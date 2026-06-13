@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { db, groupsTable, groupMembersTable, groupPostsTable, groupJoinRequestsTable, usersTable } from "@workspace/db";
+import { db, groupsTable, groupMembersTable, groupPostsTable, groupJoinRequestsTable, usersTable, notificationsTable } from "@workspace/db";
 import { desc, eq, and, sql, ilike } from "drizzle-orm";
 import { requireAuth } from "../middlewares/requireAuth";
 
@@ -624,6 +624,14 @@ router.patch("/groups/:id/join-requests/:requestId", requireAuth, async (req, re
     return;
   }
 
+  const [group] = await db
+    .select({ name: groupsTable.name })
+    .from(groupsTable)
+    .where(eq(groupsTable.id, groupId))
+    .limit(1);
+
+  const groupName = group?.name ?? "le groupe";
+
   if (action === "approve") {
     const [alreadyMember] = await db
       .select({ id: groupMembersTable.id })
@@ -643,11 +651,27 @@ router.patch("/groups/:id/join-requests/:requestId", requireAuth, async (req, re
       .update(groupJoinRequestsTable)
       .set({ status: "approved" })
       .where(eq(groupJoinRequestsTable.id, requestId));
+
+    await db.insert(notificationsTable).values({
+      userId: joinReq.userId,
+      type: "group",
+      actorId: userId,
+      action: `Votre demande de rejoindre "${groupName}" a été approuvée`,
+      link: `/groups/${groupId}`,
+    });
   } else {
     await db
       .update(groupJoinRequestsTable)
       .set({ status: "rejected" })
       .where(eq(groupJoinRequestsTable.id, requestId));
+
+    await db.insert(notificationsTable).values({
+      userId: joinReq.userId,
+      type: "group",
+      actorId: userId,
+      action: `Votre demande de rejoindre "${groupName}" a été refusée`,
+      link: `/groups/${groupId}`,
+    });
   }
 
   res.json({ ok: true, action });
