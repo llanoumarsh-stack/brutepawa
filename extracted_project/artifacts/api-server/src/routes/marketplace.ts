@@ -1,0 +1,121 @@
+import { Router } from "express";
+import { db, productsTable, ordersTable } from "@workspace/db";
+import { eq, ilike, and, desc } from "drizzle-orm";
+import {
+  CreateProductBody, GetProductParams, UpdateProductParams, UpdateProductBody,
+  DeleteProductParams, ListProductsQueryParams, CreateOrderBody, GetOrderParams
+} from "@workspace/api-zod";
+import { requireAuth } from "../middlewares/requireAuth";
+
+const router = Router();
+
+function fmt(p: typeof productsTable.$inferSelect) {
+  return { ...p, price: Number(p.price) };
+}
+
+router.get("/products/featured", requireAuth, async (req, res): Promise<void> => {
+  const products = await db.select().from(productsTable)
+    .where(eq(productsTable.status, "active"))
+    .orderBy(desc(productsTable.createdAt))
+    .limit(8);
+  res.json(products.map(fmt));
+});
+
+router.get("/products", requireAuth, async (req, res): Promise<void> => {
+  const params = ListProductsQueryParams.safeParse(req.query);
+  let query = db.select().from(productsTable).$dynamic();
+
+  const conditions = [eq(productsTable.status, "active")];
+  if (params.success && params.data.category) {
+    conditions.push(eq(productsTable.category, params.data.category));
+  }
+  if (params.success && params.data.search) {
+    conditions.push(ilike(productsTable.title, `%${params.data.search}%`));
+  }
+
+  const products = await db.select().from(productsTable)
+    .where(and(...conditions))
+    .orderBy(desc(productsTable.createdAt))
+    .limit(50);
+  res.json(products.map(fmt));
+});
+
+router.post("/products", requireAuth, async (req, res): Promise<void> => {
+  const parsed = CreateProductBody.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: parsed.error.message }); return; }
+
+  const [product] = await db.insert(productsTable).values({
+    ...parsed.data,
+    price: String(parsed.data.price),
+    sellerId: req.userId!,
+  }).returning();
+  res.status(201).json(fmt(product));
+});
+
+router.get("/products/:id", requireAuth, async (req, res): Promise<void> => {
+  const params = GetProductParams.safeParse({ id: Number(req.params.id) });
+  if (!params.success) { res.status(400).json({ error: params.error.message }); return; }
+
+  const [product] = await db.select().from(productsTable).where(eq(productsTable.id, params.data.id));
+  if (!product) { res.status(404).json({ error: "Product not found" }); return; }
+  res.json(fmt(product));
+});
+
+router.patch("/products/:id", requireAuth, async (req, res): Promise<void> => {
+  const params = UpdateProductParams.safeParse({ id: Number(req.params.id) });
+  const body = UpdateProductBody.safeParse(req.body);
+  if (!params.success || !body.success) { res.status(400).json({ error: "Invalid input" }); return; }
+
+  const updateData: Record<string, unknown> = { ...body.data };
+  if (body.data.price != null) updateData.price = String(body.data.price);
+
+  const [product] = await db.update(productsTable).set(updateData)
+    .where(and(eq(productsTable.id, params.data.id), eq(productsTable.sellerId, req.userId!)))
+    .returning();
+  if (!product) { res.status(404).json({ error: "Product not found" }); return; }
+  res.json(fmt(product));
+});
+
+router.delete("/products/:id", requireAuth, async (req, res): Promise<void> => {
+  const params = DeleteProductParams.safeParse({ id: Number(req.params.id) });
+  if (!params.success) { res.status(400).json({ error: params.error.message }); return; }
+
+  await db.delete(productsTable)
+    .where(and(eq(productsTable.id, params.data.id), eq(productsTable.sellerId, req.userId!)));
+  res.sendStatus(204);
+});
+
+router.get("/orders", requireAuth, async (req, res): Promise<void> => {
+  const orders = await db.select().from(ordersTable)
+    .where(eq(ordersTable.buyerId, req.userId!))
+    .orderBy(desc(ordersTable.createdAt));
+  res.json(orders.map(o => ({ ...o, amount: Number(o.amount) })));
+});
+
+router.post("/orders", requireAuth, async (req, res): Promise<void> => {
+  const parsed = CreateOrderBody.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: parsed.error.message }); return; }
+
+  const [product] = await db.select().from(productsTable).where(eq(productsTable.id, parsed.data.productId));
+  if (!product) { res.status(404).json({ error: "Product not found" }); return; }
+
+  const [order] = await db.insert(ordersTable).values({
+    productId: parsed.data.productId,
+    buyerId: req.userId!,
+    amount: product.price,
+    currency: product.currency,
+  }).returning();
+  res.status(201).json({ ...order, amount: Number(order.amount) });
+});
+
+router.get("/orders/:id", requireAuth, async (req, res): Promise<void> => {
+  const params = GetOrderParams.safeParse({ id: Number(req.params.id) });
+  if (!params.success) { res.status(400).json({ error: params.error.message }); return; }
+
+  const [order] = await db.select().from(ordersTable)
+    .where(and(eq(ordersTable.id, params.data.id), eq(ordersTable.buyerId, req.userId!)));
+  if (!order) { res.status(404).json({ error: "Order not found" }); return; }
+  res.json({ ...order, amount: Number(order.amount) });
+});
+
+export default router;
