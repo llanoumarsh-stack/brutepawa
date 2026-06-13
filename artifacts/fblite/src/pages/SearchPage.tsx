@@ -168,6 +168,16 @@ export default function SearchPage({ q }: Props) {
                     Voir profil
                   </button>
 
+                  <button
+                    onClick={() => navigate(`/messages?userId=${user.id}`)}
+                    style={{ padding: "8px 14px", borderRadius: 6, background: "var(--fb-bg)", border: "1px solid var(--fb-divider)", fontWeight: 600, fontSize: 13, cursor: "pointer", color: "var(--fb-blue)", transition: "background 0.15s" }}
+                    onMouseEnter={e => (e.currentTarget.style.background = "#e4e6e9")}
+                    onMouseLeave={e => (e.currentTarget.style.background = "var(--fb-bg)")}
+                    title="Envoyer un message"
+                  >
+                    💬
+                  </button>
+
                   {state === "friends" && (
                     <button disabled style={{ padding: "8px 14px", borderRadius: 6, background: "#e7f3e8", border: "none", fontWeight: 600, fontSize: 13, cursor: "default", color: "#2e7d32" }}>
                       ✓ Amis

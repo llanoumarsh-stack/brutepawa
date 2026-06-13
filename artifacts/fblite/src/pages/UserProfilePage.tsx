@@ -191,7 +191,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
             )}
             <button
               style={{ flex: 1, padding: 10, background: "var(--fb-divider)", border: "none", borderRadius: 8, fontWeight: 700, cursor: "pointer" }}
-              onClick={() => navigate("/messages")}
+              onClick={() => navigate(`/messages?userId=${user.id}`)}
             >
               💬 Message
             </button>

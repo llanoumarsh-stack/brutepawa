@@ -26,14 +26,14 @@ const mkInitials = (name: string) =>
 type Overlay = "none" | "calling" | "video" | "info" | "attach";
 
 
-export default function Messages() {
+export default function Messages({ initialUserId }: { initialUserId?: number }) {
   const navigate = useNavigate();
   const rawUser = localStorage.getItem("fb_user");
   const user = rawUser ? JSON.parse(rawUser) : { name: "Moi" };
 
   const meId = (() => { try { return (JSON.parse(localStorage.getItem("fb_user") ?? "{}") as { id?: number }).id ?? 0; } catch { return 0; } })();
 
-  const [activeConv, setActiveConv] = useState<number | null>(null);
+  const [activeConv, setActiveConv] = useState<number | null>(initialUserId ?? null);
   const [messages, setMessages] = useState<Record<number, Message[]>>({});
   const [convList, setConvList]   = useState<NormConv[]>([]);
   const [allUsers, setAllUsers]   = useState<PublicUser[]>([]);
@@ -84,7 +84,7 @@ export default function Messages() {
     Promise.all([apiGetConversations(), apiGetUsers()])
       .then(([convs, users]) => {
         setAllUsers(users);
-        setConvList(convs.map(c => {
+        const normalized: NormConv[] = convs.map(c => {
           const u = users.find(u => u.id === c.userId);
           const name = u ? `${u.firstName} ${u.lastName}` : `Utilisateur #${c.userId}`;
           return {
@@ -94,7 +94,22 @@ export default function Messages() {
             unread: c.unreadCount,
             time: new Date(c.updatedAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }),
           };
-        }));
+        });
+        // If opened directly from a profile/search and conversation doesn't exist yet, inject synthetic entry
+        if (initialUserId && !normalized.find(c => c.id === initialUserId)) {
+          const u = users.find(u => u.id === initialUserId);
+          if (u) {
+            const name = `${u.firstName} ${u.lastName}`;
+            normalized.unshift({
+              id: initialUserId,
+              user: { name, initials: mkInitials(name), color: CONV_COLORS[initialUserId % CONV_COLORS.length] },
+              lastMessage: "",
+              unread: 0,
+              time: "",
+            });
+          }
+        }
+        setConvList(normalized);
       })
       .catch(() => {});
   }, []);
