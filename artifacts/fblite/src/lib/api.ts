@@ -871,6 +871,59 @@ export async function apiAdminGetWithdrawals(status?: string): Promise<AdminWith
   return res.json();
 }
 
+export interface AdminReportUser {
+  id: number;
+  firstName: string;
+  lastName: string;
+  avatarUrl: string | null;
+}
+
+export interface AdminReport {
+  id: number;
+  reason: string;
+  status: "pending" | "reviewed" | "dismissed";
+  createdAt: string;
+  reporter: AdminReportUser;
+  reported: AdminReportUser;
+}
+
+export interface AdminReportsResponse {
+  reports: AdminReport[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
+export async function apiAdminGetReports(params?: {
+  page?: number;
+  sort?: "asc" | "desc";
+  status?: string;
+}): Promise<AdminReportsResponse> {
+  const qs = new URLSearchParams();
+  if (params?.page) qs.set("page", String(params.page));
+  if (params?.sort) qs.set("sort", params.sort);
+  if (params?.status && params.status !== "all") qs.set("status", params.status);
+  const query = qs.toString() ? `?${qs.toString()}` : "";
+  const res = await apiFetch(`/admin/reports${query}`);
+  if (!res.ok) return { reports: [], total: 0, page: 1, totalPages: 1 };
+  return res.json();
+}
+
+export async function apiAdminPatchReport(
+  id: number,
+  action: "reviewed" | "dismissed",
+): Promise<{ id: number; status: string }> {
+  const res = await apiFetch(`/admin/reports/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify({ action }),
+  });
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(e.error ?? "Action échouée");
+  }
+  return res.json();
+}
+
 export async function apiAdminPatchWithdrawal(
   id: number,
   action: "validated" | "paid" | "rejected",

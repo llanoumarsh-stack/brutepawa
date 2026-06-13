@@ -111,8 +111,9 @@ export const userReportsTable = pgTable("user_reports", {
   reporterId: integer("reporter_id").notNull(),
   reportedId: integer("reported_id").notNull(),
   reason: text("reason").notNull(),
+  status: text("status").notNull().default("pending"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-});
+}, (t) => [index("user_reports_status_idx").on(t.status)]);
 
 export const notificationsTable = pgTable("notifications", {
   id: serial("id").primaryKey(),

@@ -2,18 +2,12 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "../router";
 import { STATS_BY_COUNTRY, formatNumber } from "../data/mock";
 import { isAdmin } from "../lib/admin";
-import { apiGetUsers, type PublicUser, apiAdminGetWithdrawals, apiAdminPatchWithdrawal, type AdminWithdrawal } from "../lib/api";
+import { apiGetUsers, type PublicUser, apiAdminGetWithdrawals, apiAdminPatchWithdrawal, type AdminWithdrawal, apiAdminGetReports, apiAdminPatchReport, type AdminReport } from "../lib/api";
 
 type AdminSection = "dashboard" | "users" | "content" | "jobs" | "reports" | "monetization" | "withdrawals" | "settings";
 
 type WithdrawalStatus = "all" | "pending" | "validated" | "paid" | "rejected";
-
-const REPORTS = [
-  { id: 1, type: "Contenu inapproprié", reporter: "Aminata Diallo", target: "Publication #231", country: "🇸🇳 Sénégal", date: "Il y a 10 min", status: "En attente" },
-  { id: 2, type: "Compte suspect", reporter: "Moussa Coulibaly", target: "Profil Jean-Claude M.", country: "🇧🇫 Burkina", date: "Il y a 1 h", status: "En cours" },
-  { id: 3, type: "Arnaque marketplace", reporter: "Fatou Diop", target: "Annonce #889", country: "🇲🇱 Mali", date: "Il y a 3 h", status: "Résolu" },
-  { id: 4, type: "Spam", reporter: "Yao Kouassi", target: "Commentaire #44", country: "🇨🇮 Côte d'Ivoire", date: "Hier", status: "Résolu" },
-];
+type ReportStatusFilter = "all" | "pending" | "reviewed" | "dismissed";
 
 const PENDING_VERIFS = [
   { id: 1, name: "Ibrahim Traoré", country: "🇹🇬 Togo", request: "Badge vérifié", date: "Hier" },
@@ -24,7 +18,6 @@ const PENDING_VERIFS = [
 export default function Admin() {
   const navigate = useNavigate();
   const [section, setSection] = useState<AdminSection>("dashboard");
-  const [reportStatuses, setReportStatuses] = useState<Record<number, string>>({});
   const [apiUsers, setApiUsers] = useState<PublicUser[]>([]);
 
   // Withdrawals state
@@ -36,6 +29,17 @@ export default function Admin() {
   const [rejectNote, setRejectNote] = useState("");
   const [wdError, setWdError] = useState<string | null>(null);
 
+  // Reports state
+  const [reports, setReports] = useState<AdminReport[]>([]);
+  const [rptFilter, setRptFilter] = useState<ReportStatusFilter>("all");
+  const [rptSort, setRptSort] = useState<"asc" | "desc">("desc");
+  const [rptPage, setRptPage] = useState(1);
+  const [rptTotalPages, setRptTotalPages] = useState(1);
+  const [rptTotal, setRptTotal] = useState(0);
+  const [rptLoading, setRptLoading] = useState(false);
+  const [rptActing, setRptActing] = useState<number | null>(null);
+  const [rptError, setRptError] = useState<string | null>(null);
+
   const rawUser = localStorage.getItem("fb_user");
   const user = rawUser ? JSON.parse(rawUser) : null;
 
@@ -46,6 +50,33 @@ export default function Admin() {
     }
     apiGetUsers().then(setApiUsers).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (section !== "reports") return;
+    setRptLoading(true);
+    setRptError(null);
+    apiAdminGetReports({ page: rptPage, sort: rptSort, status: rptFilter })
+      .then(data => {
+        setReports(data.reports);
+        setRptTotal(data.total);
+        setRptTotalPages(data.totalPages);
+      })
+      .catch(() => setRptError("Impossible de charger les signalements"))
+      .finally(() => setRptLoading(false));
+  }, [section, rptFilter, rptSort, rptPage]);
+
+  async function handleReportAction(id: number, action: "reviewed" | "dismissed") {
+    setRptActing(id);
+    setRptError(null);
+    try {
+      const updated = await apiAdminPatchReport(id, action);
+      setReports(rs => rs.map(r => r.id === updated.id ? { ...r, status: updated.status as AdminReport["status"] } : r));
+    } catch (e) {
+      setRptError(e instanceof Error ? e.message : "Erreur");
+    } finally {
+      setRptActing(null);
+    }
+  }
 
   useEffect(() => {
     if (section !== "withdrawals") return;
@@ -315,43 +346,127 @@ export default function Admin() {
         {section === "reports" && (
           <>
             <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 16 }}>⚠️ Gestion des signalements</div>
-            <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
-              {["Tous", "En attente", "En cours", "Résolu"].map(f => (
-                <button key={f} style={{ padding: "5px 12px", borderRadius: 20, border: "1px solid var(--fb-border)", background: f === "Tous" ? "var(--fb-blue)" : "var(--fb-white)", color: f === "Tous" ? "#fff" : "var(--fb-text)", fontSize: 13, cursor: "pointer", fontWeight: 600 }}>{f}</button>
+
+            {/* Filter + sort bar */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+              {([
+                ["all", "Tous"],
+                ["pending", "En attente"],
+                ["reviewed", "Examinés"],
+                ["dismissed", "Ignorés"],
+              ] as [ReportStatusFilter, string][]).map(([val, label]) => (
+                <button
+                  key={val}
+                  onClick={() => { setRptFilter(val); setRptPage(1); }}
+                  style={{
+                    padding: "5px 12px", borderRadius: 20, border: "1px solid var(--fb-border)",
+                    background: rptFilter === val ? "var(--fb-blue)" : "var(--fb-white)",
+                    color: rptFilter === val ? "#fff" : "var(--fb-text)",
+                    fontSize: 13, cursor: "pointer", fontWeight: 600,
+                  }}
+                >{label}</button>
               ))}
+              <button
+                onClick={() => { setRptSort(s => s === "desc" ? "asc" : "desc"); setRptPage(1); }}
+                style={{
+                  marginLeft: "auto", padding: "5px 12px", borderRadius: 20,
+                  border: "1px solid var(--fb-border)", background: "var(--fb-white)",
+                  color: "var(--fb-text)", fontSize: 13, cursor: "pointer", fontWeight: 600,
+                }}
+              >{rptSort === "desc" ? "⬇ Plus récents" : "⬆ Plus anciens"}</button>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {REPORTS.map(r => {
-                const status = reportStatuses[r.id] ?? r.status;
-                return (
-                  <div key={r.id} style={{ background: "var(--fb-white)", borderRadius: 10, border: "1px solid var(--fb-divider)", padding: "14px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                      <div style={{ fontWeight: 700, fontSize: 14 }}>⚠️ {r.type}</div>
-                      <span style={{
-                        background: status === "Résolu" ? "#f0f9f0" : status === "En cours" ? "#FFF8E1" : "#ffebee",
-                        color: status === "Résolu" ? "#42B72A" : status === "En cours" ? "#FF9800" : "#F44336",
-                        fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 20
-                      }}>{status}</span>
-                    </div>
-                    <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", marginBottom: 8 }}>
-                      Signalé par : <strong>{r.reporter}</strong> · {r.country} · {r.date}
-                      <br />Cible : {r.target}
-                    </div>
-                    {status !== "Résolu" && (
-                      <div style={{ display: "flex", gap: 8 }}>
-                        <button onClick={() => setReportStatuses(s => ({ ...s, [r.id]: "Résolu" }))}
-                          style={{ flex: 1, background: "#42B72A", color: "#fff", border: "none", borderRadius: 6, padding: "7px", fontSize: 13, cursor: "pointer", fontWeight: 700 }}>
-                          ✓ Résoudre
-                        </button>
-                        <button style={{ flex: 1, background: "#F44336", color: "#fff", border: "none", borderRadius: 6, padding: "7px", fontSize: 13, cursor: "pointer", fontWeight: 700 }}>
-                          🚫 Suspendre
-                        </button>
+
+            {/* Total count */}
+            {!rptLoading && (
+              <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", marginBottom: 12 }}>
+                {rptTotal} signalement{rptTotal !== 1 ? "s" : ""} au total
+              </div>
+            )}
+
+            {rptError && (
+              <div style={{ background: "#ffebee", color: "#c62828", borderRadius: 8, padding: "10px 14px", marginBottom: 12, fontSize: 13, fontWeight: 600 }}>
+                ⚠️ {rptError}
+              </div>
+            )}
+
+            {rptLoading ? (
+              <div style={{ textAlign: "center", padding: 40, color: "var(--fb-text-secondary)", fontSize: 14 }}>Chargement…</div>
+            ) : reports.length === 0 ? (
+              <div style={{ textAlign: "center", padding: 40, color: "var(--fb-text-secondary)", fontSize: 14 }}>
+                Aucun signalement trouvé
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {reports.map(r => {
+                  const statusMeta: Record<string, { bg: string; color: string; label: string }> = {
+                    pending:   { bg: "#ffebee", color: "#F44336", label: "En attente" },
+                    reviewed:  { bg: "#E8F5E9", color: "#2E7D32", label: "Examiné" },
+                    dismissed: { bg: "#F5F5F5", color: "#757575", label: "Ignoré" },
+                  };
+                  const sm = statusMeta[r.status] ?? statusMeta.pending;
+                  const reporterName = `${r.reporter.firstName} ${r.reporter.lastName}`.trim();
+                  const reportedName = `${r.reported.firstName} ${r.reported.lastName}`.trim();
+                  const date = new Date(r.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
+                  const isBusy = rptActing === r.id;
+
+                  return (
+                    <div key={r.id} style={{ background: "var(--fb-white)", borderRadius: 10, border: "1px solid var(--fb-divider)", padding: 14 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                        <div style={{ fontWeight: 700, fontSize: 14 }}>⚠️ Signalement #{r.id}</div>
+                        <span style={{ background: sm.bg, color: sm.color, fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 20, flexShrink: 0 }}>
+                          {sm.label}
+                        </span>
                       </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+                      <div style={{ fontSize: 13, marginBottom: 4 }}>
+                        <span style={{ color: "var(--fb-text-secondary)" }}>Raison : </span>
+                        <strong>{r.reason}</strong>
+                      </div>
+                      <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", marginBottom: 10 }}>
+                        Signalé par <strong>{reporterName}</strong> contre <strong>{reportedName}</strong>
+                        <br />Le {date}
+                      </div>
+                      {r.status === "pending" && (
+                        <div style={{ display: "flex", gap: 8 }}>
+                          <button
+                            onClick={() => handleReportAction(r.id, "reviewed")}
+                            disabled={isBusy}
+                            style={{ flex: 1, background: "#42B72A", color: "#fff", border: "none", borderRadius: 6, padding: "7px", fontSize: 13, cursor: isBusy ? "not-allowed" : "pointer", fontWeight: 700, opacity: isBusy ? 0.6 : 1 }}
+                          >
+                            ✓ Marquer examiné
+                          </button>
+                          <button
+                            onClick={() => handleReportAction(r.id, "dismissed")}
+                            disabled={isBusy}
+                            style={{ flex: 1, background: "#9E9E9E", color: "#fff", border: "none", borderRadius: 6, padding: "7px", fontSize: 13, cursor: isBusy ? "not-allowed" : "pointer", fontWeight: 700, opacity: isBusy ? 0.6 : 1 }}
+                          >
+                            ✗ Ignorer
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Pagination */}
+            {rptTotalPages > 1 && (
+              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 12, marginTop: 16 }}>
+                <button
+                  onClick={() => setRptPage(p => Math.max(1, p - 1))}
+                  disabled={rptPage <= 1}
+                  style={{ padding: "6px 14px", borderRadius: 8, border: "1px solid var(--fb-border)", background: "var(--fb-white)", cursor: rptPage <= 1 ? "not-allowed" : "pointer", fontSize: 13, opacity: rptPage <= 1 ? 0.4 : 1 }}
+                >← Préc.</button>
+                <span style={{ fontSize: 13, color: "var(--fb-text-secondary)" }}>
+                  Page {rptPage} / {rptTotalPages}
+                </span>
+                <button
+                  onClick={() => setRptPage(p => Math.min(rptTotalPages, p + 1))}
+                  disabled={rptPage >= rptTotalPages}
+                  style={{ padding: "6px 14px", borderRadius: 8, border: "1px solid var(--fb-border)", background: "var(--fb-white)", cursor: rptPage >= rptTotalPages ? "not-allowed" : "pointer", fontSize: 13, opacity: rptPage >= rptTotalPages ? 0.4 : 1 }}
+                >Suiv. →</button>
+              </div>
+            )}
           </>
         )}
 
