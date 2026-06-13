@@ -247,6 +247,32 @@ export interface ApiGroup {
 export interface ApiGroupDetail extends ApiGroup {
   isMember: boolean;
   memberRole: string | null;
+  joinRequestStatus: string | null;
+}
+
+export interface ApiGroupMember {
+  memberId: number;
+  role: string;
+  joinedAt: string;
+  userId: number;
+  firstName: string;
+  lastName: string;
+  avatarUrl: string | null;
+}
+
+export interface ApiGroupMembersResponse {
+  members: ApiGroupMember[];
+  myRole: string;
+}
+
+export interface ApiJoinRequest {
+  requestId: number;
+  status: string;
+  createdAt: string;
+  userId: number;
+  firstName: string;
+  lastName: string;
+  avatarUrl: string | null;
 }
 
 export async function apiGetGroups(): Promise<ApiGroup[]> {
@@ -306,6 +332,57 @@ export async function apiCreateGroupPost(groupId: number, content: string, image
   if (!res.ok) {
     const err = await res.json().catch(() => ({})) as { error?: string };
     throw new Error(err.error ?? "Impossible de publier dans ce groupe");
+  }
+}
+
+export async function apiGetGroupMembers(groupId: number): Promise<ApiGroupMembersResponse> {
+  const res = await apiFetch(`/groups/${groupId}/members`);
+  if (!res.ok) throw new Error("Impossible de charger les membres");
+  return res.json() as Promise<ApiGroupMembersResponse>;
+}
+
+export async function apiRemoveGroupMember(groupId: number, targetUserId: number): Promise<void> {
+  const res = await apiFetch(`/groups/${groupId}/members/${targetUserId}`, { method: "DELETE" });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(err.error ?? "Impossible de retirer ce membre");
+  }
+}
+
+export async function apiSetGroupMemberRole(groupId: number, targetUserId: number, role: string): Promise<void> {
+  const res = await apiFetch(`/groups/${groupId}/members/${targetUserId}/role`, {
+    method: "PATCH",
+    body: JSON.stringify({ role }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(err.error ?? "Impossible de changer le rôle");
+  }
+}
+
+export async function apiRequestToJoin(groupId: number): Promise<{ status: string; requestId: number }> {
+  const res = await apiFetch(`/groups/${groupId}/join-requests`, { method: "POST" });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(err.error ?? "Impossible d'envoyer la demande");
+  }
+  return res.json() as Promise<{ status: string; requestId: number }>;
+}
+
+export async function apiGetJoinRequests(groupId: number): Promise<ApiJoinRequest[]> {
+  const res = await apiFetch(`/groups/${groupId}/join-requests`);
+  if (!res.ok) return [];
+  return res.json() as Promise<ApiJoinRequest[]>;
+}
+
+export async function apiHandleJoinRequest(groupId: number, requestId: number, action: "approve" | "reject"): Promise<void> {
+  const res = await apiFetch(`/groups/${groupId}/join-requests/${requestId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ action }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(err.error ?? "Impossible de traiter la demande");
   }
 }
 

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { db, groupsTable, groupMembersTable, groupPostsTable, usersTable } from "@workspace/db";
+import { db, groupsTable, groupMembersTable, groupPostsTable, groupJoinRequestsTable, usersTable } from "@workspace/db";
 import { desc, eq, and, sql, ilike } from "drizzle-orm";
 import { requireAuth } from "../middlewares/requireAuth";
 
@@ -94,6 +94,18 @@ router.get("/groups/:id", requireAuth, async (req, res): Promise<void> => {
   const isMember = Boolean(membership);
 
   if (group.privacy === "private" && !isMember) {
+    const [joinReq] = await db
+      .select({ id: groupJoinRequestsTable.id, status: groupJoinRequestsTable.status })
+      .from(groupJoinRequestsTable)
+      .where(
+        and(
+          eq(groupJoinRequestsTable.groupId, groupId),
+          eq(groupJoinRequestsTable.userId, userId),
+        ),
+      )
+      .orderBy(desc(groupJoinRequestsTable.createdAt))
+      .limit(1);
+
     res.json({
       id: group.id,
       name: group.name,
@@ -107,11 +119,12 @@ router.get("/groups/:id", requireAuth, async (req, res): Promise<void> => {
       description: null,
       isMember: false,
       memberRole: null,
+      joinRequestStatus: joinReq?.status ?? null,
     });
     return;
   }
 
-  res.json({ ...group, isMember, memberRole: membership?.role ?? null });
+  res.json({ ...group, isMember, memberRole: membership?.role ?? null, joinRequestStatus: null });
 });
 
 router.post("/groups/:id/join", requireAuth, async (req, res): Promise<void> => {
@@ -134,7 +147,7 @@ router.post("/groups/:id/join", requireAuth, async (req, res): Promise<void> => 
   }
 
   if (group.privacy === "private") {
-    res.status(403).json({ error: "Ce groupe est privé. Une invitation est requise pour le rejoindre." });
+    res.status(403).json({ error: "Ce groupe est privé. Utilisez la demande d'adhésion." });
     return;
   }
 
@@ -307,6 +320,337 @@ router.post("/groups/:id/posts", requireAuth, async (req, res): Promise<void> =>
     .returning();
 
   res.status(201).json(post);
+});
+
+router.get("/groups/:id/members", requireAuth, async (req, res): Promise<void> => {
+  const userId = req.userId!;
+  const groupId = parseInt(req.params.id, 10);
+  if (isNaN(groupId)) {
+    res.status(400).json({ error: "Invalid group id" });
+    return;
+  }
+
+  const [membership] = await db
+    .select({ role: groupMembersTable.role })
+    .from(groupMembersTable)
+    .where(and(eq(groupMembersTable.groupId, groupId), eq(groupMembersTable.userId, userId)))
+    .limit(1);
+
+  if (!membership) {
+    res.status(403).json({ error: "Accès réservé aux membres" });
+    return;
+  }
+
+  const members = await db
+    .select({
+      memberId: groupMembersTable.id,
+      role: groupMembersTable.role,
+      joinedAt: groupMembersTable.joinedAt,
+      userId: usersTable.id,
+      firstName: usersTable.firstName,
+      lastName: usersTable.lastName,
+      avatarUrl: usersTable.avatarUrl,
+    })
+    .from(groupMembersTable)
+    .innerJoin(usersTable, eq(groupMembersTable.userId, usersTable.id))
+    .where(eq(groupMembersTable.groupId, groupId))
+    .orderBy(
+      sql`CASE WHEN ${groupMembersTable.role} = 'admin' THEN 0 WHEN ${groupMembersTable.role} = 'moderator' THEN 1 ELSE 2 END`,
+      desc(groupMembersTable.joinedAt),
+    )
+    .limit(200);
+
+  res.json({ members, myRole: membership.role });
+});
+
+router.delete("/groups/:id/members/:targetUserId", requireAuth, async (req, res): Promise<void> => {
+  const userId = req.userId!;
+  const groupId = parseInt(req.params.id, 10);
+  const targetUserId = parseInt(req.params.targetUserId, 10);
+
+  if (isNaN(groupId) || isNaN(targetUserId)) {
+    res.status(400).json({ error: "Invalid id" });
+    return;
+  }
+
+  if (targetUserId === userId) {
+    res.status(400).json({ error: "Utilisez la route /leave pour quitter le groupe" });
+    return;
+  }
+
+  const [myMembership] = await db
+    .select({ role: groupMembersTable.role })
+    .from(groupMembersTable)
+    .where(and(eq(groupMembersTable.groupId, groupId), eq(groupMembersTable.userId, userId)))
+    .limit(1);
+
+  if (!myMembership || (myMembership.role !== "admin" && myMembership.role !== "moderator")) {
+    res.status(403).json({ error: "Réservé aux admins et modérateurs" });
+    return;
+  }
+
+  const [target] = await db
+    .select({ role: groupMembersTable.role })
+    .from(groupMembersTable)
+    .where(and(eq(groupMembersTable.groupId, groupId), eq(groupMembersTable.userId, targetUserId)))
+    .limit(1);
+
+  if (!target) {
+    res.status(404).json({ error: "Membre introuvable" });
+    return;
+  }
+
+  if (target.role === "admin") {
+    res.status(403).json({ error: "Impossible de retirer un administrateur" });
+    return;
+  }
+
+  if (target.role === "moderator" && myMembership.role !== "admin") {
+    res.status(403).json({ error: "Seul l'admin peut retirer un modérateur" });
+    return;
+  }
+
+  await db
+    .delete(groupMembersTable)
+    .where(and(eq(groupMembersTable.groupId, groupId), eq(groupMembersTable.userId, targetUserId)));
+
+  await db
+    .update(groupsTable)
+    .set({ membersCount: sql`GREATEST(${groupsTable.membersCount} - 1, 0)` })
+    .where(eq(groupsTable.id, groupId));
+
+  res.json({ ok: true });
+});
+
+router.patch("/groups/:id/members/:targetUserId/role", requireAuth, async (req, res): Promise<void> => {
+  const userId = req.userId!;
+  const groupId = parseInt(req.params.id, 10);
+  const targetUserId = parseInt(req.params.targetUserId, 10);
+
+  if (isNaN(groupId) || isNaN(targetUserId)) {
+    res.status(400).json({ error: "Invalid id" });
+    return;
+  }
+
+  const { role } = req.body as { role?: string };
+  if (!role || !["member", "moderator"].includes(role)) {
+    res.status(400).json({ error: "Rôle invalide. Valeurs possibles: member, moderator" });
+    return;
+  }
+
+  const [myMembership] = await db
+    .select({ role: groupMembersTable.role })
+    .from(groupMembersTable)
+    .where(and(eq(groupMembersTable.groupId, groupId), eq(groupMembersTable.userId, userId)))
+    .limit(1);
+
+  if (!myMembership || myMembership.role !== "admin") {
+    res.status(403).json({ error: "Réservé à l'administrateur du groupe" });
+    return;
+  }
+
+  const [target] = await db
+    .select({ role: groupMembersTable.role })
+    .from(groupMembersTable)
+    .where(and(eq(groupMembersTable.groupId, groupId), eq(groupMembersTable.userId, targetUserId)))
+    .limit(1);
+
+  if (!target) {
+    res.status(404).json({ error: "Membre introuvable" });
+    return;
+  }
+
+  if (target.role === "admin") {
+    res.status(403).json({ error: "Impossible de changer le rôle d'un administrateur" });
+    return;
+  }
+
+  await db
+    .update(groupMembersTable)
+    .set({ role })
+    .where(and(eq(groupMembersTable.groupId, groupId), eq(groupMembersTable.userId, targetUserId)));
+
+  res.json({ ok: true, role });
+});
+
+router.post("/groups/:id/join-requests", requireAuth, async (req, res): Promise<void> => {
+  const userId = req.userId!;
+  const groupId = parseInt(req.params.id, 10);
+  if (isNaN(groupId)) {
+    res.status(400).json({ error: "Invalid group id" });
+    return;
+  }
+
+  const [group] = await db
+    .select({ id: groupsTable.id, privacy: groupsTable.privacy })
+    .from(groupsTable)
+    .where(eq(groupsTable.id, groupId))
+    .limit(1);
+
+  if (!group) {
+    res.status(404).json({ error: "Groupe introuvable" });
+    return;
+  }
+
+  if (group.privacy !== "private") {
+    res.status(400).json({ error: "Ce groupe est public, rejoignez-le directement" });
+    return;
+  }
+
+  const [existing] = await db
+    .select({ id: groupMembersTable.id })
+    .from(groupMembersTable)
+    .where(and(eq(groupMembersTable.groupId, groupId), eq(groupMembersTable.userId, userId)))
+    .limit(1);
+
+  if (existing) {
+    res.json({ ok: true, alreadyMember: true });
+    return;
+  }
+
+  const [pendingReq] = await db
+    .select({ id: groupJoinRequestsTable.id, status: groupJoinRequestsTable.status })
+    .from(groupJoinRequestsTable)
+    .where(
+      and(
+        eq(groupJoinRequestsTable.groupId, groupId),
+        eq(groupJoinRequestsTable.userId, userId),
+      ),
+    )
+    .orderBy(desc(groupJoinRequestsTable.createdAt))
+    .limit(1);
+
+  if (pendingReq && pendingReq.status === "pending") {
+    res.json({ ok: true, status: "pending", requestId: pendingReq.id });
+    return;
+  }
+
+  const [created] = await db
+    .insert(groupJoinRequestsTable)
+    .values({ groupId, userId, status: "pending" })
+    .returning();
+
+  res.status(201).json({ ok: true, status: "pending", requestId: created.id });
+});
+
+router.get("/groups/:id/join-requests", requireAuth, async (req, res): Promise<void> => {
+  const userId = req.userId!;
+  const groupId = parseInt(req.params.id, 10);
+  if (isNaN(groupId)) {
+    res.status(400).json({ error: "Invalid group id" });
+    return;
+  }
+
+  const [myMembership] = await db
+    .select({ role: groupMembersTable.role })
+    .from(groupMembersTable)
+    .where(and(eq(groupMembersTable.groupId, groupId), eq(groupMembersTable.userId, userId)))
+    .limit(1);
+
+  if (!myMembership || (myMembership.role !== "admin" && myMembership.role !== "moderator")) {
+    res.status(403).json({ error: "Réservé aux admins et modérateurs" });
+    return;
+  }
+
+  const requests = await db
+    .select({
+      requestId: groupJoinRequestsTable.id,
+      status: groupJoinRequestsTable.status,
+      createdAt: groupJoinRequestsTable.createdAt,
+      userId: usersTable.id,
+      firstName: usersTable.firstName,
+      lastName: usersTable.lastName,
+      avatarUrl: usersTable.avatarUrl,
+    })
+    .from(groupJoinRequestsTable)
+    .innerJoin(usersTable, eq(groupJoinRequestsTable.userId, usersTable.id))
+    .where(
+      and(
+        eq(groupJoinRequestsTable.groupId, groupId),
+        eq(groupJoinRequestsTable.status, "pending"),
+      ),
+    )
+    .orderBy(desc(groupJoinRequestsTable.createdAt))
+    .limit(100);
+
+  res.json(requests);
+});
+
+router.patch("/groups/:id/join-requests/:requestId", requireAuth, async (req, res): Promise<void> => {
+  const userId = req.userId!;
+  const groupId = parseInt(req.params.id, 10);
+  const requestId = parseInt(req.params.requestId, 10);
+
+  if (isNaN(groupId) || isNaN(requestId)) {
+    res.status(400).json({ error: "Invalid id" });
+    return;
+  }
+
+  const { action } = req.body as { action?: string };
+  if (!action || !["approve", "reject"].includes(action)) {
+    res.status(400).json({ error: "Action invalide. Valeurs possibles: approve, reject" });
+    return;
+  }
+
+  const [myMembership] = await db
+    .select({ role: groupMembersTable.role })
+    .from(groupMembersTable)
+    .where(and(eq(groupMembersTable.groupId, groupId), eq(groupMembersTable.userId, userId)))
+    .limit(1);
+
+  if (!myMembership || (myMembership.role !== "admin" && myMembership.role !== "moderator")) {
+    res.status(403).json({ error: "Réservé aux admins et modérateurs" });
+    return;
+  }
+
+  const [joinReq] = await db
+    .select()
+    .from(groupJoinRequestsTable)
+    .where(
+      and(
+        eq(groupJoinRequestsTable.id, requestId),
+        eq(groupJoinRequestsTable.groupId, groupId),
+      ),
+    )
+    .limit(1);
+
+  if (!joinReq) {
+    res.status(404).json({ error: "Demande introuvable" });
+    return;
+  }
+
+  if (joinReq.status !== "pending") {
+    res.status(400).json({ error: "Cette demande a déjà été traitée" });
+    return;
+  }
+
+  if (action === "approve") {
+    const [alreadyMember] = await db
+      .select({ id: groupMembersTable.id })
+      .from(groupMembersTable)
+      .where(and(eq(groupMembersTable.groupId, groupId), eq(groupMembersTable.userId, joinReq.userId)))
+      .limit(1);
+
+    if (!alreadyMember) {
+      await db.insert(groupMembersTable).values({ groupId, userId: joinReq.userId, role: "member" });
+      await db
+        .update(groupsTable)
+        .set({ membersCount: sql`${groupsTable.membersCount} + 1` })
+        .where(eq(groupsTable.id, groupId));
+    }
+
+    await db
+      .update(groupJoinRequestsTable)
+      .set({ status: "approved" })
+      .where(eq(groupJoinRequestsTable.id, requestId));
+  } else {
+    await db
+      .update(groupJoinRequestsTable)
+      .set({ status: "rejected" })
+      .where(eq(groupJoinRequestsTable.id, requestId));
+  }
+
+  res.json({ ok: true, action });
 });
 
 export default router;

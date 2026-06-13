@@ -3,7 +3,9 @@ import { useNavigate } from "../router";
 import {
   apiGetGroup, apiJoinGroup, apiLeaveGroup,
   apiGetGroupPosts, apiCreateGroupPost,
-  ApiGroupDetail, ApiGroupPost,
+  apiGetGroupMembers, apiRemoveGroupMember, apiSetGroupMemberRole,
+  apiRequestToJoin, apiGetJoinRequests, apiHandleJoinRequest,
+  ApiGroupDetail, ApiGroupPost, ApiGroupMember, ApiJoinRequest,
 } from "../lib/api";
 import { useR2Upload } from "../hooks/useR2Upload";
 
@@ -30,7 +32,7 @@ function relTime(iso: string) {
   return `Il y a ${Math.floor(days / 365)} an(s)`;
 }
 
-function AuthorAvatar({ id, firstName, lastName, avatarUrl, size = 40 }: {
+function UserAvatar({ id, firstName, lastName, avatarUrl, size = 40 }: {
   id: number; firstName: string; lastName: string; avatarUrl: string | null; size?: number;
 }) {
   return avatarUrl
@@ -38,12 +40,26 @@ function AuthorAvatar({ id, firstName, lastName, avatarUrl, size = 40 }: {
     : <div style={{ width: size, height: size, borderRadius: "50%", background: avatarColor(id), display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: size * 0.36, flexShrink: 0 }}>{initials(firstName, lastName)}</div>;
 }
 
+function roleLabel(role: string) {
+  if (role === "admin") return { text: "Admin", color: "#1877F2" };
+  if (role === "moderator") return { text: "Modérateur", color: "#9C27B0" };
+  return null;
+}
+
+type Tab = "posts" | "members" | "requests";
+
 export default function GroupDetailPage({ groupId }: { groupId: number }) {
   const navigate = useNavigate();
   const [group, setGroup] = useState<ApiGroupDetail | null>(null);
   const [posts, setPosts] = useState<ApiGroupPost[]>([]);
+  const [members, setMembers] = useState<ApiGroupMember[]>([]);
+  const [myRole, setMyRole] = useState<string | null>(null);
+  const [joinRequests, setJoinRequests] = useState<ApiJoinRequest[]>([]);
+  const [tab, setTab] = useState<Tab>("posts");
   const [loading, setLoading] = useState(true);
   const [postsLoading, setPostsLoading] = useState(true);
+  const [membersLoading, setMembersLoading] = useState(false);
+  const [requestsLoading, setRequestsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [postContent, setPostContent] = useState("");
@@ -53,6 +69,9 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { upload, status: uploadStatus, error: uploadError, reset: resetUpload } = useR2Upload();
+
+  const isAdmin = myRole === "admin";
+  const isAdminOrMod = myRole === "admin" || myRole === "moderator";
 
   const loadGroup = useCallback(async () => {
     setLoading(true);
@@ -75,10 +94,40 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
     setPostsLoading(false);
   }, [groupId]);
 
+  const loadMembers = useCallback(async () => {
+    setMembersLoading(true);
+    try {
+      const data = await apiGetGroupMembers(groupId);
+      setMembers(data.members);
+      setMyRole(data.myRole);
+    } catch { /* ignore */ }
+    setMembersLoading(false);
+  }, [groupId]);
+
+  const loadJoinRequests = useCallback(async () => {
+    setRequestsLoading(true);
+    try {
+      const reqs = await apiGetJoinRequests(groupId);
+      setJoinRequests(reqs);
+    } catch { /* ignore */ }
+    setRequestsLoading(false);
+  }, [groupId]);
+
   useEffect(() => {
     loadGroup();
     loadPosts();
   }, [loadGroup, loadPosts]);
+
+  useEffect(() => {
+    if (group?.isMember) {
+      loadMembers();
+    }
+  }, [group?.isMember, loadMembers]);
+
+  useEffect(() => {
+    if (tab === "members" && group?.isMember) loadMembers();
+    if (tab === "requests" && isAdminOrMod) loadJoinRequests();
+  }, [tab]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleJoin = async () => {
     if (!group) return;
@@ -87,6 +136,17 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
       await apiJoinGroup(group.id);
       setGroup(prev => prev ? { ...prev, isMember: true, membersCount: prev.membersCount + 1 } : prev);
       await loadPosts();
+      await loadMembers();
+    } catch { /* ignore */ }
+    setActionLoading(false);
+  };
+
+  const handleRequestToJoin = async () => {
+    if (!group) return;
+    setActionLoading(true);
+    try {
+      await apiRequestToJoin(group.id);
+      setGroup(prev => prev ? { ...prev, joinRequestStatus: "pending" } : prev);
     } catch { /* ignore */ }
     setActionLoading(false);
   };
@@ -96,8 +156,11 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
     setActionLoading(true);
     try {
       await apiLeaveGroup(group.id);
-      setGroup(prev => prev ? { ...prev, isMember: false, membersCount: Math.max(0, prev.membersCount - 1) } : prev);
+      setGroup(prev => prev ? { ...prev, isMember: false, membersCount: Math.max(0, prev.membersCount - 1), memberRole: null } : prev);
+      setMyRole(null);
       setPosts([]);
+      setMembers([]);
+      setTab("posts");
     } catch { /* ignore */ }
     setActionLoading(false);
   };
@@ -144,6 +207,41 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
     setPosting(false);
   };
 
+  const handleRemoveMember = async (targetUserId: number) => {
+    if (!group) return;
+    try {
+      await apiRemoveGroupMember(group.id, targetUserId);
+      setMembers(prev => prev.filter(m => m.userId !== targetUserId));
+      setGroup(prev => prev ? { ...prev, membersCount: Math.max(0, prev.membersCount - 1) } : prev);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Erreur");
+    }
+  };
+
+  const handleChangeRole = async (targetUserId: number, currentRole: string) => {
+    if (!group) return;
+    const newRole = currentRole === "moderator" ? "member" : "moderator";
+    try {
+      await apiSetGroupMemberRole(group.id, targetUserId, newRole);
+      setMembers(prev => prev.map(m => m.userId === targetUserId ? { ...m, role: newRole } : m));
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Erreur");
+    }
+  };
+
+  const handleJoinRequest = async (requestId: number, action: "approve" | "reject") => {
+    if (!group) return;
+    try {
+      await apiHandleJoinRequest(group.id, requestId, action);
+      setJoinRequests(prev => prev.filter(r => r.requestId !== requestId));
+      if (action === "approve") {
+        setGroup(prev => prev ? { ...prev, membersCount: prev.membersCount + 1 } : prev);
+      }
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Erreur");
+    }
+  };
+
   if (loading) {
     return (
       <div style={{ maxWidth: 600, margin: "0 auto", padding: 32, textAlign: "center", color: "var(--fb-text-secondary)" }}>
@@ -166,6 +264,8 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
       </div>
     );
   }
+
+  const pendingRequestCount = joinRequests.length;
 
   return (
     <div style={{ maxWidth: 600, margin: "0 auto" }}>
@@ -209,6 +309,11 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
               <span style={{ fontSize: 12, background: "var(--fb-divider)", borderRadius: 12, padding: "3px 10px", fontWeight: 600, color: "var(--fb-text-secondary)" }}>
                 {group.category}
               </span>
+              {myRole && roleLabel(myRole) && (
+                <span style={{ fontSize: 12, background: roleLabel(myRole)!.color + "20", borderRadius: 12, padding: "3px 10px", fontWeight: 700, color: roleLabel(myRole)!.color, marginLeft: 6 }}>
+                  {roleLabel(myRole)!.text}
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -219,7 +324,7 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
           </p>
         )}
 
-        {/* Join / Leave button */}
+        {/* Join / Leave / Request button */}
         <div style={{ marginTop: 16 }}>
           {group.isMember ? (
             <div style={{ display: "flex", gap: 10 }}>
@@ -228,143 +333,352 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
               </div>
               <button
                 onClick={handleLeave}
-                disabled={actionLoading}
-                style={{ padding: "11px 18px", borderRadius: 8, border: "1px solid var(--fb-border)", background: "var(--fb-white)", color: "var(--fb-text)", fontWeight: 600, fontSize: 14, cursor: "pointer" }}
+                disabled={actionLoading || myRole === "admin"}
+                title={myRole === "admin" ? "L'administrateur ne peut pas quitter le groupe" : undefined}
+                style={{ padding: "11px 18px", borderRadius: 8, border: "1px solid var(--fb-border)", background: "var(--fb-white)", color: "var(--fb-text)", fontWeight: 600, fontSize: 14, cursor: myRole === "admin" ? "not-allowed" : "pointer", opacity: myRole === "admin" ? 0.5 : 1 }}
               >
                 {actionLoading ? "…" : "Quitter"}
               </button>
             </div>
+          ) : group.privacy === "private" ? (
+            group.joinRequestStatus === "pending" ? (
+              <div style={{ padding: "12px 0", textAlign: "center", background: "var(--fb-divider)", borderRadius: 8, fontWeight: 700, fontSize: 14, color: "var(--fb-text-secondary)" }}>
+                ⏳ Demande envoyée — en attente d'approbation
+              </div>
+            ) : group.joinRequestStatus === "rejected" ? (
+              <div style={{ padding: "12px 0", textAlign: "center", background: "#FFF0F0", borderRadius: 8, fontWeight: 700, fontSize: 14, color: "#D32F2F" }}>
+                ✗ Demande refusée
+              </div>
+            ) : (
+              <button
+                onClick={handleRequestToJoin}
+                disabled={actionLoading}
+                className="btn-primary"
+                style={{ width: "100%", padding: "12px 0", fontSize: 15, fontWeight: 700 }}
+              >
+                {actionLoading ? "…" : "🔒 Demander à rejoindre"}
+              </button>
+            )
           ) : (
             <button
-              onClick={group.privacy === "private" ? undefined : handleJoin}
-              disabled={actionLoading || group.privacy === "private"}
+              onClick={handleJoin}
+              disabled={actionLoading}
               className="btn-primary"
-              style={{ width: "100%", padding: "12px 0", fontSize: 15, fontWeight: 700, opacity: group.privacy === "private" ? 0.6 : 1 }}
+              style={{ width: "100%", padding: "12px 0", fontSize: 15, fontWeight: 700 }}
             >
-              {group.privacy === "private" ? "🔒 Groupe privé — invitation requise" : (actionLoading ? "…" : "+ Rejoindre le groupe")}
+              {actionLoading ? "…" : "+ Rejoindre le groupe"}
             </button>
           )}
         </div>
       </div>
 
-      {/* Post composer (members only) */}
+      {/* Tab bar (members only) */}
       {group.isMember && (
-        <div style={{ background: "var(--fb-white)", margin: "12px 0 0", borderTop: "1px solid var(--fb-divider)", borderBottom: "1px solid var(--fb-divider)", padding: "12px 16px" }}>
-          <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 8 }}>📝 Nouvelle publication</div>
-          <textarea
-            value={postContent}
-            onChange={e => setPostContent(e.target.value)}
-            placeholder="Partagez quelque chose avec le groupe…"
-            rows={3}
-            style={{ width: "100%", resize: "vertical", borderRadius: 8, border: "1px solid var(--fb-border)", padding: "10px 12px", fontSize: 14, fontFamily: "inherit", background: "var(--fb-bg)", color: "var(--fb-text)", boxSizing: "border-box" }}
-          />
-
-          {/* Image preview */}
-          {imagePreview && (
-            <div style={{ position: "relative", marginTop: 8, display: "inline-block" }}>
-              <img
-                src={imagePreview}
-                alt="aperçu"
-                style={{ maxWidth: "100%", maxHeight: 200, borderRadius: 8, objectFit: "cover", display: "block" }}
-              />
-              <button
-                onClick={clearImage}
-                style={{ position: "absolute", top: 6, right: 6, background: "rgba(0,0,0,0.55)", border: "none", borderRadius: "50%", width: 26, height: 26, color: "#fff", cursor: "pointer", fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1 }}
-                title="Supprimer l'image"
-              >×</button>
-            </div>
-          )}
-
-          {/* Upload progress */}
-          {uploadStatus === "uploading" && (
-            <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", marginTop: 4 }}>Envoi de l'image…</div>
-          )}
-
-          {postError && (
-            <div style={{ fontSize: 12, color: "var(--fb-red, #E41E3F)", marginTop: 4 }}>{postError}</div>
-          )}
-
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10 }}>
-            {/* Hidden file input */}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              style={{ display: "none" }}
-              onChange={handleImageSelect}
-            />
+        <div style={{ display: "flex", background: "var(--fb-white)", borderBottom: "1px solid var(--fb-divider)" }}>
+          {(["posts", "members", ...(isAdminOrMod ? ["requests"] : [])] as Tab[]).map(t => (
             <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={posting}
-              style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid var(--fb-border)", background: "var(--fb-bg)", color: "var(--fb-text-secondary)", fontWeight: 600, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}
-              title="Ajouter une photo"
+              key={t}
+              onClick={() => setTab(t)}
+              style={{
+                flex: 1, padding: "12px 0", border: "none", background: "none", fontWeight: tab === t ? 700 : 500,
+                fontSize: 14, cursor: "pointer", color: tab === t ? "var(--fb-blue)" : "var(--fb-text-secondary)",
+                borderBottom: tab === t ? "3px solid var(--fb-blue)" : "3px solid transparent",
+                position: "relative",
+              }}
             >
-              🖼️ Photo
+              {t === "posts" && "Publications"}
+              {t === "members" && "Membres"}
+              {t === "requests" && (
+                <>
+                  Demandes
+                  {pendingRequestCount > 0 && (
+                    <span style={{ position: "absolute", top: 8, right: "calc(50% - 28px)", background: "#E41E3F", color: "#fff", borderRadius: "50%", width: 18, height: 18, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800 }}>
+                      {pendingRequestCount > 9 ? "9+" : pendingRequestCount}
+                    </span>
+                  )}
+                </>
+              )}
             </button>
-            <button
-              onClick={handlePost}
-              disabled={posting || !postContent.trim()}
-              className="btn-primary"
-              style={{ padding: "9px 20px", fontSize: 14, fontWeight: 700 }}
-            >
-              {posting ? "Publication…" : "Publier"}
-            </button>
-          </div>
+          ))}
         </div>
       )}
 
-      {/* Posts feed */}
-      <div style={{ padding: "12px 12px 24px" }}>
-        <div style={{ fontWeight: 800, fontSize: 17, marginBottom: 12 }}>Publications</div>
+      {/* Posts tab */}
+      {(!group.isMember || tab === "posts") && (
+        <>
+          {/* Post composer (members only) */}
+          {group.isMember && (
+            <div style={{ background: "var(--fb-white)", margin: "12px 0 0", borderTop: "1px solid var(--fb-divider)", borderBottom: "1px solid var(--fb-divider)", padding: "12px 16px" }}>
+              <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 8 }}>📝 Nouvelle publication</div>
+              <textarea
+                value={postContent}
+                onChange={e => setPostContent(e.target.value)}
+                placeholder="Partagez quelque chose avec le groupe…"
+                rows={3}
+                style={{ width: "100%", resize: "vertical", borderRadius: 8, border: "1px solid var(--fb-border)", padding: "10px 12px", fontSize: 14, fontFamily: "inherit", background: "var(--fb-bg)", color: "var(--fb-text)", boxSizing: "border-box" }}
+              />
 
-        {postsLoading ? (
-          <div style={{ textAlign: "center", padding: 32, color: "var(--fb-text-secondary)" }}>Chargement…</div>
-        ) : !group.isMember && group.privacy === "private" ? (
-          <div style={{ background: "var(--fb-white)", borderRadius: 12, border: "1px solid var(--fb-divider)", padding: "32px 20px", textAlign: "center", color: "var(--fb-text-secondary)" }}>
-            <div style={{ fontSize: 40, marginBottom: 10 }}>🔒</div>
-            <div style={{ fontWeight: 700, fontSize: 15, color: "var(--fb-text)", marginBottom: 6 }}>Contenu réservé aux membres</div>
-            <div style={{ fontSize: 13 }}>Ce groupe est privé. Demandez une invitation pour voir les publications.</div>
-          </div>
-        ) : posts.length === 0 ? (
-          <div style={{ background: "var(--fb-white)", borderRadius: 12, border: "1px solid var(--fb-divider)", padding: "32px 20px", textAlign: "center", color: "var(--fb-text-secondary)" }}>
-            <div style={{ fontSize: 40, marginBottom: 10 }}>📝</div>
-            <div style={{ fontWeight: 700, fontSize: 15, color: "var(--fb-text)", marginBottom: 6 }}>Aucune publication pour l'instant</div>
-            <div style={{ fontSize: 13 }}>
-              {group.isMember
-                ? "Soyez le premier à partager quelque chose dans ce groupe."
-                : "Rejoignez le groupe pour voir et partager des publications."}
-            </div>
-          </div>
-        ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {posts.map(post => (
-              <div key={post.id} style={{ background: "var(--fb-white)", borderRadius: 12, border: "1px solid var(--fb-divider)", padding: "14px 16px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                  <AuthorAvatar
-                    id={post.authorId}
-                    firstName={post.authorFirstName}
-                    lastName={post.authorLastName}
-                    avatarUrl={post.authorAvatarUrl}
-                    size={38}
+              {imagePreview && (
+                <div style={{ position: "relative", marginTop: 8, display: "inline-block" }}>
+                  <img
+                    src={imagePreview}
+                    alt="aperçu"
+                    style={{ maxWidth: "100%", maxHeight: 200, borderRadius: 8, objectFit: "cover", display: "block" }}
                   />
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: 14 }}>{post.authorFirstName} {post.authorLastName}</div>
-                    <div style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>{relTime(post.createdAt)}</div>
+                  <button
+                    onClick={clearImage}
+                    style={{ position: "absolute", top: 6, right: 6, background: "rgba(0,0,0,0.55)", border: "none", borderRadius: "50%", width: 26, height: 26, color: "#fff", cursor: "pointer", fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1 }}
+                    title="Supprimer l'image"
+                  >×</button>
+                </div>
+              )}
+
+              {uploadStatus === "uploading" && (
+                <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", marginTop: 4 }}>Envoi de l'image…</div>
+              )}
+
+              {postError && (
+                <div style={{ fontSize: 12, color: "var(--fb-red, #E41E3F)", marginTop: 4 }}>{postError}</div>
+              )}
+
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10 }}>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={handleImageSelect}
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={posting}
+                  style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid var(--fb-border)", background: "var(--fb-bg)", color: "var(--fb-text-secondary)", fontWeight: 600, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}
+                  title="Ajouter une photo"
+                >
+                  🖼️ Photo
+                </button>
+                <button
+                  onClick={handlePost}
+                  disabled={posting || !postContent.trim()}
+                  className="btn-primary"
+                  style={{ padding: "9px 20px", fontSize: 14, fontWeight: 700 }}
+                >
+                  {posting ? "Publication…" : "Publier"}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Posts feed */}
+          <div style={{ padding: "12px 12px 24px" }}>
+            <div style={{ fontWeight: 800, fontSize: 17, marginBottom: 12 }}>Publications</div>
+
+            {postsLoading ? (
+              <div style={{ textAlign: "center", padding: 32, color: "var(--fb-text-secondary)" }}>Chargement…</div>
+            ) : !group.isMember && group.privacy === "private" ? (
+              <div style={{ background: "var(--fb-white)", borderRadius: 12, border: "1px solid var(--fb-divider)", padding: "32px 20px", textAlign: "center", color: "var(--fb-text-secondary)" }}>
+                <div style={{ fontSize: 40, marginBottom: 10 }}>🔒</div>
+                <div style={{ fontWeight: 700, fontSize: 15, color: "var(--fb-text)", marginBottom: 6 }}>Contenu réservé aux membres</div>
+                <div style={{ fontSize: 13 }}>Ce groupe est privé. Faites une demande pour voir les publications.</div>
+              </div>
+            ) : posts.length === 0 ? (
+              <div style={{ background: "var(--fb-white)", borderRadius: 12, border: "1px solid var(--fb-divider)", padding: "32px 20px", textAlign: "center", color: "var(--fb-text-secondary)" }}>
+                <div style={{ fontSize: 40, marginBottom: 10 }}>📝</div>
+                <div style={{ fontWeight: 700, fontSize: 15, color: "var(--fb-text)", marginBottom: 6 }}>Aucune publication pour l'instant</div>
+                <div style={{ fontSize: 13 }}>
+                  {group.isMember
+                    ? "Soyez le premier à partager quelque chose dans ce groupe."
+                    : "Rejoignez le groupe pour voir et partager des publications."}
+                </div>
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {posts.map(post => (
+                  <div key={post.id} style={{ background: "var(--fb-white)", borderRadius: 12, border: "1px solid var(--fb-divider)", padding: "14px 16px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                      <UserAvatar
+                        id={post.authorId}
+                        firstName={post.authorFirstName}
+                        lastName={post.authorLastName}
+                        avatarUrl={post.authorAvatarUrl}
+                        size={38}
+                      />
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: 14 }}>{post.authorFirstName} {post.authorLastName}</div>
+                        <div style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>{relTime(post.createdAt)}</div>
+                      </div>
+                    </div>
+                    <div style={{ fontSize: 14, lineHeight: 1.6, color: "var(--fb-text)", whiteSpace: "pre-wrap" }}>{post.content}</div>
+                    {post.imageUrl && (
+                      <img
+                        src={post.imageUrl}
+                        alt=""
+                        style={{ marginTop: 10, width: "100%", borderRadius: 8, objectFit: "cover", maxHeight: 300 }}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* Members tab */}
+      {group.isMember && tab === "members" && (
+        <div style={{ padding: "12px 12px 24px" }}>
+          <div style={{ fontWeight: 800, fontSize: 17, marginBottom: 12 }}>
+            Membres ({members.length})
+          </div>
+          {membersLoading ? (
+            <div style={{ textAlign: "center", padding: 32, color: "var(--fb-text-secondary)" }}>Chargement…</div>
+          ) : members.length === 0 ? (
+            <div style={{ textAlign: "center", padding: 32, color: "var(--fb-text-secondary)" }}>Aucun membre trouvé</div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {members.map(member => {
+                const badge = roleLabel(member.role);
+                return (
+                  <div
+                    key={member.userId}
+                    style={{ background: "var(--fb-white)", borderRadius: 12, border: "1px solid var(--fb-divider)", padding: "12px 14px", display: "flex", alignItems: "center", gap: 12 }}
+                  >
+                    <UserAvatar
+                      id={member.userId}
+                      firstName={member.firstName}
+                      lastName={member.lastName}
+                      avatarUrl={member.avatarUrl}
+                      size={42}
+                    />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 700, fontSize: 14, display: "flex", alignItems: "center", gap: 6 }}>
+                        {member.firstName} {member.lastName}
+                        {badge && (
+                          <span style={{ fontSize: 11, background: badge.color + "20", color: badge.color, borderRadius: 8, padding: "2px 7px", fontWeight: 700 }}>
+                            {badge.text}
+                          </span>
+                        )}
+                      </div>
+                      <div style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>
+                        Membre depuis {relTime(member.joinedAt)}
+                      </div>
+                    </div>
+                    {isAdmin && member.role !== "admin" && (
+                      <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                        <button
+                          onClick={() => handleChangeRole(member.userId, member.role)}
+                          style={{
+                            padding: "6px 11px", borderRadius: 8, border: "1px solid var(--fb-border)",
+                            background: "var(--fb-bg)", color: "var(--fb-text-secondary)", fontWeight: 600, fontSize: 12, cursor: "pointer",
+                          }}
+                          title={member.role === "moderator" ? "Rétrograder en membre" : "Promouvoir modérateur"}
+                        >
+                          {member.role === "moderator" ? "↓ Membre" : "↑ Modo"}
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (confirm(`Retirer ${member.firstName} ${member.lastName} du groupe ?`)) {
+                              handleRemoveMember(member.userId);
+                            }
+                          }}
+                          style={{
+                            padding: "6px 11px", borderRadius: 8, border: "1px solid #E41E3F",
+                            background: "#FFF0F0", color: "#D32F2F", fontWeight: 600, fontSize: 12, cursor: "pointer",
+                          }}
+                          title="Retirer du groupe"
+                        >
+                          Retirer
+                        </button>
+                      </div>
+                    )}
+                    {!isAdmin && isAdminOrMod && member.role === "member" && (
+                      <button
+                        onClick={() => {
+                          if (confirm(`Retirer ${member.firstName} ${member.lastName} du groupe ?`)) {
+                            handleRemoveMember(member.userId);
+                          }
+                        }}
+                        style={{
+                          padding: "6px 11px", borderRadius: 8, border: "1px solid #E41E3F",
+                          background: "#FFF0F0", color: "#D32F2F", fontWeight: 600, fontSize: 12, cursor: "pointer", flexShrink: 0,
+                        }}
+                      >
+                        Retirer
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Requests tab (admin/moderator only) */}
+      {group.isMember && tab === "requests" && isAdminOrMod && (
+        <div style={{ padding: "12px 12px 24px" }}>
+          <div style={{ fontWeight: 800, fontSize: 17, marginBottom: 12 }}>
+            Demandes d'adhésion
+            {pendingRequestCount > 0 && (
+              <span style={{ marginLeft: 8, fontSize: 14, background: "#E41E3F", color: "#fff", borderRadius: 20, padding: "2px 10px", fontWeight: 700 }}>
+                {pendingRequestCount}
+              </span>
+            )}
+          </div>
+          {requestsLoading ? (
+            <div style={{ textAlign: "center", padding: 32, color: "var(--fb-text-secondary)" }}>Chargement…</div>
+          ) : joinRequests.length === 0 ? (
+            <div style={{ background: "var(--fb-white)", borderRadius: 12, border: "1px solid var(--fb-divider)", padding: "32px 20px", textAlign: "center", color: "var(--fb-text-secondary)" }}>
+              <div style={{ fontSize: 36, marginBottom: 10 }}>✅</div>
+              <div style={{ fontWeight: 700, fontSize: 15, color: "var(--fb-text)", marginBottom: 6 }}>Aucune demande en attente</div>
+              <div style={{ fontSize: 13 }}>Toutes les demandes d'adhésion ont été traitées.</div>
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {joinRequests.map(req => (
+                <div
+                  key={req.requestId}
+                  style={{ background: "var(--fb-white)", borderRadius: 12, border: "1px solid var(--fb-divider)", padding: "12px 14px", display: "flex", alignItems: "center", gap: 12 }}
+                >
+                  <UserAvatar
+                    id={req.userId}
+                    firstName={req.firstName}
+                    lastName={req.lastName}
+                    avatarUrl={req.avatarUrl}
+                    size={42}
+                  />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 700, fontSize: 14 }}>{req.firstName} {req.lastName}</div>
+                    <div style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>
+                      Demande envoyée {relTime(req.createdAt)}
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                    <button
+                      onClick={() => handleJoinRequest(req.requestId, "approve")}
+                      style={{
+                        padding: "7px 13px", borderRadius: 8, border: "none",
+                        background: "var(--fb-blue)", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer",
+                      }}
+                    >
+                      ✓ Accepter
+                    </button>
+                    <button
+                      onClick={() => handleJoinRequest(req.requestId, "reject")}
+                      style={{
+                        padding: "7px 13px", borderRadius: 8, border: "1px solid var(--fb-border)",
+                        background: "var(--fb-bg)", color: "var(--fb-text-secondary)", fontWeight: 700, fontSize: 13, cursor: "pointer",
+                      }}
+                    >
+                      ✗ Refuser
+                    </button>
                   </div>
                 </div>
-                <div style={{ fontSize: 14, lineHeight: 1.6, color: "var(--fb-text)", whiteSpace: "pre-wrap" }}>{post.content}</div>
-                {post.imageUrl && (
-                  <img
-                    src={post.imageUrl}
-                    alt=""
-                    style={{ marginTop: 10, width: "100%", borderRadius: 8, objectFit: "cover", maxHeight: 300 }}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
