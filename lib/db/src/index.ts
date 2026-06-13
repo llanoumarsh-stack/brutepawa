@@ -15,22 +15,34 @@ if (!dbUrl) {
   );
 }
 
-function sanitizeDbUrl(url: string): string {
+function parseDbUrl(url: string): pg.PoolConfig {
   try {
     const u = new URL(url);
     u.searchParams.delete("channel_binding");
-    return u.toString();
+    // node-postgres truncates usernames at the first dot when parsed from a
+    // connection string (e.g. Supabase pooler uses postgres.PROJECT_REF).
+    // Extract credentials explicitly so the full username is preserved.
+    return {
+      user: decodeURIComponent(u.username),
+      password: decodeURIComponent(u.password),
+      host: u.hostname,
+      port: u.port ? parseInt(u.port, 10) : 5432,
+      database: u.pathname.replace(/^\//, ""),
+      ssl: { rejectUnauthorized: false },
+      connectionTimeoutMillis: 30000,
+      idleTimeoutMillis: 300000,
+    };
   } catch {
-    return url;
+    return {
+      connectionString: url,
+      ssl: { rejectUnauthorized: false },
+      connectionTimeoutMillis: 30000,
+      idleTimeoutMillis: 300000,
+    };
   }
 }
 
-export const pool = new Pool({
-  connectionString: sanitizeDbUrl(dbUrl),
-  ssl: { rejectUnauthorized: false },
-  connectionTimeoutMillis: 30000,
-  idleTimeoutMillis: 300000,
-});
+export const pool = new Pool(parseDbUrl(dbUrl));
 export const db = drizzle(pool, { schema });
 
 export async function withDbRetry<T>(
