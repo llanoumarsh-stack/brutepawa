@@ -198,6 +198,88 @@ select:focus { border-color: var(--fb-blue); }
   margin: 0;
 }
 
+/* ===== MOBILE SEARCH OVERLAY ===== */
+.mobile-search-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--fb-white);
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  animation: overlaySlideUp 0.22s ease;
+}
+@keyframes overlaySlideUp {
+  from { transform: translateY(100%); opacity: 0.6; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.mobile-search-overlay-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--fb-divider);
+  background: var(--fb-white);
+  flex-shrink: 0;
+}
+.mobile-search-back-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: var(--fb-text);
+  padding: 4px 8px;
+  border-radius: 50%;
+  line-height: 1;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+.mobile-search-back-btn:hover { background: var(--fb-bg); }
+.mobile-search-input {
+  flex: 1;
+  background: var(--fb-bg);
+  border: none;
+  border-radius: 20px;
+  padding: 10px 14px;
+  font-size: 16px;
+  color: var(--fb-text);
+  outline: none;
+  box-shadow: none;
+}
+.mobile-search-input:focus {
+  border: none;
+  box-shadow: none;
+}
+.mobile-search-clear-btn {
+  background: var(--fb-text-secondary);
+  border: none;
+  color: #fff;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 14px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  padding: 0;
+  opacity: 0.7;
+}
+.mobile-search-clear-btn:hover { opacity: 1; }
+.mobile-search-overlay-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.mobile-search-overlay-body .search-dropdown {
+  position: static;
+  box-shadow: none;
+  border-radius: 0;
+  animation: none;
+  min-width: unset;
+}
+
 /* Search suggestions dropdown */
 .search-dropdown {
   position: absolute;
@@ -1081,6 +1163,11 @@ select:focus { border-color: var(--fb-blue); }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* ===== RESPONSIVE: MOBILE ONLY (< 768px) ===== */
+@media (max-width: 767px) {
+  .navbar-search-wrap { display: none; }
 }
 
 /* ===== RESPONSIVE: TABLET (768px+) ===== */

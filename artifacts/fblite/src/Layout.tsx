@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "./router";
 import CreateModal from "./components/CreateModal";
 import PostModal from "./components/PostModal";
 import SearchSuggestionsDropdown from "./components/SearchSuggestionsDropdown";
+import MobileSearchOverlay from "./components/MobileSearchOverlay";
 import { apiGetFriendRequests } from "./lib/api";
 
 interface Props {
@@ -23,8 +24,9 @@ const TABS: { id: Tab; icon: string; label: string; path: string }[] = [
 export default function Layout({ children, onNewPost }: Props) {
   const path     = useLocation();
   const navigate = useNavigate();
-  const [showCreate,    setShowCreate]    = useState(false);
-  const [showPostModal, setShowPostModal] = useState(false);
+  const [showCreate,        setShowCreate]        = useState(false);
+  const [showPostModal,     setShowPostModal]     = useState(false);
+  const [showSearchOverlay, setShowSearchOverlay] = useState(false);
   const [searchQuery,   setSearchQuery]   = useState(() => {
     const qs = window.location.search;
     return new URLSearchParams(qs).get("q") ?? "";
@@ -286,6 +288,14 @@ export default function Layout({ children, onNewPost }: Props) {
           <span style={{ fontSize: 24, lineHeight: 1 }}>＋</span>
         </button>
 
+        <button
+          className="bottom-nav-btn-main"
+          onClick={() => setShowSearchOverlay(true)}
+          title="Rechercher"
+        >
+          <span className="tab-icon">🔍</span>
+        </button>
+
         {TABS.slice(2).map(tab => (
           <button
             key={tab.id}
@@ -310,6 +320,16 @@ export default function Layout({ children, onNewPost }: Props) {
           userName={user.name}
           onClose={() => setShowPostModal(false)}
           onPost={(content) => { onNewPost?.(content); }}
+        />
+      )}
+      {showSearchOverlay && (
+        <MobileSearchOverlay
+          onClose={() => setShowSearchOverlay(false)}
+          navigate={(path) => { setShowSearchOverlay(false); navigate(path); }}
+          recentSearches={recentSearches}
+          onSelectRecent={(q) => { saveRecent(q); }}
+          onRemoveRecent={removeRecent}
+          onCommitSearch={saveRecent}
         />
       )}
     </div>
