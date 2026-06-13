@@ -37,6 +37,11 @@ export default function LiveStreamPage() {
   interface FloatingGift { id: number; emoji: string; senderName: string; giftName: string; x: number; }
   const [floatingGifts, setFloatingGifts] = useState<FloatingGift[]>([]);
 
+  interface GiftFeedEntry { id: number; emoji: string; senderName: string; giftName: string; }
+  const [giftFeedEntries, setGiftFeedEntries] = useState<GiftFeedEntry[]>([]);
+  const giftFeedIdRef = useRef(0);
+  const giftFeedBottomRef = useRef<HTMLDivElement>(null);
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -173,6 +178,11 @@ export default function LiveStreamPage() {
           user: g.senderName || "Anonyme",
           text: `a envoyé ${g.giftEmoji} ${g.giftName} !`,
         }]);
+        // Feed overlay entry — auto-expires after 4 s
+        const fid = ++giftFeedIdRef.current;
+        const feedEntry = { id: fid, emoji: g.giftEmoji || "🎁", senderName: g.senderName || "Anonyme", giftName: g.giftName || "Cadeau" };
+        setGiftFeedEntries(prev => [...prev.slice(-19), feedEntry]);
+        setTimeout(() => setGiftFeedEntries(prev => prev.filter(fe => fe.id !== fid)), 4000);
       } catch { /* ignore */ }
     });
 
@@ -196,6 +206,10 @@ export default function LiveStreamPage() {
   useEffect(() => {
     commentsEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [comments]);
+
+  useEffect(() => {
+    giftFeedBottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [giftFeedEntries]);
 
   const goLive = async () => {
     if (!localStreamRef.current) return;
@@ -476,6 +490,49 @@ export default function LiveStreamPage() {
         </div>
       ))}
 
+      {/* Gift feed overlay — mirrors viewer's feed, auto-expires after 4 s */}
+      {giftFeedEntries.length > 0 && (
+        <div style={{
+          position: "absolute",
+          top: 120,
+          left: 12,
+          maxWidth: "calc(100% - 24px)",
+          maxHeight: 200,
+          overflowY: "auto",
+          overflowX: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          gap: 5,
+          pointerEvents: "none",
+          zIndex: 20,
+          scrollbarWidth: "none",
+        }}>
+          {giftFeedEntries.map(fe => (
+            <div key={fe.id} style={{
+              display: "inline-flex",
+              alignSelf: "flex-start",
+              alignItems: "center",
+              gap: 6,
+              background: "rgba(0,0,0,0.65)",
+              backdropFilter: "blur(4px)",
+              borderRadius: 20,
+              padding: "5px 14px 5px 10px",
+              fontSize: 13,
+              fontWeight: 600,
+              color: "#fff",
+              whiteSpace: "nowrap",
+              animation: "feedSlideIn 0.3s ease-out",
+            }}>
+              <span style={{ fontSize: 20 }}>{fe.emoji}</span>
+              <span style={{ color: "#FFD700" }}>{fe.senderName}</span>
+              <span style={{ fontWeight: 400, color: "rgba(255,255,255,0.8)" }}>a envoyé</span>
+              <span style={{ color: "#E91E8C" }}>{fe.giftName}</span>
+            </div>
+          ))}
+          <div ref={giftFeedBottomRef} />
+        </div>
+      )}
+
       {/* ── TOP BAR ── */}
       <div style={{
         position: "absolute", top: 0, left: 0, right: 0,
@@ -724,6 +781,10 @@ export default function LiveStreamPage() {
         @keyframes floatUp {
           0%   { transform: translateY(0) scale(1); opacity: 1; }
           100% { transform: translateY(-160px) scale(1.4); opacity: 0; }
+        }
+        @keyframes feedSlideIn {
+          from { transform: translateX(-12px); opacity: 0; }
+          to   { transform: translateX(0);    opacity: 1; }
         }
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
