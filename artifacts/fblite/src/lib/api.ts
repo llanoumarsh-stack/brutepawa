@@ -177,6 +177,31 @@ export async function apiRejectFriendRequest(requestId: number): Promise<void> {
   if (!res.ok) throw new Error("Erreur");
 }
 
+export async function apiBlockUser(userId: number): Promise<void> {
+  const res = await apiFetch(`/users/${userId}/block`, { method: "POST" });
+  if (!res.ok) throw new Error("Erreur lors du blocage");
+}
+
+export async function apiUnblockUser(userId: number): Promise<void> {
+  const res = await apiFetch(`/users/${userId}/block`, { method: "DELETE" });
+  if (!res.ok) throw new Error("Erreur lors du déblocage");
+}
+
+export async function apiCheckBlock(userId: number): Promise<boolean> {
+  const res = await apiFetch(`/users/${userId}/block`);
+  if (!res.ok) return false;
+  const data = await res.json() as { blocked: boolean };
+  return data.blocked;
+}
+
+export async function apiReportUser(userId: number, reason: string): Promise<void> {
+  const res = await apiFetch(`/users/${userId}/report`, {
+    method: "POST",
+    body: JSON.stringify({ reason }),
+  });
+  if (!res.ok) throw new Error("Erreur lors du signalement");
+}
+
 export async function apiGetPosts(page = 1): Promise<FeedPost[]> {
   const res = await apiFetch(`/posts?page=${page}`);
   if (!res.ok) return [];

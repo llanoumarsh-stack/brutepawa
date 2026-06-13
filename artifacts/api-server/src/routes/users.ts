@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { db, usersTable, friendRequestsTable } from "@workspace/db";
+import { db, usersTable, friendRequestsTable, userBlocksTable, userReportsTable } from "@workspace/db";
 import { eq, or, and, ne, ilike, sql } from "drizzle-orm";
 import { UpdateMeBody, GetUserParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
@@ -183,6 +183,54 @@ router.get("/users/:id", requireAuth, async (req, res): Promise<void> => {
   const [user] = await db.select().from(usersTable).where(eq(usersTable.id, params.data.id));
   if (!user) { res.status(404).json({ error: "User not found" }); return; }
   res.json(formatUser(user));
+});
+
+// Block a user
+router.post("/users/:id/block", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const targetId = Number(req.params.id);
+  if (isNaN(targetId) || targetId === me) { res.status(400).json({ error: "Invalid target" }); return; }
+
+  await db.insert(userBlocksTable)
+    .values({ blockerId: me, blockedId: targetId })
+    .onConflictDoNothing();
+  res.status(201).json({ ok: true });
+});
+
+// Unblock a user
+router.delete("/users/:id/block", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const targetId = Number(req.params.id);
+  if (isNaN(targetId)) { res.status(400).json({ error: "Invalid target" }); return; }
+
+  await db.delete(userBlocksTable)
+    .where(and(eq(userBlocksTable.blockerId, me), eq(userBlocksTable.blockedId, targetId)));
+  res.json({ ok: true });
+});
+
+// Check if caller has blocked a user
+router.get("/users/:id/block", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const targetId = Number(req.params.id);
+  if (isNaN(targetId)) { res.status(400).json({ error: "Invalid target" }); return; }
+
+  const [row] = await db.select().from(userBlocksTable)
+    .where(and(eq(userBlocksTable.blockerId, me), eq(userBlocksTable.blockedId, targetId)));
+  res.json({ blocked: !!row });
+});
+
+// Report a user
+router.post("/users/:id/report", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const targetId = Number(req.params.id);
+  if (isNaN(targetId) || targetId === me) { res.status(400).json({ error: "Invalid target" }); return; }
+
+  const reason = typeof req.body.reason === "string" && req.body.reason.trim()
+    ? req.body.reason.trim()
+    : "Aucune raison précisée";
+
+  await db.insert(userReportsTable).values({ reporterId: me, reportedId: targetId, reason });
+  res.status(201).json({ ok: true });
 });
 
 export default router;

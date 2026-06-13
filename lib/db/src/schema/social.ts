@@ -99,6 +99,21 @@ export const storiesTable = pgTable("stories", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+export const userBlocksTable = pgTable("user_blocks", {
+  id: serial("id").primaryKey(),
+  blockerId: integer("blocker_id").notNull(),
+  blockedId: integer("blocked_id").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [uniqueIndex("user_blocks_pair_idx").on(t.blockerId, t.blockedId)]);
+
+export const userReportsTable = pgTable("user_reports", {
+  id: serial("id").primaryKey(),
+  reporterId: integer("reporter_id").notNull(),
+  reportedId: integer("reported_id").notNull(),
+  reason: text("reason").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const notificationsTable = pgTable("notifications", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull(),
@@ -131,3 +146,5 @@ export type Story = typeof storiesTable.$inferSelect;
 export type InsertStory = z.infer<typeof insertStorySchema>;
 export type Notification = typeof notificationsTable.$inferSelect;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+export type UserBlock = typeof userBlocksTable.$inferSelect;
+export type UserReport = typeof userReportsTable.$inferSelect;

@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "../router";
 import {
   apiGetUsersWithStatus, apiGetFriendRequests, apiGetUserPosts,
   apiSendFriendRequest, apiAcceptFriendRequest, apiRejectFriendRequest,
+  apiBlockUser, apiUnblockUser, apiCheckBlock, apiReportUser,
   type PublicUserWithStatus, type FriendRequest, type FeedPost,
 } from "../lib/api";
 
@@ -38,21 +39,68 @@ export default function UserProfilePage({ userId }: { userId: number }) {
   const [pendingRequest, setPendingRequest] = useState<FriendRequest | null>(null);
   const [activeTab, setActiveTab] = useState<ProfileTab>("posts");
 
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [blockLoading, setBlockLoading] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportReason, setReportReason] = useState("");
+  const [reportLoading, setReportLoading] = useState(false);
+  const [reportSent, setReportSent] = useState(false);
+  const moreMenuRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     setLoading(true);
     Promise.all([
       apiGetUsersWithStatus(),
       apiGetUserPosts(userId),
       apiGetFriendRequests(),
-    ]).then(([users, userPosts, requests]) => {
+      apiCheckBlock(userId),
+    ]).then(([users, userPosts, requests, blocked]) => {
       const found = users.find(u => u.id === userId) ?? null;
       setUser(found);
       setPosts(userPosts);
-      // Check if there's a pending request from this user to me
       const req = requests.find(r => r.fromUser.id === userId);
       setPendingRequest(req ?? null);
+      setIsBlocked(blocked);
     }).catch(() => {}).finally(() => setLoading(false));
   }, [userId]);
+
+  useEffect(() => {
+    if (!moreMenuOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (moreMenuRef.current && !moreMenuRef.current.contains(e.target as Node)) {
+        setMoreMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [moreMenuOpen]);
+
+  const handleToggleBlock = async () => {
+    setMoreMenuOpen(false);
+    setBlockLoading(true);
+    try {
+      if (isBlocked) {
+        await apiUnblockUser(userId);
+        setIsBlocked(false);
+      } else {
+        await apiBlockUser(userId);
+        setIsBlocked(true);
+      }
+    } catch { /* ignore */ }
+    setBlockLoading(false);
+  };
+
+  const handleReport = async () => {
+    if (!reportReason.trim()) return;
+    setReportLoading(true);
+    try {
+      await apiReportUser(userId, reportReason);
+      setReportSent(true);
+      setReportReason("");
+    } catch { /* ignore */ }
+    setReportLoading(false);
+  };
 
   const handleSendRequest = async () => {
     if (!user) return;
@@ -195,7 +243,46 @@ export default function UserProfilePage({ userId }: { userId: number }) {
             >
               💬 Message
             </button>
+            {/* More menu */}
+            <div ref={moreMenuRef} style={{ position: "relative" }}>
+              <button
+                onClick={() => setMoreMenuOpen(v => !v)}
+                disabled={blockLoading}
+                style={{ padding: "10px 14px", background: "var(--fb-divider)", border: "none", borderRadius: 8, fontWeight: 700, cursor: "pointer", fontSize: 18, lineHeight: 1 }}
+                title="Plus d'options"
+              >
+                {blockLoading ? "…" : "⋯"}
+              </button>
+              {moreMenuOpen && (
+                <div style={{
+                  position: "absolute", right: 0, top: "calc(100% + 6px)", zIndex: 100,
+                  background: "var(--fb-white)", borderRadius: 10, boxShadow: "0 4px 20px rgba(0,0,0,0.18)",
+                  border: "1px solid var(--fb-divider)", minWidth: 210, overflow: "hidden",
+                }}>
+                  <button
+                    onClick={handleToggleBlock}
+                    style={{ display: "block", width: "100%", padding: "13px 16px", background: "none", border: "none", textAlign: "left", cursor: "pointer", fontSize: 14, fontWeight: 600, color: isBlocked ? "var(--fb-blue)" : "#E53935" }}
+                  >
+                    {isBlocked ? "🔓 Débloquer cet utilisateur" : "🚫 Bloquer cet utilisateur"}
+                  </button>
+                  <div style={{ height: 1, background: "var(--fb-divider)" }} />
+                  <button
+                    onClick={() => { setMoreMenuOpen(false); setReportOpen(true); setReportSent(false); setReportReason(""); }}
+                    style={{ display: "block", width: "100%", padding: "13px 16px", background: "none", border: "none", textAlign: "left", cursor: "pointer", fontSize: 14, fontWeight: 600, color: "#E53935" }}
+                  >
+                    🚩 Signaler ce profil
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
+
+          {/* Block confirmation banner */}
+          {isBlocked && (
+            <div style={{ marginTop: 10, padding: "8px 12px", background: "#FFF3E0", borderRadius: 8, fontSize: 13, color: "#E65100", fontWeight: 600 }}>
+              🚫 Vous avez bloqué cet utilisateur. Il ne peut plus vous envoyer de messages.
+            </div>
+          )}
         </div>
 
         {/* Profile tabs */}
@@ -211,6 +298,68 @@ export default function UserProfilePage({ userId }: { userId: number }) {
           ))}
         </div>
       </div>
+
+      {/* Report modal */}
+      {reportOpen && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 999, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+          <div style={{ background: "var(--fb-white)", borderRadius: 14, padding: 24, width: "100%", maxWidth: 380, boxShadow: "0 8px 32px rgba(0,0,0,0.25)" }}>
+            {reportSent ? (
+              <>
+                <div style={{ textAlign: "center", fontSize: 40, marginBottom: 12 }}>✅</div>
+                <div style={{ fontWeight: 700, fontSize: 16, textAlign: "center", marginBottom: 8 }}>Signalement envoyé</div>
+                <div style={{ fontSize: 14, color: "var(--fb-text-secondary)", textAlign: "center", marginBottom: 20 }}>
+                  Merci. Notre équipe examinera ce profil dans les meilleurs délais.
+                </div>
+                <button
+                  onClick={() => setReportOpen(false)}
+                  className="btn-primary"
+                  style={{ width: "100%", padding: 11 }}
+                >
+                  Fermer
+                </button>
+              </>
+            ) : (
+              <>
+                <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 4 }}>🚩 Signaler ce profil</div>
+                <div style={{ fontSize: 13, color: "var(--fb-text-secondary)", marginBottom: 14 }}>
+                  Décrivez la raison de votre signalement. Nous garderons cela confidentiel.
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 14 }}>
+                  {["Contenu inapproprié", "Harcèlement ou intimidation", "Faux profil", "Spam", "Autre"].map(reason => (
+                    <button
+                      key={reason}
+                      onClick={() => setReportReason(reason)}
+                      style={{
+                        padding: "9px 14px", borderRadius: 8, border: `1.5px solid ${reportReason === reason ? "var(--fb-blue)" : "var(--fb-divider)"}`,
+                        background: reportReason === reason ? "#E8F0FE" : "none", cursor: "pointer", textAlign: "left", fontSize: 14, fontWeight: 600,
+                        color: reportReason === reason ? "var(--fb-blue)" : "var(--fb-text)",
+                      }}
+                    >
+                      {reason}
+                    </button>
+                  ))}
+                </div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button
+                    onClick={() => setReportOpen(false)}
+                    style={{ flex: 1, padding: 11, background: "var(--fb-divider)", border: "none", borderRadius: 8, fontWeight: 700, cursor: "pointer" }}
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    onClick={handleReport}
+                    disabled={!reportReason.trim() || reportLoading}
+                    className="btn-primary"
+                    style={{ flex: 1, padding: 11, opacity: !reportReason.trim() ? 0.5 : 1 }}
+                  >
+                    {reportLoading ? "…" : "Envoyer"}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       <div style={{ padding: "12px" }}>
         {/* PUBLICATIONS */}

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { db, postsTable, postLikesTable, messagesTable, usersTable, storiesTable } from "@workspace/db";
+import { db, postsTable, postLikesTable, messagesTable, usersTable, storiesTable, userBlocksTable } from "@workspace/db";
 import { eq, and, or, desc, sql, gt, ilike } from "drizzle-orm";
 import { CreatePostBody, GetPostParams, DeletePostParams, LikePostParams, LikePostBody, SendMessageBody, GetConversationParams, ListPostsQueryParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
@@ -187,9 +187,24 @@ router.post("/messages", requireAuth, async (req, res): Promise<void> => {
   const parsed = SendMessageBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: parsed.error.message }); return; }
 
+  const me = req.userId!;
+  const toId = parsed.data.toUserId;
+
+  // Deny if either party has blocked the other
+  const [block] = await db.select().from(userBlocksTable).where(
+    or(
+      and(eq(userBlocksTable.blockerId, me), eq(userBlocksTable.blockedId, toId)),
+      and(eq(userBlocksTable.blockerId, toId), eq(userBlocksTable.blockedId, me)),
+    )
+  );
+  if (block) {
+    res.status(403).json({ error: "Vous ne pouvez pas envoyer de message à cet utilisateur." });
+    return;
+  }
+
   const [msg] = await db.insert(messagesTable).values({
-    fromUserId: req.userId!,
-    toUserId: parsed.data.toUserId,
+    fromUserId: me,
+    toUserId: toId,
     content: parsed.data.content,
   }).returning();
   res.status(201).json(msg);
