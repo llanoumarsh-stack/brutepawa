@@ -2,7 +2,7 @@ import app from "./app";
 import { logger } from "./lib/logger";
 import { db } from "@workspace/db";
 import { liveStreamsTable } from "@workspace/db/schema";
-import { eq, and, lt, isNotNull, or } from "drizzle-orm";
+import { eq, and, lt, or, sql } from "drizzle-orm";
 import { deleteLiveInput } from "./lib/cloudflare-stream";
 
 const rawPort = process.env["PORT"];
@@ -35,7 +35,10 @@ async function autoStopStaleLives() {
   const sixtyMinAgo = new Date(now.getTime() - 60 * 60 * 1000);
 
   try {
-    // Find lives to stop: (no viewer heartbeat in > 5 min) OR (running > 60 min)
+    // Find lives to stop:
+    // • No viewer present for > 5 min — uses COALESCE(last_viewer_at, started_at)
+    //   so that lives that never received a heartbeat are also caught after 5 min.
+    // • Running longer than max_duration_minutes (default 60 min).
     const staleLives = await db
       .select({ id: liveStreamsTable.id, liveInputId: liveStreamsTable.liveInputId })
       .from(liveStreamsTable)
@@ -43,7 +46,10 @@ async function autoStopStaleLives() {
         and(
           eq(liveStreamsTable.status, "live"),
           or(
-            and(isNotNull(liveStreamsTable.lastViewerAt), lt(liveStreamsTable.lastViewerAt, fiveMinAgo)),
+            lt(
+              sql`COALESCE(${liveStreamsTable.lastViewerAt}, ${liveStreamsTable.startedAt})`,
+              fiveMinAgo,
+            ),
             lt(liveStreamsTable.startedAt, sixtyMinAgo),
           ),
         ),

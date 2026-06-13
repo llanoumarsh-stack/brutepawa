@@ -133,9 +133,30 @@ router.get("/stream/lives", async (_req, res) => {
   }
 });
 
-// Heartbeat — viewers (and streamer) call this every 30 s to signal presence.
-// Increments viewer_count and refreshes last_viewer_at.
+// Heartbeat — viewers call this every 30 s to refresh their presence timestamp.
+// Only updates last_viewer_at; viewer_count is managed separately by join/leave.
 router.post("/stream/live/:id/heartbeat", async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
+
+  const [stream] = await db
+    .select({ id: liveStreamsTable.id })
+    .from(liveStreamsTable)
+    .where(and(eq(liveStreamsTable.id, id), eq(liveStreamsTable.status, "live")));
+
+  if (!stream) { res.status(404).json({ error: "Live not found or ended" }); return; }
+
+  // Only refresh presence timestamp — do NOT increment viewer_count on every tick
+  await db
+    .update(liveStreamsTable)
+    .set({ lastViewerAt: new Date() })
+    .where(eq(liveStreamsTable.id, id));
+
+  res.json({ ok: true });
+});
+
+// Called when a viewer joins: increments viewer_count by 1
+router.post("/stream/live/:id/join", async (req, res) => {
   const id = parseInt(req.params.id, 10);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
@@ -157,7 +178,7 @@ router.post("/stream/live/:id/heartbeat", async (req, res) => {
   res.json({ ok: true });
 });
 
-// Decrement viewer count when a viewer disconnects
+// Called when a viewer leaves: decrements viewer_count by 1 (floor 0)
 router.delete("/stream/live/:id/heartbeat", async (req, res) => {
   const id = parseInt(req.params.id, 10);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }

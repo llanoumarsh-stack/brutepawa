@@ -138,22 +138,6 @@ export default function LiveStreamPage() {
       .catch(() => {});
   }, []);
 
-  // Send heartbeat every 30 s while streaming (also acts as streamer keep-alive)
-  useEffect(() => {
-    if (!isLive || !cfStream.session?.id) return;
-    const dbId = cfStream.session.id;
-    const token = getBpToken();
-    const headers: Record<string, string> = { "Content-Type": "application/json" };
-    if (token) headers["Authorization"] = `Bearer ${token}`;
-    const beat = () => fetch(`/api/stream/live/${dbId}/heartbeat`, { method: "POST", headers }).catch(() => {});
-    beat();
-    const interval = setInterval(beat, 30_000);
-    return () => {
-      clearInterval(interval);
-      fetch(`/api/stream/live/${dbId}/heartbeat`, { method: "DELETE", headers }).catch(() => {});
-    };
-  }, [isLive, cfStream.session?.id]);
-
   useEffect(() => {
     commentsEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [comments]);
