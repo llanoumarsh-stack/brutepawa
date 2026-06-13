@@ -4,7 +4,7 @@ import CreateModal from "./components/CreateModal";
 import PostModal from "./components/PostModal";
 import SearchSuggestionsDropdown from "./components/SearchSuggestionsDropdown";
 import MobileSearchOverlay from "./components/MobileSearchOverlay";
-import { apiGetFriendRequests } from "./lib/api";
+import { apiGetFriendRequests, apiGetUnreadNotifCount } from "./lib/api";
 
 interface Props {
   children: ReactNode;
@@ -32,6 +32,7 @@ export default function Layout({ children, onNewPost }: Props) {
     return new URLSearchParams(qs).get("q") ?? "";
   });
   const [pendingRequests, setPendingRequests] = useState(0);
+  const [unreadNotifs, setUnreadNotifs] = useState(0);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>(() => {
     try {
@@ -91,6 +92,20 @@ export default function Layout({ children, onNewPost }: Props) {
   }, []);
 
   useEffect(() => {
+    apiGetUnreadNotifCount().then(setUnreadNotifs).catch(() => {});
+    const iv = setInterval(() => {
+      apiGetUnreadNotifCount().then(setUnreadNotifs).catch(() => {});
+    }, 30_000);
+    return () => clearInterval(iv);
+  }, []);
+
+  useEffect(() => {
+    if (path === "/notifications") {
+      setUnreadNotifs(0);
+    }
+  }, [path]);
+
+  useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (searchWrapRef.current && !searchWrapRef.current.contains(e.target as Node)) {
         setShowSuggestions(false);
@@ -100,7 +115,6 @@ export default function Layout({ children, onNewPost }: Props) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const unreadNotifs   = 0;
   const unreadMessages = 0;
 
   return (

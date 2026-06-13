@@ -20,6 +20,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useColors } from "@/hooks/useColors";
 import { PostCard } from "@/components/PostCard";
 import { StoryBar } from "@/components/StoryBar";
+import { useAuth } from "@/context/AuthContext";
 
 interface StoryGroup {
   authorId: number;
@@ -44,16 +45,39 @@ function useStories() {
   });
 }
 
+function useUnreadNotifCount(token: string | null) {
+  return useQuery<number>({
+    queryKey: ["notif-unread-count"],
+    queryFn: async () => {
+      const base = process.env.EXPO_PUBLIC_DOMAIN
+        ? `https://${process.env.EXPO_PUBLIC_DOMAIN}`
+        : "";
+      const res = await fetch(`${base}/api/notifications/unread-count`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!res.ok) return 0;
+      const data = await res.json() as { count: number };
+      return data.count ?? 0;
+    },
+    enabled: Boolean(token),
+    refetchInterval: 30_000,
+    retry: false,
+  });
+}
+
 export default function FeedScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
+  const { token } = useAuth();
   const isWeb = Platform.OS === "web";
   const topPadding = isWeb ? 67 : insets.top;
 
   const postsQuery = useListPosts(undefined, { query: {} });
   const storiesQuery = useStories();
   const likeMutation = useLikePost();
+  const unreadCountQuery = useUnreadNotifCount(token);
+  const unreadCount = unreadCountQuery.data ?? 0;
 
   const posts = (postsQuery.data ?? []) as any[];
   const stories = (storiesQuery.data ?? []) as StoryGroup[];
@@ -129,6 +153,11 @@ export default function FeedScreen() {
             onPress={() => router.push("/notifications")}
           >
             <Ionicons name="notifications-outline" size={20} color={colors.foreground} />
+            {unreadCount > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{unreadCount > 99 ? "99+" : unreadCount}</Text>
+              </View>
+            )}
           </TouchableOpacity>
         </View>
       </View>
@@ -206,4 +235,22 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   emptyContent: { flexGrow: 1 },
+  badge: {
+    position: "absolute",
+    top: -4,
+    right: -4,
+    minWidth: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: "#F44336",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 3,
+  },
+  badgeText: {
+    color: "#fff",
+    fontSize: 10,
+    fontFamily: "Inter_700Bold",
+    lineHeight: 14,
+  },
 });

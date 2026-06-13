@@ -1004,6 +1004,37 @@ export async function apiAdminGetReports(params?: {
   return res.json();
 }
 
+// ── Notifications ─────────────────────────────────────────────────────────────
+
+export interface ApiNotification {
+  id: number;
+  type: string;
+  actorId: number | null;
+  actorName: string | null;
+  action: string;
+  detail: string | null;
+  link: string | null;
+  isRead: boolean;
+  createdAt: string;
+}
+
+export async function apiGetNotifications(): Promise<ApiNotification[]> {
+  const res = await apiFetch("/notifications");
+  if (!res.ok) return [];
+  return res.json() as Promise<ApiNotification[]>;
+}
+
+export async function apiGetUnreadNotifCount(): Promise<number> {
+  const res = await apiFetch("/notifications/unread-count");
+  if (!res.ok) return 0;
+  const data = await res.json() as { count: number };
+  return data.count ?? 0;
+}
+
+export async function apiMarkAllNotificationsRead(): Promise<void> {
+  await apiFetch("/notifications/read-all", { method: "PATCH" });
+}
+
 export async function apiAdminPatchReport(
   id: number,
   action: "reviewed" | "dismissed",

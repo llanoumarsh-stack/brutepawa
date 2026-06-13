@@ -377,6 +377,15 @@ router.delete("/stories/:id", requireAuth, async (req, res): Promise<void> => {
 
 // ─── Notifications ──────────────────────────────────────────────────────────
 
+router.get("/notifications/unread-count", requireAuth, async (req, res): Promise<void> => {
+  const userId = req.userId!;
+  const [row] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(notificationsTable)
+    .where(and(eq(notificationsTable.userId, userId), eq(notificationsTable.isRead, false)));
+  res.json({ count: row?.count ?? 0 });
+});
+
 router.get("/notifications", requireAuth, async (req, res): Promise<void> => {
   const userId = req.userId!;
   const rows = await db

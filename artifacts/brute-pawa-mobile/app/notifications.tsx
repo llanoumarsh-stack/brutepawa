@@ -91,6 +91,7 @@ function useMarkAllRead(token: string | null) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["notif-unread-count"] });
     },
   });
 }

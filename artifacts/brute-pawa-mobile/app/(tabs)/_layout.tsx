@@ -1,16 +1,46 @@
 import { BlurView } from "expo-blur";
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { Tabs } from "expo-router";
-import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs";
+import { Badge, Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs";
 import { SymbolView } from "expo-symbols";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Platform, StyleSheet, View, useColorScheme } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useQuery } from "@tanstack/react-query";
 
 import { useColors } from "@/hooks/useColors";
+import { useAuth } from "@/context/AuthContext";
 
-function NativeTabLayout() {
+function useUnreadNotifCount(token: string | null) {
+  return useQuery<number>({
+    queryKey: ["notif-unread-count"],
+    queryFn: async () => {
+      const base = process.env.EXPO_PUBLIC_DOMAIN
+        ? `https://${process.env.EXPO_PUBLIC_DOMAIN}`
+        : "";
+      const res = await fetch(`${base}/api/notifications/unread-count`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!res.ok) return 0;
+      const data = await res.json() as { count: number };
+      return data.count ?? 0;
+    },
+    enabled: Boolean(token),
+    refetchInterval: 30_000,
+    retry: false,
+  });
+}
+
+interface TabLayoutProps {
+  unreadCount: number;
+}
+
+function NativeTabLayout({ unreadCount }: TabLayoutProps) {
+  const badgeValue = unreadCount > 0
+    ? (unreadCount > 99 ? "99+" : String(unreadCount))
+    : undefined;
+
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">
@@ -25,6 +55,11 @@ function NativeTabLayout() {
         <Icon sf={{ default: "bubble.left", selected: "bubble.left.fill" }} />
         <Label>Messages</Label>
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="notifications">
+        <Icon sf={{ default: "bell", selected: "bell.fill" }} />
+        <Label>Alertes</Label>
+        {badgeValue !== undefined && <Badge>{badgeValue}</Badge>}
+      </NativeTabs.Trigger>
       <NativeTabs.Trigger name="profile">
         <Icon sf={{ default: "person", selected: "person.fill" }} />
         <Label>Profil</Label>
@@ -33,7 +68,7 @@ function NativeTabLayout() {
   );
 }
 
-function ClassicTabLayout() {
+function ClassicTabLayout({ unreadCount }: TabLayoutProps) {
   const colors = useColors();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
@@ -105,6 +140,19 @@ function ClassicTabLayout() {
         }}
       />
       <Tabs.Screen
+        name="notifications"
+        options={{
+          title: "Alertes",
+          tabBarBadge: unreadCount > 0 ? (unreadCount > 99 ? "99+" : unreadCount) : undefined,
+          tabBarIcon: ({ color }) =>
+            isIOS ? (
+              <SymbolView name="bell" tintColor={color} size={24} />
+            ) : (
+              <Ionicons name="notifications-outline" size={22} color={color} />
+            ),
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: "Profil",
@@ -121,8 +169,12 @@ function ClassicTabLayout() {
 }
 
 export default function TabLayout() {
+  const { token } = useAuth();
+  const unreadCountQuery = useUnreadNotifCount(token);
+  const unreadCount = unreadCountQuery.data ?? 0;
+
   if (isLiquidGlassAvailable()) {
-    return <NativeTabLayout />;
+    return <NativeTabLayout unreadCount={unreadCount} />;
   }
-  return <ClassicTabLayout />;
+  return <ClassicTabLayout unreadCount={unreadCount} />;
 }
