@@ -1,7 +1,8 @@
-import { useState, useEffect, ReactNode } from "react";
+import { useState, useEffect, useRef, ReactNode } from "react";
 import { useLocation, useNavigate } from "./router";
 import CreateModal from "./components/CreateModal";
 import PostModal from "./components/PostModal";
+import SearchSuggestionsDropdown from "./components/SearchSuggestionsDropdown";
 import { apiGetFriendRequests } from "./lib/api";
 
 interface Props {
@@ -29,6 +30,8 @@ export default function Layout({ children, onNewPost }: Props) {
     return new URLSearchParams(qs).get("q") ?? "";
   });
   const [pendingRequests, setPendingRequests] = useState(0);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchWrapRef = useRef<HTMLDivElement>(null);
 
   const rawUser      = localStorage.getItem("fb_user");
   const user         = rawUser ? JSON.parse(rawUser) : { name: "Utilisateur", email: "", avatarUrl: null };
@@ -62,6 +65,16 @@ export default function Layout({ children, onNewPost }: Props) {
     return () => clearInterval(iv);
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchWrapRef.current && !searchWrapRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const unreadNotifs   = 0;
   const unreadMessages = 0;
 
@@ -74,22 +87,37 @@ export default function Layout({ children, onNewPost }: Props) {
           <span className="navbar-logo">BP</span>
         </button>
 
-        <input
-          className="navbar-search"
-          placeholder="🔍 Rechercher sur Brute Pawa"
-          value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
-          onKeyDown={e => {
-            if (e.key === "Enter" && searchQuery.trim()) {
-              navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-              (e.target as HTMLInputElement).blur();
-            }
-            if (e.key === "Escape") {
-              setSearchQuery("");
-              (e.target as HTMLInputElement).blur();
-            }
-          }}
-        />
+        <div className="navbar-search-wrap" ref={searchWrapRef}>
+          <input
+            className="navbar-search"
+            placeholder="🔍 Rechercher sur Brute Pawa"
+            value={searchQuery}
+            onChange={e => {
+              setSearchQuery(e.target.value);
+              setShowSuggestions(e.target.value.length >= 2);
+            }}
+            onFocus={() => { if (searchQuery.length >= 2) setShowSuggestions(true); }}
+            onKeyDown={e => {
+              if (e.key === "Enter" && searchQuery.trim()) {
+                setShowSuggestions(false);
+                navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+                (e.target as HTMLInputElement).blur();
+              }
+              if (e.key === "Escape") {
+                setShowSuggestions(false);
+                setSearchQuery("");
+                (e.target as HTMLInputElement).blur();
+              }
+            }}
+          />
+          {showSuggestions && searchQuery.length >= 2 && (
+            <SearchSuggestionsDropdown
+              query={searchQuery}
+              onClose={() => setShowSuggestions(false)}
+              navigate={navigate}
+            />
+          )}
+        </div>
 
         <div className="navbar-actions">
           <div className="relative">
