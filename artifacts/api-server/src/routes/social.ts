@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db, postsTable, postLikesTable, messagesTable, usersTable, storiesTable, userBlocksTable } from "@workspace/db";
-import { eq, and, or, desc, sql, gt, ilike } from "drizzle-orm";
+import { eq, and, or, desc, sql, gt } from "drizzle-orm";
 import { CreatePostBody, GetPostParams, DeletePostParams, LikePostParams, LikePostBody, SendMessageBody, GetConversationParams, ListPostsQueryParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
 import { deleteObject, extractKeyFromUrl, ownerIdFromKey } from "../lib/r2";
@@ -17,7 +17,7 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
 
   const conditions = [];
   if (authorId) conditions.push(eq(postsTable.authorId, authorId));
-  if (search) conditions.push(ilike(postsTable.content, `%${search}%`));
+  if (search) conditions.push(sql`search_vector @@ websearch_to_tsquery('french', unaccent(${search}))`);
 
   const rows = await db
     .select({

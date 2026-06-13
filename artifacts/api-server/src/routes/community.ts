@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db, groupsTable, groupMembersTable, groupPostsTable, usersTable } from "@workspace/db";
-import { ilike, or, desc, eq, and, sql } from "drizzle-orm";
+import { desc, eq, and, sql } from "drizzle-orm";
 import { requireAuth } from "../middlewares/requireAuth";
 
 const router = Router();
@@ -29,11 +29,7 @@ router.get("/groups", requireAuth, async (req, res): Promise<void> => {
       search
         ? and(
             eq(groupsTable.privacy, "public"),
-            or(
-              ilike(groupsTable.name, `%${search}%`),
-              ilike(groupsTable.description, `%${search}%`),
-              ilike(groupsTable.category, `%${search}%`),
-            ),
+            sql`search_vector @@ websearch_to_tsquery('french', unaccent(${search}))`,
           )
         : eq(groupsTable.privacy, "public"),
     )
