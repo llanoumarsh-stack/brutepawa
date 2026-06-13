@@ -4,7 +4,7 @@ import { db } from "@workspace/db";
 import {
   giftCatalogTable, giftTransactionsTable, walletsTable,
 } from "@workspace/db/schema";
-import { eq, and, desc, sql, gt } from "drizzle-orm";
+import { eq, and, desc, sql, gt, gte } from "drizzle-orm";
 import { requireAuth } from "../middlewares/requireAuth";
 
 const router = Router();
@@ -74,21 +74,16 @@ router.post("/gifts/send", requireAuth, async (req, res) => {
 
   try {
     const record = await db.transaction(async (trx) => {
-      // Ensure sender wallet exists
-      let [sw] = await trx.select().from(walletsTable).where(eq(walletsTable.userId, senderId));
-      if (!sw) [sw] = await trx.insert(walletsTable).values({ userId: senderId }).returning();
-
-      if ((sw.tokenBalance ?? 0) < gift.tokenCost) throw new Error("INSUFFICIENT_TOKENS");
-
-      // Debit sender
-      await trx.update(walletsTable)
+      // Upsert sender wallet then atomically debit — single guarded UPDATE prevents race-condition overspend
+      await trx.insert(walletsTable).values({ userId: senderId }).onConflictDoNothing();
+      const debit = await trx.update(walletsTable)
         .set({ tokenBalance: sql`${walletsTable.tokenBalance} - ${gift.tokenCost}` })
-        .where(eq(walletsTable.userId, senderId));
+        .where(and(eq(walletsTable.userId, senderId), gte(walletsTable.tokenBalance, gift.tokenCost)))
+        .returning({ id: walletsTable.id });
+      if (debit.length === 0) throw new Error("INSUFFICIENT_TOKENS");
 
-      // Ensure receiver wallet exists and credit
-      let [rw] = await trx.select().from(walletsTable).where(eq(walletsTable.userId, receiverId));
-      if (!rw) [rw] = await trx.insert(walletsTable).values({ userId: receiverId }).returning();
-
+      // Upsert receiver wallet and credit
+      await trx.insert(walletsTable).values({ userId: receiverId }).onConflictDoNothing();
       await trx.update(walletsTable)
         .set({ tokenBalance: sql`${walletsTable.tokenBalance} + ${gift.tokenCost}` })
         .where(eq(walletsTable.userId, receiverId));

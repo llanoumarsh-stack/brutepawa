@@ -15,4 +15,4 @@ Default gift catalog seeded via `seedGiftCatalog()` called at API server startup
 
 Anti-self-gift check in `routes/gifts.ts`. In-memory rate limit: 10 gifts/min per user.
 
-GiftPicker component at `artifacts/fblite/src/components/GiftPicker.tsx` — ready for LiveWatchPage (Task #7).
+GiftPicker component at `artifacts/fblite/src/components/GiftPicker.tsx` — integrated in LiveWatchPage (viewer sends gifts); reusable on any video/live page.

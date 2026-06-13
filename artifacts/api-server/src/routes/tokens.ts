@@ -2,7 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { db } from "@workspace/db";
 import { tokenPurchasesTable, walletsTable } from "@workspace/db/schema";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, and } from "drizzle-orm";
 import { requireAuth } from "../middlewares/requireAuth";
 import crypto from "crypto";
 
@@ -90,24 +90,28 @@ router.post("/tokens/webhook", async (req, res) => {
 
   const [purchase] = await db.select().from(tokenPurchasesTable).where(eq(tokenPurchasesTable.id, purchaseId));
   if (!purchase) { res.status(404).json({ error: "Purchase not found" }); return; }
-  if (purchase.status !== "pending") {
-    res.status(409).json({ error: "Purchase already processed" }); return;
-  }
 
-  // Update purchase status
-  await db.update(tokenPurchasesTable)
-    .set({ status: status as "confirmed" | "failed" })
-    .where(eq(tokenPurchasesTable.id, purchaseId));
+  // Atomic: status transition + credit in one transaction; conditional WHERE status='pending' prevents double-credit
+  try {
+    await db.transaction(async (trx) => {
+      const updated = await trx.update(tokenPurchasesTable)
+        .set({ status: status as "confirmed" | "failed" })
+        .where(and(eq(tokenPurchasesTable.id, purchaseId), eq(tokenPurchasesTable.status, "pending")))
+        .returning();
+      if (updated.length === 0) throw new Error("ALREADY_PROCESSED");
 
-  // Credit tokens if confirmed
-  if (status === "confirmed") {
-    let [wallet] = await db.select().from(walletsTable).where(eq(walletsTable.userId, purchase.userId));
-    if (!wallet) {
-      [wallet] = await db.insert(walletsTable).values({ userId: purchase.userId }).returning();
+      if (status === "confirmed") {
+        await trx.insert(walletsTable).values({ userId: updated[0].userId }).onConflictDoNothing();
+        await trx.update(walletsTable)
+          .set({ tokenBalance: sql`${walletsTable.tokenBalance} + ${updated[0].tokens}` })
+          .where(eq(walletsTable.userId, updated[0].userId));
+      }
+    });
+  } catch (err) {
+    if (err instanceof Error && err.message === "ALREADY_PROCESSED") {
+      res.status(409).json({ error: "Purchase already processed" }); return;
     }
-    await db.update(walletsTable)
-      .set({ tokenBalance: sql`${walletsTable.tokenBalance} + ${purchase.tokens}` })
-      .where(eq(walletsTable.userId, purchase.userId));
+    throw err;
   }
 
   res.json({ ok: true });

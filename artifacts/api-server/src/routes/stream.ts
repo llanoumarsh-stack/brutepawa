@@ -128,6 +128,7 @@ router.get("/stream/live/:id", async (req, res) => {
   const [stream] = await db
     .select({
       id:          liveStreamsTable.id,
+      userId:      liveStreamsTable.userId,
       userName:    liveStreamsTable.userName,
       userFlag:    liveStreamsTable.userFlag,
       playbackUrl: liveStreamsTable.playbackUrl,

@@ -98,32 +98,36 @@ router.post("/creator/withdraw", requireAuth, async (req, res) => {
     return;
   }
 
-  let [wallet] = await db.select().from(walletsTable).where(eq(walletsTable.userId, userId));
-  if (!wallet) {
-    [wallet] = await db.insert(walletsTable).values({ userId }).returning();
-  }
+  // Debit + create withdrawal atomically; conditional update prevents concurrent overdraw
+  let withdrawal;
+  try {
+    withdrawal = await db.transaction(async (trx) => {
+      await trx.insert(walletsTable).values({ userId }).onConflictDoNothing();
+      const debit = await trx.update(walletsTable)
+        .set({ tokenBalance: sql`${walletsTable.tokenBalance} - ${tokensAmount}` })
+        .where(and(eq(walletsTable.userId, userId), gte(walletsTable.tokenBalance, tokensAmount)))
+        .returning({ id: walletsTable.id });
+      if (debit.length === 0) throw new Error("INSUFFICIENT_TOKENS");
 
-  if ((wallet.tokenBalance ?? 0) < tokensAmount) {
-    res.status(400).json({ error: "Solde de jetons insuffisant pour ce retrait." });
+      const [w] = await trx.insert(creatorWithdrawalsTable).values({
+        creatorId:     userId,
+        tokensAmount,
+        xofAmount:     tokensAmount * TOKEN_TO_XOF,
+        status:        "pending",
+        paymentMethod,
+        paymentPhone,
+      }).returning();
+      return w;
+    });
+  } catch (err) {
+    if (err instanceof Error && err.message === "INSUFFICIENT_TOKENS") {
+      res.status(400).json({ error: "Solde de jetons insuffisant pour ce retrait." });
+      return;
+    }
+    req.log.error({ err }, "Withdrawal failed");
+    res.status(500).json({ error: "Erreur lors du retrait" });
     return;
   }
-
-  // Debit tokens and create withdrawal atomically
-  const withdrawal = await db.transaction(async (trx) => {
-    await trx.update(walletsTable)
-      .set({ tokenBalance: sql`${walletsTable.tokenBalance} - ${tokensAmount}` })
-      .where(eq(walletsTable.userId, userId));
-
-    const [w] = await trx.insert(creatorWithdrawalsTable).values({
-      creatorId:     userId,
-      tokensAmount,
-      xofAmount:     tokensAmount * TOKEN_TO_XOF,
-      status:        "pending",
-      paymentMethod,
-      paymentPhone,
-    }).returning();
-    return w;
-  });
 
   res.status(201).json(withdrawal);
 });
