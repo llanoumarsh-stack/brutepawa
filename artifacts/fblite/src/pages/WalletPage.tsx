@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   apiGetWallet, apiGetTransactions, apiDeposit, apiTransfer, apiGetUsers,
-  apiGetCreatorWallet, apiPurchaseTokens,
+  apiGetCreatorWallet, apiPurchaseTokens, apiGetTokenPurchaseStatus,
   type ApiTx, type PublicUser, type ApiTokenPurchase,
 } from "../lib/api";
 
@@ -27,7 +27,12 @@ export default function WalletPage() {
   const [transactions, setTransactions] = useState<ApiTx[]>([]);
   const [loading, setLoading]           = useState(true);
   const [users, setUsers]               = useState<PublicUser[]>([]);
-  const [tab, setTab]                   = useState<Tab>("accueil");
+  const [tab, setTab]                   = useState<Tab>(() => {
+    const params = new URLSearchParams(window.location.search);
+    const t = params.get("tab");
+    if (t === "jetons" || t === "depot" || t === "envoyer" || t === "historique") return t as Tab;
+    return "accueil";
+  });
 
   // XOF wallet state
   const [depotMethod, setDepotMethod]   = useState<DepotMethod>("mtn");
@@ -41,17 +46,48 @@ export default function WalletPage() {
   const [txError, setTxError]           = useState<string | null>(null);
 
   // Token purchase state
-  const [tokenPack, setTokenPack]       = useState<typeof TOKEN_PACKS[0] | null>(null);
-  const [tokenOp, setTokenOp]           = useState<TokenOp>("orange");
-  const [tokenPhone, setTokenPhone]     = useState("");
-  const [tokenLoading, setTokenLoading] = useState(false);
-  const [tokenResult, setTokenResult]   = useState<ApiTokenPurchase | null>(null);
-  const [tokenError, setTokenError]     = useState<string | null>(null);
+  const [tokenPack, setTokenPack]           = useState<typeof TOKEN_PACKS[0] | null>(null);
+  const [tokenOp, setTokenOp]               = useState<TokenOp>("orange");
+  const [tokenPhone, setTokenPhone]         = useState("");
+  const [tokenLoading, setTokenLoading]     = useState(false);
+  const [tokenResult, setTokenResult]       = useState<ApiTokenPurchase | null>(null);
+  const [tokenError, setTokenError]         = useState<string | null>(null);
+  const [tokenConfirmed, setTokenConfirmed] = useState(false);
+  const pollRef                             = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const meId = (() => {
     try { return (JSON.parse(localStorage.getItem("fb_user") ?? "{}") as { id?: number }).id ?? 0; }
     catch { return 0; }
   })();
+
+  // Poll purchase status after initiation until confirmed/failed (max 5 min)
+  useEffect(() => {
+    if (!tokenResult) {
+      if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
+      return;
+    }
+    const start = Date.now();
+    const MAX_POLL_MS = 5 * 60 * 1000;
+    pollRef.current = setInterval(async () => {
+      if (Date.now() - start > MAX_POLL_MS) {
+        clearInterval(pollRef.current!); pollRef.current = null; return;
+      }
+      try {
+        const s = await apiGetTokenPurchaseStatus(tokenResult.purchaseId);
+        if (s.status === "confirmed") {
+          clearInterval(pollRef.current!); pollRef.current = null;
+          setTokenConfirmed(true);
+          const cw = await apiGetCreatorWallet();
+          setTokenBalance(cw.tokenBalance);
+        } else if (s.status === "failed") {
+          clearInterval(pollRef.current!); pollRef.current = null;
+          setTokenError("Paiement échoué. Veuillez réessayer.");
+          setTokenResult(null);
+        }
+      } catch { /* ignore transient errors */ }
+    }, 3000);
+    return () => { if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; } };
+  }, [tokenResult]);
 
   const reloadWallet = () =>
     Promise.all([apiGetWallet(), apiGetTransactions()])
@@ -123,13 +159,16 @@ export default function WalletPage() {
 
   const handleTokenPurchase = async () => {
     if (!tokenPack || !tokenPhone) return;
-    setTokenLoading(true); setTokenError(null); setTokenResult(null);
+    setTokenLoading(true); setTokenError(null); setTokenResult(null); setTokenConfirmed(false);
     try {
       const result = await apiPurchaseTokens({ packId: tokenPack.id, paymentMethod: tokenOp, paymentPhone: tokenPhone });
       setTokenResult(result);
-      // Note: tokens are NOT credited yet — balance updates only after webhook confirmation
     } catch (e) { setTokenError(e instanceof Error ? e.message : "Erreur d'achat"); }
     setTokenLoading(false);
+  };
+
+  const resetTokenPurchase = () => {
+    setTokenResult(null); setTokenPack(null); setTokenPhone(""); setTokenConfirmed(false); setTokenError(null);
   };
 
   const normTxs = transactions.map(normTx);
@@ -392,14 +431,35 @@ export default function WalletPage() {
                 </>
               )}
             </>
+          ) : tokenConfirmed ? (
+            /* Confirmed — tokens credited */
+            <div style={{ background: "var(--fb-white)", borderRadius: 16, padding: 20, textAlign: "center" }}>
+              <div style={{ fontSize: 64, marginBottom: 8 }}>🎉</div>
+              <div style={{ fontWeight: 900, fontSize: 20, color: "#4CAF50", marginBottom: 6 }}>Jetons crédités !</div>
+              <div style={{ fontSize: 15, color: "var(--fb-text-secondary)", marginBottom: 20 }}>
+                🪙 +{tokenResult!.tokens.toLocaleString()} jetons ont bien été ajoutés à ton solde.
+              </div>
+              <div style={{ background: "linear-gradient(135deg, #E91E8C, #9C27B0)", borderRadius: 16, padding: "16px 20px", marginBottom: 20, color: "#fff" }}>
+                <div style={{ fontSize: 13, opacity: 0.85 }}>Nouveau solde jetons</div>
+                <div style={{ fontSize: 34, fontWeight: 900, margin: "4px 0" }}>🪙 {tokenBalance.toLocaleString()}</div>
+              </div>
+              <button onClick={resetTokenPurchase}
+                style={{ width: "100%", background: "#E91E8C", color: "#fff", border: "none", borderRadius: 12, padding: 14, fontWeight: 800, fontSize: 15, cursor: "pointer" }}>
+                Acheter d'autres jetons
+              </button>
+            </div>
           ) : (
-            /* Purchase result — payment instructions */
+            /* Purchase result — waiting for payment confirmation */
             <div style={{ background: "var(--fb-white)", borderRadius: 16, padding: 20 }}>
               <div style={{ textAlign: "center", marginBottom: 16 }}>
                 <div style={{ fontSize: 48 }}>🕐</div>
                 <div style={{ fontWeight: 800, fontSize: 17, marginTop: 8 }}>Paiement en attente</div>
                 <div style={{ fontSize: 13, color: "var(--fb-text-secondary)", marginTop: 4 }}>
                   Effectue le paiement selon les instructions ci-dessous
+                </div>
+                <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", marginTop: 8, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                  <span style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%", background: "#4CAF50", animation: "blink 1.2s ease-in-out infinite" }} />
+                  Vérification automatique en cours…
                 </div>
               </div>
               <div style={{ background: "var(--fb-bg)", borderRadius: 12, padding: 16, marginBottom: 16, fontSize: 14, lineHeight: 1.7 }}>
@@ -410,9 +470,9 @@ export default function WalletPage() {
                 {tokenResult.paymentRef}
               </div>
               <div style={{ fontSize: 13, color: "var(--fb-text-secondary)", marginBottom: 16, textAlign: "center" }}>
-                🪙 +{tokenResult.tokens.toLocaleString()} jetons crédités après confirmation
+                🪙 +{tokenResult.tokens.toLocaleString()} jetons crédités automatiquement après confirmation
               </div>
-              <button onClick={() => { setTokenResult(null); setTokenPack(null); setTokenPhone(""); }}
+              <button onClick={resetTokenPurchase}
                 style={{ width: "100%", background: "#E91E8C", color: "#fff", border: "none", borderRadius: 12, padding: 14, fontWeight: 800, fontSize: 15, cursor: "pointer" }}>
                 Faire un autre achat
               </button>
@@ -453,6 +513,7 @@ export default function WalletPage() {
           ))}
         </div>
       )}
+      <style>{`@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.25; } }`}</style>
     </div>
   );
 }

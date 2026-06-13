@@ -355,6 +355,10 @@ export default function LiveWatchPage({ streamId }: Props) {
             setTokenBalance(newBalance);
             spawnFloat(gift.iconEmoji);
           }}
+          onBuyTokens={() => {
+            setShowGiftPicker(false);
+            navigate("/wallet?tab=jetons");
+          }}
         />
       )}
 

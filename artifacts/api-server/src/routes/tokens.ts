@@ -65,6 +65,15 @@ router.post("/tokens/purchase", requireAuth, async (req, res) => {
   });
 });
 
+// GET /api/tokens/purchases/:id — poll purchase status (owner only)
+router.get("/tokens/purchases/:id", requireAuth, async (req, res) => {
+  const id = parseInt(req.params.id ?? "");
+  if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
+  const [purchase] = await db.select().from(tokenPurchasesTable).where(eq(tokenPurchasesTable.id, id));
+  if (!purchase || purchase.userId !== req.userId!) { res.status(404).json({ error: "Not found" }); return; }
+  res.json({ id: purchase.id, status: purchase.status, tokens: purchase.tokens, amountXof: purchase.amountXof });
+});
+
 // POST /api/tokens/webhook — MoneyFusion confirmation (HMAC-verified)
 // In dev/test: pass { purchaseId, status: "confirmed" } with header X-MF-Signature
 router.post("/tokens/webhook", async (req, res) => {

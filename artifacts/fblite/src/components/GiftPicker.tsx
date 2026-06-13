@@ -18,11 +18,12 @@ interface Props {
   tokenBalance: number;
   onClose: () => void;
   onSent: (gift: GiftItem, tokenBalance: number) => void;
+  onBuyTokens?: () => void;
 }
 
 export default function GiftPicker({
   streamId, receiverId, receiverName, contextType, contextId,
-  tokenBalance: initialBalance, onClose, onSent,
+  tokenBalance: initialBalance, onClose, onSent, onBuyTokens,
 }: Props) {
   const [catalog, setCatalog]       = useState<GiftItem[]>([]);
   const [selected, setSelected]     = useState<GiftItem | null>(null);
@@ -136,6 +137,23 @@ export default function GiftPicker({
             );
           })}
         </div>
+
+        {/* Buy tokens CTA — shown when balance can't afford any gift */}
+        {catalog.length > 0 && balance < Math.min(...catalog.map(g => g.tokenCost)) && onBuyTokens && (
+          <button
+            onClick={onBuyTokens}
+            style={{
+              width: "100%", marginBottom: 12,
+              background: "linear-gradient(135deg, #E91E8C, #9C27B0)",
+              border: "none", borderRadius: 14, padding: "12px 0",
+              color: "#fff", fontWeight: 800, fontSize: 14,
+              cursor: "pointer", display: "flex", alignItems: "center",
+              justifyContent: "center", gap: 8,
+            }}
+          >
+            🪙 Acheter des jetons pour envoyer des cadeaux
+          </button>
+        )}
 
         {error && (
           <div style={{ background: "rgba(244,67,54,0.2)", borderRadius: 10, padding: "10px 14px", marginBottom: 12, fontSize: 13, color: "#ff6b6b" }}>

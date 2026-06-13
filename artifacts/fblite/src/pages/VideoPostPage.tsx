@@ -195,6 +195,10 @@ export default function VideoPostPage({ postId }: Props) {
             setTokenBalance(newBalance);
             spawnFloat(gift.iconEmoji);
           }}
+          onBuyTokens={() => {
+            setShowGiftPicker(false);
+            navigate("/wallet?tab=jetons");
+          }}
         />
       )}
 

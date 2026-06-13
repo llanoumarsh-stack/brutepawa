@@ -675,6 +675,12 @@ export async function apiPurchaseTokens(data: {
   return res.json() as Promise<ApiTokenPurchase>;
 }
 
+export async function apiGetTokenPurchaseStatus(purchaseId: number): Promise<{ id: number; status: string; tokens: number; amountXof: number }> {
+  const res = await apiFetch(`/tokens/purchases/${purchaseId}`);
+  if (!res.ok) throw new Error("Achat introuvable");
+  return res.json() as Promise<{ id: number; status: string; tokens: number; amountXof: number }>;
+}
+
 export async function apiGetCreatorWallet(): Promise<ApiCreatorWallet> {
   const res = await apiFetch("/creator/wallet");
   if (!res.ok) throw new Error("Wallet non disponible");
