@@ -1,0 +1,59 @@
+Analyse mon application BrutePawa existante et propose uniquement des optimisations de coûts pour les vidéos, les lives et la monétisation.
+
+OBJECTIF :
+Réduire au maximum les coûts d'infrastructure tout en gardant une bonne expérience utilisateur.
+
+STOCKAGE MÉDIAS :
+- Utiliser Cloudflare R2 pour toutes les photos, vidéos et stories.
+- Ne jamais stocker de médias dans Supabase.
+- Stocker uniquement les URLs dans la base de données.
+- Générer automatiquement une miniature lors de l'upload vidéo.
+- Compresser les vidéos avant upload.
+- Limiter les vidéos à 3 minutes maximum.
+- Supprimer automatiquement les vidéos signalées ou supprimées du bucket R2.
+- Utiliser le cache Cloudflare pour réduire les lectures R2.
+
+LIVES :
+- Lives accessibles uniquement à partir de 7000 abonnés.
+- Ne jamais enregistrer les lives par défaut.
+- Aucun replay automatique.
+- Le flux live disparaît dès la fin du direct.
+- Arrêter automatiquement le live après 5 minutes sans spectateur.
+- Limiter un live à 60 minutes maximum.
+- Prévoir une architecture permettant d'activer les replays plus tard si nécessaire.
+
+MONÉTISATION :
+Créer un système de récompenses.
+
+VIDÉOS :
+- Les utilisateurs peuvent envoyer des cadeaux virtuels.
+- Les cadeaux sont achetés avec des jetons.
+- Les jetons sont achetés via MoneyFusion.
+- Enregistrer chaque transaction.
+- Afficher les meilleurs contributeurs d'une vidéo.
+
+LIVES :
+- Afficher les cadeaux en temps réel.
+- Animation des cadeaux dans le live.
+- Classement des meilleurs donateurs.
+- Historique des récompenses reçues.
+
+RETRAITS :
+- Solde créateur.
+- Seuil minimum de retrait.
+- Validation des retraits.
+- Historique complet des paiements.
+
+SÉCURITÉ :
+- Protection contre la fraude.
+- Détection des auto-dons.
+- Limitation du spam de cadeaux.
+- Journalisation de toutes les transactions.
+
+Fournis :
+1. Les tables Supabase nécessaires.
+2. Les modifications backend nécessaires.
+3. Les modifications frontend nécessaires.
+4. Les optimisations Cloudflare R2.
+5. Les estimations de coûts à 100, 1000, 10000 et 100000 utilisateurs.
+6. Les risques techniques et financiers à anticiper.
