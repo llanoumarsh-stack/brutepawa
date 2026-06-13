@@ -297,6 +297,24 @@ export async function apiGetGroup(id: number): Promise<ApiGroupDetail> {
   return res.json() as Promise<ApiGroupDetail>;
 }
 
+export async function apiUpdateGroup(id: number, data: {
+  name?: string;
+  description?: string;
+  category?: string;
+  coverUrl?: string | null;
+  privacy?: string;
+}): Promise<ApiGroupDetail> {
+  const res = await apiFetch(`/groups/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(err.error ?? "Erreur lors de la mise à jour");
+  }
+  return res.json() as Promise<ApiGroupDetail>;
+}
+
 export async function apiJoinGroup(id: number): Promise<void> {
   const res = await apiFetch(`/groups/${id}/join`, { method: "POST" });
   if (!res.ok) throw new Error("Impossible de rejoindre le groupe");

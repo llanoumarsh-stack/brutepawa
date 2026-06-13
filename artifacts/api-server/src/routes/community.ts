@@ -127,6 +127,64 @@ router.get("/groups/:id", requireAuth, async (req, res): Promise<void> => {
   res.json({ ...group, isMember, memberRole: membership?.role ?? null, joinRequestStatus: null });
 });
 
+router.patch("/groups/:id", requireAuth, async (req, res): Promise<void> => {
+  const userId = req.userId!;
+  const groupId = parseInt(req.params.id, 10);
+  if (isNaN(groupId)) {
+    res.status(400).json({ error: "Invalid group id" });
+    return;
+  }
+
+  const [myMembership] = await db
+    .select({ role: groupMembersTable.role })
+    .from(groupMembersTable)
+    .where(and(eq(groupMembersTable.groupId, groupId), eq(groupMembersTable.userId, userId)))
+    .limit(1);
+
+  if (!myMembership || myMembership.role !== "admin") {
+    res.status(403).json({ error: "Réservé à l'administrateur du groupe" });
+    return;
+  }
+
+  const { name, description, category, coverUrl, privacy } = req.body as {
+    name?: string;
+    description?: string;
+    category?: string;
+    coverUrl?: string | null;
+    privacy?: string;
+  };
+
+  if (name !== undefined && !name.trim()) {
+    res.status(400).json({ error: "Le nom du groupe est requis" });
+    return;
+  }
+
+  if (privacy !== undefined && !["public", "private"].includes(privacy)) {
+    res.status(400).json({ error: "Valeur de confidentialité invalide" });
+    return;
+  }
+
+  const updates: Record<string, unknown> = {};
+  if (name !== undefined) updates.name = name.trim();
+  if (description !== undefined) updates.description = description?.trim() || null;
+  if (category !== undefined) updates.category = category;
+  if (coverUrl !== undefined) updates.coverUrl = coverUrl ?? null;
+  if (privacy !== undefined) updates.privacy = privacy;
+
+  if (Object.keys(updates).length === 0) {
+    res.status(400).json({ error: "Aucune modification fournie" });
+    return;
+  }
+
+  const [updated] = await db
+    .update(groupsTable)
+    .set(updates)
+    .where(eq(groupsTable.id, groupId))
+    .returning();
+
+  res.json(updated);
+});
+
 router.post("/groups/:id/join", requireAuth, async (req, res): Promise<void> => {
   const userId = req.userId!;
   const groupId = parseInt(req.params.id, 10);

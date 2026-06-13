@@ -5,9 +5,12 @@ import {
   apiGetGroupPosts, apiCreateGroupPost,
   apiGetGroupMembers, apiRemoveGroupMember, apiSetGroupMemberRole,
   apiRequestToJoin, apiGetJoinRequests, apiHandleJoinRequest,
+  apiUpdateGroup,
   ApiGroupDetail, ApiGroupPost, ApiGroupMember, ApiJoinRequest,
 } from "../lib/api";
 import { useR2Upload } from "../hooks/useR2Upload";
+
+const GROUP_CATEGORIES = ["general", "Agriculture", "Technologie", "Commerce", "Éducation", "Sport", "Santé", "Culture", "Religion"];
 
 const AVATAR_COLORS = ["#1877F2", "#E91E63", "#9C27B0", "#FF9800", "#4CAF50", "#00BCD4", "#F44336", "#3F51B5"];
 function avatarColor(id: number) { return AVATAR_COLORS[id % AVATAR_COLORS.length]; }
@@ -72,6 +75,91 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
 
   const isAdmin = myRole === "admin";
   const isAdminOrMod = myRole === "admin" || myRole === "moderator";
+
+  const [editOpen, setEditOpen] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [editCategory, setEditCategory] = useState("");
+  const [editPrivacy, setEditPrivacy] = useState<"public" | "private">("public");
+  const [editCoverUrl, setEditCoverUrl] = useState<string | null>(null);
+  const [editCoverFile, setEditCoverFile] = useState<File | null>(null);
+  const [editCoverPreview, setEditCoverPreview] = useState<string | null>(null);
+  const [editSaving, setEditSaving] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
+  const editCoverInputRef = useRef<HTMLInputElement>(null);
+  const { upload: uploadCover, status: coverUploadStatus, reset: resetCoverUpload } = useR2Upload();
+
+  const openEdit = () => {
+    if (!group) return;
+    setEditName(group.name);
+    setEditDescription(group.description ?? "");
+    setEditCategory(group.category);
+    setEditPrivacy(group.privacy as "public" | "private");
+    setEditCoverUrl(group.coverUrl);
+    setEditCoverFile(null);
+    setEditCoverPreview(null);
+    resetCoverUpload();
+    setEditError(null);
+    setEditOpen(true);
+  };
+
+  const closeEdit = () => {
+    setEditOpen(false);
+    setEditCoverFile(null);
+    setEditCoverPreview(null);
+    resetCoverUpload();
+    setEditError(null);
+  };
+
+  const handleEditCoverSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setEditCoverFile(file);
+    const reader = new FileReader();
+    reader.onload = ev => setEditCoverPreview(ev.target?.result as string);
+    reader.readAsDataURL(file);
+    resetCoverUpload();
+    if (e.target) e.target.value = "";
+  };
+
+  const handleEditSave = async () => {
+    if (!group) return;
+    if (!editName.trim()) {
+      setEditError("Le nom du groupe est requis.");
+      return;
+    }
+    if (editPrivacy === "private" && group.privacy === "public") {
+      if (!confirm("Attention : passer ce groupe en privé empêchera les non-membres de voir les publications et de rejoindre directement. Continuer ?")) {
+        return;
+      }
+    }
+    setEditSaving(true);
+    setEditError(null);
+    try {
+      let finalCoverUrl = editCoverUrl;
+      if (editCoverFile) {
+        const uploaded = await uploadCover(editCoverFile);
+        if (!uploaded) {
+          setEditError("Échec de l'upload de l'image de couverture");
+          setEditSaving(false);
+          return;
+        }
+        finalCoverUrl = uploaded.url;
+      }
+      const updated = await apiUpdateGroup(group.id, {
+        name: editName.trim(),
+        description: editDescription.trim() || undefined,
+        category: editCategory,
+        coverUrl: finalCoverUrl,
+        privacy: editPrivacy,
+      });
+      setGroup(prev => prev ? { ...prev, ...updated } : prev);
+      closeEdit();
+    } catch (err) {
+      setEditError(err instanceof Error ? err.message : "Erreur lors de la mise à jour");
+    }
+    setEditSaving(false);
+  };
 
   const loadGroup = useCallback(async () => {
     setLoading(true);
@@ -326,6 +414,14 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
 
         {/* Join / Leave / Request button */}
         <div style={{ marginTop: 16 }}>
+          {isAdmin && (
+            <button
+              onClick={openEdit}
+              style={{ width: "100%", marginBottom: 10, padding: "10px 0", borderRadius: 8, border: "1px solid var(--fb-border)", background: "var(--fb-bg)", color: "var(--fb-text)", fontWeight: 700, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+            >
+              ✏️ Modifier le groupe
+            </button>
+          )}
           {group.isMember ? (
             <div style={{ display: "flex", gap: 10 }}>
               <div style={{ flex: 1, padding: "11px 0", textAlign: "center", background: "var(--fb-divider)", borderRadius: 8, fontWeight: 700, fontSize: 14, color: "var(--fb-blue)" }}>
@@ -611,6 +707,141 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
               })}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Edit group modal */}
+      {editOpen && (
+        <div
+          onClick={e => { if (e.target === e.currentTarget) closeEdit(); }}
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", zIndex: 200, display: "flex", alignItems: "flex-end", justifyContent: "center" }}
+        >
+          <div style={{ background: "var(--fb-white)", borderRadius: "16px 16px 0 0", width: "100%", maxWidth: 600, maxHeight: "90vh", overflowY: "auto", padding: "20px 20px 40px" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
+              <div style={{ fontWeight: 800, fontSize: 17 }}>✏️ Modifier le groupe</div>
+              <button onClick={closeEdit} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "var(--fb-text-secondary)", lineHeight: 1, padding: "4px 8px" }}>×</button>
+            </div>
+
+            {/* Cover image */}
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6, color: "var(--fb-text-secondary)" }}>Image de couverture</div>
+              <div
+                style={{
+                  height: 120, borderRadius: 10, overflow: "hidden", background: (editCoverPreview || editCoverUrl)
+                    ? undefined
+                    : "linear-gradient(135deg, #1877F2 0%, #42A5F5 100%)",
+                  display: "flex", alignItems: "center", justifyContent: "center", position: "relative", cursor: "pointer", border: "1px solid var(--fb-border)",
+                }}
+                onClick={() => editCoverInputRef.current?.click()}
+              >
+                {(editCoverPreview || editCoverUrl) ? (
+                  <img src={editCoverPreview ?? editCoverUrl!} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                ) : (
+                  <div style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>📷 Ajouter une photo</div>
+                )}
+                <div style={{ position: "absolute", bottom: 8, right: 8, background: "rgba(0,0,0,0.5)", borderRadius: 8, padding: "4px 10px", color: "#fff", fontSize: 12, fontWeight: 600, backdropFilter: "blur(4px)" }}>
+                  {coverUploadStatus === "uploading" ? "Envoi…" : "Modifier"}
+                </div>
+              </div>
+              <input ref={editCoverInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleEditCoverSelect} />
+              {(editCoverPreview || editCoverUrl) && (
+                <button
+                  onClick={() => { setEditCoverUrl(null); setEditCoverFile(null); setEditCoverPreview(null); resetCoverUpload(); }}
+                  style={{ marginTop: 6, fontSize: 12, color: "#D32F2F", background: "none", border: "none", cursor: "pointer", fontWeight: 600 }}
+                >
+                  🗑 Supprimer la couverture
+                </button>
+              )}
+            </div>
+
+            {/* Name */}
+            <div style={{ marginBottom: 14 }}>
+              <label style={{ fontSize: 13, fontWeight: 600, color: "var(--fb-text-secondary)", display: "block", marginBottom: 5 }}>Nom du groupe *</label>
+              <input
+                value={editName}
+                onChange={e => setEditName(e.target.value)}
+                placeholder="Nom du groupe"
+                maxLength={100}
+                style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid var(--fb-border)", background: "var(--fb-bg)", color: "var(--fb-text)", fontSize: 14, fontFamily: "inherit", boxSizing: "border-box" }}
+              />
+            </div>
+
+            {/* Description */}
+            <div style={{ marginBottom: 14 }}>
+              <label style={{ fontSize: 13, fontWeight: 600, color: "var(--fb-text-secondary)", display: "block", marginBottom: 5 }}>Description</label>
+              <textarea
+                value={editDescription}
+                onChange={e => setEditDescription(e.target.value)}
+                placeholder="Décrivez votre groupe…"
+                rows={3}
+                maxLength={500}
+                style={{ width: "100%", resize: "vertical", padding: "10px 12px", borderRadius: 8, border: "1px solid var(--fb-border)", background: "var(--fb-bg)", color: "var(--fb-text)", fontSize: 14, fontFamily: "inherit", boxSizing: "border-box" }}
+              />
+            </div>
+
+            {/* Category */}
+            <div style={{ marginBottom: 14 }}>
+              <label style={{ fontSize: 13, fontWeight: 600, color: "var(--fb-text-secondary)", display: "block", marginBottom: 5 }}>Catégorie</label>
+              <select
+                value={editCategory}
+                onChange={e => setEditCategory(e.target.value)}
+                style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid var(--fb-border)", background: "var(--fb-bg)", color: "var(--fb-text)", fontSize: 14, fontFamily: "inherit", boxSizing: "border-box" }}
+              >
+                {GROUP_CATEGORIES.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Privacy */}
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "var(--fb-text-secondary)", marginBottom: 8 }}>Confidentialité</div>
+              <div style={{ display: "flex", gap: 10 }}>
+                <button
+                  onClick={() => setEditPrivacy("public")}
+                  style={{
+                    flex: 1, padding: "12px 0", borderRadius: 10, border: `2px solid ${editPrivacy === "public" ? "var(--fb-blue)" : "var(--fb-border)"}`,
+                    background: editPrivacy === "public" ? "var(--fb-blue)10" : "var(--fb-bg)", color: editPrivacy === "public" ? "var(--fb-blue)" : "var(--fb-text)",
+                    fontWeight: 700, fontSize: 14, cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+                  }}
+                >
+                  <span style={{ fontSize: 20 }}>🌍</span>
+                  <span>Public</span>
+                  <span style={{ fontSize: 11, fontWeight: 400, color: "var(--fb-text-secondary)" }}>Tout le monde peut rejoindre</span>
+                </button>
+                <button
+                  onClick={() => setEditPrivacy("private")}
+                  style={{
+                    flex: 1, padding: "12px 0", borderRadius: 10, border: `2px solid ${editPrivacy === "private" ? "var(--fb-blue)" : "var(--fb-border)"}`,
+                    background: editPrivacy === "private" ? "var(--fb-blue)10" : "var(--fb-bg)", color: editPrivacy === "private" ? "var(--fb-blue)" : "var(--fb-text)",
+                    fontWeight: 700, fontSize: 14, cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+                  }}
+                >
+                  <span style={{ fontSize: 20 }}>🔒</span>
+                  <span>Privé</span>
+                  <span style={{ fontSize: 11, fontWeight: 400, color: "var(--fb-text-secondary)" }}>Approbation requise</span>
+                </button>
+              </div>
+              {editPrivacy === "private" && group.privacy === "public" && (
+                <div style={{ marginTop: 8, padding: "10px 12px", background: "#FFF8E1", borderRadius: 8, border: "1px solid #FFD54F", fontSize: 13, color: "#795548" }}>
+                  ⚠️ Passer en privé empêchera les nouveaux membres de rejoindre directement. Une confirmation sera demandée à l'enregistrement.
+                </div>
+              )}
+            </div>
+
+            {editError && (
+              <div style={{ marginBottom: 12, padding: "10px 12px", background: "#FFF0F0", borderRadius: 8, color: "#D32F2F", fontSize: 13 }}>{editError}</div>
+            )}
+
+            <button
+              onClick={handleEditSave}
+              disabled={editSaving || !editName.trim()}
+              className="btn-primary"
+              style={{ width: "100%", padding: "13px 0", fontSize: 15, fontWeight: 700 }}
+            >
+              {editSaving ? "Enregistrement…" : "Enregistrer les modifications"}
+            </button>
+          </div>
         </div>
       )}
 
