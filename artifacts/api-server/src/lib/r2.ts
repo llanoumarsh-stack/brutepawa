@@ -1,9 +1,9 @@
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
 import path from "path";
 
-const accountId  = process.env.R2_ACCOUNT_ID!;
+const accountId  = process.env.CF_ACCOUNT_ID ?? process.env.R2_ACCOUNT_ID!;
 const bucketName = process.env.R2_BUCKET_NAME!;
 const publicUrl  = (process.env.R2_PUBLIC_URL ?? "").replace(/\/$/, "");
 
@@ -42,6 +42,29 @@ export function buildPublicUrl(key: string): string {
   return `${publicUrl}/${key}`;
 }
 
+/** Upload an object to R2 with long-lived cache headers */
+export async function putObject(
+  key: string,
+  body: Buffer,
+  contentType: string,
+): Promise<void> {
+  await r2.send(new PutObjectCommand({
+    Bucket:       bucketName,
+    Key:          key,
+    Body:         body,
+    ContentType:  contentType,
+    CacheControl: "public, max-age=31536000, immutable",
+  }));
+}
+
+/** Delete an object from R2 */
+export async function deleteObject(key: string): Promise<void> {
+  await r2.send(new DeleteObjectCommand({
+    Bucket: bucketName,
+    Key:    key,
+  }));
+}
+
 /** Generate a pre-signed PUT URL — client uploads directly to R2 */
 export async function createPresignedUpload(filename: string, contentType: string): Promise<{
   uploadUrl: string;
@@ -58,7 +81,7 @@ export async function createPresignedUpload(filename: string, contentType: strin
     ContentType: contentType,
   });
 
-  const uploadUrl = await getSignedUrl(r2, command, { expiresIn: 300 }); // 5 min
+  const uploadUrl = await getSignedUrl(r2, command, { expiresIn: 300 });
 
   return { uploadUrl, publicUrl: buildPublicUrl(key), key, kind };
 }

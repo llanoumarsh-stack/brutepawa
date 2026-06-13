@@ -3,7 +3,7 @@ import { useNavigate } from "../router";
 import { searchPlaces, type Place } from "../data/locations";
 import { searchItunes, MUSIC_CATEGORIES, type Track } from "../data/music";
 import { apiGetUsers, type PublicUser } from "../lib/api";
-import { useR2Upload, type UploadedMedia } from "../hooks/useR2Upload";
+import { useR2Upload, phaseLabel, type UploadedMedia } from "../hooks/useR2Upload";
 
 interface Props {
   onPublish?: (content: string, bg?: string, mood?: string, location?: string) => void;
@@ -101,7 +101,7 @@ export default function CreatePostPage({ onPublish }: Props) {
   const [uploadingIdx, setUploadingIdx] = useState<number | null>(null);
   const [eventCoverMedia, setEventCoverMedia] = useState<UploadedMedia | null>(null);
   const [eventCoverPreview, setEventCoverPreview] = useState<string | null>(null);
-  const { upload, status: uploadStatus, progress, error: uploadError, reset: resetUpload } = useR2Upload();
+  const { upload, status: uploadStatus, phase: uploadPhase, progress, error: uploadError, reset: resetUpload } = useR2Upload();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const textareaRef  = useRef<HTMLTextAreaElement>(null);
@@ -333,10 +333,10 @@ export default function CreatePostPage({ onPublish }: Props) {
       {uploadStatus === "uploading" && (
         <div style={{ padding: "6px 16px", flexShrink: 0 }}>
           <div style={{ height: 4, background: "var(--fb-bg)", borderRadius: 4, overflow: "hidden" }}>
-            <div style={{ height: "100%", width: `${progress}%`, background: "var(--fb-blue)", borderRadius: 4, transition: "width 0.2s" }} />
+            <div style={{ height: "100%", width: uploadPhase === "uploading" ? `${progress}%` : "100%", background: "var(--fb-blue)", borderRadius: 4, transition: "width 0.2s" }} />
           </div>
           <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", marginTop: 3 }}>
-            Envoi en cours — {progress}%
+            {phaseLabel(uploadPhase, progress)}
           </div>
         </div>
       )}
