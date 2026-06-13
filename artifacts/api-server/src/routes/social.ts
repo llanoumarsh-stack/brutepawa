@@ -3,6 +3,7 @@ import { db, postsTable, postLikesTable, messagesTable, usersTable, storiesTable
 import { eq, and, or, desc, sql, gt } from "drizzle-orm";
 import { CreatePostBody, GetPostParams, DeletePostParams, LikePostParams, LikePostBody, SendMessageBody, GetConversationParams, ListPostsQueryParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
+import { deleteObject, extractKeyFromUrl } from "../lib/r2";
 
 const router = Router();
 
@@ -19,6 +20,7 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
       authorId: postsTable.authorId,
       content: postsTable.content,
       imageUrl: postsTable.imageUrl,
+      thumbnailUrl: postsTable.thumbnailUrl,
       likesCount: postsTable.likesCount,
       commentsCount: postsTable.commentsCount,
       createdAt: postsTable.createdAt,
@@ -50,6 +52,7 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
     authorCountry: r.authorCountry ?? "BJ",
     content: r.content,
     imageUrl: r.imageUrl,
+    thumbnailUrl: r.thumbnailUrl ?? null,
     likesCount: r.likesCount,
     commentsCount: r.commentsCount,
     createdAt: r.createdAt,
@@ -61,10 +64,14 @@ router.post("/posts", requireAuth, async (req, res): Promise<void> => {
   const parsed = CreatePostBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: parsed.error.message }); return; }
 
+  // thumbnailUrl is outside the generated schema — read directly from body
+  const thumbnailUrl = typeof req.body.thumbnailUrl === "string" ? req.body.thumbnailUrl : null;
+
   const [post] = await db.insert(postsTable).values({
     authorId: req.userId!,
     content: parsed.data.content,
     imageUrl: parsed.data.imageUrl ?? null,
+    thumbnailUrl,
   }).returning();
   res.status(201).json(post);
 });
@@ -82,8 +89,25 @@ router.delete("/posts/:id", requireAuth, async (req, res): Promise<void> => {
   const params = DeletePostParams.safeParse({ id: Number(req.params.id) });
   if (!params.success) { res.status(400).json({ error: params.error.message }); return; }
 
-  await db.delete(postsTable)
+  // Fetch first to get media keys for R2 cleanup
+  const [post] = await db.select({
+    id: postsTable.id,
+    imageUrl: postsTable.imageUrl,
+    thumbnailUrl: postsTable.thumbnailUrl,
+  }).from(postsTable)
     .where(and(eq(postsTable.id, params.data.id), eq(postsTable.authorId, req.userId!)));
+
+  if (!post) { res.status(404).json({ error: "Post not found" }); return; }
+
+  await db.delete(postsTable).where(eq(postsTable.id, params.data.id));
+
+  // Best-effort R2 cleanup — never fail the request if storage deletion fails
+  const r2Keys = [
+    extractKeyFromUrl(post.imageUrl),
+    extractKeyFromUrl(post.thumbnailUrl),
+  ].filter((k): k is string => k !== null);
+  await Promise.all(r2Keys.map(k => deleteObject(k).catch(() => {})));
+
   res.sendStatus(204);
 });
 
@@ -173,6 +197,7 @@ router.get("/stories", requireAuth, async (req, res): Promise<void> => {
       id: storiesTable.id,
       authorId: storiesTable.authorId,
       mediaUrl: storiesTable.mediaUrl,
+      thumbnailUrl: storiesTable.thumbnailUrl,
       content: storiesTable.content,
       bgColor: storiesTable.bgColor,
       emoji: storiesTable.emoji,
@@ -189,7 +214,6 @@ router.get("/stories", requireAuth, async (req, res): Promise<void> => {
     .where(gt(storiesTable.expiresAt, now))
     .orderBy(desc(storiesTable.createdAt));
 
-  // Group by author — each author gets one entry with all their stories
   const authorMap = new Map<number, {
     authorId: number;
     authorName: string;
@@ -221,6 +245,7 @@ router.get("/stories", requireAuth, async (req, res): Promise<void> => {
     stories: a.stories.map(s => ({
       id: s.id,
       mediaUrl: s.mediaUrl,
+      thumbnailUrl: s.thumbnailUrl ?? null,
       content: s.content,
       bgColor: s.bgColor,
       emoji: s.emoji,
@@ -233,8 +258,8 @@ router.get("/stories", requireAuth, async (req, res): Promise<void> => {
 });
 
 router.post("/stories", requireAuth, async (req, res): Promise<void> => {
-  const { mediaUrl, content, bgColor, emoji } = req.body as {
-    mediaUrl?: string; content?: string; bgColor?: string; emoji?: string;
+  const { mediaUrl, thumbnailUrl, content, bgColor, emoji } = req.body as {
+    mediaUrl?: string; thumbnailUrl?: string; content?: string; bgColor?: string; emoji?: string;
   };
 
   if (!mediaUrl && !content) {
@@ -246,6 +271,7 @@ router.post("/stories", requireAuth, async (req, res): Promise<void> => {
   const [story] = await db.insert(storiesTable).values({
     authorId: req.userId!,
     mediaUrl: mediaUrl ?? null,
+    thumbnailUrl: thumbnailUrl ?? null,
     content: content ?? null,
     bgColor: bgColor ?? "#1877F2",
     emoji: emoji ?? null,
@@ -267,8 +293,24 @@ router.post("/stories/:id/view", requireAuth, async (req, res): Promise<void> =>
 router.delete("/stories/:id", requireAuth, async (req, res): Promise<void> => {
   const id = Number(req.params.id);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
-  await db.delete(storiesTable)
+
+  const [story] = await db.select({
+    id: storiesTable.id,
+    mediaUrl: storiesTable.mediaUrl,
+    thumbnailUrl: storiesTable.thumbnailUrl,
+  }).from(storiesTable)
     .where(and(eq(storiesTable.id, id), eq(storiesTable.authorId, req.userId!)));
+
+  if (!story) { res.status(404).json({ error: "Story not found" }); return; }
+
+  await db.delete(storiesTable).where(eq(storiesTable.id, id));
+
+  const r2Keys = [
+    extractKeyFromUrl(story.mediaUrl),
+    extractKeyFromUrl(story.thumbnailUrl),
+  ].filter((k): k is string => k !== null);
+  await Promise.all(r2Keys.map(k => deleteObject(k).catch(() => {})));
+
   res.sendStatus(204);
 });
 

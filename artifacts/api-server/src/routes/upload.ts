@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { buildKey, buildPublicUrl, detectKind, putObject, deleteObject } from "../lib/r2";
+import { buildKey, buildPublicUrl, detectKind, putObject, deleteObject, ownerIdFromKey } from "../lib/r2";
 import { requireAuth } from "../middlewares/requireAuth";
 
 const router: IRouter = Router();
@@ -25,7 +25,7 @@ router.post(
 
     try {
       const kind = detectKind(filename);
-      const key  = buildKey(filename, kind);
+      const key  = buildKey(filename, kind, req.userId!);
 
       await putObject(key, body, contentType);
 
@@ -39,7 +39,8 @@ router.post(
 
 /**
  * DELETE /api/upload/<key>
- * Authenticated — deletes an R2 object by key (may contain slashes).
+ * Authenticated — deletes an R2 object by key.
+ * Ownership is validated via the userId embedded in the v2 key format.
  * Key must start with a known media prefix (image/ video/ audio/).
  */
 router.delete(
@@ -47,8 +48,20 @@ router.delete(
   requireAuth,
   async (req, res): Promise<void> => {
     const key = (req.params as unknown as string[])[0];
+
     if (!key || !/^(image|video|audio)\//.test(key)) {
       res.status(400).json({ error: "Clé invalide" });
+      return;
+    }
+
+    const ownerId = ownerIdFromKey(key);
+    if (ownerId === null) {
+      // Legacy key without embedded ownership — refuse deletion via this endpoint
+      res.status(403).json({ error: "Ce fichier ne peut pas être supprimé via cette API" });
+      return;
+    }
+    if (ownerId !== req.userId!) {
+      res.status(403).json({ error: "Non autorisé" });
       return;
     }
 

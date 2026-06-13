@@ -6,6 +6,7 @@ import {
   DeleteProductParams, ListProductsQueryParams, CreateOrderBody, GetOrderParams
 } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
+import { deleteObject, extractKeyFromUrl } from "../lib/r2";
 
 const router = Router();
 
@@ -23,7 +24,6 @@ router.get("/products/featured", requireAuth, async (req, res): Promise<void> =>
 
 router.get("/products", requireAuth, async (req, res): Promise<void> => {
   const params = ListProductsQueryParams.safeParse(req.query);
-  let query = db.select().from(productsTable).$dynamic();
 
   const conditions = [eq(productsTable.status, "active")];
   if (params.success && params.data.category) {
@@ -44,10 +44,14 @@ router.post("/products", requireAuth, async (req, res): Promise<void> => {
   const parsed = CreateProductBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: parsed.error.message }); return; }
 
+  // thumbnailUrl is outside the generated schema — read directly from body
+  const thumbnailUrl = typeof req.body.thumbnailUrl === "string" ? req.body.thumbnailUrl : null;
+
   const [product] = await db.insert(productsTable).values({
     ...parsed.data,
     price: String(parsed.data.price),
     sellerId: req.userId!,
+    thumbnailUrl,
   }).returning();
   res.status(201).json(fmt(product));
 });
@@ -68,6 +72,8 @@ router.patch("/products/:id", requireAuth, async (req, res): Promise<void> => {
 
   const updateData: Record<string, unknown> = { ...body.data };
   if (body.data.price != null) updateData.price = String(body.data.price);
+  // thumbnailUrl update supported outside generated schema
+  if (typeof req.body.thumbnailUrl === "string") updateData.thumbnailUrl = req.body.thumbnailUrl;
 
   const [product] = await db.update(productsTable).set(updateData)
     .where(and(eq(productsTable.id, params.data.id), eq(productsTable.sellerId, req.userId!)))
@@ -80,8 +86,24 @@ router.delete("/products/:id", requireAuth, async (req, res): Promise<void> => {
   const params = DeleteProductParams.safeParse({ id: Number(req.params.id) });
   if (!params.success) { res.status(400).json({ error: params.error.message }); return; }
 
-  await db.delete(productsTable)
+  const [product] = await db.select({
+    id: productsTable.id,
+    imageUrl: productsTable.imageUrl,
+    thumbnailUrl: productsTable.thumbnailUrl,
+  }).from(productsTable)
     .where(and(eq(productsTable.id, params.data.id), eq(productsTable.sellerId, req.userId!)));
+
+  if (!product) { res.status(404).json({ error: "Product not found" }); return; }
+
+  await db.delete(productsTable).where(eq(productsTable.id, params.data.id));
+
+  // Best-effort R2 cleanup
+  const r2Keys = [
+    extractKeyFromUrl(product.imageUrl),
+    extractKeyFromUrl(product.thumbnailUrl),
+  ].filter((k): k is string => k !== null);
+  await Promise.all(r2Keys.map(k => deleteObject(k).catch(() => {})));
+
   res.sendStatus(204);
 });
 

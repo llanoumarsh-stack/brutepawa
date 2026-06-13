@@ -29,20 +29,46 @@ export function detectKind(filename: string): MediaKind {
   return EXT_MAP[ext] ?? "image";
 }
 
-export function buildKey(filename: string, kind: MediaKind): string {
+/**
+ * Key format (v2): {kind}/{userId}/{year}/{month}/{uuid}{ext}
+ * Encodes ownership directly in the path; 5 path segments total.
+ */
+export function buildKey(filename: string, kind: MediaKind, userId: number): string {
   const ext   = path.extname(filename) || ".bin";
   const uuid  = crypto.randomBytes(16).toString("hex");
   const now   = new Date();
   const year  = now.getUTCFullYear();
   const month = String(now.getUTCMonth() + 1).padStart(2, "0");
-  return `${kind}/${year}/${month}/${uuid}${ext}`;
+  return `${kind}/${userId}/${year}/${month}/${uuid}${ext}`;
 }
 
 export function buildPublicUrl(key: string): string {
   return `${publicUrl}/${key}`;
 }
 
-/** Upload an object to R2 with long-lived cache headers */
+/**
+ * Extracts the R2 storage key from a public URL.
+ * Returns null if the URL does not match the configured public URL prefix.
+ */
+export function extractKeyFromUrl(url: string | null | undefined): string | null {
+  if (!url || !publicUrl) return null;
+  const prefix = publicUrl + "/";
+  if (url.startsWith(prefix)) return url.slice(prefix.length);
+  return null;
+}
+
+/**
+ * Returns the userId encoded in a v2 key, or null for legacy keys / invalid format.
+ * v2 key: {kind}/{userId}/{year}/{month}/{uuid}{ext}  (5 segments)
+ */
+export function ownerIdFromKey(key: string): number | null {
+  const parts = key.split("/");
+  if (parts.length < 5) return null; // legacy key — no ownership info
+  const id = Number(parts[1]);
+  return Number.isFinite(id) && id > 0 ? id : null;
+}
+
+/** Upload an object to R2 with long-lived cache headers. */
 export async function putObject(
   key: string,
   body: Buffer,
@@ -57,7 +83,7 @@ export async function putObject(
   }));
 }
 
-/** Delete an object from R2 */
+/** Delete an object from R2. */
 export async function deleteObject(key: string): Promise<void> {
   await r2.send(new DeleteObjectCommand({
     Bucket: bucketName,
@@ -65,15 +91,15 @@ export async function deleteObject(key: string): Promise<void> {
   }));
 }
 
-/** Generate a pre-signed PUT URL — client uploads directly to R2 */
-export async function createPresignedUpload(filename: string, contentType: string): Promise<{
+/** Generate a pre-signed PUT URL — client uploads directly to R2. */
+export async function createPresignedUpload(filename: string, contentType: string, userId: number): Promise<{
   uploadUrl: string;
   publicUrl: string;
   key: string;
   kind: MediaKind;
 }> {
   const kind = detectKind(filename);
-  const key  = buildKey(filename, kind);
+  const key  = buildKey(filename, kind, userId);
 
   const command = new PutObjectCommand({
     Bucket:      bucketName,
