@@ -1,0 +1,205 @@
+import { Ionicons } from "@expo/vector-icons";
+import {
+  useListPosts,
+  useLikePost,
+} from "@workspace/api-client-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import React, { useCallback } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Platform,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useColors } from "@/hooks/useColors";
+import { PostCard } from "@/components/PostCard";
+import { StoryBar } from "@/components/StoryBar";
+
+interface StoryGroup {
+  authorId: number;
+  authorName: string;
+  authorAvatarUrl: string | null;
+  authorCountry: string;
+  storiesCount: number;
+}
+
+function useStories() {
+  return useQuery({
+    queryKey: ["stories"],
+    queryFn: async (): Promise<StoryGroup[]> => {
+      const base = process.env.EXPO_PUBLIC_DOMAIN
+        ? `https://${process.env.EXPO_PUBLIC_DOMAIN}`
+        : "";
+      const res = await fetch(`${base}/api/stories`);
+      if (!res.ok) return [];
+      return res.json() as Promise<StoryGroup[]>;
+    },
+    retry: false,
+  });
+}
+
+export default function FeedScreen() {
+  const colors = useColors();
+  const insets = useSafeAreaInsets();
+  const queryClient = useQueryClient();
+  const isWeb = Platform.OS === "web";
+  const topPadding = isWeb ? 67 : insets.top;
+
+  const postsQuery = useListPosts(undefined, { query: {} });
+  const storiesQuery = useStories();
+  const likeMutation = useLikePost();
+
+  const posts = (postsQuery.data ?? []) as any[];
+  const stories = (storiesQuery.data ?? []) as StoryGroup[];
+
+  const handleLike = useCallback(
+    (id: number, liked: boolean) => {
+      likeMutation.mutate({
+        id,
+        data: { action: liked ? "like" : "unlike" },
+      });
+    },
+    [likeMutation],
+  );
+
+  const handleRefresh = useCallback(async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: postsQuery.queryKey }),
+      queryClient.invalidateQueries({ queryKey: ["stories"] }),
+    ]);
+  }, [queryClient, postsQuery.queryKey]);
+
+  const ListHeader = useCallback(
+    () => (
+      <StoryBar
+        stories={stories}
+        onAddStory={() => {}}
+        onViewStory={() => {}}
+      />
+    ),
+    [stories],
+  );
+
+  const ListEmpty = useCallback(() => {
+    if (postsQuery.isLoading) {
+      return (
+        <View style={styles.loader}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      );
+    }
+    return (
+      <View style={styles.empty}>
+        <Ionicons name="newspaper-outline" size={48} color={colors.mutedForeground} />
+        <Text style={[styles.emptyTitle, { color: colors.foreground }]}>
+          Aucune publication
+        </Text>
+        <Text style={[styles.emptyText, { color: colors.mutedForeground }]}>
+          Suivez des personnes pour voir leurs publications
+        </Text>
+      </View>
+    );
+  }, [postsQuery.isLoading, colors]);
+
+  return (
+    <View style={[styles.root, { backgroundColor: colors.background }]}>
+      <View
+        style={[
+          styles.header,
+          {
+            paddingTop: topPadding,
+            backgroundColor: colors.card,
+            borderBottomColor: colors.border,
+          },
+        ]}
+      >
+        <Text style={[styles.brandName, { color: colors.primary }]}>Brute Pawa</Text>
+        <View style={styles.headerActions}>
+          <TouchableOpacity style={[styles.iconBtn, { backgroundColor: colors.secondary }]}>
+            <Ionicons name="search" size={20} color={colors.foreground} />
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.iconBtn, { backgroundColor: colors.secondary }]}>
+            <Ionicons name="notifications-outline" size={20} color={colors.foreground} />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <FlatList
+        data={posts}
+        keyExtractor={(item) => String(item.id)}
+        renderItem={({ item }) => (
+          <PostCard post={item as any} onLike={handleLike} />
+        )}
+        ListHeaderComponent={ListHeader}
+        ListEmptyComponent={ListEmpty}
+        refreshControl={
+          <RefreshControl
+            refreshing={postsQuery.isRefetching ?? false}
+            onRefresh={handleRefresh}
+            tintColor={colors.primary}
+            colors={[colors.primary]}
+          />
+        }
+        contentContainerStyle={posts.length === 0 ? styles.emptyContent : undefined}
+        showsVerticalScrollIndicator={false}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  root: { flex: 1 },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  brandName: {
+    fontSize: 24,
+    fontFamily: "Inter_700Bold",
+  },
+  headerActions: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  iconBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  loader: {
+    flex: 1,
+    paddingTop: 60,
+    alignItems: "center",
+  },
+  empty: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: 80,
+    gap: 12,
+    paddingHorizontal: 40,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontFamily: "Inter_600SemiBold",
+    textAlign: "center",
+  },
+  emptyText: {
+    fontSize: 14,
+    fontFamily: "Inter_400Regular",
+    textAlign: "center",
+    lineHeight: 20,
+  },
+  emptyContent: { flexGrow: 1 },
+});
