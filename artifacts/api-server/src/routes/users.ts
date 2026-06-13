@@ -32,10 +32,13 @@ router.patch("/users/me", requireAuth, async (req, res): Promise<void> => {
 });
 
 // Returns all users (except self) with their friendship status relative to the caller
-// Supports ?q= for name search
+// Supports ?q= for name search, ?country= for country filter
 router.get("/users", requireAuth, async (req, res): Promise<void> => {
   const me = req.userId!;
   const q = typeof req.query.q === "string" ? req.query.q.trim() : "";
+  const country = typeof req.query.country === "string" && req.query.country.trim()
+    ? req.query.country.trim()
+    : null;
 
   const baseCondition = ne(usersTable.id, me);
   const searchCondition = q
@@ -45,8 +48,10 @@ router.get("/users", requireAuth, async (req, res): Promise<void> => {
         ilike(usersTable.lastName, `%${q}%`)
       )
     : undefined;
+  const countryCondition = country ? eq(usersTable.country, country) : undefined;
 
-  const whereClause = searchCondition ? and(baseCondition, searchCondition) : baseCondition;
+  const allConditions = [baseCondition, searchCondition, countryCondition].filter(Boolean) as Parameters<typeof and>;
+  const whereClause = allConditions.length > 1 ? and(...allConditions) : allConditions[0];
 
   const [allUsers, allRequests] = await Promise.all([
     db.select({

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db, groupsTable, groupMembersTable, groupPostsTable, usersTable } from "@workspace/db";
-import { desc, eq, and, sql } from "drizzle-orm";
+import { desc, eq, and, sql, ilike } from "drizzle-orm";
 import { requireAuth } from "../middlewares/requireAuth";
 
 const router = Router();
@@ -10,6 +10,17 @@ router.get("/groups", requireAuth, async (req, res): Promise<void> => {
   const search = typeof req.query.search === "string" && req.query.search.trim()
     ? req.query.search.trim()
     : null;
+  const country = typeof req.query.country === "string" && req.query.country.trim()
+    ? req.query.country.trim()
+    : null;
+  const category = typeof req.query.category === "string" && req.query.category.trim()
+    ? req.query.category.trim()
+    : null;
+
+  const conditions: ReturnType<typeof eq>[] = [eq(groupsTable.privacy, "public")];
+  if (search) conditions.push(sql`search_vector @@ websearch_to_tsquery('french', unaccent(${search}))` as unknown as ReturnType<typeof eq>);
+  if (country) conditions.push(ilike(groupsTable.country, `%${country}%`));
+  if (category) conditions.push(eq(groupsTable.category, category));
 
   const rows = await db
     .select({
@@ -25,14 +36,7 @@ router.get("/groups", requireAuth, async (req, res): Promise<void> => {
       createdAt: groupsTable.createdAt,
     })
     .from(groupsTable)
-    .where(
-      search
-        ? and(
-            eq(groupsTable.privacy, "public"),
-            sql`search_vector @@ websearch_to_tsquery('french', unaccent(${search}))`,
-          )
-        : eq(groupsTable.privacy, "public"),
-    )
+    .where(and(...conditions))
     .orderBy(desc(groupsTable.membersCount), desc(groupsTable.createdAt))
     .limit(search ? 10 : 50);
 

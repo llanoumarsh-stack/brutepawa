@@ -26,6 +26,28 @@ function snippet(text: string, maxLen = 120): string {
 
 type Tab = "people" | "posts" | "groups" | "articles" | "jobs";
 
+const WEST_AFRICA_COUNTRIES = [
+  { code: "BJ", name: "Bénin" },
+  { code: "TG", name: "Togo" },
+  { code: "CI", name: "Côte d'Ivoire" },
+  { code: "SN", name: "Sénégal" },
+  { code: "ML", name: "Mali" },
+  { code: "BF", name: "Burkina Faso" },
+  { code: "NE", name: "Niger" },
+  { code: "GN", name: "Guinée" },
+  { code: "CM", name: "Cameroun" },
+  { code: "TD", name: "Tchad" },
+  { code: "GA", name: "Gabon" },
+  { code: "CG", name: "Congo" },
+  { code: "CD", name: "R.D. Congo" },
+  { code: "CF", name: "Centrafrique" },
+];
+
+const TAB_CATEGORIES: Partial<Record<Tab, string[]>> = {
+  groups:   ["Agriculture", "Technologie", "Commerce", "Éducation", "Sport", "Santé", "Culture", "Religion"],
+  articles: ["Mode", "Électronique", "Bijoux", "Artisanat", "Alimentation", "Auto/Moto", "Beauté", "Maison"],
+};
+
 interface Props {
   q: string;
 }
@@ -40,7 +62,15 @@ export default function SearchPage({ q }: Props) {
   const [jobs, setJobs]         = useState<ApiJob[]>([]);
   const [loading, setLoading]   = useState(false);
   const [requestStates, setRequestStates] = useState<Record<number, "sending" | "sent" | "friends" | "pending_sent" | "none">>({});
+
+  const [filterCountry, setFilterCountry] = useState<{ code: string; name: string } | null>(null);
+  const [filterCategory, setFilterCategory] = useState("");
+
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    setFilterCategory("");
+  }, [activeTab]);
 
   useEffect(() => {
     if (!q.trim()) {
@@ -52,12 +82,15 @@ export default function SearchPage({ q }: Props) {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(async () => {
       try {
+        const countryCode = filterCountry?.code;
+        const countryName = filterCountry?.name;
+        const category = filterCategory || undefined;
         const [u, ps, g, p, j] = await Promise.all([
-          apiSearchUsers(q),
+          apiSearchUsers(q, { country: countryCode }),
           apiSearchPosts(q),
-          apiSearchGroups(q),
-          apiGetProducts({ search: q }),
-          apiGetJobs({ search: q }),
+          apiSearchGroups(q, { country: countryName, category: activeTab === "groups" ? category : undefined }),
+          apiGetProducts({ search: q, country: countryName, category: activeTab === "articles" ? category : undefined }),
+          apiGetJobs({ search: q, country: countryName }),
         ]);
         setUsers(u);
         setPosts(ps);
@@ -78,7 +111,7 @@ export default function SearchPage({ q }: Props) {
       }
     }, 300);
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
-  }, [q]);
+  }, [q, filterCountry, filterCategory, activeTab]);
 
   const handleAddFriend = async (userId: number) => {
     setRequestStates(prev => ({ ...prev, [userId]: "sending" }));
@@ -114,6 +147,24 @@ export default function SearchPage({ q }: Props) {
     whiteSpace: "nowrap" as const,
   });
 
+  const chipStyle = (active: boolean) => ({
+    padding: "5px 13px",
+    borderRadius: 16,
+    border: `1.5px solid ${active ? "var(--fb-blue)" : "var(--fb-divider)"}`,
+    background: active ? "#e7f0fd" : "var(--fb-white)",
+    color: active ? "var(--fb-blue)" : "var(--fb-text)",
+    cursor: "pointer",
+    fontSize: 12,
+    fontWeight: active ? 700 : 500,
+    whiteSpace: "nowrap" as const,
+    transition: "all 0.15s",
+  });
+
+  const categoryOptions = TAB_CATEGORIES[activeTab] ?? [];
+  const showCountryFilter = activeTab !== "posts";
+  const showCategoryFilter = categoryOptions.length > 0;
+  const hasFilters = showCountryFilter || showCategoryFilter;
+
   return (
     <div style={{ maxWidth: 600, margin: "0 auto", padding: "16px 12px" }}>
 
@@ -131,7 +182,7 @@ export default function SearchPage({ q }: Props) {
 
       {/* Tabs */}
       {q && !loading && (
-        <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4, marginBottom: 12, scrollbarWidth: "none" }}>
+        <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4, marginBottom: 10, scrollbarWidth: "none" }}>
           {tabs.map(t => (
             <button key={t.id} style={tabStyle(t.id)} onClick={() => setActiveTab(t.id)}>
               {t.label}
@@ -149,6 +200,64 @@ export default function SearchPage({ q }: Props) {
               )}
             </button>
           ))}
+        </div>
+      )}
+
+      {/* Filter bar */}
+      {q && !loading && hasFilters && (
+        <div style={{ background: "var(--fb-white)", borderRadius: 10, border: "1px solid var(--fb-divider)", padding: "10px 14px", marginBottom: 12 }}>
+
+          {/* Country filter */}
+          {showCountryFilter && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: showCategoryFilter ? 10 : 0 }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: "var(--fb-text-secondary)", flexShrink: 0 }}>
+                📍 Pays
+              </span>
+              <div style={{ display: "flex", gap: 6, overflowX: "auto", scrollbarWidth: "none", flexWrap: "wrap" }}>
+                <button
+                  style={chipStyle(!filterCountry)}
+                  onClick={() => setFilterCountry(null)}
+                >
+                  Tous
+                </button>
+                {WEST_AFRICA_COUNTRIES.map(c => (
+                  <button
+                    key={c.code}
+                    style={chipStyle(filterCountry?.code === c.code)}
+                    onClick={() => setFilterCountry(filterCountry?.code === c.code ? null : c)}
+                  >
+                    {c.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Category filter */}
+          {showCategoryFilter && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: "var(--fb-text-secondary)", flexShrink: 0 }}>
+                🏷️ Catégorie
+              </span>
+              <div style={{ display: "flex", gap: 6, overflowX: "auto", scrollbarWidth: "none", flexWrap: "wrap" }}>
+                <button
+                  style={chipStyle(!filterCategory)}
+                  onClick={() => setFilterCategory("")}
+                >
+                  Toutes
+                </button>
+                {categoryOptions.map(cat => (
+                  <button
+                    key={cat}
+                    style={chipStyle(filterCategory === cat)}
+                    onClick={() => setFilterCategory(filterCategory === cat ? "" : cat)}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -172,6 +281,7 @@ export default function SearchPage({ q }: Props) {
         <div style={{ background: "var(--fb-white)", borderRadius: 10, border: "1px solid var(--fb-divider)", overflow: "hidden" }}>
           <div style={{ padding: "12px 16px", borderBottom: "1px solid var(--fb-divider)", fontWeight: 700, fontSize: 16 }}>
             👥 Personnes
+            {filterCountry && <span style={{ marginLeft: 8, fontSize: 13, fontWeight: 500, color: "var(--fb-blue)" }}>· {filterCountry.name}</span>}
           </div>
 
           {users.length === 0 && (
@@ -179,7 +289,7 @@ export default function SearchPage({ q }: Props) {
               <div style={{ fontSize: 40, marginBottom: 8 }}>🔍</div>
               <div style={{ fontWeight: 600, marginBottom: 4 }}>Aucun résultat trouvé</div>
               <div style={{ fontSize: 13 }}>
-                Aucun utilisateur ne correspond à « {q} ».
+                Aucun utilisateur ne correspond à « {q} »{filterCountry ? ` au ${filterCountry.name}` : ""}.
               </div>
             </div>
           )}
@@ -347,13 +457,18 @@ export default function SearchPage({ q }: Props) {
         <div style={{ background: "var(--fb-white)", borderRadius: 10, border: "1px solid var(--fb-divider)", overflow: "hidden" }}>
           <div style={{ padding: "12px 16px", borderBottom: "1px solid var(--fb-divider)", fontWeight: 700, fontSize: 16 }}>
             🏘️ Groupes / Communautés
+            {(filterCountry || filterCategory) && (
+              <span style={{ marginLeft: 8, fontSize: 13, fontWeight: 500, color: "var(--fb-blue)" }}>
+                {[filterCategory, filterCountry?.name].filter(Boolean).map(v => `· ${v}`).join(" ")}
+              </span>
+            )}
           </div>
 
           {groups.length === 0 && (
             <div style={{ padding: "32px 16px", textAlign: "center", color: "var(--fb-text-secondary)" }}>
               <div style={{ fontSize: 40, marginBottom: 8 }}>🔍</div>
               <div style={{ fontWeight: 600, marginBottom: 4 }}>Aucun groupe trouvé</div>
-              <div style={{ fontSize: 13 }}>Aucun groupe ne correspond à « {q} ».</div>
+              <div style={{ fontSize: 13 }}>Aucun groupe ne correspond à « {q} »{filterCategory ? ` en ${filterCategory}` : ""}{ filterCountry ? ` au ${filterCountry.name}` : ""}.</div>
             </div>
           )}
 
@@ -401,13 +516,18 @@ export default function SearchPage({ q }: Props) {
         <div style={{ background: "var(--fb-white)", borderRadius: 10, border: "1px solid var(--fb-divider)", overflow: "hidden" }}>
           <div style={{ padding: "12px 16px", borderBottom: "1px solid var(--fb-divider)", fontWeight: 700, fontSize: 16 }}>
             🛍️ Articles à vendre
+            {(filterCountry || filterCategory) && (
+              <span style={{ marginLeft: 8, fontSize: 13, fontWeight: 500, color: "var(--fb-blue)" }}>
+                {[filterCategory, filterCountry?.name].filter(Boolean).map(v => `· ${v}`).join(" ")}
+              </span>
+            )}
           </div>
 
           {products.length === 0 && (
             <div style={{ padding: "32px 16px", textAlign: "center", color: "var(--fb-text-secondary)" }}>
               <div style={{ fontSize: 40, marginBottom: 8 }}>🛒</div>
               <div style={{ fontWeight: 600, marginBottom: 4 }}>Aucun article trouvé</div>
-              <div style={{ fontSize: 13 }}>Aucun article ne correspond à « {q} ».</div>
+              <div style={{ fontSize: 13 }}>Aucun article ne correspond à « {q} »{filterCategory ? ` en ${filterCategory}` : ""}{ filterCountry ? ` au ${filterCountry.name}` : ""}.</div>
             </div>
           )}
 
@@ -454,13 +574,14 @@ export default function SearchPage({ q }: Props) {
         <div style={{ background: "var(--fb-white)", borderRadius: 10, border: "1px solid var(--fb-divider)", overflow: "hidden" }}>
           <div style={{ padding: "12px 16px", borderBottom: "1px solid var(--fb-divider)", fontWeight: 700, fontSize: 16 }}>
             💼 Offres d'emploi
+            {filterCountry && <span style={{ marginLeft: 8, fontSize: 13, fontWeight: 500, color: "var(--fb-blue)" }}>· {filterCountry.name}</span>}
           </div>
 
           {jobs.length === 0 && (
             <div style={{ padding: "32px 16px", textAlign: "center", color: "var(--fb-text-secondary)" }}>
               <div style={{ fontSize: 40, marginBottom: 8 }}>💼</div>
               <div style={{ fontWeight: 600, marginBottom: 4 }}>Aucune offre trouvée</div>
-              <div style={{ fontSize: 13 }}>Aucune offre ne correspond à « {q} ».</div>
+              <div style={{ fontSize: 13 }}>Aucune offre ne correspond à « {q} »{ filterCountry ? ` au ${filterCountry.name}` : ""}.</div>
             </div>
           )}
 

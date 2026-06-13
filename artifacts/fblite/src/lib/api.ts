@@ -138,9 +138,11 @@ export async function apiGetUsersWithStatus(): Promise<PublicUserWithStatus[]> {
   return res.json() as Promise<PublicUserWithStatus[]>;
 }
 
-export async function apiSearchUsers(q: string): Promise<PublicUserWithStatus[]> {
+export async function apiSearchUsers(q: string, options?: { country?: string }): Promise<PublicUserWithStatus[]> {
   if (!q.trim()) return [];
-  const res = await apiFetch(`/users?q=${encodeURIComponent(q.trim())}`);
+  const params = new URLSearchParams({ q: q.trim() });
+  if (options?.country) params.set("country", options.country);
+  const res = await apiFetch(`/users?${params.toString()}`);
   if (!res.ok) return [];
   return res.json() as Promise<PublicUserWithStatus[]>;
 }
@@ -240,9 +242,12 @@ export async function apiGetGroups(): Promise<ApiGroup[]> {
   return res.json() as Promise<ApiGroup[]>;
 }
 
-export async function apiSearchGroups(search: string): Promise<ApiGroup[]> {
+export async function apiSearchGroups(search: string, options?: { country?: string; category?: string }): Promise<ApiGroup[]> {
   if (!search.trim()) return [];
-  const res = await apiFetch(`/groups?search=${encodeURIComponent(search.trim())}`);
+  const params = new URLSearchParams({ search: search.trim() });
+  if (options?.country) params.set("country", options.country);
+  if (options?.category) params.set("category", options.category);
+  const res = await apiFetch(`/groups?${params.toString()}`);
   if (!res.ok) return [];
   return res.json() as Promise<ApiGroup[]>;
 }
@@ -547,10 +552,11 @@ export interface ApiJob {
   createdAt: string;
 }
 
-export async function apiGetJobs(params?: { type?: string; search?: string }): Promise<ApiJob[]> {
+export async function apiGetJobs(params?: { type?: string; search?: string; country?: string }): Promise<ApiJob[]> {
   const q = new URLSearchParams();
   if (params?.type) q.set("type", params.type);
   if (params?.search) q.set("search", params.search);
+  if (params?.country) q.set("country", params.country);
   const qs = q.toString();
   const res = await apiFetch(`/jobs${qs ? `?${qs}` : ""}`);
   if (!res.ok) return [];
@@ -675,10 +681,11 @@ export interface ApiProduct {
   createdAt: string;
 }
 
-export async function apiGetProducts(params?: { category?: string; search?: string }): Promise<ApiProduct[]> {
+export async function apiGetProducts(params?: { category?: string; search?: string; country?: string }): Promise<ApiProduct[]> {
   const q = new URLSearchParams();
   if (params?.category) q.set("category", params.category);
   if (params?.search) q.set("search", params.search);
+  if (params?.country) q.set("country", params.country);
   const qs = q.toString();
   const res = await apiFetch(`/products${qs ? `?${qs}` : ""}`);
   if (!res.ok) return [];

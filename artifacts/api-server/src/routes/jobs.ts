@@ -12,10 +12,14 @@ function fmtJob(j: typeof jobsTable.$inferSelect) {
 
 router.get("/jobs", requireAuth, async (req, res): Promise<void> => {
   const params = ListJobsQueryParams.safeParse(req.query);
+  const country = typeof req.query.country === "string" && req.query.country.trim()
+    ? req.query.country.trim()
+    : null;
   const conditions = [eq(jobsTable.status, "open")];
   if (params.success && params.data.type) conditions.push(eq(jobsTable.type, params.data.type));
   if (params.success && params.data.search) conditions.push(ilike(jobsTable.title, `%${params.data.search}%`));
   if (params.success && params.data.location) conditions.push(ilike(jobsTable.location, `%${params.data.location}%`));
+  if (country) conditions.push(ilike(jobsTable.location, `%${country}%`));
 
   const jobs = await db.select().from(jobsTable).where(and(...conditions)).orderBy(desc(jobsTable.createdAt)).limit(50);
   res.json(jobs.map(fmtJob));

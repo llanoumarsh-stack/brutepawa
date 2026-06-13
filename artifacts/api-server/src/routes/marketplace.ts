@@ -24,6 +24,9 @@ router.get("/products/featured", requireAuth, async (req, res): Promise<void> =>
 
 router.get("/products", requireAuth, async (req, res): Promise<void> => {
   const params = ListProductsQueryParams.safeParse(req.query);
+  const country = typeof req.query.country === "string" && req.query.country.trim()
+    ? req.query.country.trim()
+    : null;
 
   const conditions = [eq(productsTable.status, "active")];
   if (params.success && params.data.category) {
@@ -31,6 +34,9 @@ router.get("/products", requireAuth, async (req, res): Promise<void> => {
   }
   if (params.success && params.data.search) {
     conditions.push(ilike(productsTable.title, `%${params.data.search}%`));
+  }
+  if (country) {
+    conditions.push(ilike(productsTable.location, `%${country}%`));
   }
 
   const products = await db.select().from(productsTable)
