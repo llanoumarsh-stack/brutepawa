@@ -178,7 +178,7 @@ router.post("/stream/live/:id/heartbeat", async (req, res) => {
   res.json({ ok: true });
 });
 
-// Called when a viewer joins: increments viewer_count by 1
+// Called when a viewer joins: increments viewer_count by 1 and emits a join event
 router.post("/stream/live/:id/join", async (req, res) => {
   const id = parseInt(req.params.id, 10);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
@@ -197,6 +197,19 @@ router.post("/stream/live/:id/join", async (req, res) => {
       lastViewerAt: new Date(),
     })
     .where(eq(liveStreamsTable.id, id));
+
+  // Write a system join record so SSE subscribers see the join announcement
+  const viewerName = (req.body?.userName ?? "").toString().trim().slice(0, 60) || "Anonyme";
+  const viewerFlag = (req.body?.userFlag ?? "").toString().trim().slice(0, 10);
+  try {
+    await db.insert(liveMessagesTable).values({
+      streamId: id,
+      userId:   "system",
+      userName: viewerName,
+      userFlag: viewerFlag,
+      content:  "",
+    });
+  } catch { /* non-fatal — viewer count is already updated */ }
 
   res.json({ ok: true });
 });
@@ -308,7 +321,11 @@ router.get("/stream/live/:id/events", async (req, res) => {
         .limit(30);
 
       for (const m of msgs) {
-        res.write(`event: chat\ndata: ${JSON.stringify(m)}\n\n`);
+        if (m.userId === "system") {
+          res.write(`event: join\ndata: ${JSON.stringify({ userName: m.userName, userFlag: m.userFlag })}\n\n`);
+        } else {
+          res.write(`event: chat\ndata: ${JSON.stringify(m)}\n\n`);
+        }
         lastMsgId = m.id;
       }
     } catch { /* ignore DB errors — keep connection alive */ }

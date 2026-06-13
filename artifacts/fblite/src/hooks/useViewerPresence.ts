@@ -9,12 +9,15 @@ import { getBpToken } from "../lib/api";
  *   - POST /heartbeat every 30 s   → refreshes last_viewer_at (presence signal)
  *   - DELETE /heartbeat on leave   → decrements viewer_count
  *
- * The broadcaster does NOT use this hook; it is strictly for audience members.
- * Consumed by LiveWatchPage (follow-up task #7 will expand the viewer experience).
- *
- * @param streamId  DB id of the live stream row (null/undefined → hook is dormant)
+ * @param streamId   DB id of the live stream row (null/undefined → hook is dormant)
+ * @param userName   Display name of the viewer (included in the join announcement)
+ * @param userFlag   Flag emoji of the viewer (optional)
  */
-export function useViewerPresence(streamId: number | null | undefined): void {
+export function useViewerPresence(
+  streamId: number | null | undefined,
+  userName?: string,
+  userFlag?: string,
+): void {
   const joinedRef = useRef(false);
 
   useEffect(() => {
@@ -25,7 +28,11 @@ export function useViewerPresence(streamId: number | null | undefined): void {
     if (token) headers["Authorization"] = `Bearer ${token}`;
 
     const join = () =>
-      fetch(`/api/stream/live/${streamId}/join`, { method: "POST", headers }).catch(() => {});
+      fetch(`/api/stream/live/${streamId}/join`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ userName: userName || "Anonyme", userFlag: userFlag || "" }),
+      }).catch(() => {});
 
     const heartbeat = () =>
       fetch(`/api/stream/live/${streamId}/heartbeat`, { method: "POST", headers }).catch(() => {});
@@ -33,7 +40,6 @@ export function useViewerPresence(streamId: number | null | undefined): void {
     const leave = () => {
       if (!joinedRef.current) return;
       joinedRef.current = false;
-      // keepalive: true ensures the request completes even during page unload
       fetch(`/api/stream/live/${streamId}/heartbeat`, {
         method: "DELETE",
         headers,
@@ -41,11 +47,9 @@ export function useViewerPresence(streamId: number | null | undefined): void {
       }).catch(() => {});
     };
 
-    // Join immediately on mount, then heartbeat every 30 s
     join().then(() => { joinedRef.current = true; });
     const interval = setInterval(heartbeat, 30_000);
 
-    // Best-effort leave on tab close / navigation away
     window.addEventListener("beforeunload", leave);
 
     return () => {

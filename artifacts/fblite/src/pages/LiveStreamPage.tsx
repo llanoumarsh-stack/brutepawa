@@ -197,6 +197,17 @@ export default function LiveStreamPage() {
       } catch { /* ignore */ }
     });
 
+    es.addEventListener("join", (evt) => {
+      try {
+        const m = JSON.parse((evt as MessageEvent).data) as { userName: string; userFlag?: string };
+        setComments(prev => [...prev.slice(-30), {
+          id: Date.now() + Math.random(),
+          user: "👋",
+          text: `${m.userFlag ? `${m.userFlag} ` : ""}${m.userName || "Anonyme"} a rejoint le live`,
+        }]);
+      } catch { /* ignore */ }
+    });
+
     return () => {
       es.close();
       sseRef.current = null;

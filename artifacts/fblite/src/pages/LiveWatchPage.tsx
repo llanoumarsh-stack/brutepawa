@@ -28,7 +28,7 @@ interface FloatingGift {
 
 interface FeedEntry {
   id: number;
-  type: "gift" | "chat";
+  type: "gift" | "chat" | "join";
   senderName: string;
   userFlag?: string;
   giftEmoji?: string;
@@ -42,6 +42,11 @@ interface Props {
 
 export default function LiveWatchPage({ streamId }: Props) {
   const navigate = useNavigate();
+  const rawUser = localStorage.getItem("fb_user");
+  const localUser = rawUser ? (JSON.parse(rawUser) as { name?: string; flag?: string }) : null;
+  const viewerName = localUser?.name || "Anonyme";
+  const viewerFlag = localUser?.flag || "";
+
   const [stream, setStream]           = useState<LiveInfo | null>(null);
   const [error, setError]             = useState<string | null>(null);
   const [loading, setLoading]         = useState(true);
@@ -57,7 +62,7 @@ export default function LiveWatchPage({ streamId }: Props) {
   const feedBottomRef = useRef<HTMLDivElement>(null);
   const sseRef      = useRef<EventSource | null>(null);
 
-  useViewerPresence(stream?.id ?? null);
+  useViewerPresence(stream?.id ?? null, viewerName, viewerFlag);
 
   useEffect(() => {
     const token = getBpToken();
@@ -143,6 +148,22 @@ export default function LiveWatchPage({ streamId }: Props) {
           senderName: data.userName || "Anonyme",
           userFlag: data.userFlag ?? "",
           content: data.content,
+        }]);
+      } catch { /* ignore parse errors */ }
+    });
+
+    es.addEventListener("join", (e) => {
+      try {
+        const data = JSON.parse((e as MessageEvent).data) as {
+          userName: string;
+          userFlag?: string;
+        };
+        const fid = ++feedIdRef.current;
+        setFeedEntries(prev => [...prev.slice(-49), {
+          id: fid,
+          type: "join",
+          senderName: data.userName || "Anonyme",
+          userFlag: data.userFlag ?? "",
         }]);
       } catch { /* ignore parse errors */ }
     });
@@ -304,6 +325,30 @@ export default function LiveWatchPage({ streamId }: Props) {
                 <span style={{ color: "#FFD700" }}>{fe.senderName}</span>
                 <span style={{ fontWeight: 400, color: "rgba(255,255,255,0.8)" }}>a envoyé</span>
                 <span style={{ color: "#E91E8C" }}>{fe.giftName}</span>
+              </div>
+            ) : fe.type === "join" ? (
+              <div
+                key={fe.id}
+                style={{
+                  display: "inline-flex",
+                  alignSelf: "flex-start",
+                  alignItems: "center",
+                  gap: 5,
+                  background: "rgba(255,255,255,0.12)",
+                  backdropFilter: "blur(4px)",
+                  borderRadius: 20,
+                  padding: "4px 12px",
+                  fontSize: 12,
+                  color: "rgba(255,255,255,0.75)",
+                  animation: "feedSlideIn 0.3s ease-out",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                <span>👋</span>
+                <span style={{ fontWeight: 700, color: "#fff" }}>
+                  {fe.userFlag ? `${fe.userFlag} ` : ""}{fe.senderName}
+                </span>
+                <span>a rejoint le live</span>
               </div>
             ) : (
               <div
