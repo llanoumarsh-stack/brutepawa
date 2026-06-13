@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db, usersTable, friendRequestsTable } from "@workspace/db";
-import { eq, or, and, ne } from "drizzle-orm";
+import { eq, or, and, ne, ilike, sql } from "drizzle-orm";
 import { UpdateMeBody, GetUserParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
 
@@ -32,14 +32,27 @@ router.patch("/users/me", requireAuth, async (req, res): Promise<void> => {
 });
 
 // Returns all users (except self) with their friendship status relative to the caller
+// Supports ?q= for name search
 router.get("/users", requireAuth, async (req, res): Promise<void> => {
   const me = req.userId!;
+  const q = typeof req.query.q === "string" ? req.query.q.trim() : "";
+
+  const baseCondition = ne(usersTable.id, me);
+  const searchCondition = q
+    ? or(
+        ilike(sql`(${usersTable.firstName} || ' ' || ${usersTable.lastName})`, `%${q}%`),
+        ilike(usersTable.firstName, `%${q}%`),
+        ilike(usersTable.lastName, `%${q}%`)
+      )
+    : undefined;
+
+  const whereClause = searchCondition ? and(baseCondition, searchCondition) : baseCondition;
 
   const [allUsers, allRequests] = await Promise.all([
     db.select({
       id: usersTable.id, firstName: usersTable.firstName, lastName: usersTable.lastName,
       country: usersTable.country, avatarUrl: usersTable.avatarUrl, bio: usersTable.bio,
-    }).from(usersTable).where(ne(usersTable.id, me)),
+    }).from(usersTable).where(whereClause),
 
     db.select().from(friendRequestsTable).where(
       or(eq(friendRequestsTable.fromUserId, me), eq(friendRequestsTable.toUserId, me))

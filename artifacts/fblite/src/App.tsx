@@ -27,6 +27,7 @@ import ScorePage from "./pages/ScorePage";
 import UserProfilePage from "./pages/UserProfilePage";
 import CreatorDashboardPage from "./pages/CreatorDashboardPage";
 import VideoPostPage from "./pages/VideoPostPage";
+import SearchPage from "./pages/SearchPage";
 
 import { ADMIN_SECRET_PATH } from "./lib/admin";
 import { Post } from "./lib/store";
@@ -168,6 +169,17 @@ function AppContent() {
     );
   }
   if (path === "/score") return <ScorePage />;
+
+  // Search route — path may include query string: /search?q=...
+  if (path.startsWith("/search")) {
+    const qs = path.includes("?") ? path.slice(path.indexOf("?") + 1) : "";
+    const q = new URLSearchParams(qs).get("q") ?? "";
+    return (
+      <Layout onNewPost={handleNewPost}>
+        <SearchPage q={q} />
+      </Layout>
+    );
+  }
 
   // Dynamic route matching
   const productMatch = matchDynamic("/marketplace/:id", path);

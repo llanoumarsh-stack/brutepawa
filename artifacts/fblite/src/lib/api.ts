@@ -138,6 +138,13 @@ export async function apiGetUsersWithStatus(): Promise<PublicUserWithStatus[]> {
   return res.json() as Promise<PublicUserWithStatus[]>;
 }
 
+export async function apiSearchUsers(q: string): Promise<PublicUserWithStatus[]> {
+  if (!q.trim()) return [];
+  const res = await apiFetch(`/users?q=${encodeURIComponent(q.trim())}`);
+  if (!res.ok) return [];
+  return res.json() as Promise<PublicUserWithStatus[]>;
+}
+
 export async function apiGetFriends(): Promise<PublicUser[]> {
   const res = await apiFetch("/users/me/friends");
   if (!res.ok) return [];

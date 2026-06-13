@@ -24,12 +24,20 @@ export default function Layout({ children, onNewPost }: Props) {
   const navigate = useNavigate();
   const [showCreate,    setShowCreate]    = useState(false);
   const [showPostModal, setShowPostModal] = useState(false);
-  const [searchQuery,   setSearchQuery]   = useState("");
+  const [searchQuery,   setSearchQuery]   = useState(() => {
+    const qs = window.location.search;
+    return new URLSearchParams(qs).get("q") ?? "";
+  });
   const [pendingRequests, setPendingRequests] = useState(0);
 
-  const rawUser     = localStorage.getItem("fb_user");
-  const user        = rawUser ? JSON.parse(rawUser) : { name: "Utilisateur", email: "", avatarUrl: null };
+  const rawUser      = localStorage.getItem("fb_user");
+  const user         = rawUser ? JSON.parse(rawUser) : { name: "Utilisateur", email: "", avatarUrl: null };
   const userInitials = user.name ? user.name.slice(0, 2).toUpperCase() : "ME";
+
+  // Pre-fill search bar if already on /search?q=...
+  const currentPath = path;
+  const currentQs   = currentPath.includes("?") ? currentPath.slice(currentPath.indexOf("?") + 1) : "";
+  const currentQ    = new URLSearchParams(currentQs).get("q") ?? "";
 
   const menuPaths = ["/menu", "/wallet", "/tontines", "/formations", "/jobs"];
   const activeTab = TABS.find(t => t.path === path)?.id
@@ -71,6 +79,16 @@ export default function Layout({ children, onNewPost }: Props) {
           placeholder="🔍 Rechercher sur Brute Pawa"
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
+          onKeyDown={e => {
+            if (e.key === "Enter" && searchQuery.trim()) {
+              navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+              (e.target as HTMLInputElement).blur();
+            }
+            if (e.key === "Escape") {
+              setSearchQuery("");
+              (e.target as HTMLInputElement).blur();
+            }
+          }}
         />
 
         <div className="navbar-actions">
