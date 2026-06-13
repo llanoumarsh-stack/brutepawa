@@ -326,7 +326,7 @@ export default function Community() {
                       {friend.bio && <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", marginTop: 2 }}>{friend.bio}</div>}
                     </div>
                     <button
-                      onClick={() => navigate("/messages")}
+                      onClick={() => navigate(`/messages?userId=${friend.id}`)}
                       style={{ flexShrink: 0, padding: "8px 12px", background: "var(--fb-divider)", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: "pointer" }}
                     >💬 Message</button>
                   </div>

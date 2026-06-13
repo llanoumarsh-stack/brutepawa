@@ -15,6 +15,7 @@ import giftsRouter from "./gifts";
 import tokensRouter from "./tokens";
 import creatorRouter from "./creator";
 import communityRouter from "./community";
+import signalingRouter from "./signaling";
 
 const router: IRouter = Router();
 
@@ -34,5 +35,6 @@ router.use(giftsRouter);
 router.use(tokensRouter);
 router.use(creatorRouter);
 router.use(communityRouter);
+router.use(signalingRouter);
 
 export default router;

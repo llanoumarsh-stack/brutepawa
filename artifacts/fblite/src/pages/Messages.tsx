@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "../router";
 import { apiGetConversations, apiGetMessages, apiSendMessage, apiGetUsers, type PublicUser } from "../lib/api";
+import { useCallSignaling } from "../hooks/useCallSignaling";
 
 interface Message {
   id: number;
@@ -23,79 +24,70 @@ const CONV_COLORS = ["#1877F2","#E91E8C","#7B1FA2","#F57C00","#388E3C","#00838F"
 const mkInitials = (name: string) =>
   name.split(" ").filter(Boolean).map(w => w[0]).join("").slice(0, 2).toUpperCase() || "?";
 
-type Overlay = "none" | "calling" | "video" | "info" | "attach";
-
+type Overlay = "none" | "info" | "attach";
 
 export default function Messages({ initialUserId }: { initialUserId?: number }) {
   const navigate = useNavigate();
-  const rawUser = localStorage.getItem("fb_user");
-  const user = rawUser ? JSON.parse(rawUser) : { name: "Moi" };
-
   const meId = (() => { try { return (JSON.parse(localStorage.getItem("fb_user") ?? "{}") as { id?: number }).id ?? 0; } catch { return 0; } })();
 
-  const [activeConv, setActiveConv] = useState<number | null>(initialUserId ?? null);
-  const [messages, setMessages] = useState<Record<number, Message[]>>({});
-  const [convList, setConvList]   = useState<NormConv[]>([]);
-  const [allUsers, setAllUsers]   = useState<PublicUser[]>([]);
-  const [newMsg, setNewMsg] = useState("");
-  const [search, setSearch] = useState("");
-  const [typing, setTyping] = useState(false);
-  const [overlay, setOverlay] = useState<Overlay>("none");
-  const [callDuration, setCallDuration] = useState(0);
-  const [callActive, setCallActive] = useState(false);
-  const [callMuted, setCallMuted] = useState(false);
-  const [callSpeaker, setCallSpeaker] = useState(false);
-  const [cameraFront, setCameraFront] = useState(true);
-  const [cameraFlipping, setCameraFlipping] = useState(false);
-  const [showAddContact, setShowAddContact] = useState(false);
-  const [addedContacts, setAddedContacts] = useState<number[]>([]);
-  const [callToast, setCallToast] = useState<string | null>(null);
-  const [mediaError, setMediaError] = useState<string | null>(null);
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const callTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const streamRef = useRef<MediaStream | null>(null);
+  const [activeConv, setActiveConv]   = useState<number | null>(initialUserId ?? null);
+  const [messages, setMessages]       = useState<Record<number, Message[]>>({});
+  const [convList, setConvList]       = useState<NormConv[]>([]);
+  const [allUsers, setAllUsers]       = useState<PublicUser[]>([]);
+  const [newMsg, setNewMsg]           = useState("");
+  const [search, setSearch]           = useState("");
+  const [typing, setTyping]           = useState(false);
+  const [overlay, setOverlay]         = useState<Overlay>("none");
 
-  const activeUser = activeConv ? (convList.find(c => c.id === activeConv)?.user ?? null) : null;
-  const currentMessages = activeConv ? (messages[activeConv] ?? []) : [];
+  const bottomRef      = useRef<HTMLDivElement>(null);
+  const localVideoRef  = useRef<HTMLVideoElement>(null);
+  const remoteVideoRef = useRef<HTMLVideoElement>(null);
+  const remoteAudioRef = useRef<HTMLAudioElement>(null);
 
+  const sig = useCallSignaling(meId);
+
+  const activeUser   = activeConv ? (convList.find(c => c.id === activeConv)?.user ?? null) : null;
+  const callPeerUser = sig.callPeerId ? (convList.find(c => c.id === sig.callPeerId)?.user
+    ?? (() => {
+      const u = allUsers.find(x => x.id === sig.callPeerId);
+      if (!u) return null;
+      const name = `${u.firstName} ${u.lastName}`;
+      return { name, initials: mkInitials(name), color: CONV_COLORS[sig.callPeerId % CONV_COLORS.length] };
+    })()) : null;
+
+  const currentMessages  = activeConv ? (messages[activeConv] ?? []) : [];
+  const filteredConvs    = convList.filter(c => c.user.name.toLowerCase().includes(search.toLowerCase()));
+
+  // Sync local stream → video element
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [currentMessages]);
+    if (localVideoRef.current) localVideoRef.current.srcObject = sig.localStream;
+  }, [sig.localStream]);
 
+  // Sync remote stream → video or audio element
   useEffect(() => {
-    if (callActive) {
-      callTimerRef.current = setInterval(() => setCallDuration(d => d + 1), 1000);
-    } else {
-      if (callTimerRef.current) clearInterval(callTimerRef.current);
-      setCallDuration(0);
-    }
-    return () => { if (callTimerRef.current) clearInterval(callTimerRef.current); };
-  }, [callActive]);
+    if (sig.callType === "video" && remoteVideoRef.current)
+      remoteVideoRef.current.srcObject = sig.remoteStream;
+    else if (sig.callType === "audio" && remoteAudioRef.current)
+      remoteAudioRef.current.srcObject = sig.remoteStream;
+  }, [sig.remoteStream, sig.callType]);
 
-  // Release camera/mic when navigating away — prevents NotReadableError on LiveStreamPage
-  useEffect(() => {
-    return () => { stopStream(); };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [currentMessages]);
 
   useEffect(() => {
     Promise.all([apiGetConversations(), apiGetUsers()])
       .then(([convs, users]) => {
         setAllUsers(users);
         const normalized: NormConv[] = convs.map(c => {
-          const u = users.find(u => u.id === c.userId);
+          const u    = users.find(u => u.id === c.userId);
           const name = u ? `${u.firstName} ${u.lastName}` : `Utilisateur #${c.userId}`;
           return {
-            id: c.userId,
-            user: { name, initials: mkInitials(name), color: CONV_COLORS[c.userId % CONV_COLORS.length] },
+            id:          c.userId,
+            user:        { name, initials: mkInitials(name), color: CONV_COLORS[c.userId % CONV_COLORS.length] },
             lastMessage: c.lastMessage,
-            unread: c.unreadCount,
-            time: new Date(c.updatedAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }),
+            unread:      c.unreadCount,
+            time:        new Date(c.updatedAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }),
           };
         });
-        // If opened directly from a profile/search and conversation doesn't exist yet, inject synthetic entry
         if (initialUserId && !normalized.find(c => c.id === initialUserId)) {
           const u = users.find(u => u.id === initialUserId);
           if (u) {
@@ -103,9 +95,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
             normalized.unshift({
               id: initialUserId,
               user: { name, initials: mkInitials(name), color: CONV_COLORS[initialUserId % CONV_COLORS.length] },
-              lastMessage: "",
-              unread: 0,
-              time: "",
+              lastMessage: "", unread: 0, time: "",
             });
           }
         }
@@ -120,140 +110,18 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
       setMessages(prev => ({
         ...prev,
         [activeConv]: msgs.map(m => ({
-          id: m.id,
-          text: m.content,
-          mine: m.fromUserId === meId,
-          time: new Date(m.createdAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }),
+          id:     m.id,
+          text:   m.content,
+          mine:   m.fromUserId === meId,
+          time:   new Date(m.createdAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }),
           status: m.isRead ? "read" as const : "sent" as const,
         })),
       }));
     }).catch(() => {});
   }, [activeConv]);
 
-  const fmtTime = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
-
-  const showToast = (msg: string) => {
-    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
-    setCallToast(msg);
-    toastTimerRef.current = setTimeout(() => setCallToast(null), 2200);
-  };
-
-  const stopStream = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(t => t.stop());
-      streamRef.current = null;
-    }
-    if (videoRef.current) videoRef.current.srcObject = null;
-  };
-
-  const startCall = async (type: "calling" | "video") => {
-    setOverlay(type);
-    setCallActive(false);
-    setCameraFront(true);
-    setAddedContacts([]);
-    setShowAddContact(false);
-    setMediaError(null);
-    stopStream();
-    try {
-      const constraints: MediaStreamConstraints = {
-        audio: true,
-        video: type === "video" ? { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } } : false,
-      };
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      streamRef.current = stream;
-      if (videoRef.current && type === "video") {
-        videoRef.current.srcObject = stream;
-        videoRef.current.play().catch(() => {});
-      }
-      setCallActive(true);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      if (msg.includes("Permission") || msg.includes("NotAllowed")) {
-        setMediaError("Accès refusé — autorisez la caméra/micro dans les paramètres du navigateur.");
-      } else if (msg.includes("NotFound")) {
-        setMediaError("Caméra ou micro introuvable sur cet appareil.");
-      } else {
-        setMediaError("Impossible d'accéder à la caméra/micro.");
-      }
-      setTimeout(() => setCallActive(true), 2000);
-    }
-  };
-
-  const endCall = () => {
-    stopStream();
-    setCallActive(false);
-    setCallMuted(false);
-    setCallSpeaker(false);
-    setCameraFront(true);
-    setShowAddContact(false);
-    setAddedContacts([]);
-    setCallToast(null);
-    setMediaError(null);
-    setOverlay("none");
-  };
-
-  const toggleMute = () => {
-    const next = !callMuted;
-    setCallMuted(next);
-    if (streamRef.current) {
-      streamRef.current.getAudioTracks().forEach(t => { t.enabled = !next; });
-    }
-    showToast(next ? "🔇 Micro désactivé" : "🎙️ Micro activé");
-  };
-
-  const toggleSpeaker = async () => {
-    const next = !callSpeaker;
-    setCallSpeaker(next);
-    if (videoRef.current && "setSinkId" in videoRef.current) {
-      try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const speakers = devices.filter(d => d.kind === "audiooutput");
-        const target = next
-          ? speakers.find(d => d.label.toLowerCase().includes("speaker") || d.label.toLowerCase().includes("loud")) ?? speakers[speakers.length - 1]
-          : speakers[0];
-        if (target) {
-          await (videoRef.current as HTMLVideoElement & { setSinkId: (id: string) => Promise<void> }).setSinkId(target.deviceId);
-        }
-      } catch { /* setSinkId not supported on this browser */ }
-    }
-    showToast(next ? "🔊 Haut-parleur activé" : "🔈 Haut-parleur désactivé");
-  };
-
-  const flipCamera = async () => {
-    if (!streamRef.current) {
-      showToast("Caméra non disponible");
-      return;
-    }
-    setCameraFlipping(true);
-    const newFront = !cameraFront;
-    streamRef.current.getVideoTracks().forEach(t => t.stop());
-    try {
-      const newStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: newFront ? "user" : "environment" },
-        audio: false,
-      });
-      const newVideoTrack = newStream.getVideoTracks()[0];
-      const audioTracks = streamRef.current.getAudioTracks();
-      const combined = new MediaStream([...audioTracks, newVideoTrack]);
-      streamRef.current = combined;
-      if (videoRef.current) {
-        videoRef.current.srcObject = combined;
-        videoRef.current.play().catch(() => {});
-      }
-      setCameraFront(newFront);
-      showToast(newFront ? "🤳 Caméra frontale" : "📷 Caméra arrière");
-    } catch {
-      showToast("Impossible de retourner la caméra");
-    }
-    setCameraFlipping(false);
-  };
-
-  const addContact = (id: number, name: string) => {
-    if (addedContacts.includes(id)) return;
-    setAddedContacts(prev => [...prev, id]);
-    setShowAddContact(false);
-    showToast(`✅ ${name} ajouté(e) à l'appel`);
-  };
+  const fmtTime = (s: number) =>
+    `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 
   const sendMsg = (text?: string, attachment?: Message["attachment"]) => {
     const content = text ?? newMsg.trim();
@@ -266,251 +134,214 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
     apiSendMessage(activeConv, content).catch(() => {});
   };
 
-  const addableContacts = allUsers.slice(0, 8).map(u => ({
-    id: u.id,
-    name: `${u.firstName} ${u.lastName}`,
-    initials: mkInitials(`${u.firstName} ${u.lastName}`),
-    color: CONV_COLORS[u.id % CONV_COLORS.length],
-  }));
+  navigate; // suppress lint warning
 
-  const filteredConvs = convList.filter(c =>
-    c.user.name.toLowerCase().includes(search.toLowerCase())
-  );
+  /* ══════════════════════════════════════════════════════════════
+     INCOMING CALL OVERLAY (top priority)
+  ══════════════════════════════════════════════════════════════ */
+  if (sig.callState === "incoming" && sig.incomingCall) {
+    const caller     = allUsers.find(u => u.id === sig.incomingCall!.fromUserId);
+    const callerName = caller
+      ? `${caller.firstName} ${caller.lastName}`
+      : `Utilisateur #${sig.incomingCall.fromUserId}`;
+    const callerInitials = mkInitials(callerName);
+    const callerColor    = CONV_COLORS[sig.incomingCall.fromUserId % CONV_COLORS.length];
+    const isVideo        = sig.incomingCall.callType === "video";
 
-  /* ── OVERLAYS ────────────────────────────────────────────── */
+    return (
+      <div style={{
+        position: "fixed", inset: 0, zIndex: 300,
+        background: "linear-gradient(160deg, #0d1b2a 0%, #1a3a52 100%)",
+        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+        padding: "48px 32px",
+      }}>
+        <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 13, letterSpacing: 1, textTransform: "uppercase", marginBottom: 24 }}>
+          {isVideo ? "📹 Appel vidéo entrant" : "📞 Appel audio entrant"}
+        </div>
+        <div style={{
+          width: 110, height: 110, borderRadius: "50%", background: callerColor,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 40, color: "#fff", fontWeight: 800,
+          boxShadow: `0 0 0 14px ${callerColor}44, 0 0 0 28px ${callerColor}22`,
+          animation: "pulse 1.5s infinite",
+          marginBottom: 20,
+        }}>{callerInitials}</div>
+        <div style={{ color: "#fff", fontWeight: 900, fontSize: 26, marginBottom: 6 }}>{callerName}</div>
+        <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 15, marginBottom: 56 }}>
+          {isVideo ? "Appel vidéo" : "Appel audio"}
+        </div>
 
-  if (activeConv && activeUser && (overlay === "calling" || overlay === "video")) {
+        {sig.mediaError && (
+          <div style={{ background: "rgba(244,67,54,0.2)", color: "#FF6B6B", borderRadius: 12, padding: "10px 20px", marginBottom: 24, fontSize: 13, textAlign: "center" }}>
+            {sig.mediaError}
+          </div>
+        )}
+
+        <div style={{ display: "flex", gap: 60 }}>
+          <div style={{ textAlign: "center", cursor: "pointer" }} onClick={() => sig.rejectCall()}>
+            <div style={{ width: 72, height: 72, borderRadius: "50%", background: "#F44336", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, margin: "0 auto 10px", boxShadow: "0 4px 16px rgba(244,67,54,0.5)" }}>📵</div>
+            <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}>Refuser</div>
+          </div>
+          <div style={{ textAlign: "center", cursor: "pointer" }} onClick={() => sig.acceptCall()}>
+            <div style={{ width: 72, height: 72, borderRadius: "50%", background: "#42B72A", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, margin: "0 auto 10px", boxShadow: "0 4px 16px rgba(66,183,42,0.5)" }}>
+              {isVideo ? "📹" : "📞"}
+            </div>
+            <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}>Accepter</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     ACTIVE / CALLING OVERLAY (real WebRTC)
+  ══════════════════════════════════════════════════════════════ */
+  if (sig.callState === "calling" || sig.callState === "active") {
+    const peer    = callPeerUser;
+    const isVideo = sig.callType === "video";
+
     return (
       <div style={{
         position: "fixed", inset: 0, zIndex: 200,
-        background: overlay === "video"
+        background: isVideo
           ? "linear-gradient(160deg, #0d1b2a 0%, #1a3a52 100%)"
           : "linear-gradient(160deg, #1a1a2e 0%, #16213e 100%)",
         display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "space-between",
         padding: "60px 32px 48px",
       }}>
 
-        {/* Toast */}
-        {callToast && (
-          <div style={{
-            position: "absolute", top: 18, left: "50%", transform: "translateX(-50%)",
-            background: "rgba(0,0,0,0.75)", color: "#fff", borderRadius: 20,
-            padding: "8px 20px", fontSize: 14, fontWeight: 600, whiteSpace: "nowrap",
-            zIndex: 10, backdropFilter: "blur(6px)",
-          }}>{callToast}</div>
-        )}
+        {/* Hidden audio element for voice calls */}
+        <audio ref={remoteAudioRef} autoPlay playsInline style={{ display: "none" }} />
 
-        {/* Add contact bottom sheet */}
-        {showAddContact && (
-          <div style={{
-            position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 20,
-            background: "#1e2a3a", borderRadius: "16px 16px 0 0",
-            padding: "20px 16px 32px", boxShadow: "0 -8px 32px rgba(0,0,0,0.5)",
-          }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-              <div style={{ color: "#fff", fontWeight: 700, fontSize: 16 }}>Ajouter à l'appel</div>
-              <button onClick={() => setShowAddContact(false)} style={{ background: "rgba(255,255,255,0.15)", border: "none", color: "#fff", borderRadius: "50%", width: 30, height: 30, cursor: "pointer", fontSize: 16 }}>✕</button>
-            </div>
-            {addableContacts.map(c => (
-              <div key={c.id} onClick={() => addContact(c.id, c.name)} style={{
-                display: "flex", alignItems: "center", gap: 12, padding: "10px 8px", cursor: "pointer",
-                borderRadius: 10, background: addedContacts.includes(c.id) ? "rgba(66,183,42,0.2)" : "transparent",
-              }}>
-                <div style={{ width: 42, height: 42, borderRadius: "50%", background: c.color, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 15, flexShrink: 0 }}>{c.initials}</div>
-                <div style={{ flex: 1, color: "#fff", fontWeight: 600 }}>{c.name}</div>
-                <div style={{ color: addedContacts.includes(c.id) ? "#42B72A" : "rgba(255,255,255,0.4)", fontSize: 18 }}>
-                  {addedContacts.includes(c.id) ? "✓" : "+"}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Top: contact info + added contacts */}
+        {/* Top: peer info */}
         <div style={{ textAlign: "center" }}>
           <div style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", marginBottom: 12, letterSpacing: 1, textTransform: "uppercase" }}>
-            {overlay === "video" ? "📹 Appel vidéo" : "📞 Appel audio"}
+            {isVideo ? "📹 Appel vidéo" : "📞 Appel audio"}
           </div>
-
-          {/* Main avatar + added contact avatars */}
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-end", gap: -12, marginBottom: 16 }}>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
             <div style={{
-              width: 100, height: 100, borderRadius: "50%", background: activeUser.color,
+              width: 100, height: 100, borderRadius: "50%",
+              background: peer?.color ?? "#1877F2",
               display: "flex", alignItems: "center", justifyContent: "center",
               fontSize: 36, color: "#fff", fontWeight: 800,
-              boxShadow: callActive
-                ? `0 0 0 12px ${activeUser.color}44, 0 0 0 24px ${activeUser.color}22`
+              boxShadow: sig.callState === "active"
+                ? `0 0 0 12px ${peer?.color ?? "#1877F2"}44, 0 0 0 24px ${peer?.color ?? "#1877F2"}22`
                 : "none",
-              transition: "box-shadow 0.6s", flexShrink: 0,
-            }}>{activeUser.initials}</div>
-            {addedContacts.map(id => {
-              const c = addableContacts.find(x => x.id === id);
-              if (!c) return null;
-              return (
-                <div key={id} style={{
-                  width: 52, height: 52, borderRadius: "50%", background: c.color,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 18, color: "#fff", fontWeight: 800,
-                  border: "3px solid #0d1b2a", marginLeft: -14, flexShrink: 0,
-                }}>{c.initials}</div>
-              );
-            })}
+              transition: "box-shadow 0.6s",
+            }}>{peer?.initials ?? "?"}</div>
           </div>
-
           <div style={{ color: "#fff", fontWeight: 800, fontSize: 24, marginBottom: 4 }}>
-            {addedContacts.length > 0
-              ? `${activeUser.name.split(" ")[0]} + ${addedContacts.length}`
-              : activeUser.name}
+            {peer?.name ?? "Appel en cours"}
           </div>
           <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 15 }}>
-            {callActive ? (
-              <span style={{ color: "#42B72A", fontWeight: 700 }}>🟢 {fmtTime(callDuration)}</span>
-            ) : (
-              <span>⏳ Connexion...</span>
-            )}
+            {sig.callState === "active"
+              ? <span style={{ color: "#42B72A", fontWeight: 700 }}>🟢 {fmtTime(sig.callDuration)}</span>
+              : <span>⏳ Connexion...</span>
+            }
           </div>
-
-          {/* Muted indicator */}
-          {callMuted && (
+          {sig.isMuted && (
             <div style={{ marginTop: 8, background: "rgba(244,67,54,0.25)", borderRadius: 20, padding: "4px 14px", display: "inline-block", color: "#FF6B6B", fontSize: 13, fontWeight: 600 }}>
               🔇 Micro coupé
             </div>
           )}
+          {sig.mediaError && (
+            <div style={{ marginTop: 8, background: "rgba(244,67,54,0.2)", color: "#FF6B6B", borderRadius: 12, padding: "8px 16px", fontSize: 13 }}>
+              {sig.mediaError}
+            </div>
+          )}
         </div>
 
-        {/* Middle: real camera feed */}
-        {overlay === "video" && (
-          <div style={{
-            width: "100%", maxWidth: 320, aspectRatio: "4/3",
-            borderRadius: 16, overflow: "hidden", position: "relative",
-            background: "rgba(0,0,0,0.5)",
-            border: "1px solid rgba(255,255,255,0.15)",
-            transform: cameraFlipping ? "scaleX(0)" : "scaleX(1)",
-            transition: "transform 0.3s ease",
-          }}>
-            {/* Live camera video */}
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              muted
-              style={{
-                width: "100%", height: "100%", objectFit: "cover",
-                display: "block",
-                transform: cameraFront ? "scaleX(-1)" : "scaleX(1)",
-              }}
-            />
+        {/* Middle: video feeds */}
+        {isVideo && (
+          <div style={{ width: "100%", maxWidth: 380, position: "relative" }}>
+            {/* Remote (main) */}
+            <div style={{ width: "100%", aspectRatio: "4/3", borderRadius: 16, overflow: "hidden", background: "rgba(0,0,0,0.5)", border: "1px solid rgba(255,255,255,0.15)" }}>
+              <video
+                ref={remoteVideoRef}
+                autoPlay
+                playsInline
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+              />
+              {sig.callState !== "active" && (
+                <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.5)", color: "rgba(255,255,255,0.7)", fontSize: 14, flexDirection: "column", gap: 8 }}>
+                  <div style={{ fontSize: 32 }}>⏳</div>
+                  <div>Connexion...</div>
+                </div>
+              )}
+            </div>
 
-            {/* Fallback shown when no stream yet or error */}
-            {(!callActive || mediaError) && (
-              <div style={{
-                position: "absolute", inset: 0,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                flexDirection: "column", gap: 8,
-                background: "rgba(0,0,0,0.6)",
-                color: "rgba(255,255,255,0.7)", fontSize: 13, textAlign: "center", padding: 16,
-              }}>
-                {mediaError
-                  ? <><div style={{ fontSize: 32 }}>📵</div><div>{mediaError}</div></>
-                  : <><div style={{ fontSize: 32 }}>⏳</div><div>Connexion...</div></>
-                }
-              </div>
-            )}
-
-            {/* Muted mic overlay */}
-            {callMuted && (
-              <div style={{ position: "absolute", bottom: 8, left: 8, background: "rgba(244,67,54,0.85)", borderRadius: 12, padding: "2px 8px", fontSize: 11, color: "#fff", fontWeight: 600 }}>
-                🔇
-              </div>
-            )}
-            {/* Speaker indicator */}
-            {callSpeaker && (
-              <div style={{ position: "absolute", top: 8, right: 8, background: "rgba(66,183,42,0.85)", borderRadius: 12, padding: "2px 8px", fontSize: 11, color: "#fff", fontWeight: 600 }}>
-                🔊 HP
-              </div>
-            )}
-            {/* Camera label */}
-            <div style={{ position: "absolute", top: 8, left: 8, background: "rgba(0,0,0,0.5)", borderRadius: 10, padding: "2px 8px", fontSize: 10, color: "rgba(255,255,255,0.8)" }}>
-              {cameraFront ? "Frontale" : "Arrière"}
+            {/* Local (corner) */}
+            <div style={{ position: "absolute", bottom: 10, right: 10, width: 90, height: 120, borderRadius: 10, overflow: "hidden", border: "2px solid rgba(255,255,255,0.4)", background: "rgba(0,0,0,0.6)" }}>
+              <video
+                ref={localVideoRef}
+                autoPlay
+                playsInline
+                muted
+                style={{
+                  width: "100%", height: "100%", objectFit: "cover", display: "block",
+                  transform: sig.cameraFront ? "scaleX(-1)" : "scaleX(1)",
+                }}
+              />
             </div>
           </div>
         )}
 
-        {/* Bottom: controls */}
+        {/* Controls */}
         <div style={{ width: "100%" }}>
           <div style={{ display: "flex", justifyContent: "center", gap: 20, marginBottom: 32 }}>
-            {/* Muet */}
-            <div onClick={toggleMute} style={{ textAlign: "center", cursor: "pointer" }}>
-              <div style={{
-                width: 56, height: 56, borderRadius: "50%", position: "relative",
-                background: callMuted ? "rgba(244,67,54,0.85)" : "rgba(255,255,255,0.15)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 22, margin: "0 auto 6px", border: `2px solid ${callMuted ? "#F44336" : "rgba(255,255,255,0.2)"}`,
-                transition: "all 0.2s",
-              }}>
-                {callMuted ? "🔇" : "🎙️"}
-                {callMuted && <div style={{ position: "absolute", bottom: -2, right: -2, width: 16, height: 16, background: "#F44336", borderRadius: "50%", border: "2px solid #1a1a2e", fontSize: 9, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>✕</div>}
-              </div>
-              <div style={{ color: callMuted ? "#FF6B6B" : "rgba(255,255,255,0.7)", fontSize: 11, fontWeight: callMuted ? 700 : 400 }}>{callMuted ? "Activé" : "Muet"}</div>
-            </div>
-
-            {/* Ajouter */}
-            <div onClick={() => setShowAddContact(true)} style={{ textAlign: "center", cursor: "pointer" }}>
+            {/* Mute */}
+            <div onClick={() => sig.toggleMute()} style={{ textAlign: "center", cursor: "pointer" }}>
               <div style={{
                 width: 56, height: 56, borderRadius: "50%",
-                background: addedContacts.length > 0 ? "rgba(66,183,42,0.3)" : "rgba(255,255,255,0.15)",
+                background: sig.isMuted ? "rgba(244,67,54,0.85)" : "rgba(255,255,255,0.15)",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 22, margin: "0 auto 6px", border: `2px solid ${addedContacts.length > 0 ? "#42B72A" : "rgba(255,255,255,0.2)"}`,
-                transition: "all 0.2s", position: "relative",
-              }}>
-                👥
-                {addedContacts.length > 0 && (
-                  <div style={{ position: "absolute", top: -4, right: -4, width: 18, height: 18, background: "#42B72A", borderRadius: "50%", border: "2px solid #1a1a2e", fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700 }}>{addedContacts.length}</div>
-                )}
-              </div>
-              <div style={{ color: addedContacts.length > 0 ? "#42B72A" : "rgba(255,255,255,0.7)", fontSize: 11, fontWeight: addedContacts.length > 0 ? 700 : 400 }}>Ajouter</div>
-            </div>
-
-            {/* Haut-parleur */}
-            <div onClick={toggleSpeaker} style={{ textAlign: "center", cursor: "pointer" }}>
-              <div style={{
-                width: 56, height: 56, borderRadius: "50%",
-                background: callSpeaker ? "rgba(24,119,242,0.85)" : "rgba(255,255,255,0.15)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 22, margin: "0 auto 6px", border: `2px solid ${callSpeaker ? "#1877F2" : "rgba(255,255,255,0.2)"}`,
+                fontSize: 22, margin: "0 auto 6px",
+                border: `2px solid ${sig.isMuted ? "#F44336" : "rgba(255,255,255,0.2)"}`,
                 transition: "all 0.2s",
               }}>
-                {callSpeaker ? "🔊" : "🔈"}
+                {sig.isMuted ? "🔇" : "🎙️"}
               </div>
-              <div style={{ color: callSpeaker ? "#64B5F6" : "rgba(255,255,255,0.7)", fontSize: 11, fontWeight: callSpeaker ? 700 : 400 }}>
-                {callSpeaker ? "Activé" : "Haut-parleur"}
+              <div style={{ color: sig.isMuted ? "#FF6B6B" : "rgba(255,255,255,0.7)", fontSize: 11, fontWeight: sig.isMuted ? 700 : 400 }}>
+                {sig.isMuted ? "Activé" : "Muet"}
               </div>
             </div>
 
-            {/* Retourner (vidéo seulement) */}
-            {overlay === "video" && (
-              <div onClick={flipCamera} style={{ textAlign: "center", cursor: "pointer" }}>
+            {/* Flip camera (video only) */}
+            {isVideo && (
+              <div onClick={() => sig.flipCamera()} style={{ textAlign: "center", cursor: "pointer" }}>
                 <div style={{
                   width: 56, height: 56, borderRadius: "50%",
                   background: "rgba(255,255,255,0.15)",
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 22, margin: "0 auto 6px", border: "2px solid rgba(255,255,255,0.2)",
-                  transition: "transform 0.3s",
-                  transform: cameraFlipping ? "rotate(180deg)" : "rotate(0deg)",
-                }}>
-                  🔁
+                  fontSize: 22, margin: "0 auto 6px",
+                  border: "2px solid rgba(255,255,255,0.2)",
+                }}>🔁</div>
+                <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11 }}>
+                  {sig.cameraFront ? "Frontale" : "Arrière"}
                 </div>
-                <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11 }}>Retourner</div>
               </div>
             )}
+
+            {/* Speaker placeholder */}
+            <div style={{ textAlign: "center", opacity: 0.5 }}>
+              <div style={{
+                width: 56, height: 56, borderRadius: "50%",
+                background: "rgba(255,255,255,0.15)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 22, margin: "0 auto 6px",
+                border: "2px solid rgba(255,255,255,0.2)",
+              }}>🔊</div>
+              <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11 }}>HP</div>
+            </div>
           </div>
 
           {/* Hang up */}
           <div style={{ display: "flex", justifyContent: "center" }}>
-            <div onClick={endCall} style={{
+            <div onClick={() => sig.endCall()} style={{
               width: 68, height: 68, borderRadius: "50%", background: "#F44336",
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 28, cursor: "pointer", boxShadow: "0 4px 16px rgba(244,67,54,0.5)",
+              fontSize: 28, cursor: "pointer",
+              boxShadow: "0 4px 16px rgba(244,67,54,0.5)",
             }}>📵</div>
           </div>
         </div>
@@ -518,19 +349,19 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
     );
   }
 
+  /* ══════════════════════════════════════════════════════════════
+     INFO OVERLAY
+  ══════════════════════════════════════════════════════════════ */
   if (activeConv && activeUser && overlay === "info") {
     return (
       <div style={{
         position: "fixed", top: 56, bottom: 60, left: 0, right: 0,
         background: "var(--fb-bg)", zIndex: 10, overflowY: "auto",
       }}>
-        {/* Header */}
         <div style={{ background: "var(--fb-white)", padding: "12px 16px", borderBottom: "1px solid var(--fb-divider)", display: "flex", alignItems: "center", gap: 12 }}>
           <button onClick={() => setOverlay("none")} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "var(--fb-blue)" }}>←</button>
           <div style={{ fontWeight: 700, fontSize: 17 }}>Infos du contact</div>
         </div>
-
-        {/* Avatar + name */}
         <div style={{ background: "var(--fb-white)", padding: "28px 20px 20px", textAlign: "center", borderBottom: "1px solid var(--fb-divider)" }}>
           <div style={{ position: "relative", display: "inline-block", marginBottom: 12 }}>
             <div className="avatar" style={{ width: 88, height: 88, fontSize: 32, background: activeUser.color }}>{activeUser.initials}</div>
@@ -538,16 +369,11 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
           </div>
           <div style={{ fontWeight: 900, fontSize: 22, marginBottom: 4 }}>{activeUser.name}</div>
           <div style={{ fontSize: 14, color: "#42B72A", fontWeight: 700 }}>🟢 En ligne</div>
-          <div style={{ fontSize: 13, color: "var(--fb-text-secondary)", marginTop: 4 }}>
-            📍 Abidjan, Côte d'Ivoire
-          </div>
-          {/* Quick actions */}
           <div style={{ display: "flex", justifyContent: "center", gap: 16, marginTop: 16 }}>
             {[
               { icon: "💬", label: "Message", action: () => setOverlay("none") },
-              { icon: "📞", label: "Appel", action: () => startCall("calling") },
-              { icon: "📹", label: "Vidéo", action: () => startCall("video") },
-              { icon: "👤", label: "Profil", action: () => {} },
+              { icon: "📞", label: "Appel", action: () => { setOverlay("none"); sig.startCall(activeConv, "audio"); } },
+              { icon: "📹", label: "Vidéo",  action: () => { setOverlay("none"); sig.startCall(activeConv, "video"); } },
             ].map(a => (
               <div key={a.label} onClick={a.action} style={{ cursor: "pointer", textAlign: "center" }}>
                 <div style={{ width: 48, height: 48, borderRadius: "50%", background: "var(--fb-blue)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, margin: "0 auto 6px" }}>{a.icon}</div>
@@ -556,15 +382,13 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
             ))}
           </div>
         </div>
-
-        {/* Info rows */}
         <div style={{ background: "var(--fb-white)", marginTop: 8, borderTop: "1px solid var(--fb-divider)", borderBottom: "1px solid var(--fb-divider)" }}>
           {[
-            { icon: "📧", label: "Email", value: `${activeUser.name.toLowerCase().replace(" ", ".")}@mail.com` },
-            { icon: "📞", label: "Téléphone", value: "+225 07 XX XX XX XX" },
-            { icon: "🌍", label: "Pays", value: "Côte d'Ivoire 🇨🇮" },
-            { icon: "🏅", label: "Score de confiance", value: "Niveau Or · 88%" },
-            { icon: "💼", label: "Profession", value: "Entrepreneur" },
+            { icon: "📧", label: "Email",            value: `${activeUser.name.toLowerCase().replace(" ", ".")}@mail.com` },
+            { icon: "📞", label: "Téléphone",         value: "+225 07 XX XX XX XX" },
+            { icon: "🌍", label: "Pays",              value: "Côte d'Ivoire 🇨🇮" },
+            { icon: "🏅", label: "Score de confiance",value: "Niveau Or · 88%" },
+            { icon: "💼", label: "Profession",        value: "Entrepreneur" },
           ].map((row, i) => (
             <div key={i} style={{ display: "flex", gap: 14, padding: "13px 16px", borderBottom: "1px solid var(--fb-divider)", alignItems: "center" }}>
               <span style={{ fontSize: 20 }}>{row.icon}</span>
@@ -575,14 +399,12 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
             </div>
           ))}
         </div>
-
-        {/* Actions */}
         <div style={{ marginTop: 8 }}>
           {[
-            { icon: "🔕", label: "Couper les notifications", color: "var(--fb-text)" },
-            { icon: "🔍", label: "Rechercher dans la conversation", color: "var(--fb-text)" },
-            { icon: "🗑️", label: "Supprimer la conversation", color: "#F44336" },
-            { icon: "🚫", label: "Bloquer ce contact", color: "#F44336" },
+            { icon: "🔕", label: "Couper les notifications",          color: "var(--fb-text)" },
+            { icon: "🔍", label: "Rechercher dans la conversation",    color: "var(--fb-text)" },
+            { icon: "🗑️", label: "Supprimer la conversation",         color: "#F44336" },
+            { icon: "🚫", label: "Bloquer ce contact",                color: "#F44336" },
           ].map((a, i) => (
             <div key={i} style={{ background: "var(--fb-white)", padding: "14px 16px", borderBottom: "1px solid var(--fb-divider)", display: "flex", alignItems: "center", gap: 14, cursor: "pointer" }}>
               <span style={{ fontSize: 20 }}>{a.icon}</span>
@@ -594,8 +416,9 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
     );
   }
 
-  /* ── CONVERSATION VIEW ───────────────────────────────────── */
-
+  /* ══════════════════════════════════════════════════════════════
+     CONVERSATION VIEW
+  ══════════════════════════════════════════════════════════════ */
   if (activeConv && activeUser) {
     return (
       <div style={{
@@ -620,16 +443,15 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
               {typing ? "⌨️ En train d'écrire..." : "En ligne"}
             </div>
           </div>
-          {/* Action buttons */}
           <div style={{ display: "flex", gap: 4 }}>
             <button
-              onClick={() => startCall("calling")}
+              onClick={() => sig.startCall(activeConv, "audio")}
               title="Appel audio"
               style={{ background: "var(--fb-bg)", border: "none", borderRadius: "50%", width: 40, height: 40, cursor: "pointer", fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>
               📞
             </button>
             <button
-              onClick={() => startCall("video")}
+              onClick={() => sig.startCall(activeConv, "video")}
               title="Appel vidéo"
               style={{ background: "var(--fb-bg)", border: "none", borderRadius: "50%", width: 40, height: 40, cursor: "pointer", fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>
               📹
@@ -643,7 +465,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
           </div>
         </div>
 
-        {/* Messages */}
+        {/* Messages list */}
         <div style={{ flex: 1, overflowY: "auto", padding: "14px 12px", display: "flex", flexDirection: "column", gap: 6 }}>
           <div style={{ textAlign: "center", fontSize: 12, color: "var(--fb-text-secondary)", background: "rgba(255,255,255,0.8)", borderRadius: 20, padding: "4px 14px", margin: "0 auto 8px" }}>
             Aujourd'hui
@@ -712,14 +534,14 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
             <div style={{ fontWeight: 700, marginBottom: 14, fontSize: 14 }}>Joindre un fichier</div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10 }}>
               {[
-                { icon: "📷", label: "Photo", action: () => { sendMsg("📷 Photo envoyée", { type: "image", label: "photo.jpg" }); setOverlay("none"); } },
+                { icon: "📷", label: "Photo",    action: () => { sendMsg("📷 Photo envoyée", { type: "image", label: "photo.jpg" }); setOverlay("none"); } },
                 { icon: "📄", label: "Document", action: () => { sendMsg("📄 Document envoyé", { type: "doc", label: "document.pdf" }); setOverlay("none"); } },
                 { icon: "📍", label: "Position", action: () => { sendMsg("📍 Ma position actuelle", { type: "location", label: "Abidjan, Cocody" }); setOverlay("none"); } },
-                { icon: "🎵", label: "Audio", action: () => { sendMsg("🎵 Message vocal (0:08)", { type: "audio", label: "vocal_0008.m4a" }); setOverlay("none"); } },
-                { icon: "🛍️", label: "Produit", action: () => { sendMsg("🛍️ Article partagé : Tissu Wax — 4 500 FCFA"); setOverlay("none"); } },
+                { icon: "🎵", label: "Audio",    action: () => { sendMsg("🎵 Message vocal (0:08)", { type: "audio", label: "vocal_0008.m4a" }); setOverlay("none"); } },
+                { icon: "🛍️", label: "Produit",  action: () => { sendMsg("🛍️ Article partagé : Tissu Wax — 4 500 FCFA"); setOverlay("none"); } },
                 { icon: "💳", label: "Paiement", action: () => { sendMsg("💸 Demande de paiement : 15 000 FCFA"); setOverlay("none"); } },
-                { icon: "📅", label: "RDV", action: () => { sendMsg("📅 Rendez-vous proposé : Demain à 10h00"); setOverlay("none"); } },
-                { icon: "📊", label: "Sondage", action: () => { sendMsg("📊 Sondage : Quel créneau vous convient ?"); setOverlay("none"); } },
+                { icon: "📅", label: "RDV",      action: () => { sendMsg("📅 Rendez-vous proposé : Demain à 10h00"); setOverlay("none"); } },
+                { icon: "📊", label: "Sondage",  action: () => { sendMsg("📊 Sondage : Quel créneau vous convient ?"); setOverlay("none"); } },
               ].map(item => (
                 <div key={item.label} onClick={item.action} style={{ textAlign: "center", cursor: "pointer" }}>
                   <div style={{ width: 52, height: 52, background: "var(--fb-bg)", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, margin: "0 auto 6px" }}>{item.icon}</div>
@@ -764,7 +586,9 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
     );
   }
 
-  /* ── CONVERSATIONS LIST ──────────────────────────────────── */
+  /* ══════════════════════════════════════════════════════════════
+     CONVERSATIONS LIST
+  ══════════════════════════════════════════════════════════════ */
   return (
     <div style={{ maxWidth: 600, margin: "0 auto" }}>
       <div style={{ background: "var(--fb-white)", padding: "12px 16px", borderBottom: "1px solid var(--fb-divider)" }}>
