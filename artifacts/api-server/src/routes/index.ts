@@ -14,6 +14,7 @@ import streamRouter from "./stream";
 import giftsRouter from "./gifts";
 import tokensRouter from "./tokens";
 import creatorRouter from "./creator";
+import communityRouter from "./community";
 
 const router: IRouter = Router();
 
@@ -32,5 +33,6 @@ router.use(streamRouter);
 router.use(giftsRouter);
 router.use(tokensRouter);
 router.use(creatorRouter);
+router.use(communityRouter);
 
 export default router;

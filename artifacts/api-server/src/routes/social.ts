@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db, postsTable, postLikesTable, messagesTable, usersTable, storiesTable } from "@workspace/db";
-import { eq, and, or, desc, sql, gt } from "drizzle-orm";
+import { eq, and, or, desc, sql, gt, ilike } from "drizzle-orm";
 import { CreatePostBody, GetPostParams, DeletePostParams, LikePostParams, LikePostBody, SendMessageBody, GetConversationParams, ListPostsQueryParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
 import { deleteObject, extractKeyFromUrl, ownerIdFromKey } from "../lib/r2";
@@ -11,8 +11,13 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
   const params = ListPostsQueryParams.safeParse(req.query);
   const page = params.success ? (params.data.page ?? 1) : 1;
   const authorId = req.query.authorId ? Number(req.query.authorId) : null;
-  const limit = 20;
+  const search = typeof req.query.search === "string" && req.query.search.trim() ? req.query.search.trim() : null;
+  const limit = search ? 10 : 20;
   const offset = (page - 1) * limit;
+
+  const conditions = [];
+  if (authorId) conditions.push(eq(postsTable.authorId, authorId));
+  if (search) conditions.push(ilike(postsTable.content, `%${search}%`));
 
   const rows = await db
     .select({
@@ -31,7 +36,7 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
     })
     .from(postsTable)
     .leftJoin(usersTable, eq(postsTable.authorId, usersTable.id))
-    .where(authorId ? eq(postsTable.authorId, authorId) : undefined)
+    .where(conditions.length > 0 ? and(...conditions) : undefined)
     .orderBy(desc(postsTable.createdAt))
     .limit(limit).offset(offset);
 

@@ -3,9 +3,13 @@ import {
   apiSearchUsers,
   apiGetProducts,
   apiGetJobs,
+  apiSearchPosts,
+  apiSearchGroups,
   type PublicUserWithStatus,
   type ApiProduct,
   type ApiJob,
+  type FeedPost,
+  type ApiGroup,
 } from "../lib/api";
 
 interface Props {
@@ -21,17 +25,23 @@ interface Props {
 const AVATAR_COLORS = ["#1877F2","#E91E63","#9C27B0","#F57C00","#388E3C","#D32F2F","#00838F","#5D4037"];
 function colorForId(id: number) { return AVATAR_COLORS[id % AVATAR_COLORS.length]; }
 
+function snippet(text: string, maxLen = 80): string {
+  return text.length > maxLen ? text.slice(0, maxLen).trimEnd() + "…" : text;
+}
+
 export default function SearchSuggestionsDropdown({ query, onClose, navigate, recentSearches, onSelectRecent, onRemoveRecent, onCommitSearch }: Props) {
   const [users, setUsers]       = useState<PublicUserWithStatus[]>([]);
   const [products, setProducts] = useState<ApiProduct[]>([]);
   const [jobs, setJobs]         = useState<ApiJob[]>([]);
+  const [posts, setPosts]       = useState<FeedPost[]>([]);
+  const [groups, setGroups]     = useState<ApiGroup[]>([]);
   const [loading, setLoading]   = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (query.length < 2) {
-      setUsers([]); setProducts([]); setJobs([]);
+      setUsers([]); setProducts([]); setJobs([]); setPosts([]); setGroups([]);
       setLoading(false);
       return;
     }
@@ -45,18 +55,22 @@ export default function SearchSuggestionsDropdown({ query, onClose, navigate, re
       abortRef.current = ctrl;
 
       try {
-        const [u, p, j] = await Promise.all([
+        const [u, p, j, ps, g] = await Promise.all([
           apiSearchUsers(query),
           apiGetProducts({ search: query }),
           apiGetJobs({ search: query }),
+          apiSearchPosts(query),
+          apiSearchGroups(query),
         ]);
         if (ctrl.signal.aborted) return;
         setUsers(u.slice(0, 4));
         setProducts(p.slice(0, 4));
         setJobs(j.slice(0, 4));
+        setPosts(ps.slice(0, 3));
+        setGroups(g.slice(0, 3));
       } catch {
         if (ctrl.signal.aborted) return;
-        setUsers([]); setProducts([]); setJobs([]);
+        setUsers([]); setProducts([]); setJobs([]); setPosts([]); setGroups([]);
       } finally {
         if (!ctrl.signal.aborted) setLoading(false);
       }
@@ -67,7 +81,7 @@ export default function SearchSuggestionsDropdown({ query, onClose, navigate, re
     };
   }, [query]);
 
-  const hasResults = users.length > 0 || products.length > 0 || jobs.length > 0;
+  const hasResults = users.length > 0 || products.length > 0 || jobs.length > 0 || posts.length > 0 || groups.length > 0;
   const noResults  = !loading && query.length >= 2 && !hasResults;
 
   const go = (path: string) => {
@@ -157,6 +171,58 @@ export default function SearchSuggestionsDropdown({ query, onClose, navigate, re
               </button>
             );
           })}
+        </div>
+      )}
+
+      {/* Posts */}
+      {!loading && posts.length > 0 && (
+        <div className="search-dropdown-section">
+          <div className="search-dropdown-section-title">📝 Publications</div>
+          {posts.map(p => (
+            <button
+              key={p.id}
+              className="search-dropdown-item"
+              onClick={goSearch}
+            >
+              <div className="search-dropdown-avatar" style={{ background: "#E8F5E9" }}>
+                {p.authorAvatarUrl
+                  ? <img src={p.authorAvatarUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  : <span style={{ fontSize: 18 }}>📝</span>
+                }
+              </div>
+              <div className="search-dropdown-item-info">
+                <div className="search-dropdown-item-name" style={{ fontSize: 13 }}>
+                  {snippet(p.content)}
+                </div>
+                <div className="search-dropdown-item-sub">par {p.authorName}</div>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Groups / Communities */}
+      {!loading && groups.length > 0 && (
+        <div className="search-dropdown-section">
+          <div className="search-dropdown-section-title">🏘️ Groupes</div>
+          {groups.map(g => (
+            <button
+              key={g.id}
+              className="search-dropdown-item"
+              onClick={goSearch}
+            >
+              <div className="search-dropdown-avatar" style={{ background: "#F3E5F5" }}>
+                <span style={{ fontSize: 20 }}>{g.emoji}</span>
+              </div>
+              <div className="search-dropdown-item-info">
+                <div className="search-dropdown-item-name">{g.name}</div>
+                <div className="search-dropdown-item-sub">
+                  {g.membersCount} membre{g.membersCount !== 1 ? "s" : ""}
+                  {g.country ? ` · ${g.country}` : ""}
+                </div>
+              </div>
+            </button>
+          ))}
         </div>
       )}
 

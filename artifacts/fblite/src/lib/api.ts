@@ -183,6 +183,33 @@ export async function apiGetPosts(page = 1): Promise<FeedPost[]> {
   return res.json() as Promise<FeedPost[]>;
 }
 
+export async function apiSearchPosts(search: string): Promise<FeedPost[]> {
+  if (!search.trim()) return [];
+  const res = await apiFetch(`/posts?search=${encodeURIComponent(search.trim())}`);
+  if (!res.ok) return [];
+  return res.json() as Promise<FeedPost[]>;
+}
+
+export interface ApiGroup {
+  id: number;
+  name: string;
+  description: string | null;
+  category: string;
+  emoji: string;
+  coverUrl: string | null;
+  country: string | null;
+  privacy: string;
+  membersCount: number;
+  createdAt: string;
+}
+
+export async function apiSearchGroups(search: string): Promise<ApiGroup[]> {
+  if (!search.trim()) return [];
+  const res = await apiFetch(`/groups?search=${encodeURIComponent(search.trim())}`);
+  if (!res.ok) return [];
+  return res.json() as Promise<ApiGroup[]>;
+}
+
 export async function apiCreatePost(
   content: string,
   imageUrl?: string,
