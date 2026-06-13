@@ -2,7 +2,7 @@ import app from "./app";
 import { logger } from "./lib/logger";
 import { db } from "@workspace/db";
 import { liveStreamsTable } from "@workspace/db/schema";
-import { eq, and, lt, or, isNotNull, sql } from "drizzle-orm";
+import { eq, and, lt, or, isNotNull, isNull, sql } from "drizzle-orm";
 import { deleteLiveInput } from "./lib/cloudflare-stream";
 
 const rawPort = process.env["PORT"];
@@ -35,13 +35,12 @@ async function autoStopStaleLives() {
   const sixtyMinAgo = new Date(now.getTime() - 60 * 60 * 1000);
 
   try {
-    // Find lives to stop:
-    // • last_viewer_at IS NOT NULL AND last_viewer_at < now-5min:
-    //   A heartbeat has been received at some point, but not in the last 5 min.
-    //   Both broadcaster keep-alive and real viewer heartbeats set last_viewer_at,
-    //   so this correctly fires when everyone (broadcaster + viewers) has gone quiet.
-    // • started_at < now - max_duration_minutes:
-    //   Per-stream configurable max duration (default 60 min) stored in DB.
+    // Find lives to stop — three independent conditions (any one is sufficient):
+    // 1. Never had any viewer AND started > 5 min ago (no audience from the start).
+    // 2. Had viewers, all left, and last heartbeat was > 5 min ago
+    //    (viewer_count = 0 guards against premature stop if viewers are still present).
+    // 3. Running longer than the per-row max_duration_minutes (default 60 min).
+    // Note: broadcaster does NOT send heartbeats; last_viewer_at reflects viewer-only presence.
     const staleLives = await db
       .select({ id: liveStreamsTable.id, liveInputId: liveStreamsTable.liveInputId })
       .from(liveStreamsTable)
@@ -49,7 +48,15 @@ async function autoStopStaleLives() {
         and(
           eq(liveStreamsTable.status, "live"),
           or(
-            and(isNotNull(liveStreamsTable.lastViewerAt), lt(liveStreamsTable.lastViewerAt, fiveMinAgo)),
+            // Condition 1: never had a viewer and started > 5 min ago
+            and(isNull(liveStreamsTable.lastViewerAt), lt(liveStreamsTable.startedAt, fiveMinAgo)),
+            // Condition 2: had viewers but viewer_count reached 0 and no heartbeat in > 5 min
+            and(
+              eq(liveStreamsTable.viewerCount, 0),
+              isNotNull(liveStreamsTable.lastViewerAt),
+              lt(liveStreamsTable.lastViewerAt, fiveMinAgo),
+            ),
+            // Condition 3: max duration per DB field
             sql`${liveStreamsTable.startedAt} < NOW() - (${liveStreamsTable.maxDurationMinutes} * INTERVAL '1 minute')`,
           ),
         ),

@@ -138,27 +138,6 @@ export default function LiveStreamPage() {
       .catch(() => {});
   }, []);
 
-  // Broadcaster keep-alive: sends POST /heartbeat every 30 s while streaming.
-  // This only refreshes last_viewer_at (no viewer_count change), so the auto-stop
-  // cron can detect an abandoned live 5 min after the last heartbeat.
-  // Real viewers send their own heartbeats from the viewer page (follow-up #7).
-  useEffect(() => {
-    if (!isLive || !cfStream.session?.id) return;
-    const dbId = cfStream.session.id;
-    const token = getBpToken();
-    const headers: Record<string, string> = {};
-    if (token) headers["Authorization"] = `Bearer ${token}`;
-    const beat = () =>
-      fetch(`/api/stream/live/${dbId}/heartbeat`, { method: "POST", headers }).catch(() => {});
-    beat();
-    const interval = setInterval(beat, 30_000);
-    return () => {
-      clearInterval(interval);
-      // Signal departure so the cron can react sooner
-      fetch(`/api/stream/live/${dbId}/heartbeat`, { method: "DELETE", headers }).catch(() => {});
-    };
-  }, [isLive, cfStream.session?.id]);
-
   useEffect(() => {
     commentsEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [comments]);
