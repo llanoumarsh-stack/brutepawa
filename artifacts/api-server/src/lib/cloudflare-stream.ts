@@ -1,4 +1,4 @@
-const CF_ACCOUNT_ID = process.env.R2_ACCOUNT_ID!;
+const CF_ACCOUNT_ID = (process.env.CF_ACCOUNT_ID ?? process.env.R2_ACCOUNT_ID)!;
 const CF_STREAM_TOKEN = process.env.CF_STREAM_TOKEN!;
 
 const BASE = `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/stream`;

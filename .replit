@@ -47,3 +47,4 @@ channel = "stable-25_05"
 
 [userenv.shared]
 APP_DATABASE_URL = "postgresql://postgres.siffrjlejdhycchozitd:nk38fkjCjsuVyLSv@aws-0-eu-west-1.pooler.supabase.com:5432/postgres"
+CF_ACCOUNT_ID = "09e1ef3aa248da4402f2dd80e146d674"
