@@ -26,6 +26,14 @@ interface FloatingGift {
   x: number;
 }
 
+interface FeedEntry {
+  id: number;
+  senderName: string;
+  giftEmoji: string;
+  giftName: string;
+  fading: boolean;
+}
+
 interface Props {
   streamId: number;
 }
@@ -39,7 +47,11 @@ export default function LiveWatchPage({ streamId }: Props) {
   const [topDonors, setTopDonors]     = useState<TopDonor[]>([]);
   const [showGiftPicker, setShowGiftPicker] = useState(false);
   const [floatingGifts, setFloatingGifts]  = useState<FloatingGift[]>([]);
-  const floatIdRef = useRef(0);
+  const [feedEntries, setFeedEntries]      = useState<FeedEntry[]>([]);
+  const floatIdRef  = useRef(0);
+  const feedIdRef   = useRef(0);
+  const feedBottomRef = useRef<HTMLDivElement>(null);
+  const sseRef      = useRef<EventSource | null>(null);
 
   useViewerPresence(stream?.id ?? null);
 
@@ -86,6 +98,56 @@ export default function LiveWatchPage({ streamId }: Props) {
     const iv = setInterval(load, 15_000);
     return () => clearInterval(iv);
   }, [stream]);
+
+  // SSE — subscribe to gift events for the live feed
+  useEffect(() => {
+    if (!stream) return;
+
+    const es = new EventSource(`/api/stream/live/${stream.id}/events`);
+    sseRef.current = es;
+
+    es.onmessage = (e) => {
+      try {
+        const data = JSON.parse(e.data) as {
+          senderName: string;
+          giftEmoji: string;
+          giftName: string;
+        };
+        const fid = ++feedIdRef.current;
+        const entry: FeedEntry = {
+          id: fid,
+          senderName: data.senderName || "Anonyme",
+          giftEmoji:  data.giftEmoji  || "🎁",
+          giftName:   data.giftName   || "Cadeau",
+          fading: false,
+        };
+        setFeedEntries(prev => [...prev.slice(-19), entry]);
+
+        spawnFloat(entry.giftEmoji);
+
+        // Start fade-out after 3.5 s, remove after 4.5 s
+        setTimeout(() => {
+          setFeedEntries(prev =>
+            prev.map(fe => fe.id === fid ? { ...fe, fading: true } : fe)
+          );
+        }, 3500);
+        setTimeout(() => {
+          setFeedEntries(prev => prev.filter(fe => fe.id !== fid));
+        }, 4500);
+      } catch { /* ignore parse errors */ }
+    };
+
+    return () => {
+      es.close();
+      sseRef.current = null;
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stream?.id]);
+
+  // Auto-scroll feed to newest entry
+  useEffect(() => {
+    feedBottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [feedEntries]);
 
   const spawnFloat = (emoji: string) => {
     const id = ++floatIdRef.current;
@@ -168,6 +230,56 @@ export default function LiveWatchPage({ streamId }: Props) {
             {g.emoji}
           </div>
         ))}
+
+        {/* Gift event feed overlay */}
+        {feedEntries.length > 0 && (
+          <div
+            style={{
+              position: "absolute",
+              bottom: 80,
+              left: 12,
+              width: "calc(100% - 24px)",
+              maxHeight: 160,
+              overflowY: "auto",
+              overflowX: "hidden",
+              display: "flex",
+              flexDirection: "column",
+              gap: 4,
+              pointerEvents: "none",
+              zIndex: 40,
+              scrollbarWidth: "none",
+            }}
+          >
+            {feedEntries.map(fe => (
+              <div
+                key={fe.id}
+                style={{
+                  display: "inline-flex",
+                  alignSelf: "flex-start",
+                  alignItems: "center",
+                  gap: 6,
+                  background: "rgba(0,0,0,0.55)",
+                  backdropFilter: "blur(4px)",
+                  borderRadius: 20,
+                  padding: "4px 12px 4px 8px",
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: "#fff",
+                  whiteSpace: "nowrap",
+                  transition: "opacity 1s ease",
+                  opacity: fe.fading ? 0 : 1,
+                  animation: "feedSlideIn 0.3s ease-out",
+                }}
+              >
+                <span style={{ fontSize: 18 }}>{fe.giftEmoji}</span>
+                <span style={{ color: "#FFD700" }}>{fe.senderName}</span>
+                <span style={{ fontWeight: 400, color: "rgba(255,255,255,0.8)" }}>a envoyé</span>
+                <span style={{ color: "#E91E8C" }}>{fe.giftName}</span>
+              </div>
+            ))}
+            <div ref={feedBottomRef} />
+          </div>
+        )}
       </div>
 
       {/* Top Donors bar (shown if there are any) */}
@@ -251,6 +363,10 @@ export default function LiveWatchPage({ streamId }: Props) {
           0%   { transform: translateY(0) scale(1); opacity: 1; }
           80%  { transform: translateY(-160px) scale(1.3); opacity: 0.9; }
           100% { transform: translateY(-220px) scale(0.8); opacity: 0; }
+        }
+        @keyframes feedSlideIn {
+          from { transform: translateX(-16px); opacity: 0; }
+          to   { transform: translateX(0);     opacity: 1; }
         }
       `}</style>
     </div>
