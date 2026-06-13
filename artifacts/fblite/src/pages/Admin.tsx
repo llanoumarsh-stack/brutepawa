@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "../router";
 import { STATS_BY_COUNTRY, formatNumber } from "../data/mock";
 import { isAdmin } from "../lib/admin";
-import { apiGetUsers, type PublicUser } from "../lib/api";
+import { apiGetUsers, type PublicUser, apiAdminGetWithdrawals, apiAdminPatchWithdrawal, type AdminWithdrawal } from "../lib/api";
 
-type AdminSection = "dashboard" | "users" | "content" | "jobs" | "reports" | "monetization" | "settings";
+type AdminSection = "dashboard" | "users" | "content" | "jobs" | "reports" | "monetization" | "withdrawals" | "settings";
+
+type WithdrawalStatus = "all" | "pending" | "validated" | "paid" | "rejected";
 
 const REPORTS = [
   { id: 1, type: "Contenu inapproprié", reporter: "Aminata Diallo", target: "Publication #231", country: "🇸🇳 Sénégal", date: "Il y a 10 min", status: "En attente" },
@@ -25,6 +27,15 @@ export default function Admin() {
   const [reportStatuses, setReportStatuses] = useState<Record<number, string>>({});
   const [apiUsers, setApiUsers] = useState<PublicUser[]>([]);
 
+  // Withdrawals state
+  const [withdrawals, setWithdrawals] = useState<AdminWithdrawal[]>([]);
+  const [wdFilter, setWdFilter] = useState<WithdrawalStatus>("all");
+  const [wdLoading, setWdLoading] = useState(false);
+  const [wdActing, setWdActing] = useState<number | null>(null);
+  const [rejectModal, setRejectModal] = useState<{ id: number } | null>(null);
+  const [rejectNote, setRejectNote] = useState("");
+  const [wdError, setWdError] = useState<string | null>(null);
+
   const rawUser = localStorage.getItem("fb_user");
   const user = rawUser ? JSON.parse(rawUser) : null;
 
@@ -35,6 +46,29 @@ export default function Admin() {
     }
     apiGetUsers().then(setApiUsers).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (section !== "withdrawals") return;
+    setWdLoading(true);
+    setWdError(null);
+    apiAdminGetWithdrawals(wdFilter === "all" ? undefined : wdFilter)
+      .then(setWithdrawals)
+      .catch(() => setWdError("Impossible de charger les retraits"))
+      .finally(() => setWdLoading(false));
+  }, [section, wdFilter]);
+
+  async function handleWithdrawalAction(id: number, action: "validated" | "paid" | "rejected", note?: string) {
+    setWdActing(id);
+    setWdError(null);
+    try {
+      const updated = await apiAdminPatchWithdrawal(id, action, note);
+      setWithdrawals(ws => ws.map(w => w.id === updated.id ? updated : w));
+    } catch (e) {
+      setWdError(e instanceof Error ? e.message : "Erreur");
+    } finally {
+      setWdActing(null);
+    }
+  }
 
   if (!user || !isAdmin(user.email)) return null;
 
@@ -73,10 +107,11 @@ export default function Admin() {
 
       {/* Nav */}
       <div style={{ background: "var(--fb-white)", padding: "8px", borderBottom: "1px solid var(--fb-divider)", display: "flex", overflowX: "auto", scrollbarWidth: "none", gap: 4 }}>
-        {(["dashboard", "users", "content", "jobs", "reports", "monetization", "settings"] as AdminSection[]).map(id => {
+        {(["dashboard", "users", "content", "jobs", "reports", "monetization", "withdrawals", "settings"] as AdminSection[]).map(id => {
           const labels: Record<AdminSection, [string, string]> = {
             dashboard: ["📊", "Stats"], users: ["👤", "Utilisateurs"], content: ["📝", "Contenus"],
-            jobs: ["💼", "Emplois"], reports: ["⚠️", "Signalements"], monetization: ["💳", "Revenus"], settings: ["⚙️", "Config"]
+            jobs: ["💼", "Emplois"], reports: ["⚠️", "Signalements"], monetization: ["💳", "Revenus"],
+            withdrawals: ["💸", "Retraits"], settings: ["⚙️", "Config"]
           };
           const [emoji, label] = labels[id];
           return (
@@ -349,6 +384,167 @@ export default function Admin() {
                 <div style={{ fontWeight: 900, color: "#42B72A", fontSize: 14, textAlign: "right" }}>{item.revenue}</div>
               </div>
             ))}
+          </>
+        )}
+
+        {/* RETRAITS */}
+        {section === "withdrawals" && (
+          <>
+            <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 16 }}>💸 Retraits créateurs</div>
+
+            {/* Status filter tabs */}
+            <div style={{ display: "flex", gap: 6, marginBottom: 16, flexWrap: "wrap" }}>
+              {([
+                ["all", "Tous"],
+                ["pending", "En attente"],
+                ["validated", "Validés"],
+                ["paid", "Payés"],
+                ["rejected", "Rejetés"],
+              ] as [WithdrawalStatus, string][]).map(([val, label]) => (
+                <button
+                  key={val}
+                  onClick={() => setWdFilter(val)}
+                  style={{
+                    padding: "5px 14px", borderRadius: 20, border: "1px solid var(--fb-border)",
+                    background: wdFilter === val ? "var(--fb-blue)" : "var(--fb-white)",
+                    color: wdFilter === val ? "#fff" : "var(--fb-text)",
+                    fontSize: 13, cursor: "pointer", fontWeight: 600,
+                  }}
+                >{label}</button>
+              ))}
+            </div>
+
+            {wdError && (
+              <div style={{ background: "#ffebee", color: "#c62828", borderRadius: 8, padding: "10px 14px", marginBottom: 12, fontSize: 13, fontWeight: 600 }}>
+                ⚠️ {wdError}
+              </div>
+            )}
+
+            {wdLoading ? (
+              <div style={{ textAlign: "center", padding: 40, color: "var(--fb-text-secondary)", fontSize: 14 }}>Chargement…</div>
+            ) : withdrawals.length === 0 ? (
+              <div style={{ textAlign: "center", padding: 40, color: "var(--fb-text-secondary)", fontSize: 14 }}>Aucun retrait trouvé</div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {withdrawals.map(w => {
+                  const statusColors: Record<string, { bg: string; color: string; label: string }> = {
+                    pending:   { bg: "#FFF8E1", color: "#F57F17", label: "En attente" },
+                    validated: { bg: "#E3F2FD", color: "#1565C0", label: "Validé" },
+                    paid:      { bg: "#E8F5E9", color: "#2E7D32", label: "Payé" },
+                    rejected:  { bg: "#FFEBEE", color: "#C62828", label: "Rejeté" },
+                  };
+                  const sc = statusColors[w.status] ?? statusColors.pending;
+                  const operatorEmoji: Record<string, string> = { orange: "🟠", mtn: "🟡", wave: "🔵" };
+                  const date = new Date(w.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
+                  const isBusy = wdActing === w.id;
+
+                  return (
+                    <div key={w.id} style={{ background: "var(--fb-white)", borderRadius: 10, border: "1px solid var(--fb-divider)", padding: 14 }}>
+                      {/* Header row */}
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                        <div>
+                          <div style={{ fontWeight: 700, fontSize: 15 }}>{w.creatorName || `Créateur #${w.creatorId}`}</div>
+                          <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", marginTop: 2 }}>#{w.id} · {date}</div>
+                        </div>
+                        <span style={{ background: sc.bg, color: sc.color, fontSize: 11, fontWeight: 700, padding: "3px 9px", borderRadius: 20, flexShrink: 0 }}>
+                          {sc.label}
+                        </span>
+                      </div>
+
+                      {/* Amount + operator row */}
+                      <div style={{ display: "flex", gap: 10, marginBottom: 10, flexWrap: "wrap" }}>
+                        <div style={{ background: "var(--fb-bg)", borderRadius: 8, padding: "6px 12px", fontSize: 13, fontWeight: 700 }}>
+                          🪙 {w.tokensAmount.toLocaleString("fr-FR")} jetons
+                        </div>
+                        <div style={{ background: "var(--fb-bg)", borderRadius: 8, padding: "6px 12px", fontSize: 13, fontWeight: 700, color: "#2E7D32" }}>
+                          {w.xofAmount.toLocaleString("fr-FR")} XOF
+                        </div>
+                        <div style={{ background: "var(--fb-bg)", borderRadius: 8, padding: "6px 12px", fontSize: 13 }}>
+                          {operatorEmoji[w.paymentMethod] ?? "📱"} {w.paymentMethod.toUpperCase()} · {w.paymentPhone}
+                        </div>
+                      </div>
+
+                      {/* Admin note if present */}
+                      {w.adminNote && (
+                        <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", marginBottom: 8, fontStyle: "italic" }}>
+                          Note : {w.adminNote}
+                        </div>
+                      )}
+
+                      {/* Actions — only for actionable statuses */}
+                      {w.status === "pending" && (
+                        <div style={{ display: "flex", gap: 8 }}>
+                          <button
+                            disabled={isBusy}
+                            onClick={() => handleWithdrawalAction(w.id, "validated")}
+                            style={{ flex: 1, background: "#1565C0", color: "#fff", border: "none", borderRadius: 6, padding: "8px", fontSize: 13, cursor: "pointer", fontWeight: 700, opacity: isBusy ? 0.6 : 1 }}
+                          >
+                            ✓ Valider
+                          </button>
+                          <button
+                            disabled={isBusy}
+                            onClick={() => { setRejectModal({ id: w.id }); setRejectNote(""); }}
+                            style={{ flex: 1, background: "#F44336", color: "#fff", border: "none", borderRadius: 6, padding: "8px", fontSize: 13, cursor: "pointer", fontWeight: 700, opacity: isBusy ? 0.6 : 1 }}
+                          >
+                            ✗ Rejeter
+                          </button>
+                        </div>
+                      )}
+                      {w.status === "validated" && (
+                        <div style={{ display: "flex", gap: 8 }}>
+                          <button
+                            disabled={isBusy}
+                            onClick={() => handleWithdrawalAction(w.id, "paid")}
+                            style={{ flex: 1, background: "#2E7D32", color: "#fff", border: "none", borderRadius: 6, padding: "8px", fontSize: 13, cursor: "pointer", fontWeight: 700, opacity: isBusy ? 0.6 : 1 }}
+                          >
+                            💰 Marquer payé
+                          </button>
+                          <button
+                            disabled={isBusy}
+                            onClick={() => { setRejectModal({ id: w.id }); setRejectNote(""); }}
+                            style={{ flex: 1, background: "#F44336", color: "#fff", border: "none", borderRadius: 6, padding: "8px", fontSize: 13, cursor: "pointer", fontWeight: 700, opacity: isBusy ? 0.6 : 1 }}
+                          >
+                            ✗ Rejeter
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Reject modal */}
+            {rejectModal && (
+              <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, padding: 20 }}>
+                <div style={{ background: "var(--fb-white)", borderRadius: 14, padding: 24, width: "100%", maxWidth: 380 }}>
+                  <div style={{ fontWeight: 800, fontSize: 16, marginBottom: 4 }}>Rejeter le retrait</div>
+                  <div style={{ fontSize: 13, color: "var(--fb-text-secondary)", marginBottom: 14 }}>
+                    Optionnel : expliquer la raison du rejet (visible par le créateur).
+                  </div>
+                  <textarea
+                    value={rejectNote}
+                    onChange={e => setRejectNote(e.target.value)}
+                    placeholder="Raison du rejet..."
+                    rows={3}
+                    style={{ width: "100%", borderRadius: 8, border: "1px solid var(--fb-border)", padding: "8px 10px", fontSize: 14, resize: "none", boxSizing: "border-box", fontFamily: "inherit" }}
+                  />
+                  <div style={{ display: "flex", gap: 10, marginTop: 14 }}>
+                    <button
+                      onClick={() => setRejectModal(null)}
+                      style={{ flex: 1, background: "var(--fb-bg)", color: "var(--fb-text)", border: "none", borderRadius: 8, padding: "10px", fontSize: 14, cursor: "pointer", fontWeight: 600 }}
+                    >Annuler</button>
+                    <button
+                      onClick={async () => {
+                        await handleWithdrawalAction(rejectModal.id, "rejected", rejectNote.trim() || undefined);
+                        setRejectModal(null);
+                      }}
+                      style={{ flex: 1, background: "#F44336", color: "#fff", border: "none", borderRadius: 8, padding: "10px", fontSize: 14, cursor: "pointer", fontWeight: 700 }}
+                    >Confirmer le rejet</button>
+                  </div>
+                </div>
+              </div>
+            )}
           </>
         )}
 

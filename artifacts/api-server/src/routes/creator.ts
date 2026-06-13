@@ -144,6 +144,47 @@ router.get("/creator/withdrawals", requireAuth, async (req, res) => {
   res.json(withdrawals);
 });
 
+// GET /api/admin/withdrawals — list all withdrawals (admin only), optional ?status=
+router.get("/admin/withdrawals", requireAuth, async (req, res) => {
+  const userId = req.userId!;
+  const [user] = await db
+    .select({ role: usersTable.role })
+    .from(usersTable)
+    .where(eq(usersTable.id, userId));
+
+  if (!user || user.role !== "admin") {
+    res.status(403).json({ error: "Accès refusé" }); return;
+  }
+
+  const statusFilter = req.query.status as string | undefined;
+  const validStatuses = ["pending", "validated", "paid", "rejected"] as const;
+
+  const rows = await db
+    .select({
+      id:            creatorWithdrawalsTable.id,
+      creatorId:     creatorWithdrawalsTable.creatorId,
+      creatorName:   sql<string>`${usersTable.firstName} || ' ' || ${usersTable.lastName}`,
+      tokensAmount:  creatorWithdrawalsTable.tokensAmount,
+      xofAmount:     creatorWithdrawalsTable.xofAmount,
+      status:        creatorWithdrawalsTable.status,
+      paymentMethod: creatorWithdrawalsTable.paymentMethod,
+      paymentPhone:  creatorWithdrawalsTable.paymentPhone,
+      adminNote:     creatorWithdrawalsTable.adminNote,
+      createdAt:     creatorWithdrawalsTable.createdAt,
+    })
+    .from(creatorWithdrawalsTable)
+    .leftJoin(usersTable, eq(usersTable.id, creatorWithdrawalsTable.creatorId))
+    .where(
+      statusFilter && validStatuses.includes(statusFilter as typeof validStatuses[number])
+        ? eq(creatorWithdrawalsTable.status, statusFilter as typeof validStatuses[number])
+        : undefined
+    )
+    .orderBy(desc(creatorWithdrawalsTable.createdAt))
+    .limit(200);
+
+  res.json(rows);
+});
+
 // PATCH /api/admin/withdrawals/:id — admin validate/reject
 const AdminPatchBody = z.object({
   action:    z.enum(["validated", "paid", "rejected"]),

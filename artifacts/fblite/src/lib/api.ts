@@ -699,3 +699,39 @@ export async function apiGetWithdrawals() {
   if (!res.ok) return [];
   return res.json() as Promise<{ id: number; tokensAmount: number; xofAmount: number; status: string; paymentMethod: string; paymentPhone: string; createdAt: string }[]>;
 }
+
+export interface AdminWithdrawal {
+  id: number;
+  creatorId: number;
+  creatorName: string;
+  tokensAmount: number;
+  xofAmount: number;
+  status: "pending" | "validated" | "paid" | "rejected";
+  paymentMethod: string;
+  paymentPhone: string;
+  adminNote: string | null;
+  createdAt: string;
+}
+
+export async function apiAdminGetWithdrawals(status?: string): Promise<AdminWithdrawal[]> {
+  const qs = status && status !== "all" ? `?status=${status}` : "";
+  const res = await apiFetch(`/admin/withdrawals${qs}`);
+  if (!res.ok) return [];
+  return res.json();
+}
+
+export async function apiAdminPatchWithdrawal(
+  id: number,
+  action: "validated" | "paid" | "rejected",
+  adminNote?: string,
+): Promise<AdminWithdrawal> {
+  const res = await apiFetch(`/admin/withdrawals/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify({ action, adminNote }),
+  });
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(e.error ?? "Action échouée");
+  }
+  return res.json();
+}
