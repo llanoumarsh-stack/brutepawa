@@ -156,13 +156,21 @@ router.post("/posts/:id/like", requireAuth, async (req, res): Promise<void> => {
 });
 
 router.get("/messages", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+
+  const blocks = await db.select().from(userBlocksTable).where(
+    or(eq(userBlocksTable.blockerId, me), eq(userBlocksTable.blockedId, me))
+  );
+  const blockedUserIds = new Set(blocks.map(b => b.blockerId === me ? b.blockedId : b.blockerId));
+
   const msgs = await db.select().from(messagesTable)
-    .where(or(eq(messagesTable.fromUserId, req.userId!), eq(messagesTable.toUserId, req.userId!)))
+    .where(or(eq(messagesTable.fromUserId, me), eq(messagesTable.toUserId, me)))
     .orderBy(desc(messagesTable.createdAt));
 
   const convoMap = new Map<number, typeof msgs[0]>();
   for (const m of msgs) {
-    const otherId = m.fromUserId === req.userId ? m.toUserId : m.fromUserId;
+    const otherId = m.fromUserId === me ? m.toUserId : m.fromUserId;
+    if (blockedUserIds.has(otherId)) continue;
     if (!convoMap.has(otherId)) convoMap.set(otherId, m);
   }
 
@@ -170,7 +178,7 @@ router.get("/messages", requireAuth, async (req, res): Promise<void> => {
     fromUserId: messagesTable.fromUserId,
     count: sql<number>`count(*)::int`,
   }).from(messagesTable)
-    .where(and(eq(messagesTable.toUserId, req.userId!), eq(messagesTable.isRead, false)))
+    .where(and(eq(messagesTable.toUserId, me), eq(messagesTable.isRead, false)))
     .groupBy(messagesTable.fromUserId);
 
   const convos = Array.from(convoMap.entries()).map(([userId, msg]) => ({
@@ -214,15 +222,29 @@ router.get("/messages/:userId", requireAuth, async (req, res): Promise<void> => 
   const params = GetConversationParams.safeParse({ userId: Number(req.params.userId) });
   if (!params.success) { res.status(400).json({ error: params.error.message }); return; }
 
+  const me = req.userId!;
+  const otherId = params.data.userId;
+
+  const [block] = await db.select().from(userBlocksTable).where(
+    or(
+      and(eq(userBlocksTable.blockerId, me), eq(userBlocksTable.blockedId, otherId)),
+      and(eq(userBlocksTable.blockerId, otherId), eq(userBlocksTable.blockedId, me)),
+    )
+  );
+  if (block) {
+    res.status(403).json({ error: "Vous ne pouvez pas accéder à cette conversation." });
+    return;
+  }
+
   const msgs = await db.select().from(messagesTable)
     .where(or(
-      and(eq(messagesTable.fromUserId, req.userId!), eq(messagesTable.toUserId, params.data.userId)),
-      and(eq(messagesTable.fromUserId, params.data.userId), eq(messagesTable.toUserId, req.userId!)),
+      and(eq(messagesTable.fromUserId, me), eq(messagesTable.toUserId, otherId)),
+      and(eq(messagesTable.fromUserId, otherId), eq(messagesTable.toUserId, me)),
     ))
     .orderBy(messagesTable.createdAt);
 
   await db.update(messagesTable).set({ isRead: true })
-    .where(and(eq(messagesTable.fromUserId, params.data.userId), eq(messagesTable.toUserId, req.userId!)));
+    .where(and(eq(messagesTable.fromUserId, otherId), eq(messagesTable.toUserId, me)));
 
   res.json(msgs);
 });
