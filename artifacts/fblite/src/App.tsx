@@ -21,6 +21,7 @@ import FormationDetail from "./pages/FormationDetail";
 import CreatePostPage from "./pages/CreatePostPage";
 import CreateStoryPage from "./pages/CreateStoryPage";
 import LiveStreamPage from "./pages/LiveStreamPage";
+import LiveWatchPage from "./pages/LiveWatchPage";
 import EditProfilePage from "./pages/EditProfilePage";
 import ScorePage from "./pages/ScorePage";
 import UserProfilePage from "./pages/UserProfilePage";
@@ -147,6 +148,12 @@ function AppContent() {
   if (path === "/create-story") return <CreateStoryPage onCreated={loadPosts} />;
   if (path === "/live") return <LiveStreamPage />;
   if (path === "/edit-profile") return <EditProfilePage />;
+
+  const liveWatchMatch = matchDynamic("/live/:id", path);
+  if (liveWatchMatch) {
+    const sid = parseInt(liveWatchMatch.id, 10);
+    if (!isNaN(sid)) return <LiveWatchPage streamId={sid} />;
+  }
   if (path === "/score") return <ScorePage />;
 
   // Dynamic route matching

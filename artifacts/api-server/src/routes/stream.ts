@@ -119,6 +119,27 @@ router.delete("/stream/live/:liveInputId", requireAuth, async (req, res) => {
   res.json({ ok: true });
 });
 
+// Fetch a single live stream by DB id (public — needed by viewer page)
+router.get("/stream/live/:id", async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
+
+  const [stream] = await db
+    .select({
+      id:          liveStreamsTable.id,
+      userName:    liveStreamsTable.userName,
+      userFlag:    liveStreamsTable.userFlag,
+      playbackUrl: liveStreamsTable.playbackUrl,
+      viewerCount: liveStreamsTable.viewerCount,
+      status:      liveStreamsTable.status,
+    })
+    .from(liveStreamsTable)
+    .where(eq(liveStreamsTable.id, id));
+
+  if (!stream) { res.status(404).json({ error: "Live not found" }); return; }
+  res.json(stream);
+});
+
 // Public — listing active streams is intentionally open
 router.get("/stream/lives", async (_req, res) => {
   try {
