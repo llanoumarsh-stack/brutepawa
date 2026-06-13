@@ -26,6 +26,7 @@ import EditProfilePage from "./pages/EditProfilePage";
 import ScorePage from "./pages/ScorePage";
 import UserProfilePage from "./pages/UserProfilePage";
 import CreatorDashboardPage from "./pages/CreatorDashboardPage";
+import VideoPostPage from "./pages/VideoPostPage";
 
 import { ADMIN_SECRET_PATH } from "./lib/admin";
 import { Post } from "./lib/store";
@@ -155,6 +156,16 @@ function AppContent() {
   if (liveWatchMatch) {
     const sid = parseInt(liveWatchMatch.id, 10);
     if (!isNaN(sid)) return <LiveWatchPage streamId={sid} />;
+  }
+
+  const videoPostMatch = matchDynamic("/video/:id", path);
+  if (videoPostMatch) {
+    const pid = parseInt(videoPostMatch.id, 10);
+    if (!isNaN(pid)) return (
+      <Layout onNewPost={handleNewPost}>
+        <VideoPostPage postId={pid} />
+      </Layout>
+    );
   }
   if (path === "/score") return <ScorePage />;
 

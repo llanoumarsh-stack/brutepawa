@@ -11,4 +11,4 @@ Endpoint: `GET /api/stream/live/:id/events` (in `routes/stream.ts`)
 
 **Why:** Simple polling SSE avoids Redis/pub-sub complexity while staying real-time enough for live gifting.
 
-**How to apply:** LiveWatchPage (Task #7) should connect to this SSE using the live's DB ID, same as LiveStreamPage does via `cfStream.session.id`.
+**How to apply:** LiveWatchPage connects to this SSE using the live's DB ID (same as LiveStreamPage via `cfStream.session.id`). This is already integrated.

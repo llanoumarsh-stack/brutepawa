@@ -80,9 +80,28 @@ router.get("/posts/:id", requireAuth, async (req, res): Promise<void> => {
   const params = GetPostParams.safeParse({ id: Number(req.params.id) });
   if (!params.success) { res.status(400).json({ error: params.error.message }); return; }
 
-  const [post] = await db.select().from(postsTable).where(eq(postsTable.id, params.data.id));
-  if (!post) { res.status(404).json({ error: "Post not found" }); return; }
-  res.json(post);
+  const [row] = await db.select({
+    id:            postsTable.id,
+    authorId:      postsTable.authorId,
+    content:       postsTable.content,
+    imageUrl:      postsTable.imageUrl,
+    thumbnailUrl:  postsTable.thumbnailUrl,
+    likesCount:    postsTable.likesCount,
+    commentsCount: postsTable.commentsCount,
+    createdAt:     postsTable.createdAt,
+    authorFirstName: usersTable.firstName,
+    authorLastName:  usersTable.lastName,
+  }).from(postsTable)
+    .leftJoin(usersTable, eq(postsTable.authorId, usersTable.id))
+    .where(eq(postsTable.id, params.data.id));
+
+  if (!row) { res.status(404).json({ error: "Post not found" }); return; }
+  res.json({
+    ...row,
+    authorName: row.authorFirstName && row.authorLastName
+      ? `${row.authorFirstName} ${row.authorLastName}`
+      : "Utilisateur",
+  });
 });
 
 router.delete("/posts/:id", requireAuth, async (req, res): Promise<void> => {

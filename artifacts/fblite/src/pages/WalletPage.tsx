@@ -127,8 +127,7 @@ export default function WalletPage() {
     try {
       const result = await apiPurchaseTokens({ packId: tokenPack.id, paymentMethod: tokenOp, paymentPhone: tokenPhone });
       setTokenResult(result);
-      // Optimistically update token balance display
-      setTokenBalance(prev => prev + tokenPack.tokens);
+      // Note: tokens are NOT credited yet — balance updates only after webhook confirmation
     } catch (e) { setTokenError(e instanceof Error ? e.message : "Erreur d'achat"); }
     setTokenLoading(false);
   };

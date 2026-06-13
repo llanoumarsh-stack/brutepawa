@@ -299,6 +299,9 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 💬 Commenter
               </button>
               <button className="post-btn" onClick={() => handleShare(post.id)}>↗️ Partager</button>
+              {post.imageUrl && (
+                <button className="post-btn" onClick={() => navigate(`/video/${post.id}`)}>🎁 Cadeau</button>
+              )}
             </div>
             {showComments === post.id && (
               <div style={{ padding: "8px 16px", borderTop: "1px solid var(--fb-divider)" }}>

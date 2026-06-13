@@ -68,9 +68,15 @@ router.post("/tokens/purchase", requireAuth, async (req, res) => {
 // POST /api/tokens/webhook — MoneyFusion confirmation (HMAC-verified)
 // In dev/test: pass { purchaseId, status: "confirmed" } with header X-MF-Signature
 router.post("/tokens/webhook", async (req, res) => {
-  const secret = process.env["MONEYFUSION_SECRET"] ?? "";
+  const secret  = process.env["MONEYFUSION_SECRET"] ?? "";
+  const isDev   = process.env["NODE_ENV"] === "development";
 
-  // Verify signature if secret is configured
+  // Fail-closed: reject if secret is absent outside of development
+  if (!secret && !isDev) {
+    res.status(503).json({ error: "Webhook not configured: MONEYFUSION_SECRET required in production" });
+    return;
+  }
+
   if (secret) {
     const sig  = req.headers["x-mf-signature"] as string | undefined;
     const body = JSON.stringify(req.body);
