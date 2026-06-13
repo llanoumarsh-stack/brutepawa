@@ -25,6 +25,7 @@ import LiveWatchPage from "./pages/LiveWatchPage";
 import EditProfilePage from "./pages/EditProfilePage";
 import ScorePage from "./pages/ScorePage";
 import UserProfilePage from "./pages/UserProfilePage";
+import CreatorDashboardPage from "./pages/CreatorDashboardPage";
 
 import { ADMIN_SECRET_PATH } from "./lib/admin";
 import { Post } from "./lib/store";
@@ -148,6 +149,7 @@ function AppContent() {
   if (path === "/create-story") return <CreateStoryPage onCreated={loadPosts} />;
   if (path === "/live") return <LiveStreamPage />;
   if (path === "/edit-profile") return <EditProfilePage />;
+  if (path === "/creator") return <CreatorDashboardPage />;
 
   const liveWatchMatch = matchDynamic("/live/:id", path);
   if (liveWatchMatch) {

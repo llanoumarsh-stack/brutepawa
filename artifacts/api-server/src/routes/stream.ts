@@ -3,9 +3,10 @@ import { z } from "zod";
 import { db } from "@workspace/db";
 import { liveStreamsTable } from "@workspace/db/schema";
 import { followsTable } from "@workspace/db/schema";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and, sql, gt, asc } from "drizzle-orm";
 import { createLiveInput, deleteLiveInput } from "../lib/cloudflare-stream";
 import { requireAuth } from "../middlewares/requireAuth";
+import { giftTransactionsTable } from "@workspace/db/schema";
 
 const router: IRouter = Router();
 
@@ -210,6 +211,61 @@ router.delete("/stream/live/:id/heartbeat", async (req, res) => {
     .where(and(eq(liveStreamsTable.id, id), eq(liveStreamsTable.status, "live")));
 
   res.json({ ok: true });
+});
+
+// SSE — real-time gift events for a live stream (polls DB every 2s, pushes new gifts)
+router.get("/stream/live/:id/events", async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) { res.status(400).end(); return; }
+
+  res.setHeader("Content-Type",  "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection",    "keep-alive");
+  res.setHeader("X-Accel-Buffering", "no");
+  res.flushHeaders();
+
+  // Start from the current max gift id so we only push NEW gifts
+  let lastId = 0;
+  try {
+    const [row] = await db
+      .select({ maxId: sql<number>`coalesce(max(id), 0)::int` })
+      .from(giftTransactionsTable)
+      .where(and(
+        eq(giftTransactionsTable.contextType, "live"),
+        eq(giftTransactionsTable.contextId, id),
+      ));
+    lastId = row?.maxId ?? 0;
+  } catch { /* start from 0 if error */ }
+
+  const poll = async () => {
+    try {
+      const gifts = await db
+        .select()
+        .from(giftTransactionsTable)
+        .where(and(
+          eq(giftTransactionsTable.contextType, "live"),
+          eq(giftTransactionsTable.contextId, id),
+          gt(giftTransactionsTable.id, lastId),
+        ))
+        .orderBy(asc(giftTransactionsTable.id))
+        .limit(20);
+
+      for (const g of gifts) {
+        res.write(`data: ${JSON.stringify(g)}\n\n`);
+        lastId = g.id;
+      }
+    } catch { /* ignore DB errors — keep connection alive */ }
+  };
+
+  const interval = setInterval(poll, 2000);
+
+  // Send a keepalive comment every 25s to prevent proxy timeouts
+  const keepalive = setInterval(() => res.write(": ping\n\n"), 25_000);
+
+  req.on("close", () => {
+    clearInterval(interval);
+    clearInterval(keepalive);
+  });
 });
 
 export default router;

@@ -6,3 +6,4 @@ export * from "./jobs";
 export * from "./education";
 export * from "./social";
 export * from "./community";
+export * from "./gifts";

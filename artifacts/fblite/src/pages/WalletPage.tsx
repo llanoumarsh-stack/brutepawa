@@ -1,27 +1,52 @@
 import { useState, useEffect } from "react";
 import {
   apiGetWallet, apiGetTransactions, apiDeposit, apiTransfer, apiGetUsers,
-  type ApiTx, type PublicUser,
+  apiGetCreatorWallet, apiPurchaseTokens,
+  type ApiTx, type PublicUser, type ApiTokenPurchase,
 } from "../lib/api";
 
-type Tab = "accueil" | "depot" | "envoyer" | "historique";
+type Tab = "accueil" | "depot" | "envoyer" | "historique" | "jetons";
 type DepotMethod = "mtn" | "orange" | "moov";
+type TokenOp = "orange" | "mtn" | "wave";
+
+const TOKEN_PACKS = [
+  { id: "pack_100"  as const, tokens: 100,  xof: 500,   label: "Pack Débutant",  emoji: "🌱" },
+  { id: "pack_500"  as const, tokens: 500,  xof: 2500,  label: "Pack Standard",  emoji: "⭐" },
+  { id: "pack_2000" as const, tokens: 2000, xof: 10000, label: "Pack Premium",   emoji: "💎" },
+];
+
+const TOKEN_OPERATORS: { id: TokenOp; label: string; emoji: string }[] = [
+  { id: "orange", label: "Orange Money", emoji: "🟠" },
+  { id: "mtn",    label: "MTN MoMo",     emoji: "🟡" },
+  { id: "wave",   label: "Wave",         emoji: "🔵" },
+];
 
 export default function WalletPage() {
-  const [balance, setBalance]         = useState(0);
+  const [balance, setBalance]           = useState(0);
+  const [tokenBalance, setTokenBalance] = useState(0);
   const [transactions, setTransactions] = useState<ApiTx[]>([]);
-  const [loading, setLoading]         = useState(true);
-  const [users, setUsers]             = useState<PublicUser[]>([]);
-  const [tab, setTab]                 = useState<Tab>("accueil");
-  const [depotMethod, setDepotMethod] = useState<DepotMethod>("mtn");
-  const [depotAmount, setDepotAmount] = useState("");
-  const [depotPhone, setDepotPhone]   = useState("");
-  const [sendTo, setSendTo]           = useState("");
+  const [loading, setLoading]           = useState(true);
+  const [users, setUsers]               = useState<PublicUser[]>([]);
+  const [tab, setTab]                   = useState<Tab>("accueil");
+
+  // XOF wallet state
+  const [depotMethod, setDepotMethod]   = useState<DepotMethod>("mtn");
+  const [depotAmount, setDepotAmount]   = useState("");
+  const [depotPhone, setDepotPhone]     = useState("");
+  const [sendTo, setSendTo]             = useState("");
   const [sendToUserId, setSendToUserId] = useState<number | null>(null);
-  const [sendAmount, setSendAmount]   = useState("");
-  const [processing, setProcessing]   = useState(false);
-  const [success, setSuccess]         = useState<string | null>(null);
-  const [txError, setTxError]         = useState<string | null>(null);
+  const [sendAmount, setSendAmount]     = useState("");
+  const [processing, setProcessing]     = useState(false);
+  const [success, setSuccess]           = useState<string | null>(null);
+  const [txError, setTxError]           = useState<string | null>(null);
+
+  // Token purchase state
+  const [tokenPack, setTokenPack]       = useState<typeof TOKEN_PACKS[0] | null>(null);
+  const [tokenOp, setTokenOp]           = useState<TokenOp>("orange");
+  const [tokenPhone, setTokenPhone]     = useState("");
+  const [tokenLoading, setTokenLoading] = useState(false);
+  const [tokenResult, setTokenResult]   = useState<ApiTokenPurchase | null>(null);
+  const [tokenError, setTokenError]     = useState<string | null>(null);
 
   const meId = (() => {
     try { return (JSON.parse(localStorage.getItem("fb_user") ?? "{}") as { id?: number }).id ?? 0; }
@@ -30,24 +55,25 @@ export default function WalletPage() {
 
   const reloadWallet = () =>
     Promise.all([apiGetWallet(), apiGetTransactions()])
-      .then(([w, txs]) => { setBalance(w.balance); setTransactions(txs); })
+      .then(([w, txs]) => { setBalance(Number(w.balance)); setTransactions(txs); })
       .catch(() => {});
 
   useEffect(() => {
-    Promise.all([apiGetWallet(), apiGetTransactions(), apiGetUsers()])
-      .then(([w, txs, userList]) => {
-        setBalance(w.balance);
+    Promise.all([apiGetWallet(), apiGetTransactions(), apiGetUsers(), apiGetCreatorWallet()])
+      .then(([w, txs, userList, cw]) => {
+        setBalance(Number(w.balance));
         setTransactions(txs);
         setUsers(userList.filter(u => u.id !== meId));
+        setTokenBalance(cw.tokenBalance);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 
   const methodInfo: Record<DepotMethod, { label: string; color: string; emoji: string; prefix: string }> = {
-    mtn:    { label: "MTN Mobile Money",    color: "#FFC107", emoji: "🟡", prefix: "+229 66" },
-    orange: { label: "Orange Money",        color: "#FF6D00", emoji: "🟠", prefix: "+229 97" },
-    moov:   { label: "Moov Money",          color: "#1565C0", emoji: "🔵", prefix: "+229 96" },
+    mtn:    { label: "MTN Mobile Money", color: "#FFC107", emoji: "🟡", prefix: "+229 66" },
+    orange: { label: "Orange Money",     color: "#FF6D00", emoji: "🟠", prefix: "+229 97" },
+    moov:   { label: "Moov Money",       color: "#1565C0", emoji: "🔵", prefix: "+229 96" },
   };
 
   const normTx = (tx: ApiTx) => {
@@ -95,6 +121,18 @@ export default function WalletPage() {
     setProcessing(false);
   };
 
+  const handleTokenPurchase = async () => {
+    if (!tokenPack || !tokenPhone) return;
+    setTokenLoading(true); setTokenError(null); setTokenResult(null);
+    try {
+      const result = await apiPurchaseTokens({ packId: tokenPack.id, paymentMethod: tokenOp, paymentPhone: tokenPhone });
+      setTokenResult(result);
+      // Optimistically update token balance display
+      setTokenBalance(prev => prev + tokenPack.tokens);
+    } catch (e) { setTokenError(e instanceof Error ? e.message : "Erreur d'achat"); }
+    setTokenLoading(false);
+  };
+
   const normTxs = transactions.map(normTx);
 
   return (
@@ -105,19 +143,25 @@ export default function WalletPage() {
         <div style={{ fontSize: 36, fontWeight: 900, letterSpacing: -1 }}>
           {loading ? "..." : balance.toLocaleString()} <span style={{ fontSize: 18 }}>FCFA</span>
         </div>
-        <div style={{ fontSize: 13, opacity: 0.75, marginTop: 4 }}>Solde disponible · Mis à jour à l'instant</div>
-        <div style={{ display: "flex", gap: 12, marginTop: 20 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6, marginBottom: 16 }}>
+          <div style={{ background: "rgba(255,215,0,0.2)", borderRadius: 20, padding: "4px 12px", fontSize: 14, fontWeight: 700, color: "#FFD700" }}>
+            🪙 {tokenBalance.toLocaleString()} jetons
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           {([
             { icon: "⬇️", label: "Déposer",    tab: "depot"      as Tab },
             { icon: "⬆️", label: "Envoyer",    tab: "envoyer"    as Tab },
+            { icon: "🪙",  label: "Jetons",     tab: "jetons"     as Tab },
             { icon: "📋", label: "Historique", tab: "historique" as Tab },
           ] as const).map(btn => (
             <button key={btn.tab} onClick={() => setTab(btn.tab)} style={{
-              flex: 1, background: "rgba(255,255,255,0.2)", border: "none", borderRadius: 12,
-              color: "#fff", padding: "10px 0", cursor: "pointer", fontWeight: 700, fontSize: 13
+              flex: 1, background: tab === btn.tab ? "rgba(255,255,255,0.35)" : "rgba(255,255,255,0.2)",
+              border: tab === btn.tab ? "2px solid rgba(255,255,255,0.6)" : "2px solid transparent",
+              borderRadius: 12, color: "#fff", padding: "9px 0", cursor: "pointer", fontWeight: 700, fontSize: 12, minWidth: 60,
             }}>
-              <div style={{ fontSize: 22 }}>{btn.icon}</div>
-              <div>{btn.label}</div>
+              <div style={{ fontSize: 20 }}>{btn.icon}</div>
+              <div style={{ marginTop: 2 }}>{btn.label}</div>
             </button>
           ))}
         </div>
@@ -277,6 +321,104 @@ export default function WalletPage() {
               {processing ? "Envoi en cours..." : `Envoyer ${sendAmount ? parseInt(sendAmount).toLocaleString() + " FCFA" : ""}`}
             </button>
           </div>
+        </div>
+      )}
+
+      {/* ── JETONS 🪙 ── */}
+      {tab === "jetons" && (
+        <div style={{ padding: 16 }}>
+          {/* Balance card */}
+          <div style={{ background: "linear-gradient(135deg, #E91E8C, #9C27B0)", borderRadius: 16, padding: "18px 20px", marginBottom: 16, color: "#fff" }}>
+            <div style={{ fontSize: 13, opacity: 0.85 }}>Solde jetons</div>
+            <div style={{ fontSize: 36, fontWeight: 900, margin: "4px 0" }}>🪙 {tokenBalance.toLocaleString()}</div>
+            <div style={{ fontSize: 13, opacity: 0.75 }}>1 jeton = 5 XOF · Utilisables pour offrir des cadeaux en live</div>
+          </div>
+
+          {!tokenResult ? (
+            <>
+              {/* Pack selection */}
+              <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 10 }}>Choisir un pack</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
+                {TOKEN_PACKS.map(p => (
+                  <button key={p.id} onClick={() => setTokenPack(p)} style={{
+                    display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", borderRadius: 14,
+                    border: `2px solid ${tokenPack?.id === p.id ? "#E91E8C" : "var(--fb-divider)"}`,
+                    background: tokenPack?.id === p.id ? "#fce4ec" : "var(--fb-white)",
+                    cursor: "pointer", textAlign: "left",
+                  }}>
+                    <div style={{ fontSize: 32 }}>{p.emoji}</div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 800, fontSize: 15 }}>{p.label}</div>
+                      <div style={{ fontSize: 13, color: "var(--fb-text-secondary)", marginTop: 2 }}>🪙 {p.tokens.toLocaleString()} jetons</div>
+                    </div>
+                    <div style={{ fontWeight: 900, fontSize: 16, color: "#E91E8C" }}>{p.xof.toLocaleString()} XOF</div>
+                  </button>
+                ))}
+              </div>
+
+              {tokenPack && (
+                <>
+                  {/* Operator */}
+                  <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 8 }}>Opérateur Mobile Money</div>
+                  <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
+                    {TOKEN_OPERATORS.map(op => (
+                      <button key={op.id} onClick={() => setTokenOp(op.id)} style={{
+                        flex: 1, padding: "10px 0", borderRadius: 12, cursor: "pointer", fontWeight: 700, fontSize: 12,
+                        border: `2px solid ${tokenOp === op.id ? "#E91E8C" : "var(--fb-divider)"}`,
+                        background: tokenOp === op.id ? "#fce4ec" : "var(--fb-white)",
+                      }}>
+                        <div style={{ fontSize: 22 }}>{op.emoji}</div>
+                        <div style={{ marginTop: 2 }}>{op.label.split(" ")[0]}</div>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Phone */}
+                  <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 6 }}>Numéro de téléphone</div>
+                  <input value={tokenPhone} onChange={e => setTokenPhone(e.target.value)}
+                    placeholder="+225 07 XX XX XX XX"
+                    style={{ width: "100%", background: "var(--fb-bg)", border: "none", borderRadius: 10, padding: "12px 14px", fontSize: 15, marginBottom: 14, boxSizing: "border-box" }} />
+
+                  {tokenError && (
+                    <div style={{ background: "#FFEBEE", color: "#C62828", borderRadius: 10, padding: "10px 14px", marginBottom: 12, fontSize: 13 }}>❌ {tokenError}</div>
+                  )}
+
+                  <button onClick={handleTokenPurchase} disabled={tokenLoading || !tokenPhone}
+                    style={{
+                      width: "100%", background: tokenLoading ? "#ccc" : "#E91E8C", color: "#fff", border: "none",
+                      borderRadius: 12, padding: 14, fontWeight: 800, fontSize: 16, cursor: "pointer",
+                    }}>
+                    {tokenLoading ? "Traitement…" : `Acheter 🪙 ${tokenPack.tokens} jetons — ${tokenPack.xof.toLocaleString()} XOF`}
+                  </button>
+                </>
+              )}
+            </>
+          ) : (
+            /* Purchase result — payment instructions */
+            <div style={{ background: "var(--fb-white)", borderRadius: 16, padding: 20 }}>
+              <div style={{ textAlign: "center", marginBottom: 16 }}>
+                <div style={{ fontSize: 48 }}>🕐</div>
+                <div style={{ fontWeight: 800, fontSize: 17, marginTop: 8 }}>Paiement en attente</div>
+                <div style={{ fontSize: 13, color: "var(--fb-text-secondary)", marginTop: 4 }}>
+                  Effectue le paiement selon les instructions ci-dessous
+                </div>
+              </div>
+              <div style={{ background: "var(--fb-bg)", borderRadius: 12, padding: 16, marginBottom: 16, fontSize: 14, lineHeight: 1.7 }}>
+                {tokenResult.instructions.message}
+              </div>
+              <div style={{ fontWeight: 700, marginBottom: 6, fontSize: 13 }}>Référence</div>
+              <div style={{ fontFamily: "monospace", background: "#E3F2FD", borderRadius: 8, padding: "10px 14px", fontSize: 14, fontWeight: 700, marginBottom: 16, wordBreak: "break-all" }}>
+                {tokenResult.paymentRef}
+              </div>
+              <div style={{ fontSize: 13, color: "var(--fb-text-secondary)", marginBottom: 16, textAlign: "center" }}>
+                🪙 +{tokenResult.tokens.toLocaleString()} jetons crédités après confirmation
+              </div>
+              <button onClick={() => { setTokenResult(null); setTokenPack(null); setTokenPhone(""); }}
+                style={{ width: "100%", background: "#E91E8C", color: "#fff", border: "none", borderRadius: 12, padding: 14, fontWeight: 800, fontSize: 15, cursor: "pointer" }}>
+                Faire un autre achat
+              </button>
+            </div>
+          )}
         </div>
       )}
 

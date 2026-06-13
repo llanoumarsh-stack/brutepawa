@@ -587,3 +587,115 @@ export async function apiCreateProduct(data: {
   }
   return res.json() as Promise<ApiProduct>;
 }
+
+// ── Gifts & Tokens ────────────────────────────────────────────────────────────
+
+export interface ApiGiftItem {
+  id: number;
+  name: string;
+  iconEmoji: string;
+  tokenCost: number;
+  animationType: string;
+}
+
+export interface ApiGiftTransaction {
+  id: number;
+  senderId: number;
+  senderName: string;
+  receiverId: number;
+  giftId: number;
+  giftName: string;
+  giftEmoji: string;
+  tokenAmount: number;
+  contextType: "video" | "live";
+  contextId: number;
+  createdAt: string;
+}
+
+export interface ApiTokenPurchase {
+  purchaseId: number;
+  paymentRef: string;
+  status: string;
+  instructions: {
+    operator: string; phone: string; amount: string; reference: string; message: string;
+  };
+  tokens: number;
+  amountXof: number;
+}
+
+export interface ApiCreatorWallet {
+  tokenBalance: number;
+  xofBalance: number;
+  tokenToXof: number;
+  minWithdrawTokens: number;
+  revenueToday:  { tokens: number; xof: number };
+  revenueMonth:  { tokens: number; xof: number };
+}
+
+export async function apiGetGiftCatalog(): Promise<ApiGiftItem[]> {
+  const res = await fetch(`${BASE}/gifts/catalog`);
+  if (!res.ok) return [];
+  return res.json() as Promise<ApiGiftItem[]>;
+}
+
+export async function apiSendGift(data: {
+  giftId: number; receiverId: number; contextType: "live" | "video";
+  contextId: number; senderName: string;
+}): Promise<ApiGiftTransaction> {
+  const res = await apiFetch("/gifts/send", { method: "POST", body: JSON.stringify(data) });
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(e.error ?? "Erreur lors de l'envoi");
+  }
+  return res.json() as Promise<ApiGiftTransaction>;
+}
+
+export async function apiGetTopDonors(contextType: "live" | "video", contextId: number) {
+  const res = await fetch(`${BASE}/gifts/top-donors/${contextType}/${contextId}`);
+  if (!res.ok) return [];
+  return res.json() as Promise<{ senderId: number; senderName: string; totalTokens: number; giftsCount: number }[]>;
+}
+
+export async function apiGetReceivedGifts(limit = 20): Promise<ApiGiftTransaction[]> {
+  const res = await apiFetch(`/gifts/received?limit=${limit}`);
+  if (!res.ok) return [];
+  return res.json() as Promise<ApiGiftTransaction[]>;
+}
+
+export async function apiPurchaseTokens(data: {
+  packId: "pack_100" | "pack_500" | "pack_2000";
+  paymentMethod: "orange" | "mtn" | "wave";
+  paymentPhone: string;
+}): Promise<ApiTokenPurchase> {
+  const res = await apiFetch("/tokens/purchase", { method: "POST", body: JSON.stringify(data) });
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(e.error ?? "Achat échoué");
+  }
+  return res.json() as Promise<ApiTokenPurchase>;
+}
+
+export async function apiGetCreatorWallet(): Promise<ApiCreatorWallet> {
+  const res = await apiFetch("/creator/wallet");
+  if (!res.ok) throw new Error("Wallet non disponible");
+  return res.json() as Promise<ApiCreatorWallet>;
+}
+
+export async function apiRequestWithdrawal(data: {
+  paymentMethod: "orange" | "mtn" | "wave";
+  paymentPhone: string;
+  tokensAmount: number;
+}): Promise<{ id: number; status: string; xofAmount: number }> {
+  const res = await apiFetch("/creator/withdraw", { method: "POST", body: JSON.stringify(data) });
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(e.error ?? "Retrait échoué");
+  }
+  return res.json() as Promise<{ id: number; status: string; xofAmount: number }>;
+}
+
+export async function apiGetWithdrawals() {
+  const res = await apiFetch("/creator/withdrawals");
+  if (!res.ok) return [];
+  return res.json() as Promise<{ id: number; tokensAmount: number; xofAmount: number; status: string; paymentMethod: string; paymentPhone: string; createdAt: string }[]>;
+}

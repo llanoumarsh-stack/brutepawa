@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "../router";
 import { useCloudflareStream } from "../hooks/useCloudflareStream";
 import { getBpToken } from "../lib/api";
+import GiftPicker from "../components/GiftPicker";
 
 const REACTIONS = ["❤️", "😍", "🔥", "👏", "😂", "🎉"];
 
@@ -31,11 +32,16 @@ export default function LiveStreamPage() {
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [showConfirmEnd, setShowConfirmEnd] = useState(false);
   const [eligibility, setEligibility] = useState<{ canGoLive: boolean; followersCount: number } | null>(null);
+  const [showGiftPicker, setShowGiftPicker] = useState(false);
+  const [tokenBalance, setTokenBalance] = useState(0);
+  interface FloatingGift { id: number; emoji: string; senderName: string; giftName: string; x: number; }
+  const [floatingGifts, setFloatingGifts] = useState<FloatingGift[]>([]);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const commentsEndRef = useRef<HTMLDivElement>(null);
+  const sseRef = useRef<EventSource | null>(null);
 
   const cfStream = useCloudflareStream();
   const isLive = cfStream.status === "live";
@@ -137,6 +143,43 @@ export default function LiveStreamPage() {
       })
       .catch(() => {});
   }, []);
+
+  // Load token balance
+  useEffect(() => {
+    const token = getBpToken();
+    if (!token) return;
+    fetch("/api/creator/wallet", { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then((d: { tokenBalance?: number }) => { if (d.tokenBalance !== undefined) setTokenBalance(d.tokenBalance); })
+      .catch(() => {});
+  }, []);
+
+  // SSE — subscribe to incoming gift events when live
+  useEffect(() => {
+    if (!isLive || !cfStream.session?.id) return;
+    const dbId = cfStream.session.id;
+    const es = new EventSource(`/api/stream/live/${dbId}/events`);
+    sseRef.current = es;
+    es.onmessage = (evt) => {
+      try {
+        const g = JSON.parse(evt.data) as { id: number; giftEmoji: string; senderName: string; giftName: string };
+        const x = 10 + Math.random() * 60;
+        const newGift = { id: g.id, emoji: g.giftEmoji, senderName: g.senderName, giftName: g.giftName, x };
+        setFloatingGifts(prev => [...prev, newGift]);
+        setTimeout(() => setFloatingGifts(prev => prev.filter(fg => fg.id !== newGift.id)), 3500);
+        // Add as a comment
+        setComments(prev => [...prev.slice(-30), {
+          id: Date.now(),
+          user: g.senderName || "Anonyme",
+          text: `a envoyé ${g.giftEmoji} ${g.giftName} !`,
+        }]);
+      } catch { /* ignore */ }
+    };
+    return () => {
+      es.close();
+      sseRef.current = null;
+    };
+  }, [isLive, cfStream.session?.id]);
 
   useEffect(() => {
     commentsEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -390,6 +433,24 @@ export default function LiveStreamPage() {
         </div>
       ))}
 
+      {/* Floating gifts from SSE */}
+      {floatingGifts.map(g => (
+        <div key={g.id} style={{
+          position: "absolute", bottom: 220, left: `${g.x}%`,
+          pointerEvents: "none", textAlign: "center",
+          animation: "floatUp 3.5s ease-out forwards",
+          zIndex: 15,
+        }}>
+          <div style={{ fontSize: 40 }}>{g.emoji}</div>
+          <div style={{
+            background: "rgba(233,30,140,0.85)", borderRadius: 12, padding: "3px 8px",
+            fontSize: 11, color: "#fff", fontWeight: 700, marginTop: 2, whiteSpace: "nowrap",
+          }}>
+            {g.senderName || "Anonyme"}
+          </div>
+        </div>
+      ))}
+
       {/* ── TOP BAR ── */}
       <div style={{
         position: "absolute", top: 0, left: 0, right: 0,
@@ -416,6 +477,16 @@ export default function LiveStreamPage() {
           👁 {viewers}
         </div>
         <div style={{ flex: 1 }} />
+        {/* Token earnings badge */}
+        {tokenBalance > 0 && (
+          <div style={{
+            background: "rgba(233,30,140,0.75)", borderRadius: 20, padding: "4px 10px",
+            fontSize: 13, color: "#fff", fontWeight: 700, backdropFilter: "blur(4px)",
+            display: "flex", alignItems: "center", gap: 4,
+          }}>
+            🪙 {tokenBalance.toLocaleString()}
+          </div>
+        )}
         <button onClick={toggleMute} style={{
           background: muted ? "rgba(244,67,54,0.8)" : "rgba(0,0,0,0.5)",
           border: "none", borderRadius: "50%", width: 36, height: 36,
@@ -531,6 +602,12 @@ export default function LiveStreamPage() {
             backdropFilter: "blur(4px)", color: "#fff",
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>💬</button>
+          <button onClick={() => setShowGiftPicker(true)} style={{
+            background: "rgba(233,30,140,0.7)", border: "none", borderRadius: "50%",
+            width: 38, height: 38, fontSize: 18, cursor: "pointer",
+            backdropFilter: "blur(4px)", color: "#fff",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>🎁</button>
           <button onClick={() => {
             navigator.share?.({
               title: `${user.name} est en direct sur Brute Pawa`,
@@ -552,6 +629,43 @@ export default function LiveStreamPage() {
           </button>
         </div>
       </div>
+
+      {/* Gift panel — shows received gifts for this live */}
+      {showGiftPicker && (
+        <div
+          style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 30, display: "flex", alignItems: "flex-end" }}
+          onClick={e => { if (e.target === e.currentTarget) setShowGiftPicker(false); }}
+        >
+          <div style={{ width: "100%", background: "#1a1a2e", borderRadius: "20px 20px 0 0", padding: "20px 16px 36px", color: "#fff" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <div style={{ fontWeight: 800, fontSize: 17 }}>🎁 Cadeaux reçus</div>
+              <div style={{ fontWeight: 900, fontSize: 18, color: "#FFD700" }}>🪙 {tokenBalance.toLocaleString()}</div>
+            </div>
+            {floatingGifts.length === 0 ? (
+              <div style={{ textAlign: "center", padding: "24px 0", color: "rgba(255,255,255,0.5)", fontSize: 14 }}>
+                <div style={{ fontSize: 40, marginBottom: 8 }}>🎁</div>
+                <div>Les spectateurs peuvent vous envoyer des cadeaux</div>
+                <div style={{ fontSize: 12, marginTop: 6, opacity: 0.7 }}>Ils apparaîtront ici en temps réel</div>
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 220, overflowY: "auto" }}>
+                {floatingGifts.map(g => (
+                  <div key={g.id} style={{ display: "flex", alignItems: "center", gap: 10, background: "rgba(255,255,255,0.07)", borderRadius: 12, padding: "10px 14px" }}>
+                    <div style={{ fontSize: 30 }}>{g.emoji}</div>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: 14 }}>{g.senderName || "Anonyme"}</div>
+                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.6)" }}>a envoyé {g.giftName}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <button onClick={() => setShowGiftPicker(false)} style={{ width: "100%", background: "rgba(255,255,255,0.1)", border: "none", color: "#fff", borderRadius: 12, padding: 12, fontWeight: 700, fontSize: 14, marginTop: 16, cursor: "pointer" }}>
+              Fermer
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Confirm end modal */}
       {showConfirmEnd && (

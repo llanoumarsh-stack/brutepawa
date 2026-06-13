@@ -4,6 +4,7 @@ import { db } from "@workspace/db";
 import { liveStreamsTable } from "@workspace/db/schema";
 import { eq, and, lt, or, isNotNull, isNull, sql } from "drizzle-orm";
 import { deleteLiveInput } from "./lib/cloudflare-stream";
+import { seedGiftCatalog } from "./routes/gifts";
 
 const rawPort = process.env["PORT"];
 
@@ -86,6 +87,9 @@ app.listen(port, (err) => {
   }
 
   logger.info({ port }, "Server listening");
+
+  // Seed gift catalog (idempotent — only inserts if empty)
+  seedGiftCatalog().catch(err => logger.warn({ err }, "seedGiftCatalog failed (non-fatal)"));
 
   // Start auto-stop cron: runs every 2 minutes
   setInterval(autoStopStaleLives, 2 * 60 * 1000);

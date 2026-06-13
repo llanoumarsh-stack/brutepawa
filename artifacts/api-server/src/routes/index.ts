@@ -11,6 +11,9 @@ import socialRouter from "./social";
 import adminRouter from "./admin";
 import uploadRouter from "./upload";
 import streamRouter from "./stream";
+import giftsRouter from "./gifts";
+import tokensRouter from "./tokens";
+import creatorRouter from "./creator";
 
 const router: IRouter = Router();
 
@@ -26,5 +29,8 @@ router.use(socialRouter);
 router.use(adminRouter);
 router.use(uploadRouter);
 router.use(streamRouter);
+router.use(giftsRouter);
+router.use(tokensRouter);
+router.use(creatorRouter);
 
 export default router;
