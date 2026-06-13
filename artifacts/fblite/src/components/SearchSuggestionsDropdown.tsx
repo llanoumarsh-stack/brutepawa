@@ -209,7 +209,7 @@ export default function SearchSuggestionsDropdown({ query, onClose, navigate, re
             <button
               key={g.id}
               className="search-dropdown-item"
-              onClick={goSearch}
+              onClick={() => go(`/groups/${g.id}`)}
             >
               <div className="search-dropdown-avatar" style={{ background: "#F3E5F5" }}>
                 <span style={{ fontSize: 20 }}>{g.emoji}</span>

@@ -226,6 +226,18 @@ export interface ApiGroup {
   privacy: string;
   membersCount: number;
   createdAt: string;
+  isMember?: boolean;
+}
+
+export interface ApiGroupDetail extends ApiGroup {
+  isMember: boolean;
+  memberRole: string | null;
+}
+
+export async function apiGetGroups(): Promise<ApiGroup[]> {
+  const res = await apiFetch("/groups");
+  if (!res.ok) return [];
+  return res.json() as Promise<ApiGroup[]>;
 }
 
 export async function apiSearchGroups(search: string): Promise<ApiGroup[]> {
@@ -233,6 +245,50 @@ export async function apiSearchGroups(search: string): Promise<ApiGroup[]> {
   const res = await apiFetch(`/groups?search=${encodeURIComponent(search.trim())}`);
   if (!res.ok) return [];
   return res.json() as Promise<ApiGroup[]>;
+}
+
+export async function apiGetGroup(id: number): Promise<ApiGroupDetail> {
+  const res = await apiFetch(`/groups/${id}`);
+  if (!res.ok) throw new Error("Groupe introuvable");
+  return res.json() as Promise<ApiGroupDetail>;
+}
+
+export async function apiJoinGroup(id: number): Promise<void> {
+  const res = await apiFetch(`/groups/${id}/join`, { method: "POST" });
+  if (!res.ok) throw new Error("Impossible de rejoindre le groupe");
+}
+
+export async function apiLeaveGroup(id: number): Promise<void> {
+  const res = await apiFetch(`/groups/${id}/leave`, { method: "DELETE" });
+  if (!res.ok) throw new Error("Impossible de quitter le groupe");
+}
+
+export interface ApiGroupPost {
+  id: number;
+  content: string;
+  imageUrl: string | null;
+  createdAt: string;
+  authorId: number;
+  authorFirstName: string;
+  authorLastName: string;
+  authorAvatarUrl: string | null;
+}
+
+export async function apiGetGroupPosts(groupId: number): Promise<ApiGroupPost[]> {
+  const res = await apiFetch(`/groups/${groupId}/posts`);
+  if (!res.ok) return [];
+  return res.json() as Promise<ApiGroupPost[]>;
+}
+
+export async function apiCreateGroupPost(groupId: number, content: string, imageUrl?: string): Promise<void> {
+  const res = await apiFetch(`/groups/${groupId}/posts`, {
+    method: "POST",
+    body: JSON.stringify({ content, imageUrl: imageUrl ?? null }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(err.error ?? "Impossible de publier dans ce groupe");
+  }
 }
 
 export async function apiCreatePost(

@@ -28,6 +28,7 @@ import UserProfilePage from "./pages/UserProfilePage";
 import CreatorDashboardPage from "./pages/CreatorDashboardPage";
 import VideoPostPage from "./pages/VideoPostPage";
 import SearchPage from "./pages/SearchPage";
+import GroupDetailPage from "./pages/GroupDetailPage";
 
 import { ADMIN_SECRET_PATH } from "./lib/admin";
 import { Post } from "./lib/store";
@@ -186,6 +187,7 @@ function AppContent() {
   const jobMatch = matchDynamic("/jobs/:id", path);
   const formationMatch = matchDynamic("/formations/:id", path);
   const userProfileMatch = matchDynamic("/profile/:id", path);
+  const groupMatch = matchDynamic("/groups/:id", path);
 
   if (productMatch) {
     return (
@@ -217,6 +219,17 @@ function AppContent() {
         <UserProfilePage userId={parseInt(userProfileMatch.id)} />
       </Layout>
     );
+  }
+
+  if (groupMatch) {
+    const gid = parseInt(groupMatch.id, 10);
+    if (!isNaN(gid)) {
+      return (
+        <Layout onNewPost={handleNewPost}>
+          <GroupDetailPage groupId={gid} />
+        </Layout>
+      );
+    }
   }
 
   return (

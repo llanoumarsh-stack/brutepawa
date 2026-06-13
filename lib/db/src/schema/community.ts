@@ -48,10 +48,20 @@ export const pageFollowersTable = pgTable("page_followers", {
   followedAt: timestamp("followed_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+export const groupPostsTable = pgTable("group_posts", {
+  id: serial("id").primaryKey(),
+  groupId: integer("group_id").notNull(),
+  userId: integer("user_id").notNull(),
+  content: text("content").notNull(),
+  imageUrl: text("image_url"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const insertGroupSchema = createInsertSchema(groupsTable).omit({ id: true, createdAt: true, updatedAt: true, membersCount: true });
 export const insertPageSchema = createInsertSchema(pagesTable).omit({ id: true, createdAt: true, updatedAt: true, followersCount: true });
 export type Group = typeof groupsTable.$inferSelect;
 export type GroupMember = typeof groupMembersTable.$inferSelect;
+export type GroupPost = typeof groupPostsTable.$inferSelect;
 export type Page = typeof pagesTable.$inferSelect;
 export type PageFollower = typeof pageFollowersTable.$inferSelect;
 export type InsertGroup = z.infer<typeof insertGroupSchema>;

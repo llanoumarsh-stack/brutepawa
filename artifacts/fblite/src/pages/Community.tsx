@@ -3,7 +3,8 @@ import { useNavigate } from "../router";
 import {
   apiGetUsersWithStatus, apiGetFriends, apiGetFriendRequests,
   apiSendFriendRequest, apiAcceptFriendRequest, apiRejectFriendRequest,
-  PublicUser, PublicUserWithStatus, FriendRequest,
+  apiGetGroups, apiJoinGroup, apiLeaveGroup,
+  PublicUser, PublicUserWithStatus, FriendRequest, ApiGroup,
 } from "../lib/api";
 
 type SubTab = "personnes" | "amis" | "abonnes" | "groupes" | "pages" | "entreprises" | "messagerie";
@@ -62,16 +63,25 @@ export default function Community() {
   const [users, setUsers] = useState<PublicUserWithStatus[]>([]);
   const [friends, setFriends] = useState<PublicUser[]>([]);
   const [requests, setRequests] = useState<FriendRequest[]>([]);
+  const [groups, setGroups] = useState<ApiGroup[]>([]);
+  const [groupSearch, setGroupSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<Record<number, boolean>>({});
+  const [groupActionLoading, setGroupActionLoading] = useState<Record<number, boolean>>({});
 
   const loadAll = useCallback(async () => {
     setLoading(true);
     try {
-      const [u, f, r] = await Promise.all([apiGetUsersWithStatus(), apiGetFriends(), apiGetFriendRequests()]);
+      const [u, f, r, g] = await Promise.all([
+        apiGetUsersWithStatus(),
+        apiGetFriends(),
+        apiGetFriendRequests(),
+        apiGetGroups(),
+      ]);
       setUsers(u);
       setFriends(f);
       setRequests(r);
+      setGroups(g);
     } catch { /* ignore */ }
     setLoading(false);
   }, []);
@@ -334,8 +344,120 @@ export default function Community() {
         {/* ─── GROUPES ─── */}
         {activeTab === "groupes" && (
           <>
-            <button className="btn-primary" style={{ marginBottom: 16 }}>+ Créer un groupe</button>
-            <EmptyState emoji="🏘️" title="Aucun groupe disponible" sub="Les groupes seront bientôt disponibles." />
+            <input
+              value={groupSearch}
+              onChange={e => setGroupSearch(e.target.value)}
+              placeholder="🔍 Rechercher des groupes..."
+              style={{ marginBottom: 12 }}
+            />
+
+            {loading ? (
+              <div style={{ textAlign: "center", padding: 32, color: "var(--fb-text-secondary)" }}>Chargement…</div>
+            ) : (() => {
+              const q = groupSearch.toLowerCase().trim();
+              const filtered = q
+                ? groups.filter(g =>
+                    g.name.toLowerCase().includes(q) ||
+                    (g.description ?? "").toLowerCase().includes(q) ||
+                    g.category.toLowerCase().includes(q),
+                  )
+                : groups;
+
+              if (filtered.length === 0) {
+                return (
+                  <EmptyState
+                    emoji="🏘️"
+                    title={q ? "Aucun groupe trouvé" : "Aucun groupe disponible"}
+                    sub={q ? "Modifiez votre recherche." : "Les groupes seront bientôt disponibles."}
+                  />
+                );
+              }
+
+              return (
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {filtered.map(group => (
+                    <div
+                      key={group.id}
+                      style={{ background: "var(--fb-white)", borderRadius: 12, border: "1px solid var(--fb-divider)", overflow: "hidden" }}
+                    >
+                      {/* Cover strip */}
+                      <div
+                        onClick={() => navigate(`/groups/${group.id}`)}
+                        style={{
+                          height: 64,
+                          background: group.coverUrl
+                            ? `url(${group.coverUrl}) center/cover no-repeat`
+                            : "linear-gradient(135deg, #1877F2 0%, #42A5F5 100%)",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          cursor: "pointer", fontSize: 32,
+                        }}
+                      >
+                        {!group.coverUrl && group.emoji}
+                      </div>
+
+                      {/* Body */}
+                      <div style={{ padding: "12px 14px", display: "flex", alignItems: "center", gap: 12 }}>
+                        <div
+                          style={{ flex: 1, minWidth: 0, cursor: "pointer" }}
+                          onClick={() => navigate(`/groups/${group.id}`)}
+                        >
+                          <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 2 }}>{group.emoji} {group.name}</div>
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: "2px 10px" }}>
+                            <span style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>
+                              👥 {group.membersCount.toLocaleString()} membre{group.membersCount !== 1 ? "s" : ""}
+                            </span>
+                            <span style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>
+                              {group.privacy === "public" ? "🌍 Public" : "🔒 Privé"}
+                            </span>
+                            {group.country && (
+                              <span style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>📍 {group.country}</span>
+                            )}
+                          </div>
+                          {group.description && (
+                            <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", marginTop: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              {group.description}
+                            </div>
+                          )}
+                        </div>
+
+                        {group.isMember ? (
+                          <button
+                            disabled={groupActionLoading[group.id]}
+                            onClick={async () => {
+                              setGroupActionLoading(prev => ({ ...prev, [group.id]: true }));
+                              try {
+                                await apiLeaveGroup(group.id);
+                                setGroups(prev => prev.map(g => g.id === group.id ? { ...g, isMember: false, membersCount: Math.max(0, g.membersCount - 1) } : g));
+                              } catch { /* ignore */ }
+                              setGroupActionLoading(prev => ({ ...prev, [group.id]: false }));
+                            }}
+                            style={{ flexShrink: 0, padding: "8px 14px", borderRadius: 8, border: "1px solid var(--fb-border)", background: "var(--fb-white)", color: "var(--fb-text)", fontWeight: 600, fontSize: 13, cursor: "pointer" }}
+                          >
+                            {groupActionLoading[group.id] ? "…" : "✓ Membre"}
+                          </button>
+                        ) : (
+                          <button
+                            disabled={groupActionLoading[group.id]}
+                            onClick={async () => {
+                              setGroupActionLoading(prev => ({ ...prev, [group.id]: true }));
+                              try {
+                                await apiJoinGroup(group.id);
+                                setGroups(prev => prev.map(g => g.id === group.id ? { ...g, isMember: true, membersCount: g.membersCount + 1 } : g));
+                              } catch { /* ignore */ }
+                              setGroupActionLoading(prev => ({ ...prev, [group.id]: false }));
+                            }}
+                            className="btn-primary"
+                            style={{ flexShrink: 0, width: "auto", padding: "8px 14px", fontSize: 13, fontWeight: 700 }}
+                          >
+                            {groupActionLoading[group.id] ? "…" : "+ Rejoindre"}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
           </>
         )}
 

@@ -360,6 +360,7 @@ export default function SearchPage({ q }: Props) {
           {groups.map((group, idx) => (
             <div
               key={group.id}
+              onClick={() => navigate(`/groups/${group.id}`)}
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -367,6 +368,7 @@ export default function SearchPage({ q }: Props) {
                 padding: "12px 16px",
                 borderBottom: idx < groups.length - 1 ? "1px solid var(--fb-divider)" : "none",
                 transition: "background 0.15s",
+                cursor: "pointer",
               }}
               onMouseEnter={e => (e.currentTarget.style.background = "var(--fb-bg)")}
               onMouseLeave={e => (e.currentTarget.style.background = "")}
