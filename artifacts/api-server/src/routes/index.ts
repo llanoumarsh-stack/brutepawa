@@ -1,0 +1,30 @@
+import { Router, type IRouter } from "express";
+import healthRouter from "./health";
+import authRouter from "./auth";
+import usersRouter from "./users";
+import walletRouter from "./wallet";
+import tontinesRouter from "./tontines";
+import marketplaceRouter from "./marketplace";
+import jobsRouter from "./jobs";
+import educationRouter from "./education";
+import socialRouter from "./social";
+import adminRouter from "./admin";
+import uploadRouter from "./upload";
+import streamRouter from "./stream";
+
+const router: IRouter = Router();
+
+router.use(healthRouter);
+router.use(authRouter);
+router.use(usersRouter);
+router.use(walletRouter);
+router.use(tontinesRouter);
+router.use(marketplaceRouter);
+router.use(jobsRouter);
+router.use(educationRouter);
+router.use(socialRouter);
+router.use(adminRouter);
+router.use(uploadRouter);
+router.use(streamRouter);
+
+export default router;
