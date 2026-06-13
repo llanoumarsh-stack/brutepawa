@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import {
   apiGetWallet, apiGetTransactions, apiDeposit, apiTransfer, apiGetUsers,
-  apiGetCreatorWallet, apiPurchaseTokens, apiGetTokenPurchaseStatus,
-  type ApiTx, type PublicUser, type ApiTokenPurchase,
+  apiGetCreatorWallet, apiPurchaseTokens, apiGetTokenPurchaseStatus, apiGetGiftHistory,
+  type ApiTx, type PublicUser, type ApiTokenPurchase, type ApiGiftHistoryItem,
 } from "../lib/api";
 
-type Tab = "accueil" | "depot" | "envoyer" | "historique" | "jetons";
+type Tab = "accueil" | "depot" | "envoyer" | "historique" | "jetons" | "cadeaux";
 type DepotMethod = "mtn" | "orange" | "moov";
 type TokenOp = "orange" | "mtn" | "wave";
 
@@ -30,9 +30,16 @@ export default function WalletPage() {
   const [tab, setTab]                   = useState<Tab>(() => {
     const params = new URLSearchParams(window.location.search);
     const t = params.get("tab");
-    if (t === "jetons" || t === "depot" || t === "envoyer" || t === "historique") return t as Tab;
+    if (t === "jetons" || t === "depot" || t === "envoyer" || t === "historique" || t === "cadeaux") return t as Tab;
     return "accueil";
   });
+
+  // Gift history state
+  const [giftHistory, setGiftHistory]         = useState<ApiGiftHistoryItem[]>([]);
+  const [giftHistoryLoading, setGiftHistoryLoading] = useState(false);
+  const [giftHistoryOffset, setGiftHistoryOffset]   = useState(0);
+  const [giftHistoryHasMore, setGiftHistoryHasMore] = useState(true);
+  const GIFT_PAGE = 20;
 
   // XOF wallet state
   const [depotMethod, setDepotMethod]   = useState<DepotMethod>("mtn");
@@ -88,6 +95,32 @@ export default function WalletPage() {
     }, 3000);
     return () => { if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; } };
   }, [tokenResult]);
+
+  // Load gift history when tab is opened
+  useEffect(() => {
+    if (tab !== "cadeaux") return;
+    setGiftHistoryLoading(true);
+    apiGetGiftHistory(GIFT_PAGE, 0)
+      .then(items => {
+        setGiftHistory(items);
+        setGiftHistoryOffset(items.length);
+        setGiftHistoryHasMore(items.length === GIFT_PAGE);
+      })
+      .catch(() => {})
+      .finally(() => setGiftHistoryLoading(false));
+  }, [tab]);
+
+  const loadMoreGifts = async () => {
+    if (giftHistoryLoading || !giftHistoryHasMore) return;
+    setGiftHistoryLoading(true);
+    try {
+      const items = await apiGetGiftHistory(GIFT_PAGE, giftHistoryOffset);
+      setGiftHistory(prev => [...prev, ...items]);
+      setGiftHistoryOffset(prev => prev + items.length);
+      setGiftHistoryHasMore(items.length === GIFT_PAGE);
+    } catch { /* ignore */ }
+    setGiftHistoryLoading(false);
+  };
 
   const reloadWallet = () =>
     Promise.all([apiGetWallet(), apiGetTransactions()])
@@ -191,6 +224,7 @@ export default function WalletPage() {
             { icon: "⬇️", label: "Déposer",    tab: "depot"      as Tab },
             { icon: "⬆️", label: "Envoyer",    tab: "envoyer"    as Tab },
             { icon: "🪙",  label: "Jetons",     tab: "jetons"     as Tab },
+            { icon: "🎁",  label: "Cadeaux",    tab: "cadeaux"    as Tab },
             { icon: "📋", label: "Historique", tab: "historique" as Tab },
           ] as const).map(btn => (
             <button key={btn.tab} onClick={() => setTab(btn.tab)} style={{
@@ -475,6 +509,79 @@ export default function WalletPage() {
               <button onClick={resetTokenPurchase}
                 style={{ width: "100%", background: "#E91E8C", color: "#fff", border: "none", borderRadius: 12, padding: 14, fontWeight: 800, fontSize: 15, cursor: "pointer" }}>
                 Faire un autre achat
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── CADEAUX 🎁 ── */}
+      {tab === "cadeaux" && (
+        <div style={{ background: "var(--fb-white)", marginTop: 4 }}>
+          <div style={{ padding: "12px 16px", borderBottom: "1px solid var(--fb-divider)", fontWeight: 700, fontSize: 15 }}>
+            🎁 Cadeaux envoyés ({giftHistory.length}{giftHistoryHasMore ? "+" : ""})
+          </div>
+
+          {giftHistoryLoading && giftHistory.length === 0 && (
+            <div style={{ padding: "32px 16px", textAlign: "center", color: "var(--fb-text-secondary)", fontSize: 14 }}>
+              Chargement…
+            </div>
+          )}
+
+          {!giftHistoryLoading && giftHistory.length === 0 && (
+            <div style={{ padding: "40px 16px", textAlign: "center" }}>
+              <div style={{ fontSize: 48, marginBottom: 10 }}>🎁</div>
+              <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 6 }}>Aucun cadeau envoyé</div>
+              <div style={{ color: "var(--fb-text-secondary)", fontSize: 13 }}>
+                Rejoins un live et envoie des cadeaux à tes créateurs préférés !
+              </div>
+            </div>
+          )}
+
+          {giftHistory.map(gift => {
+            const date = new Date(gift.createdAt).toLocaleDateString("fr-FR", {
+              day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit",
+            });
+            const recipient = gift.receiverName?.trim() || `Utilisateur #${gift.receiverId}`;
+            const contextLabel = gift.contextType === "live" ? "🔴 Live" : "🎬 Vidéo";
+            return (
+              <div key={gift.id} style={{ padding: "14px 16px", borderBottom: "1px solid var(--fb-divider)", display: "flex", alignItems: "center", gap: 14 }}>
+                <div style={{
+                  width: 48, height: 48, borderRadius: 14, flexShrink: 0,
+                  background: "linear-gradient(135deg, #fce4ec, #f8bbd0)",
+                  display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24,
+                }}>
+                  {gift.giftEmoji || "🎁"}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 800, fontSize: 14 }}>{gift.giftName}</div>
+                  <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    À <strong>{recipient}</strong> · {contextLabel} #{gift.contextId}
+                  </div>
+                  <div style={{ fontSize: 11, color: "var(--fb-text-secondary)", marginTop: 2 }}>{date}</div>
+                </div>
+                <div style={{ flexShrink: 0, fontWeight: 900, fontSize: 15, color: "#E91E8C", textAlign: "right" }}>
+                  <div>-🪙 {gift.tokenAmount.toLocaleString()}</div>
+                  <div style={{ fontSize: 10, color: "var(--fb-text-secondary)", fontWeight: 600, marginTop: 1 }}>
+                    jetons
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          {giftHistoryHasMore && (
+            <div style={{ padding: "14px 16px", textAlign: "center" }}>
+              <button
+                onClick={loadMoreGifts}
+                disabled={giftHistoryLoading}
+                style={{
+                  background: "none", border: "2px solid var(--fb-divider)", borderRadius: 10,
+                  padding: "10px 24px", fontWeight: 700, cursor: "pointer",
+                  color: "var(--fb-blue)", fontSize: 13,
+                }}
+              >
+                {giftHistoryLoading ? "Chargement…" : "Voir plus"}
               </button>
             </div>
           )}

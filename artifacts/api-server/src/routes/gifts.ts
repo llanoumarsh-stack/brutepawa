@@ -2,7 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { db } from "@workspace/db";
 import {
-  giftCatalogTable, giftTransactionsTable, walletsTable,
+  giftCatalogTable, giftTransactionsTable, walletsTable, usersTable,
 } from "@workspace/db/schema";
 import { eq, and, desc, sql, gt, gte } from "drizzle-orm";
 import { requireAuth } from "../middlewares/requireAuth";
@@ -140,6 +140,43 @@ router.get("/gifts/top-donors/:contextType/:contextId", async (req, res) => {
     .limit(10);
 
   res.json(donors);
+});
+
+// GET /api/gifts/history  — viewer sent-gift history (auth required)
+router.get("/gifts/history", requireAuth, async (req, res) => {
+  const userId = req.userId!;
+  const limit  = Math.min(parseInt(String(req.query.limit  ?? "20"), 10) || 20, 100);
+  const offset = Math.max(parseInt(String(req.query.offset ?? "0"),  10) || 0,  0);
+
+  const receiver = db.$with("receiver").as(
+    db.select({ id: usersTable.id, firstName: usersTable.firstName, lastName: usersTable.lastName })
+      .from(usersTable),
+  );
+
+  const gifts = await db
+    .with(receiver)
+    .select({
+      id:           giftTransactionsTable.id,
+      senderId:     giftTransactionsTable.senderId,
+      senderName:   giftTransactionsTable.senderName,
+      receiverId:   giftTransactionsTable.receiverId,
+      receiverName: sql<string>`concat(${receiver.firstName}, ' ', ${receiver.lastName})`,
+      giftId:       giftTransactionsTable.giftId,
+      giftName:     giftTransactionsTable.giftName,
+      giftEmoji:    giftTransactionsTable.giftEmoji,
+      tokenAmount:  giftTransactionsTable.tokenAmount,
+      contextType:  giftTransactionsTable.contextType,
+      contextId:    giftTransactionsTable.contextId,
+      createdAt:    giftTransactionsTable.createdAt,
+    })
+    .from(giftTransactionsTable)
+    .leftJoin(receiver, eq(receiver.id, giftTransactionsTable.receiverId))
+    .where(eq(giftTransactionsTable.senderId, userId))
+    .orderBy(desc(giftTransactionsTable.createdAt))
+    .limit(limit)
+    .offset(offset);
+
+  res.json(gifts);
 });
 
 // GET /api/gifts/received  — creator history (auth required)

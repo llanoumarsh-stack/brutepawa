@@ -662,6 +662,16 @@ export async function apiGetReceivedGifts(limit = 20): Promise<ApiGiftTransactio
   return res.json() as Promise<ApiGiftTransaction[]>;
 }
 
+export interface ApiGiftHistoryItem extends ApiGiftTransaction {
+  receiverName: string | null;
+}
+
+export async function apiGetGiftHistory(limit = 20, offset = 0): Promise<ApiGiftHistoryItem[]> {
+  const res = await apiFetch(`/gifts/history?limit=${limit}&offset=${offset}`);
+  if (!res.ok) return [];
+  return res.json() as Promise<ApiGiftHistoryItem[]>;
+}
+
 export async function apiPurchaseTokens(data: {
   packId: "pack_100" | "pack_500" | "pack_2000";
   paymentMethod: "orange" | "mtn" | "wave";
