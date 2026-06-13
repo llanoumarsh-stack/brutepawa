@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { z } from "zod";
 import { db } from "@workspace/db";
-import { liveStreamsTable } from "@workspace/db/schema";
+import { liveStreamsTable, liveMessagesTable } from "@workspace/db/schema";
 import { followsTable } from "@workspace/db/schema";
 import { eq, and, sql, gt, asc } from "drizzle-orm";
 import { createLiveInput, deleteLiveInput } from "../lib/cloudflare-stream";
@@ -214,7 +214,37 @@ router.delete("/stream/live/:id/heartbeat", async (req, res) => {
   res.json({ ok: true });
 });
 
-// SSE — real-time gift events for a live stream (polls DB every 2s, pushes new gifts)
+// Post a chat message to a live stream (requires auth)
+router.post("/stream/live/:id/messages", requireAuth, async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
+
+  const content = (req.body?.content ?? "").toString().trim().slice(0, 300);
+  if (!content) { res.status(400).json({ error: "content is required" }); return; }
+
+  const userId = String(req.userId!);
+
+  // Verify stream is live
+  const [stream] = await db
+    .select({ id: liveStreamsTable.id })
+    .from(liveStreamsTable)
+    .where(and(eq(liveStreamsTable.id, id), eq(liveStreamsTable.status, "live")));
+  if (!stream) { res.status(404).json({ error: "Live not found or ended" }); return; }
+
+  // Fetch sender info from auth token / stored profile
+  const rawUser = (req as unknown as { user?: { name?: string; flag?: string } }).user;
+  const userName = rawUser?.name ?? "Anonyme";
+  const userFlag = rawUser?.flag ?? "";
+
+  const [row] = await db
+    .insert(liveMessagesTable)
+    .values({ streamId: id, userId, userName, userFlag, content })
+    .returning();
+
+  res.json(row);
+});
+
+// SSE — real-time gift + chat events for a live stream (polls DB every 2s)
 router.get("/stream/live/:id/events", async (req, res) => {
   const id = parseInt(req.params.id, 10);
   if (isNaN(id)) { res.status(400).end(); return; }
@@ -226,7 +256,8 @@ router.get("/stream/live/:id/events", async (req, res) => {
   res.flushHeaders();
 
   // Start from the current max gift id so we only push NEW gifts
-  let lastId = 0;
+  let lastGiftId = 0;
+  let lastMsgId = 0;
   try {
     const [row] = await db
       .select({ maxId: sql<number>`coalesce(max(id), 0)::int` })
@@ -235,25 +266,50 @@ router.get("/stream/live/:id/events", async (req, res) => {
         eq(giftTransactionsTable.contextType, "live"),
         eq(giftTransactionsTable.contextId, id),
       ));
-    lastId = row?.maxId ?? 0;
+    lastGiftId = row?.maxId ?? 0;
+  } catch { /* start from 0 if error */ }
+
+  try {
+    const [row] = await db
+      .select({ maxId: sql<number>`coalesce(max(id), 0)::int` })
+      .from(liveMessagesTable)
+      .where(eq(liveMessagesTable.streamId, id));
+    lastMsgId = row?.maxId ?? 0;
   } catch { /* start from 0 if error */ }
 
   const poll = async () => {
     try {
+      // Poll new gifts
       const gifts = await db
         .select()
         .from(giftTransactionsTable)
         .where(and(
           eq(giftTransactionsTable.contextType, "live"),
           eq(giftTransactionsTable.contextId, id),
-          gt(giftTransactionsTable.id, lastId),
+          gt(giftTransactionsTable.id, lastGiftId),
         ))
         .orderBy(asc(giftTransactionsTable.id))
         .limit(20);
 
       for (const g of gifts) {
-        res.write(`data: ${JSON.stringify(g)}\n\n`);
-        lastId = g.id;
+        res.write(`event: gift\ndata: ${JSON.stringify(g)}\n\n`);
+        lastGiftId = g.id;
+      }
+
+      // Poll new chat messages
+      const msgs = await db
+        .select()
+        .from(liveMessagesTable)
+        .where(and(
+          eq(liveMessagesTable.streamId, id),
+          gt(liveMessagesTable.id, lastMsgId),
+        ))
+        .orderBy(asc(liveMessagesTable.id))
+        .limit(30);
+
+      for (const m of msgs) {
+        res.write(`event: chat\ndata: ${JSON.stringify(m)}\n\n`);
+        lastMsgId = m.id;
       }
     } catch { /* ignore DB errors — keep connection alive */ }
   };

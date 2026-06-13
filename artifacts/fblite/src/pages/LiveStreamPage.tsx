@@ -154,27 +154,39 @@ export default function LiveStreamPage() {
       .catch(() => {});
   }, []);
 
-  // SSE — subscribe to incoming gift events when live
+  // SSE — subscribe to incoming gift + chat events when live
   useEffect(() => {
     if (!isLive || !cfStream.session?.id) return;
     const dbId = cfStream.session.id;
     const es = new EventSource(`/api/stream/live/${dbId}/events`);
     sseRef.current = es;
-    es.onmessage = (evt) => {
+
+    es.addEventListener("gift", (evt) => {
       try {
-        const g = JSON.parse(evt.data) as { id: number; giftEmoji: string; senderName: string; giftName: string };
+        const g = JSON.parse((evt as MessageEvent).data) as { id: number; giftEmoji: string; senderName: string; giftName: string };
         const x = 10 + Math.random() * 60;
         const newGift = { id: g.id, emoji: g.giftEmoji, senderName: g.senderName, giftName: g.giftName, x };
         setFloatingGifts(prev => [...prev, newGift]);
         setTimeout(() => setFloatingGifts(prev => prev.filter(fg => fg.id !== newGift.id)), 3500);
-        // Add as a comment
         setComments(prev => [...prev.slice(-30), {
           id: Date.now(),
           user: g.senderName || "Anonyme",
           text: `a envoyé ${g.giftEmoji} ${g.giftName} !`,
         }]);
       } catch { /* ignore */ }
-    };
+    });
+
+    es.addEventListener("chat", (evt) => {
+      try {
+        const m = JSON.parse((evt as MessageEvent).data) as { userName: string; userFlag?: string; content: string };
+        setComments(prev => [...prev.slice(-30), {
+          id: Date.now() + Math.random(),
+          user: (m.userFlag ? `${m.userFlag} ` : "") + (m.userName || "Anonyme"),
+          text: m.content,
+        }]);
+      } catch { /* ignore */ }
+    });
+
     return () => {
       es.close();
       sseRef.current = null;
@@ -218,12 +230,25 @@ export default function LiveStreamPage() {
     setTimeout(() => setReactingEmoji(null), 350);
   };
 
-  const sendComment = () => {
+  const sendComment = async () => {
     const text = newComment.trim();
     if (!text) return;
-    setComments(prev => [...prev.slice(-30), { id: Date.now(), user: user.name.split(" ")[0], text }]);
     setNewComment("");
     setShowCommentInput(false);
+    // Optimistic: add locally immediately
+    setComments(prev => [...prev.slice(-30), { id: Date.now(), user: user.name.split(" ")[0], text }]);
+    // Persist to the server if we're live so viewers also see it
+    if (isLive && cfStream.session?.id) {
+      const token = getBpToken();
+      fetch(`/api/stream/live/${cfStream.session.id}/messages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ content: text }),
+      }).catch(() => {});
+    }
   };
 
   const endLive = async () => {

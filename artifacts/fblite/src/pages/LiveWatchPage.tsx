@@ -28,10 +28,12 @@ interface FloatingGift {
 
 interface FeedEntry {
   id: number;
+  type: "gift" | "chat";
   senderName: string;
-  giftEmoji: string;
-  giftName: string;
-  fading: boolean;
+  userFlag?: string;
+  giftEmoji?: string;
+  giftName?: string;
+  content?: string;
 }
 
 interface Props {
@@ -48,6 +50,8 @@ export default function LiveWatchPage({ streamId }: Props) {
   const [showGiftPicker, setShowGiftPicker] = useState(false);
   const [floatingGifts, setFloatingGifts]  = useState<FloatingGift[]>([]);
   const [feedEntries, setFeedEntries]      = useState<FeedEntry[]>([]);
+  const [chatInput, setChatInput]          = useState("");
+  const [sendingChat, setSendingChat]      = useState(false);
   const floatIdRef  = useRef(0);
   const feedIdRef   = useRef(0);
   const feedBottomRef = useRef<HTMLDivElement>(null);
@@ -99,43 +103,49 @@ export default function LiveWatchPage({ streamId }: Props) {
     return () => clearInterval(iv);
   }, [stream]);
 
-  // SSE — subscribe to gift events for the live feed
+  // SSE — subscribe to gift + chat events for the live feed
   useEffect(() => {
     if (!stream) return;
 
     const es = new EventSource(`/api/stream/live/${stream.id}/events`);
     sseRef.current = es;
 
-    es.onmessage = (e) => {
+    es.addEventListener("gift", (e) => {
       try {
-        const data = JSON.parse(e.data) as {
+        const data = JSON.parse((e as MessageEvent).data) as {
           senderName: string;
           giftEmoji: string;
           giftName: string;
         };
         const fid = ++feedIdRef.current;
-        const entry: FeedEntry = {
+        setFeedEntries(prev => [...prev.slice(-49), {
           id: fid,
+          type: "gift",
           senderName: data.senderName || "Anonyme",
-          giftEmoji:  data.giftEmoji  || "🎁",
-          giftName:   data.giftName   || "Cadeau",
-          fading: false,
-        };
-        setFeedEntries(prev => [...prev.slice(-19), entry]);
-
-        spawnFloat(entry.giftEmoji);
-
-        // Start fade-out after 3.5 s, remove after 4.5 s
-        setTimeout(() => {
-          setFeedEntries(prev =>
-            prev.map(fe => fe.id === fid ? { ...fe, fading: true } : fe)
-          );
-        }, 3500);
-        setTimeout(() => {
-          setFeedEntries(prev => prev.filter(fe => fe.id !== fid));
-        }, 4500);
+          giftEmoji: data.giftEmoji  || "🎁",
+          giftName:  data.giftName   || "Cadeau",
+        }]);
+        spawnFloat(data.giftEmoji || "🎁");
       } catch { /* ignore parse errors */ }
-    };
+    });
+
+    es.addEventListener("chat", (e) => {
+      try {
+        const data = JSON.parse((e as MessageEvent).data) as {
+          userName: string;
+          userFlag?: string;
+          content: string;
+        };
+        const fid = ++feedIdRef.current;
+        setFeedEntries(prev => [...prev.slice(-49), {
+          id: fid,
+          type: "chat",
+          senderName: data.userName || "Anonyme",
+          userFlag: data.userFlag ?? "",
+          content: data.content,
+        }]);
+      } catch { /* ignore parse errors */ }
+    });
 
     return () => {
       es.close();
@@ -154,6 +164,26 @@ export default function LiveWatchPage({ streamId }: Props) {
     const x  = 15 + Math.random() * 60;
     setFloatingGifts(prev => [...prev, { id, emoji, x }]);
     setTimeout(() => setFloatingGifts(prev => prev.filter(g => g.id !== id)), 2200);
+  };
+
+  const sendChat = async () => {
+    const text = chatInput.trim();
+    if (!text || !stream || sendingChat) return;
+    setSendingChat(true);
+    try {
+      const token = getBpToken();
+      await fetch(`/api/stream/live/${stream.id}/messages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ content: text }),
+      });
+      setChatInput("");
+    } catch { /* ignore */ } finally {
+      setSendingChat(false);
+    }
   };
 
   if (loading) {
@@ -179,6 +209,7 @@ export default function LiveWatchPage({ streamId }: Props) {
   }
 
   const broadcasterId = parseInt(stream.userId, 10);
+  const token = getBpToken();
 
   return (
     <div className="flex flex-col h-screen bg-black text-white relative overflow-hidden">
@@ -231,26 +262,26 @@ export default function LiveWatchPage({ streamId }: Props) {
           </div>
         ))}
 
-        {/* Gift event feed overlay */}
-        {feedEntries.length > 0 && (
-          <div
-            style={{
-              position: "absolute",
-              bottom: 80,
-              left: 12,
-              width: "calc(100% - 24px)",
-              maxHeight: 160,
-              overflowY: "auto",
-              overflowX: "hidden",
-              display: "flex",
-              flexDirection: "column",
-              gap: 4,
-              pointerEvents: "none",
-              zIndex: 40,
-              scrollbarWidth: "none",
-            }}
-          >
-            {feedEntries.map(fe => (
+        {/* Unified activity feed overlay (gifts + chat) */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 12,
+            left: 12,
+            width: "calc(100% - 24px)",
+            maxHeight: 180,
+            overflowY: "auto",
+            overflowX: "hidden",
+            display: "flex",
+            flexDirection: "column",
+            gap: 5,
+            pointerEvents: "none",
+            zIndex: 40,
+            scrollbarWidth: "none",
+          }}
+        >
+          {feedEntries.map(fe => (
+            fe.type === "gift" ? (
               <div
                 key={fe.id}
                 style={{
@@ -258,7 +289,7 @@ export default function LiveWatchPage({ streamId }: Props) {
                   alignSelf: "flex-start",
                   alignItems: "center",
                   gap: 6,
-                  background: "rgba(0,0,0,0.55)",
+                  background: "rgba(0,0,0,0.6)",
                   backdropFilter: "blur(4px)",
                   borderRadius: 20,
                   padding: "4px 12px 4px 8px",
@@ -266,8 +297,6 @@ export default function LiveWatchPage({ streamId }: Props) {
                   fontWeight: 600,
                   color: "#fff",
                   whiteSpace: "nowrap",
-                  transition: "opacity 1s ease",
-                  opacity: fe.fading ? 0 : 1,
                   animation: "feedSlideIn 0.3s ease-out",
                 }}
               >
@@ -276,10 +305,33 @@ export default function LiveWatchPage({ streamId }: Props) {
                 <span style={{ fontWeight: 400, color: "rgba(255,255,255,0.8)" }}>a envoyé</span>
                 <span style={{ color: "#E91E8C" }}>{fe.giftName}</span>
               </div>
-            ))}
-            <div ref={feedBottomRef} />
-          </div>
-        )}
+            ) : (
+              <div
+                key={fe.id}
+                style={{
+                  display: "inline-flex",
+                  alignSelf: "flex-start",
+                  alignItems: "baseline",
+                  gap: 5,
+                  background: "rgba(0,0,0,0.55)",
+                  backdropFilter: "blur(4px)",
+                  borderRadius: 20,
+                  padding: "5px 12px",
+                  fontSize: 13,
+                  color: "#fff",
+                  animation: "feedSlideIn 0.3s ease-out",
+                  maxWidth: "90%",
+                }}
+              >
+                <span style={{ color: "#64B5F6", fontWeight: 700, whiteSpace: "nowrap", flexShrink: 0 }}>
+                  {fe.userFlag ? `${fe.userFlag} ` : ""}{fe.senderName}
+                </span>
+                <span style={{ wordBreak: "break-word" }}>{fe.content}</span>
+              </div>
+            )
+          ))}
+          <div ref={feedBottomRef} />
+        </div>
       </div>
 
       {/* Top Donors bar (shown if there are any) */}
@@ -309,35 +361,81 @@ export default function LiveWatchPage({ streamId }: Props) {
         </div>
       )}
 
-      {/* Bottom action bar */}
+      {/* Bottom action bar: chat input + gift button */}
       <div
         style={{
           background: "rgba(0,0,0,0.85)",
-          padding: "10px 16px",
+          padding: "10px 12px",
           display: "flex",
-          justifyContent: "flex-end",
           alignItems: "center",
-          gap: 12,
+          gap: 8,
           zIndex: 10,
         }}
       >
+        {token ? (
+          <>
+            <input
+              value={chatInput}
+              onChange={e => setChatInput(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter") sendChat(); }}
+              placeholder="Écrire un message…"
+              maxLength={300}
+              style={{
+                flex: 1,
+                background: "rgba(255,255,255,0.12)",
+                border: "1px solid rgba(255,255,255,0.2)",
+                borderRadius: 22,
+                padding: "9px 14px",
+                fontSize: 14,
+                color: "#fff",
+                outline: "none",
+              }}
+            />
+            <button
+              onClick={sendChat}
+              disabled={!chatInput.trim() || sendingChat}
+              style={{
+                background: chatInput.trim() ? "#1877F2" : "rgba(255,255,255,0.15)",
+                border: "none",
+                borderRadius: "50%",
+                width: 38,
+                height: 38,
+                color: "#fff",
+                fontSize: 17,
+                cursor: chatInput.trim() ? "pointer" : "default",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+                transition: "background 0.2s",
+              }}
+            >
+              ➤
+            </button>
+          </>
+        ) : (
+          <div style={{ flex: 1, color: "rgba(255,255,255,0.5)", fontSize: 13, paddingLeft: 4 }}>
+            Connecte-toi pour participer au chat
+          </div>
+        )}
         <button
           onClick={() => setShowGiftPicker(true)}
           style={{
             background: "linear-gradient(135deg, #E91E8C, #9C27B0)",
             border: "none",
             borderRadius: 24,
-            padding: "10px 20px",
+            padding: "9px 16px",
             color: "#fff",
             fontWeight: 800,
-            fontSize: 15,
+            fontSize: 14,
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
-            gap: 6,
+            gap: 5,
+            flexShrink: 0,
           }}
         >
-          🎁 Envoyer un cadeau
+          🎁
         </button>
       </div>
 

@@ -32,6 +32,16 @@ export const messagesTable = pgTable("messages", {
 
 export const liveStreamStatusEnum = pgEnum("live_stream_status", ["live", "ended"]);
 
+export const liveMessagesTable = pgTable("live_messages", {
+  id: serial("id").primaryKey(),
+  streamId: integer("stream_id").notNull(),
+  userId: text("user_id").notNull(),
+  userName: text("user_name").notNull(),
+  userFlag: text("user_flag").notNull().default(""),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [index("live_messages_stream_idx").on(t.streamId)]);
+
 export const liveStreamsTable = pgTable("live_streams", {
   id: serial("id").primaryKey(),
   userId: text("user_id").notNull(),
@@ -112,6 +122,7 @@ export type Post = typeof postsTable.$inferSelect;
 export type InsertMessage = z.infer<typeof insertMessageSchema>;
 export type Message = typeof messagesTable.$inferSelect;
 export type LiveStream = typeof liveStreamsTable.$inferSelect;
+export type LiveMessage = typeof liveMessagesTable.$inferSelect;
 export type Comment = typeof commentsTable.$inferSelect;
 export type InsertComment = z.infer<typeof insertCommentSchema>;
 export type Follow = typeof followsTable.$inferSelect;
