@@ -1,5 +1,9 @@
 import app from "./app";
 import { logger } from "./lib/logger";
+import { db } from "@workspace/db";
+import { liveStreamsTable } from "@workspace/db/schema";
+import { eq, and, lt, isNotNull, or } from "drizzle-orm";
+import { deleteLiveInput } from "./lib/cloudflare-stream";
 
 const rawPort = process.env["PORT"];
 
@@ -24,6 +28,44 @@ try {
   logger.warn("Could not parse database URL");
 }
 
+// Auto-stop live streams that have been running too long or have no viewers
+async function autoStopStaleLives() {
+  const now = new Date();
+  const fiveMinAgo  = new Date(now.getTime() - 5  * 60 * 1000);
+  const sixtyMinAgo = new Date(now.getTime() - 60 * 60 * 1000);
+
+  try {
+    // Find lives to stop: (no viewer heartbeat in > 5 min) OR (running > 60 min)
+    const staleLives = await db
+      .select({ id: liveStreamsTable.id, liveInputId: liveStreamsTable.liveInputId })
+      .from(liveStreamsTable)
+      .where(
+        and(
+          eq(liveStreamsTable.status, "live"),
+          or(
+            and(isNotNull(liveStreamsTable.lastViewerAt), lt(liveStreamsTable.lastViewerAt, fiveMinAgo)),
+            lt(liveStreamsTable.startedAt, sixtyMinAgo),
+          ),
+        ),
+      );
+
+    for (const live of staleLives) {
+      try {
+        await deleteLiveInput(live.liveInputId);
+      } catch (err) {
+        logger.warn({ err, liveInputId: live.liveInputId }, "autoStop: CF deleteLiveInput failed (non-fatal)");
+      }
+      await db
+        .update(liveStreamsTable)
+        .set({ status: "ended", endedAt: now })
+        .where(eq(liveStreamsTable.id, live.id));
+      logger.info({ liveId: live.id }, "autoStop: ended stale live");
+    }
+  } catch (err) {
+    logger.error({ err }, "autoStop: error running live cleanup");
+  }
+}
+
 app.listen(port, (err) => {
   if (err) {
     logger.error({ err }, "Error listening on port");
@@ -31,4 +73,8 @@ app.listen(port, (err) => {
   }
 
   logger.info({ port }, "Server listening");
+
+  // Start auto-stop cron: runs every 2 minutes
+  setInterval(autoStopStaleLives, 2 * 60 * 1000);
+  logger.info("Live auto-stop cron started (every 2 min)");
 });

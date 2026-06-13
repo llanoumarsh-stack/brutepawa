@@ -11,6 +11,7 @@ export type StreamStatus =
   | "error";
 
 export interface StreamSession {
+  id: number | null;
   liveInputId: string;
   webRtcUrl: string;
   playbackUrl: string;
@@ -63,7 +64,13 @@ export function useCloudflareStream(opts?: UseCloudflareStreamOptions) {
         throw new Error(body.error ?? `HTTP ${res.status}`);
       }
 
-      const sess = await res.json() as StreamSession;
+      const raw = await res.json() as { id?: number | null; liveInputId: string; webRtcUrl: string; playbackUrl: string };
+      const sess: StreamSession = {
+        id: raw.id ?? null,
+        liveInputId: raw.liveInputId,
+        webRtcUrl: raw.webRtcUrl,
+        playbackUrl: raw.playbackUrl,
+      };
       setSession(sess);
       updateStatus("connecting");
 

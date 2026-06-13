@@ -32,7 +32,7 @@ export async function createLiveInput(meta: { userName: string }): Promise<LiveI
     method: "POST",
     body: JSON.stringify({
       meta: { name: `brute-pawa-live-${meta.userName}-${Date.now()}` },
-      recording: { mode: "automatic", timeoutSeconds: 60 },
+      recording: { mode: "off" },
     }),
   });
 }

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "../router";
 import { useCloudflareStream } from "../hooks/useCloudflareStream";
+import { getBpToken } from "../lib/api";
 
 const REACTIONS = ["❤️", "😍", "🔥", "👏", "😂", "🎉"];
 
@@ -29,6 +30,7 @@ export default function LiveStreamPage() {
   const [newComment, setNewComment] = useState("");
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [showConfirmEnd, setShowConfirmEnd] = useState(false);
+  const [eligibility, setEligibility] = useState<{ canGoLive: boolean; followersCount: number } | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
@@ -121,6 +123,36 @@ export default function LiveStreamPage() {
       if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [isLive]);
+
+  // Fetch eligibility (follower gate) on mount
+  useEffect(() => {
+    const token = getBpToken();
+    if (!token) return;
+    fetch("/api/stream/live/eligibility", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then((data: { canGoLive: boolean; followersCount: number } | null) => {
+        if (data) setEligibility(data);
+      })
+      .catch(() => {});
+  }, []);
+
+  // Send heartbeat every 30 s while streaming (also acts as streamer keep-alive)
+  useEffect(() => {
+    if (!isLive || !cfStream.session?.id) return;
+    const dbId = cfStream.session.id;
+    const token = getBpToken();
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+    const beat = () => fetch(`/api/stream/live/${dbId}/heartbeat`, { method: "POST", headers }).catch(() => {});
+    beat();
+    const interval = setInterval(beat, 30_000);
+    return () => {
+      clearInterval(interval);
+      fetch(`/api/stream/live/${dbId}/heartbeat`, { method: "DELETE", headers }).catch(() => {});
+    };
+  }, [isLive, cfStream.session?.id]);
 
   useEffect(() => {
     commentsEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -277,17 +309,39 @@ export default function LiveStreamPage() {
             </div>
           )}
 
+          {/* Follower gate notice */}
+          {eligibility !== null && !eligibility.canGoLive && (
+            <div style={{
+              background: "rgba(244,67,54,0.15)", border: "1px solid rgba(244,67,54,0.4)",
+              borderRadius: 14, padding: "16px 18px", maxWidth: 320, textAlign: "center",
+            }}>
+              <div style={{ fontSize: 32, marginBottom: 8 }}>🔒</div>
+              <div style={{ color: "#fff", fontWeight: 700, fontSize: 15, marginBottom: 4 }}>
+                Live accessible à partir de 7 000 abonnés
+              </div>
+              <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 13 }}>
+                Tu as {eligibility.followersCount.toLocaleString("fr-FR")} abonné{eligibility.followersCount !== 1 ? "s" : ""}.
+              </div>
+            </div>
+          )}
+
           {/* Buttons */}
           {!isConnecting && (
             <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%", maxWidth: 300 }}>
               {cameraReady && (
-                <button onClick={goLive} style={{
-                  background: "#F44336", border: "none", borderRadius: 12,
-                  padding: "16px 0", color: "#fff", fontWeight: 900, fontSize: 16,
-                  cursor: "pointer", width: "100%",
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                  boxShadow: "0 4px 20px rgba(244,67,54,0.5)",
-                }}>
+                <button
+                  onClick={goLive}
+                  disabled={eligibility !== null && !eligibility.canGoLive}
+                  style={{
+                    background: (eligibility !== null && !eligibility.canGoLive) ? "rgba(255,255,255,0.15)" : "#F44336",
+                    border: "none", borderRadius: 12,
+                    padding: "16px 0", color: "#fff", fontWeight: 900, fontSize: 16,
+                    cursor: (eligibility !== null && !eligibility.canGoLive) ? "not-allowed" : "pointer",
+                    width: "100%", opacity: (eligibility !== null && !eligibility.canGoLive) ? 0.5 : 1,
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                    boxShadow: (eligibility !== null && !eligibility.canGoLive) ? "none" : "0 4px 20px rgba(244,67,54,0.5)",
+                  }}
+                >
                   🔴 Démarrer le direct
                 </button>
               )}

@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, integer, boolean, pgEnum, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, integer, boolean, pgEnum, uniqueIndex, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -41,9 +41,14 @@ export const liveStreamsTable = pgTable("live_streams", {
   webRtcUrl: text("webrtc_url").notNull(),
   playbackUrl: text("playback_url").notNull(),
   status: liveStreamStatusEnum("status").notNull().default("live"),
+  viewerCount: integer("viewer_count").notNull().default(0),
+  lastViewerAt: timestamp("last_viewer_at", { withTimezone: true }),
+  maxDurationMinutes: integer("max_duration_minutes").notNull().default(60),
+  recordingEnabled: boolean("recording_enabled").notNull().default(false),
+  replayUrl: text("replay_url"),
   startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
   endedAt: timestamp("ended_at", { withTimezone: true }),
-});
+}, (t) => [index("live_streams_status_idx").on(t.status)]);
 
 export const commentsTable = pgTable("comments", {
   id: serial("id").primaryKey(),

@@ -2,7 +2,8 @@ import { Router, type IRouter } from "express";
 import { z } from "zod";
 import { db } from "@workspace/db";
 import { liveStreamsTable } from "@workspace/db/schema";
-import { eq, and } from "drizzle-orm";
+import { followsTable } from "@workspace/db/schema";
+import { eq, and, sql } from "drizzle-orm";
 import { createLiveInput, deleteLiveInput } from "../lib/cloudflare-stream";
 import { requireAuth } from "../middlewares/requireAuth";
 
@@ -13,6 +14,18 @@ const StartBody = z.object({
   userFlag: z.string().default(""),
 });
 
+const MIN_FOLLOWERS = 7000;
+
+// Must be defined before any parameterised live routes to avoid prefix conflicts
+router.get("/stream/live/eligibility", requireAuth, async (req, res) => {
+  const userId = req.userId!;
+  const [{ cnt }] = await db
+    .select({ cnt: sql<number>`count(*)::int` })
+    .from(followsTable)
+    .where(eq(followsTable.followingId, userId));
+  res.json({ canGoLive: cnt >= MIN_FOLLOWERS, followersCount: cnt });
+});
+
 router.post("/stream/live", requireAuth, async (req, res) => {
   const parsed = StartBody.safeParse(req.body);
   if (!parsed.success) {
@@ -20,7 +33,20 @@ router.post("/stream/live", requireAuth, async (req, res) => {
     return;
   }
   const { userName, userFlag } = parsed.data;
-  const userId = String(req.userId!);
+  const userId = req.userId!;
+
+  // Gate: must have at least 7 000 followers
+  const [{ cnt: followersCount }] = await db
+    .select({ cnt: sql<number>`count(*)::int` })
+    .from(followsTable)
+    .where(eq(followsTable.followingId, userId));
+
+  if (followersCount < MIN_FOLLOWERS) {
+    res.status(403).json({
+      error: `Le live est accessible à partir de ${MIN_FOLLOWERS.toLocaleString("fr-FR")} abonnés. Tu en as ${followersCount.toLocaleString("fr-FR")}.`,
+    });
+    return;
+  }
 
   let liveInput;
   try {
@@ -38,7 +64,7 @@ router.post("/stream/live", requireAuth, async (req, res) => {
       const [row] = await db
         .insert(liveStreamsTable)
         .values({
-          userId,
+          userId:      String(userId),
           userName,
           userFlag,
           liveInputId: liveInput.uid,
@@ -67,7 +93,6 @@ router.delete("/stream/live/:liveInputId", requireAuth, async (req, res) => {
   const liveInputId = String(req.params.liveInputId);
   const userId = String(req.userId!);
 
-  // Verify the stream belongs to the authenticated user
   const [stream] = await db
     .select()
     .from(liveStreamsTable)
@@ -102,11 +127,47 @@ router.get("/stream/lives", async (_req, res) => {
       .from(liveStreamsTable)
       .where(eq(liveStreamsTable.status, "live"))
       .orderBy(liveStreamsTable.startedAt);
-
     res.json(lives);
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: "Failed to fetch live streams" });
   }
+});
+
+// Heartbeat — viewers (and streamer) call this every 30 s to signal presence.
+// Increments viewer_count and refreshes last_viewer_at.
+router.post("/stream/live/:id/heartbeat", async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
+
+  const [stream] = await db
+    .select({ id: liveStreamsTable.id })
+    .from(liveStreamsTable)
+    .where(and(eq(liveStreamsTable.id, id), eq(liveStreamsTable.status, "live")));
+
+  if (!stream) { res.status(404).json({ error: "Live not found or ended" }); return; }
+
+  await db
+    .update(liveStreamsTable)
+    .set({
+      viewerCount:  sql`${liveStreamsTable.viewerCount} + 1`,
+      lastViewerAt: new Date(),
+    })
+    .where(eq(liveStreamsTable.id, id));
+
+  res.json({ ok: true });
+});
+
+// Decrement viewer count when a viewer disconnects
+router.delete("/stream/live/:id/heartbeat", async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
+
+  await db
+    .update(liveStreamsTable)
+    .set({ viewerCount: sql`GREATEST(${liveStreamsTable.viewerCount} - 1, 0)` })
+    .where(and(eq(liveStreamsTable.id, id), eq(liveStreamsTable.status, "live")));
+
+  res.json({ ok: true });
 });
 
 export default router;
