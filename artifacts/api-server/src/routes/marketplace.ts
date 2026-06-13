@@ -6,7 +6,7 @@ import {
   DeleteProductParams, ListProductsQueryParams, CreateOrderBody, GetOrderParams
 } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
-import { deleteObject, extractKeyFromUrl } from "../lib/r2";
+import { deleteObject, extractKeyFromUrl, ownerIdFromKey } from "../lib/r2";
 
 const router = Router();
 
@@ -97,11 +97,11 @@ router.delete("/products/:id", requireAuth, async (req, res): Promise<void> => {
 
   await db.delete(productsTable).where(eq(productsTable.id, params.data.id));
 
-  // Best-effort R2 cleanup
+  // Best-effort R2 cleanup — only delete keys owned by the requesting user
   const r2Keys = [
     extractKeyFromUrl(product.imageUrl),
     extractKeyFromUrl(product.thumbnailUrl),
-  ].filter((k): k is string => k !== null);
+  ].filter((k): k is string => k !== null && ownerIdFromKey(k) === req.userId!);
   await Promise.all(r2Keys.map(k => deleteObject(k).catch(() => {})));
 
   res.sendStatus(204);

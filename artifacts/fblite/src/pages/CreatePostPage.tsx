@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "../router";
 import { searchPlaces, type Place } from "../data/locations";
 import { searchItunes, MUSIC_CATEGORIES, type Track } from "../data/music";
-import { apiGetUsers, type PublicUser } from "../lib/api";
+import { apiGetUsers, apiCreatePost, type PublicUser } from "../lib/api";
 import { useR2Upload, phaseLabel, type UploadedMedia } from "../hooks/useR2Upload";
 
 interface Props {
@@ -167,11 +167,20 @@ export default function CreatePostPage({ onPublish }: Props) {
   }
   const hasHeaderExtra = moodEmoji || taggedNames.length > 0;
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
     if (!canPublish) return;
     let finalContent = content.trim();
     if (selectedTrack) finalContent = (finalContent ? finalContent + "\n" : "") + `🎵 ${selectedTrack.title} — ${selectedTrack.artist}`;
     if (selectedLocation) finalContent += `\n📍 ${selectedLocation.city}, ${selectedLocation.country}`;
+
+    // Persist post to backend — include first uploaded media + its thumbnail
+    const firstMedia = medias[0];
+    await apiCreatePost(
+      finalContent,
+      firstMedia?.url ?? undefined,
+      firstMedia?.thumbnailUrl ?? undefined,
+    ).catch(() => {});
+
     onPublish?.(finalContent, hasBg ? activeBg?.value : undefined, selectedMood ?? undefined, selectedLocation ? `${selectedLocation.city}` : undefined);
     navigate("/");
   };

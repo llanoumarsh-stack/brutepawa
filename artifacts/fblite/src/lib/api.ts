@@ -176,10 +176,18 @@ export async function apiGetPosts(page = 1): Promise<FeedPost[]> {
   return res.json() as Promise<FeedPost[]>;
 }
 
-export async function apiCreatePost(content: string, imageUrl?: string): Promise<void> {
+export async function apiCreatePost(
+  content: string,
+  imageUrl?: string,
+  thumbnailUrl?: string,
+): Promise<void> {
   await apiFetch("/posts", {
     method: "POST",
-    body: JSON.stringify({ content, imageUrl: imageUrl ?? null }),
+    body: JSON.stringify({
+      content,
+      imageUrl: imageUrl ?? null,
+      thumbnailUrl: thumbnailUrl ?? null,
+    }),
   });
 }
 
@@ -241,6 +249,7 @@ export async function apiGetStories(): Promise<StoryGroup[]> {
 
 export async function apiCreateStory(data: {
   mediaUrl?: string;
+  thumbnailUrl?: string;
   content?: string;
   bgColor?: string;
   emoji?: string;

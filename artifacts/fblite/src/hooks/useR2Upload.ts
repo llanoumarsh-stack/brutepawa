@@ -104,10 +104,12 @@ async function compressVideo(
       onProgress?.(Math.min(99, Math.round(progress * 100)));
     });
 
-    // Scale to 720p max, maintaining aspect ratio; encode with libx264 CRF 28
+    // Fit within 1280×720 bounding box (handles landscape AND portrait);
+    // force_original_aspect_ratio=decrease never upscales smaller videos.
+    // Second scale pass rounds dimensions to even numbers (required by libx264).
     await ffmpeg.exec([
       "-i", inputName,
-      "-vf", "scale='min(1280,iw)':'-2',scale=trunc(iw/2)*2:trunc(ih/2)*2",
+      "-vf", "scale=1280:720:force_original_aspect_ratio=decrease,scale=trunc(iw/2)*2:trunc(ih/2)*2",
       "-c:v", "libx264",
       "-crf", "28",
       "-preset", "fast",

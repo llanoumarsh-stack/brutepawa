@@ -34,6 +34,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
 
   const [photoPreview, setPhotoPreview] = useState<string | null>(draft?.previewUrl ?? null);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const { upload, status: uploadStatus, progress } = useR2Upload();
 
@@ -44,7 +45,10 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
     const { file, previewUrl } = d;
     storyDraftStore.clear(); // clears reference only, does NOT revoke the URL
     upload(file).then(result => {
-      if (result) setPhotoUrl(result.url);
+      if (result) {
+        setPhotoUrl(result.url);
+        setThumbnailUrl(result.thumbnailUrl ?? null);
+      }
     });
     // Revoke the object URL only when the component unmounts
     return () => URL.revokeObjectURL(previewUrl);
@@ -60,6 +64,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
     const result = await upload(file);
     if (result) {
       setPhotoUrl(result.url);
+      setThumbnailUrl(result.thumbnailUrl ?? null);
       setMode("photo");
     } else {
       setPhotoPreview(null);
@@ -73,7 +78,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
     try {
       if (mode === "photo") {
         if (!photoUrl) { setError("Photo en cours d'upload, attends encore…"); setSubmitting(false); return; }
-        await apiCreateStory({ mediaUrl: photoUrl, content: text.trim() || undefined });
+        await apiCreateStory({ mediaUrl: photoUrl, thumbnailUrl: thumbnailUrl ?? undefined, content: text.trim() || undefined });
       } else {
         if (!text.trim() && !selectedEmoji) { setError("Écris quelque chose ou choisis un emoji"); setSubmitting(false); return; }
         await apiCreateStory({ content: text.trim() || undefined, bgColor: selectedBg.value, emoji: selectedEmoji ?? undefined });
