@@ -12,12 +12,16 @@ interface Props {
   query: string;
   onClose: () => void;
   navigate: (path: string) => void;
+  recentSearches: string[];
+  onSelectRecent: (q: string) => void;
+  onRemoveRecent: (q: string) => void;
+  onCommitSearch?: (q: string) => void;
 }
 
 const AVATAR_COLORS = ["#1877F2","#E91E63","#9C27B0","#F57C00","#388E3C","#D32F2F","#00838F","#5D4037"];
 function colorForId(id: number) { return AVATAR_COLORS[id % AVATAR_COLORS.length]; }
 
-export default function SearchSuggestionsDropdown({ query, onClose, navigate }: Props) {
+export default function SearchSuggestionsDropdown({ query, onClose, navigate, recentSearches, onSelectRecent, onRemoveRecent, onCommitSearch }: Props) {
   const [users, setUsers]       = useState<PublicUserWithStatus[]>([]);
   const [products, setProducts] = useState<ApiProduct[]>([]);
   const [jobs, setJobs]         = useState<ApiJob[]>([]);
@@ -72,12 +76,40 @@ export default function SearchSuggestionsDropdown({ query, onClose, navigate }: 
   };
 
   const goSearch = () => {
+    onCommitSearch?.(query.trim());
     onClose();
     navigate(`/search?q=${encodeURIComponent(query.trim())}`);
   };
 
+  const showRecents = query.length < 2 && recentSearches.length > 0;
+
   return (
     <div className="search-dropdown">
+
+      {/* Recent searches (shown when input is empty / < 2 chars) */}
+      {showRecents && (
+        <div className="search-dropdown-section">
+          <div className="search-dropdown-section-title">🕐 Récentes</div>
+          {recentSearches.map(q => (
+            <div key={q} className="search-dropdown-recent-row">
+              <button
+                className="search-dropdown-recent-query"
+                onClick={() => onSelectRecent(q)}
+              >
+                <span className="search-dropdown-recent-icon">🔍</span>
+                {q}
+              </button>
+              <button
+                className="search-dropdown-recent-remove"
+                title="Supprimer"
+                onClick={e => { e.stopPropagation(); onRemoveRecent(q); }}
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* "See all results" shortcut */}
       {query.length >= 2 && (

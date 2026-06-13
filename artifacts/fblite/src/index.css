@@ -316,6 +316,52 @@ select:focus { border-color: var(--fb-blue); }
   margin-top: 1px;
 }
 
+.search-dropdown-recent-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.search-dropdown-recent-query {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 14px;
+  color: var(--fb-text-primary);
+  border-radius: 8px;
+  transition: background 0.15s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.search-dropdown-recent-query:hover { background: var(--fb-bg); }
+.search-dropdown-recent-icon {
+  font-size: 14px;
+  color: var(--fb-text-secondary);
+  flex-shrink: 0;
+}
+.search-dropdown-recent-remove {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--fb-text-secondary);
+  font-size: 18px;
+  line-height: 1;
+  padding: 4px 10px 4px 4px;
+  border-radius: 50%;
+  transition: color 0.15s, background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.search-dropdown-recent-remove:hover { color: #e41e3f; background: #fff0f3; }
+
 .navbar-actions { display: flex; align-items: center; gap: 8px; }
 .nav-btn {
   background: rgba(255,255,255,0.15);

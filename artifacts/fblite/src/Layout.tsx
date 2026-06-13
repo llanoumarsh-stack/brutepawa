@@ -31,7 +31,30 @@ export default function Layout({ children, onNewPost }: Props) {
   });
   const [pendingRequests, setPendingRequests] = useState(0);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem("bp_recent_searches") ?? "[]");
+    } catch { return []; }
+  });
   const searchWrapRef = useRef<HTMLDivElement>(null);
+
+  const saveRecent = (q: string) => {
+    const trimmed = q.trim();
+    if (!trimmed) return;
+    setRecentSearches(prev => {
+      const deduped = [trimmed, ...prev.filter(x => x !== trimmed)].slice(0, 5);
+      localStorage.setItem("bp_recent_searches", JSON.stringify(deduped));
+      return deduped;
+    });
+  };
+
+  const removeRecent = (q: string) => {
+    setRecentSearches(prev => {
+      const next = prev.filter(x => x !== q);
+      localStorage.setItem("bp_recent_searches", JSON.stringify(next));
+      return next;
+    });
+  };
 
   const rawUser      = localStorage.getItem("fb_user");
   const user         = rawUser ? JSON.parse(rawUser) : { name: "Utilisateur", email: "", avatarUrl: null };
@@ -94,11 +117,12 @@ export default function Layout({ children, onNewPost }: Props) {
             value={searchQuery}
             onChange={e => {
               setSearchQuery(e.target.value);
-              setShowSuggestions(e.target.value.length >= 2);
+              setShowSuggestions(true);
             }}
-            onFocus={() => { if (searchQuery.length >= 2) setShowSuggestions(true); }}
+            onFocus={() => setShowSuggestions(true)}
             onKeyDown={e => {
               if (e.key === "Enter" && searchQuery.trim()) {
+                saveRecent(searchQuery);
                 setShowSuggestions(false);
                 navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
                 (e.target as HTMLInputElement).blur();
@@ -110,11 +134,19 @@ export default function Layout({ children, onNewPost }: Props) {
               }
             }}
           />
-          {showSuggestions && searchQuery.length >= 2 && (
+          {showSuggestions && (searchQuery.length >= 2 || recentSearches.length > 0) && (
             <SearchSuggestionsDropdown
               query={searchQuery}
               onClose={() => setShowSuggestions(false)}
               navigate={navigate}
+              recentSearches={recentSearches}
+              onSelectRecent={q => {
+                setSearchQuery(q);
+                saveRecent(q);
+                setShowSuggestions(true);
+              }}
+              onRemoveRecent={removeRecent}
+              onCommitSearch={saveRecent}
             />
           )}
         </div>
