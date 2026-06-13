@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { db, postsTable, postLikesTable, messagesTable, usersTable, storiesTable, userBlocksTable } from "@workspace/db";
+import { db, postsTable, postLikesTable, messagesTable, usersTable, storiesTable, userBlocksTable, notificationsTable } from "@workspace/db";
 import { eq, and, or, desc, sql, gt } from "drizzle-orm";
 import { CreatePostBody, GetPostParams, DeletePostParams, LikePostParams, LikePostBody, SendMessageBody, GetConversationParams, ListPostsQueryParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
@@ -373,6 +373,28 @@ router.delete("/stories/:id", requireAuth, async (req, res): Promise<void> => {
   await Promise.all(r2Keys.map(k => deleteObject(k).catch(() => {})));
 
   res.sendStatus(204);
+});
+
+// ─── Notifications ──────────────────────────────────────────────────────────
+
+router.get("/notifications", requireAuth, async (req, res): Promise<void> => {
+  const userId = req.userId!;
+  const rows = await db
+    .select()
+    .from(notificationsTable)
+    .where(eq(notificationsTable.userId, userId))
+    .orderBy(desc(notificationsTable.createdAt))
+    .limit(50);
+  res.json(rows);
+});
+
+router.patch("/notifications/read-all", requireAuth, async (req, res): Promise<void> => {
+  const userId = req.userId!;
+  await db
+    .update(notificationsTable)
+    .set({ isRead: true })
+    .where(and(eq(notificationsTable.userId, userId), eq(notificationsTable.isRead, false)));
+  res.json({ ok: true });
 });
 
 export default router;

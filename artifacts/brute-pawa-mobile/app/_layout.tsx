@@ -44,6 +44,14 @@ function RootLayoutNav() {
         name="chat/[userId]"
         options={{ headerShown: false, presentation: "card" }}
       />
+      <Stack.Screen
+        name="notifications"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="groups/[id]"
+        options={{ headerShown: false, presentation: "card" }}
+      />
     </Stack>
   );
 }

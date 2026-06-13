@@ -4,6 +4,7 @@ import {
   useLikePost,
 } from "@workspace/api-client-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { router } from "expo-router";
 import React, { useCallback } from "react";
 import {
   ActivityIndicator,
@@ -123,7 +124,10 @@ export default function FeedScreen() {
           <TouchableOpacity style={[styles.iconBtn, { backgroundColor: colors.secondary }]}>
             <Ionicons name="search" size={20} color={colors.foreground} />
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.iconBtn, { backgroundColor: colors.secondary }]}>
+          <TouchableOpacity
+            style={[styles.iconBtn, { backgroundColor: colors.secondary }]}
+            onPress={() => router.push("/notifications")}
+          >
             <Ionicons name="notifications-outline" size={20} color={colors.foreground} />
           </TouchableOpacity>
         </View>
