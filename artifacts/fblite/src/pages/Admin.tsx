@@ -388,9 +388,54 @@ export default function Admin() {
         )}
 
         {/* RETRAITS */}
-        {section === "withdrawals" && (
+        {section === "withdrawals" && (() => {
+          const now = new Date();
+          const currentMonth = now.getMonth();
+          const currentYear = now.getFullYear();
+
+          const allPending = withdrawals.filter(w => w.status === "pending");
+          const pendingCount = allPending.length;
+          const pendingXof = allPending.reduce((s, w) => s + w.xofAmount, 0);
+
+          const paidThisMonthXof = withdrawals
+            .filter(w => {
+              if (w.status !== "paid") return false;
+              const d = new Date(w.createdAt);
+              return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+            })
+            .reduce((s, w) => s + w.xofAmount, 0);
+
+          return (
           <>
             <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 16 }}>💸 Retraits créateurs</div>
+
+            {/* Summary card */}
+            {!wdLoading && (
+              <div style={{
+                background: "linear-gradient(135deg, #1877F2 0%, #0d5fd4 100%)",
+                borderRadius: 14,
+                padding: "16px 18px",
+                marginBottom: 16,
+                color: "#fff",
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr 1fr",
+                gap: 10,
+                textAlign: "center",
+              }}>
+                <div>
+                  <div style={{ fontSize: 26, fontWeight: 900 }}>{pendingCount}</div>
+                  <div style={{ fontSize: 11, opacity: 0.85, marginTop: 2 }}>En attente</div>
+                </div>
+                <div style={{ borderLeft: "1px solid rgba(255,255,255,0.25)", borderRight: "1px solid rgba(255,255,255,0.25)", paddingLeft: 8, paddingRight: 8 }}>
+                  <div style={{ fontSize: 15, fontWeight: 900, lineHeight: 1.3 }}>{pendingXof.toLocaleString("fr-FR")}</div>
+                  <div style={{ fontSize: 10, opacity: 0.85, marginTop: 2 }}>XOF en attente</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 900, lineHeight: 1.3 }}>{paidThisMonthXof.toLocaleString("fr-FR")}</div>
+                  <div style={{ fontSize: 10, opacity: 0.85, marginTop: 2 }}>XOF payés ce mois</div>
+                </div>
+              </div>
+            )}
 
             {/* Status filter tabs */}
             <div style={{ display: "flex", gap: 6, marginBottom: 16, flexWrap: "wrap" }}>
@@ -546,7 +591,8 @@ export default function Admin() {
               </div>
             )}
           </>
-        )}
+          );
+        })()}
 
         {/* SETTINGS */}
         {section === "settings" && (
