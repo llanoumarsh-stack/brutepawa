@@ -190,6 +190,22 @@ router.get("/users/:id", requireAuth, async (req, res): Promise<void> => {
   res.json(formatUser(user));
 });
 
+// List all users blocked by the caller
+router.get("/users/me/blocks", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const rows = await db
+    .select({
+      id: usersTable.id,
+      firstName: usersTable.firstName,
+      lastName: usersTable.lastName,
+      avatarUrl: usersTable.avatarUrl,
+    })
+    .from(userBlocksTable)
+    .innerJoin(usersTable, eq(usersTable.id, userBlocksTable.blockedId))
+    .where(eq(userBlocksTable.blockerId, me));
+  res.json(rows);
+});
+
 // Block a user
 router.post("/users/:id/block", requireAuth, async (req, res): Promise<void> => {
   const me = req.userId!;

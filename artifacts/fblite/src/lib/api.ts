@@ -189,6 +189,19 @@ export async function apiUnblockUser(userId: number): Promise<void> {
   if (!res.ok) throw new Error("Erreur lors du déblocage");
 }
 
+export interface BlockedUser {
+  id: number;
+  firstName: string;
+  lastName: string;
+  avatarUrl: string | null;
+}
+
+export async function apiGetBlockedUsers(): Promise<BlockedUser[]> {
+  const res = await apiFetch("/users/me/blocks");
+  if (!res.ok) throw new Error("Erreur lors du chargement des utilisateurs bloqués");
+  return res.json() as Promise<BlockedUser[]>;
+}
+
 export async function apiCheckBlock(userId: number): Promise<boolean> {
   const res = await apiFetch(`/users/${userId}/block`);
   if (!res.ok) return false;

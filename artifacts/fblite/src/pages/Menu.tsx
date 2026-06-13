@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "../router";
 import { isAdmin, ADMIN_SECRET_PATH } from "../lib/admin";
-import { apiGetTontines, apiGetCourses, apiGetEnrollments, apiGetWallet, type ApiTontine, type ApiCourse, type ApiEnrollment } from "../lib/api";
+import { apiGetTontines, apiGetCourses, apiGetEnrollments, apiGetWallet, apiGetBlockedUsers, apiUnblockUser, type ApiTontine, type ApiCourse, type ApiEnrollment, type BlockedUser } from "../lib/api";
 
 const SCORE_MAP: Record<string, { label: string; color: string; next: string; emoji: string; progress: number; bg: string }> = {
   bronze:  { label: "Bronze",  color: "#CD7F32", bg: "#FFF8E1", next: "Argent",  emoji: "🥉", progress: 45 },
@@ -24,6 +24,9 @@ export default function Menu() {
   const [courses, setCourses] = useState<ApiCourse[]>([]);
   const [enrollments, setEnrollments] = useState<ApiEnrollment[]>([]);
   const [wallet, setWallet] = useState<{ balance: number; currency: string } | null>(null);
+  const [blockedUsers, setBlockedUsers] = useState<BlockedUser[]>([]);
+  const [blockedLoading, setBlockedLoading] = useState(false);
+  const [blockedFetched, setBlockedFetched] = useState(false);
 
   useEffect(() => {
     Promise.all([apiGetTontines(), apiGetCourses(), apiGetEnrollments(), apiGetWallet()]).then(([t, c, e, w]) => {
@@ -33,6 +36,21 @@ export default function Menu() {
       if (w) setWallet({ balance: w.balance, currency: w.currency });
     }).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (activeSection === "settings-privacy" && !blockedFetched && !blockedLoading) {
+      setBlockedLoading(true);
+      apiGetBlockedUsers().then(users => {
+        setBlockedUsers(users);
+        setBlockedFetched(true);
+        setBlockedLoading(false);
+      }).catch(() => {
+        setBlockedFetched(true);
+        setBlockedLoading(false);
+      });
+    }
+  }, [activeSection, blockedFetched, blockedLoading]);
+
   const [isPremium, setIsPremium] = useState(false);
 
   // Settings state
@@ -386,34 +404,65 @@ export default function Menu() {
     </div>
   );
 
-  if (activeSection === "settings-privacy") return (
-    <div style={{ maxWidth: 600, margin: "0 auto" }}>
-      <div style={{ background: "var(--fb-white)", padding: "12px 16px", borderBottom: "1px solid var(--fb-divider)", display: "flex", alignItems: "center", gap: 12 }}>
-        <button onClick={() => setActiveSection("settings")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "var(--fb-blue)" }}>←</button>
-        <div style={{ fontWeight: 900, fontSize: 18 }}>🔒 Confidentialité</div>
-      </div>
-      <div style={{ padding: "8px 0" }}>
-        {[
-          { label: "Profil public", desc: "Tout le monde peut voir votre profil", value: profilePublic, onChange: () => setProfilePublic(v => !v) },
-          { label: "Afficher mon téléphone", desc: "Visible par vos contacts", value: showPhone, onChange: () => setShowPhone(v => !v) },
-          { label: "Afficher mon email", desc: "Visible dans votre profil public", value: showEmail, onChange: () => setShowEmail(v => !v) },
-        ].map((item, i) => (
-          <div key={i} style={{ background: "var(--fb-white)", padding: "14px 16px", borderBottom: "1px solid var(--fb-divider)", display: "flex", alignItems: "center", gap: 12 }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 700, fontSize: 15 }}>{item.label}</div>
-              <div style={{ fontSize: 13, color: "var(--fb-text-secondary)" }}>{item.desc}</div>
+  if (activeSection === "settings-privacy") {
+    const handleUnblock = async (userId: number) => {
+      try {
+        await apiUnblockUser(userId);
+        setBlockedUsers(prev => prev.filter(u => u.id !== userId));
+      } catch {}
+    };
+
+    return (
+      <div style={{ maxWidth: 600, margin: "0 auto" }}>
+        <div style={{ background: "var(--fb-white)", padding: "12px 16px", borderBottom: "1px solid var(--fb-divider)", display: "flex", alignItems: "center", gap: 12 }}>
+          <button onClick={() => setActiveSection("settings")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "var(--fb-blue)" }}>←</button>
+          <div style={{ fontWeight: 900, fontSize: 18 }}>🔒 Confidentialité</div>
+        </div>
+        <div style={{ padding: "8px 0" }}>
+          {[
+            { label: "Profil public", desc: "Tout le monde peut voir votre profil", value: profilePublic, onChange: () => setProfilePublic(v => !v) },
+            { label: "Afficher mon téléphone", desc: "Visible par vos contacts", value: showPhone, onChange: () => setShowPhone(v => !v) },
+            { label: "Afficher mon email", desc: "Visible dans votre profil public", value: showEmail, onChange: () => setShowEmail(v => !v) },
+          ].map((item, i) => (
+            <div key={i} style={{ background: "var(--fb-white)", padding: "14px 16px", borderBottom: "1px solid var(--fb-divider)", display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 700, fontSize: 15 }}>{item.label}</div>
+                <div style={{ fontSize: 13, color: "var(--fb-text-secondary)" }}>{item.desc}</div>
+              </div>
+              <Toggle value={item.value} onChange={item.onChange} />
             </div>
-            <Toggle value={item.value} onChange={item.onChange} />
+          ))}
+          <div style={{ padding: "14px 16px", background: "var(--fb-white)" }}>
+            <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 12 }}>Utilisateurs bloqués</div>
+            {blockedLoading ? (
+              <div style={{ fontSize: 13, color: "var(--fb-text-secondary)", padding: "8px 0" }}>Chargement…</div>
+            ) : blockedUsers.length === 0 ? (
+              <div style={{ fontSize: 13, color: "var(--fb-text-secondary)" }}>Aucun utilisateur bloqué</div>
+            ) : (
+              blockedUsers.map(u => (
+                <div key={u.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: "1px solid var(--fb-divider)" }}>
+                  {u.avatarUrl ? (
+                    <img src={u.avatarUrl} alt="" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+                  ) : (
+                    <div style={{ width: 40, height: 40, borderRadius: "50%", background: "var(--fb-blue)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 16, flexShrink: 0 }}>
+                      {u.firstName.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <div style={{ flex: 1, fontWeight: 600, fontSize: 15 }}>{u.firstName} {u.lastName}</div>
+                  <button
+                    onClick={() => handleUnblock(u.id)}
+                    style={{ background: "none", border: "1px solid var(--fb-blue)", color: "var(--fb-blue)", borderRadius: 8, padding: "6px 14px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}
+                  >
+                    Débloquer
+                  </button>
+                </div>
+              ))
+            )}
           </div>
-        ))}
-        <div style={{ padding: "14px 16px", background: "var(--fb-white)", borderBottom: "1px solid var(--fb-divider)" }}>
-          <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 6 }}>Liste de blocage</div>
-          <div style={{ fontSize: 13, color: "var(--fb-text-secondary)", marginBottom: 10 }}>Aucun compte bloqué</div>
-          <button style={{ color: "var(--fb-blue)", background: "none", border: "none", fontWeight: 700, cursor: "pointer", fontSize: 14 }}>+ Bloquer un compte</button>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
 
   if (activeSection === "settings-notifs") return (
     <div style={{ maxWidth: 600, margin: "0 auto" }}>
