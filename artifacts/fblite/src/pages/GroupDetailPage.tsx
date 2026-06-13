@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "../router";
 import {
   apiGetGroup, apiJoinGroup, apiLeaveGroup,
   apiGetGroupPosts, apiCreateGroupPost,
   ApiGroupDetail, ApiGroupPost,
 } from "../lib/api";
+import { useR2Upload } from "../hooks/useR2Upload";
 
 const AVATAR_COLORS = ["#1877F2", "#E91E63", "#9C27B0", "#FF9800", "#4CAF50", "#00BCD4", "#F44336", "#3F51B5"];
 function avatarColor(id: number) { return AVATAR_COLORS[id % AVATAR_COLORS.length]; }
@@ -48,6 +49,10 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
   const [postContent, setPostContent] = useState("");
   const [posting, setPosting] = useState(false);
   const [postError, setPostError] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { upload, status: uploadStatus, error: uploadError, reset: resetUpload } = useR2Upload();
 
   const loadGroup = useCallback(async () => {
     setLoading(true);
@@ -97,13 +102,41 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
     setActionLoading(false);
   };
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onload = ev => setImagePreview(ev.target?.result as string);
+    reader.readAsDataURL(file);
+    resetUpload();
+    if (e.target) e.target.value = "";
+  };
+
+  const clearImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    resetUpload();
+  };
+
   const handlePost = async () => {
     if (!postContent.trim() || !group) return;
     setPosting(true);
     setPostError(null);
     try {
-      await apiCreateGroupPost(group.id, postContent.trim());
+      let imageUrl: string | undefined;
+      if (imageFile) {
+        const uploaded = await upload(imageFile);
+        if (!uploaded) {
+          setPostError(uploadError ?? "Échec de l'upload de l'image");
+          setPosting(false);
+          return;
+        }
+        imageUrl = uploaded.url;
+      }
+      await apiCreateGroupPost(group.id, postContent.trim(), imageUrl);
       setPostContent("");
+      clearImage();
       await loadPosts();
     } catch (err) {
       setPostError(err instanceof Error ? err.message : "Erreur lors de la publication");
@@ -225,17 +258,58 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
             rows={3}
             style={{ width: "100%", resize: "vertical", borderRadius: 8, border: "1px solid var(--fb-border)", padding: "10px 12px", fontSize: 14, fontFamily: "inherit", background: "var(--fb-bg)", color: "var(--fb-text)", boxSizing: "border-box" }}
           />
+
+          {/* Image preview */}
+          {imagePreview && (
+            <div style={{ position: "relative", marginTop: 8, display: "inline-block" }}>
+              <img
+                src={imagePreview}
+                alt="aperçu"
+                style={{ maxWidth: "100%", maxHeight: 200, borderRadius: 8, objectFit: "cover", display: "block" }}
+              />
+              <button
+                onClick={clearImage}
+                style={{ position: "absolute", top: 6, right: 6, background: "rgba(0,0,0,0.55)", border: "none", borderRadius: "50%", width: 26, height: 26, color: "#fff", cursor: "pointer", fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1 }}
+                title="Supprimer l'image"
+              >×</button>
+            </div>
+          )}
+
+          {/* Upload progress */}
+          {uploadStatus === "uploading" && (
+            <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", marginTop: 4 }}>Envoi de l'image…</div>
+          )}
+
           {postError && (
             <div style={{ fontSize: 12, color: "var(--fb-red, #E41E3F)", marginTop: 4 }}>{postError}</div>
           )}
-          <button
-            onClick={handlePost}
-            disabled={posting || !postContent.trim()}
-            className="btn-primary"
-            style={{ marginTop: 8, width: "auto", padding: "9px 20px", fontSize: 14, fontWeight: 700 }}
-          >
-            {posting ? "Publication…" : "Publier"}
-          </button>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10 }}>
+            {/* Hidden file input */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handleImageSelect}
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={posting}
+              style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid var(--fb-border)", background: "var(--fb-bg)", color: "var(--fb-text-secondary)", fontWeight: 600, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}
+              title="Ajouter une photo"
+            >
+              🖼️ Photo
+            </button>
+            <button
+              onClick={handlePost}
+              disabled={posting || !postContent.trim()}
+              className="btn-primary"
+              style={{ padding: "9px 20px", fontSize: 14, fontWeight: 700 }}
+            >
+              {posting ? "Publication…" : "Publier"}
+            </button>
+          </div>
         </div>
       )}
 
