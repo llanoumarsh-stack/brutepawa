@@ -76,15 +76,34 @@ router.patch("/products/:id", requireAuth, async (req, res): Promise<void> => {
   const body = UpdateProductBody.safeParse(req.body);
   if (!params.success || !body.success) { res.status(400).json({ error: "Invalid input" }); return; }
 
+  // Fetch old image URLs before overwriting so we can clean up orphaned R2 objects
+  const [current] = await db.select({
+    imageUrl: productsTable.imageUrl,
+    thumbnailUrl: productsTable.thumbnailUrl,
+  }).from(productsTable)
+    .where(and(eq(productsTable.id, params.data.id), eq(productsTable.sellerId, req.userId!)));
+
+  if (!current) { res.status(404).json({ error: "Product not found" }); return; }
+
   const updateData: Record<string, unknown> = { ...body.data };
   if (body.data.price != null) updateData.price = String(body.data.price);
-  // thumbnailUrl update supported outside generated schema
   if (typeof req.body.thumbnailUrl === "string") updateData.thumbnailUrl = req.body.thumbnailUrl;
 
   const [product] = await db.update(productsTable).set(updateData)
     .where(and(eq(productsTable.id, params.data.id), eq(productsTable.sellerId, req.userId!)))
     .returning();
   if (!product) { res.status(404).json({ error: "Product not found" }); return; }
+
+  // Best-effort cleanup: delete old R2 images if they were replaced
+  const toDelete: (string | null)[] = [];
+  if (body.data.imageUrl && body.data.imageUrl !== current.imageUrl)
+    toDelete.push(extractKeyFromUrl(current.imageUrl));
+  if (typeof req.body.thumbnailUrl === "string" && req.body.thumbnailUrl !== current.thumbnailUrl)
+    toDelete.push(extractKeyFromUrl(current.thumbnailUrl));
+
+  const validKeys = toDelete.filter((k): k is string => !!k && ownerIdFromKey(k) === req.userId!);
+  await Promise.all(validKeys.map(k => deleteObject(k).catch(() => {})));
+
   res.json(fmt(product));
 });
 

@@ -1,4 +1,10 @@
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+  ListObjectsV2Command,
+  type _Object,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
 import path from "path";
@@ -63,7 +69,7 @@ export function extractKeyFromUrl(url: string | null | undefined): string | null
  */
 export function ownerIdFromKey(key: string): number | null {
   const parts = key.split("/");
-  if (parts.length < 5) return null; // legacy key — no ownership info
+  if (parts.length < 5) return null;
   const id = Number(parts[1]);
   return Number.isFinite(id) && id > 0 ? id : null;
 }
@@ -91,6 +97,12 @@ export async function deleteObject(key: string): Promise<void> {
   }));
 }
 
+/** Delete multiple R2 objects — best-effort, individual failures are ignored. */
+export async function deleteObjects(keys: (string | null | undefined)[]): Promise<void> {
+  const valid = keys.filter((k): k is string => !!k);
+  await Promise.all(valid.map(k => deleteObject(k).catch(() => {})));
+}
+
 /** Generate a pre-signed PUT URL — client uploads directly to R2. */
 export async function createPresignedUpload(filename: string, contentType: string, userId: number): Promise<{
   uploadUrl: string;
@@ -110,4 +122,41 @@ export async function createPresignedUpload(filename: string, contentType: strin
   const uploadUrl = await getSignedUrl(r2, command, { expiresIn: 300 });
 
   return { uploadUrl, publicUrl: buildPublicUrl(key), key, kind };
+}
+
+export interface R2Object {
+  key: string;
+  lastModified: Date;
+  size: number;
+}
+
+/**
+ * List all objects in the R2 bucket (paginated).
+ * Optionally filter by prefix (e.g. "image/" or "video/").
+ */
+export async function listAllObjects(prefix?: string): Promise<R2Object[]> {
+  const results: R2Object[] = [];
+  let continuationToken: string | undefined;
+
+  do {
+    const cmd = new ListObjectsV2Command({
+      Bucket:            bucketName,
+      Prefix:            prefix,
+      ContinuationToken: continuationToken,
+      MaxKeys:           1000,
+    });
+    const response = await r2.send(cmd);
+    for (const obj of (response.Contents ?? []) as _Object[]) {
+      if (obj.Key && obj.LastModified && obj.Size != null) {
+        results.push({
+          key:          obj.Key,
+          lastModified: obj.LastModified,
+          size:         obj.Size,
+        });
+      }
+    }
+    continuationToken = response.NextContinuationToken;
+  } while (continuationToken);
+
+  return results;
 }

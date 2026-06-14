@@ -1,0 +1,54 @@
+Optimise complètement la gestion du stockage et des médias de Brutepawa pour réduire les coûts et éviter le gaspillage.
+
+OBJECTIFS :
+
+1. PHOTOS
+- Stocker toutes les photos sur Cloudflare R2.
+- Compresser automatiquement les images avant l'upload.
+- Générer plusieurs tailles (miniature, moyenne, originale).
+- Supprimer automatiquement les anciennes photos de profil et de couverture remplacées.
+- Empêcher les doublons inutiles.
+
+2. VIDÉOS COURTES
+- Stocker les vidéos sur Cloudflare R2.
+- Compresser et optimiser automatiquement.
+- Générer une miniature.
+- Limiter la taille maximale des vidéos.
+- Supprimer automatiquement les vidéos supprimées par l'utilisateur.
+- Nettoyer les fichiers orphelins qui n'ont plus de référence en base de données.
+
+3. MESSAGES VOCAUX
+- Stocker les audios sur Cloudflare R2.
+- Utiliser un format compressé (Opus ou équivalent).
+- Supprimer les fichiers audio lorsque les messages sont supprimés.
+
+4. LIVES
+- Utiliser Cloudflare Stream pour les lives.
+- Désactiver totalement l'enregistrement des lives par défaut.
+- Ne conserver aucun replay.
+- Dès qu'un utilisateur termine son live :
+  - arrêter immédiatement le flux,
+  - supprimer les ressources temporaires,
+  - libérer la bande passante utilisée.
+- Vérifier qu'aucune vidéo de live n'est stockée dans R2.
+
+5. NETTOYAGE AUTOMATIQUE
+Créer des tâches automatiques pour :
+- supprimer les fichiers non utilisés,
+- supprimer les médias orphelins,
+- supprimer les uploads incomplets,
+- nettoyer les ressources temporaires.
+
+6. LIMITATION DES COÛTS
+- Ajouter des quotas par utilisateur.
+- Limiter les abus d'upload.
+- Prévoir une architecture pouvant supporter des milliers d'utilisateurs tout en minimisant les coûts Cloudflare.
+
+7. AUDIT FINAL
+À la fin :
+- expliquer l'architecture mise en place,
+- estimer les économies de stockage réalisées,
+- signaler tout risque de gaspillage restant,
+- vérifier que les photos, vidéos, vocaux et lives fonctionnent toujours correctement.
+
+Applique directement les modifications dans le code lorsque cela est possible.

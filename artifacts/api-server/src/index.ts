@@ -1,10 +1,11 @@
 import app from "./app";
 import { logger } from "./lib/logger";
 import { db } from "@workspace/db";
-import { liveStreamsTable } from "@workspace/db/schema";
+import { liveStreamsTable, usersTable, postsTable, storiesTable, productsTable } from "@workspace/db/schema";
 import { eq, and, lt, or, isNotNull, isNull, sql } from "drizzle-orm";
 import { deleteLiveInput } from "./lib/cloudflare-stream";
 import { seedGiftCatalog } from "./routes/gifts";
+import { listAllObjects, deleteObject, extractKeyFromUrl } from "./lib/r2";
 
 const rawPort = process.env["PORT"];
 
@@ -80,6 +81,66 @@ async function autoStopStaleLives() {
   }
 }
 
+// ─── Orphan R2 cleanup ────────────────────────────────────────────────────────
+// Runs once per day. Lists all R2 objects and deletes any that:
+//   1. Are older than 24 hours (to skip in-flight uploads)
+//   2. Have no matching URL reference in any DB table
+async function cleanupOrphanedR2Objects() {
+  logger.info("orphanCleanup: starting");
+  try {
+    const allObjects = await listAllObjects();
+    if (allObjects.length === 0) {
+      logger.info("orphanCleanup: bucket empty or R2 not configured");
+      return;
+    }
+
+    // Collect all R2 URLs stored in the database
+    const [users, posts, stories, products] = await Promise.all([
+      db.select({ a: usersTable.avatarUrl, b: usersTable.coverUrl }).from(usersTable),
+      db.select({ a: postsTable.imageUrl,  b: postsTable.thumbnailUrl }).from(postsTable),
+      db.select({ a: storiesTable.mediaUrl, b: storiesTable.thumbnailUrl }).from(storiesTable),
+      db.select({ a: productsTable.imageUrl, b: productsTable.thumbnailUrl }).from(productsTable),
+    ]);
+
+    const referencedKeys = new Set<string>();
+    const addKey = (url: string | null | undefined) => {
+      if (!url) return;
+      // extractKeyFromUrl returns null if not our R2 — safe to call on any URL
+      const key = extractKeyFromUrl(url);
+      if (key) referencedKeys.add(key);
+    };
+
+    for (const row of [...users, ...posts, ...stories, ...products]) {
+      addKey(row.a);
+      addKey(row.b);
+    }
+
+    const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24h ago
+    const orphans = allObjects.filter(
+      obj => obj.lastModified < cutoff && !referencedKeys.has(obj.key),
+    );
+
+    logger.info(
+      { total: allObjects.length, referenced: referencedKeys.size, orphans: orphans.length },
+      "orphanCleanup: scan complete",
+    );
+
+    let deleted = 0;
+    for (const obj of orphans) {
+      try {
+        await deleteObject(obj.key);
+        deleted++;
+      } catch (err) {
+        logger.warn({ err, key: obj.key }, "orphanCleanup: delete failed (non-fatal)");
+      }
+    }
+
+    logger.info({ deleted }, "orphanCleanup: done");
+  } catch (err) {
+    logger.error({ err }, "orphanCleanup: error (non-fatal)");
+  }
+}
+
 app.listen(port, (err) => {
   if (err) {
     logger.error({ err }, "Error listening on port");
@@ -91,7 +152,14 @@ app.listen(port, (err) => {
   // Seed gift catalog (idempotent — only inserts if empty)
   seedGiftCatalog().catch(err => logger.warn({ err }, "seedGiftCatalog failed (non-fatal)"));
 
-  // Start auto-stop cron: runs every 2 minutes
+  // Auto-stop stale lives: every 2 minutes
   setInterval(autoStopStaleLives, 2 * 60 * 1000);
   logger.info("Live auto-stop cron started (every 2 min)");
+
+  // Orphan R2 cleanup: once per day (first run after 30 min warm-up)
+  setTimeout(() => {
+    cleanupOrphanedR2Objects();
+    setInterval(cleanupOrphanedR2Objects, 24 * 60 * 60 * 1000);
+  }, 30 * 60 * 1000);
+  logger.info("Orphan R2 cleanup cron scheduled (daily, first run in 30 min)");
 });

@@ -4,6 +4,7 @@ import { eq, or, and, ne, ilike, sql } from "drizzle-orm";
 import { UpdateMeBody, GetUserParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
 import { pushToUserDevice } from "./push";
+import { deleteObject, extractKeyFromUrl, ownerIdFromKey } from "../lib/r2";
 
 const router = Router();
 
@@ -25,10 +26,28 @@ router.get("/users/me", requireAuth, async (req, res): Promise<void> => {
 router.patch("/users/me", requireAuth, async (req, res): Promise<void> => {
   const parsed = UpdateMeBody.safeParse(req.body);
   if (!parsed.success) { res.status(400).json({ error: parsed.error.message }); return; }
+
+  // Fetch current user to find old R2 keys before overwriting them
+  const [current] = await db.select({ avatarUrl: usersTable.avatarUrl, coverUrl: usersTable.coverUrl })
+    .from(usersTable).where(eq(usersTable.id, req.userId!));
+
   const [user] = await db.update(usersTable)
     .set(parsed.data)
     .where(eq(usersTable.id, req.userId!))
     .returning();
+
+  // Best-effort cleanup: delete old avatar/cover from R2 if they were replaced
+  if (current) {
+    const toDelete: (string | null)[] = [];
+    if (parsed.data.avatarUrl && parsed.data.avatarUrl !== current.avatarUrl)
+      toDelete.push(extractKeyFromUrl(current.avatarUrl));
+    if (parsed.data.coverUrl && parsed.data.coverUrl !== current.coverUrl)
+      toDelete.push(extractKeyFromUrl(current.coverUrl));
+
+    const validKeys = toDelete.filter((k): k is string => !!k && ownerIdFromKey(k) === req.userId!);
+    await Promise.all(validKeys.map(k => deleteObject(k).catch(() => {})));
+  }
+
   res.json(formatUser(user));
 });
 
