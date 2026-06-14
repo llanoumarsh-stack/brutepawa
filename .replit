@@ -52,3 +52,4 @@ channel = "stable-25_05"
 [userenv.shared]
 VAPID_PUBLIC_KEY = "BMISrkca36bivA-ExmS6BFJgFRaDIUGmgDiRGdC03rIGZ9S0nX6bKpaUIyfznP0OwKDhAb1RX9LRDq1BnNYhdIo"
 CF_ACCOUNT_ID = "09e1ef3aa248da4402f2dd80e146d674"
+APP_DATABASE_URL = "postgresql://postgres.siffrjlejdhycchozitd:hoV77BiQcpc3boAe@aws-0-eu-west-1.pooler.supabase.com:6543/postgres"
