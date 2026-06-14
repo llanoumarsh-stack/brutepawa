@@ -6,48 +6,68 @@ import { sql } from "drizzle-orm";
 
 const router = Router();
 
-function getVapidKeys() {
-  const pub  = process.env.VAPID_PUBLIC_KEY;
-  const priv = process.env.VAPID_PRIVATE_KEY;
-  if (pub && priv) return { publicKey: pub, privateKey: priv };
-  return null;
+// ── VAPID key bootstrap ───────────────────────────────────────────────────────
+// Keys MUST be stored as Replit secrets (VAPID_PUBLIC_KEY + VAPID_PRIVATE_KEY).
+// In development, if absent we generate ephemeral keys and log them once so the
+// developer can copy them into Replit secrets. Ephemeral keys are lost on restart.
+let _vapidPublic:  string | null = null;
+let _vapidPrivate: string | null = null;
+
+function initVapid() {
+  const pub  = process.env.VAPID_PUBLIC_KEY?.trim();
+  const priv = process.env.VAPID_PRIVATE_KEY?.trim();
+
+  if (pub && priv) {
+    _vapidPublic  = pub;
+    _vapidPrivate = priv;
+    webpush.setVapidDetails("mailto:admin@brutepawa.com", pub, priv);
+    return true;
+  }
+
+  if (process.env.NODE_ENV !== "production") {
+    try {
+      const keys = webpush.generateVAPIDKeys();
+      _vapidPublic  = keys.publicKey;
+      _vapidPrivate = keys.privateKey;
+      webpush.setVapidDetails("mailto:admin@brutepawa.com", keys.publicKey, keys.privateKey);
+      console.log(
+        "\n[push] ⚠️  VAPID keys not set — using ephemeral keys (lost on restart).",
+        "\n       Add these to Replit Secrets to persist push notifications:",
+        `\n       VAPID_PUBLIC_KEY  = ${keys.publicKey}`,
+        `\n       VAPID_PRIVATE_KEY = ${keys.privateKey}\n`,
+      );
+      return true;
+    } catch { return false; }
+  }
+
+  console.warn("[push] VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY not set — push notifications disabled.");
+  return false;
 }
 
-function initWebPush() {
-  const keys = getVapidKeys();
-  if (!keys) return false;
-  webpush.setVapidDetails(
-    "mailto:admin@brutepawa.com",
-    keys.publicKey,
-    keys.privateKey,
-  );
-  return true;
-}
+const webPushReady = initVapid();
 
-const webPushReady = initWebPush();
-
+// ── Push subscriptions table ─────────────────────────────────────────────────
 async function ensureTable() {
   await db.execute(sql`
     CREATE TABLE IF NOT EXISTS push_subscriptions (
-      id          SERIAL PRIMARY KEY,
-      user_id     INTEGER NOT NULL,
-      endpoint    TEXT    NOT NULL UNIQUE,
-      p256dh      TEXT    NOT NULL,
-      auth        TEXT    NOT NULL,
-      created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      id         SERIAL PRIMARY KEY,
+      user_id    INTEGER NOT NULL,
+      endpoint   TEXT    NOT NULL UNIQUE,
+      p256dh     TEXT    NOT NULL,
+      auth       TEXT    NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
   `);
 }
-
 ensureTable().catch(() => {});
 
+// ── Routes ───────────────────────────────────────────────────────────────────
 router.get("/push/vapid-public-key", (_req, res) => {
-  const keys = getVapidKeys();
-  if (!keys) {
+  if (!webPushReady || !_vapidPublic) {
     res.json({ key: null, enabled: false });
     return;
   }
-  res.json({ key: keys.publicKey, enabled: true });
+  res.json({ key: _vapidPublic, enabled: true });
 });
 
 router.post("/push/subscribe", requireAuth, async (req, res): Promise<void> => {
@@ -55,12 +75,10 @@ router.post("/push/subscribe", requireAuth, async (req, res): Promise<void> => {
     endpoint: string;
     keys: { p256dh: string; auth: string };
   };
-
   if (!endpoint || !keys?.p256dh || !keys?.auth) {
     res.status(400).json({ error: "Invalid subscription payload" });
     return;
   }
-
   try {
     await db.execute(sql`
       INSERT INTO push_subscriptions (user_id, endpoint, p256dh, auth)
@@ -90,10 +108,8 @@ router.delete("/push/unsubscribe", requireAuth, async (req, res): Promise<void> 
   }
 });
 
-export async function pushToUserDevice(
-  userId: number,
-  payload: object,
-): Promise<void> {
+// ── Utility: send push to all devices of a user ──────────────────────────────
+export async function pushToUserDevice(userId: number, payload: object): Promise<void> {
   if (!webPushReady) return;
 
   let subs: { endpoint: string; p256dh: string; auth: string }[] = [];
