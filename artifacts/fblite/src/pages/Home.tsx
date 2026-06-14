@@ -77,10 +77,11 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
   const [comments, setComments] = useState<Record<number, PostComment[]>>({});
   const [newComment, setNewComment] = useState<Record<number, string>>({});
   const [submittingComment, setSubmittingComment] = useState<number | null>(null);
-  // reply state: keyed by parent comment id
-  const [replyingTo, setReplyingTo] = useState<number | null>(null);
-  const [newReply, setNewReply] = useState<Record<number, string>>({});
-  const [submittingReply, setSubmittingReply] = useState<number | null>(null);
+  // reply state
+  const [replyingTo, setReplyingTo]           = useState<number | null>(null);
+  const [replyContextName, setReplyContextName] = useState<string>("");
+  const [replyContextPostId, setReplyContextPostId] = useState<number | null>(null);
+  const commentInputRef = useRef<Record<number, HTMLInputElement | null>>({});
 
   // Reaction picker
   const [reactionType, setReactionType] = useState<Record<number, string>>({});
@@ -103,27 +104,18 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
     }
   };
 
-  const startReply = (comment: PostComment) => {
+  const startReply = (comment: PostComment, postId: number) => {
     setReplyingTo(comment.id);
-    setNewReply(prev => ({ ...prev, [comment.id]: `@${comment.authorFirstName} ` }));
+    setReplyContextName(`${comment.authorFirstName} ${comment.authorLastName}`);
+    setReplyContextPostId(postId);
+    setNewComment(prev => ({ ...prev, [postId]: "" }));
+    setTimeout(() => commentInputRef.current[postId]?.focus(), 80);
   };
 
-  const cancelReply = () => setReplyingTo(null);
-
-  const submitReply = async (postId: number, parentId: number) => {
-    const text = (newReply[parentId] ?? "").trim();
-    if (!text || submittingReply === parentId) return;
-    setSubmittingReply(parentId);
-    setNewReply(prev => ({ ...prev, [parentId]: "" }));
-    try {
-      const comment = await apiPostComment(postId, text, parentId);
-      setComments(prev => ({ ...prev, [postId]: [...(prev[postId] ?? []), comment] }));
-      setReplyingTo(null);
-    } catch {
-      setNewReply(prev => ({ ...prev, [parentId]: text }));
-    } finally {
-      setSubmittingReply(null);
-    }
+  const cancelReply = () => {
+    setReplyingTo(null);
+    setReplyContextName("");
+    setReplyContextPostId(null);
   };
 
   const toggleCommentLike = async (postId: number, commentId: number) => {
@@ -267,8 +259,10 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
     if (!text || submittingComment === postId) return;
     setSubmittingComment(postId);
     setNewComment(prev => ({ ...prev, [postId]: "" }));
+    const parentId = replyContextPostId === postId && replyingTo != null ? replyingTo : undefined;
+    if (parentId != null) cancelReply();
     try {
-      const comment = await apiPostComment(postId, text);
+      const comment = await apiPostComment(postId, text, parentId);
       setComments(prev => ({ ...prev, [postId]: [...(prev[postId] ?? []), comment] }));
     } catch {
       setNewComment(prev => ({ ...prev, [postId]: text }));
@@ -590,7 +584,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                               <button onClick={() => toggleCommentLike(post.id, c.id)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 12, fontWeight: 700, color: c.likedByMe ? "#1877F2" : "#65676b" }}>
                                 J'aime
                               </button>
-                              <button onClick={() => replyingTo === c.id ? cancelReply() : startReply(c)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 12, fontWeight: 700, color: "#65676b" }}>
+                              <button onClick={() => replyingTo === c.id ? cancelReply() : startReply(c, post.id)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 12, fontWeight: 700, color: replyingTo === c.id ? "#1877F2" : "#65676b" }}>
                                 {replyingTo === c.id ? "Annuler" : "Répondre"}
                               </button>
                             </div>
@@ -629,28 +623,22 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                           </div>
                         )}
 
-                        {/* Reply input */}
-                        {replyingTo === c.id && (
-                          <div style={{ marginLeft: 42, marginTop: 6, display: "flex", gap: 6, alignItems: "center" }}>
-                            <div className="avatar xs" style={{ width: 26, height: 26, fontSize: 9, flexShrink: 0 }}>{userInitials}</div>
-                            <input
-                              autoFocus
-                              style={{ flex: 1, background: "#f0f2f5", border: "none", borderRadius: 18, padding: "7px 12px", fontSize: 13, outline: "none" }}
-                              placeholder={`Répondre à ${c.authorFirstName}…`}
-                              value={newReply[c.id] ?? ""}
-                              onChange={e => setNewReply(prev => ({ ...prev, [c.id]: e.target.value }))}
-                              onKeyDown={e => { if (e.key === "Enter") submitReply(post.id, c.id); if (e.key === "Escape") cancelReply(); }}
-                              disabled={submittingReply === c.id}
-                            />
-                            <button onClick={() => submitReply(post.id, c.id)} disabled={submittingReply === c.id}
-                              style={{ background: "#1877F2", border: "none", borderRadius: "50%", width: 30, height: 30, color: "#fff", cursor: "pointer", fontSize: 13, opacity: submittingReply === c.id ? 0.6 : 1, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                              ➤
-                            </button>
-                          </div>
-                        )}
                       </div>
                     );
                   })}
+
+                  {/* ── Reply chip ── */}
+                  {replyContextPostId === post.id && replyingTo !== null && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px 2px", fontSize: 12, color: "#65676b" }}>
+                      <span>↩️ Répondre à</span>
+                      <span style={{ fontWeight: 700, color: "#1877F2" }}>{replyContextName}</span>
+                      <button
+                        onClick={cancelReply}
+                        style={{ background: "none", border: "none", cursor: "pointer", color: "#aaa", fontSize: 15, padding: "0 0 0 4px", lineHeight: 1, marginLeft: "auto" }}
+                        aria-label="Annuler la réponse"
+                      >✕</button>
+                    </div>
+                  )}
 
                   {/* ── Bottom comment input bar (Facebook style) ── */}
                   <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px 12px", borderTop: topLevel.length > 0 ? "1px solid #e4e6eb" : "none", marginTop: 6 }}>
@@ -660,11 +648,12 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                     }
                     <div style={{ flex: 1, background: "#f0f2f5", borderRadius: 22, display: "flex", alignItems: "center", padding: "0 6px 0 14px", gap: 4 }}>
                       <input
+                        ref={el => { commentInputRef.current[post.id] = el; }}
                         style={{ flex: 1, background: "transparent", border: "none", padding: "9px 0", fontSize: 14, outline: "none", color: "#050505", minWidth: 0 }}
-                        placeholder={`Commenter en tant que ${user.name.split(" ")[0]}…`}
+                        placeholder={replyContextPostId === post.id && replyingTo != null ? `Répondre à ${replyContextName.split(" ")[0]}…` : `Commenter en tant que ${user.name.split(" ")[0]}…`}
                         value={newComment[post.id] ?? ""}
                         onChange={e => setNewComment(prev => ({ ...prev, [post.id]: e.target.value }))}
-                        onKeyDown={e => { if (e.key === "Enter") submitComment(post.id); }}
+                        onKeyDown={e => { if (e.key === "Enter") submitComment(post.id); if (e.key === "Escape" && replyingTo) cancelReply(); }}
                         disabled={submittingComment === post.id}
                       />
                       {!(newComment[post.id] ?? "").trim() ? (
