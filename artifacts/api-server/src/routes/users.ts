@@ -3,6 +3,7 @@ import { db, usersTable, friendRequestsTable, userBlocksTable, userReportsTable 
 import { eq, or, and, ne, ilike, sql } from "drizzle-orm";
 import { UpdateMeBody, GetUserParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
+import { pushToUserDevice } from "./push";
 
 const router = Router();
 
@@ -150,6 +151,18 @@ router.post("/users/:id/friend-request", requireAuth, async (req, res): Promise<
   const [row] = await db.insert(friendRequestsTable)
     .values({ fromUserId: me, toUserId: targetId, status: "pending" })
     .returning();
+
+  // Push notification to target
+  const [requester] = await db.select({ firstName: usersTable.firstName, lastName: usersTable.lastName })
+    .from(usersTable).where(eq(usersTable.id, me));
+  const requesterName = requester ? `${requester.firstName} ${requester.lastName}`.trim() : "Quelqu'un";
+  pushToUserDevice(targetId, {
+    title: "Brute Pawa",
+    body: `${requesterName} vous a envoyé une demande d'amitié`,
+    tag: `friend-req-${row.id}`,
+    data: { url: "/community" },
+  }).catch(() => {});
+
   res.status(201).json({ id: row.id, status: row.status });
 });
 
@@ -165,6 +178,18 @@ router.post("/friends/:id/accept", requireAuth, async (req, res): Promise<void> 
   if (row.status !== "pending") { res.status(409).json({ error: "Already processed" }); return; }
 
   await db.update(friendRequestsTable).set({ status: "accepted" }).where(eq(friendRequestsTable.id, requestId));
+
+  // Push notification to the original requester
+  const [acceptor] = await db.select({ firstName: usersTable.firstName, lastName: usersTable.lastName })
+    .from(usersTable).where(eq(usersTable.id, me));
+  const acceptorName = acceptor ? `${acceptor.firstName} ${acceptor.lastName}`.trim() : "Quelqu'un";
+  pushToUserDevice(row.fromUserId, {
+    title: "Brute Pawa",
+    body: `${acceptorName} a accepté votre demande d'amitié 🎉`,
+    tag: `friend-accept-${requestId}`,
+    data: { url: `/profile/${me}` },
+  }).catch(() => {});
+
   res.json({ ok: true });
 });
 

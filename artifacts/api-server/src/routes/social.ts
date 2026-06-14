@@ -3,6 +3,7 @@ import { db, postsTable, postLikesTable, messagesTable, usersTable, storiesTable
 import { eq, and, or, desc, sql, gt } from "drizzle-orm";
 import { CreatePostBody, GetPostParams, DeletePostParams, LikePostParams, LikePostBody, SendMessageBody, GetConversationParams, ListPostsQueryParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
+import { pushToUserDevice } from "./push";
 import { deleteObject, extractKeyFromUrl, ownerIdFromKey } from "../lib/r2";
 
 const router = Router();
@@ -152,6 +153,20 @@ router.post("/posts/:id/like", requireAuth, async (req, res): Promise<void> => {
   }
 
   const [post] = await db.select().from(postsTable).where(eq(postsTable.id, params.data.id));
+
+  // Push notification to post author on new like
+  if (body.data.action === "like" && !existing && post && post.authorId !== req.userId!) {
+    const [liker] = await db.select({ firstName: usersTable.firstName, lastName: usersTable.lastName })
+      .from(usersTable).where(eq(usersTable.id, req.userId!));
+    const likerName = liker ? `${liker.firstName} ${liker.lastName}`.trim() : "Quelqu'un";
+    pushToUserDevice(post.authorId, {
+      title: "Brute Pawa",
+      body: `${likerName} a aimé votre publication`,
+      tag: `like-${params.data.id}`,
+      data: { url: "/" },
+    }).catch(() => {});
+  }
+
   res.json(post);
 });
 
@@ -215,6 +230,18 @@ router.post("/messages", requireAuth, async (req, res): Promise<void> => {
     toUserId: toId,
     content: parsed.data.content,
   }).returning();
+
+  // Push notification to recipient
+  const [sender] = await db.select({ firstName: usersTable.firstName, lastName: usersTable.lastName })
+    .from(usersTable).where(eq(usersTable.id, me));
+  const senderName = sender ? `${sender.firstName} ${sender.lastName}`.trim() : "Quelqu'un";
+  pushToUserDevice(toId, {
+    title: senderName,
+    body: parsed.data.content.length > 80 ? parsed.data.content.slice(0, 80) + "…" : parsed.data.content,
+    tag: `msg-${me}`,
+    data: { url: `/messages?userId=${me}` },
+  }).catch(() => {});
+
   res.status(201).json(msg);
 });
 
