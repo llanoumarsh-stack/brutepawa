@@ -564,129 +564,157 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
   }
 
   /* ══════════════════════════════════════════════════════════════
-     INFO OVERLAY
+     INFO OVERLAY — WhatsApp × BP style
   ══════════════════════════════════════════════════════════════ */
   if (activeConv && activeUser && overlay === "info") {
     return (
-      <div style={{ position: "fixed", top: 56, bottom: 60, left: 0, right: 0, background: "var(--fb-bg)", zIndex: 10, overflowY: "auto" }}>
-        <div style={{ background: "var(--fb-white)", padding: "12px 16px", borderBottom: "1px solid var(--fb-divider)", display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={() => setOverlay("none")} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "var(--fb-blue)" }}>←</button>
-          <div style={{ fontWeight: 700, fontSize: 17 }}>Infos du contact</div>
+      <div style={{ position: "fixed", top: 56, bottom: 60, left: 0, right: 0, background: "#f0f2f5", zIndex: 10, overflowY: "auto" }}>
+        {/* Header */}
+        <div style={{
+          background: "#1877F2", padding: "10px 14px",
+          display: "flex", alignItems: "center", gap: 12,
+        }}>
+          <button onClick={() => setOverlay("none")} style={{
+            background: "none", border: "none", fontSize: 20, cursor: "pointer",
+            color: "#fff", display: "flex", alignItems: "center", padding: 4,
+          }}>←</button>
+          <div style={{ fontWeight: 700, fontSize: 17, color: "#fff" }}>Infos du contact</div>
         </div>
-        <div style={{ background: "var(--fb-white)", padding: "28px 20px 20px", textAlign: "center", borderBottom: "1px solid var(--fb-divider)" }}>
-          <div style={{ position: "relative", display: "inline-block", marginBottom: 12 }}>
-            <div className="avatar" style={{ width: 88, height: 88, fontSize: 32, background: activeUser.color }}>{activeUser.initials}</div>
-            <div style={{ position: "absolute", bottom: 4, right: 4, width: 18, height: 18, background: "#42B72A", borderRadius: "50%", border: "3px solid #fff" }} />
+        {/* Profile card */}
+        <div style={{ background: "#fff", padding: "28px 20px 24px", textAlign: "center" }}>
+          <div style={{ position: "relative", display: "inline-block", marginBottom: 14 }}>
+            <div className="avatar" style={{ width: 96, height: 96, fontSize: 34, background: activeUser.color }}>{activeUser.initials}</div>
+            <div style={{ position: "absolute", bottom: 5, right: 5, width: 20, height: 20, background: "#42B72A", borderRadius: "50%", border: "3px solid #fff" }} />
           </div>
-          <div style={{ fontWeight: 900, fontSize: 22, marginBottom: 4 }}>{activeUser.name}</div>
-          <div style={{ fontSize: 14, color: "#42B72A", fontWeight: 700 }}>🟢 En ligne</div>
-          <div style={{ display: "flex", justifyContent: "center", gap: 16, marginTop: 16 }}>
+          <div style={{ fontWeight: 900, fontSize: 23, color: "#111", marginBottom: 4 }}>{activeUser.name}</div>
+          <div style={{ fontSize: 13, color: presence.online ? "#42B72A" : "#888", fontWeight: 600 }}>
+            {presence.online ? "🟢 En ligne" : presText}
+          </div>
+          <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 20 }}>
             {[
-              { icon: "💬", label: "Message", action: () => setOverlay("none") },
-              { icon: "📞", label: "Appel",   action: () => { setOverlay("none"); sig.startCall(activeConv, "audio"); } },
-              { icon: "📹", label: "Vidéo",   action: () => { setOverlay("none"); sig.startCall(activeConv, "video"); } },
+              { icon: "💬", label: "Message", action: () => setOverlay("none"), color: "#1877F2" },
+              { icon: "📞", label: "Appel audio", action: () => { setOverlay("none"); sig.startCall(activeConv, "audio"); }, color: "#42B72A" },
+              { icon: "📹", label: "Vidéo", action: () => { setOverlay("none"); sig.startCall(activeConv, "video"); }, color: "#E91E63" },
             ].map(a => (
               <div key={a.label} onClick={a.action} style={{ cursor: "pointer", textAlign: "center" }}>
-                <div style={{ width: 48, height: 48, borderRadius: "50%", background: "var(--fb-blue)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, margin: "0 auto 6px" }}>{a.icon}</div>
-                <div style={{ fontSize: 11, color: "var(--fb-text-secondary)" }}>{a.label}</div>
+                <div style={{ width: 52, height: 52, borderRadius: "50%", background: a.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, margin: "0 auto 6px", boxShadow: `0 2px 8px ${a.color}55` }}>{a.icon}</div>
+                <div style={{ fontSize: 11, color: "#555", fontWeight: 600 }}>{a.label}</div>
               </div>
             ))}
           </div>
+        </div>
+        {/* Info rows */}
+        <div style={{ marginTop: 8, background: "#fff" }}>
+          {[
+            { icon: "😊", label: "Bonjour ! J'utilise Brute Pawa." },
+            { icon: "📱", label: activeUser.name },
+          ].map((r, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 20px", borderBottom: "1px solid #f0f2f5" }}>
+              <span style={{ fontSize: 22 }}>{r.icon}</span>
+              <span style={{ fontSize: 15, color: "#111" }}>{r.label}</span>
+            </div>
+          ))}
         </div>
       </div>
     );
   }
 
   /* ══════════════════════════════════════════════════════════════
-     CONVERSATION VIEW
+     CONVERSATION VIEW — WhatsApp × Brute Pawa
   ══════════════════════════════════════════════════════════════ */
   if (activeConv && activeUser) {
     return (
       <div style={{
         position: "fixed", top: 56, bottom: 60, left: 0, right: 0,
-        display: "flex", flexDirection: "column", background: "#f0f2f5", zIndex: 5,
+        display: "flex", flexDirection: "column", zIndex: 5,
         overflow: "hidden",
+        background: "#ECE5DD",
       }}>
-        {/* Header — normal ou mode sélection */}
+        <style>{`
+          .bp-chat-bg {
+            background-color: #ECE5DD;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231877F2' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+          }
+          .bp-msg-mine {
+            background: #1877F2;
+            color: #fff;
+            border-radius: 18px 18px 4px 18px;
+            position: relative;
+          }
+          .bp-msg-theirs {
+            background: #fff;
+            color: #111;
+            border-radius: 18px 18px 18px 4px;
+            position: relative;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.12);
+          }
+        `}</style>
+
+        {/* ── HEADER ── */}
         {selectionMode ? (
           <div style={{
-            background: "#075e54", padding: "8px 12px",
+            background: "#0d47a1", padding: "10px 12px",
             display: "flex", alignItems: "center", gap: 14, flexShrink: 0,
-            boxShadow: "0 1px 3px rgba(0,0,0,0.18)",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
           }}>
-            <button onClick={exitSelection} style={{
-              background: "none", border: "none", fontSize: 22, cursor: "pointer",
-              color: "#fff", padding: 4, display: "flex", alignItems: "center",
-            }}>✕</button>
-            <span style={{ flex: 1, fontWeight: 700, fontSize: 18, color: "#fff" }}>
-              {selectedMsgs.size}
-            </span>
-            <button onClick={copySelected} title="Copier" style={{
-              background: "none", border: "none", cursor: "pointer",
-              color: "#fff", fontSize: 20, padding: 6, display: "flex", alignItems: "center",
-            }}>⎘</button>
-            <button title="Transférer" style={{
-              background: "none", border: "none", cursor: "pointer",
-              color: "#fff", fontSize: 20, padding: 6, display: "flex", alignItems: "center",
-            }}>↪</button>
+            <button onClick={exitSelection} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "#fff", display: "flex", alignItems: "center" }}>✕</button>
+            <span style={{ flex: 1, fontWeight: 700, fontSize: 18, color: "#fff" }}>{selectedMsgs.size} sélectionné{selectedMsgs.size > 1 ? "s" : ""}</span>
+            <button onClick={copySelected} title="Copier" style={{ background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: 20, padding: 6 }}>⎘</button>
+            <button title="Transférer" style={{ background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: 20, padding: 6 }}>↪</button>
             <button
               onClick={() => selectedMsgs.size > 0 && setShowDeleteConfirm(true)}
               title="Supprimer"
-              style={{
-                background: "none", border: "none", cursor: selectedMsgs.size > 0 ? "pointer" : "default",
-                color: selectedMsgs.size > 0 ? "#fff" : "rgba(255,255,255,0.4)",
-                fontSize: 20, padding: 6, display: "flex", alignItems: "center",
-              }}>🗑</button>
+              style={{ background: "none", border: "none", cursor: selectedMsgs.size > 0 ? "pointer" : "default", color: selectedMsgs.size > 0 ? "#fff" : "rgba(255,255,255,0.35)", fontSize: 20, padding: 6 }}
+            >🗑</button>
           </div>
         ) : (
           <div style={{
-            background: "#fff", padding: "8px 12px",
-            borderBottom: "1px solid #e4e6eb",
-            display: "flex", alignItems: "center", gap: 10, flexShrink: 0,
-            boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+            background: "#1877F2", padding: "8px 10px",
+            display: "flex", alignItems: "center", gap: 8, flexShrink: 0,
+            boxShadow: "0 2px 4px rgba(0,0,0,0.18)",
           }}>
             <button onClick={() => { setActiveConv(null); setOverlay("none"); }} style={{
-              background: "none", border: "none", fontSize: 20, cursor: "pointer",
-              color: "#1877F2", padding: "6px 8px", borderRadius: "50%",
-              display: "flex", alignItems: "center", justifyContent: "center",
+              background: "none", border: "none", fontSize: 22, cursor: "pointer",
+              color: "#fff", display: "flex", alignItems: "center", padding: "4px 2px",
             }}>←</button>
 
             <div style={{ position: "relative", cursor: "pointer" }} onClick={() => setOverlay("info")}>
-              <div className="avatar" style={{ background: activeUser.color, width: 40, height: 40, fontSize: 15 }}>{activeUser.initials}</div>
-              <div style={{ position: "absolute", bottom: 1, right: 1, width: 12, height: 12, background: "#42B72A", borderRadius: "50%", border: "2px solid #fff" }} />
+              <div className="avatar" style={{ background: "rgba(255,255,255,0.25)", width: 40, height: 40, fontSize: 14, color: "#fff", border: "2px solid rgba(255,255,255,0.4)" }}>{activeUser.initials}</div>
+              {presence.online && <div style={{ position: "absolute", bottom: 1, right: 1, width: 11, height: 11, background: "#42B72A", borderRadius: "50%", border: "2px solid #1877F2" }} />}
             </div>
 
             <div style={{ flex: 1, minWidth: 0, cursor: "pointer" }} onClick={() => setOverlay("info")}>
-              <div style={{ fontWeight: 700, fontSize: 15, color: "#050505", lineHeight: 1.2 }}>{activeUser.name}</div>
-              <div style={{ fontSize: 12, color: presence.online ? "#42B72A" : "#65676b", fontWeight: 600 }}>{presText}</div>
+              <div style={{ fontWeight: 700, fontSize: 15, color: "#fff", lineHeight: 1.2 }}>{activeUser.name}</div>
+              <div style={{ fontSize: 11.5, color: "rgba(255,255,255,0.85)", fontWeight: 500 }}>{presText}</div>
             </div>
 
             <div style={{ display: "flex", gap: 2 }}>
               <button onClick={() => sig.startCall(activeConv, "audio")} title="Appel audio" style={{
-                background: "#f0f2f5", border: "none", borderRadius: "50%",
-                width: 38, height: 38, cursor: "pointer", fontSize: 17,
+                background: "rgba(255,255,255,0.15)", border: "none", borderRadius: "50%",
+                width: 38, height: 38, cursor: "pointer", fontSize: 17, color: "#fff",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}>📞</button>
               <button onClick={() => sig.startCall(activeConv, "video")} title="Appel vidéo" style={{
-                background: "#f0f2f5", border: "none", borderRadius: "50%",
-                width: 38, height: 38, cursor: "pointer", fontSize: 17,
+                background: "rgba(255,255,255,0.15)", border: "none", borderRadius: "50%",
+                width: 38, height: 38, cursor: "pointer", fontSize: 17, color: "#fff",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}>📹</button>
               <button onClick={() => setOverlay("info")} title="Infos" style={{
-                background: "#f0f2f5", border: "none", borderRadius: "50%",
-                width: 38, height: 38, cursor: "pointer", fontSize: 17,
+                background: "rgba(255,255,255,0.15)", border: "none", borderRadius: "50%",
+                width: 38, height: 38, cursor: "pointer", color: "#fff", fontSize: 18, fontWeight: 700,
                 display: "flex", alignItems: "center", justifyContent: "center",
-              }}>ℹ️</button>
+              }}>⋮</button>
             </div>
           </div>
         )}
 
-        {/* Messages list */}
-        <div style={{ flex: 1, overflowY: "auto", padding: "10px 12px", display: "flex", flexDirection: "column", gap: 3 }}>
+        {/* ── MESSAGES AREA ── */}
+        <div className="bp-chat-bg" style={{ flex: 1, overflowY: "auto", padding: "10px 10px 6px", display: "flex", flexDirection: "column", gap: 2 }}>
           <div style={{
-            textAlign: "center", fontSize: 12, color: "#65676b",
-            background: "rgba(255,255,255,0.9)", borderRadius: 20,
-            padding: "4px 14px", margin: "4px auto 10px", display: "inline-block", alignSelf: "center",
+            textAlign: "center", fontSize: 11.5, color: "#555",
+            background: "rgba(255,255,255,0.85)", borderRadius: 20,
+            padding: "4px 14px", margin: "2px auto 10px", display: "inline-block", alignSelf: "center",
+            boxShadow: "0 1px 2px rgba(0,0,0,0.08)",
           }}>
             Aujourd'hui
           </div>
@@ -706,44 +734,38 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
               onContextMenu: (e: React.MouseEvent) => { e.preventDefault(); startLongPress(msg.id); },
             };
 
-            const handleRowClick = () => {
-              if (selectionMode) toggleSelect(msg.id);
-            };
-
             return (
               <div
                 key={msg.id}
-                onClick={handleRowClick}
+                onClick={() => selectionMode && toggleSelect(msg.id)}
                 style={{
                   display: "flex",
                   justifyContent: msg.mine ? "flex-end" : "flex-start",
-                  alignItems: "center",
+                  alignItems: "flex-end",
                   gap: 6,
-                  marginTop: isFirst ? 8 : 1,
+                  marginTop: isFirst ? 6 : 1,
                   paddingLeft: selectionMode ? 4 : 0,
-                  background: isSelected ? "rgba(0,90,255,0.08)" : "transparent",
+                  background: isSelected ? "rgba(24,119,242,0.12)" : "transparent",
                   borderRadius: 8,
                   cursor: selectionMode ? "pointer" : "default",
                   transition: "background 0.15s",
                   userSelect: "none",
+                  paddingRight: msg.mine ? 4 : 0,
                 }}
               >
-                {/* Selection circle */}
                 {selectionMode && (
                   <div style={{
-                    width: 24, height: 24, borderRadius: "50%", flexShrink: 0,
-                    border: isSelected ? "none" : "2px solid #bbb",
-                    background: isSelected ? "#25D366" : "transparent",
+                    width: 22, height: 22, borderRadius: "50%", flexShrink: 0,
+                    border: isSelected ? "none" : "2px solid #aaa",
+                    background: isSelected ? "#1877F2" : "transparent",
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    transition: "all 0.15s",
                   }}>
-                    {isSelected && <span style={{ color: "#fff", fontSize: 13, fontWeight: 700 }}>✓</span>}
+                    {isSelected && <span style={{ color: "#fff", fontSize: 12, fontWeight: 700 }}>✓</span>}
                   </div>
                 )}
 
-                {/* Avatar placeholder for other's messages */}
                 {!msg.mine && !selectionMode && (
-                  <div style={{ width: 28, flexShrink: 0, paddingBottom: 2, alignSelf: "flex-end" }}>
+                  <div style={{ width: 28, flexShrink: 0, alignSelf: "flex-end", paddingBottom: 2 }}>
                     {isLast && (
                       <div className="avatar xs" style={{ background: activeUser.color, width: 26, height: 26, fontSize: 10 }}>
                         {activeUser.initials}
@@ -752,12 +774,12 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
                   </div>
                 )}
 
-                <div style={{ maxWidth: "75%" }} {...(!selectionMode ? longPressHandlers : {})}>
+                <div style={{ maxWidth: "72%", display: "flex", flexDirection: "column" }} {...(!selectionMode ? longPressHandlers : {})}>
                   {msg.attachment && (
                     <div style={{
-                      background: msg.mine ? "#1877F2" : "#e4e6eb",
-                      color: msg.mine ? "#fff" : "#050505",
-                      borderRadius: 18, padding: "8px 12px", marginBottom: 2, fontSize: 13,
+                      background: msg.mine ? "#1564c0" : "#f1f1f1",
+                      color: msg.mine ? "#fff" : "#111",
+                      borderRadius: 14, padding: "8px 12px", marginBottom: 2, fontSize: 13,
                       display: "flex", alignItems: "center", gap: 8,
                     }}>
                       <span style={{ fontSize: 18 }}>
@@ -766,74 +788,75 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
                       <span>{msg.attachment.label}</span>
                     </div>
                   )}
-                  <div style={{
-                    background: msg.mine ? "#1877F2" : "#e4e6eb",
-                    color: msg.mine ? "#fff" : "#050505",
-                    borderRadius: msg.mine
-                      ? (isFirst ? "18px 18px 4px 18px" : isLast ? "18px 4px 18px 18px" : "18px 4px 4px 18px")
-                      : (isFirst ? "18px 18px 18px 4px" : isLast ? "4px 18px 18px 18px" : "4px 18px 18px 4px"),
-                    padding: "9px 13px", fontSize: 14.5, lineHeight: 1.4,
+                  <div className={msg.mine ? "bp-msg-mine" : "bp-msg-theirs"} style={{
+                    padding: "8px 12px 6px",
+                    fontSize: 14.5, lineHeight: 1.45,
                     wordBreak: "break-word",
                   }}>
                     {msg.text}
-                  </div>
-                  {isLast && (
                     <div style={{
-                      fontSize: 10.5, color: "#65676b", marginTop: 3,
-                      textAlign: msg.mine ? "right" : "left",
-                      paddingRight: msg.mine ? 2 : 0,
+                      fontSize: 10, marginTop: 2,
+                      color: msg.mine ? "rgba(255,255,255,0.75)" : "#888",
+                      textAlign: "right",
+                      display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 3,
                     }}>
-                      {msg.time}{msg.mine && <span style={{ marginLeft: 4 }}>{msg.status === "read" ? "✓✓" : "✓"}</span>}
+                      {msg.time}
+                      {msg.mine && (
+                        <span style={{ color: msg.status === "read" ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.6)", fontSize: 11 }}>
+                          {msg.status === "read" ? "✓✓" : "✓"}
+                        </span>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
             );
           })}
+
+          {currentMessages.length === 0 && (
+            <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "40px 0" }}>
+              <div style={{ background: "rgba(255,255,255,0.85)", borderRadius: 16, padding: "12px 20px", fontSize: 13, color: "#555", textAlign: "center", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
+                🔒 Les messages sont chiffrés de bout en bout
+              </div>
+            </div>
+          )}
+
           <div ref={bottomRef} />
         </div>
 
-        {/* Attachment picker */}
+        {/* ── ATTACHMENT PICKER ── */}
         {overlay === "attach" && (
           <div style={{
             position: "absolute", bottom: 58, left: 0, right: 0,
             background: "#fff", borderTop: "1px solid #e4e6eb",
-            padding: "16px 20px", boxShadow: "0 -4px 16px rgba(0,0,0,0.08)",
+            padding: "16px 20px 18px", boxShadow: "0 -4px 20px rgba(0,0,0,0.1)",
           }}>
-            <div style={{ fontWeight: 700, marginBottom: 14, fontSize: 14 }}>Joindre un fichier</div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
               {[
-                { icon: "📷", label: "Photo",    action: () => { sendMsg("📷 Photo envoyée", { type: "image", label: "photo.jpg" }); setOverlay("none"); } },
-                { icon: "📄", label: "Document", action: () => { sendMsg("📄 Document envoyé", { type: "doc", label: "document.pdf" }); setOverlay("none"); } },
-                { icon: "📍", label: "Position", action: () => { sendMsg("📍 Ma position", { type: "location", label: "Abidjan, Cocody" }); setOverlay("none"); } },
-                { icon: "🎵", label: "Audio",    action: () => { sendMsg("🎵 Message vocal (0:08)", { type: "audio", label: "vocal.m4a" }); setOverlay("none"); } },
-                { icon: "🛍️", label: "Produit",  action: () => { sendMsg("🛍️ Tissu Wax — 4 500 FCFA"); setOverlay("none"); } },
-                { icon: "💳", label: "Paiement", action: () => { sendMsg("💸 Demande : 15 000 FCFA"); setOverlay("none"); } },
-                { icon: "📅", label: "RDV",      action: () => { sendMsg("📅 Rendez-vous : demain 10h"); setOverlay("none"); } },
-                { icon: "📊", label: "Sondage",  action: () => { sendMsg("📊 Sondage : quel créneau ?"); setOverlay("none"); } },
+                { icon: "🖼️", label: "Photo",    bg: "#E91E63", action: () => { sendMsg("📷 Photo envoyée", { type: "image", label: "photo.jpg" }); setOverlay("none"); } },
+                { icon: "📄", label: "Document", bg: "#9C27B0", action: () => { sendMsg("📄 Document envoyé", { type: "doc", label: "document.pdf" }); setOverlay("none"); } },
+                { icon: "📍", label: "Position", bg: "#F44336", action: () => { sendMsg("📍 Ma position", { type: "location", label: "Abidjan, Cocody" }); setOverlay("none"); } },
+                { icon: "🎵", label: "Audio",    bg: "#FF9800", action: () => { sendMsg("🎵 Message vocal (0:08)", { type: "audio", label: "vocal.m4a" }); setOverlay("none"); } },
+                { icon: "🛍️", label: "Produit",  bg: "#1877F2", action: () => { sendMsg("🛍️ Tissu Wax — 4 500 FCFA"); setOverlay("none"); } },
+                { icon: "💸", label: "Paiement", bg: "#4CAF50", action: () => { sendMsg("💸 Demande : 15 000 FCFA"); setOverlay("none"); } },
+                { icon: "📅", label: "RDV",      bg: "#00BCD4", action: () => { sendMsg("📅 Rendez-vous : demain 10h"); setOverlay("none"); } },
+                { icon: "📊", label: "Sondage",  bg: "#607D8B", action: () => { sendMsg("📊 Sondage : quel créneau ?"); setOverlay("none"); } },
               ].map(item => (
                 <div key={item.label} onClick={item.action} style={{ textAlign: "center", cursor: "pointer" }}>
-                  <div style={{ width: 52, height: 52, background: "#f0f2f5", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, margin: "0 auto 5px" }}>{item.icon}</div>
-                  <div style={{ fontSize: 11, color: "#65676b", fontWeight: 600 }}>{item.label}</div>
+                  <div style={{ width: 52, height: 52, background: item.bg, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, margin: "0 auto 6px", boxShadow: `0 2px 8px ${item.bg}55` }}>{item.icon}</div>
+                  <div style={{ fontSize: 11, color: "#444", fontWeight: 600 }}>{item.label}</div>
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {/* Bottom bar — selection actions OR normal input */}
+        {/* ── BOTTOM BAR ── */}
         {selectionMode ? (
-          <div style={{
-            background: "#fff", borderTop: "1px solid #e4e6eb",
-            display: "flex", flexShrink: 0,
-          }}>
-            {[
-              { icon: "↩", label: "Répondre" },
-              { icon: "→", label: "Transférer" },
-            ].map(action => (
+          <div style={{ background: "#fff", borderTop: "1px solid #e4e6eb", display: "flex", flexShrink: 0 }}>
+            {[{ icon: "↩", label: "Répondre" }, { icon: "→", label: "Transférer" }].map(action => (
               <button key={action.label} style={{
-                flex: 1, background: "none", border: "none",
-                padding: "14px 0", cursor: "pointer",
+                flex: 1, background: "none", border: "none", padding: "14px 0", cursor: "pointer",
                 display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
                 borderRight: action.label === "Répondre" ? "1px solid #e4e6eb" : "none",
               }}>
@@ -844,28 +867,23 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
           </div>
         ) : (
           <div style={{
-            background: "#fff", padding: "8px 10px",
-            borderTop: "1px solid #e4e6eb",
+            background: "#f0f2f5", padding: "6px 8px",
             display: "flex", gap: 6, alignItems: "center", flexShrink: 0,
           }}>
             <button
               onClick={() => setOverlay(o => o === "attach" ? "none" : "attach")}
               style={{
-                background: overlay === "attach" ? "#1877F2" : "#f0f2f5",
-                border: "none", width: 36, height: 36, borderRadius: "50%",
-                cursor: "pointer", fontSize: 18,
+                background: overlay === "attach" ? "#1877F2" : "#fff",
+                border: "none", width: 40, height: 40, borderRadius: "50%",
+                cursor: "pointer", fontSize: 20,
                 display: "flex", alignItems: "center", justifyContent: "center",
-                color: overlay === "attach" ? "#fff" : "#1877F2", flexShrink: 0,
+                color: overlay === "attach" ? "#fff" : "#555", flexShrink: 0,
                 transition: "all 0.2s",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.12)",
               }}>
-              {overlay === "attach" ? "✕" : "+"}
+              {overlay === "attach" ? "✕" : "＋"}
             </button>
-            <button style={{
-              background: "none", border: "none", fontSize: 22, cursor: "pointer",
-              color: "#1877F2", flexShrink: 0, padding: 0,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              width: 36, height: 36,
-            }}>📷</button>
+
             <div style={{ flex: 1, position: "relative" }}>
               <input
                 value={newMsg}
@@ -873,93 +891,56 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
                 onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMsg(); } }}
                 placeholder="Message..."
                 style={{
-                  width: "100%", background: "#f0f2f5", border: "none",
-                  borderRadius: 22, padding: "10px 16px", fontSize: 14.5,
-                  outline: "none", boxSizing: "border-box", color: "#050505",
+                  width: "100%", background: "#fff", border: "none",
+                  borderRadius: 22, padding: "10px 14px", fontSize: 15,
+                  outline: "none", boxSizing: "border-box", color: "#111",
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
                 }}
               />
             </div>
+
             {newMsg.trim() ? (
               <button onClick={() => sendMsg()} style={{
                 background: "#1877F2", border: "none", borderRadius: "50%",
-                width: 36, height: 36, color: "#fff", cursor: "pointer",
+                width: 40, height: 40, color: "#fff", cursor: "pointer",
                 fontSize: 16, flexShrink: 0,
                 display: "flex", alignItems: "center", justifyContent: "center",
+                boxShadow: "0 2px 8px rgba(24,119,242,0.5)",
               }}>➤</button>
             ) : (
               <button style={{
-                background: "none", border: "none", fontSize: 24, cursor: "pointer",
-                color: "#1877F2", flexShrink: 0, padding: 0,
-              }}>👍</button>
+                background: "#1877F2", border: "none", borderRadius: "50%",
+                width: 40, height: 40, color: "#fff", cursor: "pointer",
+                fontSize: 18, flexShrink: 0,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                boxShadow: "0 2px 8px rgba(24,119,242,0.5)",
+              }}>🎤</button>
             )}
           </div>
         )}
 
-        {/* Delete confirmation modal */}
+        {/* ── DELETE MODAL ── */}
         {showDeleteConfirm && (
-          <div style={{
-            position: "absolute", inset: 0,
-            background: "rgba(0,0,0,0.45)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            zIndex: 50, padding: "0 24px",
-          }}
+          <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50, padding: "0 24px" }}
             onClick={e => { if (e.target === e.currentTarget) setShowDeleteConfirm(false); }}
           >
-            <div style={{
-              background: "#fff", borderRadius: 16,
-              width: "100%", maxWidth: 360,
-              padding: "24px 20px 16px",
-              boxShadow: "0 8px 32px rgba(0,0,0,0.22)",
-            }}>
-              <div style={{ fontWeight: 800, fontSize: 17, color: "#050505", marginBottom: 8 }}>
-                Supprimer le message
+            <div style={{ background: "#fff", borderRadius: 16, width: "100%", maxWidth: 340, padding: "24px 20px 16px", boxShadow: "0 8px 32px rgba(0,0,0,0.25)" }}>
+              <div style={{ fontWeight: 800, fontSize: 16, color: "#111", marginBottom: 10 }}>Supprimer le message</div>
+              <div style={{ fontSize: 14, color: "#555", marginBottom: 18, lineHeight: 1.5 }}>
+                Supprimer {selectedMsgs.size > 1 ? `ces ${selectedMsgs.size} messages` : "ce message"} ?
               </div>
-              <div style={{ fontSize: 14, color: "#444", marginBottom: 18, lineHeight: 1.5 }}>
-                Voulez-vous vraiment supprimer {selectedMsgs.size > 1 ? `ces ${selectedMsgs.size} messages` : "ce message"} ?
-              </div>
-
-              {/* "Delete for everyone" checkbox (only if all selected messages are mine) */}
               {(() => {
-                const allMine = [...selectedMsgs].every(id =>
-                  (messages[activeConv!] ?? []).find(m => m.id === id)?.mine
-                );
+                const allMine = [...selectedMsgs].every(id => (messages[activeConv!] ?? []).find(m => m.id === id)?.mine);
                 return allMine ? (
-                  <label style={{
-                    display: "flex", alignItems: "center", gap: 10,
-                    marginBottom: 20, cursor: "pointer",
-                  }}>
-                    <input
-                      type="checkbox"
-                      checked={deleteForAll}
-                      onChange={e => setDeleteForAll(e.target.checked)}
-                      style={{ width: 18, height: 18, cursor: "pointer", accentColor: "#1877F2" }}
-                    />
-                    <span style={{ fontSize: 14, color: "#333" }}>
-                      Supprimer aussi pour {activeUser?.name ?? "l'autre"}
-                    </span>
+                  <label style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20, cursor: "pointer" }}>
+                    <input type="checkbox" checked={deleteForAll} onChange={e => setDeleteForAll(e.target.checked)} style={{ width: 18, height: 18, cursor: "pointer", accentColor: "#1877F2" }} />
+                    <span style={{ fontSize: 14, color: "#333" }}>Supprimer aussi pour {activeUser?.name ?? "l'autre"}</span>
                   </label>
                 ) : null;
               })()}
-
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-                <button
-                  onClick={() => setShowDeleteConfirm(false)}
-                  style={{
-                    background: "none", border: "none", padding: "10px 18px",
-                    fontSize: 15, fontWeight: 700, color: "#1877F2", cursor: "pointer",
-                    borderRadius: 8,
-                  }}>
-                  Annuler
-                </button>
-                <button
-                  onClick={confirmDelete}
-                  style={{
-                    background: "none", border: "none", padding: "10px 18px",
-                    fontSize: 15, fontWeight: 700, color: "#F44336", cursor: "pointer",
-                    borderRadius: 8,
-                  }}>
-                  Supprimer
-                </button>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: 4 }}>
+                <button onClick={() => setShowDeleteConfirm(false)} style={{ background: "none", border: "none", padding: "10px 16px", fontSize: 15, fontWeight: 700, color: "#1877F2", cursor: "pointer", borderRadius: 8 }}>Annuler</button>
+                <button onClick={confirmDelete} style={{ background: "none", border: "none", padding: "10px 16px", fontSize: 15, fontWeight: 700, color: "#F44336", cursor: "pointer", borderRadius: 8 }}>Supprimer</button>
               </div>
             </div>
           </div>
@@ -969,116 +950,188 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
   }
 
   /* ══════════════════════════════════════════════════════════════
-     INBOX — Facebook Messenger style
+     INBOX — WhatsApp × Brute Pawa
   ══════════════════════════════════════════════════════════════ */
   return (
-    <div style={{ maxWidth: 600, margin: "0 auto", background: "#fff", minHeight: "100%" }}>
+    <div style={{
+      position: "fixed", top: 56, bottom: 60, left: 0, right: 0,
+      display: "flex", flexDirection: "column", background: "#fff", zIndex: 1,
+      overflow: "hidden",
+    }}>
+      <style>{`
+        .bp-conv-row:active { background: #f0f2f5 !important; }
+        .bp-conv-row:hover  { background: #f7f8fa !important; }
+        @keyframes bp-fade-in { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+      `}</style>
 
-      {/* Header */}
-      <div style={{ padding: "14px 16px 10px", borderBottom: "none" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-          <div style={{ fontWeight: 900, fontSize: 24, color: "#050505" }}>Messages</div>
-          <div style={{ display: "flex", gap: 6 }}>
-            <button style={{
-              background: "#f0f2f5", border: "none", borderRadius: "50%",
-              width: 36, height: 36, cursor: "pointer", fontSize: 17,
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}>✏️</button>
+      {/* ── HEADER FIXE ── */}
+      <div style={{ background: "#1877F2", flexShrink: 0 }}>
+        {/* Title row */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 14px 8px" }}>
+          <div style={{ fontWeight: 900, fontSize: 22, color: "#fff", letterSpacing: -0.3 }}>Messages</div>
+          <div style={{ display: "flex", gap: 4 }}>
+            {[
+              { icon: "🔍", title: "Rechercher" },
+              { icon: "✏️", title: "Nouvelle discussion" },
+              { icon: "⋮",  title: "Menu", style: { fontSize: 22, fontWeight: 700 } },
+            ].map(btn => (
+              <button key={btn.title} title={btn.title} style={{
+                background: "rgba(255,255,255,0.15)", border: "none", borderRadius: "50%",
+                width: 36, height: 36, cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                color: "#fff", fontSize: (btn.style as { fontSize?: number })?.fontSize ?? 17,
+                fontWeight: (btn.style as { fontWeight?: number })?.fontWeight ?? 400,
+              }}>{btn.icon}</button>
+            ))}
           </div>
         </div>
-        <div style={{ position: "relative" }}>
-          <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "#65676b", fontSize: 14 }}>🔍</span>
+        {/* Search bar */}
+        <div style={{ position: "relative", padding: "0 12px 10px" }}>
+          <span style={{ position: "absolute", left: 22, top: "50%", transform: "translateY(-65%)", fontSize: 13, color: "rgba(255,255,255,0.6)" }}>🔍</span>
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Rechercher dans les messages"
+            placeholder="Rechercher ou démarrer une discussion"
             style={{
-              width: "100%", background: "#f0f2f5", border: "none",
-              borderRadius: 22, padding: "9px 16px 9px 38px",
-              fontSize: 14.5, outline: "none", boxSizing: "border-box", color: "#050505",
+              width: "100%", background: "rgba(255,255,255,0.18)", border: "none",
+              borderRadius: 22, padding: "8px 14px 8px 34px",
+              fontSize: 13.5, outline: "none", boxSizing: "border-box",
+              color: "#fff",
             }}
           />
         </div>
       </div>
 
-      {/* Actifs maintenant */}
-      {convList.length > 0 && (
-        <div style={{ padding: "8px 16px 12px", borderBottom: "1px solid #f0f2f5" }}>
-          <div style={{ fontWeight: 700, fontSize: 13, color: "#050505", marginBottom: 10 }}>Actifs maintenant</div>
-          <div style={{ display: "flex", gap: 14, overflowX: "auto", scrollbarWidth: "none" }}>
-            {convList.slice(0, 8).map(conv => (
-              <div key={conv.id} onClick={() => setActiveConv(conv.id)} style={{ flexShrink: 0, textAlign: "center", cursor: "pointer" }}>
-                <div style={{ position: "relative", marginBottom: 4 }}>
-                  <div className="avatar" style={{
-                    background: conv.user.color, width: 52, height: 52,
-                    fontSize: 18, margin: "0 auto",
-                  }}>{conv.user.initials}</div>
-                  <div style={{ position: "absolute", bottom: 2, right: 2, width: 14, height: 14, background: "#42B72A", borderRadius: "50%", border: "2px solid #fff" }} />
-                </div>
-                <div style={{ fontSize: 11, color: "#050505", fontWeight: 600, maxWidth: 54, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {conv.user.name.split(" ")[0]}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* ── SCROLLABLE BODY ── */}
+      <div style={{ flex: 1, overflowY: "auto" }}>
 
-      {/* Conversation list */}
-      <div>
-        {filteredConvs.length === 0 && (
-          <div style={{ padding: "40px 20px", textAlign: "center", color: "#65676b", fontSize: 14 }}>
-            {search ? "Aucun résultat" : "Aucune conversation pour l'instant"}
+        {/* Statuts actifs (like WhatsApp status bar) */}
+        {convList.length > 0 && (
+          <div style={{ borderBottom: "1px solid #f0f2f5" }}>
+            <div style={{
+              display: "flex", gap: 0, overflowX: "auto",
+              scrollbarWidth: "none", padding: "10px 8px 12px",
+            }}>
+              {/* Mon statut (ajouter) */}
+              <div style={{ flexShrink: 0, textAlign: "center", width: 68, padding: "0 4px" }}>
+                <div style={{ position: "relative", marginBottom: 5 }}>
+                  <div className="avatar" style={{
+                    width: 52, height: 52, fontSize: 18, margin: "0 auto",
+                    background: "#1877F2", border: "3px solid #fff",
+                    boxShadow: "0 0 0 2px #1877F2",
+                  }}>
+                    {(() => {
+                      try { return (JSON.parse(localStorage.getItem("fb_user") ?? "{}") as { name?: string }).name?.slice(0,2).toUpperCase() ?? "Moi"; } catch { return "Moi"; }
+                    })()}
+                  </div>
+                  <div style={{ position: "absolute", bottom: 0, right: 8, width: 18, height: 18, background: "#1877F2", borderRadius: "50%", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 12, fontWeight: 900 }}>+</div>
+                </div>
+                <div style={{ fontSize: 10.5, color: "#555", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Mon statut</div>
+              </div>
+
+              {/* Autres statuts */}
+              {convList.slice(0, 6).map(conv => (
+                <div key={conv.id} onClick={() => setActiveConv(conv.id)} style={{ flexShrink: 0, textAlign: "center", width: 68, padding: "0 4px", cursor: "pointer" }}>
+                  <div style={{ position: "relative", marginBottom: 5 }}>
+                    <div className="avatar" style={{
+                      width: 52, height: 52, fontSize: 18, margin: "0 auto",
+                      background: conv.user.color,
+                      border: `3px solid ${conv.unread > 0 ? "#1877F2" : "#ddd"}`,
+                      boxShadow: `0 0 0 1px ${conv.unread > 0 ? "#1877F2" : "transparent"}`,
+                    }}>{conv.user.initials}</div>
+                    <div style={{ position: "absolute", bottom: 0, right: 8, width: 14, height: 14, background: "#42B72A", borderRadius: "50%", border: "2px solid #fff" }} />
+                  </div>
+                  <div style={{ fontSize: 10.5, color: "#333", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    {conv.user.name.split(" ")[0]}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
-        {filteredConvs.map(conv => (
-          <div
-            key={conv.id}
-            onClick={() => setActiveConv(conv.id)}
-            style={{
-              display: "flex", gap: 12, padding: "8px 16px", cursor: "pointer",
-              background: "#fff",
-              transition: "background 0.1s",
-            }}
-            onMouseEnter={e => (e.currentTarget.style.background = "#f0f2f5")}
-            onMouseLeave={e => (e.currentTarget.style.background = "#fff")}
-          >
-            <div style={{ position: "relative", flexShrink: 0, alignSelf: "center" }}>
-              <div className="avatar" style={{ background: conv.user.color, width: 56, height: 56, fontSize: 20 }}>{conv.user.initials}</div>
-              <div style={{ position: "absolute", bottom: 2, right: 2, width: 14, height: 14, background: "#42B72A", borderRadius: "50%", border: "2px solid #fff" }} />
+
+        {/* ── CONVERSATION LIST ── */}
+        {filteredConvs.length === 0 ? (
+          <div style={{ padding: "50px 20px", textAlign: "center" }}>
+            <div style={{ fontSize: 48, marginBottom: 12 }}>💬</div>
+            <div style={{ fontWeight: 700, fontSize: 16, color: "#333", marginBottom: 6 }}>
+              {search ? "Aucun résultat" : "Aucune discussion"}
             </div>
-            <div style={{ flex: 1, minWidth: 0, alignSelf: "center" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 2 }}>
-                <span style={{
-                  fontWeight: conv.unread > 0 ? 800 : 600, fontSize: 15.5, color: "#050505",
-                  overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "65%",
-                }}>{conv.user.name}</span>
-                <span style={{
-                  fontSize: 12, fontWeight: conv.unread > 0 ? 700 : 400,
-                  color: conv.unread > 0 ? "#1877F2" : "#65676b", flexShrink: 0,
-                }}>{conv.time}</span>
-              </div>
-              <div style={{
-                fontSize: 13.5, color: conv.unread > 0 ? "#050505" : "#65676b",
-                overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                fontWeight: conv.unread > 0 ? 700 : 400,
-              }}>
-                {conv.lastMessage || "Démarrer une conversation"}
-              </div>
+            <div style={{ fontSize: 13, color: "#888" }}>
+              {search ? "Essayez un autre nom" : "Appuyez sur ✏️ pour démarrer une conversation"}
             </div>
-            {conv.unread > 0 && (
-              <div style={{
-                background: "#1877F2", color: "#fff", borderRadius: "50%",
-                minWidth: 22, height: 22,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 12, fontWeight: 800, flexShrink: 0, alignSelf: "center",
-              }}>
-                {conv.unread > 9 ? "9+" : conv.unread}
-              </div>
-            )}
           </div>
-        ))}
+        ) : (
+          filteredConvs.map((conv, idx) => (
+            <div
+              key={conv.id}
+              className="bp-conv-row"
+              onClick={() => setActiveConv(conv.id)}
+              style={{
+                display: "flex", gap: 12, padding: "10px 14px",
+                cursor: "pointer", background: "#fff",
+                borderBottom: idx < filteredConvs.length - 1 ? "1px solid #f5f5f5" : "none",
+                transition: "background 0.1s",
+                animation: "bp-fade-in 0.2s ease forwards",
+              }}
+            >
+              {/* Avatar */}
+              <div style={{ position: "relative", flexShrink: 0, alignSelf: "center" }}>
+                <div className="avatar" style={{ background: conv.user.color, width: 52, height: 52, fontSize: 19 }}>{conv.user.initials}</div>
+                <div style={{ position: "absolute", bottom: 1, right: 1, width: 13, height: 13, background: "#42B72A", borderRadius: "50%", border: "2px solid #fff" }} />
+              </div>
+
+              {/* Text */}
+              <div style={{ flex: 1, minWidth: 0, alignSelf: "center" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 3 }}>
+                  <span style={{
+                    fontWeight: conv.unread > 0 ? 800 : 600, fontSize: 15.5, color: "#111",
+                    overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "68%",
+                  }}>{conv.user.name}</span>
+                  <span style={{
+                    fontSize: 11.5, fontWeight: conv.unread > 0 ? 700 : 400, flexShrink: 0,
+                    color: conv.unread > 0 ? "#1877F2" : "#aaa",
+                  }}>{conv.time}</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                  <div style={{
+                    flex: 1, fontSize: 13.5,
+                    color: conv.unread > 0 ? "#222" : "#888",
+                    overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                    fontWeight: conv.unread > 0 ? 600 : 400,
+                  }}>
+                    {conv.lastMessage || "Démarrer une conversation"}
+                  </div>
+                  {conv.unread > 0 && (
+                    <div style={{
+                      background: "#1877F2", color: "#fff", borderRadius: 20,
+                      minWidth: 20, height: 20, flexShrink: 0,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 11, fontWeight: 800, padding: "0 5px",
+                    }}>
+                      {conv.unread > 99 ? "99+" : conv.unread}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))
+        )}
       </div>
+
+      {/* ── FAB NOUVELLE DISCUSSION ── */}
+      <button
+        style={{
+          position: "absolute", bottom: 16, right: 16,
+          width: 54, height: 54, borderRadius: "50%",
+          background: "#1877F2", border: "none", cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 24, color: "#fff",
+          boxShadow: "0 4px 16px rgba(24,119,242,0.45)",
+          zIndex: 10,
+        }}
+        title="Nouvelle discussion"
+      >✏️</button>
     </div>
   );
 }
