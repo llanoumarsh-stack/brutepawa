@@ -148,7 +148,7 @@ select:focus { border-color: var(--fb-blue); }
 
 /* ===== NAV BAR ===== */
 .navbar {
-  background: var(--fb-blue);
+  background: #42B72A;
   padding: 0 16px;
   height: var(--navbar-height);
   display: flex;

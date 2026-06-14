@@ -6,7 +6,7 @@ import { apiGetStories, apiGetComments, apiPostComment, apiToggleCommentLike, ap
 import StoryViewer from "../components/StoryViewer";
 import { storyDraftStore } from "../lib/storyDraft";
 
-const AVATAR_COLORS = ["#1877F2","#E91E63","#9C27B0","#F57C00","#388E3C","#212121","#D32F2F","#00838F"];
+const AVATAR_COLORS = ["#42B72A","#E91E63","#9C27B0","#F57C00","#388E3C","#212121","#D32F2F","#00838F"];
 
 function getInitials(name?: string) {
   if (!name) return "??";
@@ -301,9 +301,9 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
           <div className="story-bg" style={{ background: "#e4e6e9", position: "relative", overflow: "hidden" }}>
             {user.avatarUrl
               ? <img src={user.avatarUrl} alt="moi" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              : <div style={{ width: "100%", height: "100%", background: "#1877F2", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 22 }}>{userInitials}</div>
+              : <div style={{ width: "100%", height: "100%", background: "#42B72A", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 22 }}>{userInitials}</div>
             }
-            <div style={{ position: "absolute", bottom: 8, left: "50%", transform: "translateX(-50%)", width: 28, height: 28, borderRadius: "50%", background: "#1877F2", border: "3px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 16, fontWeight: 900, lineHeight: 1 }}>+</div>
+            <div style={{ position: "absolute", bottom: 8, left: "50%", transform: "translateX(-50%)", width: 28, height: 28, borderRadius: "50%", background: "#42B72A", border: "3px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 16, fontWeight: 900, lineHeight: 1 }}>+</div>
           </div>
           <div className="story-label">Créer une story</div>
         </div>
@@ -322,13 +322,13 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 {preview?.content && !preview?.mediaUrl && !preview?.emoji && (
                   <div style={{ fontSize: 11, fontWeight: 700, color: "#fff", padding: "4px 6px", textAlign: "center", position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>{preview.content.slice(0, 40)}</div>
                 )}
-                <div style={{ position: "absolute", top: 8, left: 8, width: 34, height: 34, borderRadius: "50%", border: "3px solid #1877F2", background: avatarBg, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                <div style={{ position: "absolute", top: 8, left: 8, width: 34, height: 34, borderRadius: "50%", border: "3px solid #42B72A", background: avatarBg, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
                   {group.authorAvatarUrl
                     ? <img src={group.authorAvatarUrl} alt={group.authorName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     : <span style={{ color: "#fff", fontWeight: 700, fontSize: 12 }}>{initials}</span>}
                 </div>
                 {group.storiesCount > 1 && (
-                  <div style={{ position: "absolute", top: 6, right: 6, background: "#1877F2", color: "#fff", borderRadius: 10, minWidth: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, padding: "0 4px" }}>{group.storiesCount}</div>
+                  <div style={{ position: "absolute", top: 6, right: 6, background: "#42B72A", color: "#fff", borderRadius: 10, minWidth: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, padding: "0 4px" }}>{group.storiesCount}</div>
                 )}
               </div>
               <div className="story-label">{group.authorName.split(" ")[0]}</div>
@@ -355,7 +355,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
       >
         {user.avatarUrl
           ? <img src={user.avatarUrl} alt="Avatar" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
-          : <div className="avatar" style={{ background: "#1877F2", width: 40, height: 40, fontSize: 15, flexShrink: 0 }}>{userInitials}</div>
+          : <div className="avatar" style={{ background: "#42B72A", width: 40, height: 40, fontSize: 15, flexShrink: 0 }}>{userInitials}</div>
         }
         <div style={{
           flex: 1, background: "var(--fb-bg)", borderRadius: 22, padding: "10px 16px",
@@ -378,7 +378,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
       {!postsLoading && visiblePosts.map(post => {
         const displayName = post.authorName ?? "Utilisateur";
         const displayInitials = getInitials(displayName);
-        const displayColor = post.authorAvatarUrl ? undefined : "#1877F2";
+        const displayColor = post.authorAvatarUrl ? undefined : "#42B72A";
         const postComments = comments[post.id] ?? [];
         return (
           <div key={post.id} className="post-card">
@@ -664,7 +664,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                   <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px 12px", borderTop: topLevel.length > 0 ? "1px solid #e4e6eb" : "none", marginTop: 6 }}>
                     {user.avatarUrl
                       ? <img src={user.avatarUrl} alt="moi" style={{ width: 34, height: 34, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
-                      : <div className="avatar xs" style={{ width: 34, height: 34, fontSize: 12, flexShrink: 0, background: "#1877F2" }}>{userInitials}</div>
+                      : <div className="avatar xs" style={{ width: 34, height: 34, fontSize: 12, flexShrink: 0, background: "#42B72A" }}>{userInitials}</div>
                     }
                     <div style={{ flex: 1, background: "#f0f2f5", borderRadius: 22, display: "flex", alignItems: "center", padding: "0 6px 0 14px", gap: 4 }}>
                       <input
