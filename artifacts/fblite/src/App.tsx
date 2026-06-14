@@ -29,6 +29,7 @@ import ScorePage from "./pages/ScorePage";
 import UserProfilePage from "./pages/UserProfilePage";
 import CreatorDashboardPage from "./pages/CreatorDashboardPage";
 import VideoPostPage from "./pages/VideoPostPage";
+import PostDetailPage from "./pages/PostDetailPage";
 import SearchPage from "./pages/SearchPage";
 import GroupDetailPage from "./pages/GroupDetailPage";
 
@@ -190,6 +191,13 @@ function AppContent() {
       </Layout>
     );
   }
+
+  const postDetailMatch = matchDynamic("/post/:id", path);
+  if (postDetailMatch) {
+    const pid = parseInt(postDetailMatch.id, 10);
+    if (!isNaN(pid)) return <PostDetailPage postId={pid} />;
+  }
+
   if (path === "/score") return <ScorePage />;
 
   // Search route — path may include query string: /search?q=...

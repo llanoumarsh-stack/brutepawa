@@ -522,7 +522,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
               })()}
 
               {/* Commenter */}
-              <button className="post-btn" style={{ flex: 1, borderRight: "1px solid #e4e6eb" }} onClick={() => toggleComments(post.id)}>
+              <button className="post-btn" style={{ flex: 1, borderRight: "1px solid #e4e6eb" }} onClick={() => navigate(`/post/${post.id}`)}>
                 💬 Commenter
               </button>
 

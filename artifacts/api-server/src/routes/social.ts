@@ -120,16 +120,23 @@ router.get("/posts/:id", requireAuth, async (req, res): Promise<void> => {
     createdAt:     postsTable.createdAt,
     authorFirstName: usersTable.firstName,
     authorLastName:  usersTable.lastName,
+    authorAvatarUrl: usersTable.avatarUrl,
   }).from(postsTable)
     .leftJoin(usersTable, eq(postsTable.authorId, usersTable.id))
     .where(eq(postsTable.id, params.data.id));
 
   if (!row) { res.status(404).json({ error: "Post not found" }); return; }
+
+  const [likeRow] = await db.select({ postId: postLikesTable.postId })
+    .from(postLikesTable)
+    .where(and(eq(postLikesTable.postId, params.data.id), eq(postLikesTable.userId, req.userId!)));
+
   res.json({
     ...row,
     authorName: row.authorFirstName && row.authorLastName
       ? `${row.authorFirstName} ${row.authorLastName}`
       : "Utilisateur",
+    liked: !!likeRow,
   });
 });
 
