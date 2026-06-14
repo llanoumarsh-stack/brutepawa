@@ -4,6 +4,8 @@ import { useR2Upload } from "../hooks/useR2Upload";
 import { apiGetMe, apiUpdateMe, saveFbUser, apiGetFriends, apiGetUserPosts, type PublicUser, type FeedPost } from "../lib/api";
 import { computeScore, type ScoreFactors } from "../lib/score";
 import ProModeModal from "../components/ProModeModal";
+import ProfileStatusModal from "../components/ProfileStatusModal";
+import ArchiveModal from "../components/ArchiveModal";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -24,6 +26,8 @@ export default function Profile() {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showProMode, setShowProMode] = useState(false);
   const [isPro, setIsPro] = useState(() => localStorage.getItem("bp_pro_mode") === "1");
+  const [showProfileStatus, setShowProfileStatus] = useState(false);
+  const [showArchive, setShowArchive] = useState(false);
 
   const copyProfileLink = useCallback(() => {
     const url = `${window.location.origin}${import.meta.env.BASE_URL ?? ""}profile/${localUser.id ?? ""}`;
@@ -146,8 +150,8 @@ export default function Profile() {
           >
             <div style={{ width: 40, height: 4, background: "#e0e0e0", borderRadius: 2, margin: "8px auto 16px" }} />
             {[
-              { icon: "🟢", label: "Statut du profil",              action: () => setShowProfileMenu(false) },
-              { icon: "🗄️", label: "Archive",                        action: () => setShowProfileMenu(false) },
+              { icon: "🟢", label: "Statut du profil",              action: () => { setShowProfileMenu(false); setShowProfileStatus(true); } },
+              { icon: "🗄️", label: "Archive",                        action: () => { setShowProfileMenu(false); setShowArchive(true); } },
               { icon: "📊", label: "Historique d'activité",          action: () => setShowProfileMenu(false) },
               { icon: "👁️", label: "Examiner les publications",      action: () => setShowProfileMenu(false) },
               { icon: "⭐", label: "Ajouter des éléments à la une", action: () => setShowProfileMenu(false) },
@@ -483,6 +487,18 @@ export default function Profile() {
           onClose={() => setShowProMode(false)}
           onActivated={() => setIsPro(true)}
         />
+      )}
+
+      {showProfileStatus && (
+        <ProfileStatusModal
+          userName={localUser.name}
+          avatarUrl={avatarUrl || undefined}
+          onClose={() => setShowProfileStatus(false)}
+        />
+      )}
+
+      {showArchive && (
+        <ArchiveModal onClose={() => setShowArchive(false)} />
       )}
     </div>
   );

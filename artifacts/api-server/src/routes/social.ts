@@ -616,4 +616,69 @@ router.patch("/notifications/read-all", requireAuth, async (req, res): Promise<v
   res.json({ ok: true });
 });
 
+router.post("/posts/:id/archive", requireAuth, async (req, res): Promise<void> => {
+  const postId = Number(req.params.id);
+  const userId = req.userId!;
+  const [post] = await db.select({ authorId: postsTable.authorId }).from(postsTable).where(eq(postsTable.id, postId));
+  if (!post) { res.status(404).json({ error: "Publication introuvable" }); return; }
+  if (post.authorId !== userId) { res.status(403).json({ error: "Accès refusé" }); return; }
+  await db.update(postsTable).set({ isArchived: true, archivedAt: new Date() }).where(eq(postsTable.id, postId));
+  res.json({ ok: true });
+});
+
+router.get("/posts/archived", requireAuth, async (req, res): Promise<void> => {
+  const userId = req.userId!;
+  const rows = await db
+    .select({
+      id: postsTable.id,
+      content: postsTable.content,
+      imageUrl: postsTable.imageUrl,
+      archivedAt: postsTable.archivedAt,
+      authorFirstName: usersTable.firstName,
+      authorLastName: usersTable.lastName,
+    })
+    .from(postsTable)
+    .leftJoin(usersTable, eq(postsTable.authorId, usersTable.id))
+    .where(and(eq(postsTable.authorId, userId), eq(postsTable.isArchived, true)))
+    .orderBy(desc(postsTable.archivedAt));
+
+  res.json(rows.map(r => ({
+    id: r.id,
+    type: r.imageUrl ? "post" : "post",
+    summary: r.content.length > 80 ? r.content.slice(0, 80) + "…" : (r.content || "a publié une photo"),
+    archivedAt: r.archivedAt?.toISOString() ?? new Date().toISOString(),
+    authorName: r.authorFirstName && r.authorLastName ? `${r.authorFirstName} ${r.authorLastName}` : "Vous",
+  })));
+});
+
+router.post("/posts/archived/restore", requireAuth, async (req, res): Promise<void> => {
+  const userId = req.userId!;
+  const ids: number[] = Array.isArray(req.body?.ids) ? req.body.ids.map(Number).filter(Boolean) : [];
+  if (ids.length === 0) { res.status(400).json({ error: "Aucun identifiant fourni" }); return; }
+  await db
+    .update(postsTable)
+    .set({ isArchived: false, archivedAt: null })
+    .where(and(eq(postsTable.authorId, userId), sql`${postsTable.id} = ANY(ARRAY[${sql.join(ids.map(id => sql`${id}`), sql`, `)}]::int[])`));
+  res.json({ ok: true });
+});
+
+router.post("/posts/archived/delete", requireAuth, async (req, res): Promise<void> => {
+  const userId = req.userId!;
+  const ids: number[] = Array.isArray(req.body?.ids) ? req.body.ids.map(Number).filter(Boolean) : [];
+  if (ids.length === 0) { res.status(400).json({ error: "Aucun identifiant fourni" }); return; }
+  const posts = await db
+    .select({ id: postsTable.id, imageUrl: postsTable.imageUrl, thumbnailUrl: postsTable.thumbnailUrl })
+    .from(postsTable)
+    .where(and(eq(postsTable.authorId, userId), sql`${postsTable.id} = ANY(ARRAY[${sql.join(ids.map(id => sql`${id}`), sql`, `)}]::int[])`));
+  for (const p of posts) {
+    if (p.imageUrl) { const k = extractKeyFromUrl(p.imageUrl); if (k && ownerIdFromKey(k) === userId) await releaseStorage(userId, k); }
+    if (p.thumbnailUrl) { const k = extractKeyFromUrl(p.thumbnailUrl); if (k && ownerIdFromKey(k) === userId) await releaseStorage(userId, k); }
+  }
+  await db.delete(postsTable).where(and(
+    eq(postsTable.authorId, userId),
+    sql`${postsTable.id} = ANY(ARRAY[${sql.join(ids.map(id => sql`${id}`), sql`, `)}]::int[])`,
+  ));
+  res.json({ ok: true });
+});
+
 export default router;
