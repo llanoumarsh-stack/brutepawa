@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
-  getBpToken,
+  apiFetch,
   apiGetComments,
   apiPostComment,
   apiToggleCommentLike,
@@ -89,10 +89,7 @@ export default function PostDetailPage({ postId }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const token = getBpToken();
-    const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
-    const base = import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "";
-    fetch(`${base}/api/posts/${postId}`, { headers })
+    apiFetch(`/posts/${postId}`)
       .then(r => r.json())
       .then((data: PostData & { error?: string }) => {
         if (data.error) { setError(data.error); return; }
@@ -118,13 +115,10 @@ export default function PostDetailPage({ postId }: Props) {
   }, []);
 
   const toggleLike = () => {
-    const token = getBpToken();
-    const headers: Record<string, string> = { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) };
-    const base = import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "";
     const action = liked ? "unlike" : "like";
     setLiked(!liked);
     setLikesCount(c => liked ? Math.max(0, c - 1) : c + 1);
-    fetch(`${base}/api/posts/${postId}/like`, { method: "POST", headers, body: JSON.stringify({ action }) }).catch(() => {
+    apiFetch(`/posts/${postId}/like`, { method: "POST", body: JSON.stringify({ action }) }).catch(() => {
       setLiked(liked);
       setLikesCount(c => liked ? c + 1 : Math.max(0, c - 1));
     });

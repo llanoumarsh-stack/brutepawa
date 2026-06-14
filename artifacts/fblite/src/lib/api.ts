@@ -28,7 +28,7 @@ export interface BpUser {
   createdAt: string;
 }
 
-async function apiFetch(path: string, options?: RequestInit): Promise<Response> {
+export async function apiFetch(path: string, options?: RequestInit): Promise<Response> {
   const token = getBpToken();
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
