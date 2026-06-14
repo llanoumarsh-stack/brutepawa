@@ -37,6 +37,7 @@ import { ADMIN_SECRET_PATH } from "./lib/admin";
 import { Post } from "./lib/store";
 import { apiGetPosts, apiLikePost, apiCreatePost, getBpToken } from "./lib/api";
 import InstallBanner from "./components/InstallBanner";
+import TopLoadingBar from "./components/TopLoadingBar";
 import { usePushNotifications } from "./hooks/usePushNotifications";
 
 function relativeTime(iso: string): string {
@@ -286,6 +287,7 @@ function AppContent() {
 export default function App() {
   return (
     <Router>
+      <TopLoadingBar />
       <PushAutoSubscribe />
       <AppContent />
       <InstallBanner />

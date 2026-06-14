@@ -26,6 +26,7 @@ export function Router({ children }: { children: ReactNode }) {
     const url = base + to;
     window.history.pushState(null, "", url);
     setPath(to);
+    window.dispatchEvent(new Event("bp:navigate"));
   };
 
   return <RouterContext.Provider value={{ path, navigate }}>{children}</RouterContext.Provider>;
