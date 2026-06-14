@@ -9,6 +9,9 @@ import ArchiveModal from "../components/ArchiveModal";
 import ActivityHistoryModal from "../components/ActivityHistoryModal";
 import FeaturedContentModal from "../components/FeaturedContentModal";
 import DeactivateProModal from "../components/DeactivateProModal";
+import VoirEnTantQueModal from "../components/VoirEnTantQueModal";
+import LockProfileModal from "../components/LockProfileModal";
+import ReviewTagsModal from "../components/ReviewTagsModal";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -34,6 +37,10 @@ export default function Profile() {
   const [showActivityHistory, setShowActivityHistory] = useState(false);
   const [showFeaturedContent, setShowFeaturedContent] = useState(false);
   const [showDeactivatePro, setShowDeactivatePro] = useState(false);
+  const [showVoirEnTantQue, setShowVoirEnTantQue] = useState(false);
+  const [showLockProfile, setShowLockProfile] = useState(false);
+  const [showReviewTags, setShowReviewTags] = useState(false);
+  const [isProfileLocked, setIsProfileLocked] = useState(() => localStorage.getItem("bp_profile_locked") === "1");
 
   const copyProfileLink = useCallback(() => {
     const url = `${window.location.origin}${import.meta.env.BASE_URL ?? ""}profile/${localUser.id ?? ""}`;
@@ -159,10 +166,10 @@ export default function Profile() {
               { icon: "🟢", label: "Statut du profil",              action: () => { setShowProfileMenu(false); setShowProfileStatus(true); } },
               { icon: "🗄️", label: "Archive",                        action: () => { setShowProfileMenu(false); setShowArchive(true); } },
               { icon: "📊", label: "Historique d'activité",          action: () => { setShowProfileMenu(false); setShowActivityHistory(true); } },
-              { icon: "👁️", label: "Examiner les publications",      action: () => setShowProfileMenu(false) },
+              { icon: "👁️", label: "Examiner les publications",      action: () => { setShowProfileMenu(false); setShowReviewTags(true); } },
               { icon: "⭐", label: "Ajouter des éléments à la une", action: () => { setShowProfileMenu(false); setShowFeaturedContent(true); } },
-              { icon: "🔒", label: "Verrouiller le profil",          action: () => setShowProfileMenu(false) },
-              { icon: "👤", label: "Voir en tant que",               action: () => setShowProfileMenu(false) },
+              { icon: isProfileLocked ? "🔓" : "🔒", label: isProfileLocked ? "Déverrouiller le profil" : "Verrouiller le profil", action: () => { setShowProfileMenu(false); setShowLockProfile(true); } },
+              { icon: "👤", label: "Voir en tant que",               action: () => { setShowProfileMenu(false); setShowVoirEnTantQue(true); } },
               { icon: "🔍", label: "Rechercher",                     action: () => { setShowProfileMenu(false); navigate("/search"); } },
               ...(isPro ? [
                 { icon: "⚡", label: "Mode pro activé ✓",            action: () => setShowProfileMenu(false) },
@@ -532,6 +539,31 @@ export default function Profile() {
           onClose={() => setShowDeactivatePro(false)}
           onDeactivated={() => setIsPro(false)}
         />
+      )}
+
+      {showVoirEnTantQue && (
+        <VoirEnTantQueModal
+          onClose={() => setShowVoirEnTantQue(false)}
+          userName={localUser.name}
+          avatarUrl={avatarUrl || undefined}
+          bio={bio}
+          country={localUser.country}
+          flag={localUser.flag}
+          friendsCount={friends.length}
+          postsCount={myPosts.length}
+        />
+      )}
+
+      {showLockProfile && (
+        <LockProfileModal
+          onClose={() => setShowLockProfile(false)}
+          currentlyLocked={isProfileLocked}
+          onToggle={(locked) => setIsProfileLocked(locked)}
+        />
+      )}
+
+      {showReviewTags && (
+        <ReviewTagsModal onClose={() => setShowReviewTags(false)} />
       )}
     </div>
   );

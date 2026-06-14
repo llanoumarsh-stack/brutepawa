@@ -1153,3 +1153,103 @@ export async function apiCheckFollowing(userIds: number[]): Promise<number[]> {
   const data = await res.json() as { following: number[] };
   return data.following;
 }
+
+export interface ApiEvent {
+  id: number;
+  organizerId: number;
+  organizerName: string;
+  organizerAvatarUrl: string | null;
+  title: string;
+  description: string;
+  location: string;
+  startAt: string;
+  endAt: string | null;
+  coverUrl: string | null;
+  isOnline: boolean;
+  type: string;
+  goingCount: number;
+  interestedCount: number;
+  createdAt: string;
+  myRsvp: "going" | "interested" | "not_going" | null;
+}
+
+export async function apiGetEvents(): Promise<ApiEvent[]> {
+  const res = await apiFetch("/events");
+  if (!res.ok) return [];
+  return res.json();
+}
+
+export async function apiCreateEvent(data: {
+  title: string; description?: string; location?: string;
+  startAt: string; endAt?: string; isOnline?: boolean; type?: string;
+}): Promise<ApiEvent> {
+  const res = await apiFetch("/events", { method: "POST", body: JSON.stringify(data) });
+  if (!res.ok) throw new Error("Erreur lors de la création");
+  return res.json();
+}
+
+export async function apiRsvpEvent(eventId: number, status: "going" | "interested" | "not_going"): Promise<{ myRsvp: string | null }> {
+  const res = await apiFetch(`/events/${eventId}/rsvp`, { method: "POST", body: JSON.stringify({ status }) });
+  if (!res.ok) throw new Error("Erreur RSVP");
+  return res.json();
+}
+
+export interface SavedPost {
+  id: number;
+  postId: number;
+  savedAt: string;
+  content: string;
+  imageUrl: string | null;
+  thumbnailUrl: string | null;
+  likesCount: number;
+  commentsCount: number;
+  createdAt: string;
+  authorName: string;
+  authorAvatarUrl: string | null;
+  authorCountry: string | null;
+}
+
+export async function apiGetSaved(): Promise<SavedPost[]> {
+  const res = await apiFetch("/saved");
+  if (!res.ok) return [];
+  return res.json();
+}
+
+export async function apiToggleSaved(postId: number): Promise<{ saved: boolean }> {
+  const res = await apiFetch(`/saved/${postId}`, { method: "POST" });
+  if (!res.ok) throw new Error("Erreur enregistrement");
+  return res.json();
+}
+
+export async function apiRemoveSaved(postId: number): Promise<void> {
+  await apiFetch(`/saved/${postId}`, { method: "DELETE" });
+}
+
+export async function apiCheckSaved(postIds: number[]): Promise<number[]> {
+  if (postIds.length === 0) return [];
+  const res = await apiFetch(`/saved/check?ids=${postIds.join(",")}`);
+  if (!res.ok) return [];
+  const data = await res.json() as { saved: number[] };
+  return data.saved;
+}
+
+export interface MemoryPost {
+  id: number;
+  content: string;
+  imageUrl: string | null;
+  thumbnailUrl: string | null;
+  likesCount: number;
+  commentsCount: number;
+  createdAt: string;
+  yearsAgo: number;
+}
+
+export async function apiGetMemories(): Promise<MemoryPost[]> {
+  const res = await apiFetch("/memories");
+  if (!res.ok) return [];
+  return res.json();
+}
+
+export async function apiReportPost(postId: number, reason: string = "spam"): Promise<void> {
+  await apiFetch(`/posts/${postId}/report`, { method: "POST", body: JSON.stringify({ reason }) });
+}

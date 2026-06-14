@@ -32,6 +32,9 @@ import VideoPostPage from "./pages/VideoPostPage";
 import PostDetailPage from "./pages/PostDetailPage";
 import SearchPage from "./pages/SearchPage";
 import GroupDetailPage from "./pages/GroupDetailPage";
+import EventsPage from "./pages/EventsPage";
+import SavedPage from "./pages/SavedPage";
+import MemoriesPage from "./pages/MemoriesPage";
 
 import { ADMIN_SECRET_PATH } from "./lib/admin";
 import { Post } from "./lib/store";
@@ -201,6 +204,15 @@ function AppContent() {
   }
 
   if (path === "/score") return <ScorePage />;
+  if (path === "/events") return (
+    <Layout onNewPost={handleNewPost}><EventsPage /></Layout>
+  );
+  if (path === "/saved") return (
+    <Layout onNewPost={handleNewPost}><SavedPage /></Layout>
+  );
+  if (path === "/memories") return (
+    <Layout onNewPost={handleNewPost}><MemoriesPage /></Layout>
+  );
 
   // Search route — path may include query string: /search?q=...
   if (path.startsWith("/search")) {

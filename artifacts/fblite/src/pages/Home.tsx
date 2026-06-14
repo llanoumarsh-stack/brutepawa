@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "../router";
 import { Post } from "../lib/store";
 import { formatNumber } from "../data/mock";
-import { apiGetStories, apiGetComments, apiPostComment, apiToggleCommentLike, type StoryGroup, type PostComment } from "../lib/api";
+import { apiGetStories, apiGetComments, apiPostComment, apiToggleCommentLike, apiToggleSaved, apiReportPost, type StoryGroup, type PostComment } from "../lib/api";
 import StoryViewer from "../components/StoryViewer";
 import { storyDraftStore } from "../lib/storyDraft";
 
@@ -164,11 +164,19 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
   const closeMenu = () => setOpenMenu(null);
 
   const handleSave = (postId: number) => {
+    const alreadySaved = savedPosts.has(postId);
     setSavedPosts(prev => {
       const next = new Set(prev);
-      if (next.has(postId)) { next.delete(postId); showToast("Publication retirée des enregistrements"); }
-      else { next.add(postId); showToast("✅ Publication enregistrée"); }
+      if (next.has(postId)) next.delete(postId); else next.add(postId);
       return next;
+    });
+    showToast(alreadySaved ? "Publication retirée des enregistrements" : "✅ Publication enregistrée");
+    apiToggleSaved(postId).catch(() => {
+      setSavedPosts(prev => {
+        const next = new Set(prev);
+        if (alreadySaved) next.add(postId); else next.delete(postId);
+        return next;
+      });
     });
     closeMenu();
   };
@@ -189,8 +197,9 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
     closeMenu();
   };
 
-  const handleReport = (authorName: string) => {
+  const handleReport = (authorName: string, postId: number) => {
     showToast(`🚩 Publication signalée. ${authorName} ne saura pas qui l'a signalé(e).`);
+    apiReportPost(postId, "inappropriate").catch(() => {});
     closeMenu();
   };
 
@@ -786,7 +795,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                   icon: "🚩",
                   label: "Signaler la publication",
                   desc: `${openMenu.authorName} ne saura pas qui l'a signalé(e).`,
-                  action: () => handleReport(openMenu.authorName),
+                  action: () => handleReport(openMenu.authorName, openMenu.postId),
                   arrow: true,
                 },
                 {

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { db, postsTable, postLikesTable, messagesTable, usersTable, storiesTable, userBlocksTable, notificationsTable, commentsTable, commentLikesTable } from "@workspace/db";
+import { db, postsTable, postLikesTable, messagesTable, usersTable, storiesTable, userBlocksTable, notificationsTable, commentsTable, commentLikesTable, savedPostsTable, postReportsTable } from "@workspace/db";
 import { eq, and, or, desc, sql, gt } from "drizzle-orm";
 import { CreatePostBody, GetPostParams, DeletePostParams, LikePostParams, LikePostBody, SendMessageBody, GetConversationParams, ListPostsQueryParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
@@ -659,6 +659,125 @@ router.post("/posts/archived/restore", requireAuth, async (req, res): Promise<vo
     .update(postsTable)
     .set({ isArchived: false, archivedAt: null })
     .where(and(eq(postsTable.authorId, userId), sql`${postsTable.id} = ANY(ARRAY[${sql.join(ids.map(id => sql`${id}`), sql`, `)}]::int[])`));
+  res.json({ ok: true });
+});
+
+router.get("/saved", requireAuth, async (req, res): Promise<void> => {
+  const userId = req.userId!;
+  const rows = await db
+    .select({
+      id: savedPostsTable.id,
+      postId: savedPostsTable.postId,
+      savedAt: savedPostsTable.createdAt,
+      content: postsTable.content,
+      imageUrl: postsTable.imageUrl,
+      thumbnailUrl: postsTable.thumbnailUrl,
+      likesCount: postsTable.likesCount,
+      commentsCount: postsTable.commentsCount,
+      createdAt: postsTable.createdAt,
+      authorFirstName: usersTable.firstName,
+      authorLastName: usersTable.lastName,
+      authorAvatarUrl: usersTable.avatarUrl,
+      authorCountry: usersTable.country,
+    })
+    .from(savedPostsTable)
+    .innerJoin(postsTable, eq(savedPostsTable.postId, postsTable.id))
+    .leftJoin(usersTable, eq(postsTable.authorId, usersTable.id))
+    .where(eq(savedPostsTable.userId, userId))
+    .orderBy(desc(savedPostsTable.createdAt))
+    .limit(50);
+  res.json(rows.map(r => ({
+    id: r.id,
+    postId: r.postId,
+    savedAt: r.savedAt,
+    content: r.content,
+    imageUrl: r.imageUrl,
+    thumbnailUrl: r.thumbnailUrl,
+    likesCount: r.likesCount,
+    commentsCount: r.commentsCount,
+    createdAt: r.createdAt,
+    authorName: r.authorFirstName && r.authorLastName ? `${r.authorFirstName} ${r.authorLastName}` : "Utilisateur",
+    authorAvatarUrl: r.authorAvatarUrl,
+    authorCountry: r.authorCountry,
+  })));
+});
+
+router.post("/saved/:postId", requireAuth, async (req, res): Promise<void> => {
+  const userId = req.userId!;
+  const postId = parseInt(req.params.postId, 10);
+  if (isNaN(postId)) { res.status(400).json({ error: "ID invalide" }); return; }
+  const existing = await db.select().from(savedPostsTable).where(and(eq(savedPostsTable.userId, userId), eq(savedPostsTable.postId, postId)));
+  if (existing.length > 0) {
+    await db.delete(savedPostsTable).where(and(eq(savedPostsTable.userId, userId), eq(savedPostsTable.postId, postId)));
+    res.json({ saved: false });
+  } else {
+    await db.insert(savedPostsTable).values({ userId, postId }).onConflictDoNothing();
+    res.json({ saved: true });
+  }
+});
+
+router.delete("/saved/:postId", requireAuth, async (req, res): Promise<void> => {
+  const userId = req.userId!;
+  const postId = parseInt(req.params.postId, 10);
+  if (isNaN(postId)) { res.status(400).json({ error: "ID invalide" }); return; }
+  await db.delete(savedPostsTable).where(and(eq(savedPostsTable.userId, userId), eq(savedPostsTable.postId, postId)));
+  res.json({ ok: true });
+});
+
+router.get("/saved/check", requireAuth, async (req, res): Promise<void> => {
+  const userId = req.userId!;
+  const idsRaw = req.query.ids;
+  const ids: number[] = Array.isArray(idsRaw)
+    ? idsRaw.map(Number).filter(n => !isNaN(n))
+    : typeof idsRaw === "string"
+    ? idsRaw.split(",").map(Number).filter(n => !isNaN(n))
+    : [];
+  if (ids.length === 0) { res.json({ saved: [] }); return; }
+  const rows = await db
+    .select({ postId: savedPostsTable.postId })
+    .from(savedPostsTable)
+    .where(and(eq(savedPostsTable.userId, userId), sql`${savedPostsTable.postId} = ANY(ARRAY[${sql.join(ids.map(id => sql`${id}`), sql`, `)}]::int[])`));
+  res.json({ saved: rows.map(r => r.postId) });
+});
+
+router.get("/memories", requireAuth, async (req, res): Promise<void> => {
+  const userId = req.userId!;
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  const day = now.getDate();
+  const rows = await db
+    .select({
+      id: postsTable.id,
+      content: postsTable.content,
+      imageUrl: postsTable.imageUrl,
+      thumbnailUrl: postsTable.thumbnailUrl,
+      likesCount: postsTable.likesCount,
+      commentsCount: postsTable.commentsCount,
+      createdAt: postsTable.createdAt,
+    })
+    .from(postsTable)
+    .where(and(
+      eq(postsTable.authorId, userId),
+      eq(postsTable.isArchived, false),
+      sql`EXTRACT(MONTH FROM ${postsTable.createdAt}) = ${month}`,
+      sql`EXTRACT(DAY FROM ${postsTable.createdAt}) = ${day}`,
+      sql`EXTRACT(YEAR FROM ${postsTable.createdAt}) < ${now.getFullYear()}`,
+    ))
+    .orderBy(desc(postsTable.createdAt))
+    .limit(20);
+  res.json(rows.map(r => ({
+    ...r,
+    yearsAgo: now.getFullYear() - new Date(r.createdAt).getFullYear(),
+  })));
+});
+
+router.post("/posts/:id/report", requireAuth, async (req, res): Promise<void> => {
+  const userId = req.userId!;
+  const postId = parseInt(req.params.id, 10);
+  if (isNaN(postId)) { res.status(400).json({ error: "ID invalide" }); return; }
+  const { reason } = req.body ?? {};
+  const r = reason ? String(reason).slice(0, 200) : "spam";
+  await db.insert(postReportsTable).values({ reporterId: userId, postId, reason: r }).onConflictDoNothing();
   res.json({ ok: true });
 });
 

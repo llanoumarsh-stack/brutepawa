@@ -243,11 +243,14 @@ export default function Layout({ children, onNewPost }: Props) {
           {/* Quick links */}
           <nav style={{ display: "flex", flexDirection: "column", gap: 2 }}>
             {[
-              { icon: "💬", label: "Messages",    path: "/messages" },
-              { icon: "🏆", label: "Score",       path: "/score" },
-              { icon: "🪙", label: "Portefeuille", path: "/wallet" },
-              { icon: "🎬", label: "Live",        path: "/live" },
-              { icon: "📊", label: "Créateur",    path: "/creator" },
+              { icon: "💬", label: "Messages",       path: "/messages" },
+              { icon: "🏆", label: "Score",          path: "/score" },
+              { icon: "🪙", label: "Portefeuille",   path: "/wallet" },
+              { icon: "📅", label: "Événements",     path: "/events" },
+              { icon: "🔖", label: "Enregistrements", path: "/saved" },
+              { icon: "✨", label: "Souvenirs",      path: "/memories" },
+              { icon: "🎬", label: "Live",           path: "/live" },
+              { icon: "📊", label: "Créateur",       path: "/creator" },
             ].map(item => (
               <button
                 key={item.path}

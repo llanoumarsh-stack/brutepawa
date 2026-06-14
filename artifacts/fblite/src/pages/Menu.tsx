@@ -673,6 +673,9 @@ export default function Menu() {
   // MAIN MENU
   const MENU_ITEMS = [
     { emoji: "👤", label: "Profil", desc: "Voir et modifier votre profil", action: () => navigate("/profile") },
+    { emoji: "📅", label: "Événements", desc: "Créer et rejoindre des événements", action: () => navigate("/events") },
+    { emoji: "🔖", label: "Enregistrements", desc: "Publications que vous avez sauvegardées", action: () => navigate("/saved") },
+    { emoji: "✨", label: "Souvenirs", desc: "Vos publications d'il y a 1 an, 2 ans…", action: () => navigate("/memories") },
     { emoji: "⭐", label: "Compte Premium", desc: isPremium ? "✅ Actif · Renouvellement 11 juil." : "Passer à Premium · 2 500 FCFA/mois", action: () => setActiveSection("premium"), highlight: !isPremium },
     { emoji: "⚙️", label: "Paramètres", desc: "Confidentialité, notifications, langue", action: () => setActiveSection("settings") },
     { emoji: "✅", label: "Vérification du compte", desc: "Obtenir le badge vérifié · 2 500 FCFA", action: () => setActiveSection("settings") },
@@ -714,10 +717,14 @@ export default function Menu() {
         <div style={{ fontWeight: 700, marginBottom: 10, fontSize: 14 }}>Raccourcis</div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
           {[
-            { emoji: "💳", label: "Wallet", action: () => navigate("/wallet") },
-            { emoji: "💰", label: "Tontines", action: () => navigate("/tontines") },
-            { emoji: "🎓", label: "Cours", action: () => navigate("/formations") },
-            { emoji: "⭐", label: "Premium", action: () => setActiveSection("premium") },
+            { emoji: "💳", label: "Wallet",        action: () => navigate("/wallet") },
+            { emoji: "💰", label: "Tontines",      action: () => navigate("/tontines") },
+            { emoji: "📅", label: "Événements",    action: () => navigate("/events") },
+            { emoji: "🔖", label: "Enregistrés",  action: () => navigate("/saved") },
+            { emoji: "✨", label: "Souvenirs",     action: () => navigate("/memories") },
+            { emoji: "🎓", label: "Cours",         action: () => navigate("/formations") },
+            { emoji: "📊", label: "Créateur",      action: () => navigate("/creator") },
+            { emoji: "⭐", label: "Premium",       action: () => setActiveSection("premium") },
           ].map(item => (
             <button key={item.label} onClick={item.action} style={{ background: "var(--fb-bg)", border: "none", borderRadius: 10, padding: "12px 4px", cursor: "pointer", textAlign: "center" }}>
               <div style={{ fontSize: 22 }}>{item.emoji}</div>

@@ -138,6 +138,46 @@ export const notificationsTable = pgTable("notifications", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+export const eventsTable = pgTable("events", {
+  id: serial("id").primaryKey(),
+  organizerId: integer("organizer_id").notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  location: text("location"),
+  startAt: timestamp("start_at", { withTimezone: true }).notNull(),
+  endAt: timestamp("end_at", { withTimezone: true }),
+  coverUrl: text("cover_url"),
+  isOnline: boolean("is_online").notNull().default(false),
+  type: text("type").notNull().default("public"),
+  goingCount: integer("going_count").notNull().default(0),
+  interestedCount: integer("interested_count").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const eventRsvpsTable = pgTable("event_rsvps", {
+  id: serial("id").primaryKey(),
+  eventId: integer("event_id").notNull(),
+  userId: integer("user_id").notNull(),
+  status: text("status").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [uniqueIndex("event_rsvps_pair_idx").on(t.eventId, t.userId)]);
+
+export const savedPostsTable = pgTable("saved_posts", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  postId: integer("post_id").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [uniqueIndex("saved_posts_pair_idx").on(t.userId, t.postId)]);
+
+export const postReportsTable = pgTable("post_reports", {
+  id: serial("id").primaryKey(),
+  reporterId: integer("reporter_id").notNull(),
+  postId: integer("post_id").notNull(),
+  reason: text("reason").notNull().default("spam"),
+  status: text("status").notNull().default("pending"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [index("post_reports_status_idx").on(t.status)]);
+
 export const insertPostSchema = createInsertSchema(postsTable).omit({ id: true, createdAt: true, updatedAt: true, likesCount: true, commentsCount: true });
 export const insertMessageSchema = createInsertSchema(messagesTable).omit({ id: true, createdAt: true });
 export const insertCommentSchema = createInsertSchema(commentsTable).omit({ id: true, createdAt: true, updatedAt: true, likesCount: true });
