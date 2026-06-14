@@ -80,17 +80,34 @@ function stopRingtone() {
 }
 
 // ─── Media constraints ───────────────────────────────────────────────────────
-// Start at 480p (good quality, reasonable bandwidth for 4G Africa).
-// Browser will negotiate down if bandwidth is insufficient.
+// Audio notes for Android Chrome:
+//   • Do NOT force sampleRate — hardware AEC on Android typically runs at 16kHz.
+//     Forcing 48kHz causes software resampling which desynchronises the AEC
+//     reference signal → residual echo.
+//   • googEchoCancellation / googNoiseSuppression2 / googHighpassFilter are
+//     Chrome-specific constraints that activate hardware AEC on Android.
+//   • channelCount: 1 (mono) is required for hardware AEC on most Android SoCs.
+//   • latency: 0 tells Chrome to use the lowest-latency audio path, which on
+//     Android routes through AudioManager.MODE_IN_COMMUNICATION (earpiece AEC).
 async function getMedia(type: "audio" | "video"): Promise<MediaStream> {
+  const audioConstraints: MediaTrackConstraints & Record<string, unknown> = {
+    echoCancellation:    true,
+    noiseSuppression:    true,
+    autoGainControl:     true,
+    channelCount:        1,
+    // Let the OS/hardware decide sample rate (do NOT pin to 48000)
+    // Chrome/Android AEC extras — ignored gracefully on other browsers
+    googEchoCancellation:    true,
+    googNoiseSuppression:    true,
+    googAutoGainControl:     true,
+    googHighpassFilter:      true,
+    googNoiseSuppression2:   true,
+    googEchoCancellationType: "browser",
+    latency:             0,
+  };
+
   return navigator.mediaDevices.getUserMedia({
-    audio: {
-      echoCancellation: true,
-      noiseSuppression: true,
-      autoGainControl: true,
-      sampleRate: 48000,
-      channelCount: 1,
-    },
+    audio: audioConstraints,
     video: type === "video"
       ? {
           facingMode: "user",
@@ -143,7 +160,9 @@ export function useCallSignaling(
   const [localStream, setLocalStream]   = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [isMuted, setIsMuted]           = useState(false);
-  const [isSpeaker, setIsSpeaker]       = useState(true);
+  // Start in earpiece mode (false). Speaker-on is the #1 cause of echo/whistle
+  // on Android because the loudspeaker saturates the mic before AEC can cancel it.
+  const [isSpeaker, setIsSpeaker]       = useState(false);
   const [cameraFront, setCameraFront]   = useState(true);
   const [callDuration, setCallDuration] = useState(0);
   const [mediaError, setMediaError]     = useState<string | null>(null);
@@ -205,7 +224,7 @@ export function useCallSignaling(
     setIncomingCall(null);
     isMutedRef.current = false;
     setIsMuted(false);
-    setIsSpeaker(true);
+    setIsSpeaker(false); // Reset to earpiece, not speaker
     setCameraFront(true);
     setMediaError(null);
   }, [stopTimer, stopLocal]);

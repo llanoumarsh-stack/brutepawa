@@ -85,15 +85,25 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
 
   const sig = useCallSignaling(meId, onNewMessage);
 
-  // Wire remoteStream → <audio> element for voice calls (must be after sig is declared)
+  // Wire remoteStream → <audio> element for AUDIO-ONLY calls.
+  // For VIDEO calls the <video ref={remoteVideoRef}> already carries both audio
+  // and video tracks from the same stream. Attaching the stream to the <audio>
+  // element simultaneously would play the remote audio TWICE — the doubled output
+  // saturates the AEC reference and causes the whistling/echo on Android.
   useEffect(() => {
     const el = remoteAudioRef.current;
-    if (!el || !sig.remoteStream) return;
-    if (el.srcObject !== sig.remoteStream) {
-      el.srcObject = sig.remoteStream;
-      el.play().catch(() => {});
+    if (!el) return;
+    if (sig.remoteStream && sig.callType === "audio") {
+      // Audio-only call — play remote audio through the hidden <audio> element.
+      if (el.srcObject !== sig.remoteStream) {
+        el.srcObject = sig.remoteStream;
+        el.play().catch(() => {});
+      }
+    } else {
+      // Video call (audio handled by <video>) or call ended — silence this element.
+      el.srcObject = null;
     }
-  }, [sig.remoteStream]);
+  }, [sig.remoteStream, sig.callType]);
 
   // Attach local stream to <video> only when stream reference actually changes.
   // Using a stable ref + useEffect prevents srcObject from being re-assigned on
