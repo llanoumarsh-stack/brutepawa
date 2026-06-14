@@ -13,6 +13,24 @@ function getInitials(name?: string) {
   return name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
 }
 
+const REACTIONS = [
+  { id: "like",  label: "J'aime",    emoji: "👍", color: "#1877F2" },
+  { id: "love",  label: "J'adore",   emoji: "❤️", color: "#F33E58" },
+  { id: "care",  label: "Solidaire", emoji: "🫂", color: "#F7B125" },
+  { id: "haha",  label: "Haha",      emoji: "😆", color: "#F7B125" },
+  { id: "wow",   label: "Wouah",     emoji: "😮", color: "#F7B125" },
+  { id: "sad",   label: "Triste",    emoji: "😢", color: "#748FD5" },
+  { id: "angry", label: "En colère", emoji: "😡", color: "#E9710F" },
+];
+
+function timeAgo(iso: string): string {
+  const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (s < 60)    return "À l'instant";
+  if (s < 3600)  return `${Math.floor(s / 60)} min`;
+  if (s < 86400) return `${Math.floor(s / 3600)} h`;
+  return `${Math.floor(s / 86400)} j`;
+}
+
 interface Props {
   posts?: Post[];
   postsLoading?: boolean;
@@ -63,6 +81,11 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
   const [replyingTo, setReplyingTo] = useState<number | null>(null);
   const [newReply, setNewReply] = useState<Record<number, string>>({});
   const [submittingReply, setSubmittingReply] = useState<number | null>(null);
+
+  // Reaction picker
+  const [reactionType, setReactionType] = useState<Record<number, string>>({});
+  const [showReactionPicker, setShowReactionPicker] = useState<number | null>(null);
+  const reactionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const loadComments = useCallback(async (postId: number) => {
     try {
@@ -206,6 +229,37 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
 
   const toggleLike = (id: number) => {
     onLike?.(id);
+  };
+
+  const quickLike = (postId: number, isLiked: boolean) => {
+    if (showReactionPicker === postId) { setShowReactionPicker(null); return; }
+    if (!isLiked) {
+      setReactionType(prev => ({ ...prev, [postId]: "like" }));
+    } else {
+      setReactionType(prev => { const n = { ...prev }; delete n[postId]; return n; });
+    }
+    onLike?.(postId);
+  };
+
+  const selectReaction = (postId: number, reactionId: string, isLiked: boolean) => {
+    const current = reactionType[postId];
+    if (current === reactionId) {
+      setReactionType(prev => { const n = { ...prev }; delete n[postId]; return n; });
+      if (isLiked) onLike?.(postId);
+    } else if (!isLiked) {
+      setReactionType(prev => ({ ...prev, [postId]: reactionId }));
+      onLike?.(postId);
+    } else {
+      setReactionType(prev => ({ ...prev, [postId]: reactionId }));
+    }
+    setShowReactionPicker(null);
+  };
+
+  const startReactionTimer = (postId: number) => {
+    reactionTimerRef.current = setTimeout(() => setShowReactionPicker(postId), 500);
+  };
+  const cancelReactionTimer = () => {
+    if (reactionTimerRef.current) { clearTimeout(reactionTimerRef.current); reactionTimerRef.current = null; }
   };
 
   const submitComment = async (postId: number) => {
@@ -397,136 +451,235 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 />
               );
             })()}
-            <div className="post-stats">
-              <span>{post.liked ? "❤️" : "👍"} {formatNumber(post.likes)}</span>
-              <span>
-                {(post.comments + postComments.length) > 0 && `${formatNumber(post.comments + postComments.length)} commentaires`}
-                {(post.comments + postComments.length) > 0 && post.shares > 0 && " · "}
-                {post.shares > 0 && `${formatNumber(post.shares)} partages`}
-              </span>
-            </div>
-            <div className="post-actions">
-              <button className={`post-btn${post.liked ? " liked" : ""}`} onClick={() => toggleLike(post.id)}>
-                {post.liked ? "❤️" : "👍"} J'aime
-              </button>
-              <button className="post-btn" onClick={() => toggleComments(post.id)}>
+            {/* ── Stats bar ── */}
+            {(post.likes > 0 || (post.comments + postComments.length) > 0 || post.shares > 0) && (
+              <div style={{ padding: "6px 14px 6px", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 13.5, color: "#65676b" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                  {post.likes > 0 && (
+                    <>
+                      <span style={{ display: "inline-flex", position: "relative", width: post.likes > 5 ? 36 : 20, height: 20, flexShrink: 0 }}>
+                        <span style={{ position: "absolute", left: 0, fontSize: 16 }}>👍</span>
+                        {post.likes > 5 && <span style={{ position: "absolute", left: 14, fontSize: 16 }}>❤️</span>}
+                      </span>
+                      <span style={{ marginLeft: post.likes > 5 ? 2 : 0 }}>{formatNumber(post.likes)}</span>
+                    </>
+                  )}
+                </div>
+                <div style={{ display: "flex", gap: 10 }}>
+                  {(post.comments + postComments.length) > 0 && (
+                    <span style={{ cursor: "pointer" }} onClick={() => toggleComments(post.id)}>
+                      {formatNumber(post.comments + postComments.length)} commentaire{(post.comments + postComments.length) > 1 ? "s" : ""}
+                    </span>
+                  )}
+                  {post.shares > 0 && <span>{formatNumber(post.shares)} partages</span>}
+                </div>
+              </div>
+            )}
+
+            {/* ── Action bar ── */}
+            <div style={{ display: "flex", borderTop: "1px solid #e4e6eb", borderBottom: "1px solid #e4e6eb", position: "relative" }}>
+              {/* Reaction picker backdrop */}
+              {showReactionPicker === post.id && (
+                <div style={{ position: "fixed", inset: 0, zIndex: 98 }} onClick={() => setShowReactionPicker(null)} />
+              )}
+              {/* Reaction picker popup */}
+              {showReactionPicker === post.id && (
+                <div style={{
+                  position: "absolute", bottom: "calc(100% + 8px)", left: 4, zIndex: 99,
+                  background: "#fff", borderRadius: 30, padding: "8px 14px",
+                  boxShadow: "0 4px 24px rgba(0,0,0,0.22)",
+                  display: "flex", gap: 8, alignItems: "flex-end",
+                }}>
+                  {REACTIONS.map(r => (
+                    <div
+                      key={r.id}
+                      onClick={() => selectReaction(post.id, r.id, post.liked)}
+                      style={{ textAlign: "center", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}
+                    >
+                      <div
+                        style={{ fontSize: 28, lineHeight: 1, transition: "transform 0.12s" }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "scale(1.35) translateY(-4px)"; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = "scale(1)"; }}
+                      >{r.emoji}</div>
+                      <div style={{ fontSize: 10, color: r.color, fontWeight: 700, whiteSpace: "nowrap" }}>{r.label}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* J'aime */}
+              {(() => {
+                const rx = REACTIONS.find(r => r.id === (reactionType[post.id] ?? "like")) ?? REACTIONS[0];
+                return (
+                  <button
+                    className="post-btn"
+                    style={{ flex: 1, borderRight: "1px solid #e4e6eb", color: post.liked ? rx.color : "#65676b", fontWeight: post.liked ? 700 : 400 }}
+                    onClick={() => quickLike(post.id, post.liked)}
+                    onMouseDown={() => startReactionTimer(post.id)}
+                    onMouseUp={cancelReactionTimer}
+                    onMouseLeave={cancelReactionTimer}
+                    onTouchStart={() => startReactionTimer(post.id)}
+                    onTouchEnd={cancelReactionTimer}
+                    onTouchMove={cancelReactionTimer}
+                  >
+                    {post.liked ? rx.emoji : "👍"} {post.liked ? rx.label : "J'aime"}
+                  </button>
+                );
+              })()}
+
+              {/* Commenter */}
+              <button className="post-btn" style={{ flex: 1, borderRight: "1px solid #e4e6eb" }} onClick={() => toggleComments(post.id)}>
                 💬 Commenter
               </button>
-              <button className="post-btn" onClick={() => handleShare(post.id)}>↗️ Partager</button>
-              {post.imageUrl && (
-                <button className="post-btn" onClick={() => navigate(`/video/${post.id}`)}>🎁 Cadeau</button>
-              )}
+
+              {/* Partager */}
+              <button className="post-btn" style={{ flex: 1 }} onClick={() => handleShare(post.id)}>
+                ↗️ Partager
+              </button>
             </div>
+
+            {/* ── Comment section ── */}
             {showComments === post.id && (() => {
               const topLevel = postComments.filter(c => !c.parentId);
-              const replies = postComments.filter(c => c.parentId);
+              const replies  = postComments.filter(c => c.parentId);
               return (
-                <div style={{ padding: "8px 16px", borderTop: "1px solid var(--fb-divider)" }}>
+                <div style={{ background: "var(--fb-white)" }}>
+                  {/* Sort selector */}
+                  {topLevel.length > 1 && (
+                    <div style={{ padding: "8px 14px 2px" }}>
+                      <button style={{ background: "none", border: "none", fontSize: 13, fontWeight: 700, color: "#050505", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
+                        Plus pertinents <span style={{ fontSize: 10 }}>▼</span>
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Empty state */}
                   {topLevel.length === 0 && (
-                    <div style={{ fontSize: 13, color: "var(--fb-text-secondary)", textAlign: "center", padding: "8px 0" }}>
+                    <div style={{ textAlign: "center", padding: "14px 14px 6px", color: "#65676b", fontSize: 13 }}>
                       Soyez le premier à commenter 💬
                     </div>
                   )}
+
+                  {/* Comment list */}
                   {topLevel.map(c => {
                     const cInitials = getInitials(`${c.authorFirstName} ${c.authorLastName}`);
-                    const cReplies = replies.filter(r => r.parentId === c.id);
+                    const cReplies  = replies.filter(r => r.parentId === c.id);
                     return (
-                      <div key={c.id} style={{ marginBottom: 10 }}>
-                        {/* Top-level comment */}
+                      <div key={c.id} style={{ padding: "6px 12px 2px" }}>
+                        {/* Comment row */}
                         <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
                           {c.authorAvatarUrl
-                            ? <img src={c.authorAvatarUrl} alt={cInitials} style={{ width: 28, height: 28, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
-                            : <div className="avatar xs">{cInitials}</div>
+                            ? <img src={c.authorAvatarUrl} alt={cInitials} style={{ width: 34, height: 34, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+                            : <div className="avatar xs" style={{ width: 34, height: 34, fontSize: 12, flexShrink: 0 }}>{cInitials}</div>
                           }
-                          <div style={{ flex: 1 }}>
-                            <div style={{ background: "var(--fb-bg)", borderRadius: 16, padding: "7px 12px", fontSize: 13 }}>
-                              <div style={{ fontWeight: 600, fontSize: 12, marginBottom: 2 }}>{c.authorFirstName} {c.authorLastName}</div>
-                              {c.content}
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            {/* Bubble */}
+                            <div style={{ display: "inline-block", background: "#f0f2f5", borderRadius: 18, padding: "8px 12px", maxWidth: "calc(100% - 32px)" }}>
+                              <div style={{ fontWeight: 700, fontSize: 13, color: "#050505", marginBottom: 2 }}>{c.authorFirstName} {c.authorLastName}</div>
+                              <div style={{ fontSize: 14, color: "#050505", lineHeight: 1.4 }}>{c.content}</div>
                             </div>
-                            <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 3 }}>
-                              <button
-                                onClick={() => toggleCommentLike(post.id, c.id)}
-                                style={{ background: "none", border: "none", fontSize: 12, fontWeight: 600, color: c.likedByMe ? "#E0245E" : "var(--fb-text-secondary)", cursor: "pointer", padding: "2px 4px" }}
-                              >
-                                {c.likedByMe ? "❤️" : "🤍"}{c.likesCount > 0 ? ` ${c.likesCount}` : ""}
+                            {/* Like count badge */}
+                            {c.likesCount > 0 && (
+                              <span style={{ display: "inline-flex", alignItems: "center", gap: 2, background: "#fff", borderRadius: 10, padding: "1px 5px 1px 3px", boxShadow: "0 1px 3px rgba(0,0,0,0.18)", fontSize: 12, marginLeft: 4, verticalAlign: "middle" }}>
+                                <span>❤️</span><span style={{ color: "#65676b", fontWeight: 600 }}>{c.likesCount}</span>
+                              </span>
+                            )}
+                            {/* Time · J'aime · Répondre */}
+                            <div style={{ display: "flex", gap: 12, paddingLeft: 4, marginTop: 3, fontSize: 12, fontWeight: 600, color: "#65676b", alignItems: "center" }}>
+                              <span style={{ color: "#aaa", fontWeight: 400 }}>{timeAgo(c.createdAt)}</span>
+                              <button onClick={() => toggleCommentLike(post.id, c.id)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 12, fontWeight: 700, color: c.likedByMe ? "#1877F2" : "#65676b" }}>
+                                J'aime
                               </button>
-                              <button
-                                onClick={() => replyingTo === c.id ? cancelReply() : startReply(c)}
-                                style={{ background: "none", border: "none", fontSize: 12, fontWeight: 600, color: "var(--fb-text-secondary)", cursor: "pointer", padding: "2px 4px" }}
-                              >
-                                {replyingTo === c.id ? "Annuler" : "↩️ Répondre"}
+                              <button onClick={() => replyingTo === c.id ? cancelReply() : startReply(c)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 12, fontWeight: 700, color: "#65676b" }}>
+                                {replyingTo === c.id ? "Annuler" : "Répondre"}
                               </button>
                             </div>
                           </div>
                         </div>
-                        {/* Nested replies */}
+
+                        {/* Replies */}
                         {cReplies.length > 0 && (
-                          <div style={{ marginLeft: 36, marginTop: 6, display: "flex", flexDirection: "column", gap: 6 }}>
+                          <div style={{ marginLeft: 42, marginTop: 4, display: "flex", flexDirection: "column", gap: 4 }}>
                             {cReplies.map(r => {
                               const rInitials = getInitials(`${r.authorFirstName} ${r.authorLastName}`);
                               return (
                                 <div key={r.id} style={{ display: "flex", gap: 6, alignItems: "flex-start" }}>
                                   {r.authorAvatarUrl
-                                    ? <img src={r.authorAvatarUrl} alt={rInitials} style={{ width: 24, height: 24, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
-                                    : <div className="avatar xs" style={{ width: 24, height: 24, fontSize: 10 }}>{rInitials}</div>
+                                    ? <img src={r.authorAvatarUrl} alt={rInitials} style={{ width: 26, height: 26, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+                                    : <div className="avatar xs" style={{ width: 26, height: 26, fontSize: 9, flexShrink: 0 }}>{rInitials}</div>
                                   }
                                   <div style={{ flex: 1 }}>
-                                    <div style={{ background: "var(--fb-bg)", borderRadius: 14, padding: "6px 10px", fontSize: 13 }}>
-                                      <div style={{ fontWeight: 600, fontSize: 11, marginBottom: 1 }}>{r.authorFirstName} {r.authorLastName}</div>
-                                      {r.content}
+                                    <div style={{ display: "inline-block", background: "#f0f2f5", borderRadius: 14, padding: "6px 10px", maxWidth: "100%" }}>
+                                      <div style={{ fontWeight: 700, fontSize: 12, color: "#050505", marginBottom: 1 }}>{r.authorFirstName} {r.authorLastName}</div>
+                                      <div style={{ fontSize: 13, color: "#050505" }}>{r.content}</div>
                                     </div>
-                                    <button
-                                      onClick={() => toggleCommentLike(post.id, r.id)}
-                                      style={{ background: "none", border: "none", fontSize: 11, fontWeight: 600, color: r.likedByMe ? "#E0245E" : "var(--fb-text-secondary)", cursor: "pointer", padding: "2px 4px", marginTop: 2 }}
-                                    >
-                                      {r.likedByMe ? "❤️" : "🤍"}{r.likesCount > 0 ? ` ${r.likesCount}` : ""}
-                                    </button>
+                                    {r.likesCount > 0 && (
+                                      <span style={{ display: "inline-flex", alignItems: "center", gap: 1, background: "#fff", borderRadius: 10, padding: "1px 4px 1px 2px", boxShadow: "0 1px 3px rgba(0,0,0,0.15)", fontSize: 11, marginLeft: 3, verticalAlign: "middle" }}>
+                                        <span>❤️</span><span style={{ color: "#65676b" }}>{r.likesCount}</span>
+                                      </span>
+                                    )}
+                                    <div style={{ display: "flex", gap: 10, paddingLeft: 4, marginTop: 2, fontSize: 11, fontWeight: 600, color: "#65676b" }}>
+                                      <span style={{ color: "#aaa", fontWeight: 400 }}>{timeAgo(r.createdAt)}</span>
+                                      <button onClick={() => toggleCommentLike(post.id, r.id)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 11, fontWeight: 700, color: r.likedByMe ? "#1877F2" : "#65676b" }}>J'aime</button>
+                                    </div>
                                   </div>
                                 </div>
                               );
                             })}
                           </div>
                         )}
+
                         {/* Reply input */}
                         {replyingTo === c.id && (
-                          <div style={{ marginLeft: 36, marginTop: 6, display: "flex", gap: 6, alignItems: "center" }}>
-                            <div className="avatar xs" style={{ width: 24, height: 24, fontSize: 10 }}>{userInitials}</div>
+                          <div style={{ marginLeft: 42, marginTop: 6, display: "flex", gap: 6, alignItems: "center" }}>
+                            <div className="avatar xs" style={{ width: 26, height: 26, fontSize: 9, flexShrink: 0 }}>{userInitials}</div>
                             <input
                               autoFocus
-                              style={{ flex: 1, background: "var(--fb-bg)", border: "1px solid var(--fb-divider)", borderRadius: 18, padding: "6px 12px", fontSize: 13, outline: "none" }}
+                              style={{ flex: 1, background: "#f0f2f5", border: "none", borderRadius: 18, padding: "7px 12px", fontSize: 13, outline: "none" }}
                               placeholder={`Répondre à ${c.authorFirstName}…`}
                               value={newReply[c.id] ?? ""}
                               onChange={e => setNewReply(prev => ({ ...prev, [c.id]: e.target.value }))}
                               onKeyDown={e => { if (e.key === "Enter") submitReply(post.id, c.id); if (e.key === "Escape") cancelReply(); }}
                               disabled={submittingReply === c.id}
                             />
-                            <button
-                              onClick={() => submitReply(post.id, c.id)}
-                              disabled={submittingReply === c.id}
-                              style={{ background: "var(--fb-blue)", border: "none", borderRadius: "50%", width: 28, height: 28, color: "#fff", cursor: "pointer", fontSize: 13, opacity: submittingReply === c.id ? 0.6 : 1 }}
-                            >➤</button>
+                            <button onClick={() => submitReply(post.id, c.id)} disabled={submittingReply === c.id}
+                              style={{ background: "#1877F2", border: "none", borderRadius: "50%", width: 30, height: 30, color: "#fff", cursor: "pointer", fontSize: 13, opacity: submittingReply === c.id ? 0.6 : 1, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                              ➤
+                            </button>
                           </div>
                         )}
                       </div>
                     );
                   })}
-                  {/* New top-level comment box */}
-                  <div className="comment-box" style={{ marginTop: 4 }}>
-                    <div className="avatar xs">{userInitials}</div>
-                    <div style={{ flex: 1, display: "flex", gap: 8 }}>
+
+                  {/* ── Bottom comment input bar (Facebook style) ── */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px 12px", borderTop: topLevel.length > 0 ? "1px solid #e4e6eb" : "none", marginTop: 6 }}>
+                    {user.avatarUrl
+                      ? <img src={user.avatarUrl} alt="moi" style={{ width: 34, height: 34, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+                      : <div className="avatar xs" style={{ width: 34, height: 34, fontSize: 12, flexShrink: 0, background: "#1877F2" }}>{userInitials}</div>
+                    }
+                    <div style={{ flex: 1, background: "#f0f2f5", borderRadius: 22, display: "flex", alignItems: "center", padding: "0 6px 0 14px", gap: 4 }}>
                       <input
-                        style={{ flex: 1, background: "var(--fb-bg)", border: "none", borderRadius: 20, padding: "8px 14px", fontSize: 14, outline: "none" }}
-                        placeholder="Écrire un commentaire..."
+                        style={{ flex: 1, background: "transparent", border: "none", padding: "9px 0", fontSize: 14, outline: "none", color: "#050505", minWidth: 0 }}
+                        placeholder={`Commenter en tant que ${user.name.split(" ")[0]}…`}
                         value={newComment[post.id] ?? ""}
                         onChange={e => setNewComment(prev => ({ ...prev, [post.id]: e.target.value }))}
                         onKeyDown={e => { if (e.key === "Enter") submitComment(post.id); }}
                         disabled={submittingComment === post.id}
                       />
-                      <button
-                        onClick={() => submitComment(post.id)}
-                        disabled={submittingComment === post.id}
-                        style={{ background: "var(--fb-blue)", border: "none", borderRadius: "50%", width: 32, height: 32, color: "#fff", cursor: "pointer", opacity: submittingComment === post.id ? 0.6 : 1 }}
-                      >➤</button>
+                      {!(newComment[post.id] ?? "").trim() ? (
+                        <div style={{ display: "flex", gap: 0, flexShrink: 0 }}>
+                          {[{ icon: "🙂", key: "emoji" }, { icon: "GIF", key: "gif" }, { icon: "😊", key: "sticker" }].map(b => (
+                            <button key={b.key} style={{ background: "none", border: "none", padding: "6px 6px", cursor: "pointer", fontSize: b.key === "gif" ? 10 : 16, fontWeight: b.key === "gif" ? 700 : 400, color: "#65676b" }}>{b.icon}</button>
+                          ))}
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => submitComment(post.id)}
+                          disabled={submittingComment === post.id}
+                          style={{ background: "none", border: "none", padding: "6px 8px", cursor: "pointer", color: "#1877F2", fontSize: 18, opacity: submittingComment === post.id ? 0.6 : 1, flexShrink: 0 }}
+                        >➤</button>
+                      )}
                     </div>
                   </div>
                 </div>
