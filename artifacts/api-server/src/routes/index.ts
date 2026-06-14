@@ -16,6 +16,7 @@ import tokensRouter from "./tokens";
 import creatorRouter from "./creator";
 import communityRouter from "./community";
 import signalingRouter from "./signaling";
+import pushRouter from "./push";
 
 const router: IRouter = Router();
 
@@ -36,5 +37,6 @@ router.use(tokensRouter);
 router.use(creatorRouter);
 router.use(communityRouter);
 router.use(signalingRouter);
+router.use(pushRouter);
 
 export default router;

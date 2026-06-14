@@ -1,9 +1,24 @@
 import { Router, type Request, type Response, type NextFunction } from "express";
 import { verifyToken } from "../lib/auth";
+import { pushToUserDevice } from "./push";
+import { db } from "@workspace/db";
+import { sql } from "drizzle-orm";
 
 const router = Router();
 
 const listeners = new Map<number, Response>();
+
+export function pushToUser(userId: number, eventName: string, data: unknown): boolean {
+  const target = listeners.get(Number(userId));
+  if (!target) return false;
+  try {
+    target.write(`event: ${eventName}\ndata: ${JSON.stringify(data)}\n\n`);
+    return true;
+  } catch {
+    listeners.delete(Number(userId));
+    return false;
+  }
+}
 
 function sseAuth(req: Request, res: Response, next: NextFunction): void {
   let token = (req.headers.authorization ?? "").replace("Bearer ", "").trim();
@@ -43,7 +58,7 @@ router.get("/signaling/listen", sseAuth, (req, res) => {
   });
 });
 
-router.post("/signaling/send", sseAuth, (req, res) => {
+router.post("/signaling/send", sseAuth, async (req, res) => {
   const from = req.userId!;
   const { to, type, payload } = req.body as { to: number; type: string; payload: unknown };
 
@@ -52,18 +67,72 @@ router.post("/signaling/send", sseAuth, (req, res) => {
     return;
   }
 
-  const target = listeners.get(Number(to));
-  if (!target) {
-    res.json({ delivered: false, reason: "user_offline" });
+  const delivered = pushToUser(Number(to), "signal", { type, from, payload: payload ?? {} });
+
+  // If user is offline and this is a call invite → send push notification
+  if (!delivered && type === "call:invite") {
+    try {
+      const rows = await db.execute(sql`
+        SELECT first_name, last_name FROM users WHERE id = ${from} LIMIT 1
+      `);
+      const caller = (rows.rows?.[0] ?? {}) as { first_name?: string; last_name?: string };
+      const callerName = [caller.first_name, caller.last_name].filter(Boolean).join(" ") || `Utilisateur #${from}`;
+      const callType   = (payload as { callType?: string })?.callType ?? "audio";
+
+      await pushToUserDevice(Number(to), {
+        title: callType === "video" ? "📹 Appel vidéo entrant" : "📞 Appel audio entrant",
+        body:  `${callerName} vous appelle`,
+        tag:   "incoming-call",
+        requireInteraction: true,
+        vibrate: [300, 100, 300, 100, 300],
+        actions: [
+          { action: "accept", title: "✅ Accepter" },
+          { action: "reject", title: "❌ Refuser" },
+        ],
+        data: {
+          url:         "/messages",
+          fromUserId:  from,
+          callType,
+          callerName,
+          rejectUrl:   "/api/signaling/send",
+        },
+      });
+    } catch { /* non-fatal */ }
+  }
+
+  res.json({ delivered });
+});
+
+// ── Cloudflare TURN credentials ──────────────────────────────────────────────
+// Returns ICE servers. Uses Cloudflare Calls TURN if CF_TURN_KEY_ID +
+// CF_TURN_API_TOKEN are set; otherwise returns empty (client falls back to
+// hardcoded STUN + open-relay TURN).
+router.get("/turn-credentials", async (_req, res) => {
+  const keyId    = process.env.CF_TURN_KEY_ID;
+  const apiToken = process.env.CF_STREAM_TOKEN ?? process.env.CF_TURN_API_TOKEN;
+
+  if (!keyId || !apiToken) {
+    res.json({ iceServers: [] });
     return;
   }
 
   try {
-    target.write(`event: signal\ndata: ${JSON.stringify({ type, from, payload: payload ?? {} })}\n\n`);
-    res.json({ delivered: true });
+    const cfRes = await fetch(
+      `https://rtc.live.cloudflare.com/v1/turn/keys/${keyId}/credentials/generate`,
+      {
+        method:  "POST",
+        headers: {
+          "Authorization": `Bearer ${apiToken}`,
+          "Content-Type":  "application/json",
+        },
+        body: JSON.stringify({ ttl: 86400 }),
+      },
+    );
+    if (!cfRes.ok) throw new Error(`CF TURN ${cfRes.status}`);
+    const data = await cfRes.json() as { iceServers?: unknown };
+    res.json(data);
   } catch {
-    listeners.delete(Number(to));
-    res.json({ delivered: false, reason: "write_failed" });
+    res.json({ iceServers: [] });
   }
 });
 

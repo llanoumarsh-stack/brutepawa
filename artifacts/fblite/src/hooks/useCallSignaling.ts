@@ -3,17 +3,118 @@ import { getBpToken } from "../lib/api";
 
 const BASE = "/api";
 
-const ICE_SERVERS: RTCIceServer[] = [
+// ─── ICE servers ─────────────────────────────────────────────────────────────
+// STUN (free) + public TURN relay as fallback for symmetric NAT (MTN/Orange/Moov).
+// Replace open-relay credentials with Cloudflare Calls TURN when CF_TURN_KEY_ID
+// is configured via the /api/turn-credentials endpoint.
+const DEFAULT_ICE: RTCIceServer[] = [
   { urls: "stun:stun.l.google.com:19302" },
   { urls: "stun:stun1.l.google.com:19302" },
   { urls: "stun:stun.cloudflare.com:3478" },
+  {
+    urls: [
+      "turn:openrelay.metered.ca:80",
+      "turn:openrelay.metered.ca:443",
+      "turn:openrelay.metered.ca:443?transport=tcp",
+    ],
+    username: "openrelayproject",
+    credential: "openrelayproject",
+  },
 ];
+
+async function fetchIceServers(): Promise<RTCIceServer[]> {
+  try {
+    const token = getBpToken();
+    const res = await fetch(`${BASE}/turn-credentials`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    if (res.ok) {
+      const data = await res.json() as { iceServers?: RTCIceServer[] };
+      if (data.iceServers?.length) return data.iceServers;
+    }
+  } catch { /* fall through */ }
+  return DEFAULT_ICE;
+}
+
+// ─── Ringtone (plays through loudspeaker on mobile) ──────────────────────────
+let _ringtoneCtx: AudioContext | null = null;
+let _ringtoneNode: OscillatorNode | null = null;
+let _ringtoneGain: GainNode | null = null;
+let _ringtoneTimer: ReturnType<typeof setTimeout> | null = null;
+let _ringtonePlaying = false;
+
+function playRingtone() {
+  if (_ringtonePlaying) return;
+  _ringtonePlaying = true;
+  try {
+    const ctx = new AudioContext();
+    _ringtoneCtx = ctx;
+    const gain = ctx.createGain();
+    gain.gain.value = 0.6;
+    gain.connect(ctx.destination);
+    _ringtoneGain = gain;
+
+    function beep() {
+      if (!_ringtonePlaying) return;
+      const osc = ctx.createOscillator();
+      osc.type = "sine";
+      osc.frequency.value = 480;
+      osc.connect(gain);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.4);
+      _ringtoneNode = osc;
+      _ringtoneTimer = setTimeout(() => { if (_ringtonePlaying) beep(); }, 1800);
+    }
+    beep();
+  } catch { /* ignore if AudioContext unavailable */ }
+}
+
+function stopRingtone() {
+  _ringtonePlaying = false;
+  if (_ringtoneTimer) { clearTimeout(_ringtoneTimer); _ringtoneTimer = null; }
+  try { _ringtoneNode?.stop(); } catch { /* ignore */ }
+  try { _ringtoneCtx?.close(); } catch { /* ignore */ }
+  _ringtoneCtx = null;
+  _ringtoneNode = null;
+  _ringtoneGain = null;
+}
+
+// ─── Media constraints ───────────────────────────────────────────────────────
+// Start at 480p (good quality, reasonable bandwidth for 4G Africa).
+// Browser will negotiate down if bandwidth is insufficient.
+async function getMedia(type: "audio" | "video"): Promise<MediaStream> {
+  return navigator.mediaDevices.getUserMedia({
+    audio: {
+      echoCancellation: true,
+      noiseSuppression: true,
+      autoGainControl: true,
+      sampleRate: 48000,
+      channelCount: 1,
+    },
+    video: type === "video"
+      ? {
+          facingMode: "user",
+          width:     { ideal: 640, max: 1280 },
+          height:    { ideal: 480, max: 720 },
+          frameRate: { ideal: 24, max: 30 },
+        }
+      : false,
+  });
+}
 
 export type CallState = "idle" | "calling" | "incoming" | "active";
 
 export interface IncomingCallInfo {
   fromUserId: number;
   callType: "audio" | "video";
+}
+
+export interface NewMessagePayload {
+  id: number;
+  fromUserId: number;
+  toUserId: number;
+  content: string;
+  createdAt: string;
 }
 
 async function postSignal(to: number, type: string, payload: unknown = {}) {
@@ -30,16 +131,11 @@ async function postSignal(to: number, type: string, payload: unknown = {}) {
   } catch { /* network error */ }
 }
 
-async function getMedia(type: "audio" | "video"): Promise<MediaStream> {
-  return navigator.mediaDevices.getUserMedia({
-    audio: true,
-    video: type === "video"
-      ? { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } }
-      : false,
-  });
-}
-
-export function useCallSignaling(meId: number) {
+// ─── Hook ─────────────────────────────────────────────────────────────────────
+export function useCallSignaling(
+  meId: number,
+  onNewMessage?: (msg: NewMessagePayload) => void,
+) {
   const [callState, setCallState]       = useState<CallState>("idle");
   const [callType, setCallType]         = useState<"audio" | "video" | null>(null);
   const [callPeerId, setCallPeerId]     = useState<number | null>(null);
@@ -47,17 +143,28 @@ export function useCallSignaling(meId: number) {
   const [localStream, setLocalStream]   = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
   const [isMuted, setIsMuted]           = useState(false);
+  const [isSpeaker, setIsSpeaker]       = useState(true);
   const [cameraFront, setCameraFront]   = useState(true);
   const [callDuration, setCallDuration] = useState(0);
   const [mediaError, setMediaError]     = useState<string | null>(null);
 
-  const pcRef              = useRef<RTCPeerConnection | null>(null);
-  const localStreamRef     = useRef<MediaStream | null>(null);
-  const pendingCandidates  = useRef<RTCIceCandidateInit[]>([]);
-  const callTimerRef       = useRef<ReturnType<typeof setInterval> | null>(null);
-  const callStateRef       = useRef<CallState>("idle");
-  const callPeerIdRef      = useRef<number | null>(null);
-  const handleSignalRef    = useRef<((msg: SignalMsg) => Promise<void>) | null>(null);
+  const pcRef             = useRef<RTCPeerConnection | null>(null);
+  const localStreamRef    = useRef<MediaStream | null>(null);
+  const pendingCandidates = useRef<RTCIceCandidateInit[]>([]);
+  const callTimerRef      = useRef<ReturnType<typeof setInterval> | null>(null);
+  const callStateRef      = useRef<CallState>("idle");
+  const callPeerIdRef     = useRef<number | null>(null);
+  const handleSignalRef   = useRef<((msg: SignalMsg) => Promise<void>) | null>(null);
+  const isMutedRef        = useRef(false);
+  const onNewMessageRef   = useRef(onNewMessage);
+  const iceServersRef     = useRef<RTCIceServer[]>(DEFAULT_ICE);
+
+  useEffect(() => { onNewMessageRef.current = onNewMessage; }, [onNewMessage]);
+
+  // Prefetch ICE servers (may include Cloudflare TURN)
+  useEffect(() => {
+    fetchIceServers().then((servers) => { iceServersRef.current = servers; });
+  }, []);
 
   interface SignalMsg {
     type: string;
@@ -65,7 +172,7 @@ export function useCallSignaling(meId: number) {
     payload: Record<string, unknown>;
   }
 
-  const _setCallState = (s: CallState) => { callStateRef.current = s; setCallState(s); };
+  const _setCallState  = (s: CallState)     => { callStateRef.current = s; setCallState(s); };
   const _setCallPeerId = (id: number | null) => { callPeerIdRef.current = id; setCallPeerId(id); };
 
   const stopTimer = useCallback(() => {
@@ -85,6 +192,7 @@ export function useCallSignaling(meId: number) {
   }, []);
 
   const cleanup = useCallback(() => {
+    stopRingtone();
     stopTimer();
     stopLocal();
     pcRef.current?.close();
@@ -95,14 +203,35 @@ export function useCallSignaling(meId: number) {
     _setCallPeerId(null);
     setCallType(null);
     setIncomingCall(null);
+    isMutedRef.current = false;
     setIsMuted(false);
+    setIsSpeaker(true);
     setCameraFront(true);
     setMediaError(null);
   }, [stopTimer, stopLocal]);
 
+  // ─── Limit video bitrate after connection ──────────────────────────────────
+  function applyBitrateLimit(pc: RTCPeerConnection) {
+    pc.getSenders().forEach(async (sender) => {
+      if (sender.track?.kind !== "video") return;
+      const params = sender.getParameters();
+      if (!params.encodings?.length) params.encodings = [{}];
+      params.encodings[0].maxBitrate = 600_000; // 600 kbps max for video
+      params.encodings[0].scaleResolutionDownBy = 1;
+      try { await sender.setParameters(params); } catch { /* ignore */ }
+    });
+    pc.getSenders().forEach(async (sender) => {
+      if (sender.track?.kind !== "audio") return;
+      const params = sender.getParameters();
+      if (!params.encodings?.length) params.encodings = [{}];
+      params.encodings[0].maxBitrate = 64_000; // 64 kbps for audio (Opus)
+      try { await sender.setParameters(params); } catch { /* ignore */ }
+    });
+  }
+
   const buildPC = useCallback((stream: MediaStream): RTCPeerConnection => {
     pcRef.current?.close();
-    const pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+    const pc = new RTCPeerConnection({ iceServers: iceServersRef.current });
     pcRef.current = pc;
 
     stream.getTracks().forEach(t => pc.addTrack(t, stream));
@@ -110,9 +239,13 @@ export function useCallSignaling(meId: number) {
     const remote = new MediaStream();
     pc.ontrack = e => {
       e.streams[0]?.getTracks().forEach(t => {
-        if (!remote.getTracks().includes(t)) remote.addTrack(t);
+        if (!remote.getTracks().find(x => x.id === t.id)) remote.addTrack(t);
       });
       setRemoteStream(new MediaStream(remote.getTracks()));
+    };
+
+    pc.onconnectionstatechange = () => {
+      if (pc.connectionState === "connected") applyBitrateLimit(pc);
     };
 
     return pc;
@@ -128,7 +261,6 @@ export function useCallSignaling(meId: number) {
   const handleSignal = useCallback(async (msg: SignalMsg) => {
     const { type, from, payload } = msg;
 
-    // ── INCOMING INVITE ──────────────────────────────────────────
     if (type === "call:invite") {
       if (callStateRef.current !== "idle") {
         await postSignal(from, "call:reject", { reason: "busy" });
@@ -139,11 +271,12 @@ export function useCallSignaling(meId: number) {
       _setCallPeerId(from);
       setCallType(ct);
       _setCallState("incoming");
+      playRingtone();
       return;
     }
 
-    // ── CALLEE ACCEPTED — now caller creates offer ────────────────
     if (type === "call:accept") {
+      stopRingtone();
       const stream = localStreamRef.current;
       if (!stream) return;
 
@@ -159,8 +292,8 @@ export function useCallSignaling(meId: number) {
       return;
     }
 
-    // ── CALLER SENT OFFER — callee sets remote + sends answer ─────
     if (type === "call:offer") {
+      stopRingtone();
       const stream = localStreamRef.current;
       const pc     = pcRef.current;
       if (!stream || !pc) return;
@@ -181,8 +314,8 @@ export function useCallSignaling(meId: number) {
       return;
     }
 
-    // ── CALLEE SENT ANSWER — caller is now live ───────────────────
     if (type === "call:answer") {
+      stopRingtone();
       const pc = pcRef.current;
       if (!pc) return;
       await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp as RTCSessionDescriptionInit));
@@ -192,7 +325,6 @@ export function useCallSignaling(meId: number) {
       return;
     }
 
-    // ── ICE CANDIDATE ─────────────────────────────────────────────
     if (type === "call:ice") {
       const pc        = pcRef.current;
       const candidate = payload.candidate as RTCIceCandidateInit;
@@ -204,35 +336,58 @@ export function useCallSignaling(meId: number) {
       return;
     }
 
-    // ── REJECT / END ──────────────────────────────────────────────
     if (type === "call:reject" || type === "call:end") {
       cleanup();
       return;
     }
   }, [buildPC, drainCandidates, startTimer, cleanup]);
 
-  // Keep the ref up to date so the stable SSE listener always calls the latest version
   useEffect(() => { handleSignalRef.current = handleSignal; }, [handleSignal]);
 
-  // ── SSE connection (stable — created once per meId) ──────────────
+  // ─── SSE listener with auto-reconnect ─────────────────────────────────────
   useEffect(() => {
     if (!meId) return;
-    const token = getBpToken();
-    if (!token) return;
+    let es: EventSource | null = null;
+    let retryTimeout: ReturnType<typeof setTimeout> | null = null;
+    let destroyed = false;
+    let retryDelay = 1000;
 
-    const es = new EventSource(`${BASE}/signaling/listen?token=${encodeURIComponent(token)}`);
+    function connect() {
+      if (destroyed) return;
+      const token = getBpToken();
+      if (!token) return;
 
-    es.addEventListener("signal", (e: MessageEvent) => {
-      try {
-        const msg = JSON.parse(e.data) as SignalMsg;
-        handleSignalRef.current?.(msg);
-      } catch { /* ignore */ }
-    });
+      es = new EventSource(`${BASE}/signaling/listen?token=${encodeURIComponent(token)}`);
 
-    return () => { es.close(); };
+      es.addEventListener("signal", (e: MessageEvent) => {
+        retryDelay = 1000;
+        try { handleSignalRef.current?.(JSON.parse(e.data) as SignalMsg); } catch { /* ignore */ }
+      });
+
+      es.addEventListener("message:new", (e: MessageEvent) => {
+        retryDelay = 1000;
+        try { onNewMessageRef.current?.(JSON.parse(e.data) as NewMessagePayload); } catch { /* ignore */ }
+      });
+
+      es.addEventListener("connected", () => { retryDelay = 1000; });
+
+      es.onerror = () => {
+        es?.close();
+        es = null;
+        if (destroyed) return;
+        retryDelay = Math.min(retryDelay * 2, 30_000);
+        retryTimeout = setTimeout(connect, retryDelay);
+      };
+    }
+
+    connect();
+
+    return () => {
+      destroyed = true;
+      if (retryTimeout) clearTimeout(retryTimeout);
+      es?.close();
+    };
   }, [meId]);
-
-  // ── Public API ───────────────────────────────────────────────────
 
   const startCall = useCallback(async (toUserId: number, type: "audio" | "video") => {
     if (callStateRef.current !== "idle") return;
@@ -262,6 +417,7 @@ export function useCallSignaling(meId: number) {
   const acceptCall = useCallback(async () => {
     const ic = incomingCall;
     if (!ic) return;
+    stopRingtone();
     setMediaError(null);
 
     try {
@@ -275,6 +431,7 @@ export function useCallSignaling(meId: number) {
           postSignal(callPeerIdRef.current, "call:ice", { candidate: candidate.toJSON() });
       };
 
+      _setCallState("active");
       await postSignal(ic.fromUserId, "call:accept", {});
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -288,22 +445,36 @@ export function useCallSignaling(meId: number) {
   }, [incomingCall, buildPC, cleanup]);
 
   const rejectCall = useCallback(async () => {
+    stopRingtone();
     const peerId = callPeerIdRef.current;
     if (peerId !== null) await postSignal(peerId, "call:reject", {});
     cleanup();
   }, [cleanup]);
 
   const endCall = useCallback(async () => {
+    stopRingtone();
     const peerId = callPeerIdRef.current;
     if (peerId !== null) await postSignal(peerId, "call:end", {});
     cleanup();
   }, [cleanup]);
 
   const toggleMute = useCallback(() => {
-    const next = !isMuted;
+    const next = !isMutedRef.current;
+    isMutedRef.current = next;
     setIsMuted(next);
     localStreamRef.current?.getAudioTracks().forEach(t => { t.enabled = !next; });
-  }, [isMuted]);
+  }, []);
+
+  const toggleSpeaker = useCallback(async (audioEl: HTMLAudioElement | null) => {
+    const next = !isSpeaker;
+    setIsSpeaker(next);
+    if (!audioEl) return;
+    // setSinkId routes audio output: "" = default earpiece, "speaker" = loudspeaker
+    const el = audioEl as HTMLAudioElement & { setSinkId?: (id: string) => Promise<void> };
+    if (typeof el.setSinkId === "function") {
+      try { await el.setSinkId(next ? "speaker" : ""); } catch { /* not supported */ }
+    }
+  }, [isSpeaker]);
 
   const flipCamera = useCallback(async () => {
     if (!localStreamRef.current) return;
@@ -311,19 +482,16 @@ export function useCallSignaling(meId: number) {
     localStreamRef.current.getVideoTracks().forEach(t => t.stop());
     try {
       const newStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: newFront ? "user" : "environment" },
+        video: { facingMode: newFront ? "user" : "environment", width: { ideal: 640 }, height: { ideal: 480 } },
         audio: false,
       });
-      const newVideoTrack  = newStream.getVideoTracks()[0];
-      const audioTracks    = localStreamRef.current.getAudioTracks();
-      const combined       = new MediaStream([...audioTracks, newVideoTrack]);
+      const newVideoTrack = newStream.getVideoTracks()[0];
+      const audioTracks   = localStreamRef.current.getAudioTracks();
+      const combined      = new MediaStream([...audioTracks, newVideoTrack]);
       localStreamRef.current = combined;
       setLocalStream(combined);
-
-      // Replace track in peer connection
       const sender = pcRef.current?.getSenders().find(s => s.track?.kind === "video");
       if (sender && newVideoTrack) await sender.replaceTrack(newVideoTrack);
-
       setCameraFront(newFront);
     } catch { /* ignore */ }
   }, [cameraFront]);
@@ -336,6 +504,7 @@ export function useCallSignaling(meId: number) {
     localStream,
     remoteStream,
     isMuted,
+    isSpeaker,
     cameraFront,
     callDuration,
     mediaError,
@@ -344,6 +513,7 @@ export function useCallSignaling(meId: number) {
     rejectCall,
     endCall,
     toggleMute,
+    toggleSpeaker,
     flipCamera,
   };
 }
