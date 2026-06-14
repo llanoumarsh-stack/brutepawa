@@ -408,7 +408,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                     onClick={() => navigate(post.authorId === user.id ? "/profile" : `/user/${post.authorId}`)}
                   >{displayName}</div>
                   {!post.sponsored && (
-                    <span style={{ color: "var(--fb-blue)", fontSize: 12, fontWeight: 600, cursor: "pointer", marginLeft: 2 }}>
+                    <span style={{ color: "#42B72A", fontSize: 12, fontWeight: 600, cursor: "pointer", marginLeft: 2 }}>
                       · Suivre
                     </span>
                   )}
@@ -722,10 +722,11 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
           />
           {/* Sheet */}
           <div style={{
-            position: "fixed", bottom: 60, left: 0, right: 0, zIndex: 100,
+            position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 100,
             background: "var(--fb-white)", borderRadius: "20px 20px 0 0",
             boxShadow: "0 -4px 32px rgba(0,0,0,0.18)",
-            maxHeight: "80vh", overflowY: "auto",
+            maxHeight: "85vh", overflowY: "auto",
+            animation: "slideUpSheet 0.25s cubic-bezier(0.32,0.72,0,1)",
           }}>
             {/* Handle */}
             <div style={{ display: "flex", justifyContent: "center", padding: "10px 0 4px" }}>
