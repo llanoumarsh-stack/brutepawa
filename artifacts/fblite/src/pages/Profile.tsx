@@ -3,6 +3,7 @@ import { useNavigate } from "../router";
 import { useR2Upload } from "../hooks/useR2Upload";
 import { apiGetMe, apiUpdateMe, saveFbUser, apiGetFriends, apiGetUserPosts, type PublicUser, type FeedPost } from "../lib/api";
 import { computeScore, type ScoreFactors } from "../lib/score";
+import ProModeModal from "../components/ProModeModal";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -21,6 +22,8 @@ export default function Profile() {
   const [uploadingWhat, setUploadingWhat] = useState<"avatar" | "cover" | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showProMode, setShowProMode] = useState(false);
+  const [isPro, setIsPro] = useState(() => localStorage.getItem("bp_pro_mode") === "1");
 
   const copyProfileLink = useCallback(() => {
     const url = `${window.location.origin}${import.meta.env.BASE_URL ?? ""}profile/${localUser.id ?? ""}`;
@@ -151,7 +154,7 @@ export default function Profile() {
               { icon: "🔒", label: "Verrouiller le profil",          action: () => setShowProfileMenu(false) },
               { icon: "👤", label: "Voir en tant que",               action: () => setShowProfileMenu(false) },
               { icon: "🔍", label: "Rechercher",                     action: () => { setShowProfileMenu(false); navigate("/search"); } },
-              { icon: "⚡", label: "Activer le mode pro",            action: () => setShowProfileMenu(false) },
+              { icon: "⚡", label: isPro ? "Mode pro activé ✓" : "Activer le mode pro", action: () => { setShowProfileMenu(false); if (!isPro) setShowProMode(true); } },
               { icon: "🔗", label: "Copier le lien du profil",       action: copyProfileLink },
             ].map(item => (
               <button
@@ -474,6 +477,13 @@ export default function Profile() {
       </div>
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+
+      {showProMode && (
+        <ProModeModal
+          onClose={() => setShowProMode(false)}
+          onActivated={() => setIsPro(true)}
+        />
+      )}
     </div>
   );
 }
