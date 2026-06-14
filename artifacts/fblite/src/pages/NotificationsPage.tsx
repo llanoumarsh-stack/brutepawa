@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "../router";
 import { apiGetNotifications, apiMarkAllNotificationsRead, type ApiNotification } from "../lib/api";
+import { usePushNotifications } from "../hooks/usePushNotifications";
 
 const TYPE_ICONS: Record<string, string> = {
   like: "❤️", comment: "💬", friend: "👥", message: "✉️",
@@ -45,6 +46,7 @@ export default function NotificationsPage() {
   const [notifs, setNotifs] = useState<ApiNotification[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<Filter>("all");
+  const { permission, subscribed, loading: pushLoading, subscribe, unsubscribe } = usePushNotifications();
 
   useEffect(() => {
     setLoading(true);
@@ -77,6 +79,46 @@ export default function NotificationsPage() {
           Tout marquer comme lu
         </button>
       </div>
+
+      {/* ── Push notifications toggle ── */}
+      {permission !== "unsupported" && (
+        <div style={{ background: "var(--fb-white)", margin: "8px 0", padding: "14px 16px", borderBottom: "1px solid var(--fb-divider)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 24 }}>{permission === "denied" ? "🔕" : "🔔"}</span>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 14 }}>Notifications push</div>
+              <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", marginTop: 2 }}>
+                {permission === "denied"
+                  ? "Bloquées — autorise dans les paramètres du navigateur"
+                  : subscribed
+                  ? "Activées sur cet appareil"
+                  : "Reçois des alertes même quand l'app est fermée"}
+              </div>
+            </div>
+          </div>
+          {permission !== "denied" && (
+            <button
+              disabled={pushLoading}
+              onClick={subscribed ? unsubscribe : subscribe}
+              style={{
+                flexShrink: 0,
+                padding: "8px 16px",
+                borderRadius: 20,
+                border: "none",
+                background: subscribed ? "#E4E6EB" : "var(--fb-blue)",
+                color: subscribed ? "var(--fb-text)" : "#fff",
+                fontWeight: 700,
+                fontSize: 13,
+                cursor: pushLoading ? "wait" : "pointer",
+                opacity: pushLoading ? 0.6 : 1,
+                transition: "all 0.2s",
+              }}
+            >
+              {pushLoading ? "…" : subscribed ? "Désactiver" : "Activer"}
+            </button>
+          )}
+        </div>
+      )}
 
       <div style={{ background: "var(--fb-white)", borderBottom: "1px solid var(--fb-divider)", display: "flex" }}>
         {[

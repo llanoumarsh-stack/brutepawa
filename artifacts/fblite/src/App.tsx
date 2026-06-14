@@ -34,6 +34,7 @@ import { ADMIN_SECRET_PATH } from "./lib/admin";
 import { Post } from "./lib/store";
 import { apiGetPosts, apiLikePost, apiCreatePost, getBpToken } from "./lib/api";
 import InstallBanner from "./components/InstallBanner";
+import { usePushNotifications } from "./hooks/usePushNotifications";
 
 function relativeTime(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
@@ -61,6 +62,21 @@ function matchDynamic(pattern: string, path: string): Record<string, string> | n
     }
   }
   return params;
+}
+
+function PushAutoSubscribe() {
+  const isAuth = Boolean(localStorage.getItem("fb_user"));
+  const { permission, subscribed, subscribe } = usePushNotifications();
+
+  useEffect(() => {
+    if (!isAuth) return;
+    if (permission === "default" && !subscribed) {
+      const t = setTimeout(() => subscribe(), 5000);
+      return () => clearTimeout(t);
+    }
+  }, [isAuth, permission, subscribed, subscribe]);
+
+  return null;
 }
 
 function AppContent() {
@@ -258,6 +274,7 @@ function AppContent() {
 export default function App() {
   return (
     <Router>
+      <PushAutoSubscribe />
       <AppContent />
       <InstallBanner />
     </Router>
