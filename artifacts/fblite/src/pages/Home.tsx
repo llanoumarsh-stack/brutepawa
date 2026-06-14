@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "../router";
 import { Post } from "../lib/store";
 import { formatNumber } from "../data/mock";
-import { apiGetStories, type StoryGroup } from "../lib/api";
+import { apiGetStories, apiGetComments, apiPostComment, type StoryGroup, type PostComment } from "../lib/api";
 import StoryViewer from "../components/StoryViewer";
 import { storyDraftStore } from "../lib/storyDraft";
 
@@ -56,8 +56,25 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
   const allPosts = [...newPosts, ...posts];
 
   const [showComments, setShowComments] = useState<number | null>(null);
-  const [comments, setComments] = useState<Record<number, string[]>>({});
-  const [newComment, setNewComment] = useState("");
+  const [comments, setComments] = useState<Record<number, PostComment[]>>({});
+  const [newComment, setNewComment] = useState<Record<number, string>>({});
+  const [submittingComment, setSubmittingComment] = useState<number | null>(null);
+
+  const loadComments = useCallback(async (postId: number) => {
+    try {
+      const data = await apiGetComments(postId);
+      setComments(prev => ({ ...prev, [postId]: data }));
+    } catch { /* silent */ }
+  }, []);
+
+  const toggleComments = (postId: number) => {
+    if (showComments === postId) {
+      setShowComments(null);
+    } else {
+      setShowComments(postId);
+      loadComments(postId);
+    }
+  };
 
   // Post menu & actions
   const [openMenu, setOpenMenu] = useState<PostMenu | null>(null);
@@ -133,10 +150,19 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
     onLike?.(id);
   };
 
-  const submitComment = (postId: number) => {
-    if (!newComment.trim()) return;
-    setComments(prev => ({ ...prev, [postId]: [...(prev[postId] ?? []), newComment.trim()] }));
-    setNewComment("");
+  const submitComment = async (postId: number) => {
+    const text = (newComment[postId] ?? "").trim();
+    if (!text || submittingComment === postId) return;
+    setSubmittingComment(postId);
+    setNewComment(prev => ({ ...prev, [postId]: "" }));
+    try {
+      const comment = await apiPostComment(postId, text);
+      setComments(prev => ({ ...prev, [postId]: [...(prev[postId] ?? []), comment] }));
+    } catch {
+      setNewComment(prev => ({ ...prev, [postId]: text }));
+    } finally {
+      setSubmittingComment(null);
+    }
   };
 
   const visiblePosts = allPosts.filter(p => !hiddenPosts.has(p.id));
@@ -295,7 +321,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
               <button className={`post-btn${post.liked ? " liked" : ""}`} onClick={() => toggleLike(post.id)}>
                 {post.liked ? "❤️" : "👍"} J'aime
               </button>
-              <button className="post-btn" onClick={() => setShowComments(showComments === post.id ? null : post.id)}>
+              <button className="post-btn" onClick={() => toggleComments(post.id)}>
                 💬 Commenter
               </button>
               <button className="post-btn" onClick={() => handleShare(post.id)}>↗️ Partager</button>
@@ -305,23 +331,42 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
             </div>
             {showComments === post.id && (
               <div style={{ padding: "8px 16px", borderTop: "1px solid var(--fb-divider)" }}>
-                {postComments.map((c, i) => (
-                  <div key={i} style={{ display: "flex", gap: 8, marginBottom: 8, alignItems: "flex-start" }}>
-                    <div className="avatar xs">{userInitials}</div>
-                    <div style={{ background: "var(--fb-bg)", borderRadius: 16, padding: "7px 12px", fontSize: 13, flex: 1 }}>{c}</div>
+                {postComments.map(c => {
+                  const cInitials = getInitials(`${c.authorFirstName} ${c.authorLastName}`);
+                  return (
+                    <div key={c.id} style={{ display: "flex", gap: 8, marginBottom: 8, alignItems: "flex-start" }}>
+                      {c.authorAvatarUrl
+                        ? <img src={c.authorAvatarUrl} alt={cInitials} style={{ width: 28, height: 28, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+                        : <div className="avatar xs">{cInitials}</div>
+                      }
+                      <div style={{ background: "var(--fb-bg)", borderRadius: 16, padding: "7px 12px", fontSize: 13, flex: 1 }}>
+                        <div style={{ fontWeight: 600, fontSize: 12, marginBottom: 2 }}>{c.authorFirstName} {c.authorLastName}</div>
+                        {c.content}
+                      </div>
+                    </div>
+                  );
+                })}
+                {postComments.length === 0 && (
+                  <div style={{ fontSize: 13, color: "var(--fb-text-secondary)", textAlign: "center", padding: "8px 0" }}>
+                    Soyez le premier à commenter 💬
                   </div>
-                ))}
+                )}
                 <div className="comment-box">
                   <div className="avatar xs">{userInitials}</div>
                   <div style={{ flex: 1, display: "flex", gap: 8 }}>
                     <input
                       style={{ flex: 1, background: "var(--fb-bg)", border: "none", borderRadius: 20, padding: "8px 14px", fontSize: 14, outline: "none" }}
                       placeholder="Écrire un commentaire..."
-                      value={newComment}
-                      onChange={e => setNewComment(e.target.value)}
+                      value={newComment[post.id] ?? ""}
+                      onChange={e => setNewComment(prev => ({ ...prev, [post.id]: e.target.value }))}
                       onKeyDown={e => { if (e.key === "Enter") submitComment(post.id); }}
+                      disabled={submittingComment === post.id}
                     />
-                    <button onClick={() => submitComment(post.id)} style={{ background: "var(--fb-blue)", border: "none", borderRadius: "50%", width: 32, height: 32, color: "#fff", cursor: "pointer" }}>➤</button>
+                    <button
+                      onClick={() => submitComment(post.id)}
+                      disabled={submittingComment === post.id}
+                      style={{ background: "var(--fb-blue)", border: "none", borderRadius: "50%", width: 32, height: 32, color: "#fff", cursor: "pointer", opacity: submittingComment === post.id ? 0.6 : 1 }}
+                    >➤</button>
                   </div>
                 </div>
               </div>

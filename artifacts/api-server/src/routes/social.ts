@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { db, postsTable, postLikesTable, messagesTable, usersTable, storiesTable, userBlocksTable, notificationsTable } from "@workspace/db";
+import { db, postsTable, postLikesTable, messagesTable, usersTable, storiesTable, userBlocksTable, notificationsTable, commentsTable } from "@workspace/db";
 import { eq, and, or, desc, sql, gt } from "drizzle-orm";
 import { CreatePostBody, GetPostParams, DeletePostParams, LikePostParams, LikePostBody, SendMessageBody, GetConversationParams, ListPostsQueryParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
@@ -400,6 +400,81 @@ router.delete("/stories/:id", requireAuth, async (req, res): Promise<void> => {
   await Promise.all(r2Keys.map(k => deleteObject(k).catch(() => {})));
 
   res.sendStatus(204);
+});
+
+// ─── Comments ────────────────────────────────────────────────────────────────
+
+router.get("/posts/:id/comments", requireAuth, async (req, res): Promise<void> => {
+  const postId = parseInt(req.params.id);
+  if (isNaN(postId)) { res.status(400).json({ error: "Invalid post id" }); return; }
+
+  const rows = await db
+    .select({
+      id: commentsTable.id,
+      postId: commentsTable.postId,
+      authorId: commentsTable.authorId,
+      content: commentsTable.content,
+      createdAt: commentsTable.createdAt,
+      authorFirstName: usersTable.firstName,
+      authorLastName: usersTable.lastName,
+      authorAvatarUrl: usersTable.avatarUrl,
+    })
+    .from(commentsTable)
+    .innerJoin(usersTable, eq(commentsTable.authorId, usersTable.id))
+    .where(eq(commentsTable.postId, postId))
+    .orderBy(commentsTable.createdAt)
+    .limit(100);
+
+  res.json(rows);
+});
+
+router.post("/posts/:id/comments", requireAuth, async (req, res): Promise<void> => {
+  const postId = parseInt(req.params.id);
+  if (isNaN(postId)) { res.status(400).json({ error: "Invalid post id" }); return; }
+
+  const { content } = req.body as { content?: string };
+  if (!content?.trim()) { res.status(400).json({ error: "Contenu requis" }); return; }
+
+  const authorId = req.userId!;
+
+  // Fetch post to get author id
+  const [post] = await db
+    .select({ authorId: postsTable.authorId })
+    .from(postsTable)
+    .where(eq(postsTable.id, postId));
+
+  if (!post) { res.status(404).json({ error: "Publication introuvable" }); return; }
+
+  // Insert comment
+  const [comment] = await db
+    .insert(commentsTable)
+    .values({ postId, authorId, content: content.trim() })
+    .returning();
+
+  // Increment commentsCount on post
+  await db
+    .update(postsTable)
+    .set({ commentsCount: sql`${postsTable.commentsCount} + 1` })
+    .where(eq(postsTable.id, postId));
+
+  // Notify post author (not self)
+  if (post.authorId !== authorId) {
+    const [author] = await db
+      .select({ firstName: usersTable.firstName, lastName: usersTable.lastName })
+      .from(usersTable)
+      .where(eq(usersTable.id, authorId));
+
+    const name = author ? `${author.firstName} ${author.lastName}` : "Quelqu'un";
+    const preview = content.trim().length > 60 ? content.trim().slice(0, 60) + "…" : content.trim();
+
+    pushToUserDevice(post.authorId, {
+      title: `💬 ${name} a commenté votre publication`,
+      body: preview,
+      url: "/",
+    }).catch(() => {});
+  }
+
+  res.status(201).json(comment);
 });
 
 // ─── Notifications ──────────────────────────────────────────────────────────

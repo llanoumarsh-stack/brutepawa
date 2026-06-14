@@ -1065,3 +1065,34 @@ export async function apiAdminPatchWithdrawal(
   }
   return res.json();
 }
+
+// ─── Comments ────────────────────────────────────────────────────────────────
+
+export interface PostComment {
+  id: number;
+  postId: number;
+  authorId: number;
+  content: string;
+  createdAt: string;
+  authorFirstName: string;
+  authorLastName: string;
+  authorAvatarUrl: string | null;
+}
+
+export async function apiGetComments(postId: number): Promise<PostComment[]> {
+  const res = await apiFetch(`/posts/${postId}/comments`);
+  if (!res.ok) return [];
+  return res.json();
+}
+
+export async function apiPostComment(postId: number, content: string): Promise<PostComment> {
+  const res = await apiFetch(`/posts/${postId}/comments`, {
+    method: "POST",
+    body: JSON.stringify({ content }),
+  });
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(e.error ?? "Erreur lors du commentaire");
+  }
+  return res.json();
+}
