@@ -1,7 +1,21 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "../router";
-import { apiGetConversations, apiGetMessages, apiSendMessage, apiGetUsers, type PublicUser } from "../lib/api";
+import { apiGetConversations, apiGetMessages, apiSendMessage, apiGetUsers, apiGetUserPresence, type PublicUser } from "../lib/api";
 import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignaling";
+
+function presenceLabel(online: boolean, lastSeenAt: string | null): string {
+  if (online) return "En ligne";
+  if (!lastSeenAt) return "Hors ligne";
+  const diff = Date.now() - new Date(lastSeenAt).getTime();
+  const secs = Math.floor(diff / 1000);
+  if (secs < 60) return `En ligne il y a ${secs} s`;
+  const mins = Math.floor(secs / 60);
+  if (mins < 60) return `En ligne il y a ${mins} min`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `En ligne il y a ${hrs} h`;
+  const days = Math.floor(hrs / 24);
+  return `En ligne il y a ${days} j`;
+}
 
 interface Message {
   id: number;
@@ -43,6 +57,8 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
   const [selectedMsgs, setSelectedMsgs]         = useState<Set<number>>(new Set());
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteForAll, setDeleteForAll]         = useState(false);
+  const [presence, setPresence] = useState<{ online: boolean; lastSeenAt: string | null }>({ online: false, lastSeenAt: null });
+  const [presenceTick, setPresenceTick] = useState(0);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const bottomRef      = useRef<HTMLDivElement>(null);
@@ -195,6 +211,21 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
       }));
     }).catch(() => {});
   }, [activeConv]);
+
+  /* Fetch & poll presence every 30s when a conversation is open */
+  useEffect(() => {
+    if (!activeConv) { setPresence({ online: false, lastSeenAt: null }); return; }
+    let cancelled = false;
+    const fetch = () => apiGetUserPresence(activeConv).then(p => { if (!cancelled) setPresence(p); }).catch(() => {});
+    fetch();
+    // tick every second to re-render relative time label without re-fetching
+    const ticker = setInterval(() => setPresenceTick(t => t + 1), 5000);
+    const poller = setInterval(fetch, 30000);
+    return () => { cancelled = true; clearInterval(ticker); clearInterval(poller); };
+  }, [activeConv]);
+
+  const presText = presenceLabel(presence.online, presence.lastSeenAt);
+  void presenceTick; // used to trigger re-render for relative time
 
   /* Polling: refresh messages every 3s for open conversation, convList every 10s */
   useEffect(() => {
@@ -574,6 +605,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
       <div style={{
         position: "fixed", top: 56, bottom: 60, left: 0, right: 0,
         display: "flex", flexDirection: "column", background: "#f0f2f5", zIndex: 5,
+        overflow: "hidden",
       }}>
         {/* Header — normal ou mode sélection */}
         {selectionMode ? (
@@ -626,7 +658,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
 
             <div style={{ flex: 1, minWidth: 0, cursor: "pointer" }} onClick={() => setOverlay("info")}>
               <div style={{ fontWeight: 700, fontSize: 15, color: "#050505", lineHeight: 1.2 }}>{activeUser.name}</div>
-              <div style={{ fontSize: 12, color: "#42B72A", fontWeight: 600 }}>En ligne</div>
+              <div style={{ fontSize: 12, color: presence.online ? "#42B72A" : "#65676b", fontWeight: 600 }}>{presText}</div>
             </div>
 
             <div style={{ display: "flex", gap: 2 }}>

@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { verifyToken } from "../lib/auth";
+import { touchPresence } from "../lib/presenceStore";
 
 declare global {
   namespace Express {
@@ -24,6 +25,7 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
   }
   req.userId = payload.userId;
   req.userRole = payload.role;
+  touchPresence(payload.userId);
   next();
 }
 

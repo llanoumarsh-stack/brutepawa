@@ -1130,3 +1130,9 @@ export async function apiGetStorageStats(): Promise<StorageStats> {
   if (!res.ok) throw new Error("Erreur lors de la récupération du stockage");
   return res.json() as Promise<StorageStats>;
 }
+
+export async function apiGetUserPresence(userId: number): Promise<{ online: boolean; lastSeenAt: string | null }> {
+  const res = await apiFetch(`/users/${userId}/presence`);
+  if (!res.ok) return { online: false, lastSeenAt: null };
+  return res.json();
+}

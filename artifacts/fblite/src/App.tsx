@@ -20,6 +20,8 @@ import JobDetail from "./pages/JobDetail";
 import FormationDetail from "./pages/FormationDetail";
 import CreatePostPage from "./pages/CreatePostPage";
 import CreateStoryPage from "./pages/CreateStoryPage";
+import CreateReelPage from "./pages/CreateReelPage";
+import CreateLifeEventPage from "./pages/CreateLifeEventPage";
 import LiveStreamPage from "./pages/LiveStreamPage";
 import LiveWatchPage from "./pages/LiveWatchPage";
 import EditProfilePage from "./pages/EditProfilePage";
@@ -167,6 +169,8 @@ function AppContent() {
   if (path === ADMIN_SECRET_PATH) return <Admin />;
   if (path === "/create-post") return <CreatePostPage onPublish={handleNewPost} />;
   if (path === "/create-story") return <CreateStoryPage onCreated={loadPosts} />;
+  if (path === "/create-reel") return <CreateReelPage />;
+  if (path === "/create-life-event") return <CreateLifeEventPage />;
   if (path === "/live") return <LiveStreamPage />;
   if (path === "/edit-profile") return <EditProfilePage />;
   if (path === "/creator") return <CreatorDashboardPage />;

@@ -6,6 +6,7 @@ import { requireAuth } from "../middlewares/requireAuth";
 import { pushToUserDevice } from "./push";
 import { extractKeyFromUrl, ownerIdFromKey } from "../lib/r2";
 import { releaseStorage } from "../lib/storage";
+import { getPresence } from "../lib/presenceStore";
 
 const router = Router();
 
@@ -22,6 +23,12 @@ router.get("/users/me", requireAuth, async (req, res): Promise<void> => {
   const [user] = await db.select().from(usersTable).where(eq(usersTable.id, req.userId!));
   if (!user) { res.status(404).json({ error: "User not found" }); return; }
   res.json(formatUser(user));
+});
+
+router.get("/users/:id/presence", requireAuth, async (req, res): Promise<void> => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
+  res.json(getPresence(id));
 });
 
 router.patch("/users/me", requireAuth, async (req, res): Promise<void> => {

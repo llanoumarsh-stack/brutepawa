@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "../router";
 import { useR2Upload } from "../hooks/useR2Upload";
 import { apiGetMe, apiUpdateMe, saveFbUser, apiGetFriends, apiGetUserPosts, type PublicUser, type FeedPost } from "../lib/api";
@@ -20,6 +20,13 @@ export default function Profile() {
   const [coverUrl, setCoverUrl] = useState<string>(localUser.coverUrl ?? "");
   const [uploadingWhat, setUploadingWhat] = useState<"avatar" | "cover" | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  const copyProfileLink = useCallback(() => {
+    const url = `${window.location.origin}${import.meta.env.BASE_URL ?? ""}profile/${localUser.id ?? ""}`;
+    navigator.clipboard?.writeText(url).catch(() => {});
+    setShowProfileMenu(false);
+  }, [localUser.id]);
 
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef  = useRef<HTMLInputElement>(null);
@@ -120,8 +127,45 @@ export default function Profile() {
       {/* Back button */}
       <div style={{ background: "var(--fb-white)", padding: "10px 16px", borderBottom: "1px solid var(--fb-divider)", display: "flex", alignItems: "center", gap: 10 }}>
         <button onClick={() => navigate("/")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "var(--fb-blue)" }}>←</button>
-        <span style={{ fontWeight: 700, fontSize: 17 }}>Profil</span>
+        <span style={{ fontWeight: 700, fontSize: 17, flex: 1 }}>Profil</span>
+        <button onClick={() => setShowProfileMenu(true)} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "#050505", padding: "4px 6px", borderRadius: 8 }}>⋯</button>
       </div>
+
+      {/* Profile options bottom sheet */}
+      {showProfileMenu && (
+        <div
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 100 }}
+          onClick={() => setShowProfileMenu(false)}
+        >
+          <div
+            style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "#fff", borderRadius: "20px 20px 0 0", padding: "8px 0 32px" }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ width: 40, height: 4, background: "#e0e0e0", borderRadius: 2, margin: "8px auto 16px" }} />
+            {[
+              { icon: "🟢", label: "Statut du profil",              action: () => setShowProfileMenu(false) },
+              { icon: "🗄️", label: "Archive",                        action: () => setShowProfileMenu(false) },
+              { icon: "📊", label: "Historique d'activité",          action: () => setShowProfileMenu(false) },
+              { icon: "👁️", label: "Examiner les publications",      action: () => setShowProfileMenu(false) },
+              { icon: "⭐", label: "Ajouter des éléments à la une", action: () => setShowProfileMenu(false) },
+              { icon: "🔒", label: "Verrouiller le profil",          action: () => setShowProfileMenu(false) },
+              { icon: "👤", label: "Voir en tant que",               action: () => setShowProfileMenu(false) },
+              { icon: "🔍", label: "Rechercher",                     action: () => { setShowProfileMenu(false); navigate("/search"); } },
+              { icon: "⚡", label: "Activer le mode pro",            action: () => setShowProfileMenu(false) },
+              { icon: "🔗", label: "Copier le lien du profil",       action: copyProfileLink },
+            ].map(item => (
+              <button
+                key={item.label}
+                onClick={item.action}
+                style={{ width: "100%", background: "none", border: "none", padding: "14px 20px", display: "flex", alignItems: "center", gap: 16, cursor: "pointer", textAlign: "left" }}
+              >
+                <span style={{ fontSize: 22, width: 28, textAlign: "center" }}>{item.icon}</span>
+                <span style={{ fontSize: 15, color: "#050505" }}>{item.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {displayError && (
         <div style={{ background: "#ffebee", color: "#b00020", padding: "8px 16px", fontSize: 13, textAlign: "center" }}>

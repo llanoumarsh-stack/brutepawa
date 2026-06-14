@@ -41,6 +41,7 @@ export default function Feed() {
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerGroupIdx, setViewerGroupIdx] = useState(0);
   const storyFileRef = useRef<HTMLInputElement>(null);
+  const [postMenuId, setPostMenuId] = useState<number | null>(null);
 
   const handleStoryFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -272,7 +273,7 @@ export default function Feed() {
                   <div className="post-author">{post.authorName} {flag}</div>
                   <div className="post-time">🌐 {timeAgo(post.createdAt)}</div>
                 </div>
-                <button className="post-more">···</button>
+                <button className="post-more" onClick={() => setPostMenuId(post.id)}>···</button>
               </div>
               <div className="post-content">{post.content}</div>
               {post.imageUrl && (
@@ -319,6 +320,44 @@ export default function Feed() {
           </button>
         ))}
       </nav>
+
+      {/* Post options bottom sheet */}
+      {postMenuId !== null && (
+        <div
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 200 }}
+          onClick={() => setPostMenuId(null)}
+        >
+          <div
+            style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "#fff", borderRadius: "20px 20px 0 0", padding: "8px 0 32px" }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ width: 40, height: 4, background: "#e0e0e0", borderRadius: 2, margin: "8px auto 16px" }} />
+            {[
+              { icon: "📌", label: "Épingler la publication",         danger: false },
+              { icon: "🔕", label: "Désactiver les notifications",    danger: false },
+              { icon: "🔖", label: "Enregistrer",                     danger: false },
+              { icon: "↗️", label: "Partager",                        danger: false },
+              { icon: "🔒", label: "Modifier la confidentialité",     danger: false },
+              { icon: "🗄️", label: "Déplacer dans l'archive",         danger: false },
+              { icon: "🗑️", label: "Déplacer dans la corbeille",      danger: true  },
+              { icon: "🔗", label: "Copier le lien",                  danger: false },
+            ].map(item => (
+              <button
+                key={item.label}
+                onClick={() => setPostMenuId(null)}
+                style={{
+                  width: "100%", background: "none", border: "none",
+                  padding: "14px 20px", display: "flex", alignItems: "center",
+                  gap: 16, cursor: "pointer", textAlign: "left",
+                }}
+              >
+                <span style={{ fontSize: 22, width: 28, textAlign: "center" }}>{item.icon}</span>
+                <span style={{ fontSize: 15, color: item.danger ? "#E53935" : "#050505" }}>{item.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
