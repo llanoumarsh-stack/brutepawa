@@ -53,7 +53,7 @@ export default function Login() {
             autoComplete="current-password"
             disabled={loading}
           />
-          <button type="submit" className="btn-primary" disabled={loading}>
+          <button type="submit" className="btn-primary" disabled={loading} style={{ background: loading ? "#36A420" : "#42B72A", boxShadow: "0 2px 8px rgba(66,183,42,0.35)" }}>
             {loading ? "Connexion…" : "Se connecter"}
           </button>
           <div className="forgotten-link">
