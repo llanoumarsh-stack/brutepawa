@@ -68,16 +68,27 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
 });
 
 router.post("/posts", requireAuth, async (req, res): Promise<void> => {
-  const parsed = CreatePostBody.safeParse(req.body);
-  if (!parsed.success) { res.status(400).json({ error: parsed.error.message }); return; }
+  // Allow empty content when a media URL is provided (video/image posts without caption)
+  const rawBody = {
+    ...req.body,
+    content: req.body.content || (req.body.imageUrl ? "" : req.body.content),
+  };
+  // Validate using a relaxed schema: content optional when imageUrl present
+  const hasMedia = typeof req.body.imageUrl === "string" && req.body.imageUrl.length > 0;
+  const contentVal = typeof rawBody.content === "string" ? rawBody.content.trim() : "";
+  if (!hasMedia && contentVal.length === 0) {
+    res.status(400).json({ error: "Le contenu est requis si aucun média n'est joint." });
+    return;
+  }
 
   // thumbnailUrl is outside the generated schema — read directly from body
   const thumbnailUrl = typeof req.body.thumbnailUrl === "string" ? req.body.thumbnailUrl : null;
+  const imageUrl = typeof req.body.imageUrl === "string" ? req.body.imageUrl : null;
 
   const [post] = await db.insert(postsTable).values({
     authorId: req.userId!,
-    content: parsed.data.content,
-    imageUrl: parsed.data.imageUrl ?? null,
+    content: contentVal,
+    imageUrl,
     thumbnailUrl,
   }).returning();
   res.status(201).json(post);

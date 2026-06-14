@@ -329,10 +329,14 @@ export default function Profile() {
                     <div className="post-time">🌐 {new Date(post.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}</div>
                   </div>
                 </div>
-                {post.imageUrl && (
-                  <img src={post.imageUrl} alt="" style={{ width: "100%", maxHeight: 300, objectFit: "cover" }} />
-                )}
-                <div className="post-content">{post.content}</div>
+                {post.imageUrl && (() => {
+                  const url = post.imageUrl!;
+                  const isVid = /\.(mp4|mov|webm|ogg|m4v)(\?.*)?$/i.test(url);
+                  return isVid
+                    ? <video src={url} controls playsInline style={{ width: "100%", maxHeight: 360, objectFit: "cover", display: "block", background: "#000" }} />
+                    : <img src={url} alt="" style={{ width: "100%", maxHeight: 360, objectFit: "cover" }} />;
+                })()}
+                {post.content && <div className="post-content">{post.content}</div>}
                 <div className="post-actions">
                   <button className="post-btn">👍 {post.likesCount}</button>
                   <button className="post-btn">💬 {post.commentsCount}</button>

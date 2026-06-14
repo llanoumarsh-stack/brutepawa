@@ -409,7 +409,7 @@ export async function apiCreatePost(
   imageUrl?: string,
   thumbnailUrl?: string,
 ): Promise<void> {
-  await apiFetch("/posts", {
+  const res = await apiFetch("/posts", {
     method: "POST",
     body: JSON.stringify({
       content,
@@ -417,6 +417,10 @@ export async function apiCreatePost(
       thumbnailUrl: thumbnailUrl ?? null,
     }),
   });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(body.error ?? `Erreur ${res.status}`);
+  }
 }
 
 export async function apiLikePost(id: number, action: "like" | "unlike"): Promise<void> {

@@ -374,10 +374,29 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 </button>
               </div>
             </div>
-            <div className="post-content">{post.content}</div>
+            {post.content && <div className="post-content">{post.content}</div>}
             {post.emoji && (
               <div className="post-image-emoji" style={{ background: "var(--fb-bg)" }}>{post.emoji}</div>
             )}
+            {post.imageUrl && (() => {
+              const url = post.imageUrl!;
+              const isVideo = /\.(mp4|mov|webm|ogg|m4v)(\?.*)?$/i.test(url);
+              return isVideo ? (
+                <video
+                  src={url}
+                  controls
+                  playsInline
+                  style={{ width: "100%", maxHeight: 420, objectFit: "cover", display: "block", background: "#000", borderRadius: 0 }}
+                />
+              ) : (
+                <img
+                  src={url}
+                  alt=""
+                  style={{ width: "100%", maxHeight: 420, objectFit: "cover", display: "block", borderRadius: 0 }}
+                  onClick={() => navigate(`/video/${post.id}`)}
+                />
+              );
+            })()}
             <div className="post-stats">
               <span>{post.liked ? "❤️" : "👍"} {formatNumber(post.likes)}</span>
               <span>

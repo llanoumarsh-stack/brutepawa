@@ -176,11 +176,16 @@ export default function CreatePostPage({ onPublish }: Props) {
 
     // Persist post to backend — include first uploaded media + its thumbnail
     const firstMedia = medias[0];
-    await apiCreatePost(
-      finalContent,
-      firstMedia?.url ?? undefined,
-      firstMedia?.thumbnailUrl ?? undefined,
-    ).catch(() => {});
+    try {
+      await apiCreatePost(
+        finalContent,
+        firstMedia?.url ?? undefined,
+        firstMedia?.thumbnailUrl ?? undefined,
+      );
+    } catch (err) {
+      alert((err as Error).message ?? "Erreur lors de la publication.");
+      return;
+    }
 
     onPublish?.(finalContent, hasBg ? activeBg?.value : undefined, selectedMood ?? undefined, selectedLocation ? `${selectedLocation.city}` : undefined);
     navigate("/");
