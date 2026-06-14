@@ -11,15 +11,13 @@ import { useQuery } from "@tanstack/react-query";
 
 import { useColors } from "@/hooks/useColors";
 import { useAuth } from "@/context/AuthContext";
+import { API_BASE_URL } from "@/constants/api";
 
 function useUnreadNotifCount(token: string | null) {
   return useQuery<number>({
     queryKey: ["notif-unread-count"],
     queryFn: async () => {
-      const base = process.env.EXPO_PUBLIC_DOMAIN
-        ? `https://${process.env.EXPO_PUBLIC_DOMAIN}`
-        : "";
-      const res = await fetch(`${base}/api/notifications/unread-count`, {
+      const res = await fetch(`${API_BASE_URL}/api/notifications/unread-count`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       if (!res.ok) return 0;

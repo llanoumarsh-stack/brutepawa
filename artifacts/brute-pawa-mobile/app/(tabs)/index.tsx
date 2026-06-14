@@ -21,6 +21,7 @@ import { useColors } from "@/hooks/useColors";
 import { PostCard } from "@/components/PostCard";
 import { StoryBar } from "@/components/StoryBar";
 import { useAuth } from "@/context/AuthContext";
+import { API_BASE_URL } from "@/constants/api";
 
 interface StoryGroup {
   authorId: number;
@@ -34,10 +35,7 @@ function useStories() {
   return useQuery({
     queryKey: ["stories"],
     queryFn: async (): Promise<StoryGroup[]> => {
-      const base = process.env.EXPO_PUBLIC_DOMAIN
-        ? `https://${process.env.EXPO_PUBLIC_DOMAIN}`
-        : "";
-      const res = await fetch(`${base}/api/stories`);
+      const res = await fetch(`${API_BASE_URL}/api/stories`);
       if (!res.ok) return [];
       return res.json() as Promise<StoryGroup[]>;
     },
@@ -49,10 +47,7 @@ function useUnreadNotifCount(token: string | null) {
   return useQuery<number>({
     queryKey: ["notif-unread-count"],
     queryFn: async () => {
-      const base = process.env.EXPO_PUBLIC_DOMAIN
-        ? `https://${process.env.EXPO_PUBLIC_DOMAIN}`
-        : "";
-      const res = await fetch(`${base}/api/notifications/unread-count`, {
+      const res = await fetch(`${API_BASE_URL}/api/notifications/unread-count`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       if (!res.ok) return 0;

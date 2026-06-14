@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import { useColors } from "@/hooks/useColors";
 import { useAuth } from "@/context/AuthContext";
+import { API_BASE_URL } from "@/constants/api";
 
 interface GroupDetail {
   id: number;
@@ -34,10 +35,7 @@ function useGroupDetail(id: number, token: string | null) {
   return useQuery<GroupDetail>({
     queryKey: ["group", id],
     queryFn: async () => {
-      const base = process.env.EXPO_PUBLIC_DOMAIN
-        ? `https://${process.env.EXPO_PUBLIC_DOMAIN}`
-        : "";
-      const res = await fetch(`${base}/api/groups/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/groups/${id}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       if (!res.ok) throw new Error("Group not found");

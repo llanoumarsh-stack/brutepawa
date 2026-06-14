@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useColors } from "@/hooks/useColors";
 import { useAuth } from "@/context/AuthContext";
+import { API_BASE_URL } from "@/constants/api";
 
 interface Notification {
   id: number;
@@ -62,10 +63,7 @@ function useNotifications(token: string | null) {
   return useQuery<Notification[]>({
     queryKey: ["notifications"],
     queryFn: async () => {
-      const base = process.env.EXPO_PUBLIC_DOMAIN
-        ? `https://${process.env.EXPO_PUBLIC_DOMAIN}`
-        : "";
-      const res = await fetch(`${base}/api/notifications`, {
+      const res = await fetch(`${API_BASE_URL}/api/notifications`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       if (!res.ok) return [];
@@ -80,10 +78,7 @@ function useMarkAllRead(token: string | null) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async () => {
-      const base = process.env.EXPO_PUBLIC_DOMAIN
-        ? `https://${process.env.EXPO_PUBLIC_DOMAIN}`
-        : "";
-      const res = await fetch(`${base}/api/notifications/read-all`, {
+      const res = await fetch(`${API_BASE_URL}/api/notifications/read-all`, {
         method: "PATCH",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
