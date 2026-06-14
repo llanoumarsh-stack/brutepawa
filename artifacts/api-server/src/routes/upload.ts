@@ -126,8 +126,8 @@ router.post(
         trackedFiles.push({ key: mainKey, sizeBytes: mainBuffer.length, kind: "audio" });
       }
 
-      // ── Track all uploaded objects + update quota counter ─────────────────
-      await trackUploads(trackedFiles, userId);
+      // ── Track all uploaded objects + update quota counter (best-effort) ────
+      await trackUploads(trackedFiles, userId).catch(() => {});
 
       const totalStored = trackedFiles.reduce((s, f) => s + f.sizeBytes, 0);
 

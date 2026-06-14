@@ -332,13 +332,24 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
             )}
             <div className="post-header">
               {post.authorAvatarUrl ? (
-                <img src={post.authorAvatarUrl} alt={displayName} className="avatar" style={{ width: 40, height: 40, objectFit: "cover", flexShrink: 0, borderRadius: "50%" }} />
+                <img
+                  src={post.authorAvatarUrl} alt={displayName} className="avatar"
+                  style={{ width: 40, height: 40, objectFit: "cover", flexShrink: 0, borderRadius: "50%", cursor: "pointer" }}
+                  onClick={() => navigate(post.authorId === user.id ? "/profile" : `/user/${post.authorId}`)}
+                />
               ) : (
-                <div className="avatar" style={{ background: displayColor }}>{displayInitials}</div>
+                <div
+                  className="avatar" style={{ background: displayColor, cursor: "pointer" }}
+                  onClick={() => navigate(post.authorId === user.id ? "/profile" : `/user/${post.authorId}`)}
+                >{displayInitials}</div>
               )}
               <div className="post-meta">
                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <div className="post-author">{displayName}</div>
+                  <div
+                    className="post-author"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => navigate(post.authorId === user.id ? "/profile" : `/user/${post.authorId}`)}
+                  >{displayName}</div>
                   {!post.sponsored && (
                     <span style={{ color: "var(--fb-blue)", fontSize: 12, fontWeight: 600, cursor: "pointer", marginLeft: 2 }}>
                       · Suivre

@@ -43,16 +43,6 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
   const activeConvRef  = useRef<number | null>(null);
   const allUsersRef    = useRef<PublicUser[]>([]);
 
-  // ── CRITICAL FIX: wire remoteStream to the <audio> element for voice calls ──
-  useEffect(() => {
-    const el = remoteAudioRef.current;
-    if (!el || !sig.remoteStream) return;
-    if (el.srcObject !== sig.remoteStream) {
-      el.srcObject = sig.remoteStream;
-      el.play().catch(() => {});
-    }
-  }, [sig.remoteStream]);
-
   useEffect(() => { activeConvRef.current = activeConv; }, [activeConv]);
   useEffect(() => { allUsersRef.current = allUsers; }, [allUsers]);
 
@@ -85,6 +75,16 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
   }, []);
 
   const sig = useCallSignaling(meId, onNewMessage);
+
+  // Wire remoteStream → <audio> element for voice calls (must be after sig is declared)
+  useEffect(() => {
+    const el = remoteAudioRef.current;
+    if (!el || !sig.remoteStream) return;
+    if (el.srcObject !== sig.remoteStream) {
+      el.srcObject = sig.remoteStream;
+      el.play().catch(() => {});
+    }
+  }, [sig.remoteStream]);
 
   const activeUser   = activeConv ? (convList.find(c => c.id === activeConv)?.user ?? null) : null;
   const callPeerUser = sig.callPeerId ? (convList.find(c => c.id === sig.callPeerId)?.user
