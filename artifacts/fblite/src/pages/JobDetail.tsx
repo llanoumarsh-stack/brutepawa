@@ -107,17 +107,26 @@ export default function JobDetail({ id }: Props) {
 
         {/* Apply button */}
         {applied ? (
-          <div style={{ background: "#E8F5E9", color: "#2E7D32", borderRadius: 12, padding: "14px", textAlign: "center", fontWeight: 800, fontSize: 15 }}>
+          <div style={{ background: "#E8F5E9", color: "#2E7D32", borderRadius: 12, padding: "14px", textAlign: "center", fontWeight: 800, fontSize: 15, marginBottom: 10 }}>
             ✅ Vous avez postulé à cette offre
           </div>
         ) : (
           <button onClick={() => setShowForm(true)} style={{
             width: "100%", background: "var(--fb-blue)", color: "#fff", border: "none",
-            borderRadius: 12, padding: "14px", fontWeight: 800, fontSize: 16, cursor: "pointer"
+            borderRadius: 12, padding: "14px", fontWeight: 800, fontSize: 16, cursor: "pointer", marginBottom: 10
           }}>
             📨 Postuler maintenant
           </button>
         )}
+        <button
+          onClick={() => {
+            const enc = job ? encodeURIComponent(job.title + " — " + job.company) : "";
+            navigate(`/jobs/inbox${job ? `?jobTitle=${enc}` : ""}`);
+          }}
+          style={{ width: "100%", background: "#fff", color: "#1877F2", border: "2px solid #1877F2", borderRadius: 12, padding: "12px", fontWeight: 700, fontSize: 15, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
+        >
+          💬 Contacter le recruteur
+        </button>
       </div>
 
       {/* Job details */}

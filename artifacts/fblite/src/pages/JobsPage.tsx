@@ -82,12 +82,20 @@ export default function JobsPage() {
       <div style={{ background: "var(--fb-white)", padding: "12px 16px", borderBottom: "1px solid var(--fb-divider)" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
           <h2 style={{ margin: 0, fontSize: 18, fontWeight: 900 }}>💼 Emplois & Freelance</h2>
-          <button
-            onClick={() => setShowForm(true)}
-            style={{ background: "var(--fb-blue)", color: "#fff", border: "none", borderRadius: 20, padding: "7px 14px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}
-          >
-            + Publier une offre
-          </button>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button
+              onClick={() => navigate("/jobs/inbox")}
+              style={{ background: "var(--fb-bg)", color: "var(--fb-blue)", border: "1.5px solid var(--fb-blue)", borderRadius: 20, padding: "7px 12px", fontWeight: 700, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}
+            >
+              💬 Messages
+            </button>
+            <button
+              onClick={() => setShowForm(true)}
+              style={{ background: "var(--fb-blue)", color: "#fff", border: "none", borderRadius: 20, padding: "7px 14px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}
+            >
+              + Publier
+            </button>
+          </div>
         </div>
 
         {/* Search */}

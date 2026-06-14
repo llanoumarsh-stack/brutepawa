@@ -35,6 +35,7 @@ import GroupDetailPage from "./pages/GroupDetailPage";
 import EventsPage from "./pages/EventsPage";
 import SavedPage from "./pages/SavedPage";
 import MemoriesPage from "./pages/MemoriesPage";
+import JobInboxPage from "./pages/JobInboxPage";
 
 import { ADMIN_SECRET_PATH } from "./lib/admin";
 import { Post } from "./lib/store";
@@ -236,6 +237,26 @@ function AppContent() {
     return (
       <Layout onNewPost={handleNewPost}>
         <ProductDetail id={parseInt(productMatch.id)} />
+      </Layout>
+    );
+  }
+
+  if (path === "/jobs/inbox") {
+    return (
+      <Layout onNewPost={handleNewPost}>
+        <JobInboxPage />
+      </Layout>
+    );
+  }
+
+  if (path.startsWith("/jobs/inbox?")) {
+    const qs3 = path.slice(path.indexOf("?") + 1);
+    const p3  = new URLSearchParams(qs3);
+    const uid = parseInt(p3.get("userId") ?? "0", 10);
+    const jt  = p3.get("jobTitle") ?? undefined;
+    return (
+      <Layout onNewPost={handleNewPost}>
+        <JobInboxPage initialUserId={isNaN(uid) ? undefined : uid} initialJobTitle={jt} />
       </Layout>
     );
   }
