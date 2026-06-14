@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db, groupsTable, groupMembersTable, groupPostsTable, groupJoinRequestsTable, usersTable, notificationsTable } from "@workspace/db";
-import { desc, eq, and, sql, ilike } from "drizzle-orm";
+import { desc, eq, and, sql, ilike, inArray } from "drizzle-orm";
 import { requireAuth } from "../middlewares/requireAuth";
 
 const router = Router();
@@ -52,7 +52,7 @@ router.get("/groups", requireAuth, async (req, res): Promise<void> => {
     .where(
       and(
         eq(groupMembersTable.userId, userId),
-        sql`${groupMembersTable.groupId} = ANY(${sql.raw(`ARRAY[${groupIds.join(",")}]::int[]`)})`,
+        inArray(groupMembersTable.groupId, groupIds),
       ),
     );
 

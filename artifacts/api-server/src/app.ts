@@ -1,8 +1,14 @@
 import express, { type Express } from "express";
 import cors from "cors";
+import helmet from "helmet";
 import pinoHttp from "pino-http";
 import router from "./routes";
 import { logger } from "./lib/logger";
+
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ?? "")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
 
 const app: Express = express();
 
@@ -25,7 +31,17 @@ app.use(
     },
   }),
 );
-app.use(cors());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+}));
+app.use(
+  cors({
+    origin: ALLOWED_ORIGINS.length > 0
+      ? ALLOWED_ORIGINS
+      : (origin, cb) => cb(null, true),
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

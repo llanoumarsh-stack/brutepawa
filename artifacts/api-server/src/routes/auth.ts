@@ -1,4 +1,5 @@
 import { Router } from "express";
+import rateLimit from "express-rate-limit";
 import bcrypt from "bcryptjs";
 import { db, usersTable, walletsTable, withDbRetry } from "@workspace/db";
 import { eq } from "drizzle-orm";
@@ -8,7 +9,15 @@ import { logger } from "../lib/logger";
 
 const router = Router();
 
-router.post("/auth/register", async (req, res): Promise<void> => {
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Trop de tentatives. Réessayez dans 15 minutes." },
+});
+
+router.post("/auth/register", authLimiter, async (req, res): Promise<void> => {
   const parsed = RegisterBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
@@ -64,7 +73,7 @@ router.post("/auth/register", async (req, res): Promise<void> => {
   });
 });
 
-router.post("/auth/login", async (req, res): Promise<void> => {
+router.post("/auth/login", authLimiter, async (req, res): Promise<void> => {
   const parsed = LoginBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
