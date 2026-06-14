@@ -33,6 +33,7 @@ import GroupDetailPage from "./pages/GroupDetailPage";
 import { ADMIN_SECRET_PATH } from "./lib/admin";
 import { Post } from "./lib/store";
 import { apiGetPosts, apiLikePost, apiCreatePost, getBpToken } from "./lib/api";
+import InstallBanner from "./components/InstallBanner";
 
 function relativeTime(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
@@ -258,6 +259,7 @@ export default function App() {
   return (
     <Router>
       <AppContent />
+      <InstallBanner />
     </Router>
   );
 }
