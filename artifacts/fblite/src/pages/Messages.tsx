@@ -246,6 +246,55 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
     apiSendMessage(activeConv, content).catch(() => {});
   };
 
+  // ── Long-press / selection helpers ───────────────────────────────────────
+  const startLongPress = (msgId: number) => {
+    longPressTimer.current = setTimeout(() => {
+      setSelectionMode(true);
+      setSelectedMsgs(new Set([msgId]));
+    }, 500);
+  };
+
+  const cancelLongPress = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const toggleSelect = (msgId: number) => {
+    setSelectedMsgs(prev => {
+      const next = new Set(prev);
+      if (next.has(msgId)) next.delete(msgId); else next.add(msgId);
+      return next;
+    });
+  };
+
+  const exitSelection = () => {
+    setSelectionMode(false);
+    setSelectedMsgs(new Set());
+    setShowDeleteConfirm(false);
+    setDeleteForAll(false);
+  };
+
+  const copySelected = () => {
+    if (!activeConv) return;
+    const texts = (messages[activeConv] ?? [])
+      .filter(m => selectedMsgs.has(m.id))
+      .map(m => m.text)
+      .join("\n");
+    navigator.clipboard.writeText(texts).catch(() => {});
+    exitSelection();
+  };
+
+  const confirmDelete = () => {
+    if (!activeConv) return;
+    setMessages(prev => ({
+      ...prev,
+      [activeConv]: (prev[activeConv] ?? []).filter(m => !selectedMsgs.has(m.id)),
+    }));
+    exitSelection();
+  };
+
   navigate;
 
   /* ══════════════════════════════════════════════════════════════
@@ -516,47 +565,79 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
         position: "fixed", top: 56, bottom: 60, left: 0, right: 0,
         display: "flex", flexDirection: "column", background: "#f0f2f5", zIndex: 5,
       }}>
-        {/* Header — Facebook Messenger style */}
-        <div style={{
-          background: "#fff", padding: "8px 12px",
-          borderBottom: "1px solid #e4e6eb",
-          display: "flex", alignItems: "center", gap: 10, flexShrink: 0,
-          boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
-        }}>
-          <button onClick={() => { setActiveConv(null); setOverlay("none"); }} style={{
-            background: "none", border: "none", fontSize: 20, cursor: "pointer",
-            color: "#1877F2", padding: "6px 8px", borderRadius: "50%",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>←</button>
-
-          <div style={{ position: "relative", cursor: "pointer" }} onClick={() => setOverlay("info")}>
-            <div className="avatar" style={{ background: activeUser.color, width: 40, height: 40, fontSize: 15 }}>{activeUser.initials}</div>
-            <div style={{ position: "absolute", bottom: 1, right: 1, width: 12, height: 12, background: "#42B72A", borderRadius: "50%", border: "2px solid #fff" }} />
+        {/* Header — normal ou mode sélection */}
+        {selectionMode ? (
+          <div style={{
+            background: "#075e54", padding: "8px 12px",
+            display: "flex", alignItems: "center", gap: 14, flexShrink: 0,
+            boxShadow: "0 1px 3px rgba(0,0,0,0.18)",
+          }}>
+            <button onClick={exitSelection} style={{
+              background: "none", border: "none", fontSize: 22, cursor: "pointer",
+              color: "#fff", padding: 4, display: "flex", alignItems: "center",
+            }}>✕</button>
+            <span style={{ flex: 1, fontWeight: 700, fontSize: 18, color: "#fff" }}>
+              {selectedMsgs.size}
+            </span>
+            <button onClick={copySelected} title="Copier" style={{
+              background: "none", border: "none", cursor: "pointer",
+              color: "#fff", fontSize: 20, padding: 6, display: "flex", alignItems: "center",
+            }}>⎘</button>
+            <button title="Transférer" style={{
+              background: "none", border: "none", cursor: "pointer",
+              color: "#fff", fontSize: 20, padding: 6, display: "flex", alignItems: "center",
+            }}>↪</button>
+            <button
+              onClick={() => selectedMsgs.size > 0 && setShowDeleteConfirm(true)}
+              title="Supprimer"
+              style={{
+                background: "none", border: "none", cursor: selectedMsgs.size > 0 ? "pointer" : "default",
+                color: selectedMsgs.size > 0 ? "#fff" : "rgba(255,255,255,0.4)",
+                fontSize: 20, padding: 6, display: "flex", alignItems: "center",
+              }}>🗑</button>
           </div>
+        ) : (
+          <div style={{
+            background: "#fff", padding: "8px 12px",
+            borderBottom: "1px solid #e4e6eb",
+            display: "flex", alignItems: "center", gap: 10, flexShrink: 0,
+            boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+          }}>
+            <button onClick={() => { setActiveConv(null); setOverlay("none"); }} style={{
+              background: "none", border: "none", fontSize: 20, cursor: "pointer",
+              color: "#1877F2", padding: "6px 8px", borderRadius: "50%",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>←</button>
 
-          <div style={{ flex: 1, minWidth: 0, cursor: "pointer" }} onClick={() => setOverlay("info")}>
-            <div style={{ fontWeight: 700, fontSize: 15, color: "#050505", lineHeight: 1.2 }}>{activeUser.name}</div>
-            <div style={{ fontSize: 12, color: "#42B72A", fontWeight: 600 }}>En ligne</div>
-          </div>
+            <div style={{ position: "relative", cursor: "pointer" }} onClick={() => setOverlay("info")}>
+              <div className="avatar" style={{ background: activeUser.color, width: 40, height: 40, fontSize: 15 }}>{activeUser.initials}</div>
+              <div style={{ position: "absolute", bottom: 1, right: 1, width: 12, height: 12, background: "#42B72A", borderRadius: "50%", border: "2px solid #fff" }} />
+            </div>
 
-          <div style={{ display: "flex", gap: 2 }}>
-            <button onClick={() => sig.startCall(activeConv, "audio")} title="Appel audio" style={{
-              background: "#f0f2f5", border: "none", borderRadius: "50%",
-              width: 38, height: 38, cursor: "pointer", fontSize: 17,
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}>📞</button>
-            <button onClick={() => sig.startCall(activeConv, "video")} title="Appel vidéo" style={{
-              background: "#f0f2f5", border: "none", borderRadius: "50%",
-              width: 38, height: 38, cursor: "pointer", fontSize: 17,
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}>📹</button>
-            <button onClick={() => setOverlay("info")} title="Infos" style={{
-              background: "#f0f2f5", border: "none", borderRadius: "50%",
-              width: 38, height: 38, cursor: "pointer", fontSize: 17,
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}>ℹ️</button>
+            <div style={{ flex: 1, minWidth: 0, cursor: "pointer" }} onClick={() => setOverlay("info")}>
+              <div style={{ fontWeight: 700, fontSize: 15, color: "#050505", lineHeight: 1.2 }}>{activeUser.name}</div>
+              <div style={{ fontSize: 12, color: "#42B72A", fontWeight: 600 }}>En ligne</div>
+            </div>
+
+            <div style={{ display: "flex", gap: 2 }}>
+              <button onClick={() => sig.startCall(activeConv, "audio")} title="Appel audio" style={{
+                background: "#f0f2f5", border: "none", borderRadius: "50%",
+                width: 38, height: 38, cursor: "pointer", fontSize: 17,
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>📞</button>
+              <button onClick={() => sig.startCall(activeConv, "video")} title="Appel vidéo" style={{
+                background: "#f0f2f5", border: "none", borderRadius: "50%",
+                width: 38, height: 38, cursor: "pointer", fontSize: 17,
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>📹</button>
+              <button onClick={() => setOverlay("info")} title="Infos" style={{
+                background: "#f0f2f5", border: "none", borderRadius: "50%",
+                width: 38, height: 38, cursor: "pointer", fontSize: 17,
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>ℹ️</button>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Messages list */}
         <div style={{ flex: 1, overflowY: "auto", padding: "10px 12px", display: "flex", flexDirection: "column", gap: 3 }}>
@@ -569,18 +650,58 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
           </div>
 
           {currentMessages.map((msg, i) => {
-            const isFirst = i === 0 || currentMessages[i - 1]?.mine !== msg.mine;
-            const isLast  = i === currentMessages.length - 1 || currentMessages[i + 1]?.mine !== msg.mine;
+            const isFirst    = i === 0 || currentMessages[i - 1]?.mine !== msg.mine;
+            const isLast     = i === currentMessages.length - 1 || currentMessages[i + 1]?.mine !== msg.mine;
+            const isSelected = selectedMsgs.has(msg.id);
+
+            const longPressHandlers = {
+              onMouseDown:   () => startLongPress(msg.id),
+              onMouseUp:     cancelLongPress,
+              onMouseLeave:  cancelLongPress,
+              onTouchStart:  () => startLongPress(msg.id),
+              onTouchEnd:    cancelLongPress,
+              onTouchMove:   cancelLongPress,
+              onContextMenu: (e: React.MouseEvent) => { e.preventDefault(); startLongPress(msg.id); },
+            };
+
+            const handleRowClick = () => {
+              if (selectionMode) toggleSelect(msg.id);
+            };
+
             return (
-              <div key={msg.id} style={{
-                display: "flex",
-                justifyContent: msg.mine ? "flex-end" : "flex-start",
-                gap: 6,
-                alignItems: "flex-end",
-                marginTop: isFirst ? 8 : 1,
-              }}>
-                {!msg.mine && (
-                  <div style={{ width: 28, flexShrink: 0, paddingBottom: 2 }}>
+              <div
+                key={msg.id}
+                onClick={handleRowClick}
+                style={{
+                  display: "flex",
+                  justifyContent: msg.mine ? "flex-end" : "flex-start",
+                  alignItems: "center",
+                  gap: 6,
+                  marginTop: isFirst ? 8 : 1,
+                  paddingLeft: selectionMode ? 4 : 0,
+                  background: isSelected ? "rgba(0,90,255,0.08)" : "transparent",
+                  borderRadius: 8,
+                  cursor: selectionMode ? "pointer" : "default",
+                  transition: "background 0.15s",
+                  userSelect: "none",
+                }}
+              >
+                {/* Selection circle */}
+                {selectionMode && (
+                  <div style={{
+                    width: 24, height: 24, borderRadius: "50%", flexShrink: 0,
+                    border: isSelected ? "none" : "2px solid #bbb",
+                    background: isSelected ? "#25D366" : "transparent",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    transition: "all 0.15s",
+                  }}>
+                    {isSelected && <span style={{ color: "#fff", fontSize: 13, fontWeight: 700 }}>✓</span>}
+                  </div>
+                )}
+
+                {/* Avatar placeholder for other's messages */}
+                {!msg.mine && !selectionMode && (
+                  <div style={{ width: 28, flexShrink: 0, paddingBottom: 2, alignSelf: "flex-end" }}>
                     {isLast && (
                       <div className="avatar xs" style={{ background: activeUser.color, width: 26, height: 26, fontSize: 10 }}>
                         {activeUser.initials}
@@ -588,7 +709,8 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
                     )}
                   </div>
                 )}
-                <div style={{ maxWidth: "75%" }}>
+
+                <div style={{ maxWidth: "75%" }} {...(!selectionMode ? longPressHandlers : {})}>
                   {msg.attachment && (
                     <div style={{
                       background: msg.mine ? "#1877F2" : "#e4e6eb",
@@ -657,57 +779,149 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
           </div>
         )}
 
-        {/* Input bar — Messenger style */}
-        <div style={{
-          background: "#fff", padding: "8px 10px",
-          borderTop: "1px solid #e4e6eb",
-          display: "flex", gap: 6, alignItems: "center", flexShrink: 0,
-        }}>
-          <button
-            onClick={() => setOverlay(o => o === "attach" ? "none" : "attach")}
-            style={{
-              background: overlay === "attach" ? "#1877F2" : "#f0f2f5",
-              border: "none", width: 36, height: 36, borderRadius: "50%",
-              cursor: "pointer", fontSize: 18,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              color: overlay === "attach" ? "#fff" : "#1877F2", flexShrink: 0,
-              transition: "all 0.2s",
-            }}>
-            {overlay === "attach" ? "✕" : "+"}
-          </button>
-          <button style={{
-            background: "none", border: "none", fontSize: 22, cursor: "pointer",
-            color: "#1877F2", flexShrink: 0, padding: 0,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            width: 36, height: 36,
-          }}>📷</button>
-          <div style={{ flex: 1, position: "relative" }}>
-            <input
-              value={newMsg}
-              onChange={e => { setNewMsg(e.target.value); if (overlay === "attach") setOverlay("none"); }}
-              onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMsg(); } }}
-              placeholder="Message..."
-              style={{
-                width: "100%", background: "#f0f2f5", border: "none",
-                borderRadius: 22, padding: "10px 16px", fontSize: 14.5,
-                outline: "none", boxSizing: "border-box", color: "#050505",
-              }}
-            />
+        {/* Bottom bar — selection actions OR normal input */}
+        {selectionMode ? (
+          <div style={{
+            background: "#fff", borderTop: "1px solid #e4e6eb",
+            display: "flex", flexShrink: 0,
+          }}>
+            {[
+              { icon: "↩", label: "Répondre" },
+              { icon: "→", label: "Transférer" },
+            ].map(action => (
+              <button key={action.label} style={{
+                flex: 1, background: "none", border: "none",
+                padding: "14px 0", cursor: "pointer",
+                display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+                borderRight: action.label === "Répondre" ? "1px solid #e4e6eb" : "none",
+              }}>
+                <span style={{ fontSize: 20 }}>{action.icon}</span>
+                <span style={{ fontSize: 12, color: "#555", fontWeight: 600 }}>{action.label}</span>
+              </button>
+            ))}
           </div>
-          {newMsg.trim() ? (
-            <button onClick={() => sendMsg()} style={{
-              background: "#1877F2", border: "none", borderRadius: "50%",
-              width: 36, height: 36, color: "#fff", cursor: "pointer",
-              fontSize: 16, flexShrink: 0,
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}>➤</button>
-          ) : (
+        ) : (
+          <div style={{
+            background: "#fff", padding: "8px 10px",
+            borderTop: "1px solid #e4e6eb",
+            display: "flex", gap: 6, alignItems: "center", flexShrink: 0,
+          }}>
+            <button
+              onClick={() => setOverlay(o => o === "attach" ? "none" : "attach")}
+              style={{
+                background: overlay === "attach" ? "#1877F2" : "#f0f2f5",
+                border: "none", width: 36, height: 36, borderRadius: "50%",
+                cursor: "pointer", fontSize: 18,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                color: overlay === "attach" ? "#fff" : "#1877F2", flexShrink: 0,
+                transition: "all 0.2s",
+              }}>
+              {overlay === "attach" ? "✕" : "+"}
+            </button>
             <button style={{
-              background: "none", border: "none", fontSize: 24, cursor: "pointer",
+              background: "none", border: "none", fontSize: 22, cursor: "pointer",
               color: "#1877F2", flexShrink: 0, padding: 0,
-            }}>👍</button>
-          )}
-        </div>
+              display: "flex", alignItems: "center", justifyContent: "center",
+              width: 36, height: 36,
+            }}>📷</button>
+            <div style={{ flex: 1, position: "relative" }}>
+              <input
+                value={newMsg}
+                onChange={e => { setNewMsg(e.target.value); if (overlay === "attach") setOverlay("none"); }}
+                onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMsg(); } }}
+                placeholder="Message..."
+                style={{
+                  width: "100%", background: "#f0f2f5", border: "none",
+                  borderRadius: 22, padding: "10px 16px", fontSize: 14.5,
+                  outline: "none", boxSizing: "border-box", color: "#050505",
+                }}
+              />
+            </div>
+            {newMsg.trim() ? (
+              <button onClick={() => sendMsg()} style={{
+                background: "#1877F2", border: "none", borderRadius: "50%",
+                width: 36, height: 36, color: "#fff", cursor: "pointer",
+                fontSize: 16, flexShrink: 0,
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>➤</button>
+            ) : (
+              <button style={{
+                background: "none", border: "none", fontSize: 24, cursor: "pointer",
+                color: "#1877F2", flexShrink: 0, padding: 0,
+              }}>👍</button>
+            )}
+          </div>
+        )}
+
+        {/* Delete confirmation modal */}
+        {showDeleteConfirm && (
+          <div style={{
+            position: "absolute", inset: 0,
+            background: "rgba(0,0,0,0.45)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            zIndex: 50, padding: "0 24px",
+          }}
+            onClick={e => { if (e.target === e.currentTarget) setShowDeleteConfirm(false); }}
+          >
+            <div style={{
+              background: "#fff", borderRadius: 16,
+              width: "100%", maxWidth: 360,
+              padding: "24px 20px 16px",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.22)",
+            }}>
+              <div style={{ fontWeight: 800, fontSize: 17, color: "#050505", marginBottom: 8 }}>
+                Supprimer le message
+              </div>
+              <div style={{ fontSize: 14, color: "#444", marginBottom: 18, lineHeight: 1.5 }}>
+                Voulez-vous vraiment supprimer {selectedMsgs.size > 1 ? `ces ${selectedMsgs.size} messages` : "ce message"} ?
+              </div>
+
+              {/* "Delete for everyone" checkbox (only if all selected messages are mine) */}
+              {(() => {
+                const allMine = [...selectedMsgs].every(id =>
+                  (messages[activeConv!] ?? []).find(m => m.id === id)?.mine
+                );
+                return allMine ? (
+                  <label style={{
+                    display: "flex", alignItems: "center", gap: 10,
+                    marginBottom: 20, cursor: "pointer",
+                  }}>
+                    <input
+                      type="checkbox"
+                      checked={deleteForAll}
+                      onChange={e => setDeleteForAll(e.target.checked)}
+                      style={{ width: 18, height: 18, cursor: "pointer", accentColor: "#1877F2" }}
+                    />
+                    <span style={{ fontSize: 14, color: "#333" }}>
+                      Supprimer aussi pour {activeUser?.name ?? "l'autre"}
+                    </span>
+                  </label>
+                ) : null;
+              })()}
+
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  style={{
+                    background: "none", border: "none", padding: "10px 18px",
+                    fontSize: 15, fontWeight: 700, color: "#1877F2", cursor: "pointer",
+                    borderRadius: 8,
+                  }}>
+                  Annuler
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  style={{
+                    background: "none", border: "none", padding: "10px 18px",
+                    fontSize: 15, fontWeight: 700, color: "#F44336", cursor: "pointer",
+                    borderRadius: 8,
+                  }}>
+                  Supprimer
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
