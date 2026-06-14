@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { apiViewStory, type StoryGroup, type StoryItem } from "../lib/api";
 
 interface Props {
@@ -80,7 +81,7 @@ export default function StoryViewer({ groups, initialGroupIndex, onClose }: Prop
     ? `url(${story.mediaUrl}) center/cover no-repeat`
     : story.bgColor;
 
-  return (
+  return createPortal(
     <div
       style={{
         position: "fixed", inset: 0, zIndex: 200, background: "#000",
@@ -151,7 +152,8 @@ export default function StoryViewer({ groups, initialGroupIndex, onClose }: Prop
         <div style={{ flex: 1 }} onClick={e => { e.stopPropagation(); goPrev(); }} />
         <div style={{ flex: 1 }} onClick={e => { e.stopPropagation(); goNext(); }} />
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
