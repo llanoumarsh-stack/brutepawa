@@ -1072,6 +1072,7 @@ export interface PostComment {
   id: number;
   postId: number;
   authorId: number;
+  parentId: number | null;
   content: string;
   createdAt: string;
   authorFirstName: string;
@@ -1085,10 +1086,14 @@ export async function apiGetComments(postId: number): Promise<PostComment[]> {
   return res.json();
 }
 
-export async function apiPostComment(postId: number, content: string): Promise<PostComment> {
+export async function apiPostComment(
+  postId: number,
+  content: string,
+  parentId?: number,
+): Promise<PostComment> {
   const res = await apiFetch(`/posts/${postId}/comments`, {
     method: "POST",
-    body: JSON.stringify({ content }),
+    body: JSON.stringify({ content, parentId }),
   });
   if (!res.ok) {
     const e = await res.json().catch(() => ({})) as { error?: string };

@@ -59,6 +59,10 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
   const [comments, setComments] = useState<Record<number, PostComment[]>>({});
   const [newComment, setNewComment] = useState<Record<number, string>>({});
   const [submittingComment, setSubmittingComment] = useState<number | null>(null);
+  // reply state: keyed by parent comment id
+  const [replyingTo, setReplyingTo] = useState<number | null>(null);
+  const [newReply, setNewReply] = useState<Record<number, string>>({});
+  const [submittingReply, setSubmittingReply] = useState<number | null>(null);
 
   const loadComments = useCallback(async (postId: number) => {
     try {
@@ -73,6 +77,29 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
     } else {
       setShowComments(postId);
       loadComments(postId);
+    }
+  };
+
+  const startReply = (comment: PostComment) => {
+    setReplyingTo(comment.id);
+    setNewReply(prev => ({ ...prev, [comment.id]: `@${comment.authorFirstName} ` }));
+  };
+
+  const cancelReply = () => setReplyingTo(null);
+
+  const submitReply = async (postId: number, parentId: number) => {
+    const text = (newReply[parentId] ?? "").trim();
+    if (!text || submittingReply === parentId) return;
+    setSubmittingReply(parentId);
+    setNewReply(prev => ({ ...prev, [parentId]: "" }));
+    try {
+      const comment = await apiPostComment(postId, text, parentId);
+      setComments(prev => ({ ...prev, [postId]: [...(prev[postId] ?? []), comment] }));
+      setReplyingTo(null);
+    } catch {
+      setNewReply(prev => ({ ...prev, [parentId]: text }));
+    } finally {
+      setSubmittingReply(null);
     }
   };
 
@@ -329,48 +356,105 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 <button className="post-btn" onClick={() => navigate(`/video/${post.id}`)}>🎁 Cadeau</button>
               )}
             </div>
-            {showComments === post.id && (
-              <div style={{ padding: "8px 16px", borderTop: "1px solid var(--fb-divider)" }}>
-                {postComments.map(c => {
-                  const cInitials = getInitials(`${c.authorFirstName} ${c.authorLastName}`);
-                  return (
-                    <div key={c.id} style={{ display: "flex", gap: 8, marginBottom: 8, alignItems: "flex-start" }}>
-                      {c.authorAvatarUrl
-                        ? <img src={c.authorAvatarUrl} alt={cInitials} style={{ width: 28, height: 28, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
-                        : <div className="avatar xs">{cInitials}</div>
-                      }
-                      <div style={{ background: "var(--fb-bg)", borderRadius: 16, padding: "7px 12px", fontSize: 13, flex: 1 }}>
-                        <div style={{ fontWeight: 600, fontSize: 12, marginBottom: 2 }}>{c.authorFirstName} {c.authorLastName}</div>
-                        {c.content}
-                      </div>
+            {showComments === post.id && (() => {
+              const topLevel = postComments.filter(c => !c.parentId);
+              const replies = postComments.filter(c => c.parentId);
+              return (
+                <div style={{ padding: "8px 16px", borderTop: "1px solid var(--fb-divider)" }}>
+                  {topLevel.length === 0 && (
+                    <div style={{ fontSize: 13, color: "var(--fb-text-secondary)", textAlign: "center", padding: "8px 0" }}>
+                      Soyez le premier à commenter 💬
                     </div>
-                  );
-                })}
-                {postComments.length === 0 && (
-                  <div style={{ fontSize: 13, color: "var(--fb-text-secondary)", textAlign: "center", padding: "8px 0" }}>
-                    Soyez le premier à commenter 💬
-                  </div>
-                )}
-                <div className="comment-box">
-                  <div className="avatar xs">{userInitials}</div>
-                  <div style={{ flex: 1, display: "flex", gap: 8 }}>
-                    <input
-                      style={{ flex: 1, background: "var(--fb-bg)", border: "none", borderRadius: 20, padding: "8px 14px", fontSize: 14, outline: "none" }}
-                      placeholder="Écrire un commentaire..."
-                      value={newComment[post.id] ?? ""}
-                      onChange={e => setNewComment(prev => ({ ...prev, [post.id]: e.target.value }))}
-                      onKeyDown={e => { if (e.key === "Enter") submitComment(post.id); }}
-                      disabled={submittingComment === post.id}
-                    />
-                    <button
-                      onClick={() => submitComment(post.id)}
-                      disabled={submittingComment === post.id}
-                      style={{ background: "var(--fb-blue)", border: "none", borderRadius: "50%", width: 32, height: 32, color: "#fff", cursor: "pointer", opacity: submittingComment === post.id ? 0.6 : 1 }}
-                    >➤</button>
+                  )}
+                  {topLevel.map(c => {
+                    const cInitials = getInitials(`${c.authorFirstName} ${c.authorLastName}`);
+                    const cReplies = replies.filter(r => r.parentId === c.id);
+                    return (
+                      <div key={c.id} style={{ marginBottom: 10 }}>
+                        {/* Top-level comment */}
+                        <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+                          {c.authorAvatarUrl
+                            ? <img src={c.authorAvatarUrl} alt={cInitials} style={{ width: 28, height: 28, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+                            : <div className="avatar xs">{cInitials}</div>
+                          }
+                          <div style={{ flex: 1 }}>
+                            <div style={{ background: "var(--fb-bg)", borderRadius: 16, padding: "7px 12px", fontSize: 13 }}>
+                              <div style={{ fontWeight: 600, fontSize: 12, marginBottom: 2 }}>{c.authorFirstName} {c.authorLastName}</div>
+                              {c.content}
+                            </div>
+                            <button
+                              onClick={() => replyingTo === c.id ? cancelReply() : startReply(c)}
+                              style={{ background: "none", border: "none", fontSize: 12, fontWeight: 600, color: "var(--fb-text-secondary)", cursor: "pointer", padding: "2px 4px", marginTop: 2 }}
+                            >
+                              {replyingTo === c.id ? "Annuler" : "↩️ Répondre"}
+                            </button>
+                          </div>
+                        </div>
+                        {/* Nested replies */}
+                        {cReplies.length > 0 && (
+                          <div style={{ marginLeft: 36, marginTop: 6, display: "flex", flexDirection: "column", gap: 6 }}>
+                            {cReplies.map(r => {
+                              const rInitials = getInitials(`${r.authorFirstName} ${r.authorLastName}`);
+                              return (
+                                <div key={r.id} style={{ display: "flex", gap: 6, alignItems: "flex-start" }}>
+                                  {r.authorAvatarUrl
+                                    ? <img src={r.authorAvatarUrl} alt={rInitials} style={{ width: 24, height: 24, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+                                    : <div className="avatar xs" style={{ width: 24, height: 24, fontSize: 10 }}>{rInitials}</div>
+                                  }
+                                  <div style={{ background: "var(--fb-bg)", borderRadius: 14, padding: "6px 10px", fontSize: 13, flex: 1 }}>
+                                    <div style={{ fontWeight: 600, fontSize: 11, marginBottom: 1 }}>{r.authorFirstName} {r.authorLastName}</div>
+                                    {r.content}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                        {/* Reply input */}
+                        {replyingTo === c.id && (
+                          <div style={{ marginLeft: 36, marginTop: 6, display: "flex", gap: 6, alignItems: "center" }}>
+                            <div className="avatar xs" style={{ width: 24, height: 24, fontSize: 10 }}>{userInitials}</div>
+                            <input
+                              autoFocus
+                              style={{ flex: 1, background: "var(--fb-bg)", border: "1px solid var(--fb-divider)", borderRadius: 18, padding: "6px 12px", fontSize: 13, outline: "none" }}
+                              placeholder={`Répondre à ${c.authorFirstName}…`}
+                              value={newReply[c.id] ?? ""}
+                              onChange={e => setNewReply(prev => ({ ...prev, [c.id]: e.target.value }))}
+                              onKeyDown={e => { if (e.key === "Enter") submitReply(post.id, c.id); if (e.key === "Escape") cancelReply(); }}
+                              disabled={submittingReply === c.id}
+                            />
+                            <button
+                              onClick={() => submitReply(post.id, c.id)}
+                              disabled={submittingReply === c.id}
+                              style={{ background: "var(--fb-blue)", border: "none", borderRadius: "50%", width: 28, height: 28, color: "#fff", cursor: "pointer", fontSize: 13, opacity: submittingReply === c.id ? 0.6 : 1 }}
+                            >➤</button>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                  {/* New top-level comment box */}
+                  <div className="comment-box" style={{ marginTop: 4 }}>
+                    <div className="avatar xs">{userInitials}</div>
+                    <div style={{ flex: 1, display: "flex", gap: 8 }}>
+                      <input
+                        style={{ flex: 1, background: "var(--fb-bg)", border: "none", borderRadius: 20, padding: "8px 14px", fontSize: 14, outline: "none" }}
+                        placeholder="Écrire un commentaire..."
+                        value={newComment[post.id] ?? ""}
+                        onChange={e => setNewComment(prev => ({ ...prev, [post.id]: e.target.value }))}
+                        onKeyDown={e => { if (e.key === "Enter") submitComment(post.id); }}
+                        disabled={submittingComment === post.id}
+                      />
+                      <button
+                        onClick={() => submitComment(post.id)}
+                        disabled={submittingComment === post.id}
+                        style={{ background: "var(--fb-blue)", border: "none", borderRadius: "50%", width: 32, height: 32, color: "#fff", cursor: "pointer", opacity: submittingComment === post.id ? 0.6 : 1 }}
+                      >➤</button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
         );
       })}

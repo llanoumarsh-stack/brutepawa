@@ -64,6 +64,7 @@ export const commentsTable = pgTable("comments", {
   id: serial("id").primaryKey(),
   postId: integer("post_id").notNull(),
   authorId: integer("author_id").notNull(),
+  parentId: integer("parent_id"),
   content: text("content").notNull(),
   likesCount: integer("likes_count").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

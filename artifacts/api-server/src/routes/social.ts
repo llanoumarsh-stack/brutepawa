@@ -413,6 +413,7 @@ router.get("/posts/:id/comments", requireAuth, async (req, res): Promise<void> =
       id: commentsTable.id,
       postId: commentsTable.postId,
       authorId: commentsTable.authorId,
+      parentId: commentsTable.parentId,
       content: commentsTable.content,
       createdAt: commentsTable.createdAt,
       authorFirstName: usersTable.firstName,
@@ -423,7 +424,7 @@ router.get("/posts/:id/comments", requireAuth, async (req, res): Promise<void> =
     .innerJoin(usersTable, eq(commentsTable.authorId, usersTable.id))
     .where(eq(commentsTable.postId, postId))
     .orderBy(commentsTable.createdAt)
-    .limit(100);
+    .limit(200);
 
   res.json(rows);
 });
@@ -432,7 +433,7 @@ router.post("/posts/:id/comments", requireAuth, async (req, res): Promise<void> 
   const postId = parseInt(req.params.id);
   if (isNaN(postId)) { res.status(400).json({ error: "Invalid post id" }); return; }
 
-  const { content } = req.body as { content?: string };
+  const { content, parentId } = req.body as { content?: string; parentId?: number };
   if (!content?.trim()) { res.status(400).json({ error: "Contenu requis" }); return; }
 
   const authorId = req.userId!;
@@ -445,10 +446,21 @@ router.post("/posts/:id/comments", requireAuth, async (req, res): Promise<void> 
 
   if (!post) { res.status(404).json({ error: "Publication introuvable" }); return; }
 
+  // Validate parentId if provided
+  let parentComment: { authorId: number } | null = null;
+  if (parentId) {
+    const [parent] = await db
+      .select({ authorId: commentsTable.authorId })
+      .from(commentsTable)
+      .where(and(eq(commentsTable.id, parentId), eq(commentsTable.postId, postId)));
+    if (!parent) { res.status(404).json({ error: "Commentaire parent introuvable" }); return; }
+    parentComment = parent;
+  }
+
   // Insert comment
   const [comment] = await db
     .insert(commentsTable)
-    .values({ postId, authorId, content: content.trim() })
+    .values({ postId, authorId, content: content.trim(), parentId: parentId ?? null })
     .returning();
 
   // Increment commentsCount on post
@@ -457,18 +469,29 @@ router.post("/posts/:id/comments", requireAuth, async (req, res): Promise<void> 
     .set({ commentsCount: sql`${postsTable.commentsCount} + 1` })
     .where(eq(postsTable.id, postId));
 
-  // Notify post author (not self)
-  if (post.authorId !== authorId) {
-    const [author] = await db
-      .select({ firstName: usersTable.firstName, lastName: usersTable.lastName })
-      .from(usersTable)
-      .where(eq(usersTable.id, authorId));
+  // Fetch commenter name once for notifications
+  const [commenter] = await db
+    .select({ firstName: usersTable.firstName, lastName: usersTable.lastName })
+    .from(usersTable)
+    .where(eq(usersTable.id, authorId));
 
-    const name = author ? `${author.firstName} ${author.lastName}` : "Quelqu'un";
-    const preview = content.trim().length > 60 ? content.trim().slice(0, 60) + "…" : content.trim();
+  const commenterName = commenter ? `${commenter.firstName} ${commenter.lastName}` : "Quelqu'un";
+  const preview = content.trim().length > 60 ? content.trim().slice(0, 60) + "…" : content.trim();
 
+  // Notify parent comment author if this is a reply (and not self)
+  if (parentComment && parentComment.authorId !== authorId) {
+    pushToUserDevice(parentComment.authorId, {
+      title: `↩️ ${commenterName} a répondu à votre commentaire`,
+      body: preview,
+      url: "/",
+    }).catch(() => {});
+  }
+
+  // Notify post author if not self and not already notified above
+  const alreadyNotified = parentComment?.authorId === post.authorId;
+  if (post.authorId !== authorId && !alreadyNotified) {
     pushToUserDevice(post.authorId, {
-      title: `💬 ${name} a commenté votre publication`,
+      title: `💬 ${commenterName} a commenté votre publication`,
       body: preview,
       url: "/",
     }).catch(() => {});
