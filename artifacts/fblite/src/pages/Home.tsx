@@ -290,6 +290,10 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
           groups={storyGroups}
           initialGroupIndex={viewerGroupIdx}
           onClose={() => { setViewerOpen(false); loadStories(); }}
+          onAuthorClick={authorId => {
+            setViewerOpen(false);
+            navigate(authorId === user.id ? "/profile" : `/user/${authorId}`);
+          }}
         />
       )}
 

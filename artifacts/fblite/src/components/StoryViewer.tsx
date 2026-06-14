@@ -6,15 +6,16 @@ interface Props {
   groups: StoryGroup[];
   initialGroupIndex: number;
   onClose: () => void;
+  onAuthorClick?: (authorId: number) => void;
 }
 
 const STORY_DURATION = 5000;
 
-const BG_COLORS = ["#1877F2","#E91E63","#9C27B0","#F57C00","#388E3C","#212121","#D32F2F","#00838F"];
+const BG_COLORS = ["#42B72A","#E91E63","#9C27B0","#F57C00","#388E3C","#212121","#D32F2F","#00838F"];
 
 function getInitials(name: string) { return name.slice(0, 2).toUpperCase(); }
 
-export default function StoryViewer({ groups, initialGroupIndex, onClose }: Props) {
+export default function StoryViewer({ groups, initialGroupIndex, onClose, onAuthorClick }: Props) {
   const [groupIdx, setGroupIdx] = useState(initialGroupIndex);
   const [storyIdx, setStoryIdx] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -107,17 +108,24 @@ export default function StoryViewer({ groups, initialGroupIndex, onClose }: Prop
 
       {/* Author header */}
       <div style={{ position: "absolute", top: 20, left: 0, right: 0, zIndex: 10, display: "flex", alignItems: "center", gap: 10, padding: "16px 14px 8px" }}>
-        <div style={{
-          width: 38, height: 38, borderRadius: "50%", flexShrink: 0,
-          border: "2px solid #fff", overflow: "hidden",
-          background: authorBg, display: "flex", alignItems: "center", justifyContent: "center",
-          color: "#fff", fontWeight: 700, fontSize: 14,
-        }}>
+        <div
+          onClick={e => { e.stopPropagation(); onAuthorClick?.(group.authorId); }}
+          style={{
+            width: 38, height: 38, borderRadius: "50%", flexShrink: 0,
+            border: "2px solid #fff", overflow: "hidden",
+            background: authorBg, display: "flex", alignItems: "center", justifyContent: "center",
+            color: "#fff", fontWeight: 700, fontSize: 14,
+            cursor: onAuthorClick ? "pointer" : "default",
+          }}
+        >
           {group.authorAvatarUrl
             ? <img src={group.authorAvatarUrl} alt={group.authorName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             : authorInitials}
         </div>
-        <div style={{ flex: 1 }}>
+        <div
+          style={{ flex: 1, cursor: onAuthorClick ? "pointer" : "default" }}
+          onClick={e => { e.stopPropagation(); onAuthorClick?.(group.authorId); }}
+        >
           <div style={{ color: "#fff", fontWeight: 700, fontSize: 14, textShadow: "0 1px 3px rgba(0,0,0,0.5)" }}>{group.authorName}</div>
           <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 12 }}>{timeAgo(story.createdAt)}</div>
         </div>
