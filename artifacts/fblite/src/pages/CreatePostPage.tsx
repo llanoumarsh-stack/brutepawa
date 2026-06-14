@@ -96,8 +96,9 @@ export default function CreatePostPage({ onPublish }: Props) {
   const [eventLocation, setEventLocation] = useState("");
   const [eventDesc, setEventDesc]   = useState("");
   // Photos / médias (R2)
-  const [medias, setMedias]         = useState<UploadedMedia[]>([]);
+  const [medias, setMedias]             = useState<UploadedMedia[]>([]);
   const [mediaPreviews, setMediaPreviews] = useState<string[]>([]); // local preview URLs
+  const [mediaIsVideo, setMediaIsVideo]   = useState<boolean[]>([]); // parallel flag per preview
   const [uploadingIdx, setUploadingIdx] = useState<number | null>(null);
   const [eventCoverMedia, setEventCoverMedia] = useState<UploadedMedia | null>(null);
   const [eventCoverPreview, setEventCoverPreview] = useState<string | null>(null);
@@ -185,14 +186,18 @@ export default function CreatePostPage({ onPublish }: Props) {
     navigate("/");
   };
 
+  const VIDEO_EXTS = /\.(mp4|mov|avi|mkv|webm|3gp|3gpp|m4v|ogv|flv|wmv)$/i;
+
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
     if (e.target) e.target.value = "";
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
+      const isVid = file.type.startsWith("video/") || VIDEO_EXTS.test(file.name);
       // Show local preview immediately
       const previewUrl = URL.createObjectURL(file);
       setMediaPreviews(p => [...p, previewUrl]);
+      setMediaIsVideo(v => [...v, isVid]);
       setUploadingIdx(medias.length + i);
       // Upload to R2
       const result = await upload(file);
@@ -202,6 +207,7 @@ export default function CreatePostPage({ onPublish }: Props) {
       } else {
         // Remove preview on failure
         setMediaPreviews(p => p.filter(u => u !== previewUrl));
+        setMediaIsVideo(v => v.filter((_, j) => j !== mediaPreviews.length + i));
       }
     }
   };
@@ -361,11 +367,11 @@ export default function CreatePostPage({ onPublish }: Props) {
           {mediaPreviews.map((src, i) => {
             const uploaded = medias[i];
             const isUploading = uploadingIdx === i;
-            const isVideo = uploaded?.kind === "video" || (!uploaded && src.startsWith("blob:"));
+            const isVideo = uploaded?.kind === "video" || mediaIsVideo[i] === true;
             return (
               <div key={i} style={{ position: "relative", flexShrink: 0 }}>
                 {isVideo ? (
-                  <video src={src} style={{ width: 90, height: 90, objectFit: "cover", borderRadius: 10 }} muted />
+                  <video src={src} style={{ width: 90, height: 90, objectFit: "cover", borderRadius: 10 }} muted playsInline />
                 ) : (
                   <img src={src} alt="" style={{ width: 90, height: 90, objectFit: "cover", borderRadius: 10, opacity: isUploading ? 0.5 : 1 }} />
                 )}
@@ -381,6 +387,7 @@ export default function CreatePostPage({ onPublish }: Props) {
                 )}
                 <button onClick={() => {
                   setMediaPreviews(p => p.filter((_, j) => j !== i));
+                  setMediaIsVideo(v => v.filter((_, j) => j !== i));
                   setMedias(m => m.filter((_, j) => j !== i));
                 }} style={{ position: "absolute", top: 4, right: 4, background: "rgba(0,0,0,0.6)", border: "none", borderRadius: "50%", width: 22, height: 22, color: "#fff", fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
               </div>

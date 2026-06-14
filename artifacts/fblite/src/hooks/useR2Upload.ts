@@ -251,17 +251,29 @@ export function useR2Upload(): UseR2Upload {
     setProgress(0);
 
     const token   = localStorage.getItem("bp_token");
-    const isVideo = file.type.startsWith("video/");
+    const videoExts = /\.(mp4|mov|avi|mkv|webm|3gp|3gpp|m4v|ogv|flv|wmv)$/i;
+    const isVideo = file.type.startsWith("video/") || videoExts.test(file.name);
 
     try {
       // ── 1. Validate video duration ────────────────────────────────────────
       if (isVideo) {
         setPhase("checking");
-        const duration = await getVideoDuration(file);
-        if (duration > MAX_VIDEO_DURATION_S) {
-          throw new Error(
-            `La vidéo dépasse 3 minutes (${Math.round(duration)}s). Limite : 3 min.`,
-          );
+        try {
+          const duration = await getVideoDuration(file);
+          if (duration > MAX_VIDEO_DURATION_S) {
+            throw new Error(
+              `La vidéo dépasse 3 minutes (${Math.round(duration)}s). Limite : 3 min.`,
+            );
+          }
+        } catch (durationErr) {
+          // Browser cannot decode this video format natively (e.g. HEVC, 3gp,
+          // MKV on Android). ffmpeg.wasm handles these — skip the duration check
+          // and let compression attempt run. Only re-throw if it is OUR duration
+          // limit error, not a codec/decode error.
+          if (durationErr instanceof Error && durationErr.message.startsWith("La vidéo dépasse")) {
+            throw durationErr;
+          }
+          // Otherwise: ignore and proceed
         }
       }
 
