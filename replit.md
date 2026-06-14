@@ -62,7 +62,7 @@ AfriConnect is a 6-module super-app:
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- **Toujours pusher vers GitHub** après chaque modification : `git push "https://x-access-token:${GITHUB_PERSONAL_ACCESS_TOKEN}@github.com/llanoumarsh-stack/brutepawa.git" main`
 
 ## Gotchas
 
