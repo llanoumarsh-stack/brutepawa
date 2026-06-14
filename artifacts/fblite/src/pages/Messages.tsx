@@ -40,6 +40,8 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
 
   const bottomRef      = useRef<HTMLDivElement>(null);
   const remoteAudioRef = useRef<HTMLAudioElement>(null);
+  const localVideoRef  = useRef<HTMLVideoElement>(null);
+  const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const activeConvRef  = useRef<number | null>(null);
   const allUsersRef    = useRef<PublicUser[]>([]);
 
@@ -83,6 +85,36 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
     if (el.srcObject !== sig.remoteStream) {
       el.srcObject = sig.remoteStream;
       el.play().catch(() => {});
+    }
+  }, [sig.remoteStream]);
+
+  // Attach local stream to <video> only when stream reference actually changes.
+  // Using a stable ref + useEffect prevents srcObject from being re-assigned on
+  // every render (which happens every second via the callDuration timer) and
+  // eliminates the black-flash / flicker bug.
+  useEffect(() => {
+    const el = localVideoRef.current;
+    if (!el) return;
+    if (sig.localStream) {
+      if (el.srcObject !== sig.localStream) {
+        el.srcObject = sig.localStream;
+        el.play().catch(() => {});
+      }
+    } else {
+      el.srcObject = null;
+    }
+  }, [sig.localStream]);
+
+  useEffect(() => {
+    const el = remoteVideoRef.current;
+    if (!el) return;
+    if (sig.remoteStream) {
+      if (el.srcObject !== sig.remoteStream) {
+        el.srcObject = sig.remoteStream;
+        el.play().catch(() => {});
+      }
+    } else {
+      el.srcObject = null;
     }
   }, [sig.remoteStream]);
 
@@ -277,9 +309,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
         {/* Remote video — fills entire screen */}
         {isVideo && (
           <video
-            ref={el => {
-              if (el) el.srcObject = sig.remoteStream;
-            }}
+            ref={remoteVideoRef}
             autoPlay
             playsInline
             style={{
@@ -349,7 +379,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
             zIndex: 15, boxShadow: "0 4px 16px rgba(0,0,0,0.5)",
           }}>
             <video
-              ref={el => { if (el) el.srcObject = sig.localStream; }}
+              ref={localVideoRef}
               autoPlay
               playsInline
               muted

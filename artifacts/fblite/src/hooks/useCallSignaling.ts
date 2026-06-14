@@ -241,7 +241,11 @@ export function useCallSignaling(
       e.streams[0]?.getTracks().forEach(t => {
         if (!remote.getTracks().find(x => x.id === t.id)) remote.addTrack(t);
       });
-      setRemoteStream(new MediaStream(remote.getTracks()));
+      // Keep the SAME MediaStream object — React will only trigger a re-render
+      // on the first call (null → remote). Subsequent ontrack events (audio/video)
+      // mutate `remote` in-place; the <video> srcObject picks up new tracks
+      // automatically without needing a re-assignment, preventing black flashes.
+      setRemoteStream(prev => (prev === remote ? remote : remote));
     };
 
     pc.onconnectionstatechange = () => {
