@@ -123,7 +123,7 @@ export default function Layout({ children, onNewPost }: Props) {
       {/* ── Top Navbar ── */}
       <nav className="navbar">
         <button onClick={() => navigate("/")} style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-          <span className="navbar-logo">BP</span>
+          <img src="/logo.png" alt="Brute Pawa" style={{ width: 36, height: 36, borderRadius: 8, display: "block" }} />
         </button>
 
         <div className="navbar-search-wrap" ref={searchWrapRef}>

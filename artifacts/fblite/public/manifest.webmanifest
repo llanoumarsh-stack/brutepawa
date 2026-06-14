@@ -6,7 +6,7 @@
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#1877F2",
+  "theme_color": "#22c55e",
   "orientation": "portrait-primary",
   "lang": "fr",
   "categories": ["social", "business"],

@@ -31,7 +31,7 @@ export default function Login() {
 
   return (
     <div className="login-page">
-      <div className="fb-logo-text">Brute Pawa</div>
+      <img src="/logo.png" alt="Brute Pawa" style={{ width: 96, height: 96, borderRadius: 22, marginBottom: 8, display: "block", marginLeft: "auto", marginRight: "auto" }} />
       <p className="fb-tagline">Connecte-toi, vends, recrute et développe ton activité partout en Afrique francophone.</p>
 
       <div className="login-card">
