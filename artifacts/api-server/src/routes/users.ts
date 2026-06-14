@@ -30,6 +30,11 @@ router.post("/users/me/pro", requireAuth, async (req, res): Promise<void> => {
   res.json({ ok: true });
 });
 
+router.delete("/users/me/pro", requireAuth, async (req, res): Promise<void> => {
+  await db.update(usersTable).set({ role: "user" }).where(eq(usersTable.id, req.userId!));
+  res.json({ ok: true });
+});
+
 router.get("/users/:id/presence", requireAuth, async (req, res): Promise<void> => {
   const id = parseInt(req.params.id, 10);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }

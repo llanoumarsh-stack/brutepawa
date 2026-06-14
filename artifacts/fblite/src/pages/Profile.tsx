@@ -6,6 +6,9 @@ import { computeScore, type ScoreFactors } from "../lib/score";
 import ProModeModal from "../components/ProModeModal";
 import ProfileStatusModal from "../components/ProfileStatusModal";
 import ArchiveModal from "../components/ArchiveModal";
+import ActivityHistoryModal from "../components/ActivityHistoryModal";
+import FeaturedContentModal from "../components/FeaturedContentModal";
+import DeactivateProModal from "../components/DeactivateProModal";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -28,6 +31,9 @@ export default function Profile() {
   const [isPro, setIsPro] = useState(() => localStorage.getItem("bp_pro_mode") === "1");
   const [showProfileStatus, setShowProfileStatus] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
+  const [showActivityHistory, setShowActivityHistory] = useState(false);
+  const [showFeaturedContent, setShowFeaturedContent] = useState(false);
+  const [showDeactivatePro, setShowDeactivatePro] = useState(false);
 
   const copyProfileLink = useCallback(() => {
     const url = `${window.location.origin}${import.meta.env.BASE_URL ?? ""}profile/${localUser.id ?? ""}`;
@@ -152,13 +158,18 @@ export default function Profile() {
             {[
               { icon: "🟢", label: "Statut du profil",              action: () => { setShowProfileMenu(false); setShowProfileStatus(true); } },
               { icon: "🗄️", label: "Archive",                        action: () => { setShowProfileMenu(false); setShowArchive(true); } },
-              { icon: "📊", label: "Historique d'activité",          action: () => setShowProfileMenu(false) },
+              { icon: "📊", label: "Historique d'activité",          action: () => { setShowProfileMenu(false); setShowActivityHistory(true); } },
               { icon: "👁️", label: "Examiner les publications",      action: () => setShowProfileMenu(false) },
-              { icon: "⭐", label: "Ajouter des éléments à la une", action: () => setShowProfileMenu(false) },
+              { icon: "⭐", label: "Ajouter des éléments à la une", action: () => { setShowProfileMenu(false); setShowFeaturedContent(true); } },
               { icon: "🔒", label: "Verrouiller le profil",          action: () => setShowProfileMenu(false) },
               { icon: "👤", label: "Voir en tant que",               action: () => setShowProfileMenu(false) },
               { icon: "🔍", label: "Rechercher",                     action: () => { setShowProfileMenu(false); navigate("/search"); } },
-              { icon: "⚡", label: isPro ? "Mode pro activé ✓" : "Activer le mode pro", action: () => { setShowProfileMenu(false); if (!isPro) setShowProMode(true); } },
+              ...(isPro ? [
+                { icon: "⚡", label: "Mode pro activé ✓",            action: () => setShowProfileMenu(false) },
+                { icon: "↩️", label: "Désactiver le mode professionnel", action: () => { setShowProfileMenu(false); setShowDeactivatePro(true); } },
+              ] : [
+                { icon: "⚡", label: "Activer le mode pro",          action: () => { setShowProfileMenu(false); setShowProMode(true); } },
+              ]),
               { icon: "🔗", label: "Copier le lien du profil",       action: copyProfileLink },
             ].map(item => (
               <button
@@ -499,6 +510,28 @@ export default function Profile() {
 
       {showArchive && (
         <ArchiveModal onClose={() => setShowArchive(false)} />
+      )}
+
+      {showActivityHistory && (
+        <ActivityHistoryModal
+          onClose={() => setShowActivityHistory(false)}
+          userId={localUser.id}
+          userName={localUser.name}
+        />
+      )}
+
+      {showFeaturedContent && (
+        <FeaturedContentModal
+          onClose={() => setShowFeaturedContent(false)}
+          userId={localUser.id}
+        />
+      )}
+
+      {showDeactivatePro && (
+        <DeactivateProModal
+          onClose={() => setShowDeactivatePro(false)}
+          onDeactivated={() => setIsPro(false)}
+        />
       )}
     </div>
   );
