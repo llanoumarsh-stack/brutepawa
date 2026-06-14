@@ -408,7 +408,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                     onClick={() => navigate(post.authorId === user.id ? "/profile" : `/user/${post.authorId}`)}
                   >{displayName}</div>
                   {!post.sponsored && (
-                    <span style={{ color: "#42B72A", fontSize: 12, fontWeight: 600, cursor: "pointer", marginLeft: 2 }}>
+                    <span style={{ color: "var(--fb-text)", fontSize: 12, fontWeight: 600, cursor: "pointer", marginLeft: 2 }}>
                       · Suivre
                     </span>
                   )}
@@ -699,7 +699,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
       })}
 
       {/* Empty state after hiding all */}
-      {visiblePosts.length === 0 && (
+      {!postsLoading && visiblePosts.length === 0 && (
         <div style={{ textAlign: "center", padding: "40px 20px", color: "var(--fb-text-secondary)" }}>
           <div style={{ fontSize: 48, marginBottom: 12 }}>📭</div>
           <div style={{ fontWeight: 700, fontSize: 16 }}>Aucune publication à afficher</div>
