@@ -98,6 +98,7 @@ export interface FeedPost {
   authorCountry: string;
   content: string;
   imageUrl: string | null;
+  thumbnailUrl: string | null;
   likesCount: number;
   commentsCount: number;
   createdAt: string;

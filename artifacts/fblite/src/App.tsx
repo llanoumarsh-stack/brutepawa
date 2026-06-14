@@ -106,6 +106,7 @@ function AppContent() {
         liked: p.liked,
         sponsored: false,
         imageUrl: p.imageUrl,
+        thumbnailUrl: p.thumbnailUrl,
         authorName: p.authorName,
         authorAvatarUrl: p.authorAvatarUrl,
         authorCountry: p.authorCountry ?? undefined,

@@ -13,6 +13,7 @@ export interface Post {
   sponsored: boolean;
   sponsorTag?: string;
   imageUrl?: string | null;
+  thumbnailUrl?: string | null;
   authorName?: string;
   authorAvatarUrl?: string | null;
   authorCountry?: string;

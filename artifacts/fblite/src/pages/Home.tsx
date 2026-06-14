@@ -426,22 +426,33 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
             {post.emoji && (
               <div className="post-image-emoji" style={{ background: "var(--fb-bg)" }}>{post.emoji}</div>
             )}
-            {post.imageUrl && (() => {
-              const url = post.imageUrl!;
-              const isVideo = /\.(mp4|mov|webm|ogg|m4v)(\?.*)?$/i.test(url);
-              return isVideo ? (
-                <video
-                  src={url}
-                  controls
-                  playsInline
-                  style={{ width: "100%", maxHeight: 420, objectFit: "cover", display: "block", background: "#000", borderRadius: 0 }}
-                />
-              ) : (
+            {(post.imageUrl || post.thumbnailUrl) && (() => {
+              const mediaUrl = post.imageUrl ?? "";
+              const thumb    = post.thumbnailUrl;
+              const isVideo  = thumb != null || /\.(mp4|mov|webm|ogg|m4v)(\?.*)?$/i.test(mediaUrl);
+              if (isVideo) {
+                return (
+                  <div
+                    onClick={() => navigate(`/video/${post.id}`)}
+                    style={{ position: "relative", cursor: "pointer", background: "#000", lineHeight: 0 }}
+                  >
+                    {thumb
+                      ? <img src={thumb} alt="" style={{ width: "100%", maxHeight: 420, objectFit: "cover", display: "block" }} />
+                      : <div style={{ width: "100%", height: 260, background: "#111", display: "block" }} />
+                    }
+                    <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <div style={{ width: 58, height: 58, borderRadius: "50%", background: "rgba(0,0,0,0.55)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+              return (
                 <img
-                  src={url}
+                  src={mediaUrl}
                   alt=""
                   style={{ width: "100%", maxHeight: 420, objectFit: "cover", display: "block", borderRadius: 0 }}
-                  onClick={() => navigate(`/video/${post.id}`)}
                 />
               );
             })()}
