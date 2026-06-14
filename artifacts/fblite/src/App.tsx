@@ -252,6 +252,16 @@ function AppContent() {
     );
   }
 
+  const userAliasMatch = matchDynamic("/user/:id", path);
+  if (userAliasMatch) {
+    const uid = parseInt(userAliasMatch.id, 10);
+    if (!isNaN(uid)) return (
+      <Layout onNewPost={handleNewPost}>
+        <UserProfilePage userId={uid} />
+      </Layout>
+    );
+  }
+
   if (groupMatch) {
     const gid = parseInt(groupMatch.id, 10);
     if (!isNaN(gid)) {

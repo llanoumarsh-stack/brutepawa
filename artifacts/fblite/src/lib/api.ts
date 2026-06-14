@@ -1141,3 +1141,15 @@ export async function apiGetUserPresence(userId: number): Promise<{ online: bool
   if (!res.ok) return { online: false, lastSeenAt: null };
   return res.json();
 }
+
+export async function apiFollow(userId: number, action: "follow" | "unfollow"): Promise<void> {
+  await apiFetch(`/users/${userId}/follow`, { method: "POST", body: JSON.stringify({ action }) });
+}
+
+export async function apiCheckFollowing(userIds: number[]): Promise<number[]> {
+  if (userIds.length === 0) return [];
+  const res = await apiFetch("/users/follows/check", { method: "POST", body: JSON.stringify({ ids: userIds }) });
+  if (!res.ok) return [];
+  const data = await res.json() as { following: number[] };
+  return data.following;
+}

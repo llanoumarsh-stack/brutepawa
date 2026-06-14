@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { db, usersTable, friendRequestsTable, userBlocksTable, userReportsTable } from "@workspace/db";
-import { eq, or, and, ne, ilike, sql } from "drizzle-orm";
+import { db, usersTable, friendRequestsTable, userBlocksTable, userReportsTable, followsTable } from "@workspace/db";
+import { eq, or, and, ne, ilike, sql, inArray } from "drizzle-orm";
 import { UpdateMeBody, GetUserParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
 import { pushToUserDevice } from "./push";
@@ -290,6 +290,31 @@ router.get("/users/:id/block", requireAuth, async (req, res): Promise<void> => {
   const [row] = await db.select().from(userBlocksTable)
     .where(and(eq(userBlocksTable.blockerId, me), eq(userBlocksTable.blockedId, targetId)));
   res.json({ blocked: !!row });
+});
+
+// Follow / unfollow
+router.post("/users/:id/follow", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const targetId = Number(req.params.id);
+  if (isNaN(targetId) || targetId === me) { res.status(400).json({ error: "Invalid target" }); return; }
+  const action = req.body.action === "unfollow" ? "unfollow" : "follow";
+  if (action === "follow") {
+    await db.insert(followsTable).values({ followerId: me, followingId: targetId }).onConflictDoNothing();
+  } else {
+    await db.delete(followsTable).where(and(eq(followsTable.followerId, me), eq(followsTable.followingId, targetId)));
+  }
+  res.json({ ok: true, action });
+});
+
+// Batch check which user IDs the current user follows
+router.post("/users/follows/check", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const ids: number[] = Array.isArray(req.body.ids) ? req.body.ids.filter(Number.isInteger) : [];
+  if (ids.length === 0) { res.json({ following: [] }); return; }
+  const rows = await db.select({ followingId: followsTable.followingId })
+    .from(followsTable)
+    .where(and(eq(followsTable.followerId, me), inArray(followsTable.followingId, ids)));
+  res.json({ following: rows.map(r => r.followingId) });
 });
 
 // Report a user
