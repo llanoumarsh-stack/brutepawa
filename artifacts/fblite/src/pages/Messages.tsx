@@ -38,6 +38,13 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
   const [search, setSearch]           = useState("");
   const [overlay, setOverlay]         = useState<Overlay>("none");
 
+  // ── Selection mode (long-press) ──────────────────────────────────────────
+  const [selectionMode, setSelectionMode]       = useState(false);
+  const [selectedMsgs, setSelectedMsgs]         = useState<Set<number>>(new Set());
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteForAll, setDeleteForAll]         = useState(false);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const bottomRef      = useRef<HTMLDivElement>(null);
   const remoteAudioRef = useRef<HTMLAudioElement>(null);
   const localVideoRef  = useRef<HTMLVideoElement>(null);
