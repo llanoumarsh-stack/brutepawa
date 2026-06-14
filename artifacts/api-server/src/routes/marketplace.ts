@@ -6,7 +6,8 @@ import {
   DeleteProductParams, ListProductsQueryParams, CreateOrderBody, GetOrderParams
 } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
-import { deleteObject, extractKeyFromUrl, ownerIdFromKey } from "../lib/r2";
+import { extractKeyFromUrl, ownerIdFromKey } from "../lib/r2";
+import { releaseStorage } from "../lib/storage";
 
 const router = Router();
 
@@ -101,8 +102,7 @@ router.patch("/products/:id", requireAuth, async (req, res): Promise<void> => {
   if (typeof req.body.thumbnailUrl === "string" && req.body.thumbnailUrl !== current.thumbnailUrl)
     toDelete.push(extractKeyFromUrl(current.thumbnailUrl));
 
-  const validKeys = toDelete.filter((k): k is string => !!k && ownerIdFromKey(k) === req.userId!);
-  await Promise.all(validKeys.map(k => deleteObject(k).catch(() => {})));
+  await releaseStorage(toDelete.filter((k): k is string => !!k && ownerIdFromKey(k) === req.userId!));
 
   res.json(fmt(product));
 });
@@ -122,12 +122,7 @@ router.delete("/products/:id", requireAuth, async (req, res): Promise<void> => {
 
   await db.delete(productsTable).where(eq(productsTable.id, params.data.id));
 
-  // Best-effort R2 cleanup — only delete keys owned by the requesting user
-  const r2Keys = [
-    extractKeyFromUrl(product.imageUrl),
-    extractKeyFromUrl(product.thumbnailUrl),
-  ].filter((k): k is string => k !== null && ownerIdFromKey(k) === req.userId!);
-  await Promise.all(r2Keys.map(k => deleteObject(k).catch(() => {})));
+  await releaseStorage([extractKeyFromUrl(product.imageUrl), extractKeyFromUrl(product.thumbnailUrl)]);
 
   res.sendStatus(204);
 });

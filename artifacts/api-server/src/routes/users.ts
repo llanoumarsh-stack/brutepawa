@@ -4,7 +4,8 @@ import { eq, or, and, ne, ilike, sql } from "drizzle-orm";
 import { UpdateMeBody, GetUserParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
 import { pushToUserDevice } from "./push";
-import { deleteObject, extractKeyFromUrl, ownerIdFromKey } from "../lib/r2";
+import { extractKeyFromUrl, ownerIdFromKey } from "../lib/r2";
+import { releaseStorage } from "../lib/storage";
 
 const router = Router();
 
@@ -45,7 +46,7 @@ router.patch("/users/me", requireAuth, async (req, res): Promise<void> => {
       toDelete.push(extractKeyFromUrl(current.coverUrl));
 
     const validKeys = toDelete.filter((k): k is string => !!k && ownerIdFromKey(k) === req.userId!);
-    await Promise.all(validKeys.map(k => deleteObject(k).catch(() => {})));
+    await releaseStorage(validKeys);
   }
 
   res.json(formatUser(user));

@@ -4,7 +4,8 @@ import { eq, and, or, desc, sql, gt } from "drizzle-orm";
 import { CreatePostBody, GetPostParams, DeletePostParams, LikePostParams, LikePostBody, SendMessageBody, GetConversationParams, ListPostsQueryParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
 import { pushToUserDevice } from "./push";
-import { deleteObject, extractKeyFromUrl, ownerIdFromKey } from "../lib/r2";
+import { extractKeyFromUrl, ownerIdFromKey } from "../lib/r2";
+import { releaseStorage } from "../lib/storage";
 
 const router = Router();
 
@@ -126,12 +127,7 @@ router.delete("/posts/:id", requireAuth, async (req, res): Promise<void> => {
 
   await db.delete(postsTable).where(eq(postsTable.id, params.data.id));
 
-  // Best-effort R2 cleanup — only delete keys owned by the requesting user
-  const r2Keys = [
-    extractKeyFromUrl(post.imageUrl),
-    extractKeyFromUrl(post.thumbnailUrl),
-  ].filter((k): k is string => k !== null && ownerIdFromKey(k) === req.userId!);
-  await Promise.all(r2Keys.map(k => deleteObject(k).catch(() => {})));
+  await releaseStorage([extractKeyFromUrl(post.imageUrl), extractKeyFromUrl(post.thumbnailUrl)]);
 
   res.sendStatus(204);
 });
@@ -393,11 +389,7 @@ router.delete("/stories/:id", requireAuth, async (req, res): Promise<void> => {
 
   await db.delete(storiesTable).where(eq(storiesTable.id, id));
 
-  const r2Keys = [
-    extractKeyFromUrl(story.mediaUrl),
-    extractKeyFromUrl(story.thumbnailUrl),
-  ].filter((k): k is string => k !== null && ownerIdFromKey(k) === req.userId!);
-  await Promise.all(r2Keys.map(k => deleteObject(k).catch(() => {})));
+  await releaseStorage([extractKeyFromUrl(story.mediaUrl), extractKeyFromUrl(story.thumbnailUrl)]);
 
   res.sendStatus(204);
 });

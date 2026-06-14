@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "../router";
 import { apiGetMe, apiUpdateMe, saveFbUser, apiGetFriends, type PublicUser } from "../lib/api";
+import StorageSection from "../components/StorageSection";
 import { WORLD_CITIES, WORLD_MUSIC_GENRES } from "../lib/world-data";
 
 /* ── Extended profile (localStorage only — not in DB yet) ──────────────────── */
@@ -1008,6 +1009,20 @@ export default function EditProfilePage() {
           <Row icon="✉️" label={localUser.email || "Ajouter une adresse e-mail"} value={localUser.email ? "🔒 Moi uniquement" : null} onEdit={() => openView("email")} dimLabel={!localUser.email} />
         </>
       )}
+
+      {/* ── STOCKAGE ── */}
+      <div style={{ borderTop: "8px solid var(--fb-bg, #f0f2f5)", marginTop: 8 }}>
+        <div style={{
+          padding: "12px 16px 4px",
+          fontWeight: 800, fontSize: 14,
+          color: "var(--fb-text-secondary)",
+          letterSpacing: 0.3,
+          textTransform: "uppercase",
+        }}>
+          Stockage
+        </div>
+        <StorageSection />
+      </div>
     </div>
   );
 }

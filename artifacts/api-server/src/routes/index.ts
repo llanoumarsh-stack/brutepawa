@@ -17,6 +17,7 @@ import creatorRouter from "./creator";
 import communityRouter from "./community";
 import signalingRouter from "./signaling";
 import pushRouter from "./push";
+import storageRouter from "./storage";
 
 const router: IRouter = Router();
 
@@ -38,5 +39,6 @@ router.use(creatorRouter);
 router.use(communityRouter);
 router.use(signalingRouter);
 router.use(pushRouter);
+router.use(storageRouter);
 
 export default router;

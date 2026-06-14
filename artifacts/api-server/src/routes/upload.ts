@@ -1,16 +1,14 @@
 import { Router, type IRouter } from "express";
 import {
-  buildKey, buildPublicUrl, detectKind, putObject, deleteObject,
-  ownerIdFromKey, extractKeyFromUrl,
+  buildKey, buildPublicUrl, detectKind, putObject,
+  ownerIdFromKey,
 } from "../lib/r2";
 import {
   processImage, generateVideoThumbnail, compressAudioToOpus,
-  MAX_IMAGE_BYTES, MAX_VIDEO_BYTES, MAX_AUDIO_BYTES, USER_QUOTA_BYTES,
+  MAX_IMAGE_BYTES, MAX_VIDEO_BYTES, MAX_AUDIO_BYTES,
 } from "../lib/media";
+import { trackUploads, getUserQuota, releaseStorage } from "../lib/storage";
 import { requireAuth } from "../middlewares/requireAuth";
-import { db } from "@workspace/db";
-import { usersTable } from "@workspace/db";
-import { eq, sql } from "drizzle-orm";
 import path from "path";
 
 const router: IRouter = Router();
@@ -36,58 +34,54 @@ router.post(
       return;
     }
 
-    const filename    = (req.headers["x-filename"] as string) || "upload.bin";
-    const userId      = req.userId!;
-    const kind        = detectKind(filename);
-    const ext         = path.extname(filename).toLowerCase();
+    const filename = (req.headers["x-filename"] as string) || "upload.bin";
+    const userId   = req.userId!;
+    const kind     = detectKind(filename);
+    const ext      = path.extname(filename).toLowerCase();
 
-    // ── Size limits ──────────────────────────────────────────────────────────
-    const limit =
+    // ── Size limits ───────────────────────────────────────────────────────────
+    const sizeLimit =
       kind === "video" ? MAX_VIDEO_BYTES :
       kind === "audio" ? MAX_AUDIO_BYTES :
       MAX_IMAGE_BYTES;
 
-    if (body.length > limit) {
-      const limitMb = Math.round(limit / 1024 / 1024);
-      res.status(413).json({ error: `Fichier trop volumineux — max ${limitMb} Mo pour ce type` });
+    if (body.length > sizeLimit) {
+      const mb = Math.round(sizeLimit / 1024 / 1024);
+      res.status(413).json({ error: `Fichier trop volumineux — max ${mb} Mo pour ce type` });
       return;
     }
 
-    // ── Quota utilisateur (500 MB total) ─────────────────────────────────────
+    // ── Plan-based quota check ────────────────────────────────────────────────
     try {
-      const [user] = await db
-        .select({ totalStorageBytes: sql<number>`total_storage_bytes` })
-        .from(usersTable)
-        .where(eq(usersTable.id, userId));
-
-      if (user && Number(user.totalStorageBytes) + body.length > USER_QUOTA_BYTES) {
+      const quota = await getUserQuota(userId);
+      if (quota.used + body.length > quota.quota) {
         res.status(413).json({
-          error: "Quota de stockage dépassé (500 Mo). Supprime des fichiers pour libérer de l'espace.",
+          error: `Quota de stockage atteint (plan ${quota.planDisplayName} : ${fmtBytes(quota.quota)}). Supprime des fichiers pour libérer de l'espace.`,
+          quota,
         });
         return;
       }
     } catch {
-      // Non-fatal — continue if quota check fails (column may not exist yet)
+      // Non-fatal — proceed if quota lookup fails
     }
 
     try {
+      const trackedFiles: Array<{ key: string; sizeBytes: number; kind: string }> = [];
       let mainKey: string;
       let mainBuffer: Buffer;
       let mainContentType: string;
       let thumbnailUrl: string | undefined;
       let mediumUrl: string | undefined;
 
-      // ── Image: compress to WebP, generate thumbnail + medium ───────────────
+      // ── Image: compress to WebP, generate thumbnail + medium ─────────────
       if (kind === "image") {
         const processed = await processImage(body);
 
-        // Main key uses .webp regardless of original extension
         mainKey         = buildKey("upload.webp", "image", userId);
         mainBuffer      = processed.original.data;
         mainContentType = "image/webp";
 
-        // Upload thumbnail and medium in parallel
-        const thumbKey  = buildKey("thumb.webp", "image", userId);
+        const thumbKey  = buildKey("thumb.webp",  "image", userId);
         const mediumKey = buildKey("medium.webp", "image", userId);
 
         await Promise.all([
@@ -99,37 +93,43 @@ router.post(
         thumbnailUrl = buildPublicUrl(thumbKey);
         mediumUrl    = buildPublicUrl(mediumKey);
 
-      // ── Video: enforce limit, generate thumbnail ───────────────────────────
+        trackedFiles.push(
+          { key: mainKey,   sizeBytes: processed.original.data.length,  kind: "image" },
+          { key: thumbKey,  sizeBytes: processed.thumbnail.data.length, kind: "image" },
+          { key: mediumKey, sizeBytes: processed.medium.data.length,    kind: "image" },
+        );
+
+      // ── Video: enforce limit, generate thumbnail ──────────────────────────
       } else if (kind === "video") {
         mainKey         = buildKey(filename, "video", userId);
         mainBuffer      = body;
         mainContentType = (req.headers["content-type"] as string) || "video/mp4";
 
         const thumbBuffer = await generateVideoThumbnail(body, ext);
-
         await putObject(mainKey, mainBuffer, mainContentType);
+        trackedFiles.push({ key: mainKey, sizeBytes: mainBuffer.length, kind: "video" });
 
         if (thumbBuffer) {
           const thumbKey = buildKey("thumb.jpg", "image", userId);
           await putObject(thumbKey, thumbBuffer, "image/jpeg");
           thumbnailUrl = buildPublicUrl(thumbKey);
+          trackedFiles.push({ key: thumbKey, sizeBytes: thumbBuffer.length, kind: "image" });
         }
 
-      // ── Audio: compress to Opus ────────────────────────────────────────────
+      // ── Audio: compress to Opus ───────────────────────────────────────────
       } else {
         const compressed = await compressAudioToOpus(body, ext || ".mp3");
         mainKey         = buildKey(`voice${compressed.ext}`, "audio", userId);
         mainBuffer      = compressed.data;
         mainContentType = compressed.contentType;
-
         await putObject(mainKey, mainBuffer, mainContentType);
+        trackedFiles.push({ key: mainKey, sizeBytes: mainBuffer.length, kind: "audio" });
       }
 
-      // ── Increment user storage quota ─────────────────────────────────────
-      const storedBytes = mainBuffer.length;
-      await db.execute(
-        sql`UPDATE users SET total_storage_bytes = total_storage_bytes + ${storedBytes} WHERE id = ${userId}`,
-      ).catch(() => {});
+      // ── Track all uploaded objects + update quota counter ─────────────────
+      await trackUploads(trackedFiles, userId);
+
+      const totalStored = trackedFiles.reduce((s, f) => s + f.sizeBytes, 0);
 
       res.json({
         url:          buildPublicUrl(mainKey),
@@ -137,7 +137,7 @@ router.post(
         kind,
         thumbnailUrl: thumbnailUrl ?? null,
         mediumUrl:    mediumUrl    ?? null,
-        size:         storedBytes,
+        size:         totalStored,
       });
     } catch (err) {
       req.log.error({ err }, "R2 upload error");
@@ -170,7 +170,7 @@ router.delete(
     }
 
     try {
-      await deleteObject(key);
+      await releaseStorage([key]);
       res.json({ ok: true });
     } catch (err) {
       req.log.error({ err }, "R2 delete error");
@@ -178,5 +178,13 @@ router.delete(
     }
   },
 );
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function fmtBytes(b: number): string {
+  if (b >= 1_073_741_824) return `${(b / 1_073_741_824).toFixed(0)} Go`;
+  if (b >= 1_048_576)     return `${(b / 1_048_576).toFixed(0)} Mo`;
+  return `${Math.round(b / 1024)} Ko`;
+}
 
 export default router;

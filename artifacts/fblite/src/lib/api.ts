@@ -1115,3 +1115,18 @@ export async function apiToggleCommentLike(
   }
   return res.json();
 }
+
+export interface StorageStats {
+  used:            number;
+  quota:           number;
+  remaining:       number;
+  percent:         number;
+  plan:            string;
+  planDisplayName: string;
+}
+
+export async function apiGetStorageStats(): Promise<StorageStats> {
+  const res = await apiFetch("/storage/stats");
+  if (!res.ok) throw new Error("Erreur lors de la récupération du stockage");
+  return res.json() as Promise<StorageStats>;
+}
