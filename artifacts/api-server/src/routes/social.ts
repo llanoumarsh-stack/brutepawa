@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { db, postsTable, postLikesTable, messagesTable, usersTable, storiesTable, userBlocksTable, notificationsTable, commentsTable } from "@workspace/db";
+import { db, postsTable, postLikesTable, messagesTable, usersTable, storiesTable, userBlocksTable, notificationsTable, commentsTable, commentLikesTable } from "@workspace/db";
 import { eq, and, or, desc, sql, gt } from "drizzle-orm";
 import { CreatePostBody, GetPostParams, DeletePostParams, LikePostParams, LikePostBody, SendMessageBody, GetConversationParams, ListPostsQueryParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
@@ -408,6 +408,8 @@ router.get("/posts/:id/comments", requireAuth, async (req, res): Promise<void> =
   const postId = parseInt(req.params.id);
   if (isNaN(postId)) { res.status(400).json({ error: "Invalid post id" }); return; }
 
+  const userId = req.userId!;
+
   const rows = await db
     .select({
       id: commentsTable.id,
@@ -415,6 +417,7 @@ router.get("/posts/:id/comments", requireAuth, async (req, res): Promise<void> =
       authorId: commentsTable.authorId,
       parentId: commentsTable.parentId,
       content: commentsTable.content,
+      likesCount: commentsTable.likesCount,
       createdAt: commentsTable.createdAt,
       authorFirstName: usersTable.firstName,
       authorLastName: usersTable.lastName,
@@ -426,7 +429,68 @@ router.get("/posts/:id/comments", requireAuth, async (req, res): Promise<void> =
     .orderBy(commentsTable.createdAt)
     .limit(200);
 
-  res.json(rows);
+  // Fetch which comments the current user has liked
+  const likedRows = rows.length
+    ? await db
+        .select({ commentId: commentLikesTable.commentId })
+        .from(commentLikesTable)
+        .where(
+          and(
+            eq(commentLikesTable.userId, userId),
+            sql`${commentLikesTable.commentId} = ANY(ARRAY[${sql.join(rows.map(r => sql`${r.id}`), sql`, `)}]::int[])`,
+          ),
+        )
+    : [];
+
+  const likedSet = new Set(likedRows.map(r => r.commentId));
+  res.json(rows.map(r => ({ ...r, likedByMe: likedSet.has(r.id) })));
+});
+
+router.post("/posts/:postId/comments/:commentId/like", requireAuth, async (req, res): Promise<void> => {
+  const postId = parseInt(req.params.postId);
+  const commentId = parseInt(req.params.commentId);
+  if (isNaN(postId) || isNaN(commentId)) { res.status(400).json({ error: "Invalid id" }); return; }
+
+  const userId = req.userId!;
+
+  // Check comment exists and belongs to this post
+  const [comment] = await db
+    .select({ id: commentsTable.id, likesCount: commentsTable.likesCount })
+    .from(commentsTable)
+    .where(and(eq(commentsTable.id, commentId), eq(commentsTable.postId, postId)));
+
+  if (!comment) { res.status(404).json({ error: "Commentaire introuvable" }); return; }
+
+  // Check existing like
+  const [existing] = await db
+    .select({ id: commentLikesTable.id })
+    .from(commentLikesTable)
+    .where(and(eq(commentLikesTable.commentId, commentId), eq(commentLikesTable.userId, userId)));
+
+  let liked: boolean;
+  if (existing) {
+    // Unlike
+    await db.delete(commentLikesTable)
+      .where(and(eq(commentLikesTable.commentId, commentId), eq(commentLikesTable.userId, userId)));
+    await db.update(commentsTable)
+      .set({ likesCount: sql`GREATEST(${commentsTable.likesCount} - 1, 0)` })
+      .where(eq(commentsTable.id, commentId));
+    liked = false;
+  } else {
+    // Like
+    await db.insert(commentLikesTable).values({ commentId, userId });
+    await db.update(commentsTable)
+      .set({ likesCount: sql`${commentsTable.likesCount} + 1` })
+      .where(eq(commentsTable.id, commentId));
+    liked = true;
+  }
+
+  const [updated] = await db
+    .select({ likesCount: commentsTable.likesCount })
+    .from(commentsTable)
+    .where(eq(commentsTable.id, commentId));
+
+  res.json({ liked, likesCount: updated?.likesCount ?? 0 });
 });
 
 router.post("/posts/:id/comments", requireAuth, async (req, res): Promise<void> => {

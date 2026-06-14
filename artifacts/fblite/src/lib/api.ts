@@ -1074,6 +1074,8 @@ export interface PostComment {
   authorId: number;
   parentId: number | null;
   content: string;
+  likesCount: number;
+  likedByMe: boolean;
   createdAt: string;
   authorFirstName: string;
   authorLastName: string;
@@ -1098,6 +1100,18 @@ export async function apiPostComment(
   if (!res.ok) {
     const e = await res.json().catch(() => ({})) as { error?: string };
     throw new Error(e.error ?? "Erreur lors du commentaire");
+  }
+  return res.json();
+}
+
+export async function apiToggleCommentLike(
+  postId: number,
+  commentId: number,
+): Promise<{ liked: boolean; likesCount: number }> {
+  const res = await apiFetch(`/posts/${postId}/comments/${commentId}/like`, { method: "POST" });
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(e.error ?? "Erreur like commentaire");
   }
   return res.json();
 }

@@ -71,6 +71,13 @@ export const commentsTable = pgTable("comments", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });
 
+export const commentLikesTable = pgTable("comment_likes", {
+  id: serial("id").primaryKey(),
+  commentId: integer("comment_id").notNull(),
+  userId: integer("user_id").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [uniqueIndex("comment_likes_pair_idx").on(t.commentId, t.userId)]);
+
 export const followsTable = pgTable("follows", {
   id: serial("id").primaryKey(),
   followerId: integer("follower_id").notNull(),

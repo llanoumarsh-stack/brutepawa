@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "../router";
 import { Post } from "../lib/store";
 import { formatNumber } from "../data/mock";
-import { apiGetStories, apiGetComments, apiPostComment, type StoryGroup, type PostComment } from "../lib/api";
+import { apiGetStories, apiGetComments, apiPostComment, apiToggleCommentLike, type StoryGroup, type PostComment } from "../lib/api";
 import StoryViewer from "../components/StoryViewer";
 import { storyDraftStore } from "../lib/storyDraft";
 
@@ -100,6 +100,37 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
       setNewReply(prev => ({ ...prev, [parentId]: text }));
     } finally {
       setSubmittingReply(null);
+    }
+  };
+
+  const toggleCommentLike = async (postId: number, commentId: number) => {
+    // Optimistic update
+    setComments(prev => ({
+      ...prev,
+      [postId]: (prev[postId] ?? []).map(c =>
+        c.id === commentId
+          ? { ...c, likedByMe: !c.likedByMe, likesCount: c.likedByMe ? Math.max(0, c.likesCount - 1) : c.likesCount + 1 }
+          : c,
+      ),
+    }));
+    try {
+      const { liked, likesCount } = await apiToggleCommentLike(postId, commentId);
+      setComments(prev => ({
+        ...prev,
+        [postId]: (prev[postId] ?? []).map(c =>
+          c.id === commentId ? { ...c, likedByMe: liked, likesCount } : c,
+        ),
+      }));
+    } catch {
+      // Revert optimistic update on error
+      setComments(prev => ({
+        ...prev,
+        [postId]: (prev[postId] ?? []).map(c =>
+          c.id === commentId
+            ? { ...c, likedByMe: !c.likedByMe, likesCount: c.likedByMe ? c.likesCount + 1 : Math.max(0, c.likesCount - 1) }
+            : c,
+        ),
+      }));
     }
   };
 
@@ -382,12 +413,20 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                               <div style={{ fontWeight: 600, fontSize: 12, marginBottom: 2 }}>{c.authorFirstName} {c.authorLastName}</div>
                               {c.content}
                             </div>
-                            <button
-                              onClick={() => replyingTo === c.id ? cancelReply() : startReply(c)}
-                              style={{ background: "none", border: "none", fontSize: 12, fontWeight: 600, color: "var(--fb-text-secondary)", cursor: "pointer", padding: "2px 4px", marginTop: 2 }}
-                            >
-                              {replyingTo === c.id ? "Annuler" : "↩️ Répondre"}
-                            </button>
+                            <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 3 }}>
+                              <button
+                                onClick={() => toggleCommentLike(post.id, c.id)}
+                                style={{ background: "none", border: "none", fontSize: 12, fontWeight: 600, color: c.likedByMe ? "#E0245E" : "var(--fb-text-secondary)", cursor: "pointer", padding: "2px 4px" }}
+                              >
+                                {c.likedByMe ? "❤️" : "🤍"}{c.likesCount > 0 ? ` ${c.likesCount}` : ""}
+                              </button>
+                              <button
+                                onClick={() => replyingTo === c.id ? cancelReply() : startReply(c)}
+                                style={{ background: "none", border: "none", fontSize: 12, fontWeight: 600, color: "var(--fb-text-secondary)", cursor: "pointer", padding: "2px 4px" }}
+                              >
+                                {replyingTo === c.id ? "Annuler" : "↩️ Répondre"}
+                              </button>
+                            </div>
                           </div>
                         </div>
                         {/* Nested replies */}
@@ -401,9 +440,17 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                                     ? <img src={r.authorAvatarUrl} alt={rInitials} style={{ width: 24, height: 24, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
                                     : <div className="avatar xs" style={{ width: 24, height: 24, fontSize: 10 }}>{rInitials}</div>
                                   }
-                                  <div style={{ background: "var(--fb-bg)", borderRadius: 14, padding: "6px 10px", fontSize: 13, flex: 1 }}>
-                                    <div style={{ fontWeight: 600, fontSize: 11, marginBottom: 1 }}>{r.authorFirstName} {r.authorLastName}</div>
-                                    {r.content}
+                                  <div style={{ flex: 1 }}>
+                                    <div style={{ background: "var(--fb-bg)", borderRadius: 14, padding: "6px 10px", fontSize: 13 }}>
+                                      <div style={{ fontWeight: 600, fontSize: 11, marginBottom: 1 }}>{r.authorFirstName} {r.authorLastName}</div>
+                                      {r.content}
+                                    </div>
+                                    <button
+                                      onClick={() => toggleCommentLike(post.id, r.id)}
+                                      style={{ background: "none", border: "none", fontSize: 11, fontWeight: 600, color: r.likedByMe ? "#E0245E" : "var(--fb-text-secondary)", cursor: "pointer", padding: "2px 4px", marginTop: 2 }}
+                                    >
+                                      {r.likedByMe ? "❤️" : "🤍"}{r.likesCount > 0 ? ` ${r.likesCount}` : ""}
+                                    </button>
                                   </div>
                                 </div>
                               );
