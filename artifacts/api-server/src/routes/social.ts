@@ -82,16 +82,27 @@ router.post("/posts", requireAuth, async (req, res): Promise<void> => {
   }
 
   // thumbnailUrl is outside the generated schema — read directly from body
-  const thumbnailUrl = typeof req.body.thumbnailUrl === "string" ? req.body.thumbnailUrl : null;
-  const imageUrl = typeof req.body.imageUrl === "string" ? req.body.imageUrl : null;
+  // Treat empty string the same as absent: store null so DB constraints aren't triggered
+  const rawThumb = req.body.thumbnailUrl;
+  const thumbnailUrl = (typeof rawThumb === "string" && rawThumb.length > 0) ? rawThumb : null;
+  const rawImage = req.body.imageUrl;
+  const imageUrl = (typeof rawImage === "string" && rawImage.length > 0) ? rawImage : null;
 
-  const [post] = await db.insert(postsTable).values({
-    authorId: req.userId!,
-    content: contentVal,
-    imageUrl,
-    thumbnailUrl,
-  }).returning();
-  res.status(201).json(post);
+  try {
+    const [post] = await db.insert(postsTable).values({
+      authorId: req.userId!,
+      content: contentVal,
+      imageUrl,
+      thumbnailUrl,
+    }).returning();
+    res.status(201).json(post);
+  } catch (dbErr: unknown) {
+    const msg = dbErr instanceof Error ? dbErr.message : String(dbErr);
+    const cause = (dbErr as { cause?: unknown })?.cause;
+    const detail = (cause as { detail?: string; message?: string })?.message ?? (cause as { detail?: string })?.detail ?? "";
+    console.error("[POST /posts] DB insert failed:", msg, "| cause:", detail);
+    res.status(500).json({ error: "Erreur lors de la publication : " + (detail || msg) });
+  }
 });
 
 router.get("/posts/:id", requireAuth, async (req, res): Promise<void> => {
