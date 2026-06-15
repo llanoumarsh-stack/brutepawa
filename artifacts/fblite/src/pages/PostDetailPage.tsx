@@ -5,8 +5,13 @@ import {
   apiGetComments,
   apiPostComment,
   apiToggleCommentLike,
+  apiPostVoiceComment,
+  apiUploadVoice,
+  apiDeleteComment,
   type PostComment,
 } from "../lib/api";
+import VoiceRecorder from "../components/VoiceRecorder";
+import VoicePlayer from "../components/VoicePlayer";
 
 const REACTIONS = [
   { id: "like",  label: "J'aime",    emoji: "👍", color: "#1877F2" },
@@ -87,7 +92,17 @@ export default function PostDetailPage({ postId }: Props) {
 
   const [replyingTo, setReplyingTo]       = useState<number | null>(null);
   const [replyName, setReplyName]         = useState("");
+  const [voiceMode, setVoiceMode]         = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleVoiceSend = async (blob: Blob, duration: number) => {
+    const { url } = await apiUploadVoice(blob, duration);
+    const parentId = replyingTo ?? undefined;
+    if (parentId) cancelReply();
+    const c = await apiPostVoiceComment(postId, url, duration, parentId);
+    setComments(prev => [...prev, c]);
+    setVoiceMode(false);
+  };
 
   useEffect(() => {
     apiFetch(`/posts/${postId}`)
@@ -318,7 +333,10 @@ export default function PostDetailPage({ postId }: Props) {
                     <div style={{ position: "relative", display: "inline-block", maxWidth: "100%" }}>
                       <div style={{ background: "#f0f2f5", borderRadius: 14, padding: "8px 12px" }}>
                         <div style={{ fontWeight: 700, fontSize: 13, color: "#050505", marginBottom: 1 }}>{c.authorFirstName} {c.authorLastName}</div>
-                        <div style={{ fontSize: 14, color: "#050505" }}>{c.content}</div>
+                        {c.audioUrl
+                          ? <VoicePlayer url={c.audioUrl} duration={c.audioDuration} />
+                          : <div style={{ fontSize: 14, color: "#050505" }}>{c.content}</div>
+                        }
                       </div>
                       {c.likesCount > 0 && (
                         <span style={{ position: "absolute", bottom: -6, right: -4, background: "#fff", borderRadius: 10, padding: "1px 4px 1px 2px", boxShadow: "0 1px 3px rgba(0,0,0,0.18)", fontSize: 11, display: "flex", alignItems: "center", gap: 1 }}>
@@ -386,33 +404,45 @@ export default function PostDetailPage({ postId }: Props) {
           </div>
         )}
 
-        <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px 12px" }}>
+        <div style={{ display: "flex", alignItems: voiceMode ? "flex-start" : "center", gap: 8, padding: "8px 12px 12px" }}>
           {user.avatarUrl
             ? <img src={user.avatarUrl} alt="moi" style={{ width: 34, height: 34, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
-            : <div style={{ width: 34, height: 34, borderRadius: "50%", background: "#1877F2", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 12, flexShrink: 0 }}>{userInitials}</div>
+            : <div style={{ width: 34, height: 34, borderRadius: "50%", background: "#42B72A", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 12, flexShrink: 0 }}>{userInitials}</div>
           }
-          <div style={{ flex: 1, background: "#f0f2f5", borderRadius: 22, display: "flex", alignItems: "center", padding: "0 6px 0 14px", gap: 4 }}>
-            <input
-              ref={inputRef}
-              style={{ flex: 1, background: "transparent", border: "none", padding: "9px 0", fontSize: 14, outline: "none", color: "#050505", minWidth: 0 }}
-              placeholder={replyingTo != null ? `Répondre à ${replyName.split(" ")[0]}…` : `Commenter en tant que ${user.name.split(" ")[0]}…`}
-              value={newComment}
-              onChange={e => setNewComment(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter") submit(); if (e.key === "Escape" && replyingTo) cancelReply(); }}
-              disabled={submitting}
+          {voiceMode ? (
+            <VoiceRecorder
+              onSend={handleVoiceSend}
+              onCancel={() => setVoiceMode(false)}
             />
-            {!newComment.trim() ? (
-              <div style={{ display: "flex", gap: 0, flexShrink: 0 }}>
-                {[{ icon: "🙂", key: "emoji" }, { icon: "GIF", key: "gif" }, { icon: "😊", key: "sticker" }].map(b => (
-                  <button key={b.key} style={{ background: "none", border: "none", padding: "6px 6px", cursor: "pointer", fontSize: b.key === "gif" ? 10 : 16, fontWeight: b.key === "gif" ? 700 : 400, color: "#65676b" }}>{b.icon}</button>
-                ))}
-              </div>
-            ) : (
-              <button onClick={submit} disabled={submitting}
-                style={{ background: "none", border: "none", padding: "6px 8px", cursor: "pointer", color: "#1877F2", fontSize: 18, opacity: submitting ? 0.6 : 1, flexShrink: 0 }}
-              >➤</button>
-            )}
-          </div>
+          ) : (
+            <div style={{ flex: 1, background: "#f0f2f5", borderRadius: 22, display: "flex", alignItems: "center", padding: "0 6px 0 14px", gap: 4 }}>
+              <input
+                ref={inputRef}
+                style={{ flex: 1, background: "transparent", border: "none", padding: "9px 0", fontSize: 14, outline: "none", color: "#050505", minWidth: 0 }}
+                placeholder={replyingTo != null ? `Répondre à ${replyName.split(" ")[0]}…` : `Commenter en tant que ${user.name.split(" ")[0]}…`}
+                value={newComment}
+                onChange={e => setNewComment(e.target.value)}
+                onKeyDown={e => { if (e.key === "Enter") submit(); if (e.key === "Escape" && replyingTo) cancelReply(); }}
+                disabled={submitting}
+              />
+              {!newComment.trim() ? (
+                <div style={{ display: "flex", gap: 0, flexShrink: 0, alignItems: "center" }}>
+                  {[{ icon: "🙂", key: "emoji" }, { icon: "GIF", key: "gif" }, { icon: "😊", key: "sticker" }].map(b => (
+                    <button key={b.key} style={{ background: "none", border: "none", padding: "6px 5px", cursor: "pointer", fontSize: b.key === "gif" ? 10 : 16, fontWeight: b.key === "gif" ? 700 : 400, color: "#65676b" }}>{b.icon}</button>
+                  ))}
+                  <button
+                    onClick={() => setVoiceMode(true)}
+                    title="Enregistrer un vocal"
+                    style={{ background: "none", border: "none", padding: "6px 6px", cursor: "pointer", fontSize: 18, color: "#65676b", lineHeight: 1, flexShrink: 0 }}
+                  >🎤</button>
+                </div>
+              ) : (
+                <button onClick={submit} disabled={submitting}
+                  style={{ background: "none", border: "none", padding: "6px 8px", cursor: "pointer", color: "#1877F2", fontSize: 18, opacity: submitting ? 0.6 : 1, flexShrink: 0 }}
+                >➤</button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
