@@ -12,6 +12,7 @@ import DeactivateProModal from "../components/DeactivateProModal";
 import VoirEnTantQueModal from "../components/VoirEnTantQueModal";
 import LockProfileModal from "../components/LockProfileModal";
 import ReviewTagsModal from "../components/ReviewTagsModal";
+import TagReviewSettingsPage from "../components/TagReviewSettingsPage";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -40,6 +41,7 @@ export default function Profile() {
   const [showVoirEnTantQue, setShowVoirEnTantQue] = useState(false);
   const [showLockProfile, setShowLockProfile] = useState(false);
   const [showReviewTags, setShowReviewTags] = useState(false);
+  const [showTagReviewSettings, setShowTagReviewSettings] = useState(false);
   const [isProfileLocked, setIsProfileLocked] = useState(() => localStorage.getItem("bp_profile_locked") === "1");
 
   const copyProfileLink = useCallback(() => {
@@ -166,7 +168,7 @@ export default function Profile() {
               { icon: "🟢", label: "Statut du profil",              action: () => { setShowProfileMenu(false); setShowProfileStatus(true); } },
               { icon: "🗄️", label: "Archive",                        action: () => { setShowProfileMenu(false); setShowArchive(true); } },
               { icon: "📊", label: "Historique d'activité",          action: () => { setShowProfileMenu(false); setShowActivityHistory(true); } },
-              { icon: "👁️", label: "Examiner les publications",      action: () => { setShowProfileMenu(false); setShowReviewTags(true); } },
+              { icon: "👁️", label: "Examiner les publications",      action: () => { setShowProfileMenu(false); setShowTagReviewSettings(true); } },
               { icon: "⭐", label: "Ajouter des éléments à la une", action: () => { setShowProfileMenu(false); setShowFeaturedContent(true); } },
               { icon: isProfileLocked ? "🔓" : "🔒", label: isProfileLocked ? "Déverrouiller le profil" : "Verrouiller le profil", action: () => { setShowProfileMenu(false); setShowLockProfile(true); } },
               { icon: "👤", label: "Voir en tant que",               action: () => { setShowProfileMenu(false); setShowVoirEnTantQue(true); } },
@@ -564,6 +566,16 @@ export default function Profile() {
 
       {showReviewTags && (
         <ReviewTagsModal onClose={() => setShowReviewTags(false)} />
+      )}
+
+      {showTagReviewSettings && (
+        <TagReviewSettingsPage
+          onClose={() => setShowTagReviewSettings(false)}
+          onOpenTagReview={() => {
+            setShowTagReviewSettings(false);
+            setShowReviewTags(true);
+          }}
+        />
       )}
     </div>
   );
