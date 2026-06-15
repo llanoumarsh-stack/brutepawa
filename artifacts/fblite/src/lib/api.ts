@@ -1275,6 +1275,21 @@ export async function apiDeleteComment(postId: number, commentId: number): Promi
   }
 }
 
+export async function apiUploadFile(file: File): Promise<{ url: string }> {
+  const token = getBpToken();
+  const headers: Record<string, string> = {
+    "Content-Type": file.type || "application/octet-stream",
+    "x-filename": file.name,
+  };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  const res = await fetch(`${BASE}/upload`, { method: "POST", headers, body: file });
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(e.error ?? "Upload échoué");
+  }
+  return res.json() as Promise<{ url: string }>;
+}
+
 export async function apiUploadVoice(blob: Blob, durationSec: number): Promise<{ url: string }> {
   const token = getBpToken();
   const ext = blob.type.includes("ogg") ? ".ogg" : blob.type.includes("mp4") ? ".m4a" : ".webm";
