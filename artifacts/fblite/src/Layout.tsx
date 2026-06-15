@@ -68,7 +68,7 @@ export default function Layout({ children, onNewPost }: Props) {
   const currentQs   = currentPath.includes("?") ? currentPath.slice(currentPath.indexOf("?") + 1) : "";
   const currentQ    = new URLSearchParams(currentQs).get("q") ?? "";
 
-  const menuPaths = ["/menu", "/wallet", "/tontines", "/formations", "/jobs"];
+  const menuPaths = ["/wallet", "/tontines", "/formations", "/jobs"];
   const activeTab = TABS.find(t => t.path === path)?.id
     ?? (menuPaths.some(p => path.startsWith(p)) ? "menu" : "home");
 
