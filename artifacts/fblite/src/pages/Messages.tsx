@@ -98,6 +98,17 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
   const [fabOpen, setFabOpen]   = useState(false);
   const [inboxTab, setInboxTab] = useState<"all" | "unread" | "groups">("all");
 
+  const [showConvMenu, setShowConvMenu]       = useState(false);
+  const [showNotifSub, setShowNotifSub]       = useState(false);
+  const [showDeleteConv, setShowDeleteConv]   = useState(false);
+  const [showWallpaper, setShowWallpaper]     = useState(false);
+  const [convWallpaper, setConvWallpaper]     = useState<string | null>(null);
+  const [showChatSearch, setShowChatSearch]   = useState(false);
+  const [chatSearchQ, setChatSearchQ]         = useState("");
+  const [chatSearchIdx, setChatSearchIdx]     = useState(0);
+  const [longPressMsg, setLongPressMsg]       = useState<number | null>(null);
+  const [showMicTip, setShowMicTip]           = useState(false);
+
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const activeGroupRef = useRef<number | null>(null);
   const groupBottomRef = useRef<HTMLDivElement>(null);
@@ -356,7 +367,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
   };
 
   const startLongPress = (msgId: number) => {
-    longPressTimer.current = setTimeout(() => { setSelectionMode(true); setSelectedMsgs(new Set([msgId])); }, 500);
+    longPressTimer.current = setTimeout(() => { setLongPressMsg(msgId); }, 500);
   };
   const cancelLongPress = () => {
     if (longPressTimer.current) { clearTimeout(longPressTimer.current); longPressTimer.current = null; }
@@ -850,82 +861,110 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
   }
 
   /* ══════════════════════════════════════════════════════════════
-     CONVERSATION VIEW — WhatsApp × Brute Pawa
+     CONVERSATION VIEW — Facebook Lite Messenger exact clone
   ══════════════════════════════════════════════════════════════ */
   if (activeConv && activeUser) {
+    const searchMatches = chatSearchQ.trim()
+      ? currentMessages.filter(m => m.text.toLowerCase().includes(chatSearchQ.toLowerCase()))
+      : [];
+    const highlightId = searchMatches[chatSearchIdx]?.id ?? null;
+
     return (
-      <div style={{ position: "fixed", top: 56, bottom: 60, left: 0, right: 0, display: "flex", flexDirection: "column", zIndex: 5, overflow: "hidden", background: "#ECE5DD" }}>
+      <div style={{ position:"fixed", top:56, bottom:60, left:0, right:0, display:"flex", flexDirection:"column", zIndex:5, overflow:"hidden" }}>
         <style>{`
-          .bp-chat-bg { background-color: #ECE5DD; background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231877F2' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
-          .bp-msg-mine { background: #1877F2; color: #fff; border-radius: 18px 18px 4px 18px; position: relative; }
-          .bp-msg-theirs { background: #fff; color: #111; border-radius: 18px 18px 18px 4px; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.12); }
+          .fbl-msg-mine   { background:#0084FF; color:#fff; border-radius:18px 18px 4px 18px; }
+          .fbl-msg-theirs { background:#E4E6EB; color:#111; border-radius:18px 18px 18px 4px; }
+          .fbl-menu-btn { display:flex; align-items:center; gap:14px; padding:13px 20px; background:none; border:none; width:100%; font-size:15px; color:#111; cursor:pointer; text-align:left; font-family:inherit; }
+          .fbl-menu-btn:active { background:#F0F2F5; }
+          .fbl-react-btn:active { transform:scale(1.35); }
+          @keyframes fbl-sheet-up { from{transform:translateY(100%)} to{transform:translateY(0)} }
+          @keyframes fbl-fade-in  { from{opacity:0} to{opacity:1} }
         `}</style>
 
-        {/* HEADER */}
-        {selectionMode ? (
-          <div style={{ background: "#0d47a1", padding: "10px 12px", display: "flex", alignItems: "center", gap: 14, flexShrink: 0, boxShadow: "0 2px 4px rgba(0,0,0,0.2)" }}>
-            <button onClick={exitSelection} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "#fff", display: "flex", alignItems: "center" }}>✕</button>
-            <span style={{ flex: 1, fontWeight: 700, fontSize: 18, color: "#fff" }}>{selectedMsgs.size} sélectionné{selectedMsgs.size > 1 ? "s" : ""}</span>
-            <button onClick={copySelected} title="Copier" style={{ background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: 20, padding: 6 }}>⎘</button>
-            <button title="Transférer" style={{ background: "none", border: "none", cursor: "pointer", color: "#fff", fontSize: 20, padding: 6 }}>↪</button>
-            <button onClick={() => selectedMsgs.size > 0 && setShowDeleteConfirm(true)} title="Supprimer" style={{ background: "none", border: "none", cursor: selectedMsgs.size > 0 ? "pointer" : "default", color: selectedMsgs.size > 0 ? "#fff" : "rgba(255,255,255,0.35)", fontSize: 20, padding: 6 }}>🗑</button>
+        {/* ── HEADER ── */}
+        {showChatSearch ? (
+          <div style={{ background:"#1877F2", padding:"8px 10px", display:"flex", alignItems:"center", gap:8, flexShrink:0, boxShadow:"0 2px 4px rgba(0,0,0,0.18)" }}>
+            <button onClick={() => { setShowChatSearch(false); setChatSearchQ(""); setChatSearchIdx(0); }}
+              style={{ background:"none", border:"none", fontSize:24, cursor:"pointer", color:"#fff", padding:"2px 4px 2px 0", display:"flex", alignItems:"center", lineHeight:1 }}>‹</button>
+            <div style={{ fontWeight:700, fontSize:15, color:"#fff", flex:1 }}>Rechercher</div>
+            {searchMatches.length > 0 && (
+              <div style={{ fontSize:13, color:"rgba(255,255,255,0.85)", flexShrink:0 }}>
+                {chatSearchIdx + 1} sur {searchMatches.length}
+              </div>
+            )}
+            <button style={{ background:"rgba(255,255,255,0.2)", border:"none", borderRadius:14, padding:"4px 10px", color:"#fff", fontSize:12, cursor:"pointer", fontWeight:600, flexShrink:0 }}>
+              Afficher en liste
+            </button>
+            <div style={{ display:"flex" }}>
+              <button onClick={() => setChatSearchIdx(i => Math.max(0, i - 1))}
+                style={{ background:"none", border:"none", color:"#fff", fontSize:16, cursor:"pointer", padding:"4px 6px", opacity: searchMatches.length === 0 ? 0.4 : 1 }}>▲</button>
+              <button onClick={() => setChatSearchIdx(i => Math.min(searchMatches.length - 1, i + 1))}
+                style={{ background:"none", border:"none", color:"#fff", fontSize:16, cursor:"pointer", padding:"4px 6px", opacity: searchMatches.length === 0 ? 0.4 : 1 }}>▼</button>
+            </div>
           </div>
         ) : (
-          <div style={{ background: "#1877F2", padding: "8px 10px", display: "flex", alignItems: "center", gap: 8, flexShrink: 0, boxShadow: "0 2px 4px rgba(0,0,0,0.18)" }}>
-            <button onClick={() => { setActiveConv(null); setOverlay("none"); }} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "#fff", display: "flex", alignItems: "center", padding: "4px 2px" }}>←</button>
-            <div style={{ position: "relative", cursor: "pointer" }} onClick={() => setOverlay("info")}>
-              <div className="avatar" style={{ background: "rgba(255,255,255,0.25)", width: 40, height: 40, fontSize: 14, color: "#fff", border: "2px solid rgba(255,255,255,0.4)" }}>{activeUser.initials}</div>
-              {presence.online && <div style={{ position: "absolute", bottom: 1, right: 1, width: 11, height: 11, background: "#42B72A", borderRadius: "50%", border: "2px solid #1877F2" }} />}
+          <div style={{ background:"#1877F2", padding:"8px 10px", display:"flex", alignItems:"center", gap:8, flexShrink:0, boxShadow:"0 2px 4px rgba(0,0,0,0.18)" }}>
+            <button onClick={() => { setActiveConv(null); setOverlay("none"); setShowConvMenu(false); }}
+              style={{ background:"none", border:"none", fontSize:24, cursor:"pointer", color:"#fff", display:"flex", alignItems:"center", padding:"2px 4px 2px 0", lineHeight:1 }}>‹</button>
+            <div style={{ position:"relative", cursor:"pointer", flexShrink:0 }} onClick={() => setOverlay("info")}>
+              <div className="avatar" style={{ background:"rgba(255,255,255,0.25)", width:40, height:40, fontSize:14, color:"#fff", border:"2px solid rgba(255,255,255,0.4)" }}>{activeUser.initials}</div>
+              {presence.online && <div style={{ position:"absolute", bottom:1, right:1, width:11, height:11, background:"#42B72A", borderRadius:"50%", border:"2px solid #1877F2" }} />}
             </div>
-            <div style={{ flex: 1, minWidth: 0, cursor: "pointer" }} onClick={() => setOverlay("info")}>
-              <div style={{ fontWeight: 700, fontSize: 15, color: "#fff", lineHeight: 1.2 }}>{activeUser.name}</div>
-              <div style={{ fontSize: 11.5, color: "rgba(255,255,255,0.85)", fontWeight: 500 }}>{presText}</div>
+            <div style={{ flex:1, minWidth:0, cursor:"pointer" }} onClick={() => setOverlay("info")}>
+              <div style={{ fontWeight:700, fontSize:15, color:"#fff", lineHeight:1.2 }}>{activeUser.name}</div>
+              <div style={{ fontSize:11, color:"rgba(255,255,255,0.85)" }}>{presText}</div>
             </div>
-            <div style={{ display: "flex", gap: 2 }}>
-              <button onClick={() => sig.startCall(activeConv, "audio")} title="Appel audio" style={{ background: "rgba(255,255,255,0.15)", border: "none", borderRadius: "50%", width: 38, height: 38, cursor: "pointer", fontSize: 17, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>📞</button>
-              <button onClick={() => sig.startCall(activeConv, "video")} title="Appel vidéo" style={{ background: "rgba(255,255,255,0.15)", border: "none", borderRadius: "50%", width: 38, height: 38, cursor: "pointer", fontSize: 17, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>📹</button>
-              <button onClick={() => setOverlay("info")} title="Infos" style={{ background: "rgba(255,255,255,0.15)", border: "none", borderRadius: "50%", width: 38, height: 38, cursor: "pointer", color: "#fff", fontSize: 18, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>⋮</button>
+            <button onClick={() => sig.startCall(activeConv, "audio")}
+              style={{ background:"none", border:"none", width:38, height:38, cursor:"pointer", color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.24 1.01L6.6 10.8z"/></svg>
+            </button>
+            <div style={{ position:"relative", flexShrink:0 }}>
+              <button onClick={() => { setShowConvMenu(m => !m); setShowNotifSub(false); }}
+                style={{ background:"none", border:"none", width:38, height:38, cursor:"pointer", color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, fontWeight:900 }}>⋮</button>
             </div>
           </div>
         )}
 
-        {/* MESSAGES AREA */}
-        <div className="bp-chat-bg" style={{ flex: 1, overflowY: "auto", padding: "10px 10px 6px", display: "flex", flexDirection: "column", gap: 2 }}>
-          <div style={{ textAlign: "center", fontSize: 11.5, color: "#555", background: "rgba(255,255,255,0.85)", borderRadius: 20, padding: "4px 14px", margin: "2px auto 10px", display: "inline-block", alignSelf: "center", boxShadow: "0 1px 2px rgba(0,0,0,0.08)" }}>Aujourd'hui</div>
+        {/* SEARCH INPUT BAR */}
+        {showChatSearch && (
+          <div style={{ background:"#fff", padding:"6px 12px", borderBottom:"1px solid #E4E6EB", flexShrink:0 }}>
+            <input value={chatSearchQ} onChange={e => { setChatSearchQ(e.target.value); setChatSearchIdx(0); }}
+              placeholder="Rechercher dans la conversation…"
+              autoFocus
+              style={{ width:"100%", background:"#F0F2F5", border:"none", borderRadius:20, padding:"8px 14px", fontSize:14, outline:"none", boxSizing:"border-box" }} />
+          </div>
+        )}
+
+        {/* ── MESSAGES AREA ── */}
+        <div style={{ flex:1, overflowY:"auto", padding:"8px 10px 4px", display:"flex", flexDirection:"column", gap:2, background: convWallpaper ?? "#fff" }}>
+          <div style={{ textAlign:"center", fontSize:11.5, color:"#888", background:"rgba(0,0,0,0.05)", borderRadius:20, padding:"3px 14px", margin:"4px auto 10px", display:"inline-block", alignSelf:"center" }}>Aujourd'hui</div>
           {currentMessages.map((msg, i) => {
-            const isFirst    = i === 0 || currentMessages[i - 1]?.mine !== msg.mine;
-            const isLast     = i === currentMessages.length - 1 || currentMessages[i + 1]?.mine !== msg.mine;
-            const isSelected = selectedMsgs.has(msg.id);
-            const longPressHandlers = {
-              onMouseDown:   () => startLongPress(msg.id), onMouseUp:     cancelLongPress, onMouseLeave:  cancelLongPress,
-              onTouchStart:  () => startLongPress(msg.id), onTouchEnd:    cancelLongPress, onTouchMove:   cancelLongPress,
-              onContextMenu: (e: React.MouseEvent) => { e.preventDefault(); startLongPress(msg.id); },
-            };
+            const isLast = i === currentMessages.length - 1 || currentMessages[i + 1]?.mine !== msg.mine;
+            const isHL   = showChatSearch && chatSearchQ.trim() && msg.text.toLowerCase().includes(chatSearchQ.toLowerCase());
+            const isAct  = msg.id === highlightId;
             return (
-              <div key={msg.id} onClick={() => selectionMode && toggleSelect(msg.id)}
-                style={{ display: "flex", justifyContent: msg.mine ? "flex-end" : "flex-start", alignItems: "flex-end", gap: 6, marginTop: isFirst ? 6 : 1, paddingLeft: selectionMode ? 4 : 0, background: isSelected ? "rgba(24,119,242,0.12)" : "transparent", borderRadius: 8, cursor: selectionMode ? "pointer" : "default", transition: "background 0.15s", userSelect: "none", paddingRight: msg.mine ? 4 : 0 }}>
-                {selectionMode && (
-                  <div style={{ width: 22, height: 22, borderRadius: "50%", flexShrink: 0, border: isSelected ? "none" : "2px solid #aaa", background: isSelected ? "#1877F2" : "transparent", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    {isSelected && <span style={{ color: "#fff", fontSize: 12, fontWeight: 700 }}>✓</span>}
+              <div key={msg.id}
+                style={{ display:"flex", justifyContent: msg.mine ? "flex-end" : "flex-start", alignItems:"flex-end", gap:6, marginTop:2, background: isAct ? "rgba(24,119,242,0.15)" : isHL ? "rgba(255,235,59,0.25)" : "transparent", borderRadius:8, transition:"background 0.2s" }}
+                onMouseDown={() => startLongPress(msg.id)} onMouseUp={cancelLongPress} onMouseLeave={cancelLongPress}
+                onTouchStart={() => startLongPress(msg.id)} onTouchEnd={cancelLongPress} onTouchMove={cancelLongPress}
+                onContextMenu={e => { e.preventDefault(); cancelLongPress(); setLongPressMsg(msg.id); }}>
+                {!msg.mine && (
+                  <div style={{ width:28, flexShrink:0, alignSelf:"flex-end", paddingBottom:2 }}>
+                    {isLast && <div className="avatar xs" style={{ background:activeUser.color, width:26, height:26, fontSize:10 }}>{activeUser.initials}</div>}
                   </div>
                 )}
-                {!msg.mine && !selectionMode && (
-                  <div style={{ width: 28, flexShrink: 0, alignSelf: "flex-end", paddingBottom: 2 }}>
-                    {isLast && <div className="avatar xs" style={{ background: activeUser.color, width: 26, height: 26, fontSize: 10 }}>{activeUser.initials}</div>}
-                  </div>
-                )}
-                <div style={{ maxWidth: "72%", display: "flex", flexDirection: "column" }} {...(!selectionMode ? longPressHandlers : {})}>
+                <div style={{ maxWidth:"72%" }}>
                   {msg.attachment && (
-                    <div style={{ background: msg.mine ? "#1564c0" : "#f1f1f1", color: msg.mine ? "#fff" : "#111", borderRadius: 14, padding: "8px 12px", marginBottom: 2, fontSize: 13, display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontSize: 18 }}>{msg.attachment.type === "image" ? "🖼️" : msg.attachment.type === "doc" ? "📄" : msg.attachment.type === "location" ? "📍" : "🎵"}</span>
+                    <div style={{ background: msg.mine ? "#1564c0" : "#f1f1f1", color: msg.mine ? "#fff" : "#111", borderRadius:14, padding:"8px 12px", marginBottom:2, fontSize:13, display:"flex", alignItems:"center", gap:8 }}>
+                      <span style={{ fontSize:18 }}>{msg.attachment.type==="image"?"🖼️":msg.attachment.type==="doc"?"📄":msg.attachment.type==="location"?"📍":"🎵"}</span>
                       <span>{msg.attachment.label}</span>
                     </div>
                   )}
-                  <div className={msg.mine ? "bp-msg-mine" : "bp-msg-theirs"} style={{ padding: "8px 12px 6px", fontSize: 14.5, lineHeight: 1.45, wordBreak: "break-word" }}>
+                  <div className={msg.mine ? "fbl-msg-mine" : "fbl-msg-theirs"} style={{ padding:"8px 12px 5px", fontSize:14.5, lineHeight:1.45, wordBreak:"break-word" }}>
                     {msg.text}
-                    <div style={{ fontSize: 10, marginTop: 2, color: msg.mine ? "rgba(255,255,255,0.75)" : "#888", textAlign: "right", display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 3 }}>
+                    <div style={{ fontSize:10, marginTop:2, color: msg.mine ? "rgba(255,255,255,0.72)" : "#888", textAlign:"right", display:"flex", justifyContent:"flex-end", alignItems:"center", gap:3 }}>
                       {msg.time}
-                      {msg.mine && <span style={{ color: msg.status === "read" ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.6)", fontSize: 11 }}>{msg.status === "read" ? "✓✓" : "✓"}</span>}
+                      {msg.mine && <span style={{ fontSize:11 }}>{msg.status === "read" ? "✓✓" : "✓"}</span>}
                     </div>
                   </div>
                 </div>
@@ -933,85 +972,191 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
             );
           })}
           {currentMessages.length === 0 && (
-            <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "40px 0" }}>
-              <div style={{ background: "rgba(255,255,255,0.85)", borderRadius: 16, padding: "12px 20px", fontSize: 13, color: "#555", textAlign: "center", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>🔒 Les messages sont chiffrés de bout en bout</div>
+            <div style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", padding:"40px 0" }}>
+              <div style={{ background:"rgba(0,0,0,0.06)", borderRadius:16, padding:"12px 20px", fontSize:13, color:"#555" }}>
+                🔒 Les messages sont chiffrés de bout en bout
+              </div>
             </div>
           )}
           <div ref={bottomRef} />
         </div>
 
-        {/* ATTACHMENT PICKER */}
-        {overlay === "attach" && (
-          <div style={{ position: "absolute", bottom: 58, left: 0, right: 0, background: "#fff", borderTop: "1px solid #e4e6eb", padding: "16px 20px 18px", boxShadow: "0 -4px 20px rgba(0,0,0,0.1)" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
-              {[
-                { icon: "🖼️", label: "Photo",    bg: "#E91E63", action: () => { sendMsg("📷 Photo envoyée", { type: "image", label: "photo.jpg" }); setOverlay("none"); } },
-                { icon: "📄", label: "Document", bg: "#9C27B0", action: () => { sendMsg("📄 Document envoyé", { type: "doc", label: "document.pdf" }); setOverlay("none"); } },
-                { icon: "📍", label: "Position", bg: "#F44336", action: () => { sendMsg("📍 Ma position", { type: "location", label: "Abidjan, Cocody" }); setOverlay("none"); } },
-                { icon: "🎵", label: "Audio",    bg: "#FF9800", action: () => { sendMsg("🎵 Message vocal (0:08)", { type: "audio", label: "vocal.m4a" }); setOverlay("none"); } },
-                { icon: "🛍️", label: "Produit",  bg: "#1877F2", action: () => { sendMsg("🛍️ Tissu Wax — 4 500 FCFA"); setOverlay("none"); } },
-                { icon: "💸", label: "Paiement", bg: "#4CAF50", action: () => { sendMsg("💸 Demande : 15 000 FCFA"); setOverlay("none"); } },
-                { icon: "📅", label: "RDV",      bg: "#00BCD4", action: () => { sendMsg("📅 Rendez-vous : demain 10h"); setOverlay("none"); } },
-                { icon: "📊", label: "Sondage",  bg: "#607D8B", action: () => { sendMsg("📊 Sondage : quel créneau ?"); setOverlay("none"); } },
-              ].map(item => (
-                <div key={item.label} onClick={item.action} style={{ textAlign: "center", cursor: "pointer" }}>
-                  <div style={{ width: 52, height: 52, background: item.bg, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, margin: "0 auto 6px", boxShadow: `0 2px 8px ${item.bg}55` }}>{item.icon}</div>
-                  <div style={{ fontSize: 11, color: "#444", fontWeight: 600 }}>{item.label}</div>
+        {/* ── INPUT BAR — FB Lite exact ── */}
+        <div style={{ background:"#F0F2F5", padding:"6px 8px", display:"flex", gap:4, alignItems:"center", flexShrink:0 }}>
+          <button style={{ background:"none", border:"none", fontSize:24, cursor:"pointer", color:"#1877F2", padding:"4px 6px", flexShrink:0, display:"flex", alignItems:"center" }}>😊</button>
+          <div style={{ flex:1 }}>
+            <input value={newMsg} onChange={e => setNewMsg(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMsg(); } }}
+              placeholder="Message"
+              style={{ width:"100%", background:"#fff", border:"none", borderRadius:22, padding:"10px 14px", fontSize:15, outline:"none", boxSizing:"border-box", color:"#111", boxShadow:"0 1px 2px rgba(0,0,0,0.1)" }} />
+          </div>
+          {newMsg.trim() ? (
+            <button onClick={() => sendMsg()}
+              style={{ background:"#1877F2", border:"none", borderRadius:"50%", width:38, height:38, color:"#fff", cursor:"pointer", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(24,119,242,0.4)" }}>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            </button>
+          ) : (
+            <>
+              <button style={{ background:"none", border:"none", fontSize:22, cursor:"pointer", color:"#1877F2", padding:"4px 6px", flexShrink:0, display:"flex", alignItems:"center" }}>📎</button>
+              <div style={{ position:"relative", flexShrink:0 }}>
+                <button
+                  onMouseEnter={() => setShowMicTip(true)} onMouseLeave={() => setShowMicTip(false)}
+                  onTouchStart={() => setShowMicTip(true)}  onTouchEnd={() => setShowMicTip(false)}
+                  style={{ background:"#1877F2", border:"none", borderRadius:"50%", width:38, height:38, color:"#fff", cursor:"pointer", fontSize:18, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(24,119,242,0.4)" }}>🎤</button>
+                {showMicTip && (
+                  <div style={{ position:"absolute", bottom:46, right:0, background:"rgba(0,0,0,0.76)", color:"#fff", borderRadius:8, padding:"6px 12px", fontSize:12, whiteSpace:"nowrap", zIndex:60, pointerEvents:"none" }}>
+                    Maintenir pour filmer. Toucher pour un vocal.
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* ── ⋮ DROPDOWN MENU ── */}
+        {showConvMenu && (
+          <>
+            <div style={{ position:"fixed", inset:0, zIndex:98 }} onClick={() => { setShowConvMenu(false); setShowNotifSub(false); }} />
+            <div style={{ position:"fixed", top:56+56, right:8, background:"#fff", borderRadius:12, boxShadow:"0 4px 24px rgba(0,0,0,0.22)", zIndex:99, minWidth:234, overflow:"hidden", animation:"fbl-fade-in 0.15s ease" }}
+              onClick={e => e.stopPropagation()}>
+              <button className="fbl-menu-btn" onClick={() => setShowNotifSub(n => !n)}>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="#555"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                <span style={{ flex:1 }}>Notifications</span>
+                <span style={{ color:"#bbb", fontSize:16, transition:"transform 0.2s", transform: showNotifSub ? "rotate(90deg)" : "none" }}>›</span>
+              </button>
+              {showNotifSub && (
+                <div style={{ background:"#F8F9FA", borderTop:"1px solid #EAEAEA", borderBottom:"1px solid #EAEAEA" }}>
+                  <button className="fbl-menu-btn" style={{ paddingLeft:36, fontSize:14, color:"#555" }} onClick={() => setShowNotifSub(false)}>
+                    <span style={{ fontSize:14 }}>‹</span> <span>Retour</span>
+                  </button>
+                  <button className="fbl-menu-btn" style={{ paddingLeft:36, fontSize:14 }}>🔕 Couper le son</button>
+                  <button className="fbl-menu-btn" style={{ paddingLeft:36, fontSize:14 }}>⏱ Désactiver pour…</button>
+                  <button className="fbl-menu-btn" style={{ paddingLeft:36, fontSize:14 }}>⚙️ Personnaliser</button>
+                  <button className="fbl-menu-btn" style={{ paddingLeft:36, fontSize:14, color:"#E02020" }} onClick={() => setShowConvMenu(false)}>🚫 Désactiver</button>
                 </div>
+              )}
+              <button className="fbl-menu-btn" onClick={() => { sig.startCall(activeConv, "video"); setShowConvMenu(false); }}>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="#555"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+                Appel vidéo
+              </button>
+              <button className="fbl-menu-btn" onClick={() => { setShowChatSearch(true); setShowConvMenu(false); }}>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="#555"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                Rechercher
+              </button>
+              <button className="fbl-menu-btn" onClick={() => { setShowWallpaper(true); setShowConvMenu(false); }}>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="#555"><path d="M21 3H3C2 3 1 4 1 5v14c0 1.1.9 2 2 2h18c1 0 2-1 2-2V5c0-1-1-2-2-2zM5 17l3.5-4.5 2.5 3.01L14.5 11l4.5 6H5z"/></svg>
+                Fond d'écran
+              </button>
+              <div style={{ height:1, background:"#F0F2F5" }} />
+              <button className="fbl-menu-btn" onClick={() => { setMessages(prev => ({ ...prev, [activeConv!]: [] })); setShowConvMenu(false); }}>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="#555"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                Effacer l'historique
+              </button>
+              <button className="fbl-menu-btn" style={{ color:"#E02020" }} onClick={() => { setShowDeleteConv(true); setShowConvMenu(false); }}>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="#E02020"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 2.75c1.24 0 2.25 1.01 2.25 2.25S13.24 11.25 12 11.25 9.75 10.24 9.75 9 10.76 6.75 12 6.75zM17 17H7v-.75c0-1.67 3.33-2.5 5-2.5s5 .83 5 2.5V17z"/></svg>
+                Supprimer l'échange
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* ── LONG-PRESS CONTEXT MENU (reactions + actions) ── */}
+        {longPressMsg !== null && (
+          <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.45)", zIndex:200, display:"flex", flexDirection:"column", justifyContent:"flex-end", animation:"fbl-fade-in 0.15s ease" }}
+            onClick={() => setLongPressMsg(null)}>
+            <div style={{ background:"#fff", borderRadius:"20px 20px 0 0", paddingBottom:8, animation:"fbl-sheet-up 0.25s ease" }} onClick={e => e.stopPropagation()}>
+              <div style={{ display:"flex", justifyContent:"space-around", padding:"16px 8px 14px", borderBottom:"1px solid #F0F2F5" }}>
+                {["😊","❤️","👍","👎","🔥","😍","👏"].map(em => (
+                  <button key={em} className="fbl-react-btn"
+                    style={{ background:"none", border:"none", fontSize:30, cursor:"pointer", padding:6, borderRadius:"50%", transition:"transform 0.1s" }}
+                    onClick={() => setLongPressMsg(null)}>
+                    {em}
+                  </button>
+                ))}
+              </div>
+              {([
+                { icon:"↩️", label:"Répondre"   },
+                { icon:"⎘",  label:"Copier"     },
+                { icon:"↪️", label:"Transférer" },
+                { icon:"📌", label:"Épingler"   },
+                { icon:"🗑️", label:"Supprimer", danger:true },
+              ] as { icon:string; label:string; danger?:boolean }[]).map(a => (
+                <button key={a.label} className="fbl-menu-btn"
+                  style={{ color: a.danger ? "#E02020" : "#111" }}
+                  onClick={() => {
+                    if (a.label === "Copier") {
+                      const m = currentMessages.find(x => x.id === longPressMsg);
+                      if (m) navigator.clipboard.writeText(m.text).catch(() => {});
+                    }
+                    if (a.label === "Supprimer") {
+                      setMessages(prev => ({ ...prev, [activeConv!]: (prev[activeConv!] ?? []).filter(x => x.id !== longPressMsg) }));
+                    }
+                    setLongPressMsg(null);
+                  }}>
+                  <span style={{ fontSize:20, lineHeight:1 }}>{a.icon}</span>
+                  {a.label}
+                </button>
               ))}
             </div>
           </div>
         )}
 
-        {/* BOTTOM BAR */}
-        {selectionMode ? (
-          <div style={{ background: "#fff", borderTop: "1px solid #e4e6eb", display: "flex", flexShrink: 0 }}>
-            {[{ icon: "↩", label: "Répondre" }, { icon: "→", label: "Transférer" }].map(action => (
-              <button key={action.label} style={{ flex: 1, background: "none", border: "none", padding: "14px 0", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 4, borderRight: action.label === "Répondre" ? "1px solid #e4e6eb" : "none" }}>
-                <span style={{ fontSize: 20 }}>{action.icon}</span>
-                <span style={{ fontSize: 12, color: "#555", fontWeight: 600 }}>{action.label}</span>
-              </button>
-            ))}
-          </div>
-        ) : (
-          <div style={{ background: "#f0f2f5", padding: "6px 8px", display: "flex", gap: 6, alignItems: "center", flexShrink: 0 }}>
-            <button onClick={() => setOverlay(o => o === "attach" ? "none" : "attach")}
-              style={{ background: overlay === "attach" ? "#1877F2" : "#fff", border: "none", width: 40, height: 40, borderRadius: "50%", cursor: "pointer", fontSize: 20, display: "flex", alignItems: "center", justifyContent: "center", color: overlay === "attach" ? "#fff" : "#555", flexShrink: 0, transition: "all 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.12)" }}>
-              {overlay === "attach" ? "✕" : "＋"}
-            </button>
-            <div style={{ flex: 1, position: "relative" }}>
-              <input value={newMsg} onChange={e => { setNewMsg(e.target.value); if (overlay === "attach") setOverlay("none"); }}
-                onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMsg(); } }}
-                placeholder="Message..."
-                style={{ width: "100%", background: "#fff", border: "none", borderRadius: 22, padding: "10px 14px", fontSize: 15, outline: "none", boxSizing: "border-box", color: "#111", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }} />
+        {/* ── WALLPAPER / FOND D'ÉCRAN SELECTOR ── */}
+        {showWallpaper && (
+          <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", zIndex:200, display:"flex", flexDirection:"column", justifyContent:"flex-end", animation:"fbl-fade-in 0.15s ease" }}
+            onClick={() => setShowWallpaper(false)}>
+            <div style={{ background:"#fff", borderRadius:"20px 20px 0 0", padding:"20px 16px 32px", animation:"fbl-sheet-up 0.25s ease" }} onClick={e => e.stopPropagation()}>
+              <div style={{ fontWeight:700, fontSize:16, color:"#111", marginBottom:18, textAlign:"center" }}>Sélectionnez un thème</div>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(5, 1fr)", gap:14 }}>
+                {([
+                  { color:null,      label:"Défaut" },
+                  { color:"#FFF3E0", label:"Chaud"  },
+                  { color:"#E8F5E9", label:"Vert"   },
+                  { color:"#E3F2FD", label:"Bleu"   },
+                  { color:"#FCE4EC", label:"Rose"   },
+                  { color:"#F3E5F5", label:"Violet" },
+                  { color:"#E8EAF6", label:"Indigo" },
+                  { color:"#E0F7FA", label:"Cyan"   },
+                  { color:"#FFFDE7", label:"Jaune"  },
+                  { color:"#EFEBE9", label:"Brun"   },
+                ] as { color:string|null; label:string }[]).map(t => {
+                  const active = convWallpaper === t.color;
+                  return (
+                    <div key={t.label} style={{ textAlign:"center", cursor:"pointer" }}
+                      onClick={() => { setConvWallpaper(t.color); setShowWallpaper(false); }}>
+                      <div style={{ width:52, height:52, borderRadius:"50%", background: t.color ?? "#fff", border: active ? "3px solid #1877F2" : "2px solid #E4E6EB", margin:"0 auto 4px", boxShadow: active ? "0 0 0 2px rgba(24,119,242,0.3)" : "none" }} />
+                      <div style={{ fontSize:11, color: active ? "#1877F2" : "#555", fontWeight: active ? 700 : 400 }}>{t.label}</div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-            {newMsg.trim() ? (
-              <button onClick={() => sendMsg()} style={{ background: "#1877F2", border: "none", borderRadius: "50%", width: 40, height: 40, color: "#fff", cursor: "pointer", fontSize: 16, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(24,119,242,0.5)" }}>➤</button>
-            ) : (
-              <button style={{ background: "#1877F2", border: "none", borderRadius: "50%", width: 40, height: 40, color: "#fff", cursor: "pointer", fontSize: 18, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(24,119,242,0.5)" }}>🎤</button>
-            )}
           </div>
         )}
 
-        {/* DELETE MODAL */}
-        {showDeleteConfirm && (
-          <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50, padding: "0 24px" }}
-            onClick={e => { if (e.target === e.currentTarget) setShowDeleteConfirm(false); }}>
-            <div style={{ background: "#fff", borderRadius: 16, width: "100%", maxWidth: 340, padding: "24px 20px 16px", boxShadow: "0 8px 32px rgba(0,0,0,0.25)" }}>
-              <div style={{ fontWeight: 800, fontSize: 16, color: "#111", marginBottom: 10 }}>Supprimer le message</div>
-              <div style={{ fontSize: 14, color: "#555", marginBottom: 18, lineHeight: 1.5 }}>Supprimer {selectedMsgs.size > 1 ? `ces ${selectedMsgs.size} messages` : "ce message"} ?</div>
-              {(() => {
-                const allMine = [...selectedMsgs].every(id => (messages[activeConv!] ?? []).find(m => m.id === id)?.mine);
-                return allMine ? (
-                  <label style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20, cursor: "pointer" }}>
-                    <input type="checkbox" checked={deleteForAll} onChange={e => setDeleteForAll(e.target.checked)} style={{ width: 18, height: 18, cursor: "pointer", accentColor: "#1877F2" }} />
-                    <span style={{ fontSize: 14, color: "#333" }}>Supprimer aussi pour {activeUser?.name ?? "l'autre"}</span>
-                  </label>
-                ) : null;
-              })()}
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: 4 }}>
-                <button onClick={() => setShowDeleteConfirm(false)} style={{ background: "none", border: "none", padding: "10px 16px", fontSize: 15, fontWeight: 700, color: "#1877F2", cursor: "pointer", borderRadius: 8 }}>Annuler</button>
-                <button onClick={confirmDelete} style={{ background: "none", border: "none", padding: "10px 16px", fontSize: 15, fontWeight: 700, color: "#F44336", cursor: "pointer", borderRadius: 8 }}>Supprimer</button>
+        {/* ── SUPPRIMER L'ÉCHANGE DIALOG ── */}
+        {showDeleteConv && (
+          <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:300, padding:"0 24px", animation:"fbl-fade-in 0.15s ease" }}
+            onClick={e => { if (e.target === e.currentTarget) setShowDeleteConv(false); }}>
+            <div style={{ background:"#fff", borderRadius:16, width:"100%", maxWidth:340, padding:"24px 20px 16px", boxShadow:"0 8px 32px rgba(0,0,0,0.28)" }}>
+              <div style={{ fontWeight:800, fontSize:16, color:"#111", marginBottom:10 }}>Supprimer l'échange</div>
+              <div style={{ fontSize:14, color:"#555", marginBottom:18, lineHeight:1.55 }}>
+                Voulez-vous vraiment supprimer l'échange avec <strong>{activeUser.name}</strong> ?
+              </div>
+              <label style={{ display:"flex", alignItems:"center", gap:10, marginBottom:22, cursor:"pointer" }}>
+                <input type="checkbox" checked={deleteForAll} onChange={e => setDeleteForAll(e.target.checked)}
+                  style={{ width:18, height:18, accentColor:"#1877F2", cursor:"pointer" }} />
+                <span style={{ fontSize:14, color:"#333" }}>Supprimer aussi pour {activeUser.name}</span>
+              </label>
+              <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                <button onClick={() => { setMessages(prev => ({ ...prev, [activeConv!]: [] })); setActiveConv(null); setShowDeleteConv(false); setDeleteForAll(false); }}
+                  style={{ background:"#E02020", border:"none", borderRadius:8, padding:"13px", fontSize:15, fontWeight:700, color:"#fff", cursor:"pointer" }}>
+                  Supprimer l'échange
+                </button>
+                <button onClick={() => setShowDeleteConv(false)}
+                  style={{ background:"none", border:"none", padding:"10px", fontSize:15, fontWeight:600, color:"#1877F2", cursor:"pointer" }}>
+                  Annuler
+                </button>
               </div>
             </div>
           </div>
