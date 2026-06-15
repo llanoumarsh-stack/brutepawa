@@ -9,7 +9,6 @@ const COUNTRY_FLAGS: Record<string, string> = {
   ML: "🇲🇱", GN: "🇬🇳", CM: "🇨🇲", TD: "🇹🇩", GA: "🇬🇦", CG: "🇨🇬",
   CD: "🇨🇩", CF: "🇨🇫", GH: "🇬🇭",
 };
-
 const AVATAR_COLORS = ["#1877F2","#E91E63","#9C27B0","#F57C00","#388E3C","#212121","#D32F2F","#00838F"];
 
 function getInitials(name: string) { return name.slice(0, 2).toUpperCase(); }
@@ -28,6 +27,29 @@ function timeAgo(iso: string): string {
   return `Il y a ${d} j`;
 }
 
+/* ── SVG tab icons (filled = active, outline = inactive) ── */
+function IconHome({ active }: { active: boolean }) {
+  return active
+    ? <svg width="24" height="24" viewBox="0 0 24 24" fill="#1877F2"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    : <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#65676b" strokeWidth="2" strokeLinejoin="round"><path d="M3 12L12 3l9 9M5 10v9a1 1 0 0 0 1 1h4v-5h4v5h4a1 1 0 0 0 1-1v-9"/></svg>;
+}
+function IconFriends({ active }: { active: boolean }) {
+  const c = active ? "#1877F2" : "#65676b";
+  return <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="3.5" stroke={c} strokeWidth={active?2:1.8} fill={active?"#1877F2":"none"} fillOpacity={active?.15:0}/><circle cx="17" cy="8" r="2.5" stroke={c} strokeWidth={active?2:1.8} fill="none"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6" stroke={c} strokeWidth={active?2:1.8} strokeLinecap="round" fill="none"/><path d="M19 14c2.5.5 4 2 4 4.5" stroke={c} strokeWidth={active?2:1.8} strokeLinecap="round" fill="none"/></svg>;
+}
+function IconMessenger({ active }: { active: boolean }) {
+  const c = active ? "#1877F2" : "#65676b";
+  return <svg width="24" height="24" viewBox="0 0 24 24" fill={active?"#1877F2":"none"}><path d="M12 2C6.48 2 2 6.2 2 11.4c0 2.77 1.26 5.26 3.28 6.99V22l3.56-1.96c.95.26 1.96.4 3.16.4 5.52 0 10-4.2 10-9.4S17.52 2 12 2z" stroke={c} strokeWidth="1.8" fill={active?"#1877F2":"none"} fillOpacity={active?1:0}/><path d="M7 13l2.5-2.5 2.5 2.5 4-5" stroke={active?"#fff":"#65676b"} strokeWidth={active?2:1.8} strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>;
+}
+function IconBell({ active }: { active: boolean }) {
+  const c = active ? "#1877F2" : "#65676b";
+  return <svg width="24" height="24" viewBox="0 0 24 24" fill={active?"#1877F2":"none"}><path d="M18 8a6 6 0 0 0-12 0c0 4-2 5-2 5h16s-2-1-2-5" stroke={c} strokeWidth="1.8" strokeLinecap="round" fill={active?"#1877F2":"none"}/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke={c} strokeWidth="1.8" strokeLinecap="round" fill="none"/></svg>;
+}
+function IconShop({ active }: { active: boolean }) {
+  const c = active ? "#1877F2" : "#65676b";
+  return <svg width="24" height="24" viewBox="0 0 24 24" fill={active?"#1877F2":"none"}><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" stroke={c} strokeWidth="1.8" fill={active?"#1877F2":"none"} fillOpacity={active?.15:0}/><line x1="3" y1="6" x2="21" y2="6" stroke={c} strokeWidth="1.8"/><path d="M16 10a4 4 0 0 1-8 0" stroke={c} strokeWidth="1.8" fill="none"/></svg>;
+}
+
 export default function Feed() {
   const navigate = useNavigate();
   const [posts, setPosts] = useState<FeedPost[]>([]);
@@ -35,7 +57,7 @@ export default function Feed() {
   const [showModal, setShowModal] = useState(false);
   const [newPost, setNewPost] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [activeTab, setActiveTab] = useState<"feed" | "friends" | "marketplace" | "notifs" | "menu">("feed");
+  const [activeTab, setActiveTab] = useState<"feed" | "friends" | "messenger" | "notifs" | "shop">("feed");
 
   const [storyGroups, setStoryGroups] = useState<StoryGroup[]>([]);
   const [viewerOpen, setViewerOpen] = useState(false);
@@ -58,31 +80,17 @@ export default function Feed() {
 
   const loadPosts = useCallback(async () => {
     setLoading(true);
-    try {
-      const data = await apiGetPosts();
-      setPosts(data);
-    } catch {
-      setPosts([]);
-    } finally {
-      setLoading(false);
-    }
+    try { const data = await apiGetPosts(); setPosts(data); }
+    catch { setPosts([]); }
+    finally { setLoading(false); }
   }, []);
 
   const loadStories = useCallback(async () => {
-    try {
-      const data = await apiGetStories();
-      setStoryGroups(data);
-    } catch {
-      setStoryGroups([]);
-    }
+    try { setStoryGroups(await apiGetStories()); }
+    catch { setStoryGroups([]); }
   }, []);
 
   useEffect(() => { loadPosts(); loadStories(); }, [loadPosts, loadStories]);
-
-  const openStories = (groupIdx: number) => {
-    setViewerGroupIdx(groupIdx);
-    setViewerOpen(true);
-  };
 
   const toggleLike = async (id: number) => {
     const post = posts.find(p => p.id === id);
@@ -97,26 +105,29 @@ export default function Feed() {
   const submitPost = async () => {
     if (!newPost.trim() || submitting) return;
     setSubmitting(true);
-    try {
-      await apiCreatePost(newPost.trim());
-      setNewPost("");
-      setShowModal(false);
-      await loadPosts();
-    } catch {
-      /* silent */
-    } finally {
-      setSubmitting(false);
-    }
+    try { await apiCreatePost(newPost.trim()); setNewPost(""); setShowModal(false); await loadPosts(); }
+    catch { /* silent */ }
+    finally { setSubmitting(false); }
   };
 
-  const logout = () => {
-    localStorage.removeItem("fb_user");
-    localStorage.removeItem("bp_token");
-    navigate("/login");
+  const handleTabClick = (tab: typeof activeTab) => {
+    setActiveTab(tab);
+    if (tab === "messenger") navigate("/messages");
+    if (tab === "notifs")    navigate("/notifications");
+    if (tab === "shop")      navigate("/marketplace");
+    if (tab === "friends")   navigate("/search");
   };
+
+  const TABS: { id: typeof activeTab; Icon: React.FC<{ active: boolean }> }[] = [
+    { id: "feed",      Icon: IconHome },
+    { id: "friends",   Icon: IconFriends },
+    { id: "messenger", Icon: IconMessenger },
+    { id: "notifs",    Icon: IconBell },
+    { id: "shop",      Icon: IconShop },
+  ];
 
   return (
-    <>
+    <div style={{ background: "#f0f2f5", minHeight: "100vh", paddingBottom: 20 }}>
       {viewerOpen && storyGroups.length > 0 && (
         <StoryViewer
           groups={storyGroups}
@@ -125,203 +136,425 @@ export default function Feed() {
         />
       )}
 
-      <nav className="navbar">
-        <span className="navbar-logo">f</span>
-        <input className="navbar-search" placeholder="🔍 Rechercher" readOnly />
-        <div className="navbar-actions">
-          <div className="relative">
-            <button className="nav-btn" title="Messenger" onClick={() => navigate("/messages")}>💬</button>
-            <span className="badge">3</span>
+      {/* ═══════════════════════════════════════════════
+          STICKY HEADER — 3 rows exactly like Facebook
+      ═══════════════════════════════════════════════ */}
+      <div style={{ position: "sticky", top: 0, zIndex: 100, background: "#fff" }}>
+
+        {/* Row 1 — Mode payant */}
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "7px 14px", borderBottom: "1px solid #f0f2f5",
+          background: "#fff",
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontWeight: 600, fontSize: 13.5, color: "#050505" }}>Mode payant</span>
+            <div style={{
+              width: 17, height: 17, borderRadius: "50%", background: "#ccd0d5",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 10, fontWeight: 800, color: "#fff", lineHeight: 1,
+            }}>?</div>
           </div>
-          <div className="relative">
-            <button className="nav-btn" title="Notifications">🔔</button>
-            <span className="badge">7</span>
-          </div>
-          <button className="nav-btn" title="Déconnexion" onClick={logout} style={{ fontSize: 14 }}>
-            {userInitials}
+          <button style={{
+            background: "#e4e6eb", border: "none", borderRadius: 6,
+            padding: "6px 13px", fontWeight: 600, fontSize: 13, cursor: "pointer",
+            color: "#050505",
+          }}>
+            Changer de mode
           </button>
         </div>
-      </nav>
 
-      <div className="feed-container">
-        {/* ─── Stories Row ─── */}
-        <input ref={storyFileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleStoryFileSelect} />
-        <div className="stories-row">
-          {/* "Add story" card — triggers gallery directly */}
-          <div className="story-card" onClick={() => storyFileRef.current?.click()} style={{ cursor: "pointer" }}>
-            <div className="story-bg" style={{ background: "#e4e6e9", position: "relative", overflow: "hidden" }}>
-              {user.avatarUrl
-                ? <img src={user.avatarUrl} alt="moi" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                : <div style={{ width: "100%", height: "100%", background: "#1877F2", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 22 }}>{userInitials}</div>
-              }
-              <div style={{ position: "absolute", bottom: 8, left: "50%", transform: "translateX(-50%)", width: 28, height: 28, borderRadius: "50%", background: "#1877F2", border: "3px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 16, fontWeight: 900, lineHeight: 1 }}>+</div>
-            </div>
-            <div className="story-label">Créer une story</div>
-          </div>
+        {/* Row 2 — Brand + icon buttons */}
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "8px 14px",
+        }}>
+          {/* Brand logo text */}
+          <span style={{
+            color: "#1877F2", fontWeight: 900, fontSize: 28,
+            fontFamily: "'Georgia', serif", fontStyle: "italic", letterSpacing: -1,
+            lineHeight: 1,
+          }}>
+            brutepawa
+          </span>
 
-          {/* Real story groups */}
-          {storyGroups.map((group, idx) => {
-            const initials = getInitials(group.authorName);
-            const avatarBg = AVATAR_COLORS[group.authorId % AVATAR_COLORS.length];
-            const preview = group.stories[0];
-            const hasBg = preview?.bgColor && !preview?.mediaUrl;
-
-            return (
-              <div
-                key={group.authorId}
-                className="story-card"
-                onClick={() => openStories(idx)}
-                style={{ cursor: "pointer" }}
+          {/* Icon buttons */}
+          <div style={{ display: "flex", gap: 8 }}>
+            {[
+              { label: "+",  title: "Créer",           action: () => navigate("/create-post") },
+              { label: "🔍", title: "Rechercher",       action: () => navigate("/search") },
+              { label: "☰",  title: "Menu",             action: () => navigate("/menu") },
+            ].map(btn => (
+              <button
+                key={btn.title}
+                title={btn.title}
+                onClick={btn.action}
+                style={{
+                  width: 40, height: 40, borderRadius: "50%",
+                  background: "#e4e6eb", border: "none",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: btn.label === "+" ? 22 : 18,
+                  fontWeight: btn.label === "+" ? 700 : 400,
+                  color: "#050505", cursor: "pointer", flexShrink: 0,
+                  lineHeight: 1,
+                }}
               >
+                {btn.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Row 3 — Tab bar */}
+        <div style={{
+          display: "flex",
+          borderTop: "1px solid #e4e6eb",
+        }}>
+          {TABS.map(({ id, Icon }) => (
+            <button
+              key={id}
+              onClick={() => handleTabClick(id)}
+              style={{
+                flex: 1, background: "none", border: "none",
+                padding: "10px 0 8px",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                borderBottom: activeTab === id ? "3px solid #1877F2" : "3px solid transparent",
+                cursor: "pointer",
+                transition: "border-color .15s",
+              }}
+            >
+              <Icon active={activeTab === id} />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════
+          FEED CONTENT
+      ═══════════════════════════════════════════ */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
+
+        {/* ── Stories row ── */}
+        <input ref={storyFileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleStoryFileSelect} />
+        <div style={{ background: "#fff", overflowX: "auto", padding: "10px 0 10px 10px" }}>
+          <div style={{ display: "flex", gap: 8, width: "max-content" }}>
+
+            {/* Create story card */}
+            <div
+              onClick={() => storyFileRef.current?.click()}
+              style={{
+                width: 96, flexShrink: 0, cursor: "pointer",
+                display: "flex", flexDirection: "column",
+              }}
+            >
+              <div style={{
+                width: 96, height: 144, borderRadius: 10, overflow: "hidden",
+                position: "relative", border: "1px solid #e4e6eb",
+              }}>
+                <div style={{ width: "100%", height: "100%", background: "#e4e6eb", overflow: "hidden" }}>
+                  {user.avatarUrl
+                    ? <img src={user.avatarUrl} alt="moi" style={{ width: "100%", height: "75%", objectFit: "cover", display: "block" }} />
+                    : <div style={{ width: "100%", height: "75%", background: "#42B72A", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 26 }}>{userInitials}</div>
+                  }
+                  <div style={{ height: "25%", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }} />
+                </div>
+                {/* Blue + circle at bottom of image zone */}
+                <div style={{
+                  position: "absolute", bottom: "23%", left: "50%",
+                  transform: "translate(-50%, 50%)",
+                  width: 32, height: 32, borderRadius: "50%",
+                  background: "#1877F2", border: "3px solid #fff",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  color: "#fff", fontSize: 20, fontWeight: 900, lineHeight: 1,
+                  zIndex: 2,
+                }}>+</div>
+              </div>
+              <div style={{
+                textAlign: "center", fontSize: 12, fontWeight: 700,
+                color: "#050505", marginTop: 6, lineHeight: 1.3,
+                padding: "0 2px",
+              }}>Créer une story</div>
+            </div>
+
+            {/* Real story groups */}
+            {storyGroups.map((group, idx) => {
+              const initials = getInitials(group.authorName);
+              const avatarBg = AVATAR_COLORS[group.authorId % AVATAR_COLORS.length];
+              const preview = group.stories[0];
+              return (
                 <div
-                  className="story-bg"
-                  style={{
+                  key={group.authorId}
+                  onClick={() => { setViewerGroupIdx(idx); setViewerOpen(true); }}
+                  style={{ width: 96, flexShrink: 0, cursor: "pointer" }}
+                >
+                  <div style={{
+                    width: 96, height: 144, borderRadius: 10, overflow: "hidden",
+                    position: "relative",
                     background: preview?.mediaUrl
                       ? `url(${preview.mediaUrl}) center/cover no-repeat`
-                      : (preview?.bgColor ?? "#1877F2"),
-                    position: "relative",
-                    overflow: "hidden",
-                  }}
-                >
-                  {preview?.emoji && !preview?.mediaUrl && (
-                    <div style={{ fontSize: 32, position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>{preview.emoji}</div>
-                  )}
-                  {preview?.content && !preview?.mediaUrl && !preview?.emoji && (
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "#fff", padding: "4px 6px", textAlign: "center", position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-                      {preview.content.slice(0, 40)}
-                    </div>
-                  )}
-
-                  {/* Author avatar ring */}
-                  <div style={{
-                    position: "absolute", top: 8, left: 8,
-                    width: 34, height: 34, borderRadius: "50%",
-                    border: "3px solid #1877F2",
-                    background: avatarBg,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    overflow: "hidden",
+                      : (preview?.bgColor ?? avatarBg),
                   }}>
-                    {group.authorAvatarUrl
-                      ? <img src={group.authorAvatarUrl} alt={group.authorName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                      : <span style={{ color: "#fff", fontWeight: 700, fontSize: 12 }}>{initials}</span>
-                    }
-                  </div>
-
-                  {/* Count badge */}
-                  {group.storiesCount > 1 && (
-                    <div style={{ position: "absolute", top: 6, right: 6, background: "#1877F2", color: "#fff", borderRadius: 10, minWidth: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, padding: "0 4px" }}>
-                      {group.storiesCount}
+                    {/* Emoji overlay */}
+                    {preview?.emoji && !preview?.mediaUrl && (
+                      <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36 }}>{preview.emoji}</div>
+                    )}
+                    {/* Gradient overlay at bottom */}
+                    <div style={{
+                      position: "absolute", inset: 0,
+                      background: "linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.55) 100%)",
+                    }} />
+                    {/* Author avatar ring — top left */}
+                    <div style={{
+                      position: "absolute", top: 8, left: 8,
+                      width: 36, height: 36, borderRadius: "50%",
+                      border: "3px solid #1877F2",
+                      background: avatarBg,
+                      overflow: "hidden", flexShrink: 0,
+                    }}>
+                      {group.authorAvatarUrl
+                        ? <img src={group.authorAvatarUrl} alt={group.authorName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 13 }}>{initials}</div>
+                      }
                     </div>
-                  )}
+                    {/* Count badge — top right */}
+                    {group.storiesCount > 1 && (
+                      <div style={{
+                        position: "absolute", top: 6, right: 6,
+                        background: "#1877F2", color: "#fff",
+                        borderRadius: 10, minWidth: 20, height: 20,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: 11, fontWeight: 700, padding: "0 4px",
+                        border: "2px solid #fff",
+                      }}>{group.storiesCount}</div>
+                    )}
+                    {/* Author name — bottom */}
+                    <div style={{
+                      position: "absolute", bottom: 8, left: 6, right: 6,
+                      color: "#fff", fontWeight: 700, fontSize: 12,
+                      textShadow: "0 1px 3px rgba(0,0,0,0.7)",
+                    }}>{group.authorName.split(" ")[0]}</div>
+                  </div>
                 </div>
-                <div className="story-label">{group.authorName.split(" ")[0]}</div>
-              </div>
-            );
-          })}
+              );
+            })}
 
-          {/* No stories yet */}
-          {storyGroups.length === 0 && (
-            <div style={{ display: "flex", alignItems: "center", padding: "0 8px", color: "var(--fb-text-secondary)", fontSize: 12, fontStyle: "italic" }}>
-              Sois le premier à partager une story !
-            </div>
-          )}
+            {/* Padding right */}
+            <div style={{ width: 2, flexShrink: 0 }} />
+          </div>
         </div>
 
-        <div className="create-post-card">
-          <div className="create-post-top">
+        {/* ── Post creation card ── */}
+        <div style={{ background: "#fff", padding: "10px 14px 0" }}>
+          {/* Top row: avatar + input + Photo */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+            {/* Avatar */}
             {user.avatarUrl
-              ? <img src={user.avatarUrl} alt="Avatar" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
-              : <div className="avatar">{userInitials}</div>
+              ? <img src={user.avatarUrl} alt="moi" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+              : <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#42B72A", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15, flexShrink: 0 }}>{userInitials}</div>
             }
-            <button className="post-input-btn" onClick={() => setShowModal(true)}>
-              Quoi de neuf, {user.name.split(" ")[0]} ?
-            </button>
+            {/* Fake input */}
+            <div
+              onClick={() => navigate("/create-post")}
+              style={{
+                flex: 1, background: "#f0f2f5", borderRadius: 22,
+                padding: "9px 14px", fontSize: 16,
+                color: "#65676b", cursor: "pointer",
+                border: "1px solid #ccd0d5",
+                userSelect: "none",
+              }}
+            >
+              À quoi pensez-vous ?
+            </div>
+            {/* Photo button */}
+            <div
+              onClick={() => navigate("/create-post")}
+              style={{
+                display: "flex", flexDirection: "column", alignItems: "center",
+                gap: 2, cursor: "pointer", flexShrink: 0,
+              }}
+            >
+              <div style={{
+                width: 38, height: 38, borderRadius: 8,
+                background: "#e6f4ea", border: "1px solid #c8e6c9",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 20,
+              }}>📷</div>
+              <span style={{ fontSize: 11, fontWeight: 600, color: "#65676b" }}>Photo</span>
+            </div>
           </div>
-          <div className="create-post-actions">
-            <button className="action-btn" onClick={() => navigate("/create-post")}><span>🎬</span> Vidéo</button>
-            <button className="action-btn" onClick={() => navigate("/create-post")}><span>📷</span> Photo</button>
-            <button className="action-btn" onClick={() => setShowModal(true)}><span>😊</span> Humeur</button>
+
+          {/* Divider */}
+          <div style={{ borderTop: "1px solid #e4e6eb" }} />
+
+          {/* Quick action row */}
+          <div style={{ display: "flex" }}>
+            {[
+              { emoji: "🙂", label: "Je me sens...", action: () => navigate("/create-post") },
+              { emoji: "📹", label: "Vidéo",         action: () => navigate("/create-post") },
+              { emoji: "📍", label: "Localisation",  action: () => navigate("/create-post") },
+            ].map((btn, i) => (
+              <button
+                key={btn.label}
+                onClick={btn.action}
+                style={{
+                  flex: 1, background: "none", border: "none",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  gap: 5, padding: "10px 4px", cursor: "pointer",
+                  borderLeft: i > 0 ? "1px solid #e4e6eb" : "none",
+                  fontSize: 13, fontWeight: 600, color: "#65676b",
+                }}
+              >
+                <span style={{ fontSize: 18 }}>{btn.emoji}</span>
+                <span>{btn.label}</span>
+              </button>
+            ))}
           </div>
         </div>
 
+        {/* ── Loading ── */}
         {loading && (
-          <div style={{ textAlign: "center", padding: 32, color: "var(--fb-text-secondary)" }}>
-            <div style={{ fontSize: 24, marginBottom: 8 }}>⏳</div>
+          <div style={{ textAlign: "center", padding: 32, background: "#fff", color: "#65676b" }}>
+            <div style={{
+              width: 28, height: 28, border: "3px solid #e4e6eb",
+              borderTopColor: "#1877F2", borderRadius: "50%",
+              animation: "fb-spin .7s linear infinite",
+              margin: "0 auto 10px",
+            }} />
             Chargement des publications…
           </div>
         )}
 
+        {/* ── Empty state ── */}
         {!loading && posts.length === 0 && (
-          <div style={{ textAlign: "center", padding: 32, color: "var(--fb-text-secondary)" }}>
+          <div style={{ textAlign: "center", padding: 40, background: "#fff", color: "#65676b" }}>
             <div style={{ fontSize: 40, marginBottom: 8 }}>📭</div>
-            <div style={{ fontWeight: 700 }}>Aucune publication pour l'instant</div>
+            <div style={{ fontWeight: 700, color: "#050505" }}>Aucune publication pour l'instant</div>
             <div style={{ fontSize: 13, marginTop: 4 }}>Soyez le premier à publier quelque chose !</div>
           </div>
         )}
 
+        {/* ── Posts ── */}
         {posts.map(post => {
-          const flag = COUNTRY_FLAGS[post.authorCountry] ?? "🌍";
+          const flag = COUNTRY_FLAGS[post.authorCountry] ?? "";
           const initials = getInitials(post.authorName);
+          const avatarColor = AVATAR_COLORS[post.authorId % AVATAR_COLORS.length];
           return (
-            <div key={post.id} className="post-card">
-              <div className="post-header">
+            <div key={post.id} style={{ background: "#fff" }}>
+              {/* Post header */}
+              <div style={{ display: "flex", alignItems: "flex-start", padding: "12px 14px 8px", gap: 10 }}>
                 {post.authorAvatarUrl
-                  ? <img src={post.authorAvatarUrl} alt={post.authorName} style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
-                  : <div className="avatar" style={{ background: "#1877F2" }}>{initials}</div>
+                  ? <img src={post.authorAvatarUrl} alt={post.authorName} onClick={() => navigate(`/user/${post.authorId}`)}
+                      style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer" }} />
+                  : <div onClick={() => navigate(`/user/${post.authorId}`)}
+                      style={{ width: 40, height: 40, borderRadius: "50%", background: avatarColor, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15, flexShrink: 0, cursor: "pointer" }}>
+                      {initials}
+                    </div>
                 }
-                <div className="post-meta">
-                  <div className="post-author">{post.authorName} {flag}</div>
-                  <div className="post-time">🌐 {timeAgo(post.createdAt)}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap" }}>
+                    <span style={{ fontWeight: 700, fontSize: 14.5, color: "#050505", cursor: "pointer" }}
+                      onClick={() => navigate(`/user/${post.authorId}`)}>
+                      {post.authorName}
+                    </span>
+                    {flag && <span style={{ fontSize: 14 }}>{flag}</span>}
+                    <span style={{ fontSize: 13, fontWeight: 600, color: "#1877F2", cursor: "pointer" }}>· Suivre</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#65676b", marginTop: 1 }}>
+                    <span>{timeAgo(post.createdAt)}</span>
+                    <span>·</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="#65676b"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6l5 3-1 1.73-6-3.5V7z"/></svg>
+                  </div>
                 </div>
-                <button className="post-more" onClick={() => setPostMenuId(post.id)}>···</button>
+                {/* ... and × */}
+                <div style={{ display: "flex", gap: 2, flexShrink: 0 }}>
+                  <button onClick={() => setPostMenuId(post.id)}
+                    style={{ width: 32, height: 32, borderRadius: "50%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#65676b", fontSize: 20, fontWeight: 700, lineHeight: 1 }}>
+                    ···
+                  </button>
+                  <button
+                    style={{ width: 32, height: 32, borderRadius: "50%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#65676b", fontSize: 16, fontWeight: 700 }}>
+                    ✕
+                  </button>
+                </div>
               </div>
-              <div className="post-content">{post.content}</div>
-              {post.imageUrl && (
-                <div style={{ margin: "8px 0" }}>
-                  <img src={post.imageUrl} alt="" style={{ width: "100%", borderRadius: 8, maxHeight: 400, objectFit: "cover" }} />
+
+              {/* Content */}
+              {post.content && (
+                <div style={{ padding: "0 14px 10px", fontSize: 15, color: "#050505", lineHeight: 1.5 }}>
+                  {post.content}
                 </div>
               )}
-              <div className="post-stats">
-                <span>{post.liked ? "❤️" : "👍"} {formatNumber(post.likesCount)}</span>
-                <span>{post.commentsCount > 0 && `${formatNumber(post.commentsCount)} commentaires`}</span>
-              </div>
-              <div className="post-actions">
-                <button className={`post-btn${post.liked ? " liked" : ""}`} onClick={() => toggleLike(post.id)}>
-                  {post.liked ? "❤️" : "👍"} J'aime
-                </button>
-                <button className="post-btn">💬 Commenter</button>
-                <button className="post-btn">↗️ Partager</button>
+
+              {/* Media */}
+              {post.imageUrl && (
+                <img src={post.imageUrl} alt="" style={{ width: "100%", maxHeight: 420, objectFit: "cover", display: "block" }} />
+              )}
+
+              {/* Stats bar */}
+              {(post.likesCount > 0 || post.commentsCount > 0) && (
+                <div style={{
+                  display: "flex", justifyContent: "space-between", alignItems: "center",
+                  padding: "8px 14px 6px", fontSize: 13, color: "#65676b",
+                }}>
+                  {post.likesCount > 0 ? (
+                    <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                      <div style={{ display: "flex" }}>
+                        <span style={{ display: "inline-flex", width: 18, height: 18, borderRadius: "50%", background: "#1877F2", alignItems: "center", justifyContent: "center", fontSize: 10, border: "1.5px solid #fff" }}>👍</span>
+                        {post.likesCount > 4 && <span style={{ display: "inline-flex", width: 18, height: 18, borderRadius: "50%", background: "#f33e58", alignItems: "center", justifyContent: "center", fontSize: 10, marginLeft: -4, border: "1.5px solid #fff" }}>❤️</span>}
+                        {post.likesCount > 10 && <span style={{ display: "inline-flex", width: 18, height: 18, borderRadius: "50%", background: "#f44336", alignItems: "center", justifyContent: "center", fontSize: 10, marginLeft: -4, border: "1.5px solid #fff" }}>😡</span>}
+                      </div>
+                      <span>{formatNumber(post.likesCount)}</span>
+                    </div>
+                  ) : <div />}
+                  {post.commentsCount > 0 && (
+                    <span>{formatNumber(post.commentsCount)} commentaire{post.commentsCount > 1 ? "s" : ""}</span>
+                  )}
+                </div>
+              )}
+
+              {/* Divider */}
+              <div style={{ height: 1, background: "#e4e6eb", margin: "0 14px" }} />
+
+              {/* Action bar */}
+              <div style={{ display: "flex", padding: "2px 0 2px" }}>
+                {[
+                  { icon: post.liked ? "❤️" : "👍", label: post.liked ? "J'adore" : "J'aime", color: post.liked ? "#f33e58" : "#65676b", action: () => toggleLike(post.id) },
+                  { icon: "💬", label: `Commenter`, color: "#65676b", action: () => navigate(`/post/${post.id}`) },
+                  { icon: "↗️", label: `Partager`, color: "#65676b", action: () => {} },
+                ].map((btn, i) => (
+                  <button
+                    key={btn.label}
+                    onClick={btn.action}
+                    style={{
+                      flex: 1, background: "none", border: "none",
+                      borderLeft: i > 0 ? "1px solid #e4e6eb" : "none",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      gap: 6, padding: "8px 4px",
+                      fontSize: 14, fontWeight: 600,
+                      color: btn.color, cursor: "pointer",
+                    }}
+                  >
+                    <span style={{ fontSize: 17 }}>{btn.icon}</span>
+                    <span>{btn.label}</span>
+                  </button>
+                ))}
               </div>
             </div>
           );
         })}
 
+        {/* End of feed */}
         {!loading && posts.length > 0 && (
-          <div style={{ textAlign: "center", padding: "20px 0", color: "var(--fb-text-secondary)", fontSize: 13 }}>
-            Vous avez vu toutes les nouvelles publications
+          <div style={{ textAlign: "center", padding: "20px 0", color: "#65676b", fontSize: 13 }}>
+            Vous avez tout vu
           </div>
         )}
       </div>
 
-      <nav className="bottom-nav">
-        {([
-          ["feed", "🏠"],
-          ["friends", "👥"],
-          ["marketplace", "🛍️"],
-          ["notifs", "🔔"],
-          ["menu", "☰"],
-        ] as const).map(([tab, icon]) => (
-          <button
-            key={tab}
-            className={`bottom-nav-btn${activeTab === tab ? " active" : ""}`}
-            onClick={() => setActiveTab(tab)}
-          >
-            {icon}
-          </button>
-        ))}
-      </nav>
+      {/* ── Spin animation ── */}
+      <style>{`@keyframes fb-spin { to { transform: rotate(360deg); } }`}</style>
 
-      {/* Post options bottom sheet */}
+      {/* ── Post options bottom sheet ── */}
       {postMenuId !== null && (
         <div
           style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 200 }}
@@ -333,14 +566,12 @@ export default function Feed() {
           >
             <div style={{ width: 40, height: 4, background: "#e0e0e0", borderRadius: 2, margin: "8px auto 16px" }} />
             {[
-              { icon: "📌", label: "Épingler la publication",         danger: false },
-              { icon: "🔕", label: "Désactiver les notifications",    danger: false },
-              { icon: "🔖", label: "Enregistrer",                     danger: false },
-              { icon: "↗️", label: "Partager",                        danger: false },
-              { icon: "🔒", label: "Modifier la confidentialité",     danger: false },
-              { icon: "🗄️", label: "Déplacer dans l'archive",         danger: false },
-              { icon: "🗑️", label: "Déplacer dans la corbeille",      danger: true  },
-              { icon: "🔗", label: "Copier le lien",                  danger: false },
+              { icon: "🔖", label: "Enregistrer la publication",      danger: false },
+              { icon: "🔕", label: "Désactiver les notifications",     danger: false },
+              { icon: "↗️", label: "Partager sur votre journal",       danger: false },
+              { icon: "🔗", label: "Copier le lien",                   danger: false },
+              { icon: "🙈", label: "Masquer la publication",           danger: false },
+              { icon: "🚩", label: "Signaler la publication",          danger: true  },
             ].map(item => (
               <button
                 key={item.label}
@@ -359,38 +590,49 @@ export default function Feed() {
         </div>
       )}
 
+      {/* ── Quick post modal ── */}
       {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal-box" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <span>Créer une publication</span>
-              <button className="modal-close" onClick={() => setShowModal(false)}>✕</button>
+        <div
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 300, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 16px" }}
+          onClick={() => setShowModal(false)}
+        >
+          <div
+            style={{ background: "#fff", borderRadius: 10, width: "100%", maxWidth: 500, overflow: "hidden" }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 14px", borderBottom: "1px solid #e4e6eb" }}>
+              <span style={{ fontWeight: 700, fontSize: 17 }}>Créer une publication</span>
+              <button onClick={() => setShowModal(false)} style={{ background: "#e4e6eb", border: "none", borderRadius: "50%", width: 32, height: 32, cursor: "pointer", fontSize: 16, fontWeight: 700 }}>✕</button>
             </div>
-            <div className="modal-body">
+            <div style={{ padding: 14 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
                 {user.avatarUrl
                   ? <img src={user.avatarUrl} alt="Avatar" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover" }} />
-                  : <div className="avatar">{userInitials}</div>
+                  : <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#42B72A", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15 }}>{userInitials}</div>
                 }
                 <div>
-                  <div style={{ fontWeight: 700 }}>{user.name}</div>
-                  <div style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>🌐 Public</div>
+                  <div style={{ fontWeight: 700, fontSize: 15 }}>{user.name}</div>
+                  <div style={{ fontSize: 12, color: "#65676b" }}>🌐 Public</div>
                 </div>
               </div>
               <textarea
-                className="post-textarea"
+                style={{ width: "100%", border: "none", outline: "none", resize: "none", fontSize: 18, minHeight: 120, color: "#050505", fontFamily: "inherit", lineHeight: 1.5, background: "transparent" }}
                 placeholder={`Quoi de neuf, ${user.name.split(" ")[0]} ?`}
                 value={newPost}
                 onChange={e => setNewPost(e.target.value)}
                 autoFocus
               />
             </div>
-            <div className="modal-footer">
+            <div style={{ padding: "0 14px 14px" }}>
               <button
-                className="btn-primary"
                 onClick={submitPost}
                 disabled={submitting || !newPost.trim()}
-                style={{ opacity: newPost.trim() && !submitting ? 1 : 0.5 }}
+                style={{
+                  width: "100%", background: !newPost.trim() ? "#bec3c9" : "#1877F2",
+                  color: "#fff", border: "none", borderRadius: 6,
+                  padding: "10px", fontWeight: 700, fontSize: 16,
+                  cursor: !newPost.trim() ? "not-allowed" : "pointer",
+                }}
               >
                 {submitting ? "Publication…" : "Publier"}
               </button>
@@ -398,6 +640,6 @@ export default function Feed() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
