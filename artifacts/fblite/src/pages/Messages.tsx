@@ -26,7 +26,7 @@ interface Message {
   mine: boolean;
   time: string;
   status?: "sent" | "read";
-  attachment?: { type: "image" | "doc" | "location" | "audio"; label: string };
+  attachment?: { type: "image" | "doc" | "location" | "audio"; label: string; extra?: string };
 }
 
 interface NormConv {
@@ -118,18 +118,81 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
   const [longPressMsg, setLongPressMsg]       = useState<number | null>(null);
   const [showMicTip, setShowMicTip]           = useState(false);
 
-  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const activeGroupRef = useRef<number | null>(null);
-  const groupBottomRef = useRef<HTMLDivElement>(null);
-  const bottomRef      = useRef<HTMLDivElement>(null);
-  const remoteAudioRef = useRef<HTMLAudioElement>(null);
-  const localVideoRef  = useRef<HTMLVideoElement>(null);
-  const remoteVideoRef = useRef<HTMLVideoElement>(null);
-  const activeConvRef  = useRef<number | null>(null);
-  const allUsersRef    = useRef<PublicUser[]>([]);
+  const [isRecording, setIsRecording]   = useState(false);
+  const [recSeconds, setRecSeconds]     = useState(0);
+  const [vpHeight, setVpHeight]         = useState<number | null>(null);
+
+  const longPressTimer    = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const activeGroupRef    = useRef<number | null>(null);
+  const groupBottomRef    = useRef<HTMLDivElement>(null);
+  const bottomRef         = useRef<HTMLDivElement>(null);
+  const remoteAudioRef    = useRef<HTMLAudioElement>(null);
+  const localVideoRef     = useRef<HTMLVideoElement>(null);
+  const remoteVideoRef    = useRef<HTMLVideoElement>(null);
+  const activeConvRef     = useRef<number | null>(null);
+  const allUsersRef       = useRef<PublicUser[]>([]);
+  const mediaRecorderRef  = useRef<MediaRecorder | null>(null);
+  const audioChunksRef    = useRef<Blob[]>([]);
+  const recTimerRef       = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => { activeConvRef.current = activeConv; }, [activeConv]);
   useEffect(() => { allUsersRef.current = allUsers; }, [allUsers]);
+
+  /* ── VisualViewport: shrink container when keyboard opens ── */
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const handler = () => {
+      setVpHeight(vv.height);
+      // auto-scroll to last message when keyboard pushes content up
+      setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "instant" as ScrollBehavior }), 50);
+    };
+    handler();
+    vv.addEventListener("resize", handler);
+    return () => vv.removeEventListener("resize", handler);
+  }, []);
+
+  /* ── Voice recording helpers ── */
+  const startVoice = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mr = new MediaRecorder(stream);
+      audioChunksRef.current = [];
+      mr.ondataavailable = (e) => { if (e.data.size > 0) audioChunksRef.current.push(e.data); };
+      mr.onstop = () => {
+        const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        const url  = URL.createObjectURL(blob);
+        const secs = recSeconds;
+        stream.getTracks().forEach(t => t.stop());
+        if (secs < 1) return;
+        const now  = new Date().toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
+        const mins = Math.floor(secs / 60);
+        const s    = secs % 60;
+        const dur  = `${mins}:${s.toString().padStart(2, "0")}`;
+        setMessages(prev => ({
+          ...prev,
+          [activeConv!]: [...(prev[activeConv!] ?? []), {
+            id: Date.now(), text: "", mine: true, time: now, status: "sent",
+            attachment: { type: "audio", label: url, extra: dur } as { type: "audio"; label: string; extra?: string },
+          }],
+        }));
+      };
+      mr.start(100);
+      mediaRecorderRef.current = mr;
+      setIsRecording(true);
+      setRecSeconds(0);
+      recTimerRef.current = setInterval(() => setRecSeconds(s => s + 1), 1000);
+    } catch {
+      alert("Accès au microphone refusé.");
+    }
+  };
+
+  const stopVoice = () => {
+    if (recTimerRef.current) { clearInterval(recTimerRef.current); recTimerRef.current = null; }
+    mediaRecorderRef.current?.stop();
+    mediaRecorderRef.current = null;
+    setIsRecording(false);
+  };
 
   const onNewMessage = useCallback((data: NewMessagePayload) => {
     const fromId = data.fromUserId;
@@ -935,7 +998,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
     const highlightId = searchMatches[chatSearchIdx]?.id ?? null;
 
     return createPortal(
-      <div style={{ position:"fixed", top:0, bottom:0, left:0, right:0, display:"flex", flexDirection:"column", zIndex:10000, overflow:"hidden" }}>
+      <div style={{ position:"fixed", top:0, left:0, right:0, height: vpHeight ? `${vpHeight}px` : "100dvh", display:"flex", flexDirection:"column", zIndex:10000, overflow:"hidden" }}>
         <style>{`
           .fbl-msg-mine   { background:#0084FF; color:#fff; border-radius:18px 18px 4px 18px; }
           .fbl-msg-theirs { background:#E4E6EB; color:#111; border-radius:18px 18px 18px 4px; }
@@ -944,6 +1007,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
           .fbl-react-btn:active { transform:scale(1.35); }
           @keyframes fbl-sheet-up { from{transform:translateY(100%)} to{transform:translateY(0)} }
           @keyframes fbl-fade-in  { from{opacity:0} to{opacity:1} }
+          @keyframes fbl-rec-pulse { 0%,100%{opacity:1} 50%{opacity:0.2} }
         `}</style>
 
         {/* ── HEADER ── */}
@@ -1049,10 +1113,20 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
                 )}
                 <div style={{ maxWidth:"72%" }}>
                   {msg.attachment && (
-                    <div style={{ background: msg.mine ? "#1564c0" : "#f1f1f1", color: msg.mine ? "#fff" : "#111", borderRadius:14, padding:"8px 12px", marginBottom:2, fontSize:13, display:"flex", alignItems:"center", gap:8 }}>
-                      <span style={{ fontSize:18 }}>{msg.attachment.type==="image"?"🖼️":msg.attachment.type==="doc"?"📄":msg.attachment.type==="location"?"📍":"🎵"}</span>
-                      <span>{msg.attachment.label}</span>
-                    </div>
+                    msg.attachment.type === "audio" ? (
+                      <div style={{ background: msg.mine ? "#0073e6" : "#E4E6EB", borderRadius:18, padding:"8px 12px", marginBottom:2, display:"flex", alignItems:"center", gap:8, minWidth:180 }}>
+                        <span style={{ fontSize:20 }}>🎙️</span>
+                        <div style={{ flex:1, display:"flex", flexDirection:"column", gap:4 }}>
+                          <audio controls src={msg.attachment.label} style={{ width:"100%", height:28, outline:"none" }} />
+                          {msg.attachment.extra && <span style={{ fontSize:10, color: msg.mine ? "rgba(255,255,255,0.7)" : "#888" }}>{msg.attachment.extra}</span>}
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{ background: msg.mine ? "#1564c0" : "#f1f1f1", color: msg.mine ? "#fff" : "#111", borderRadius:14, padding:"8px 12px", marginBottom:2, fontSize:13, display:"flex", alignItems:"center", gap:8 }}>
+                        <span style={{ fontSize:18 }}>{msg.attachment.type==="image"?"🖼️":msg.attachment.type==="doc"?"📄":msg.attachment.type==="location"?"📍":"🎵"}</span>
+                        <span>{msg.attachment.label}</span>
+                      </div>
+                    )
                   )}
                   <div className={msg.mine ? "fbl-msg-mine" : "fbl-msg-theirs"} style={{ padding:"8px 12px 5px", fontSize:14.5, lineHeight:1.45, wordBreak:"break-word" }}>
                     {msg.text}
@@ -1126,14 +1200,23 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
               <>
                 <button style={{ background:"none", border:"none", fontSize:22, cursor:"pointer", color:"#1877F2", padding:"4px 6px", flexShrink:0, display:"flex", alignItems:"center" }}>📎</button>
                 <div style={{ position:"relative", flexShrink:0 }}>
-                  <button
-                    onMouseEnter={() => setShowMicTip(true)} onMouseLeave={() => setShowMicTip(false)}
-                    onTouchStart={() => setShowMicTip(true)}  onTouchEnd={() => setShowMicTip(false)}
-                    style={{ background:"#1877F2", border:"none", borderRadius:"50%", width:38, height:38, color:"#fff", cursor:"pointer", fontSize:18, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(24,119,242,0.4)" }}>🎤</button>
-                  {showMicTip && (
-                    <div style={{ position:"absolute", bottom:46, right:0, background:"rgba(0,0,0,0.76)", color:"#fff", borderRadius:8, padding:"6px 12px", fontSize:12, whiteSpace:"nowrap", zIndex:60, pointerEvents:"none" }}>
-                      Maintenir pour filmer. Toucher pour un vocal.
+                  {isRecording ? (
+                    <div style={{ display:"flex", alignItems:"center", gap:6, background:"#fff", border:"2px solid #e53935", borderRadius:24, padding:"4px 10px" }}>
+                      <div style={{ width:10, height:10, borderRadius:"50%", background:"#e53935", animation:"fbl-rec-pulse 1s infinite" }} />
+                      <span style={{ fontSize:13, fontWeight:700, color:"#e53935", minWidth:28 }}>
+                        {`${Math.floor(recSeconds/60)}:${(recSeconds%60).toString().padStart(2,"0")}`}
+                      </span>
+                      <button onPointerUp={stopVoice} onPointerLeave={stopVoice}
+                        style={{ background:"#e53935", border:"none", borderRadius:"50%", width:32, height:32, color:"#fff", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+                      </button>
                     </div>
+                  ) : (
+                    <button
+                      onPointerDown={e => { e.preventDefault(); startVoice(); }}
+                      style={{ background:"#1877F2", border:"none", borderRadius:"50%", width:38, height:38, color:"#fff", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(24,119,242,0.4)" }}>
+                      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.49 6-3.31 6-6.72h-1.7z"/></svg>
+                    </button>
                   )}
                 </div>
               </>
