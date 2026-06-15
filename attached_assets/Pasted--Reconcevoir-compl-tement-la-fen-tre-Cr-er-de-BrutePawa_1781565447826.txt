@@ -1,0 +1,110 @@
+> Reconcevoir complètement la fenêtre "Créer" de BrutePawa avec une identité visuelle premium, moderne et internationale (niveau Meta, Airbnb, Revolut, LinkedIn 2026).
+
+Style général :
+
+Design mobile ultra moderne.
+
+Couleurs principales : vert BrutePawa (#22C55E), blanc, gris très clair.
+
+Effet glassmorphism léger.
+
+Coins arrondis 28px.
+
+Ombres douces et élégantes.
+
+Espacement généreux.
+
+Interface très propre et professionnelle.
+
+Aucun emoji.
+
+Icônes SVG premium cohérentes.
+
+Typographie moderne et lisible.
+
+
+Fond :
+
+Arrière-plan flouté de l'application BrutePawa.
+
+Overlay translucide premium.
+
+
+En-tête :
+
+Icône verte élégante.
+
+Titre : "Créer"
+
+Sous-titre : "Choisissez ce que vous voulez créer"
+
+Bouton fermer circulaire moderne en haut à droite.
+
+
+Éléments de la liste :
+
+Chaque option doit être affichée dans une carte premium indépendante avec :
+
+fond blanc
+
+ombre légère
+
+rayon 24px
+
+icône personnalisée BrutePawa
+
+titre en gras
+
+description courte
+
+bouton flèche circulaire à droite
+
+animation hover et touch
+
+
+Options :
+
+1. Publier un post Icône : document moderne + plume Description : Partagez vos idées, actualités et moments.
+
+
+2. Vendre un produit Icône : sac shopping premium Description : Proposez vos produits à des millions d'utilisateurs.
+
+
+3. Publier un service Icône : outils professionnels modernes Description : Faites connaître vos services et développez votre activité.
+
+
+4. Créer un groupe Icône : communauté moderne de plusieurs personnes Description : Rassemblez des personnes autour d'intérêts communs.
+
+
+5. Publier une offre d'emploi Icône : mallette premium verte Description : Trouvez les meilleurs talents pour votre entreprise.
+
+
+6. Créer une formation Icône : chapeau académique moderne Description : Partagez votre savoir et formez des apprenants.
+
+
+7. Créer une tontine Icône : symbole financier premium africain Description : Lancez une tontine et atteignez vos objectifs ensemble.
+
+
+
+Bas de la fenêtre :
+
+Badge sécurité vert.
+
+Texte : "100% sécurisé • Vos données sont protégées."
+
+
+Exigences obligatoires :
+
+Respecter strictement l'identité visuelle BrutePawa.
+
+Utiliser les mêmes couleurs que le reste de l'application.
+
+Aspect international prêt pour Afrique, Europe, Amérique et Asie.
+
+Design digne d'une application valorisée à plusieurs milliards de dollars.
+
+Aucun élément amateur.
+
+Aucune icône emoji.
+
+Résultat premium, élégant et cohérent avec tout l'écosystème BrutePawa.
