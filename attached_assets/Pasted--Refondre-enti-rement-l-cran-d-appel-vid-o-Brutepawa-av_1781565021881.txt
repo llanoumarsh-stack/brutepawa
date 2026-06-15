@@ -1,0 +1,127 @@
+> Refondre entièrement l'écran d'appel vidéo Brutepawa avec un design premium international 2026.
+
+Objectif : dépasser visuellement WhatsApp, Messenger et Telegram avec une expérience moderne, élégante et immersive.
+
+Structure générale
+
+Fond noir profond avec léger dégradé vert Brutepawa.
+
+Effets lumineux subtils autour des éléments actifs.
+
+Interface minimaliste et haut de gamme.
+
+Respect total des Safe Areas Android et iPhone.
+
+
+En-tête
+
+Nom du contact en grand et en gras.
+
+Statut animé :
+
+Connexion en cours...
+
+Sonnerie...
+
+Appel vidéo...
+
+En ligne
+
+
+Animation de points dynamiques.
+
+Icône haut-parleur dans un bouton glassmorphism.
+
+
+Fenêtre vidéo distante
+
+Vidéo distante occupant tout l'écran.
+
+Coins légèrement arrondis.
+
+Effet de transition fluide lors de la connexion.
+
+Flou élégant pendant le chargement.
+
+
+Prévisualisation locale
+
+Mini caméra flottante premium.
+
+Coins ultra arrondis.
+
+Bordure lumineuse verte.
+
+Ombre douce.
+
+Position adaptable par glisser-déposer.
+
+
+Commandes d'appel
+
+Remplacer les boutons actuels par :
+
+Basculer caméra
+
+Désactiver caméra
+
+Muet
+
+Partage d'écran
+
+Effets vidéo
+
+Raccrocher
+
+
+Style des boutons
+
+Cercles glassmorphism premium.
+
+Effet de profondeur.
+
+Icônes SVG modernes.
+
+Animations fluides au toucher.
+
+Halo lumineux subtil.
+
+
+Bouton raccrocher
+
+Rouge premium.
+
+Effet glow.
+
+Plus grand que les autres boutons.
+
+Animation de pression réaliste.
+
+
+Détails premium
+
+Animation de connexion élégante.
+
+Transitions 60 FPS.
+
+Ombres réalistes.
+
+Micro-interactions modernes.
+
+Design inspiré de FaceTime, Discord Nitro et Telegram Premium.
+
+Palette Brutepawa verte internationale.
+
+
+Interdictions
+
+Aucun emoji.
+
+Aucun style Android ancien.
+
+Aucun bouton gris plat.
+
+Aucun composant daté.
+
+
+Résultat attendu : une interface d'appel vidéo digne d'une application mondiale valorisée à plusieurs milliards de dollars, moderne, professionnelle et immédiatement reconnaissable comme Brutepawa.

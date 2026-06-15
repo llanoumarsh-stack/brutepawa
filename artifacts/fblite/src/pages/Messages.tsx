@@ -722,38 +722,66 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     const isVideo     = sig.incomingCall.callType === "video";
 
     return createPortal(
-      <div style={{ position: "fixed", inset: 0, zIndex: 10000, background: "linear-gradient(180deg,#5B86E5 0%,#7A5AF8 55%,#6B21A8 100%)", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      <div style={{ position:"fixed", inset:0, zIndex:10000, overflow:"hidden", display:"flex", flexDirection:"column", background:"#040f07" }}>
         <style>{`
-          @keyframes tg-ring2{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.55),0 0 0 0 rgba(255,255,255,.3)}50%{box-shadow:0 0 0 22px rgba(255,255,255,.18),0 0 0 44px rgba(255,255,255,.07)}}
-          @keyframes tg-dots2{0%,80%,100%{opacity:0}40%{opacity:1}}
-          .tg2-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.8);margin:0 2px;animation:tg-dots2 1.4s infinite ease-in-out both}
-          .tg2-dot:nth-child(1){animation-delay:-.32s}.tg2-dot:nth-child(2){animation-delay:-.16s}
+          @keyframes bp-ring-pulse{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.18);opacity:0}}
+          @keyframes bp-ring-pulse2{0%,100%{transform:scale(1);opacity:.35}50%{transform:scale(1.32);opacity:0}}
+          @keyframes bp-dots{0%,80%,100%{opacity:0;transform:translateY(0)}40%{opacity:1;transform:translateY(-4px)}}
+          @keyframes bp-aurora{0%,100%{opacity:.7;transform:scale(1) rotate(0deg)}50%{opacity:1;transform:scale(1.08) rotate(3deg)}}
+          @keyframes bp-accept-glow{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.7),0 8px 32px rgba(34,197,94,.45)}50%{box-shadow:0 0 0 14px rgba(34,197,94,.0),0 8px 32px rgba(34,197,94,.45)}}
+          @keyframes bp-wave{0%,100%{height:8px}50%{height:22px}}
+          .bp-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#4ade80;margin:0 3px;animation:bp-dots 1.5s infinite ease-in-out both}
+          .bp-dot:nth-child(1){animation-delay:0s}.bp-dot:nth-child(2){animation-delay:.2s}.bp-dot:nth-child(3){animation-delay:.4s}
+          .bp-wave-bar{width:3px;border-radius:2px;background:linear-gradient(to top,#22C55E,#86efac);animation:bp-wave 1s ease-in-out infinite}
         `}</style>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"52px 20px 0", flexShrink:0 }}>
-          <div style={{ width:40 }} />
-          <div style={{ color:"rgba(255,255,255,.75)", fontSize:13, fontWeight:500 }}>{isVideo ? "Appel vidéo entrant" : "Appel vocal entrant"}</div>
-          <div style={{ width:40 }} />
-        </div>
-        <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
-          <div style={{ width:130, height:130, borderRadius:"50%", background:callerColor, display:"flex", alignItems:"center", justifyContent:"center", fontSize:52, color:"#fff", fontWeight:800, animation:"tg-ring2 2s ease-out infinite", marginBottom:24 }}>{mkInitials(callerName)}</div>
-          <div style={{ color:"#fff", fontWeight:800, fontSize:26, marginBottom:10, textAlign:"center", padding:"0 24px" }}>{callerName}</div>
-          <div style={{ display:"flex", alignItems:"center", gap:6, color:"rgba(255,255,255,.75)", fontSize:15 }}>
-            Sonnerie<span className="tg2-dot" /><span className="tg2-dot" /><span className="tg2-dot" />
+
+        {/* Aurora background */}
+        <div style={{ position:"absolute", inset:0, background:"linear-gradient(180deg, #071a0e 0%, #0a2e16 35%, #061208 70%, #020a04 100%)", zIndex:0 }} />
+        <div style={{ position:"absolute", top:"-10%", left:"10%", width:"80%", height:"55%", borderRadius:"50%", background:"radial-gradient(ellipse, rgba(34,197,94,0.22) 0%, rgba(16,122,56,0.10) 40%, transparent 70%)", animation:"bp-aurora 6s ease-in-out infinite", zIndex:1, pointerEvents:"none" }} />
+        <div style={{ position:"absolute", top:"5%", right:"-10%", width:"50%", height:"40%", borderRadius:"50%", background:"radial-gradient(ellipse, rgba(74,222,128,0.10) 0%, transparent 65%)", animation:"bp-aurora 8s ease-in-out infinite reverse", zIndex:1, pointerEvents:"none" }} />
+
+        {/* Incoming label */}
+        <div style={{ position:"relative", zIndex:10, display:"flex", justifyContent:"center", alignItems:"center", padding:"56px 20px 0" }}>
+          <div style={{ background:"rgba(34,197,94,0.15)", backdropFilter:"blur(10px)", border:"1px solid rgba(34,197,94,0.3)", borderRadius:20, padding:"6px 18px", display:"flex", alignItems:"center", gap:8 }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#4ade80"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.24 1.01L6.6 10.8z"/></svg>
+            <span style={{ color:"#4ade80", fontSize:13, fontWeight:700 }}>{isVideo ? "Appel vidéo entrant" : "Appel audio entrant"}</span>
           </div>
-          {sig.mediaError && <div style={{ marginTop:16, background:"rgba(244,67,54,.2)", color:"#FF6B6B", borderRadius:12, padding:"8px 18px", fontSize:13, textAlign:"center", maxWidth:280 }}>{sig.mediaError}</div>}
         </div>
-        <div style={{ padding:"0 32px 60px", flexShrink:0, display:"flex", justifyContent:"space-around" }}>
-          <div style={{ textAlign:"center", cursor:"pointer" }} onClick={() => sig.rejectCall()}>
-            <div style={{ width:68, height:68, borderRadius:"50%", background:"#F44336", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 8px", boxShadow:"0 4px 20px rgba(244,67,54,.5)" }}>
-              <svg viewBox="0 0 24 24" width="32" height="32" fill="#fff"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.12-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
+
+        {/* Center content */}
+        <div style={{ position:"relative", zIndex:10, flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
+          {/* Rings */}
+          <div style={{ position:"relative", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:32 }}>
+            <div style={{ position:"absolute", width:220, height:220, borderRadius:"50%", border:"1.5px solid rgba(34,197,94,0.2)", animation:"bp-ring-pulse2 2.4s ease-out infinite" }} />
+            <div style={{ position:"absolute", width:180, height:180, borderRadius:"50%", border:"1.5px solid rgba(34,197,94,0.32)", animation:"bp-ring-pulse 2s ease-out infinite" }} />
+            <div style={{ position:"absolute", width:148, height:148, borderRadius:"50%", border:"2px solid rgba(34,197,94,0.45)" }} />
+            {/* Avatar */}
+            <div style={{ width:124, height:124, borderRadius:"50%", background:`radial-gradient(circle at 35% 35%, ${callerColor}dd, ${callerColor}99)`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:46, color:"#fff", fontWeight:900, boxShadow:`0 0 0 4px rgba(34,197,94,0.4), 0 16px 48px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.25)`, backdropFilter:"blur(2px)", border:"3px solid rgba(255,255,255,0.15)" }}>
+              {mkInitials(callerName)}
             </div>
-            <div style={{ color:"rgba(255,255,255,.85)", fontSize:13, fontWeight:500 }}>Raccrocher</div>
+            <div style={{ position:"absolute", bottom:8, right:8, width:22, height:22, borderRadius:"50%", background:"#22C55E", border:"3px solid #040f07", boxShadow:"0 0 10px #22C55E" }} />
+          </div>
+
+          <div style={{ fontWeight:900, fontSize:26, color:"#fff", letterSpacing:0.5, marginBottom:8, textAlign:"center", padding:"0 28px", textShadow:"0 2px 16px rgba(0,0,0,0.5)" }}>{callerName}</div>
+          <div style={{ display:"flex", alignItems:"center", gap:2, marginBottom:24 }}>
+            <span style={{ color:"rgba(255,255,255,.65)", fontSize:15 }}>Appel entrant</span>
+            <span className="bp-dot" /><span className="bp-dot" /><span className="bp-dot" />
+          </div>
+        </div>
+
+        {/* Bottom — accept / reject */}
+        <div style={{ position:"relative", zIndex:10, padding:"0 40px 56px", display:"flex", justifyContent:"space-around", alignItems:"flex-start" }}>
+          <div style={{ textAlign:"center", cursor:"pointer" }} onClick={() => sig.rejectCall()}>
+            <div style={{ width:72, height:72, borderRadius:"50%", background:"linear-gradient(145deg,#ef4444,#b91c1c)", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 10px", boxShadow:"0 6px 28px rgba(239,68,68,.55), inset 0 1px 0 rgba(255,255,255,.2)" }}>
+              <svg viewBox="0 0 24 24" width="30" height="30" fill="#fff"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.12-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
+            </div>
+            <div style={{ color:"rgba(255,255,255,.75)", fontSize:13, fontWeight:600 }}>Refuser</div>
           </div>
           <div style={{ textAlign:"center", cursor:"pointer" }} onClick={() => sig.acceptCall()}>
-            <div style={{ width:68, height:68, borderRadius:"50%", background:"#4CAF50", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 8px", boxShadow:"0 4px 20px rgba(76,175,80,.5)" }}>
-              <svg viewBox="0 0 24 24" width="32" height="32" fill="#fff"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.24 1.01L6.6 10.8z"/></svg>
+            <div style={{ width:72, height:72, borderRadius:"50%", background:"linear-gradient(145deg,#22c55e,#15803d)", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 10px", animation:"bp-accept-glow 2s ease-in-out infinite", boxShadow:"0 6px 28px rgba(34,197,94,.55), inset 0 1px 0 rgba(255,255,255,.2)" }}>
+              <svg viewBox="0 0 24 24" width="30" height="30" fill="#fff"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.24 1.01L6.6 10.8z"/></svg>
             </div>
-            <div style={{ color:"rgba(255,255,255,.85)", fontSize:13, fontWeight:500 }}>Accepter</div>
+            <div style={{ color:"rgba(255,255,255,.75)", fontSize:13, fontWeight:600 }}>Accepter</div>
           </div>
         </div>
       </div>
@@ -817,41 +845,150 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             </div>
           </>
         ) : (
-          /* ── AUDIO CALL ── */
+          /* ── AUDIO CALL — BrutePawa 2026 Premium ── */
           <>
-            <div style={{ position:"absolute", inset:0, background:"linear-gradient(180deg,#5B86E5 0%,#7A5AF8 55%,#6B21A8 100%)" }} />
-            <div style={{ position:"relative", zIndex:10, display:"flex", justifyContent:"space-between", alignItems:"center", padding:"48px 20px 0", flexShrink:0 }}>
-              <div style={{ width:34 }} />
-              <div />
-              <button onClick={() => sig.toggleSpeaker(remoteAudioRef.current)} style={{ background:"none", border:"none", color:sig.isSpeaker?"#fff":"rgba(255,255,255,.6)", cursor:"pointer", padding:4 }}>
-                <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d={sig.isSpeaker?"M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z":"M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"}/></svg>
+            <style>{`
+              @keyframes bp-ring-a{0%,100%{transform:scale(1);opacity:.55}50%{transform:scale(1.22);opacity:0}}
+              @keyframes bp-ring-b{0%,100%{transform:scale(1);opacity:.35}50%{transform:scale(1.38);opacity:0}}
+              @keyframes bp-aurora-a{0%,100%{opacity:.75;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
+              @keyframes bp-aurora-b{0%,100%{opacity:.4;transform:scale(1) translateX(0)}50%{opacity:.7;transform:scale(1.06) translateX(10px)}}
+              @keyframes bp-dot-bounce{0%,80%,100%{opacity:0;transform:translateY(0)}40%{opacity:1;transform:translateY(-5px)}}
+              @keyframes bp-wv{0%,100%{height:6px;opacity:.5}50%{height:var(--h,18px);opacity:1}}
+              @keyframes bp-end-glow{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.7),0 8px 28px rgba(239,68,68,.5)}50%{box-shadow:0 0 0 10px rgba(239,68,68,0),0 8px 28px rgba(239,68,68,.5)}}
+              .bpa-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#4ade80;animation:bp-dot-bounce 1.5s ease-in-out infinite}
+              .bpa-dot:nth-child(1){animation-delay:0s}.bpa-dot:nth-child(2){animation-delay:.2s}.bpa-dot:nth-child(3){animation-delay:.4s}
+              .bpa-ctrl-btn{display:flex;align-items:center;justify-content:center;width:66px;height:66px;border-radius:50%;border:none;cursor:pointer;transition:transform .12s,box-shadow .12s}
+              .bpa-ctrl-btn:active{transform:scale(.91)!important}
+            `}</style>
+
+            {/* Deep aurora background */}
+            <div style={{ position:"absolute", inset:0, background:"linear-gradient(180deg, #071d0c 0%, #0c3318 30%, #061510 65%, #020b05 100%)", zIndex:0 }} />
+            <div style={{ position:"absolute", top:"-15%", left:"5%", width:"90%", height:"60%", borderRadius:"50%", background:"radial-gradient(ellipse, rgba(34,197,94,0.26) 0%, rgba(21,128,61,0.10) 40%, transparent 68%)", animation:"bp-aurora-a 7s ease-in-out infinite", zIndex:1, pointerEvents:"none" }} />
+            <div style={{ position:"absolute", top:"10%", right:"-15%", width:"55%", height:"45%", borderRadius:"50%", background:"radial-gradient(ellipse, rgba(74,222,128,0.12) 0%, transparent 60%)", animation:"bp-aurora-b 9s ease-in-out infinite", zIndex:1, pointerEvents:"none" }} />
+            <div style={{ position:"absolute", bottom:"20%", left:"-10%", width:"45%", height:"35%", borderRadius:"50%", background:"radial-gradient(ellipse, rgba(34,197,94,0.08) 0%, transparent 60%)", zIndex:1, pointerEvents:"none" }} />
+
+            {/* Speaker button — top right glass */}
+            <div style={{ position:"relative", zIndex:10, display:"flex", justifyContent:"flex-end", padding:"52px 20px 0", flexShrink:0 }}>
+              <button onClick={() => sig.toggleSpeaker(remoteAudioRef.current)}
+                style={{ width:46, height:46, borderRadius:"50%", background:sig.isSpeaker ? "rgba(34,197,94,0.35)" : "rgba(255,255,255,0.10)", border:`1.5px solid ${sig.isSpeaker ? "rgba(34,197,94,0.6)" : "rgba(255,255,255,0.2)"}`, backdropFilter:"blur(12px)", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 4px 16px rgba(0,0,0,0.35)", transition:"all .2s" }}>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill={sig.isSpeaker ? "#4ade80" : "rgba(255,255,255,.75)"}><path d={sig.isSpeaker ? "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" : "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"}/></svg>
               </button>
             </div>
+
+            {/* Center — avatar + waveform + info */}
             <div style={{ position:"relative", zIndex:10, flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
-              <div style={{ width:136, height:136, borderRadius:"50%", background:peer?.color ?? "#4C6EF5", display:"flex", alignItems:"center", justifyContent:"center", fontSize:54, color:"#fff", fontWeight:800, animation:"tg-ring3 2s ease-out infinite", marginBottom:28 }}>
-                {peer?.initials ?? "?"}
+
+              {/* Waveform + rings + avatar */}
+              <div style={{ position:"relative", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:36 }}>
+                {/* Outer rings */}
+                <div style={{ position:"absolute", width:230, height:230, borderRadius:"50%", border:"1.5px solid rgba(34,197,94,0.18)", animation:"bp-ring-b 2.8s ease-out infinite" }} />
+                <div style={{ position:"absolute", width:186, height:186, borderRadius:"50%", border:"1.5px solid rgba(34,197,94,0.30)", animation:"bp-ring-a 2.2s ease-out infinite" }} />
+                <div style={{ position:"absolute", width:150, height:150, borderRadius:"50%", border:"2px solid rgba(34,197,94,0.42)" }} />
+
+                {/* Waveform bars — left */}
+                <div style={{ position:"absolute", left:-52, display:"flex", alignItems:"center", gap:3, height:60 }}>
+                  {[14,20,10,24,16,8,18,12].map((h,i) => (
+                    <div key={i} className="bpa-wave-bar" style={{ width:3, borderRadius:2, background:"linear-gradient(to top,rgba(34,197,94,0.9),rgba(134,239,172,0.5))", animation:`bp-wv ${0.7 + i*0.11}s ease-in-out infinite`, animationDelay:`${i*0.09}s`, ["--h" as string]:`${h}px`, height:6 }} />
+                  ))}
+                </div>
+                {/* Waveform bars — right */}
+                <div style={{ position:"absolute", right:-52, display:"flex", alignItems:"center", gap:3, height:60 }}>
+                  {[12,18,8,22,14,20,10,16].map((h,i) => (
+                    <div key={i} style={{ width:3, borderRadius:2, background:"linear-gradient(to top,rgba(34,197,94,0.9),rgba(134,239,172,0.5))", animation:`bp-wv ${0.65 + i*0.10}s ease-in-out infinite`, animationDelay:`${i*0.07+0.15}s`, height:6 }} />
+                  ))}
+                </div>
+
+                {/* Glassmorphism avatar */}
+                <div style={{
+                  width:134, height:134, borderRadius:"50%",
+                  background:`radial-gradient(circle at 33% 30%, rgba(255,255,255,0.22), rgba(255,255,255,0.04) 60%), radial-gradient(circle at 70% 75%, ${peer?.color ?? "#166534"}cc, ${peer?.color ?? "#166534"}88)`,
+                  display:"flex", alignItems:"center", justifyContent:"center",
+                  fontSize:50, color:"#fff", fontWeight:900,
+                  border:"2.5px solid rgba(255,255,255,0.18)",
+                  boxShadow:`0 0 0 5px rgba(34,197,94,0.35), 0 20px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.3)`,
+                  backdropFilter:"blur(4px)",
+                  textShadow:"0 2px 12px rgba(0,0,0,0.4)",
+                }}>
+                  {peer?.initials ?? "?"}
+                </div>
+                {/* Online dot */}
+                <div style={{ position:"absolute", bottom:10, right:10, width:22, height:22, borderRadius:"50%", background:"radial-gradient(circle, #4ade80, #22c55e)", border:"3px solid #071d0c", boxShadow:"0 0 14px rgba(74,222,128,0.8)" }} />
               </div>
-              <div style={{ color:"#fff", fontWeight:800, fontSize:26, marginBottom:12, textAlign:"center", padding:"0 24px" }}>{peer?.name ?? "Appel vocal"}</div>
-              <div style={{ display:"flex", alignItems:"center", gap:6, color:"rgba(255,255,255,.78)", fontSize:15 }}>
+
+              {/* Name + verified */}
+              <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}>
+                <span style={{ fontWeight:900, fontSize:26, color:"#fff", letterSpacing:0.3, textShadow:"0 2px 16px rgba(0,0,0,0.5)" }}>{peer?.name ?? "Appel vocal"}</span>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 2L14.09 8.26L21 9.27L16.5 13.97L17.64 21L12 17.77L6.36 21L7.5 13.97L3 9.27L9.91 8.26L12 2Z" fill="#22C55E"/>
+                  <polyline points="9,12 11,14 15,10" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                </svg>
+              </div>
+
+              {/* Status */}
+              <div style={{ display:"flex", alignItems:"center", gap:4, marginBottom:20 }}>
                 {sig.callState === "active"
-                  ? <span style={{ color:"#A5F3A5", fontWeight:700 }}>● {fmtTime(sig.callDuration)}</span>
-                  : <><span>Sonnerie</span><span className="tg3-dot" /><span className="tg3-dot" /><span className="tg3-dot" /></>
+                  ? <span style={{ color:"#4ade80", fontWeight:700, fontSize:16, letterSpacing:0.3 }}>● {fmtTime(sig.callDuration)}</span>
+                  : <>
+                      <span style={{ color:"rgba(255,255,255,.65)", fontSize:15 }}>Sonnerie</span>
+                      <span className="bpa-dot" style={{ marginLeft:4 }} /><span className="bpa-dot" /><span className="bpa-dot" />
+                    </>
                 }
               </div>
+
+              {/* Branding capsule */}
+              <div style={{ background:"rgba(34,197,94,0.12)", backdropFilter:"blur(12px)", border:"1px solid rgba(34,197,94,0.28)", borderRadius:24, padding:"7px 18px", display:"flex", alignItems:"center", gap:8 }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                  <rect x="2" y="18" width="3" height="4" rx="1" fill="#4ade80"/>
+                  <rect x="7" y="14" width="3" height="8" rx="1" fill="#4ade80"/>
+                  <rect x="12" y="9" width="3" height="13" rx="1" fill="#4ade80"/>
+                  <rect x="17" y="4" width="3" height="18" rx="1" fill="#4ade80"/>
+                </svg>
+                <span style={{ color:"rgba(255,255,255,.85)", fontSize:13, fontWeight:600, letterSpacing:0.2 }}>Appel audio Brutepawa</span>
+              </div>
             </div>
-            <div style={{ position:"relative", zIndex:10, padding:"0 16px 58px", flexShrink:0 }}>
-              <div style={{ display:"flex", justifyContent:"space-around", alignItems:"flex-start" }}>
-                {([
-                  { label:"Haut-parleur",  icon:<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>, action:() => sig.toggleSpeaker(remoteAudioRef.current), active:sig.isSpeaker },
-                  { label:"Activer vidéo", icon:<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>, action:() => {} },
-                  { label:"Muet",          icon:<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d={sig.isMuted?"M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z":"M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28C16.28 17.23 19 14.41 19 11h-1.7z"}/></svg>, action:() => sig.toggleMute(), active:sig.isMuted },
-                  { label:"Raccrocher",    icon:<svg viewBox="0 0 24 24" width="28" height="28" fill="#fff"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.12-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>, action:() => sig.endCall(), red:true },
-                ] as {label:string;icon:JSX.Element;action:()=>void;active?:boolean;red?:boolean}[]).map(b => (
-                  <div key={b.label} style={{ textAlign:"center", cursor:"pointer" }} onClick={b.action}>
-                    <div className={`tg3-btn${b.active?" tg3-btn-on":""}`} style={b.red?{background:"#F44336",boxShadow:"0 4px 18px rgba(244,67,54,.55)"}:{}}>{b.icon}</div>
-                    <div style={{ color:"rgba(255,255,255,.85)", fontSize:11, fontWeight:500, marginTop:7 }}>{b.label}</div>
-                  </div>
-                ))}
+
+            {/* Bottom control bar */}
+            <div style={{ position:"relative", zIndex:10, padding:"0 12px 52px", flexShrink:0 }}>
+              <div style={{ background:"rgba(10,28,16,0.75)", backdropFilter:"blur(20px)", border:"1px solid rgba(34,197,94,0.15)", borderRadius:28, padding:"18px 16px 16px", boxShadow:"0 -4px 32px rgba(0,0,0,0.4)" }}>
+                <div style={{ display:"flex", justifyContent:"space-around", alignItems:"flex-start" }}>
+                  {([
+                    {
+                      label:"Haut-parleur",
+                      icon:<svg viewBox="0 0 24 24" width="26" height="26" fill={sig.isSpeaker?"#022c0f":"rgba(255,255,255,.9)"}><path d={sig.isSpeaker?"M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z":"M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"}/></svg>,
+                      action:() => sig.toggleSpeaker(remoteAudioRef.current),
+                      active:sig.isSpeaker,
+                    },
+                    {
+                      label:"Activer vidéo",
+                      icon:<svg viewBox="0 0 24 24" width="26" height="26" fill="rgba(255,255,255,.9)"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>,
+                      action:() => {},
+                      active:false,
+                    },
+                    {
+                      label:"Muet",
+                      icon:<svg viewBox="0 0 24 24" width="26" height="26" fill={sig.isMuted?"#022c0f":"rgba(255,255,255,.9)"}><path d={sig.isMuted?"M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z":"M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28C16.28 17.23 19 14.41 19 11h-1.7z"}/></svg>,
+                      action:() => sig.toggleMute(),
+                      active:sig.isMuted,
+                    },
+                    {
+                      label:"Raccrocher",
+                      icon:<svg viewBox="0 0 24 24" width="28" height="28" fill="#fff"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.12-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>,
+                      action:() => sig.endCall(),
+                      red:true,
+                    },
+                  ] as {label:string;icon:JSX.Element;action:()=>void;active?:boolean;red?:boolean}[]).map(b => (
+                    <div key={b.label} style={{ textAlign:"center", cursor:"pointer" }} onClick={b.action}>
+                      <div className="bpa-ctrl-btn" style={
+                        b.red
+                          ? { background:"linear-gradient(145deg,#ef4444,#b91c1c)", boxShadow:"0 6px 24px rgba(239,68,68,.55), inset 0 1px 0 rgba(255,255,255,.2)", animation:"bp-end-glow 2.5s ease-in-out infinite" }
+                          : b.active
+                            ? { background:"linear-gradient(145deg,#22c55e,#16a34a)", boxShadow:"0 6px 20px rgba(34,197,94,.45), inset 0 1px 0 rgba(255,255,255,.25)" }
+                            : { background:"rgba(255,255,255,0.10)", boxShadow:"0 4px 16px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.1)", border:"1px solid rgba(255,255,255,.12)" }
+                      }>{b.icon}</div>
+                      <div style={{ color:"rgba(255,255,255,.7)", fontSize:11, fontWeight:600, marginTop:8, letterSpacing:0.1 }}>{b.label}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </>
