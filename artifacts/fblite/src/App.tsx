@@ -280,21 +280,17 @@ function AppContent() {
   }
 
   if (userProfileMatch) {
-    return (
-      <Layout onNewPost={handleNewPost}>
-        <UserProfilePage userId={parseInt(userProfileMatch.id)} />
-      </Layout>
-    );
+    return <UserProfilePage userId={parseInt(userProfileMatch.id)} />;
   }
 
   const userAliasMatch = matchDynamic("/user/:id", path);
   if (userAliasMatch) {
     const uid = parseInt(userAliasMatch.id, 10);
-    if (!isNaN(uid)) return (
-      <Layout onNewPost={handleNewPost}>
-        <UserProfilePage userId={uid} />
-      </Layout>
-    );
+    if (!isNaN(uid)) return <UserProfilePage userId={uid} />;
+  }
+
+  if (path === "/profile") {
+    return <Profile />;
   }
 
   if (groupMatch) {
@@ -337,7 +333,6 @@ function AppContent() {
       {path === "/marketplace" && <MarketplacePage />}
       {path === "/notifications" && <NotificationsPage />}
       {path === "/menu" && <Menu />}
-      {path === "/profile" && <Profile />}
       {path.startsWith("/messages") && (() => {
         const qs2 = path.includes("?") ? path.slice(path.indexOf("?") + 1) : "";
         const uid = new URLSearchParams(qs2).get("userId");
