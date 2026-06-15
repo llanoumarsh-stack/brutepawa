@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
-import { apiGetConversations, apiGetMessages, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo } from "../lib/api";
+import { apiGetConversations, apiGetMessages, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiSendTyping, apiGetTyping, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo } from "../lib/api";
 import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignaling";
 
 void ({} as ApiChatGroup);
@@ -121,6 +121,17 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
   const [isRecording, setIsRecording]   = useState(false);
   const [recSeconds, setRecSeconds]     = useState(0);
   const [vpHeight, setVpHeight]         = useState<number | null>(null);
+  const [peerTyping, setPeerTyping]     = useState(false);
+  const [attachSheet, setAttachSheet]   = useState(false);
+  const [attachPage, setAttachPage]     = useState<"none"|"poll"|"event"|"contacts">("none");
+  const [pollQuestion, setPollQuestion] = useState("");
+  const [pollOptions, setPollOptions]   = useState<string[]>(["", ""]);
+  const [pollMultiple, setPollMultiple] = useState(true);
+  const [eventName, setEventName]       = useState("");
+  const [eventDesc, setEventDesc]       = useState("");
+  const [eventDate, setEventDate]       = useState(new Date().toLocaleDateString("fr",{day:"numeric",month:"long",year:"numeric"}));
+  const [eventTime, setEventTime]       = useState("14:00");
+  const typingDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const longPressTimer    = useRef<ReturnType<typeof setTimeout> | null>(null);
   const activeGroupRef    = useRef<number | null>(null);
@@ -151,6 +162,15 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
     vv.addEventListener("resize", handler);
     return () => vv.removeEventListener("resize", handler);
   }, []);
+
+  /* ── Peer typing indicator ── */
+  useEffect(() => {
+    if (!activeConv) return;
+    const poll = () => apiGetTyping(activeConv).then(t => setPeerTyping(t));
+    poll();
+    const id = setInterval(poll, 2000);
+    return () => clearInterval(id);
+  }, [activeConv]);
 
   /* ── Voice recording helpers ── */
   const startVoice = async () => {
@@ -1000,36 +1020,43 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
     return createPortal(
       <div style={{ position:"fixed", top:0, left:0, right:0, height: vpHeight ? `${vpHeight}px` : "100dvh", display:"flex", flexDirection:"column", zIndex:10000, overflow:"hidden" }}>
         <style>{`
-          .fbl-msg-mine   { background:#0084FF; color:#fff; border-radius:18px 18px 4px 18px; }
-          .fbl-msg-theirs { background:#E4E6EB; color:#111; border-radius:18px 18px 18px 4px; }
+          .fbl-msg-mine   { background:#DCF8C6; color:#111; border-radius:8px 8px 2px 8px; box-shadow:0 1px 1px rgba(0,0,0,0.12); }
+          .fbl-msg-theirs { background:#fff; color:#111; border-radius:8px 8px 8px 2px; box-shadow:0 1px 1px rgba(0,0,0,0.10); }
           .fbl-menu-btn { display:flex; align-items:center; gap:14px; padding:13px 20px; background:none; border:none; width:100%; font-size:15px; color:#111; cursor:pointer; text-align:left; font-family:inherit; }
           .fbl-menu-btn:active { background:#F0F2F5; }
           .fbl-react-btn:active { transform:scale(1.35); }
           @keyframes fbl-sheet-up { from{transform:translateY(100%)} to{transform:translateY(0)} }
           @keyframes fbl-fade-in  { from{opacity:0} to{opacity:1} }
           @keyframes fbl-rec-pulse { 0%,100%{opacity:1} 50%{opacity:0.2} }
+          @keyframes wa-typing-dot { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
+          .wa-typing-dot { width:7px; height:7px; border-radius:50%; background:#999; display:inline-block; animation:wa-typing-dot 1.2s infinite; }
+          .wa-typing-dot:nth-child(2) { animation-delay:0.2s; }
+          .wa-typing-dot:nth-child(3) { animation-delay:0.4s; }
+          .wa-attach-icon { display:flex; flex-direction:column; align-items:center; gap:7px; cursor:pointer; background:none; border:none; padding:0; }
+          .wa-attach-icon span { font-size:12px; color:#555; text-align:center; line-height:1.2; max-width:64px; }
+          .wa-attach-circle { width:52px; height:52px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; }
         `}</style>
 
         {/* ── HEADER ── */}
         {longPressMsg !== null ? (
-          /* TELEGRAM SELECTION BAR */
-          <div style={{ background:"#fff", padding:"10px 16px", display:"flex", alignItems:"center", gap:18, flexShrink:0, borderBottom:"1px solid #E4E6EB", boxShadow:"0 1px 3px rgba(0,0,0,0.08)" }}>
+          /* SELECTION BAR */
+          <div style={{ background:"#075E54", padding:"10px 16px", display:"flex", alignItems:"center", gap:18, flexShrink:0, boxShadow:"0 1px 3px rgba(0,0,0,0.18)" }}>
             <button onClick={() => setLongPressMsg(null)}
-              style={{ background:"none", border:"none", cursor:"pointer", color:"#555", display:"flex", alignItems:"center", padding:4 }}>
+              style={{ background:"none", border:"none", cursor:"pointer", color:"#fff", display:"flex", alignItems:"center", padding:4 }}>
               <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
             </button>
-            <span style={{ flex:1, fontWeight:700, fontSize:17, color:"#111" }}>1</span>
-            <button style={{ background:"none", border:"none", cursor:"pointer", color:"#555", display:"flex", alignItems:"center", padding:6 }}>
+            <span style={{ flex:1, fontWeight:700, fontSize:17, color:"#fff" }}>1</span>
+            <button style={{ background:"none", border:"none", cursor:"pointer", color:"#fff", display:"flex", alignItems:"center", padding:6 }}>
               <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M21 8.5L16.5 4 7 13.5l-3 9 9-3L21 8.5zM5.92 17.08l1.55-4.64L11 16.08 5.92 17.08zM15 6l3 3-8.25 8.25-3-3L15 6z"/></svg>
             </button>
             <button onClick={() => { setMessages(prev => ({ ...prev, [activeConv!]: (prev[activeConv!] ?? []).filter(x => x.id !== longPressMsg) })); setLongPressMsg(null); }}
-              style={{ background:"none", border:"none", cursor:"pointer", color:"#555", display:"flex", alignItems:"center", padding:6 }}>
+              style={{ background:"none", border:"none", cursor:"pointer", color:"#fff", display:"flex", alignItems:"center", padding:6 }}>
               <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
             </button>
           </div>
         ) : showChatSearch ? (
           /* SEARCH HEADER */
-          <div style={{ background:"#1877F2", padding:"8px 10px", display:"flex", alignItems:"center", gap:8, flexShrink:0, boxShadow:"0 2px 4px rgba(0,0,0,0.18)" }}>
+          <div style={{ background:"#075E54", padding:"8px 10px", display:"flex", alignItems:"center", gap:8, flexShrink:0, boxShadow:"0 2px 4px rgba(0,0,0,0.18)" }}>
             <button onClick={() => { setShowChatSearch(false); setChatSearchQ(""); setChatSearchIdx(0); }}
               style={{ background:"none", border:"none", fontSize:24, cursor:"pointer", color:"#fff", padding:"2px 4px 2px 0", display:"flex", alignItems:"center", lineHeight:1 }}>‹</button>
             <div style={{ fontWeight:700, fontSize:15, color:"#fff", flex:1 }}>Rechercher</div>
@@ -1050,12 +1077,12 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
           </div>
         ) : (
           /* NORMAL HEADER */
-          <div style={{ background:"#1877F2", padding:"8px 10px", display:"flex", alignItems:"center", gap:8, flexShrink:0, boxShadow:"0 2px 4px rgba(0,0,0,0.18)" }}>
+          <div style={{ background:"#075E54", padding:"8px 10px", display:"flex", alignItems:"center", gap:8, flexShrink:0, boxShadow:"0 2px 4px rgba(0,0,0,0.18)" }}>
             <button onClick={() => { setActiveConv(null); setOverlay("none"); setShowConvMenu(false); }}
               style={{ background:"none", border:"none", fontSize:24, cursor:"pointer", color:"#fff", display:"flex", alignItems:"center", padding:"2px 4px 2px 0", lineHeight:1 }}>‹</button>
             <div style={{ position:"relative", cursor:"pointer", flexShrink:0 }} onClick={() => setOverlay("info")}>
               <div className="avatar" style={{ background:"rgba(255,255,255,0.25)", width:40, height:40, fontSize:14, color:"#fff", border:"2px solid rgba(255,255,255,0.4)" }}>{activeUser.initials}</div>
-              {presence.online && <div style={{ position:"absolute", bottom:1, right:1, width:11, height:11, background:"#42B72A", borderRadius:"50%", border:"2px solid #1877F2" }} />}
+              {presence.online && <div style={{ position:"absolute", bottom:1, right:1, width:11, height:11, background:"#25D366", borderRadius:"50%", border:"2px solid #075E54" }} />}
             </div>
             <div style={{ flex:1, minWidth:0, cursor:"pointer" }} onClick={() => setOverlay("info")}>
               <div style={{ fontWeight:700, fontSize:15, color:"#fff", lineHeight:1.2 }}>{activeUser.name}</div>
@@ -1083,7 +1110,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
         )}
 
         {/* ── MESSAGES AREA ── */}
-        <div style={{ flex:1, overflowY:"auto", padding:"8px 10px 4px", display:"flex", flexDirection:"column", gap:2, background: convWallpaper ?? "#fff" }}>
+        <div style={{ flex:1, overflowY:"auto", padding:"8px 10px 4px", display:"flex", flexDirection:"column", gap:2, background: convWallpaper ?? "#ECE5DD" }}>
           <div style={{ textAlign:"center", fontSize:11.5, color:"#888", background:"rgba(0,0,0,0.05)", borderRadius:20, padding:"3px 14px", margin:"4px auto 10px", display:"inline-block", alignSelf:"center" }}>Aujourd'hui</div>
           {currentMessages.map((msg, i) => {
             const isLast     = i === currentMessages.length - 1 || currentMessages[i + 1]?.mine !== msg.mine;
@@ -1130,9 +1157,9 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
                   )}
                   <div className={msg.mine ? "fbl-msg-mine" : "fbl-msg-theirs"} style={{ padding:"8px 12px 5px", fontSize:14.5, lineHeight:1.45, wordBreak:"break-word" }}>
                     {msg.text}
-                    <div style={{ fontSize:10, marginTop:2, color: msg.mine ? "rgba(255,255,255,0.72)" : "#888", textAlign:"right", display:"flex", justifyContent:"flex-end", alignItems:"center", gap:3 }}>
+                    <div style={{ fontSize:10, marginTop:2, color:"#888", textAlign:"right", display:"flex", justifyContent:"flex-end", alignItems:"center", gap:3 }}>
                       {msg.time}
-                      {msg.mine && <span style={{ fontSize:11 }}>{msg.status === "read" ? "✓✓" : "✓"}</span>}
+                      {msg.mine && <span style={{ fontSize:11, color: msg.status === "read" ? "#4FC3F7" : "#888" }}>{msg.status === "read" ? "✓✓" : "✓"}</span>}
                     </div>
                   </div>
                 </div>
@@ -1144,6 +1171,13 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
               <div style={{ background:"rgba(0,0,0,0.06)", borderRadius:16, padding:"12px 20px", fontSize:13, color:"#555" }}>
                 🔒 Les messages sont chiffrés de bout en bout
               </div>
+            </div>
+          )}
+          {peerTyping && (
+            <div style={{ display:"flex", alignItems:"center", gap:8, alignSelf:"flex-start", background:"#fff", borderRadius:"8px 8px 8px 2px", padding:"8px 14px", boxShadow:"0 1px 1px rgba(0,0,0,0.10)", marginBottom:4, maxWidth:100 }}>
+              <span className="wa-typing-dot" />
+              <span className="wa-typing-dot" />
+              <span className="wa-typing-dot" />
             </div>
           )}
           <div ref={bottomRef} />
@@ -1182,23 +1216,37 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
             </div>
           </div>
         ) : (
-          /* NORMAL INPUT BAR */
+          /* NORMAL INPUT BAR — WhatsApp style */
           <div style={{ background:"#F0F2F5", padding:"6px 8px", display:"flex", gap:4, alignItems:"center", flexShrink:0 }}>
-            <button style={{ background:"none", border:"none", fontSize:24, cursor:"pointer", color:"#1877F2", padding:"4px 6px", flexShrink:0, display:"flex", alignItems:"center" }}>😊</button>
+            <button style={{ background:"none", border:"none", fontSize:22, cursor:"pointer", color:"#777", padding:"4px 4px", flexShrink:0, display:"flex", alignItems:"center" }}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm4.24 16L12 15.45 7.77 18l1.12-4.81-3.73-3.23 4.92-.42L12 5l1.92 4.53 4.92.42-3.73 3.23L16.23 18z"/></svg>
+            </button>
             <div style={{ flex:1 }}>
-              <input value={newMsg} onChange={e => setNewMsg(e.target.value)}
+              <input value={newMsg}
+                onChange={e => {
+                  setNewMsg(e.target.value);
+                  if (typingDebounceRef.current) clearTimeout(typingDebounceRef.current);
+                  apiSendTyping(activeConv!).catch(() => {});
+                  typingDebounceRef.current = setTimeout(() => { typingDebounceRef.current = null; }, 2500);
+                }}
                 onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMsg(); } }}
                 placeholder="Message"
                 style={{ width:"100%", background:"#fff", border:"none", borderRadius:22, padding:"10px 14px", fontSize:15, outline:"none", boxSizing:"border-box", color:"#111", boxShadow:"0 1px 2px rgba(0,0,0,0.1)" }} />
             </div>
             {newMsg.trim() ? (
               <button onClick={() => sendMsg()}
-                style={{ background:"#1877F2", border:"none", borderRadius:"50%", width:38, height:38, color:"#fff", cursor:"pointer", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(24,119,242,0.4)" }}>
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                style={{ background:"#25D366", border:"none", borderRadius:"50%", width:42, height:42, color:"#fff", cursor:"pointer", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(37,211,102,0.4)" }}>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
               </button>
             ) : (
               <>
-                <button style={{ background:"none", border:"none", fontSize:22, cursor:"pointer", color:"#1877F2", padding:"4px 6px", flexShrink:0, display:"flex", alignItems:"center" }}>📎</button>
+                <button onClick={() => { setAttachSheet(true); setAttachPage("none"); }}
+                  style={{ background:"none", border:"none", cursor:"pointer", color:"#777", padding:"4px 4px", flexShrink:0, display:"flex", alignItems:"center" }}>
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
+                </button>
+                <button style={{ background:"none", border:"none", cursor:"pointer", color:"#777", padding:"4px 2px", flexShrink:0, display:"flex", alignItems:"center" }}>
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 15.2l-4.4-4.4L9 9.4l3 3.1 3-3.1 1.4 1.4L12 15.2zM20 4h-3.17L15 2H9L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h4.05l.59-.65L9.88 4h4.24l1.24 1.35.59.65H20v12z"/><circle cx="12" cy="11" r="3.2"/></svg>
+                </button>
                 <div style={{ position:"relative", flexShrink:0 }}>
                   {isRecording ? (
                     <div style={{ display:"flex", alignItems:"center", gap:6, background:"#fff", border:"2px solid #e53935", borderRadius:24, padding:"4px 10px" }}>
@@ -1214,8 +1262,8 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
                   ) : (
                     <button
                       onPointerDown={e => { e.preventDefault(); startVoice(); }}
-                      style={{ background:"#1877F2", border:"none", borderRadius:"50%", width:38, height:38, color:"#fff", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(24,119,242,0.4)" }}>
-                      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.49 6-3.31 6-6.72h-1.7z"/></svg>
+                      style={{ background:"#25D366", border:"none", borderRadius:"50%", width:42, height:42, color:"#fff", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(37,211,102,0.4)" }}>
+                      <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.49 6-3.31 6-6.72h-1.7z"/></svg>
                     </button>
                   )}
                 </div>
@@ -1332,6 +1380,150 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
               </div>
             </div>
           </div>
+        )}
+
+        {/* ── ATTACHMENT SHEET ── */}
+        {attachSheet && createPortal(
+          <div style={{ position:"fixed", inset:0, zIndex:10002, display:"flex", flexDirection:"column", justifyContent:"flex-end" }}>
+            <div style={{ background:"rgba(0,0,0,0.45)", position:"absolute", inset:0 }} onClick={() => { setAttachSheet(false); setAttachPage("none"); }} />
+            <div style={{ background:"#fff", borderRadius:"18px 18px 0 0", position:"relative", zIndex:1, animation:"fbl-sheet-up 0.22s ease", maxHeight:"90dvh", overflowY:"auto" }}>
+
+              {/* MAIN ICONS GRID */}
+              {attachPage === "none" && (
+                <>
+                  <div style={{ width:36, height:4, background:"#DDD", borderRadius:2, margin:"10px auto 0" }} />
+                  <div style={{ padding:"18px 18px 6px", display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:"18px 8px" }}>
+                    {([
+                      { icon:"🖼️", label:"Galerie",       bg:"#5B8DEF" },
+                      { icon:"📷", label:"Caméra",        bg:"#FF5BA7" },
+                      { icon:"📍", label:"Localisation",  bg:"#25D366" },
+                      { icon:"👤", label:"Contact",       bg:"#1877F2", page:"contacts" as const },
+                      { icon:"📄", label:"Document",      bg:"#7B5EA7" },
+                      { icon:"📊", label:"Sondage",       bg:"#F5A623", page:"poll" as const },
+                      { icon:"📅", label:"Événement",     bg:"#FF5BA7", page:"event" as const },
+                      { icon:"🤖", label:"Images d'IA",   bg:"#00BCD4" },
+                    ] as Array<{ icon:string; label:string; bg:string; page?:"poll"|"event"|"contacts" }>).map(it => (
+                      <button key={it.label} className="wa-attach-icon" onClick={() => it.page ? setAttachPage(it.page) : setAttachSheet(false)}>
+                        <div className="wa-attach-circle" style={{ background: it.bg }}>{it.icon}</div>
+                        <span>{it.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <div style={{ height:20 }} />
+                </>
+              )}
+
+              {/* SONDAGE */}
+              {attachPage === "poll" && (
+                <div style={{ padding:"16px 18px 24px" }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:18 }}>
+                    <button onClick={() => setAttachPage("none")} style={{ background:"none", border:"none", cursor:"pointer", fontSize:22, color:"#555", padding:0 }}>‹</button>
+                    <div style={{ fontWeight:800, fontSize:17 }}>Créer un sondage</div>
+                  </div>
+                  <input value={pollQuestion} onChange={e => setPollQuestion(e.target.value)} placeholder="Question…"
+                    style={{ width:"100%", border:"none", borderBottom:"2px solid #25D366", padding:"8px 0", fontSize:16, outline:"none", marginBottom:16, boxSizing:"border-box" }} />
+                  <div style={{ fontSize:11, color:"#999", fontWeight:600, marginBottom:10, textTransform:"uppercase" as const }}>Options</div>
+                  {pollOptions.map((opt, idx) => (
+                    <div key={idx} style={{ display:"flex", alignItems:"center", gap:8, marginBottom:10 }}>
+                      <input value={opt} onChange={e => { const o=[...pollOptions]; o[idx]=e.target.value; setPollOptions(o); }} placeholder={`Option ${idx+1}`}
+                        style={{ flex:1, border:"none", borderBottom:"1.5px solid #E4E6EB", padding:"8px 0", fontSize:15, outline:"none" }} />
+                      {pollOptions.length > 2 && (
+                        <button onClick={() => setPollOptions(o => o.filter((_,i) => i !== idx))} style={{ background:"none", border:"none", cursor:"pointer", color:"#E02020", fontSize:20, padding:0 }}>✕</button>
+                      )}
+                    </div>
+                  ))}
+                  <button onClick={() => setPollOptions(o => [...o, ""])} style={{ background:"none", border:"none", color:"#25D366", fontSize:15, fontWeight:700, cursor:"pointer", padding:"4px 0", marginBottom:16 }}>+ Ajouter une option</button>
+                  <label style={{ display:"flex", alignItems:"center", gap:12, marginBottom:24, cursor:"pointer" }}>
+                    <input type="checkbox" checked={pollMultiple} onChange={e => setPollMultiple(e.target.checked)} style={{ width:18, height:18, accentColor:"#25D366" }} />
+                    <span style={{ fontSize:14 }}>Autoriser plusieurs réponses</span>
+                  </label>
+                  <button
+                    onClick={() => {
+                      if (!pollQuestion.trim() || pollOptions.filter(o=>o.trim()).length < 2) return;
+                      const text = `📊 ${pollQuestion}\n${pollOptions.filter(o=>o.trim()).map((o,i)=>`${i+1}. ${o}`).join("\n")}${pollMultiple?" (plusieurs réponses)":""}`;
+                      setMessages(prev => {
+                        const list = [...(prev[activeConv!] ?? [])];
+                        list.push({ id:Date.now(), text, mine:true, time:new Date().toLocaleTimeString("fr",{hour:"2-digit",minute:"2-digit"}), status:"sent" });
+                        return { ...prev, [activeConv!]: list };
+                      });
+                      setPollQuestion(""); setPollOptions(["",""]); setPollMultiple(true);
+                      setAttachSheet(false); setAttachPage("none");
+                    }}
+                    disabled={!pollQuestion.trim() || pollOptions.filter(o=>o.trim()).length < 2}
+                    style={{ width:"100%", background: pollQuestion.trim() && pollOptions.filter(o=>o.trim()).length>=2 ? "#25D366":"#E4E6EB", border:"none", borderRadius:30, padding:"15px", fontSize:16, fontWeight:800, color: pollQuestion.trim() && pollOptions.filter(o=>o.trim()).length>=2 ? "#fff":"#999", cursor:"pointer", transition:"all 0.2s" }}>
+                    Envoyer le sondage
+                  </button>
+                </div>
+              )}
+
+              {/* ÉVÉNEMENT */}
+              {attachPage === "event" && (
+                <div style={{ padding:"16px 18px 24px" }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:18 }}>
+                    <button onClick={() => setAttachPage("none")} style={{ background:"none", border:"none", cursor:"pointer", fontSize:22, color:"#555", padding:0 }}>‹</button>
+                    <div style={{ fontWeight:800, fontSize:17 }}>Créer un événement</div>
+                  </div>
+                  <input value={eventName} onChange={e => setEventName(e.target.value)} placeholder="Nom de l'événement"
+                    style={{ width:"100%", border:"none", borderBottom:"2px solid #25D366", padding:"8px 0", fontSize:18, fontWeight:700, outline:"none", marginBottom:16, boxSizing:"border-box" }} />
+                  <textarea value={eventDesc} onChange={e => setEventDesc(e.target.value)} placeholder="Description (optionnel)"
+                    style={{ width:"100%", border:"none", borderBottom:"1.5px solid #E4E6EB", padding:"8px 0", fontSize:14, outline:"none", resize:"none" as const, height:56, marginBottom:16, boxSizing:"border-box", fontFamily:"inherit" }} />
+                  <div style={{ display:"flex", gap:12, marginBottom:20 }}>
+                    <div style={{ flex:1 }}>
+                      <div style={{ fontSize:11, color:"#999", fontWeight:600, marginBottom:4 }}>DATE</div>
+                      <input type="date" value={eventDate} onChange={e => setEventDate(e.target.value)}
+                        style={{ width:"100%", border:"none", borderBottom:"1.5px solid #E4E6EB", padding:"6px 0", fontSize:15, outline:"none", boxSizing:"border-box" }} />
+                    </div>
+                    <div style={{ flex:1 }}>
+                      <div style={{ fontSize:11, color:"#999", fontWeight:600, marginBottom:4 }}>HEURE</div>
+                      <input type="time" value={eventTime} onChange={e => setEventTime(e.target.value)}
+                        style={{ width:"100%", border:"none", borderBottom:"1.5px solid #E4E6EB", padding:"6px 0", fontSize:15, outline:"none", boxSizing:"border-box" }} />
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (!eventName.trim()) return;
+                      const text = `📅 ${eventName}${eventDesc.trim()?`\n${eventDesc}`:""}\n🗓 ${eventDate} à ${eventTime}`;
+                      setMessages(prev => {
+                        const list = [...(prev[activeConv!] ?? [])];
+                        list.push({ id:Date.now(), text, mine:true, time:new Date().toLocaleTimeString("fr",{hour:"2-digit",minute:"2-digit"}), status:"sent" });
+                        return { ...prev, [activeConv!]: list };
+                      });
+                      setEventName(""); setEventDesc("");
+                      setAttachSheet(false); setAttachPage("none");
+                    }}
+                    disabled={!eventName.trim()}
+                    style={{ width:"100%", background: eventName.trim()?"#25D366":"#E4E6EB", border:"none", borderRadius:30, padding:"15px", fontSize:16, fontWeight:800, color: eventName.trim()?"#fff":"#999", cursor:"pointer", transition:"all 0.2s" }}>
+                    Envoyer l'événement
+                  </button>
+                </div>
+              )}
+
+              {/* CONTACTS */}
+              {attachPage === "contacts" && (
+                <div style={{ padding:"16px 0 24px" }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:8, padding:"0 18px" }}>
+                    <button onClick={() => setAttachPage("none")} style={{ background:"none", border:"none", cursor:"pointer", fontSize:22, color:"#555", padding:0 }}>‹</button>
+                    <div style={{ fontWeight:800, fontSize:17 }}>Partager un contact</div>
+                  </div>
+                  {allUsers.filter(u => u.id !== (JSON.parse(localStorage.getItem("fb_user")||"{}") as {id?:number}).id).slice(0,20).map(u => (
+                    <button key={u.id} onClick={() => {
+                      const text = `👤 Contact : ${u.name}`;
+                      setMessages(prev => {
+                        const list = [...(prev[activeConv!] ?? [])];
+                        list.push({ id:Date.now(), text, mine:true, time:new Date().toLocaleTimeString("fr",{hour:"2-digit",minute:"2-digit"}), status:"sent" });
+                        return { ...prev, [activeConv!]: list };
+                      });
+                      setAttachSheet(false); setAttachPage("none");
+                    }} style={{ display:"flex", alignItems:"center", gap:12, width:"100%", background:"none", border:"none", padding:"12px 18px", cursor:"pointer", textAlign:"left" as const }}>
+                      <div className="avatar" style={{ width:46, height:46, fontSize:16, flexShrink:0 }}>{u.name.slice(0,2).toUpperCase()}</div>
+                      <div style={{ fontWeight:600, fontSize:15, color:"#111" }}>{u.name}</div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>,
+          document.body
         )}
       </div>
     , document.body);
