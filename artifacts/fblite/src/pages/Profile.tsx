@@ -285,8 +285,23 @@ export default function Profile() {
                   <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#2ECC40", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                   </div>
-                  {/* Medal badge — argent */}
-                  <span style={{ fontSize: 18, lineHeight: 1, flexShrink: 0 }}>🥈</span>
+                  {/* Medal badge — argent, SVG custom */}
+                  <svg width="20" height="22" viewBox="0 0 20 22" fill="none" style={{ flexShrink: 0 }}>
+                    {/* Ribbon */}
+                    <rect x="7" y="0" width="6" height="9" rx="1.5" fill="#bbb"/>
+                    <rect x="7" y="0" width="6" height="9" rx="1.5" fill="url(#rg)"/>
+                    <defs>
+                      <linearGradient id="rg" x1="7" y1="0" x2="13" y2="9" gradientUnits="userSpaceOnUse">
+                        <stop stopColor="#d0d0d0"/>
+                        <stop offset="1" stopColor="#888"/>
+                      </linearGradient>
+                    </defs>
+                    {/* Circle */}
+                    <circle cx="10" cy="15" r="6.5" fill="#C8C8C8" stroke="#aaa" strokeWidth="1"/>
+                    <circle cx="10" cy="15" r="4.5" fill="#e0e0e0"/>
+                    {/* Number 2 */}
+                    <text x="10" y="19" textAnchor="middle" fontSize="6" fontWeight="800" fill="#666">2</text>
+                  </svg>
                   {/* Flag */}
                   {localUser.flag && <span style={{ fontSize: 18 }}>{localUser.flag}</span>}
                 </div>
