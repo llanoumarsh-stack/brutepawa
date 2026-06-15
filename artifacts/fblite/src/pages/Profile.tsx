@@ -218,13 +218,17 @@ export default function Profile() {
           }}
           onClick={() => !uploadingWhat && coverInputRef.current?.click()}
         >
-          {/* Abstract SVG shapes — only when no custom cover */}
+          {/* Abstract wave shapes — only when no custom cover */}
           {!coverUrl && (
-            <svg style={{ position: "absolute", right: 0, top: 0, opacity: 0.18, pointerEvents: "none" }} width="260" height="200" viewBox="0 0 260 200" fill="none">
-              <circle cx="210" cy="30" r="110" fill="white"/>
-              <circle cx="250" cy="160" r="75" fill="white"/>
-              <circle cx="140" cy="180" r="55" fill="white"/>
-              <circle cx="230" cy="90" r="40" fill="white"/>
+            <svg style={{ position: "absolute", right: 0, top: 0, pointerEvents: "none", width: "100%", height: "100%" }} viewBox="0 0 400 200" fill="none" preserveAspectRatio="xMaxYMin slice">
+              {/* Large arc — top right */}
+              <circle cx="360" cy="-30" r="160" fill="white" fillOpacity="0.12"/>
+              {/* Medium arc — mid right */}
+              <circle cx="400" cy="120" r="110" fill="white" fillOpacity="0.10"/>
+              {/* Flowing curve line */}
+              <path d="M200 0 Q320 60 400 160" stroke="white" strokeOpacity="0.20" strokeWidth="60" fill="none" strokeLinecap="round"/>
+              {/* Small accent */}
+              <circle cx="310" cy="170" r="50" fill="white" fillOpacity="0.08"/>
             </svg>
           )}
 
@@ -282,9 +286,9 @@ export default function Profile() {
                   <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#2ECC40", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                   </div>
-                  {/* Medal badge */}
-                  <div style={{ width: 22, height: 22, borderRadius: "50%", background: "#f0f0f0", border: "1.5px solid #ddd", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="15" r="6" stroke="#888" strokeWidth="1.8"/><path d="M8.21 13.89L7 23l5-3 5 3-1.21-9.12" stroke="#888" strokeWidth="1.8" strokeLinejoin="round"/><circle cx="12" cy="15" r="3" fill="#C0C0C0"/></svg>
+                  {/* Medal badge — argent */}
+                  <div style={{ width: 22, height: 22, borderRadius: "50%", background: "#e8e8e8", border: "1.5px solid #bbb", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 13, fontWeight: 800, color: "#888" }}>
+                    2
                   </div>
                   {/* Flag */}
                   {localUser.flag && <span style={{ fontSize: 18 }}>{localUser.flag}</span>}
@@ -306,8 +310,9 @@ export default function Profile() {
                   onClick={() => navigate("/score")}
                   style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "#f0faf0", border: "1.5px solid #c3eacc", borderRadius: 20, padding: "4px 11px", marginTop: 8, cursor: "pointer" }}
                 >
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="15" r="5" stroke="#888" strokeWidth="1.8"/><path d="M8.21 13.89L7 23l5-3 5 3-1.21-9.12" stroke="#888" strokeWidth="1.8" strokeLinejoin="round"/><circle cx="12" cy="15" r="2.5" fill="#C0C0C0"/></svg>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: "#2ECC40" }}>Niveau {score.label} · {score.pct}%</span>
+                  {/* Medal ribbon icon */}
+                  <span style={{ fontSize: 13 }}>🥈</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: "#555" }}>Niveau {score.label} · {score.pct}%</span>
                 </button>
               </div>
 
@@ -338,8 +343,7 @@ export default function Profile() {
             {/* Action buttons */}
             <div style={{ display: "flex", gap: 8, marginTop: 12, marginBottom: 14 }}>
               <button
-                className="btn-primary"
-                style={{ flex: 1, padding: "9px 8px", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontSize: 14, fontWeight: 700, borderRadius: 8 }}
+                style={{ flex: 1, padding: "9px 8px", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontSize: 14, fontWeight: 700, borderRadius: 8, background: "#2ECC40", color: "#fff", border: "none", cursor: "pointer" }}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
                 Ajouter à l'histoire
