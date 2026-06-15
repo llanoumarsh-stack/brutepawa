@@ -1,0 +1,246 @@
+MISSION :
+
+Créer une page d'inscription Brutepawa ultra premium pour l'étape 4 : Coordonnées de contact.
+
+OBJECTIF :
+
+Créer une interface mobile moderne de niveau Stripe, Revolut, Airbnb, LinkedIn et Notion.
+
+Le design doit inspirer confiance, sécurité et professionnalisme.
+
+STYLE :
+
+- Mobile First
+- Design 2026
+- Vert Brutepawa
+- Blanc premium
+- Dégradés élégants
+- Glassmorphism léger
+- SVG uniquement
+- Coins arrondis 32px
+- Ombres très douces
+- Animations fluides
+- Qualité internationale
+
+========================================
+LOGO ET IDENTITÉ
+========================================
+
+Afficher le logo Brutepawa centré.
+
+Icône :
+
+- Lettre "b" moderne
+- Bulle de discussion intégrée
+- Dégradé vert premium
+- Effet lumineux subtil
+
+Texte :
+
+brutepawa
+
+Sous-titre :
+
+Rejoignez la première plateforme sociale et professionnelle dédiée à l'Afrique francophone.
+
+Texte centré.
+
+========================================
+ARRIÈRE-PLAN
+========================================
+
+Créer un fond premium.
+
+Ajouter :
+
+- Cercles verts flous
+- Formes abstraites modernes
+- Motifs géométriques subtils
+- Effets lumineux légers
+- Dégradés très doux
+
+L'ensemble doit rester élégant et minimaliste.
+
+========================================
+CARTE PRINCIPALE
+========================================
+
+Créer une grande carte premium.
+
+Style :
+
+- Fond blanc
+- Coins 32px
+- Ombre douce
+- Bordure très légère
+
+========================================
+EN-TÊTE ÉTAPE
+========================================
+
+À gauche :
+
+Bouton retour moderne.
+
+Centre :
+
+Titre :
+
+Coordonnées de contact
+
+À droite :
+
+Étape 4 sur 6
+
+========================================
+BARRE DE PROGRESSION
+========================================
+
+Afficher :
+
+67% complété
+
+Créer une barre premium animée.
+
+4 étapes actives.
+2 étapes inactives.
+
+========================================
+CHOIX DU MODE DE CONTACT
+========================================
+
+Créer deux onglets modernes.
+
+Onglet actif :
+
+Numéro de mobile
+
+- Icône téléphone SVG
+- Fond vert très clair
+- Bordure verte
+
+Onglet inactif :
+
+Adresse e-mail
+
+- Icône enveloppe SVG
+- Fond blanc
+
+========================================
+SÉLECTEUR DE PAYS
+========================================
+
+Créer une grande carte sélectionnable.
+
+Contenu :
+
+Drapeau du pays
+
+Nom :
+
+Côte d'Ivoire (+225)
+
+Flèche déroulante SVG
+
+Coins arrondis.
+
+Animation au clic.
+
+========================================
+CHAMP NUMÉRO
+========================================
+
+Créer deux zones alignées.
+
+Zone 1 :
+
+Indicatif
+
++225
+
+Fond blanc.
+
+Coins arrondis.
+
+Zone 2 :
+
+Champ principal
+
+Icône téléphone SVG
+
+Placeholder :
+
+Numéro de mobile
+
+Animation focus premium.
+
+========================================
+CARTE SÉCURITÉ
+========================================
+
+Créer une carte premium.
+
+Fond :
+
+Vert très clair.
+
+Icône :
+
+Bouclier SVG moderne.
+
+Titre :
+
+Sécurité de votre compte
+
+Texte :
+
+Nous vous enverrons un code de confirmation sur votre numéro de mobile.
+
+Ajouter un badge :
+
+Compte protégé
+
+========================================
+BOUTON PRINCIPAL
+========================================
+
+Bouton :
+
+Suivant
+
+Style :
+
+- Dégradé vert premium
+- Texte blanc
+- Flèche SVG à droite
+- Largeur complète
+- Ombre légère
+- Coins 22px
+
+Animation hover et clic.
+
+========================================
+PIED DE PAGE
+========================================
+
+Texte :
+
+Brute Pawa © 2026 • Afrique francophone
+
+Style discret.
+
+========================================
+IMPORTANT
+========================================
+
+Ne rien simplifier.
+
+Ne pas utiliser un design générique.
+
+Respecter exactement la structure.
+
+Le résultat doit ressembler à une application fintech et sociale conçue par une équipe UI/UX professionnelle internationale.
+
+Qualité visuelle supérieure à Facebook, LinkedIn et TikTok.
+
+Interface premium, moderne et élégante.

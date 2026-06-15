@@ -641,31 +641,111 @@ export default function Register() {
           ═══════════════════════════════════════════ */}
           {step === 4 && (
             <div className="reg-step" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <div style={{ display: "flex", borderBottom: "1.5px solid #e5e7eb", marginBottom: 4 }}>
-                <button className={`reg-tab-btn${form.contactMode === "phone" ? " active" : ""}`} onClick={() => setForm(f => ({ ...f, contactMode: "phone" }))}>
+
+              {/* ── Tabs avec icônes ── */}
+              <div style={{ display: "flex", background: "#f3f4f6", borderRadius: 14, padding: 4, gap: 4 }}>
+                <button
+                  onClick={() => setForm(f => ({ ...f, contactMode: "phone" }))}
+                  style={{
+                    flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
+                    padding: "10px 0",
+                    background: form.contactMode === "phone" ? "#fff" : "transparent",
+                    border: form.contactMode === "phone" ? "1.5px solid #d1fae5" : "1.5px solid transparent",
+                    borderRadius: 11,
+                    color: form.contactMode === "phone" ? "#16a34a" : "#6b7280",
+                    fontSize: 13.5, fontWeight: 700, cursor: "pointer",
+                    boxShadow: form.contactMode === "phone" ? "0 1px 4px rgba(34,197,94,0.15)" : "none",
+                    transition: "all 0.15s", fontFamily: "inherit",
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M3 3h2.2l1 3.2-1.4 1.4a9 9 0 004.6 4.6l1.4-1.4 3.2 1V14S13 15 11.5 15C6.5 15 1 9.5 1 4.5 1 3 3 3 3 3z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+                  </svg>
                   Numéro de mobile
                 </button>
-                <button className={`reg-tab-btn${form.contactMode === "email" ? " active" : ""}`} onClick={() => setForm(f => ({ ...f, contactMode: "email" }))}>
+                <button
+                  onClick={() => setForm(f => ({ ...f, contactMode: "email" }))}
+                  style={{
+                    flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
+                    padding: "10px 0",
+                    background: form.contactMode === "email" ? "#fff" : "transparent",
+                    border: form.contactMode === "email" ? "1.5px solid #d1fae5" : "1.5px solid transparent",
+                    borderRadius: 11,
+                    color: form.contactMode === "email" ? "#16a34a" : "#6b7280",
+                    fontSize: 13.5, fontWeight: 700, cursor: "pointer",
+                    boxShadow: form.contactMode === "email" ? "0 1px 4px rgba(34,197,94,0.15)" : "none",
+                    transition: "all 0.15s", fontFamily: "inherit",
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <rect x="1.5" y="3.5" width="13" height="9" rx="1.8" stroke="currentColor" strokeWidth="1.4"/>
+                    <path d="M1.5 6l6.5 4 6.5-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+                  </svg>
                   Adresse e-mail
                 </button>
               </div>
 
               {form.contactMode === "phone" && (
                 <>
-                  <select style={selectBase} className="reg-field" value={form.countryCode} onChange={set("countryCode")} onFocus={fieldFocus} onBlur={fieldBlur}>
-                    {COUNTRIES.map(c => (
-                      <option key={c.code} value={c.code}>{c.flag} {c.name} ({c.phone})</option>
-                    ))}
-                  </select>
-                  <div style={{ display: "flex", gap: 8, alignItems: "stretch" }}>
-                    <div style={{ background: "#f0fdf4", border: "1.5px solid #bbf7d0", borderRadius: 14, padding: "14px 12px", fontWeight: 700, fontSize: 14, whiteSpace: "nowrap", color: "#15803d", display: "flex", alignItems: "center" }}>
-                      {selectedCountry.flag} {selectedCountry.phone}
+                  {/* Sélecteur de pays — grande carte */}
+                  <div style={{ position: "relative" }}>
+                    <select
+                      className="reg-field"
+                      style={{
+                        ...selectBase,
+                        width: "100%",
+                        padding: "15px 40px 15px 14px",
+                        borderRadius: 16,
+                        fontSize: 15, fontWeight: 600, color: "#111827",
+                        background: "#fff",
+                        boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+                      }}
+                      value={form.countryCode}
+                      onChange={set("countryCode")}
+                      onFocus={fieldFocus}
+                      onBlur={fieldBlur}
+                    >
+                      {COUNTRIES.map(c => (
+                        <option key={c.code} value={c.code}>{c.flag} {c.name} ({c.phone})</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Indicatif + champ numéro */}
+                  <div style={{ display: "flex", gap: 10, alignItems: "stretch" }}>
+                    {/* Badge indicatif */}
+                    <div style={{
+                      background: "#fff",
+                      border: "1.5px solid #e5e7eb",
+                      borderRadius: 16,
+                      padding: "0 14px",
+                      fontWeight: 800, fontSize: 15,
+                      color: "#15803d",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      whiteSpace: "nowrap",
+                      minWidth: 68,
+                      boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
+                    }}>
+                      {selectedCountry.phone}
                     </div>
+                    {/* Champ numéro */}
                     <div style={{ flex: 1, position: "relative" }}>
-                      <div style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
-                        <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><path d="M3 3h2.5l1 3.5-1.5 1.5a10 10 0 004.5 4.5l1.5-1.5 3.5 1V14.5S13 16 11.5 16C6.5 16 1 10.5 1 5.5 1 4 3 3 3 3z" stroke="#9ca3af" strokeWidth="1.3" strokeLinecap="round"/></svg>
+                      <div style={{ position: "absolute", left: 13, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+                        <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
+                          <path d="M3 3h2.2l1 3.2-1.4 1.4a9 9 0 004.6 4.6l1.4-1.4 3.2 1V14S13 15 11.5 15C6.5 15 1 9.5 1 4.5 1 3 3 3 3 3z" stroke="#9ca3af" strokeWidth="1.3" strokeLinecap="round"/>
+                        </svg>
                       </div>
-                      <input className="reg-field" style={fieldBase} type="tel" placeholder="Numéro de mobile" value={form.phone} onChange={set("phone")} onFocus={fieldFocus} onBlur={fieldBlur} autoFocus />
+                      <input
+                        className="reg-field"
+                        style={fieldBase}
+                        type="tel"
+                        placeholder="Numéro de mobile"
+                        value={form.phone}
+                        onChange={set("phone")}
+                        onFocus={fieldFocus}
+                        onBlur={fieldBlur}
+                        autoFocus
+                      />
                     </div>
                   </div>
                 </>
@@ -673,18 +753,41 @@ export default function Register() {
 
               {form.contactMode === "email" && (
                 <div style={{ position: "relative" }}>
-                  <div style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+                  <div style={{ position: "absolute", left: 13, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
                     <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><rect x="1.5" y="3.5" width="14" height="10" rx="2" stroke="#9ca3af" strokeWidth="1.3"/><path d="M1.5 6l7 4.5 7-4.5" stroke="#9ca3af" strokeWidth="1.3" strokeLinecap="round"/></svg>
                   </div>
                   <input className="reg-field" style={fieldBase} type="email" placeholder="Adresse e-mail" value={form.email} onChange={set("email")} onFocus={fieldFocus} onBlur={fieldBlur} autoFocus />
                 </div>
               )}
 
-              <div style={{ display: "flex", alignItems: "flex-start", gap: 8, background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 12, padding: "10px 12px" }}>
-                <svg width="15" height="15" viewBox="0 0 15 15" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="7.5" cy="7.5" r="6" stroke="#f59e0b" strokeWidth="1.3"/><path d="M7.5 5v3" stroke="#f59e0b" strokeWidth="1.3" strokeLinecap="round"/><circle cx="7.5" cy="10" r="0.7" fill="#f59e0b"/></svg>
-                <p style={{ margin: 0, fontSize: 12, color: "#92400e", lineHeight: 1.5 }}>
+              {/* Carte sécurité verte */}
+              <div style={{
+                background: "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)",
+                border: "1px solid #bbf7d0",
+                borderRadius: 16,
+                padding: "14px 16px",
+                display: "flex",
+                alignItems: "center",
+                gap: 14,
+              }}>
+                <div style={{
+                  width: 44, height: 44, borderRadius: "50%",
+                  background: "#fff",
+                  border: "2px solid #86efac",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  flexShrink: 0,
+                  boxShadow: "0 2px 8px rgba(34,197,94,0.15)",
+                }}>
+                  <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                    <path d="M11 2L3 5.5V10.5c0 4.8 3.4 9 8 9.5 4.6-.5 8-4.7 8-9.5V5.5L11 2z" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.5"/>
+                    <path d="M7.5 11l2.5 2.5L14.5 8" stroke="#16a34a" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <p style={{ margin: 0, fontSize: 13, color: "#15803d", lineHeight: 1.55 }}>
                   Nous vous enverrons un code de confirmation sur{" "}
-                  <strong>{form.contactMode === "phone" ? "votre numéro de mobile" : "votre adresse e-mail"}</strong>.
+                  <strong>
+                    {form.contactMode === "phone" ? "votre numéro de mobile" : "votre adresse e-mail"}.
+                  </strong>
                 </p>
               </div>
 
