@@ -600,11 +600,12 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
               {/* J'aime */}
               {(() => {
                 const rx = REACTIONS.find(r => r.id === (reactionType[post.id] ?? "like")) ?? REACTIONS[0];
+                const liked = post.liked;
                 return (
                   <button
                     className="post-btn"
-                    style={{ flex: 1, borderRight: "1px solid #e4e6eb", color: post.liked ? rx.color : "#65676b", fontWeight: post.liked ? 700 : 400 }}
-                    onClick={() => quickLike(post.id, post.liked)}
+                    style={{ flex: 1, borderRight: "1px solid #e4e6eb", color: liked ? rx.color : "#65676b", fontWeight: liked ? 700 : 500, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+                    onClick={() => quickLike(post.id, liked)}
                     onMouseDown={() => startReactionTimer(post.id)}
                     onMouseUp={cancelReactionTimer}
                     onMouseLeave={cancelReactionTimer}
@@ -612,19 +613,25 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                     onTouchEnd={cancelReactionTimer}
                     onTouchMove={cancelReactionTimer}
                   >
-                    {post.liked ? rx.emoji : "👍"} {post.liked ? rx.label : "J'aime"}
+                    {liked
+                      ? <span style={{ fontSize: 17 }}>{rx.emoji}</span>
+                      : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+                    }
+                    {liked ? rx.label : "J'aime"}
                   </button>
                 );
               })()}
 
               {/* Commenter */}
-              <button className="post-btn" style={{ flex: 1, borderRight: "1px solid #e4e6eb" }} onClick={() => navigate(`/post/${post.id}`)}>
-                💬 Commenter
+              <button className="post-btn" style={{ flex: 1, borderRight: "1px solid #e4e6eb", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }} onClick={() => navigate(`/post/${post.id}`)}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Commenter
               </button>
 
               {/* Partager */}
-              <button className="post-btn" style={{ flex: 1 }} onClick={() => handleShare(post.id)}>
-                ↗️ Partager
+              <button className="post-btn" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }} onClick={() => handleShare(post.id)}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                Partager
               </button>
             </div>
 
