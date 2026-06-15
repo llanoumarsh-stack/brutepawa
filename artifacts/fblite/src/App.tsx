@@ -232,6 +232,8 @@ function AppContent() {
   const formationMatch = matchDynamic("/formations/:id", path);
   const userProfileMatch = matchDynamic("/profile/:id", path);
   const groupMatch = matchDynamic("/groups/:id", path);
+  const chatGroupMatch = matchDynamic("/chat-groups/:id", path);
+  const tontineDetailMatch = matchDynamic("/tontines/:id", path);
 
   if (productMatch) {
     return (
@@ -301,6 +303,28 @@ function AppContent() {
       return (
         <Layout onNewPost={handleNewPost}>
           <GroupDetailPage groupId={gid} />
+        </Layout>
+      );
+    }
+  }
+
+  if (chatGroupMatch) {
+    const cgid = parseInt(chatGroupMatch.id, 10);
+    if (!isNaN(cgid)) {
+      return (
+        <Layout onNewPost={handleNewPost}>
+          <Messages initialGroupId={cgid} />
+        </Layout>
+      );
+    }
+  }
+
+  if (tontineDetailMatch) {
+    const tid = parseInt(tontineDetailMatch.id, 10);
+    if (!isNaN(tid)) {
+      return (
+        <Layout onNewPost={handleNewPost}>
+          <TontinesPage initialTontineId={tid} />
         </Layout>
       );
     }

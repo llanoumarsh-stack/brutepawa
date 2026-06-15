@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { apiGetTontines, apiGetOpenTontines, apiCreateTontine, apiContribute, apiJoinTontine, type ApiTontine } from "../lib/api";
 
-export default function TontinesPage() {
+export default function TontinesPage({ initialTontineId }: { initialTontineId?: number } = {}) {
   const [tontines, setTontines]         = useState<ApiTontine[]>([]);
   const [openTontines, setOpenTontines] = useState<ApiTontine[]>([]);
   const [loading, setLoading]           = useState(true);
   const [showCreate, setShowCreate]     = useState(false);
-  const [selectedId, setSelectedId]     = useState<number | null>(null);
+  const [selectedId, setSelectedId]     = useState<number | null>(initialTontineId ?? null);
   const [form, setForm]                 = useState({ name: "", amount: "", cycle: "Mensuel", emoji: "💼" });
   const [paid, setPaid]                 = useState<number[]>([]);
   const [creating, setCreating]         = useState(false);

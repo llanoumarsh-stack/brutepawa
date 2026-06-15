@@ -64,7 +64,7 @@ const mkInitials = (name: string) =>
 
 type Overlay = "none" | "info" | "attach";
 
-export default function Messages({ initialUserId }: { initialUserId?: number }) {
+export default function Messages({ initialUserId, initialGroupId }: { initialUserId?: number; initialGroupId?: number }) {
   const navigate = useNavigate();
   const meId = (() => { try { return (JSON.parse(localStorage.getItem("fb_user") ?? "{}") as { id?: number }).id ?? 0; } catch { return 0; } })();
 
@@ -154,6 +154,21 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
 
   useEffect(() => { activeConvRef.current = activeConv; }, [activeConv]);
   useEffect(() => { allUsersRef.current = allUsers; }, [allUsers]);
+
+  /* ── Deep-link: réagir aux changements de props (navigation SW) ── */
+  useEffect(() => {
+    if (initialUserId) {
+      setActiveConv(initialUserId);
+      setActiveGroupId(null);
+    }
+  }, [initialUserId]);
+
+  useEffect(() => {
+    if (initialGroupId) {
+      setActiveGroupId(initialGroupId);
+      setActiveConv(null);
+    }
+  }, [initialGroupId]);
 
   /* ── VisualViewport: shrink container when keyboard opens ── */
   useEffect(() => {
