@@ -882,7 +882,24 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
         `}</style>
 
         {/* ── HEADER ── */}
-        {showChatSearch ? (
+        {longPressMsg !== null ? (
+          /* TELEGRAM SELECTION BAR */
+          <div style={{ background:"#fff", padding:"10px 16px", display:"flex", alignItems:"center", gap:18, flexShrink:0, borderBottom:"1px solid #E4E6EB", boxShadow:"0 1px 3px rgba(0,0,0,0.08)" }}>
+            <button onClick={() => setLongPressMsg(null)}
+              style={{ background:"none", border:"none", cursor:"pointer", color:"#555", display:"flex", alignItems:"center", padding:4 }}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>
+            <span style={{ flex:1, fontWeight:700, fontSize:17, color:"#111" }}>1</span>
+            <button style={{ background:"none", border:"none", cursor:"pointer", color:"#555", display:"flex", alignItems:"center", padding:6 }}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M21 8.5L16.5 4 7 13.5l-3 9 9-3L21 8.5zM5.92 17.08l1.55-4.64L11 16.08 5.92 17.08zM15 6l3 3-8.25 8.25-3-3L15 6z"/></svg>
+            </button>
+            <button onClick={() => { setMessages(prev => ({ ...prev, [activeConv!]: (prev[activeConv!] ?? []).filter(x => x.id !== longPressMsg) })); setLongPressMsg(null); }}
+              style={{ background:"none", border:"none", cursor:"pointer", color:"#555", display:"flex", alignItems:"center", padding:6 }}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            </button>
+          </div>
+        ) : showChatSearch ? (
+          /* SEARCH HEADER */
           <div style={{ background:"#1877F2", padding:"8px 10px", display:"flex", alignItems:"center", gap:8, flexShrink:0, boxShadow:"0 2px 4px rgba(0,0,0,0.18)" }}>
             <button onClick={() => { setShowChatSearch(false); setChatSearchQ(""); setChatSearchIdx(0); }}
               style={{ background:"none", border:"none", fontSize:24, cursor:"pointer", color:"#fff", padding:"2px 4px 2px 0", display:"flex", alignItems:"center", lineHeight:1 }}>‹</button>
@@ -903,6 +920,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
             </div>
           </div>
         ) : (
+          /* NORMAL HEADER */
           <div style={{ background:"#1877F2", padding:"8px 10px", display:"flex", alignItems:"center", gap:8, flexShrink:0, boxShadow:"0 2px 4px rgba(0,0,0,0.18)" }}>
             <button onClick={() => { setActiveConv(null); setOverlay("none"); setShowConvMenu(false); }}
               style={{ background:"none", border:"none", fontSize:24, cursor:"pointer", color:"#fff", display:"flex", alignItems:"center", padding:"2px 4px 2px 0", lineHeight:1 }}>‹</button>
@@ -939,15 +957,26 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
         <div style={{ flex:1, overflowY:"auto", padding:"8px 10px 4px", display:"flex", flexDirection:"column", gap:2, background: convWallpaper ?? "#fff" }}>
           <div style={{ textAlign:"center", fontSize:11.5, color:"#888", background:"rgba(0,0,0,0.05)", borderRadius:20, padding:"3px 14px", margin:"4px auto 10px", display:"inline-block", alignSelf:"center" }}>Aujourd'hui</div>
           {currentMessages.map((msg, i) => {
-            const isLast = i === currentMessages.length - 1 || currentMessages[i + 1]?.mine !== msg.mine;
-            const isHL   = showChatSearch && chatSearchQ.trim() && msg.text.toLowerCase().includes(chatSearchQ.toLowerCase());
-            const isAct  = msg.id === highlightId;
+            const isLast     = i === currentMessages.length - 1 || currentMessages[i + 1]?.mine !== msg.mine;
+            const isHL       = showChatSearch && chatSearchQ.trim() && msg.text.toLowerCase().includes(chatSearchQ.toLowerCase());
+            const isAct      = msg.id === highlightId;
+            const isSelected = longPressMsg !== null && msg.id === longPressMsg;
             return (
               <div key={msg.id}
-                style={{ display:"flex", justifyContent: msg.mine ? "flex-end" : "flex-start", alignItems:"flex-end", gap:6, marginTop:2, background: isAct ? "rgba(24,119,242,0.15)" : isHL ? "rgba(255,235,59,0.25)" : "transparent", borderRadius:8, transition:"background 0.2s" }}
+                style={{ display:"flex", justifyContent: msg.mine ? "flex-end" : "flex-start", alignItems:"flex-end", gap:6, marginTop:2,
+                  background: isSelected ? "rgba(0,120,212,0.13)" : isAct ? "rgba(24,119,242,0.15)" : isHL ? "rgba(255,235,59,0.25)" : "transparent",
+                  borderRadius:8, transition:"background 0.2s", paddingLeft: longPressMsg !== null ? 36 : 0, position:"relative" }}
                 onMouseDown={() => startLongPress(msg.id)} onMouseUp={cancelLongPress} onMouseLeave={cancelLongPress}
                 onTouchStart={() => startLongPress(msg.id)} onTouchEnd={cancelLongPress} onTouchMove={cancelLongPress}
                 onContextMenu={e => { e.preventDefault(); cancelLongPress(); setLongPressMsg(msg.id); }}>
+                {/* Telegram-style selection circle indicator */}
+                {longPressMsg !== null && (
+                  <div style={{ position:"absolute", left:6, top:"50%", transform:"translateY(-50%)", width:22, height:22, borderRadius:"50%",
+                    background: isSelected ? "#1877F2" : "transparent", border: `2px solid ${isSelected ? "#1877F2" : "#B0B3B8"}`,
+                    display:"flex", alignItems:"center", justifyContent:"center", transition:"all 0.15s", flexShrink:0 }}>
+                    {isSelected && <svg viewBox="0 0 24 24" width="12" height="12" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>}
+                  </div>
+                )}
                 {!msg.mine && (
                   <div style={{ width:28, flexShrink:0, alignSelf:"flex-end", paddingBottom:2 }}>
                     {isLast && <div className="avatar xs" style={{ background:activeUser.color, width:26, height:26, fontSize:10 }}>{activeUser.initials}</div>}
@@ -981,37 +1010,71 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
           <div ref={bottomRef} />
         </div>
 
-        {/* ── INPUT BAR — FB Lite exact ── */}
-        <div style={{ background:"#F0F2F5", padding:"6px 8px", display:"flex", gap:4, alignItems:"center", flexShrink:0 }}>
-          <button style={{ background:"none", border:"none", fontSize:24, cursor:"pointer", color:"#1877F2", padding:"4px 6px", flexShrink:0, display:"flex", alignItems:"center" }}>😊</button>
-          <div style={{ flex:1 }}>
-            <input value={newMsg} onChange={e => setNewMsg(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMsg(); } }}
-              placeholder="Message"
-              style={{ width:"100%", background:"#fff", border:"none", borderRadius:22, padding:"10px 14px", fontSize:15, outline:"none", boxSizing:"border-box", color:"#111", boxShadow:"0 1px 2px rgba(0,0,0,0.1)" }} />
+        {/* ── INPUT BAR ── */}
+        {longPressMsg !== null ? (
+          /* TELEGRAM SELECTION BOTTOM: reactions + action pills */
+          <div style={{ background:"#F0F2F5", flexShrink:0, borderTop:"1px solid #E4E6EB" }}>
+            {/* Emoji reaction strip */}
+            <div style={{ display:"flex", alignItems:"center", background:"#fff", margin:"8px 12px 0", borderRadius:30, padding:"6px 4px", boxShadow:"0 1px 6px rgba(0,0,0,0.12)", gap:0 }}>
+              {["😊","❤️","👍","👎","🔥","😍","👏"].map(em => (
+                <button key={em} onClick={() => setLongPressMsg(null)}
+                  style={{ background:"none", border:"none", fontSize:26, cursor:"pointer", flex:1, padding:"4px 2px", lineHeight:1, transition:"transform 0.1s" }}
+                  onMouseEnter={e => (e.currentTarget.style.transform="scale(1.35)")}
+                  onMouseLeave={e => (e.currentTarget.style.transform="scale(1)")}>
+                  {em}
+                </button>
+              ))}
+              <button style={{ background:"none", border:"none", cursor:"pointer", color:"#888", fontSize:18, padding:"4px 8px", flexShrink:0, display:"flex", alignItems:"center" }}>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+              </button>
+            </div>
+            {/* Action pill buttons */}
+            <div style={{ display:"flex", gap:10, padding:"10px 12px 14px" }}>
+              <button onClick={() => setLongPressMsg(null)}
+                style={{ flex:1, background:"#fff", border:"1.5px solid #E4E6EB", borderRadius:24, padding:"11px 8px", fontSize:15, fontWeight:700, cursor:"pointer", color:"#111", display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"/></svg>
+                Répondre
+              </button>
+              <button onClick={() => setLongPressMsg(null)}
+                style={{ flex:1, background:"#fff", border:"1.5px solid #E4E6EB", borderRadius:24, padding:"11px 8px", fontSize:15, fontWeight:700, cursor:"pointer", color:"#111", display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
+                Transférer
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M14 15l7-7-7-7v4.1c-5 0-8.5-1.6-11-5.1 1 5 4 10 11 11V15z"/></svg>
+              </button>
+            </div>
           </div>
-          {newMsg.trim() ? (
-            <button onClick={() => sendMsg()}
-              style={{ background:"#1877F2", border:"none", borderRadius:"50%", width:38, height:38, color:"#fff", cursor:"pointer", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(24,119,242,0.4)" }}>
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-            </button>
-          ) : (
-            <>
-              <button style={{ background:"none", border:"none", fontSize:22, cursor:"pointer", color:"#1877F2", padding:"4px 6px", flexShrink:0, display:"flex", alignItems:"center" }}>📎</button>
-              <div style={{ position:"relative", flexShrink:0 }}>
-                <button
-                  onMouseEnter={() => setShowMicTip(true)} onMouseLeave={() => setShowMicTip(false)}
-                  onTouchStart={() => setShowMicTip(true)}  onTouchEnd={() => setShowMicTip(false)}
-                  style={{ background:"#1877F2", border:"none", borderRadius:"50%", width:38, height:38, color:"#fff", cursor:"pointer", fontSize:18, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(24,119,242,0.4)" }}>🎤</button>
-                {showMicTip && (
-                  <div style={{ position:"absolute", bottom:46, right:0, background:"rgba(0,0,0,0.76)", color:"#fff", borderRadius:8, padding:"6px 12px", fontSize:12, whiteSpace:"nowrap", zIndex:60, pointerEvents:"none" }}>
-                    Maintenir pour filmer. Toucher pour un vocal.
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-        </div>
+        ) : (
+          /* NORMAL INPUT BAR */
+          <div style={{ background:"#F0F2F5", padding:"6px 8px", display:"flex", gap:4, alignItems:"center", flexShrink:0 }}>
+            <button style={{ background:"none", border:"none", fontSize:24, cursor:"pointer", color:"#1877F2", padding:"4px 6px", flexShrink:0, display:"flex", alignItems:"center" }}>😊</button>
+            <div style={{ flex:1 }}>
+              <input value={newMsg} onChange={e => setNewMsg(e.target.value)}
+                onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMsg(); } }}
+                placeholder="Message"
+                style={{ width:"100%", background:"#fff", border:"none", borderRadius:22, padding:"10px 14px", fontSize:15, outline:"none", boxSizing:"border-box", color:"#111", boxShadow:"0 1px 2px rgba(0,0,0,0.1)" }} />
+            </div>
+            {newMsg.trim() ? (
+              <button onClick={() => sendMsg()}
+                style={{ background:"#1877F2", border:"none", borderRadius:"50%", width:38, height:38, color:"#fff", cursor:"pointer", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(24,119,242,0.4)" }}>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+              </button>
+            ) : (
+              <>
+                <button style={{ background:"none", border:"none", fontSize:22, cursor:"pointer", color:"#1877F2", padding:"4px 6px", flexShrink:0, display:"flex", alignItems:"center" }}>📎</button>
+                <div style={{ position:"relative", flexShrink:0 }}>
+                  <button
+                    onMouseEnter={() => setShowMicTip(true)} onMouseLeave={() => setShowMicTip(false)}
+                    onTouchStart={() => setShowMicTip(true)}  onTouchEnd={() => setShowMicTip(false)}
+                    style={{ background:"#1877F2", border:"none", borderRadius:"50%", width:38, height:38, color:"#fff", cursor:"pointer", fontSize:18, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(24,119,242,0.4)" }}>🎤</button>
+                  {showMicTip && (
+                    <div style={{ position:"absolute", bottom:46, right:0, background:"rgba(0,0,0,0.76)", color:"#fff", borderRadius:8, padding:"6px 12px", fontSize:12, whiteSpace:"nowrap", zIndex:60, pointerEvents:"none" }}>
+                      Maintenir pour filmer. Toucher pour un vocal.
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        )}
 
         {/* ── ⋮ DROPDOWN MENU ── */}
         {showConvMenu && (
@@ -1060,46 +1123,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
           </>
         )}
 
-        {/* ── LONG-PRESS CONTEXT MENU (reactions + actions) ── */}
-        {longPressMsg !== null && (
-          <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.45)", zIndex:200, display:"flex", flexDirection:"column", justifyContent:"flex-end", animation:"fbl-fade-in 0.15s ease" }}
-            onClick={() => setLongPressMsg(null)}>
-            <div style={{ background:"#fff", borderRadius:"20px 20px 0 0", paddingBottom:8, animation:"fbl-sheet-up 0.25s ease" }} onClick={e => e.stopPropagation()}>
-              <div style={{ display:"flex", justifyContent:"space-around", padding:"16px 8px 14px", borderBottom:"1px solid #F0F2F5" }}>
-                {["😊","❤️","👍","👎","🔥","😍","👏"].map(em => (
-                  <button key={em} className="fbl-react-btn"
-                    style={{ background:"none", border:"none", fontSize:30, cursor:"pointer", padding:6, borderRadius:"50%", transition:"transform 0.1s" }}
-                    onClick={() => setLongPressMsg(null)}>
-                    {em}
-                  </button>
-                ))}
-              </div>
-              {([
-                { icon:"↩️", label:"Répondre"   },
-                { icon:"⎘",  label:"Copier"     },
-                { icon:"↪️", label:"Transférer" },
-                { icon:"📌", label:"Épingler"   },
-                { icon:"🗑️", label:"Supprimer", danger:true },
-              ] as { icon:string; label:string; danger?:boolean }[]).map(a => (
-                <button key={a.label} className="fbl-menu-btn"
-                  style={{ color: a.danger ? "#E02020" : "#111" }}
-                  onClick={() => {
-                    if (a.label === "Copier") {
-                      const m = currentMessages.find(x => x.id === longPressMsg);
-                      if (m) navigator.clipboard.writeText(m.text).catch(() => {});
-                    }
-                    if (a.label === "Supprimer") {
-                      setMessages(prev => ({ ...prev, [activeConv!]: (prev[activeConv!] ?? []).filter(x => x.id !== longPressMsg) }));
-                    }
-                    setLongPressMsg(null);
-                  }}>
-                  <span style={{ fontSize:20, lineHeight:1 }}>{a.icon}</span>
-                  {a.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* long-press modal removed — handled inline by selection header + bottom bar */}
 
         {/* ── WALLPAPER / FOND D'ÉCRAN SELECTOR ── */}
         {showWallpaper && (
