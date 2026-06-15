@@ -319,105 +319,6 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
         />
       )}
 
-      {/* ─── Stories Row ─── */}
-      <input ref={storyFileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleStoryFileSelect} />
-
-      <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e4e6eb", boxShadow: "0 1px 4px rgba(0,0,0,0.06)", padding: "12px 10px" }}>
-        <div style={{ display: "flex", gap: 8, overflowX: "auto", scrollbarWidth: "none" as const }}>
-
-          {/* ── Créer une story card ── */}
-          <div
-            onClick={() => storyFileRef.current?.click()}
-            style={{ flex: "0 0 90px", cursor: "pointer", display: "flex", flexDirection: "column" as const, alignItems: "center" as const }}
-          >
-            <div style={{
-              width: 90, height: 126, borderRadius: 10, overflow: "hidden", position: "relative",
-              background: "linear-gradient(160deg, #42B72A 0%, #2D8C1E 100%)",
-              display: "flex", flexDirection: "column" as const, alignItems: "center" as const, justifyContent: "center",
-            }}>
-              {user.avatarUrl
-                ? <img src={user.avatarUrl} alt="moi" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.35 }} />
-                : null
-              }
-              {/* Initials */}
-              <div style={{ position: "relative", zIndex: 1, color: "#fff", fontWeight: 900, fontSize: 26, letterSpacing: -1, lineHeight: 1, marginBottom: 10 }}>{userInitials}</div>
-              {/* + circle */}
-              <div style={{ position: "relative", zIndex: 1, width: 32, height: 32, borderRadius: "50%", background: "#42B72A", border: "3px solid #fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
-              </div>
-            </div>
-            <div style={{ marginTop: 6, textAlign: "center" as const }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#050505", lineHeight: 1.2 }}>Créer</div>
-              <div style={{ fontSize: 11, color: "#65676b", lineHeight: 1.2 }}>une story</div>
-            </div>
-          </div>
-
-          {/* ── Real story groups ── */}
-          {storyGroups.map((group, idx) => {
-            const initials = group.authorName.slice(0, 2).toUpperCase();
-            const avatarBg = AVATAR_COLORS[group.authorId % AVATAR_COLORS.length];
-            const preview = group.stories[0];
-            const ringColors = ["#42B72A","#1877F2","#E91E63","#FF9800","#9C27B0","#00BCD4","#F44336"];
-            const ring = ringColors[group.authorId % ringColors.length];
-            return (
-              <div
-                key={group.authorId}
-                onClick={() => { setViewerGroupIdx(idx); setViewerOpen(true); }}
-                style={{ flex: "0 0 90px", cursor: "pointer", display: "flex", flexDirection: "column" as const, alignItems: "center" as const }}
-              >
-                <div style={{
-                  width: 90, height: 126, borderRadius: 10, overflow: "hidden", position: "relative",
-                  background: preview?.mediaUrl ? `url(${preview.mediaUrl}) center/cover no-repeat` : (preview?.bgColor ?? avatarBg),
-                  border: `3px solid ${ring}`,
-                  boxSizing: "border-box" as const,
-                }}>
-                  {preview?.emoji && !preview?.mediaUrl && (
-                    <div style={{ fontSize: 36, position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>{preview.emoji}</div>
-                  )}
-                  {preview?.content && !preview?.mediaUrl && !preview?.emoji && (
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "#fff", padding: "4px 6px", textAlign: "center" as const, position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>{preview.content.slice(0, 40)}</div>
-                  )}
-                  {/* Avatar ring at top */}
-                  <div style={{ position: "absolute", top: 6, left: 6, width: 34, height: 34, borderRadius: "50%", border: `3px solid ${ring}`, background: avatarBg, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", boxShadow: "0 0 0 2px #fff" }}>
-                    {group.authorAvatarUrl
-                      ? <img src={group.authorAvatarUrl} alt={group.authorName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                      : <span style={{ color: "#fff", fontWeight: 700, fontSize: 12 }}>{initials}</span>}
-                  </div>
-                  {/* Online dot */}
-                  <div style={{ position: "absolute", top: 6, left: 30, width: 10, height: 10, borderRadius: "50%", background: "#42B72A", border: "2px solid #fff" }} />
-                  {group.storiesCount > 1 && (
-                    <div style={{ position: "absolute", top: 6, right: 6, background: "#42B72A", color: "#fff", borderRadius: 10, minWidth: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, padding: "0 4px" }}>{group.storiesCount}</div>
-                  )}
-                </div>
-                <div style={{ marginTop: 6, fontSize: 11, fontWeight: 600, color: "#050505", textAlign: "center" as const, width: 86, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>
-                  {group.authorName.split(" ")[0]}
-                </div>
-              </div>
-            );
-          })}
-
-          {/* ── Voir plus (if 3+ story groups) ── */}
-          {storyGroups.length >= 3 && (
-            <div style={{ flex: "0 0 70px", cursor: "pointer", display: "flex", flexDirection: "column" as const, alignItems: "center" as const, justifyContent: "center" }}>
-              <div style={{ width: 70, height: 126, borderRadius: 10, background: "#f0f2f5", border: "1px solid #e4e6eb", display: "flex", flexDirection: "column" as const, alignItems: "center" as const, justifyContent: "center", gap: 6 }}>
-                <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#e4e6eb", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#65676b" strokeWidth="2"><circle cx="5" cy="12" r="1.5" fill="#65676b"/><circle cx="12" cy="12" r="1.5" fill="#65676b"/><circle cx="19" cy="12" r="1.5" fill="#65676b"/></svg>
-                </div>
-                <div style={{ fontSize: 11, fontWeight: 600, color: "#65676b", textAlign: "center" as const, padding: "0 4px" }}>Voir plus</div>
-              </div>
-            </div>
-          )}
-
-          {/* ── No stories yet ── */}
-          {storyGroups.length === 0 && (
-            <div style={{ display: "flex", alignItems: "center", padding: "0 8px", color: "#65676b", fontSize: 12, fontStyle: "italic" }}>
-              Sois le premier à publier une story !
-            </div>
-          )}
-
-        </div>
-      </div>
-
       {/* ─── Create post card ─── */}
       <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e4e6eb", boxShadow: "0 1px 4px rgba(0,0,0,0.06)", overflow: "hidden" }}>
         {/* Top row: avatar + input + icons */}
@@ -464,6 +365,78 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
               <span style={{ fontSize: 12, fontWeight: 600, color: "#444", whiteSpace: "nowrap" as const }}>{btn.label}</span>
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* ─── Stories Row ─── */}
+      <input ref={storyFileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleStoryFileSelect} />
+      <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e4e6eb", boxShadow: "0 1px 4px rgba(0,0,0,0.06)", padding: "12px 10px 10px" }}>
+        <div style={{ display: "flex", gap: 10, overflowX: "auto", scrollbarWidth: "none" as const, alignItems: "flex-start" }}>
+
+          {/* ── Créer une story — rectangle vert ── */}
+          <div onClick={() => storyFileRef.current?.click()} style={{ flex: "0 0 auto", cursor: "pointer", display: "flex", flexDirection: "column" as const, alignItems: "center" as const }}>
+            <div style={{
+              width: 92, height: 130, borderRadius: 12, overflow: "hidden", position: "relative",
+              background: "linear-gradient(175deg, #42B72A 0%, #2a7d18 100%)",
+              display: "flex", flexDirection: "column" as const, alignItems: "center" as const, justifyContent: "center",
+            }}>
+              {user.avatarUrl && <img src={user.avatarUrl} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.25 }} />}
+              <div style={{ position: "relative", zIndex: 1, color: "#fff", fontWeight: 900, fontSize: 28, lineHeight: 1, marginBottom: 12 }}>{userInitials}</div>
+              <div style={{ position: "relative", zIndex: 1, width: 30, height: 30, borderRadius: "50%", background: "#42B72A", border: "2.5px solid #fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
+              </div>
+            </div>
+            <div style={{ marginTop: 5, textAlign: "center" as const }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#050505", lineHeight: 1.3 }}>Créer</div>
+              <div style={{ fontSize: 11, color: "#65676b", lineHeight: 1.3 }}>une story</div>
+            </div>
+          </div>
+
+          {/* ── User story cards — CIRCULAIRES ── */}
+          {storyGroups.map((group, idx) => {
+            const initials = group.authorName.slice(0, 2).toUpperCase();
+            const avatarBg = AVATAR_COLORS[group.authorId % AVATAR_COLORS.length];
+            const preview = group.stories[0];
+            const ringColors = ["#42B72A","#1877F2","#E91E63","#FF9800","#9C27B0","#E53935"];
+            const ring = ringColors[group.authorId % ringColors.length];
+            return (
+              <div key={group.authorId} onClick={() => { setViewerGroupIdx(idx); setViewerOpen(true); }}
+                style={{ flex: "0 0 auto", cursor: "pointer", display: "flex", flexDirection: "column" as const, alignItems: "center" as const }}>
+                {/* Circular avatar with colored ring */}
+                <div style={{ width: 76, height: 76, borderRadius: "50%", padding: 3, background: `linear-gradient(135deg, ${ring}, ${ring}99)`, boxSizing: "border-box" as const, position: "relative" }}>
+                  <div style={{ width: "100%", height: "100%", borderRadius: "50%", border: "2.5px solid #fff", overflow: "hidden", background: avatarBg, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    {group.authorAvatarUrl
+                      ? <img src={group.authorAvatarUrl} alt={group.authorName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      : (preview?.mediaUrl
+                          ? <img src={preview.mediaUrl} alt={group.authorName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          : <span style={{ color: "#fff", fontWeight: 800, fontSize: 22 }}>{initials}</span>)
+                    }
+                  </div>
+                  {/* Online dot */}
+                  <div style={{ position: "absolute", bottom: 3, right: 3, width: 14, height: 14, borderRadius: "50%", background: "#42B72A", border: "2px solid #fff" }} />
+                </div>
+                <div style={{ marginTop: 6, fontSize: 11, fontWeight: 600, color: "#050505", textAlign: "center" as const, maxWidth: 76, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>
+                  {group.authorName.split(" ")[0]}
+                </div>
+              </div>
+            );
+          })}
+
+          {/* ── Voir plus ── */}
+          {storyGroups.length >= 3 && (
+            <div style={{ flex: "0 0 auto", cursor: "pointer", display: "flex", flexDirection: "column" as const, alignItems: "center" as const }}>
+              <div style={{ width: 76, height: 76, borderRadius: "50%", background: "#f0f2f5", border: "1px solid #e4e6eb", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="5" cy="12" r="1.8" fill="#65676b"/><circle cx="12" cy="12" r="1.8" fill="#65676b"/><circle cx="19" cy="12" r="1.8" fill="#65676b"/></svg>
+              </div>
+              <div style={{ marginTop: 6, fontSize: 11, fontWeight: 600, color: "#65676b", textAlign: "center" as const }}>Voir plus</div>
+            </div>
+          )}
+
+          {storyGroups.length === 0 && (
+            <div style={{ display: "flex", alignItems: "center", height: 76, padding: "0 8px", color: "#65676b", fontSize: 12, fontStyle: "italic" }}>
+              Sois le premier à publier une story !
+            </div>
+          )}
         </div>
       </div>
 
