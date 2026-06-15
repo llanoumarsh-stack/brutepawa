@@ -948,40 +948,139 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   }
 
   /* ══════════════════════════════════════════════════════════════
-     INFO OVERLAY — WhatsApp × BP style
+     INFO OVERLAY — BrutePawa 2026 premium
   ══════════════════════════════════════════════════════════════ */
   if (activeConv && activeUser && overlay === "info") {
+    const infoActions = [
+      {
+        label: "Message",
+        action: () => setOverlay("none"),
+        icon: (
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" fill="#22C55E"/>
+            <circle cx="8" cy="11" r="1.2" fill="#fff"/>
+            <circle cx="12" cy="11" r="1.2" fill="#fff"/>
+            <circle cx="16" cy="11" r="1.2" fill="#fff"/>
+          </svg>
+        ),
+      },
+      {
+        label: "Appel audio",
+        action: () => { setOverlay("none"); sig.startCall(activeConv, "audio"); },
+        icon: (
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="#22C55E">
+            <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58a1 1 0 01-.25 1.01z"/>
+          </svg>
+        ),
+      },
+      {
+        label: "Vidéo",
+        action: () => { setOverlay("none"); sig.startCall(activeConv, "video"); },
+        icon: (
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="#22C55E">
+            <path d="M15 10l4.55-2.27A1 1 0 0121 8.62v6.76a1 1 0 01-1.45.9L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+          </svg>
+        ),
+      },
+    ];
+    const infoRows = [
+      {
+        label: "Bonjour ! J'utilise Brute Pawa.",
+        icon: (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#22C55E">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M8 13s1.5 2 4 2 4-2 4-2" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" fill="none"/>
+            <circle cx="9" cy="10" r="1.2" fill="#fff"/>
+            <circle cx="15" cy="10" r="1.2" fill="#fff"/>
+          </svg>
+        ),
+      },
+      {
+        label: activeUser.name,
+        icon: (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#22C55E">
+            <rect x="5" y="2" width="14" height="20" rx="3"/>
+            <rect x="9" y="4" width="6" height="1.5" rx="0.75" fill="#fff"/>
+            <circle cx="12" cy="18" r="1" fill="#fff"/>
+          </svg>
+        ),
+      },
+    ];
     return createPortal(
-      <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, background: "#f0f2f5", zIndex: 10000, overflowY: "auto" }}>
-        <div style={{ background: "#1877F2", padding: "10px 14px", display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={() => setOverlay("none")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#fff", display: "flex", alignItems: "center", padding: 4 }}>←</button>
-          <div style={{ fontWeight: 700, fontSize: 17, color: "#fff" }}>Infos du contact</div>
+      <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, zIndex: 10000, overflowY: "auto", background: "linear-gradient(160deg, #f0fdf4 0%, #ffffff 50%, #f0fdf4 100%)" }}>
+        {/* subtle decorative blobs */}
+        <div style={{ position: "fixed", top: -60, right: -60, width: 200, height: 200, borderRadius: "50%", background: "radial-gradient(circle, rgba(34,197,94,0.10) 0%, transparent 70%)", pointerEvents: "none" }} />
+        <div style={{ position: "fixed", bottom: 80, left: -40, width: 160, height: 160, borderRadius: "50%", background: "radial-gradient(circle, rgba(34,197,94,0.07) 0%, transparent 70%)", pointerEvents: "none" }} />
+
+        {/* ── HEADER ── */}
+        <div style={{ position: "sticky", top: 0, zIndex: 10, background: "rgba(255,255,255,0.92)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", borderBottom: "1px solid rgba(34,197,94,0.12)", padding: "12px 16px", display: "flex", alignItems: "center", gap: 12 }}>
+          <button onClick={() => setOverlay("none")} style={{ width: 38, height: 38, borderRadius: "50%", background: "#F0FDF4", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+          </button>
+          <div style={{ flex: 1, fontWeight: 800, fontSize: 17, color: "#0D1B2A" }}>Infos du contact</div>
+          <button style={{ width: 38, height: 38, borderRadius: "50%", background: "#F0FDF4", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#22C55E">
+              <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
+            </svg>
+          </button>
         </div>
-        <div style={{ background: "#fff", padding: "28px 20px 24px", textAlign: "center" }}>
-          <div style={{ position: "relative", display: "inline-block", marginBottom: 14 }}>
-            <div className="avatar" style={{ width: 96, height: 96, fontSize: 34, background: activeUser.color }}>{activeUser.initials}</div>
-            <div style={{ position: "absolute", bottom: 5, right: 5, width: 20, height: 20, background: "#42B72A", borderRadius: "50%", border: "3px solid #fff" }} />
+
+        {/* ── PROFILE CARD ── */}
+        <div style={{ margin: "20px 16px 0", background: "#fff", borderRadius: 24, padding: "28px 20px 24px", textAlign: "center", boxShadow: "0 4px 24px rgba(34,197,94,0.10), 0 1px 4px rgba(0,0,0,0.06)", border: "1px solid rgba(34,197,94,0.08)" }}>
+          {/* avatar */}
+          <div style={{ position: "relative", display: "inline-block", marginBottom: 18 }}>
+            <div style={{ width: 104, height: 104, borderRadius: "50%", background: activeUser.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, fontWeight: 900, color: "#fff", border: "3.5px solid #22C55E", boxShadow: "0 0 0 4px rgba(34,197,94,0.15), 0 6px 20px rgba(0,0,0,0.12)" }}>
+              {activeUser.initials}
+            </div>
+            {/* presence dot */}
+            <div style={{ position: "absolute", bottom: 6, right: 6, width: 20, height: 20, borderRadius: "50%", background: presence.online ? "#22C55E" : "#9CA3AF", border: "3px solid #fff", boxShadow: "0 1px 4px rgba(0,0,0,0.15)" }} />
           </div>
-          <div style={{ fontWeight: 900, fontSize: 23, color: "#111", marginBottom: 4 }}>{activeUser.name}</div>
-          <div style={{ fontSize: 13, color: presence.online ? "#42B72A" : "#888", fontWeight: 600 }}>{presence.online ? "🟢 En ligne" : presText}</div>
-          <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 20 }}>
-            {[
-              { icon: "💬", label: "Message", action: () => setOverlay("none"), color: "#1877F2" },
-              { icon: "📞", label: "Appel audio", action: () => { setOverlay("none"); sig.startCall(activeConv, "audio"); }, color: "#42B72A" },
-              { icon: "📹", label: "Vidéo", action: () => { setOverlay("none"); sig.startCall(activeConv, "video"); }, color: "#E91E63" },
-            ].map(a => (
-              <div key={a.label} onClick={a.action} style={{ cursor: "pointer", textAlign: "center" }}>
-                <div style={{ width: 52, height: 52, borderRadius: "50%", background: a.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, margin: "0 auto 6px", boxShadow: `0 2px 8px ${a.color}55` }}>{a.icon}</div>
-                <div style={{ fontSize: 11, color: "#555", fontWeight: 600 }}>{a.label}</div>
+
+          {/* name + verified badge */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, marginBottom: 6 }}>
+            <span style={{ fontWeight: 900, fontSize: 22, color: "#0D1B2A", letterSpacing: -0.3 }}>{activeUser.name}</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L14.09 8.26L21 9.27L16.5 13.97L17.64 21L12 17.77L6.36 21L7.5 13.97L3 9.27L9.91 8.26L12 2Z" fill="#22C55E"/>
+              <polyline points="9,12 11,14 15,10" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+            </svg>
+          </div>
+
+          {/* presence text */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 24 }}>
+            <div style={{ width: 8, height: 8, borderRadius: "50%", background: presence.online ? "#22C55E" : "#9CA3AF", flexShrink: 0 }} />
+            <span style={{ fontSize: 13, color: presence.online ? "#22C55E" : "#9CA3AF", fontWeight: 600 }}>{presence.online ? "En ligne" : presText}</span>
+          </div>
+
+          {/* action buttons */}
+          <div style={{ display: "flex", gap: 10 }}>
+            {infoActions.map(a => (
+              <div key={a.label} onClick={a.action} style={{ flex: 1, background: "#F0FDF4", borderRadius: 16, padding: "14px 8px 12px", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 8, border: "1px solid rgba(34,197,94,0.15)", boxShadow: "0 2px 8px rgba(34,197,94,0.08)", transition: "transform 0.15s" }}
+                onPointerDown={e => (e.currentTarget.style.transform = "scale(0.96)")}
+                onPointerUp={e => (e.currentTarget.style.transform = "scale(1)")}
+                onPointerLeave={e => (e.currentTarget.style.transform = "scale(1)")}
+              >
+                <div style={{ width: 48, height: 48, borderRadius: 14, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(34,197,94,0.15)" }}>
+                  {a.icon}
+                </div>
+                <span style={{ fontSize: 11.5, fontWeight: 700, color: "#374151", textAlign: "center" }}>{a.label}</span>
               </div>
             ))}
           </div>
         </div>
-        <div style={{ marginTop: 8, background: "#fff" }}>
-          {[{ icon: "😊", label: "Bonjour ! J'utilise Brute Pawa." }, { icon: "📱", label: activeUser.name }].map((r, i) => (
-            <div key={i} style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 20px", borderBottom: "1px solid #f0f2f5" }}>
-              <span style={{ fontSize: 22 }}>{r.icon}</span>
-              <span style={{ fontSize: 15, color: "#111" }}>{r.label}</span>
+
+        {/* ── INFO ROWS ── */}
+        <div style={{ margin: "14px 16px 32px", background: "#fff", borderRadius: 20, overflow: "hidden", boxShadow: "0 2px 12px rgba(0,0,0,0.05)", border: "1px solid rgba(34,197,94,0.07)" }}>
+          {infoRows.map((row, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 14, padding: "16px 18px", borderBottom: i < infoRows.length - 1 ? "1px solid #F0FDF4" : "none" }}>
+              <div style={{ width: 38, height: 38, borderRadius: 12, background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                {row.icon}
+              </div>
+              <span style={{ flex: 1, fontSize: 14.5, color: "#0D1B2A", fontWeight: 500 }}>{row.label}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
             </div>
           ))}
         </div>
