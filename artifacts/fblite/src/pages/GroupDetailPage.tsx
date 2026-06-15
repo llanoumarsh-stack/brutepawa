@@ -9,6 +9,7 @@ import {
   ApiGroupDetail, ApiGroupPost, ApiGroupMember, ApiJoinRequest,
 } from "../lib/api";
 import { useR2Upload } from "../hooks/useR2Upload";
+import GroupBotsPanel from "../components/GroupBotsPanel";
 
 const GROUP_CATEGORIES = ["general", "Agriculture", "Technologie", "Commerce", "Éducation", "Sport", "Santé", "Culture", "Religion"];
 
@@ -49,7 +50,7 @@ function roleLabel(role: string) {
   return null;
 }
 
-type Tab = "posts" | "members" | "requests";
+type Tab = "posts" | "members" | "requests" | "bots";
 
 export default function GroupDetailPage({ groupId }: { groupId: number }) {
   const navigate = useNavigate();
@@ -471,13 +472,13 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
       {/* Tab bar (members only) */}
       {group.isMember && (
         <div style={{ display: "flex", background: "var(--fb-white)", borderBottom: "1px solid var(--fb-divider)" }}>
-          {(["posts", "members", ...(isAdminOrMod ? ["requests"] : [])] as Tab[]).map(t => (
+          {(["posts", "members", ...(isAdminOrMod ? ["requests"] : []), ...(isAdmin ? ["bots"] : [])] as Tab[]).map(t => (
             <button
               key={t}
               onClick={() => setTab(t)}
               style={{
                 flex: 1, padding: "12px 0", border: "none", background: "none", fontWeight: tab === t ? 700 : 500,
-                fontSize: 14, cursor: "pointer", color: tab === t ? "var(--fb-blue)" : "var(--fb-text-secondary)",
+                fontSize: 13, cursor: "pointer", color: tab === t ? "var(--fb-blue)" : "var(--fb-text-secondary)",
                 borderBottom: tab === t ? "3px solid var(--fb-blue)" : "3px solid transparent",
                 position: "relative",
               }}
@@ -494,6 +495,7 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
                   )}
                 </>
               )}
+              {t === "bots" && "🤖 Bots"}
             </button>
           ))}
         </div>
@@ -843,6 +845,11 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
             </button>
           </div>
         </div>
+      )}
+
+      {/* Bots tab (admin only) */}
+      {group.isMember && tab === "bots" && isAdmin && (
+        <GroupBotsPanel groupId={groupId} />
       )}
 
       {/* Requests tab (admin/moderator only) */}

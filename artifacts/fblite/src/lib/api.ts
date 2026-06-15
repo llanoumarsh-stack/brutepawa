@@ -276,6 +276,53 @@ export interface ApiJoinRequest {
   avatarUrl: string | null;
 }
 
+export interface ApiGroupBot {
+  id: number | null;
+  groupId: number;
+  botType: string;
+  enabled: boolean;
+  settings: Record<string, any>;
+  updatedAt: string | null;
+}
+
+export interface ApiBotLog {
+  id: number;
+  groupId: number;
+  botType: string;
+  action: string;
+  targetUserId: number | null;
+  detail: string | null;
+  createdAt: string;
+}
+
+export async function apiGetGroupBots(groupId: number): Promise<ApiGroupBot[]> {
+  const res = await apiFetch(`/groups/${groupId}/bots`);
+  if (!res.ok) throw new Error("Impossible de charger les bots");
+  return res.json() as Promise<ApiGroupBot[]>;
+}
+
+export async function apiPatchGroupBot(
+  groupId: number,
+  botType: string,
+  data: { enabled?: boolean; settings?: object },
+): Promise<ApiGroupBot> {
+  const res = await apiFetch(`/groups/${groupId}/bots/${botType}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(err.error ?? "Impossible de mettre à jour le bot");
+  }
+  return res.json() as Promise<ApiGroupBot>;
+}
+
+export async function apiGetBotLogs(groupId: number): Promise<ApiBotLog[]> {
+  const res = await apiFetch(`/groups/${groupId}/bot-logs`);
+  if (!res.ok) return [];
+  return res.json() as Promise<ApiBotLog[]>;
+}
+
 export async function apiGetGroups(): Promise<ApiGroup[]> {
   const res = await apiFetch("/groups");
   if (!res.ok) return [];
