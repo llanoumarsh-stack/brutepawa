@@ -57,9 +57,11 @@ self.addEventListener("push", (e) => {
 self.addEventListener("notificationclick", (e) => {
   e.notification.close();
   const d = e.notification.data || {};
-  const url = d.url || "/messages";
+  const url = d.url || "/";
   const action = e.action;
+  const isCall = !!d.callType;
 
+  // Bouton "Refuser" sur une notification d'appel
   if (action === "reject") {
     if (d.rejectUrl) {
       fetch(d.rejectUrl, {
@@ -73,15 +75,27 @@ self.addEventListener("notificationclick", (e) => {
 
   e.waitUntil(
     clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
-      for (const client of list) {
-        if (client.url.includes(self.location.origin)) {
-          client.focus();
-          client.postMessage({ type: "bp:incoming-call", data: d });
-          return;
+      const appClient = list.find((c) => c.url.startsWith(self.location.origin));
+
+      if (appClient) {
+        appClient.focus();
+        if (isCall) {
+          // Appel entrant → signaler via postMessage pour ouvrir le modal d'appel
+          appClient.postMessage({ type: "bp:incoming-call", data: d });
+        } else {
+          // Notification régulière → naviguer vers la page concernée
+          const target = new URL(url, self.location.origin).href;
+          appClient.navigate(target).catch(() => {
+            // fallback : postMessage si navigate() n'est pas supporté
+            appClient.postMessage({ type: "bp:navigate", data: { url } });
+          });
         }
+        return;
       }
-      return clients.openWindow(url).then((w) => {
-        if (w) {
+
+      // App fermée → ouvrir directement la bonne URL
+      return clients.openWindow(new URL(url, self.location.origin).href).then((w) => {
+        if (w && isCall) {
           setTimeout(() => w.postMessage({ type: "bp:incoming-call", data: d }), 1500);
         }
       });
