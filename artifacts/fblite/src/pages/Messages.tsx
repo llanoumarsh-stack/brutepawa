@@ -809,38 +809,143 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         <audio ref={remoteAudioRef} autoPlay playsInline style={{ display: "none" }} />
 
         {isVideo ? (
-          /* ── VIDEO CALL ── */
+          /* ── VIDEO CALL — BrutePawa 2026 Premium ── */
           <>
-            <video ref={remoteVideoRef} autoPlay playsInline style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover", background:"#111" }} />
-            <div style={{ position:"absolute", top:0, left:0, right:0, padding:"48px 16px 60px", background:"linear-gradient(180deg,rgba(0,0,0,.72) 0%,transparent 100%)", zIndex:10 }}>
-              <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                <div style={{ flex:1 }}>
-                  <div style={{ color:"#fff", fontWeight:800, fontSize:18 }}>{peer?.name ?? "Appel vidéo"}</div>
-                  <div style={{ color:"rgba(255,255,255,.8)", fontSize:13, marginTop:2 }}>
-                    {sig.callState === "active" ? <span style={{ color:"#A5F3A5" }}>● {fmtTime(sig.callDuration)}</span> : <span>Connexion en cours...</span>}
+            <style>{`
+              @keyframes bpv-dots{0%,80%,100%{opacity:0;transform:translateY(0)}40%{opacity:1;transform:translateY(-4px)}}
+              @keyframes bpv-end-glow{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.7),0 8px 28px rgba(239,68,68,.5)}50%{box-shadow:0 0 0 12px rgba(239,68,68,0),0 8px 28px rgba(239,68,68,.5)}}
+              @keyframes bpv-secure-pulse{0%,100%{opacity:.85}50%{opacity:1}}
+              @keyframes bpv-local-glow{0%,100%{box-shadow:0 0 0 2px rgba(34,197,94,0.7),0 4px 20px rgba(0,0,0,.55)}50%{box-shadow:0 0 0 3px rgba(74,222,128,1),0 4px 24px rgba(0,0,0,.6)}}
+              .bpv-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#4ade80;animation:bpv-dots 1.5s ease-in-out infinite}
+              .bpv-dot:nth-child(1){animation-delay:0s}.bpv-dot:nth-child(2){animation-delay:.2s}.bpv-dot:nth-child(3){animation-delay:.4s}
+              .bpv-btn{display:flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:50%;border:none;cursor:pointer;transition:transform .12s,filter .12s;background:rgba(34,197,94,0.18);backdrop-filter:blur(8px);border:1px solid rgba(34,197,94,0.3)}
+              .bpv-btn:active{transform:scale(.88)!important}
+              .bpv-btn-on{background:rgba(34,197,94,0.5)!important;border-color:rgba(34,197,94,0.7)!important}
+            `}</style>
+
+            {/* Remote video — full screen */}
+            <video ref={remoteVideoRef} autoPlay playsInline style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover", background:"linear-gradient(180deg,#071d0c,#020b05)" }} />
+
+            {/* Top gradient overlay */}
+            <div style={{ position:"absolute", top:0, left:0, right:0, height:"38%", background:"linear-gradient(180deg,rgba(0,0,0,0.82) 0%,rgba(0,0,0,0.35) 60%,transparent 100%)", zIndex:10, pointerEvents:"none" }} />
+            {/* Bottom gradient overlay */}
+            <div style={{ position:"absolute", bottom:0, left:0, right:0, height:"42%", background:"linear-gradient(0deg,rgba(0,0,0,0.88) 0%,rgba(0,0,0,0.45) 55%,transparent 100%)", zIndex:10, pointerEvents:"none" }} />
+
+            {/* Header */}
+            <div style={{ position:"absolute", top:0, left:0, right:0, zIndex:20, padding:"50px 16px 0" }}>
+              <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between" }}>
+                {/* Left: chevron down + name + status */}
+                <div style={{ display:"flex", alignItems:"flex-start", gap:10, flex:1 }}>
+                  <button onClick={() => sig.endCall()} style={{ background:"rgba(255,255,255,0.12)", backdropFilter:"blur(10px)", border:"1px solid rgba(255,255,255,0.18)", borderRadius:"50%", width:36, height:36, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", flexShrink:0, marginTop:2 }}>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="rgba(255,255,255,.9)"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+                  </button>
+                  <div>
+                    <div style={{ display:"flex", alignItems:"center", gap:7 }}>
+                      <span style={{ color:"#fff", fontWeight:900, fontSize:20, letterSpacing:0.2, textShadow:"0 1px 8px rgba(0,0,0,0.6)" }}>{peer?.name ?? "Appel vidéo"}</span>
+                      <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2L14.09 8.26L21 9.27L16.5 13.97L17.64 21L12 17.77L6.36 21L7.5 13.97L3 9.27L9.91 8.26L12 2Z" fill="#22C55E"/>
+                        <polyline points="9,12 11,14 15,10" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                      </svg>
+                    </div>
+                    <div style={{ display:"flex", alignItems:"center", gap:4, marginTop:3 }}>
+                      {sig.callState === "active"
+                        ? <span style={{ color:"#4ade80", fontSize:13, fontWeight:700 }}>● {fmtTime(sig.callDuration)}</span>
+                        : <>
+                            <span style={{ color:"rgba(255,255,255,.75)", fontSize:13 }}>Connexion en cours</span>
+                            <span className="bpv-dot" style={{ marginLeft:2 }} /><span className="bpv-dot" /><span className="bpv-dot" />
+                          </>
+                      }
+                    </div>
+                    <div style={{ display:"flex", alignItems:"center", gap:5, marginTop:4 }}>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(74,222,128,0.8)"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                      <span style={{ color:"rgba(255,255,255,.55)", fontSize:11, letterSpacing:0.2 }}>Chiffré de bout en bout</span>
+                    </div>
                   </div>
                 </div>
-                <button onClick={() => sig.toggleSpeaker(remoteAudioRef.current)} style={{ background:"none", border:"none", color:sig.isSpeaker?"#fff":"rgba(255,255,255,.6)", cursor:"pointer", padding:4 }}>
-                  <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+                {/* Speaker button */}
+                <button onClick={() => sig.toggleSpeaker(remoteAudioRef.current)}
+                  style={{ width:44, height:44, borderRadius:"50%", background:sig.isSpeaker ? "rgba(34,197,94,0.35)" : "rgba(255,255,255,0.12)", border:`1.5px solid ${sig.isSpeaker ? "rgba(34,197,94,0.65)" : "rgba(255,255,255,0.22)"}`, backdropFilter:"blur(12px)", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 4px 14px rgba(0,0,0,0.4)", flexShrink:0 }}>
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill={sig.isSpeaker ? "#4ade80" : "rgba(255,255,255,.8)"}><path d={sig.isSpeaker ? "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" : "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"}/></svg>
                 </button>
               </div>
             </div>
-            <div style={{ position:"absolute", top:110, right:14, width:100, height:148, borderRadius:16, overflow:"hidden", border:"2px solid rgba(255,255,255,.55)", zIndex:15, boxShadow:"0 4px 16px rgba(0,0,0,.5)" }}>
-              <video ref={localVideoRef} autoPlay playsInline muted style={{ width:"100%", height:"100%", objectFit:"cover", transform:sig.cameraFront?"scaleX(-1)":"scaleX(1)" }} />
+
+            {/* Local camera preview — premium floating */}
+            <div style={{ position:"absolute", top:130, right:14, width:106, height:158, borderRadius:20, overflow:"hidden", zIndex:20, animation:"bpv-local-glow 2.5s ease-in-out infinite", cursor:"pointer" }}>
+              <video ref={localVideoRef} autoPlay playsInline muted style={{ width:"100%", height:"100%", objectFit:"cover", transform:sig.cameraFront ? "scaleX(-1)" : "scaleX(1)" }} />
+              {/* Camera flip overlay button */}
+              <div onClick={() => sig.flipCamera()} style={{ position:"absolute", bottom:7, right:7, width:28, height:28, borderRadius:"50%", background:"rgba(0,0,0,0.55)", backdropFilter:"blur(6px)", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", border:"1px solid rgba(255,255,255,0.2)" }}>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="rgba(255,255,255,0.9)"><path d="M20 5h-3.17L15 3H9L7.17 5H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-8 13c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+              </div>
+              {/* Signal indicator */}
+              <div style={{ position:"absolute", top:7, right:7, display:"flex", alignItems:"flex-end", gap:1 }}>
+                {[3,5,7,9].map((h,i) => <div key={i} style={{ width:3, height:h, borderRadius:1, background:i < 3 ? "#22c55e" : "rgba(255,255,255,0.3)" }} />)}
+              </div>
             </div>
-            <div style={{ position:"absolute", bottom:0, left:0, right:0, padding:"0 16px 52px", background:"linear-gradient(0deg,rgba(0,0,0,.75) 0%,transparent 100%)", zIndex:10 }}>
-              <div style={{ display:"flex", justifyContent:"space-around", alignItems:"flex-start" }}>
-                {([
-                  { label:"Retourner",     icon:<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M12.05 0l-.66.03 3.81 3.81 1.33-1.33C19.8 4.07 22.14 7.24 22.5 11H24c-.51-6.16-5.66-11-11.95-11zm-.22 4C8.47 4 5.2 6.28 4.22 9.65l1.42-.42c.73-2.36 2.93-4.23 5.53-4.23 2.1 0 3.96.96 5.2 2.47L14.75 9h4V5l-1.3 1.3C16.07 4.89 14.18 4 12.08 4h-.25zM7.47 21.49C4.2 19.93 1.86 16.76 1.5 13H0c.51 6.16 5.66 11 11.95 11l.66-.03-3.81-3.81-1.33 1.33zm.89-6.52c-.19 0-.38-.03-.56-.08L6 16.68l-.41.41c.28.4.64.74 1.04 1.01.9.6 1.96.9 3.03.73.3-.04.59-.12.87-.23.56-.22 1.04-.6 1.42-1.08.19-.22.36-.47.49-.73.24-.53.34-1.12.28-1.7l-.08-.6-1.42.42c-.01.19-.04.38-.1.56-.18.56-.58 1.01-1.1 1.27a2.4 2.4 0 0 1-.66.17z"/></svg>, action:() => sig.flipCamera() },
-                  { label:"Arrêter vidéo", icon:<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M21 6.5l-4-4-12 12 4 4 12-12zM3.27 2L2 3.27 4.73 6H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.21 0 .39-.08.54-.18L19.73 21 21 19.73 3.27 2zM15 17H5V8h1.73l8 8H15v1z"/></svg>, action:() => {} },
-                  { label:"Muet",          icon:<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d={sig.isMuted?"M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z":"M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28C16.28 17.23 19 14.41 19 11h-1.7z"}/></svg>, action:() => sig.toggleMute(), active:sig.isMuted },
-                  { label:"Raccrocher",    icon:<svg viewBox="0 0 24 24" width="28" height="28" fill="#fff"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.12-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>, action:() => sig.endCall(), red:true },
-                ] as {label:string;icon:JSX.Element;action:()=>void;active?:boolean;red?:boolean}[]).map(b => (
-                  <div key={b.label} style={{ textAlign:"center", cursor:"pointer" }} onClick={b.action}>
-                    <div className={`tg3-btn${b.active?" tg3-btn-on":""}`} style={b.red?{background:"#F44336",boxShadow:"0 4px 18px rgba(244,67,54,.55)"}:{}}>{b.icon}</div>
-                    <div style={{ color:"rgba(255,255,255,.85)", fontSize:11, fontWeight:500, marginTop:7 }}>{b.label}</div>
-                  </div>
-                ))}
+
+            {/* Secure connection badge — center */}
+            {sig.callState === "active" && (
+              <div style={{ position:"absolute", bottom:175, left:"50%", transform:"translateX(-50%)", zIndex:20, animation:"bpv-secure-pulse 3s ease-in-out infinite" }}>
+                <div style={{ background:"rgba(34,197,94,0.18)", backdropFilter:"blur(14px)", border:"1px solid rgba(34,197,94,0.35)", borderRadius:24, padding:"7px 18px", display:"flex", alignItems:"center", gap:7, whiteSpace:"nowrap" }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                    <rect x="2" y="18" width="3" height="4" rx="1" fill="#4ade80"/>
+                    <rect x="7" y="13" width="3" height="9" rx="1" fill="#4ade80"/>
+                    <rect x="12" y="8" width="3" height="14" rx="1" fill="#4ade80"/>
+                    <rect x="17" y="3" width="3" height="19" rx="1" fill="#4ade80"/>
+                  </svg>
+                  <span style={{ color:"rgba(255,255,255,.88)", fontSize:12, fontWeight:700, letterSpacing:0.2 }}>Connexion sécurisée</span>
+                </div>
+              </div>
+            )}
+
+            {/* Bottom control bar */}
+            <div style={{ position:"absolute", bottom:0, left:0, right:0, zIndex:20, padding:"0 10px 46px" }}>
+              <div style={{ background:"rgba(5,14,8,0.78)", backdropFilter:"blur(22px)", border:"1px solid rgba(34,197,94,0.12)", borderRadius:28, padding:"18px 10px 14px", boxShadow:"0 -4px 32px rgba(0,0,0,0.5)" }}>
+                <div style={{ display:"flex", justifyContent:"space-around", alignItems:"flex-start" }}>
+                  {([
+                    {
+                      label:"Basculer\ncaméra",
+                      icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="rgba(255,255,255,.9)"><path d="M20 5h-3.17L15 3H9L7.17 5H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-8 13c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>,
+                      action:() => sig.flipCamera(), active:false,
+                    },
+                    {
+                      label:"Désactiver\nvidéo",
+                      icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="rgba(255,255,255,.9)"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>,
+                      action:() => {}, active:false,
+                    },
+                    {
+                      label:"Muet",
+                      icon:<svg viewBox="0 0 24 24" width="24" height="24" fill={sig.isMuted ? "#022c0f" : "rgba(255,255,255,.9)"}><path d={sig.isMuted ? "M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z" : "M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28C16.28 17.23 19 14.41 19 11h-1.7z"}/></svg>,
+                      action:() => sig.toggleMute(), active:sig.isMuted,
+                    },
+                    {
+                      label:"Partager\nécran",
+                      icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="rgba(255,255,255,.9)"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zm-7-3.53v-2.19c-2.78.48-4.34 1.71-5.5 3.72.14-1.39.73-4.47 3.93-5.81L9.5 8.47C11.27 7.28 13.8 6.86 16 9.5l1.5-1.5v4.47H13z"/></svg>,
+                      action:() => {}, active:false,
+                    },
+                    {
+                      label:"Effets",
+                      icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="rgba(255,255,255,.9)"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7zm1-11h-2v3H8v2h3v3h2v-3h3v-2h-3z"/><circle cx="12" cy="12" r="1.5" fill="rgba(255,255,255,.9)"/><path d="M12 2l1.09 3.26L16 4l-2.18 2.55L15.5 10l-3.5-2-3.5 2 1.68-3.45L8 4l2.91 1.26z" fill="rgba(255,255,255,.6)"/></svg>,
+                      action:() => {}, active:false,
+                    },
+                    {
+                      label:"Raccrocher",
+                      icon:<svg viewBox="0 0 24 24" width="26" height="26" fill="#fff"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.12-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>,
+                      action:() => sig.endCall(), red:true,
+                    },
+                  ] as {label:string;icon:JSX.Element;action:()=>void;active?:boolean;red?:boolean}[]).map(b => (
+                    <div key={b.label} style={{ textAlign:"center", cursor:"pointer", minWidth:0 }} onClick={b.action}>
+                      <div className={`bpv-btn${b.active ? " bpv-btn-on" : ""}`} style={
+                        b.red
+                          ? { background:"linear-gradient(145deg,#ef4444,#b91c1c)", border:"none", width:64, height:64, animation:"bpv-end-glow 2.5s ease-in-out infinite", boxShadow:"0 6px 24px rgba(239,68,68,.55), inset 0 1px 0 rgba(255,255,255,.2)" }
+                          : b.active
+                            ? { background:"rgba(34,197,94,0.5)", border:"1px solid rgba(34,197,94,0.7)" }
+                            : {}
+                      }>{b.icon}</div>
+                      <div style={{ color:"rgba(255,255,255,.68)", fontSize:10, fontWeight:600, marginTop:7, whiteSpace:"pre-line", lineHeight:1.3, letterSpacing:0.1 }}>{b.label}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </>
