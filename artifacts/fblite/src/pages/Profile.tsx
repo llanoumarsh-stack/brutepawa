@@ -429,63 +429,144 @@ export default function Profile() {
           </div>
         )}
 
-        {/* À PROPOS */}
-        {activeTab === "about" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <div style={{ background: "var(--fb-white)", borderRadius: 10, border: "1px solid var(--fb-divider)", padding: 16 }}>
-              <div style={{ fontWeight: 700, marginBottom: 12 }}>Informations</div>
-              {[
-                { icon: "💼", label: bio },
-                { icon: localUser.flag || "📍", label: `Habite à ${localUser.country || "Côte d'Ivoire"}` },
-                { icon: "📞", label: localUser.phone || "Téléphone non spécifié" },
-                { icon: "📧", label: localUser.email || "Email non spécifié" },
-              ].map((info, i) => (
-                <div key={i} style={{ display: "flex", gap: 12, padding: "8px 0", borderTop: i > 0 ? "1px solid var(--fb-divider)" : "none" }}>
-                  <span style={{ fontSize: 18, width: 24, textAlign: "center" }}>{info.icon}</span>
-                  <span style={{ fontSize: 14 }}>{info.label}</span>
-                </div>
-              ))}
-            </div>
-            {(() => {
-              let hobbies: string[] = [];
-              try {
-                const ext = JSON.parse(localStorage.getItem("fb_profile_ext") ?? "{}");
-                hobbies = (ext.hobbies ?? "").split(",").map((s: string) => s.trim()).filter(Boolean);
-              } catch { /* ignore */ }
-              return hobbies.length > 0 ? (
-                <div style={{ background: "var(--fb-white)", borderRadius: 10, border: "1px solid var(--fb-divider)", padding: 16 }}>
-                  <div style={{ fontWeight: 700, marginBottom: 12 }}>Centres d'intérêt</div>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                    {hobbies.map(h => (
-                      <span key={h} style={{ background: "var(--fb-blue-light)", color: "var(--fb-blue)", padding: "5px 12px", borderRadius: 20, fontSize: 13, fontWeight: 600 }}>{h}</span>
-                    ))}
-                  </div>
-                </div>
-              ) : null;
-            })()}
-            <button
-              onClick={() => navigate("/score")}
-              style={{ background: "var(--fb-white)", borderRadius: 10, border: `1.5px solid ${score.color}`, padding: 16, width: "100%", textAlign: "left", cursor: "pointer" }}
-            >
-              <div style={{ fontWeight: 700, marginBottom: 12 }}>Score de confiance →</div>
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <span style={{ fontSize: 36 }}>{score.emoji}</span>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 700, color: score.color }}>Niveau {score.label}</div>
-                  <div style={{ fontSize: 13, color: "var(--fb-text-secondary)" }}>Progression : {score.pct}%</div>
-                  <div style={{ background: "var(--fb-bg)", borderRadius: 6, height: 6, marginTop: 6, overflow: "hidden" }}>
-                    <div style={{ height: "100%", width: `${score.pct}%`, background: score.color, borderRadius: 6 }} />
-                  </div>
-                  {score.nextLevel && score.pointsToNext !== null && (
-                    <div style={{ fontSize: 11, color: "var(--fb-text-secondary)", marginTop: 4 }}>
-                      {score.pointsToNext} pts pour le niveau {score.nextLevel}
+        {/* À PROPOS — premium redesign */}
+        {activeTab === "about" && (() => {
+          let extData: Record<string,string> = {};
+          try { extData = JSON.parse(localStorage.getItem("fb_profile_ext") ?? "{}"); } catch { /**/ }
+
+          const infoRows = [
+            {
+              icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2ECC40" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>,
+              label: bio,
+            },
+            {
+              icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2ECC40" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>,
+              label: `Habite à ${localUser.country || localUser.countryCode || "TG"}`,
+            },
+            {
+              icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2ECC40" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.16 6.16l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>,
+              label: localUser.phone || "Téléphone non spécifié",
+            },
+            {
+              icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2ECC40" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>,
+              label: localUser.email || "Email non spécifié",
+            },
+            {
+              icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2ECC40" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
+              label: `Membre depuis ${extData.joinDate || "mai 2024"}`,
+            },
+          ];
+
+          return (
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+
+              {/* ── Informations card ── */}
+              <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 1px 6px rgba(0,0,0,0.07)", overflow: "hidden" }}>
+                <div style={{ padding: "16px 16px 10px", fontWeight: 800, fontSize: 16, color: "#050505" }}>Informations</div>
+                {infoRows.map((row, i) => (
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 16px", borderTop: i === 0 ? "none" : "1px solid #f0f0f0" }}>
+                    <div style={{ width: 36, height: 36, borderRadius: 10, background: "#f0faf0", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      {row.icon}
                     </div>
-                  )}
+                    <span style={{ flex: 1, fontSize: 14, color: "#050505", lineHeight: 1.4 }}>{row.label}</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ccc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  </div>
+                ))}
+                {/* Profil vérifié row */}
+                <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 16px", borderTop: "1px solid #f0f0f0" }}>
+                  <div style={{ width: 36, height: 36, borderRadius: 10, background: "#f0faf0", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2ECC40" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                  </div>
+                  <span style={{ flex: 1, fontSize: 14, color: "#2ECC40", fontWeight: 700 }}>Profil vérifié</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ccc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                 </div>
               </div>
-            </button>
-          </div>
-        )}
+
+              {/* ── Score de confiance card ── */}
+              <div
+                onClick={() => navigate("/score")}
+                style={{ background: "#fff", borderRadius: 16, boxShadow: "0 1px 6px rgba(0,0,0,0.07)", padding: "16px", cursor: "pointer" }}
+              >
+                <div style={{ fontWeight: 800, fontSize: 16, color: "#050505", marginBottom: 14, display: "flex", alignItems: "center", gap: 6 }}>
+                  Score de confiance
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                  {/* Medal SVG */}
+                  <svg width="52" height="60" viewBox="0 0 52 60" fill="none" style={{ flexShrink: 0 }}>
+                    <defs>
+                      <linearGradient id="medal-ribbon" x1="0" y1="0" x2="1" y2="1">
+                        <stop stopColor="#6366f1"/>
+                        <stop offset="1" stopColor="#3730a3"/>
+                      </linearGradient>
+                      <linearGradient id="medal-body" x1="0" y1="0" x2="1" y2="1">
+                        <stop stopColor="#e2e8f0"/>
+                        <stop offset="1" stopColor="#94a3b8"/>
+                      </linearGradient>
+                      <linearGradient id="medal-inner" x1="0" y1="0" x2="1" y2="1">
+                        <stop stopColor="#f8fafc"/>
+                        <stop offset="1" stopColor="#cbd5e1"/>
+                      </linearGradient>
+                    </defs>
+                    {/* Ribbon left */}
+                    <rect x="15" y="2" width="9" height="22" rx="3" fill="url(#medal-ribbon)" transform="rotate(-15 19.5 13)"/>
+                    {/* Ribbon right */}
+                    <rect x="28" y="2" width="9" height="22" rx="3" fill="url(#medal-ribbon)" transform="rotate(15 32.5 13)"/>
+                    {/* Outer circle */}
+                    <circle cx="26" cy="42" r="17" fill="url(#medal-body)" stroke="#b0bec5" strokeWidth="1.5"/>
+                    {/* Inner circle */}
+                    <circle cx="26" cy="42" r="12" fill="url(#medal-inner)"/>
+                    {/* Number 2 */}
+                    <text x="26" y="48" textAnchor="middle" fontSize="14" fontWeight="900" fill="#475569">2</text>
+                  </svg>
+
+                  {/* Score details */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 800, fontSize: 15, color: "#050505" }}>Niveau {score.label}</div>
+                    <div style={{ fontSize: 13, color: "#65676b", marginTop: 2 }}>
+                      Progression : <span style={{ color: "#2ECC40", fontWeight: 700 }}>{score.pct}%</span>
+                    </div>
+                    {/* Progress bar */}
+                    <div style={{ background: "#f0f0f0", borderRadius: 6, height: 7, marginTop: 7, overflow: "hidden" }}>
+                      <div style={{ height: "100%", width: `${score.pct}%`, background: "linear-gradient(90deg,#2ECC40,#27AE60)", borderRadius: 6, transition: "width 0.6s ease" }} />
+                    </div>
+                    {score.nextLevel && score.pointsToNext !== null && (
+                      <div style={{ fontSize: 11.5, color: "#888", marginTop: 5 }}>
+                        {score.pointsToNext} pts pour atteindre le niveau {score.nextLevel}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Points badge */}
+                  <div style={{ flexShrink: 0, background: "linear-gradient(135deg,#2ECC40,#1a9e2f)", borderRadius: 14, padding: "10px 14px", display: "flex", flexDirection: "column", alignItems: "center", gap: 3, boxShadow: "0 3px 10px rgba(46,204,64,0.3)" }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                    <span style={{ fontSize: 18, fontWeight: 900, color: "#fff", lineHeight: 1 }}>{score.points}</span>
+                    <span style={{ fontSize: 10, color: "rgba(255,255,255,0.85)", fontWeight: 600 }}>Points</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* ── Centres d'intérêt (si présents) ── */}
+              {(() => {
+                let hobbies: string[] = [];
+                try {
+                  const ext = JSON.parse(localStorage.getItem("fb_profile_ext") ?? "{}");
+                  hobbies = (ext.hobbies ?? "").split(",").map((s: string) => s.trim()).filter(Boolean);
+                } catch { /* ignore */ }
+                return hobbies.length > 0 ? (
+                  <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 1px 6px rgba(0,0,0,0.07)", padding: 16 }}>
+                    <div style={{ fontWeight: 800, fontSize: 16, color: "#050505", marginBottom: 12 }}>Centres d'intérêt</div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                      {hobbies.map(h => (
+                        <span key={h} style={{ background: "#f0faf0", color: "#2ECC40", padding: "6px 14px", borderRadius: 20, fontSize: 13, fontWeight: 600, border: "1px solid #c3eacc" }}>{h}</span>
+                      ))}
+                    </div>
+                  </div>
+                ) : null;
+              })()}
+            </div>
+          );
+        })()}
 
         {/* AMIS */}
         {activeTab === "amis" && (
