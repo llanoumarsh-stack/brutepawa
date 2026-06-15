@@ -1262,7 +1262,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
   );
 
   return (
-    <div style={{ position: "fixed", top: 56, bottom: 60, left: 0, right: 0, display: "flex", flexDirection: "column", background: "#F0F2F5", zIndex: 1, overflow: "hidden" }}>
+    <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, display: "flex", flexDirection: "column", background: "#F0F2F5", zIndex: 1, overflow: "hidden" }}>
       <style>{`
         .bp-conv-row { transition: background 0.12s; }
         .bp-conv-row:active { background: #EEF2F8 !important; }
