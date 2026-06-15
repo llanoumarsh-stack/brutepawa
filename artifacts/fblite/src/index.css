@@ -1005,7 +1005,15 @@ select:focus { border-color: var(--fb-blue); }
   background: linear-gradient(135deg, #2ECC40 0%, #27AE60 55%, #1a8a34 100%);
   position: relative;
   border-radius: 12px 12px 0 0;
+  overflow: visible;
+}
+.profile-cover::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px 12px 0 0;
   overflow: hidden;
+  pointer-events: none;
 }
 .profile-avatar-wrap {
   position: absolute;
