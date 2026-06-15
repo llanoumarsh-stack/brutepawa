@@ -32,21 +32,49 @@ const INIT: Form = {
 
 const TOTAL_STEPS = 6;
 
-/* ── tiny helpers ─────────────────────────────────────── */
-const inp: React.CSSProperties = {
+const STEP_TITLES = [
+  "Créer un compte",
+  "Date de naissance",
+  "Votre genre",
+  "Coordonnées de contact",
+  "Mot de passe",
+  "Code de confirmation",
+];
+
+/* ── Shared field style ── */
+const fieldBase: React.CSSProperties = {
   width: "100%", boxSizing: "border-box",
-  background: "#f0f2f5", border: "1.5px solid #ccd0d5",
-  borderRadius: 6, padding: "12px 14px",
-  fontSize: 16, color: "#1c1e21",
-  outline: "none", fontFamily: "inherit",
+  padding: "14px 14px 14px 42px",
+  border: "1.5px solid #e5e7eb",
+  borderRadius: 14,
+  fontSize: 15, color: "#111827",
+  background: "#fafafa",
+  outline: "none",
+  fontFamily: "inherit",
+  transition: "border-color 0.15s, box-shadow 0.15s",
 };
-const sel: React.CSSProperties = { ...inp, appearance: "none" as React.CSSProperties["appearance"], cursor: "pointer" };
-const btnGreen: React.CSSProperties = {
-  background: "#42b72a", color: "#fff", border: "none",
-  borderRadius: 6, padding: "12px 32px",
-  fontSize: 17, fontWeight: 700, cursor: "pointer",
-  width: "100%", marginTop: 4,
+
+const selectBase: React.CSSProperties = {
+  ...fieldBase,
+  paddingLeft: 14,
+  appearance: "none" as React.CSSProperties["appearance"],
+  cursor: "pointer",
+  backgroundImage: `url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 6l4 4 4-4' stroke='%239ca3af' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`,
+  backgroundRepeat: "no-repeat",
+  backgroundPosition: "right 12px center",
+  paddingRight: 36,
 };
+
+function fieldFocus(e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
+  e.target.style.borderColor = "#22c55e";
+  e.target.style.boxShadow = "0 0 0 3px rgba(34,197,94,0.12)";
+  e.target.style.background = "#fff";
+}
+function fieldBlur(e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
+  e.target.style.borderColor = "#e5e7eb";
+  e.target.style.boxShadow = "none";
+  e.target.style.background = "#fafafa";
+}
 
 export default function Register() {
   const navigate = useNavigate();
@@ -61,11 +89,9 @@ export default function Register() {
 
   const selectedCountry = COUNTRIES.find(c => c.code === form.countryCode) ?? COUNTRIES[0];
 
-  /* ── navigation ─────────────────────────────────────── */
   const next = () => { setError(""); setStep(s => s + 1); };
   const back = () => { setError(""); setStep(s => s - 1); };
 
-  /* ── validation per step ─────────────────────────────── */
   const validate = () => {
     if (step === 1) {
       if (!form.firstName.trim() || !form.lastName.trim())
@@ -92,11 +118,8 @@ export default function Register() {
     return true;
   };
 
-  const handleNext = () => {
-    if (validate() === true) next();
-  };
+  const handleNext = () => { if (validate() === true) next(); };
 
-  /* ── final submit ─────────────────────────────────────── */
   const handleSubmit = async () => {
     if (validate() !== true) return;
     setLoading(true);
@@ -112,286 +135,507 @@ export default function Register() {
         email, phone, password: form.password,
         country: form.countryCode,
       });
-      setBpToken(token);
-      saveFbUser(user);
-      navigate("/");
+      setBpToken(token); saveFbUser(user); navigate("/");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Erreur lors de l'inscription.");
       setLoading(false);
     }
   };
 
-  /* ── UI ───────────────────────────────────────────────── */
   return (
     <div style={{
-      minHeight: "100vh", background: "#f0f2f5",
-      display: "flex", flexDirection: "column",
-      alignItems: "center", justifyContent: "center",
-      padding: "20px 16px",
+      minHeight: "100dvh",
+      background: "#fff",
+      display: "flex",
+      flexDirection: "column",
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      position: "relative",
+      overflow: "hidden",
     }}>
       <style>{`
-        .reg-radio { display:flex; align-items:center; justify-content:space-between; background:#f0f2f5; border:1.5px solid #ccd0d5; borderRadius:6px; padding:10px 14px; cursor:pointer; font-size:16px; border-radius:6px; margin-bottom:8px; }
-        .reg-radio:has(input:checked) { border-color:#1877F2; background:#e7f0ff; }
-        .reg-code-input { width:100%; text-align:center; font-size:24px; font-weight:700; letter-spacing:8px; }
-        .reg-tab { flex:1; padding:10px 0; background:none; border:none; border-bottom:3px solid transparent; font-size:15px; font-weight:600; color:#606770; cursor:pointer; }
-        .reg-tab.active { color:#1877F2; border-bottom-color:#1877F2; }
-        @keyframes regSlide { from{opacity:0;transform:translateX(18px)} to{opacity:1;transform:translateX(0)} }
-        .reg-step { animation: regSlide 0.22s ease; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideBack { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        .reg-step { animation: slideIn 0.22s ease; }
+        .reg-step-back { animation: slideBack 0.22s ease; }
+        .reg-field:focus { border-color: #22c55e !important; box-shadow: 0 0 0 3px rgba(34,197,94,0.12) !important; background: #fff !important; }
+        .reg-tab-btn { flex: 1; padding: 10px 0; background: none; border: none; border-bottom: 2.5px solid transparent; font-size: 14px; font-weight: 600; color: #9ca3af; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+        .reg-tab-btn.active { color: #16a34a; border-bottom-color: #22c55e; }
+        .reg-radio-opt { display: flex; align-items: center; justify-content: space-between; border: 1.5px solid #e5e7eb; border-radius: 14px; padding: 13px 16px; cursor: pointer; font-size: 15px; color: #111827; font-weight: 500; transition: all 0.15s; background: #fafafa; }
+        .reg-radio-opt:hover { border-color: #22c55e; background: #f0fdf4; }
+        .reg-radio-opt.selected { border-color: #22c55e; background: #f0fdf4; color: #16a34a; }
+        .reg-next-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); border: none; border-radius: 14px; color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 16px rgba(34,197,94,0.38); transition: all 0.2s; font-family: inherit; letter-spacing: 0.1px; }
+        .reg-next-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(34,197,94,0.45); }
+        .reg-next-btn:disabled { background: linear-gradient(135deg, #86efac 0%, #4ade80 100%); box-shadow: none; cursor: not-allowed; }
+        .reg-login-btn { width: 100%; padding: 14px; background: #fff; border: 1.5px solid #22c55e; border-radius: 14px; color: #16a34a; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.15s; font-family: inherit; }
+        .reg-login-btn:hover { background: #f0fdf4; transform: translateY(-1px); }
       `}</style>
 
-      {/* Logo */}
-      <div style={{ marginBottom: 16, textAlign: "center" }}>
-        <div style={{ fontSize: 40, fontWeight: 900, color: "#1877F2", letterSpacing: -1, lineHeight: 1 }}>brutepawa</div>
-        <div style={{ fontSize: 14, color: "#606770", marginTop: 4 }}>
-          Connecte-toi partout en Afrique francophone.
+      {/* ── Fond décoratif ── */}
+      <svg style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 0 }} viewBox="0 0 390 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="rg1" cx="85%" cy="8%" r="50%">
+            <stop offset="0%" stopColor="#22c55e" stopOpacity="0.11" />
+            <stop offset="100%" stopColor="#22c55e" stopOpacity="0" />
+          </radialGradient>
+          <radialGradient id="rg2" cx="5%" cy="88%" r="50%">
+            <stop offset="0%" stopColor="#16a34a" stopOpacity="0.09" />
+            <stop offset="100%" stopColor="#16a34a" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+        <rect width="390" height="900" fill="url(#rg1)" />
+        <rect width="390" height="900" fill="url(#rg2)" />
+        <circle cx="345" cy="55" r="110" fill="#22c55e" fillOpacity="0.05" />
+        <circle cx="25" cy="180" r="70" fill="#16a34a" fillOpacity="0.06" />
+        <circle cx="355" cy="820" r="130" fill="#22c55e" fillOpacity="0.05" />
+        <circle cx="50" cy="760" r="55" fill="#4ade80" fillOpacity="0.07" />
+        {[...Array(5)].map((_, i) => [...Array(4)].map((_, j) => (
+          <circle key={`${i}-${j}`} cx={45 + j * 110} cy={130 + i * 150} r="1.4" fill="#22c55e" fillOpacity="0.14" />
+        )))}
+        <path d="M -30 280 Q 120 170 270 260 T 420 240" stroke="#22c55e" strokeWidth="1" fill="none" strokeOpacity="0.09" />
+      </svg>
+
+      {/* ── Contenu ── */}
+      <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", flex: 1, padding: "0 20px 32px", maxWidth: 440, margin: "0 auto", width: "100%", boxSizing: "border-box" }}>
+
+        {/* Logo */}
+        <div style={{ marginTop: 44, marginBottom: 4, display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{
+            width: 72, height: 72, borderRadius: 20,
+            background: "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            boxShadow: "0 8px 28px rgba(34,197,94,0.32)",
+            marginBottom: 12, position: "relative", overflow: "hidden",
+          }}>
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "45%", background: "linear-gradient(180deg,rgba(255,255,255,0.17) 0%,transparent 100%)", borderRadius: "20px 20px 0 0" }} />
+            <svg width="42" height="42" viewBox="0 0 42 42" fill="none">
+              <text x="10" y="29" fontSize="26" fontWeight="800" fontFamily="Inter,sans-serif" fill="white">b</text>
+              <circle cx="31" cy="27" r="6.5" fill="white" fillOpacity="0.9" />
+              <circle cx="28.8" cy="27" r="1.3" fill="#16a34a" />
+              <circle cx="31" cy="27" r="1.3" fill="#16a34a" />
+              <circle cx="33.2" cy="27" r="1.3" fill="#16a34a" />
+            </svg>
+          </div>
+          <span style={{ fontSize: 24, fontWeight: 800, color: "#16a34a", letterSpacing: "-0.5px" }}>brutepawa</span>
         </div>
-      </div>
 
-      {/* Card */}
-      <div style={{
-        background: "#fff", borderRadius: 8,
-        boxShadow: "0 2px 12px rgba(0,0,0,0.15)",
-        width: "100%", maxWidth: 396,
-        padding: "20px 24px 24px",
-      }}>
-        {/* Header */}
-        <div style={{ marginBottom: 16, position: "relative" }}>
-          {step > 1 && (
-            <button
-              onClick={back}
-              style={{ position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "#606770", padding: 0 }}
-            >←</button>
-          )}
-          <div style={{ textAlign: step > 1 ? "center" : "left" }}>
-            <div style={{ fontSize: 24, fontWeight: 800, color: "#1c1e21", lineHeight: 1.2 }}>
-              {step === 1 && "Créer un compte"}
-              {step === 2 && "Votre date de naissance"}
-              {step === 3 && "Votre genre"}
-              {step === 4 && "Coordonnées de contact"}
-              {step === 5 && "Choisissez un mot de passe"}
-              {step === 6 && "Entrez le code de confirmation"}
-            </div>
-            {step === 1 && <div style={{ fontSize: 14, color: "#606770", marginTop: 2 }}>C'est rapide et facile.</div>}
-          </div>
+        {/* Slogan */}
+        <p style={{ textAlign: "center", fontSize: 14.5, fontWeight: 500, color: "#374151", lineHeight: 1.5, margin: "12px 0 20px" }}>
+          Rejoignez la première plateforme sociale et professionnelle dédiée à l'Afrique francophone.
+        </p>
 
-          {/* Progress dots */}
-          <div style={{ display: "flex", justifyContent: "center", gap: 6, marginTop: 12 }}>
-            {Array.from({ length: TOTAL_STEPS }, (_, i) => (
-              <div key={i} style={{ width: i + 1 === step ? 22 : 8, height: 8, borderRadius: 4, background: i + 1 <= step ? "#1877F2" : "#d8dadf", transition: "all .2s" }} />
-            ))}
-          </div>
-        </div>
+        {/* ── Carte d'inscription ── */}
+        <div style={{
+          width: "100%",
+          background: "#fff",
+          borderRadius: 28,
+          boxShadow: "0 4px 24px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.04)",
+          padding: "24px 22px 22px",
+          boxSizing: "border-box",
+        }}>
 
-        <div style={{ borderTop: "1px solid #dadde1", margin: "0 -24px 18px", width: "calc(100% + 48px)" }} />
-
-        {/* Error */}
-        {error && (
-          <div style={{ background: "#fff0f0", border: "1px solid #ffc0c0", borderRadius: 6, padding: "9px 12px", fontSize: 13.5, color: "#c92a2a", marginBottom: 14 }}>
-            ⚠️ {error}
-          </div>
-        )}
-
-        {/* ── STEP 1 : Nom ───────────────────────────────────── */}
-        {step === 1 && (
-          <div className="reg-step" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <div style={{ display: "flex", gap: 10 }}>
-              <input style={inp} placeholder="Prénom" value={form.firstName} onChange={set("firstName")} autoFocus />
-              <input style={inp} placeholder="Nom de famille" value={form.lastName} onChange={set("lastName")} />
-            </div>
-            <button style={btnGreen} onClick={handleNext}>Suivant</button>
-            <p style={{ fontSize: 12, color: "#606770", margin: 0, textAlign: "center", lineHeight: 1.5 }}>
-              En cliquant sur Suivant, vous acceptez nos <a href="#" style={{ color: "#1877F2" }}>Conditions</a>,{" "}
-              notre <a href="#" style={{ color: "#1877F2" }}>Politique de confidentialité</a> et notre{" "}
-              <a href="#" style={{ color: "#1877F2" }}>Politique relative aux cookies</a>.
-            </p>
-            <div style={{ textAlign: "center", marginTop: 6 }}>
-              <a href="#" onClick={e => { e.preventDefault(); navigate("/login"); }} style={{ fontSize: 14, color: "#1877F2", fontWeight: 600 }}>
-                Vous avez déjà un compte ?
-              </a>
-            </div>
-          </div>
-        )}
-
-        {/* ── STEP 2 : Date de naissance ─────────────────────── */}
-        {step === 2 && (
-          <div className="reg-step" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <p style={{ margin: 0, fontSize: 14, color: "#606770", lineHeight: 1.5 }}>
-              Indiquez votre vrai anniversaire, même si ce compte est destiné à une entreprise, un animal de compagnie ou autre chose.
-            </p>
-            <div style={{ display: "flex", gap: 8 }}>
-              <select style={{ ...sel, flex: 1 }} value={form.day} onChange={set("day")}>
-                {DAYS.map(d => <option key={d} value={d}>{d}</option>)}
-              </select>
-              <select style={{ ...sel, flex: 1.6 }} value={form.month} onChange={set("month")}>
-                {MONTHS.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
-              </select>
-              <select style={{ ...sel, flex: 1.2 }} value={form.year} onChange={set("year")}>
-                {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
-              </select>
-            </div>
-            <p style={{ margin: 0, fontSize: 12, color: "#90949c" }}>
-              🔒 Seuls les membres dont vous autorisez l'accès peuvent voir votre anniversaire.
-            </p>
-            <button style={btnGreen} onClick={handleNext}>Suivant</button>
-          </div>
-        )}
-
-        {/* ── STEP 3 : Genre ─────────────────────────────────── */}
-        {step === 3 && (
-          <div className="reg-step" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <p style={{ margin: "0 0 8px", fontSize: 14, color: "#606770" }}>
-              Vous pouvez modifier qui voit votre genre sur votre profil plus tard.
-            </p>
-            {[
-              { value: "F", label: "Femme" },
-              { value: "M", label: "Homme" },
-              { value: "O", label: "Personnalisé" },
-            ].map(opt => (
-              <label key={opt.value} className="reg-radio" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: form.gender === opt.value ? "#e7f0ff" : "#f0f2f5", border: `1.5px solid ${form.gender === opt.value ? "#1877F2" : "#ccd0d5"}`, borderRadius: 6, padding: "11px 14px", cursor: "pointer", fontSize: 16 }}>
-                {opt.label}
-                <input type="radio" name="gender" value={opt.value} checked={form.gender === opt.value} onChange={set("gender")} style={{ width: 20, height: 20, accentColor: "#1877F2" }} />
-              </label>
-            ))}
-            {form.gender === "O" && (
-              <input style={inp} placeholder="Genre (facultatif)" value={form.customGender} onChange={set("customGender")} />
-            )}
-            <p style={{ margin: 0, fontSize: 12, color: "#90949c" }}>
-              🔒 Votre genre restera privé par défaut.
-            </p>
-            <button style={btnGreen} onClick={handleNext}>Suivant</button>
-          </div>
-        )}
-
-        {/* ── STEP 4 : Contact ───────────────────────────────── */}
-        {step === 4 && (
-          <div className="reg-step" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {/* Tabs */}
-            <div style={{ display: "flex", borderBottom: "1px solid #dadde1", marginBottom: 8 }}>
-              <button className={`reg-tab${form.contactMode === "phone" ? " active" : ""}`} onClick={() => setForm(f => ({ ...f, contactMode: "phone" }))}>Numéro de mobile</button>
-              <button className={`reg-tab${form.contactMode === "email" ? " active" : ""}`} onClick={() => setForm(f => ({ ...f, contactMode: "email" }))}>Adresse e-mail</button>
-            </div>
-
-            {form.contactMode === "phone" && (
-              <>
-                <select style={sel} value={form.countryCode} onChange={set("countryCode")}>
-                  {COUNTRIES.map(c => (
-                    <option key={c.code} value={c.code}>{c.flag} {c.name} ({c.phone})</option>
-                  ))}
-                </select>
-                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                  <div style={{ background: "#f0f2f5", border: "1.5px solid #ccd0d5", borderRadius: 6, padding: "12px 14px", fontWeight: 700, fontSize: 15, whiteSpace: "nowrap", color: "#606770" }}>
-                    {selectedCountry.flag} {selectedCountry.phone}
-                  </div>
-                  <input style={{ ...inp, flex: 1 }} type="tel" placeholder="Numéro de mobile" value={form.phone} onChange={set("phone")} autoFocus />
+          {/* En-tête de carte */}
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 6 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              {step > 1 && (
+                <button
+                  onClick={back}
+                  style={{ background: "#f3f4f6", border: "none", borderRadius: 10, width: 32, height: 32, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8l4-4" stroke="#374151" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </button>
+              )}
+              <div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: "#111827", lineHeight: 1.2 }}>
+                  {STEP_TITLES[step - 1]}
                 </div>
-              </>
-            )}
-
-            {form.contactMode === "email" && (
-              <input style={inp} type="email" placeholder="Adresse e-mail" value={form.email} onChange={set("email")} autoFocus />
-            )}
-
-            <p style={{ margin: 0, fontSize: 12, color: "#90949c", lineHeight: 1.5 }}>
-              Nous vous enverrons un code de confirmation sur{" "}
-              {form.contactMode === "phone" ? "votre numéro de mobile" : "votre adresse e-mail"} pour confirmer votre compte.
-            </p>
-            <button style={btnGreen} onClick={handleNext}>Suivant</button>
+                {step === 1 && <div style={{ fontSize: 13, color: "#6b7280", marginTop: 2, fontWeight: 400 }}>C'est rapide et facile.</div>}
+              </div>
+            </div>
+            <div style={{ textAlign: "right", flexShrink: 0, marginLeft: 8 }}>
+              <span style={{ fontSize: 12, color: "#9ca3af", fontWeight: 500 }}>Étape </span>
+              <span style={{ fontSize: 13, color: "#16a34a", fontWeight: 800 }}>{step}</span>
+              <span style={{ fontSize: 12, color: "#9ca3af", fontWeight: 500 }}> sur {TOTAL_STEPS}</span>
+            </div>
           </div>
-        )}
 
-        {/* ── STEP 5 : Mot de passe ──────────────────────────── */}
-        {step === 5 && (
-          <div className="reg-step" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <p style={{ margin: 0, fontSize: 14, color: "#606770" }}>
-              Créez un mot de passe d'au moins 6 caractères. Un mot de passe sécurisé mélange des lettres, des chiffres et des signes de ponctuation.
-            </p>
-            <div style={{ position: "relative" }}>
+          {/* Barre de progression */}
+          <div style={{ display: "flex", gap: 4, marginBottom: 20, marginTop: 8 }}>
+            {Array.from({ length: TOTAL_STEPS }, (_, i) => (
+              <div key={i} style={{
+                flex: 1, height: 5, borderRadius: 3,
+                background: i + 1 <= step
+                  ? `linear-gradient(90deg, #22c55e, #16a34a)`
+                  : "#e5e7eb",
+                transition: "background 0.3s",
+              }} />
+            ))}
+          </div>
+
+          {/* Erreur */}
+          {error && (
+            <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 12, padding: "10px 14px", color: "#dc2626", fontSize: 13, fontWeight: 500, display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#dc2626" strokeWidth="1.5"/><path d="M8 5v3.5" stroke="#dc2626" strokeWidth="1.5" strokeLinecap="round"/><circle cx="8" cy="11" r="0.75" fill="#dc2626"/></svg>
+              {error}
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════
+              ÉTAPE 1 : Prénom + Nom
+          ═══════════════════════════════════════════ */}
+          {step === 1 && (
+            <div className="reg-step" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <div style={{ display: "flex", gap: 10 }}>
+                {/* Prénom */}
+                <div style={{ flex: 1, position: "relative" }}>
+                  <div style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+                    <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><circle cx="8.5" cy="5.5" r="2.8" stroke="#9ca3af" strokeWidth="1.4"/><path d="M2.5 14c0-3.314 2.686-4.5 6-4.5s6 1.186 6 4.5" stroke="#9ca3af" strokeWidth="1.4" strokeLinecap="round"/></svg>
+                  </div>
+                  <input
+                    className="reg-field"
+                    style={fieldBase}
+                    placeholder="Prénom"
+                    value={form.firstName}
+                    onChange={set("firstName")}
+                    onFocus={fieldFocus}
+                    onBlur={fieldBlur}
+                    autoFocus
+                  />
+                </div>
+                {/* Nom */}
+                <div style={{ flex: 1, position: "relative" }}>
+                  <div style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+                    <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><rect x="2" y="3" width="13" height="11" rx="2" stroke="#9ca3af" strokeWidth="1.4"/><path d="M5 7h7M5 10h5" stroke="#9ca3af" strokeWidth="1.4" strokeLinecap="round"/></svg>
+                  </div>
+                  <input
+                    className="reg-field"
+                    style={fieldBase}
+                    placeholder="Nom de famille"
+                    value={form.lastName}
+                    onChange={set("lastName")}
+                    onFocus={fieldFocus}
+                    onBlur={fieldBlur}
+                  />
+                </div>
+              </div>
+
+              <button className="reg-next-btn" onClick={handleNext}>
+                Suivant
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9h12M10.5 5.5L14 9l-3.5 3.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </button>
+
+              {/* Mentions légales */}
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 2 }}>
+                  <path d="M8 1.5L2 4v4c0 3.5 2.5 6.3 6 7 3.5-.7 6-3.5 6-7V4L8 1.5z" stroke="#22c55e" strokeWidth="1.3" fill="none"/>
+                  <path d="M5.5 8l2 2 3-3" stroke="#22c55e" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <p style={{ margin: 0, fontSize: 12, color: "#6b7280", lineHeight: 1.55 }}>
+                  En cliquant sur Suivant, vous acceptez nos <a href="#" style={{ color: "#3b82f6", textDecoration: "none" }}>Conditions</a>,{" "}
+                  notre <a href="#" style={{ color: "#3b82f6", textDecoration: "none" }}>Politique de confidentialité</a> et notre{" "}
+                  <a href="#" style={{ color: "#3b82f6", textDecoration: "none" }}>Politique relative aux cookies</a>.
+                </p>
+              </div>
+
+              {/* Séparateur */}
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ flex: 1, height: 1, background: "#e5e7eb" }} />
+                <span style={{ fontSize: 12, color: "#9ca3af", fontWeight: 500 }}>ou</span>
+                <div style={{ flex: 1, height: 1, background: "#e5e7eb" }} />
+              </div>
+
+              <button className="reg-login-btn" onClick={() => navigate("/login")}>
+                <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><circle cx="8.5" cy="5.5" r="2.8" stroke="#16a34a" strokeWidth="1.4"/><path d="M2.5 14c0-3.314 2.686-4.5 6-4.5s6 1.186 6 4.5" stroke="#16a34a" strokeWidth="1.4" strokeLinecap="round"/></svg>
+                Vous avez déjà un compte ?{" "}
+                <strong>Connectez-vous</strong>
+              </button>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════
+              ÉTAPE 2 : Date de naissance
+          ═══════════════════════════════════════════ */}
+          {step === 2 && (
+            <div className="reg-step" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <p style={{ margin: 0, fontSize: 13.5, color: "#6b7280", lineHeight: 1.55 }}>
+                Indiquez votre vrai anniversaire, même si ce compte est destiné à une entreprise, un animal de compagnie ou autre chose.
+              </p>
+              <div style={{ display: "flex", gap: 8 }}>
+                <select style={{ ...selectBase, flex: 1 }} className="reg-field" value={form.day} onChange={set("day")} onFocus={fieldFocus} onBlur={fieldBlur}>
+                  {DAYS.map(d => <option key={d} value={d}>{d}</option>)}
+                </select>
+                <select style={{ ...selectBase, flex: 1.7 }} className="reg-field" value={form.month} onChange={set("month")} onFocus={fieldFocus} onBlur={fieldBlur}>
+                  {MONTHS.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
+                </select>
+                <select style={{ ...selectBase, flex: 1.3 }} className="reg-field" value={form.year} onChange={set("year")} onFocus={fieldFocus} onBlur={fieldBlur}>
+                  {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+                </select>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#f0fdf4", border: "1px solid #d1fae5", borderRadius: 12, padding: "9px 12px" }}>
+                <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1.5L2 4v3.5c0 3.2 2.3 5.8 5.5 6.5 3.2-.7 5.5-3.3 5.5-6.5V4L7.5 1.5z" stroke="#22c55e" strokeWidth="1.2" fill="none"/><path d="M5 7.5l2 2 3-3" stroke="#22c55e" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <p style={{ margin: 0, fontSize: 12, color: "#15803d", fontWeight: 500 }}>Seuls les membres autorisés peuvent voir votre anniversaire.</p>
+              </div>
+              <button className="reg-next-btn" onClick={handleNext}>
+                Suivant
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9h12M10.5 5.5L14 9l-3.5 3.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </button>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════
+              ÉTAPE 3 : Genre
+          ═══════════════════════════════════════════ */}
+          {step === 3 && (
+            <div className="reg-step" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <p style={{ margin: "0 0 4px", fontSize: 13.5, color: "#6b7280" }}>
+                Vous pouvez modifier qui voit votre genre sur votre profil plus tard.
+              </p>
+              {[
+                { value: "F", label: "Femme",        icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.4"/><path d="M9 11.5V16M7 14h4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg> },
+                { value: "M", label: "Homme",         icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="8" cy="10" r="4.5" stroke="currentColor" strokeWidth="1.4"/><path d="M11.5 6.5L15 3M15 3h-3M15 3v3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+                { value: "O", label: "Personnalisé",  icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="4.5" stroke="currentColor" strokeWidth="1.4"/><path d="M9 4.5V2M9 16v-2.5M4.5 9H2M16 9h-2.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg> },
+              ].map(opt => (
+                <div
+                  key={opt.value}
+                  className={`reg-radio-opt${form.gender === opt.value ? " selected" : ""}`}
+                  onClick={() => setForm(f => ({ ...f, gender: opt.value }))}
+                  style={{ color: form.gender === opt.value ? "#16a34a" : "#111827" }}
+                >
+                  <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <span style={{ color: form.gender === opt.value ? "#22c55e" : "#9ca3af" }}>{opt.icon}</span>
+                    {opt.label}
+                  </span>
+                  <div style={{
+                    width: 20, height: 20, borderRadius: "50%",
+                    border: `2px solid ${form.gender === opt.value ? "#22c55e" : "#d1d5db"}`,
+                    background: form.gender === opt.value ? "#22c55e" : "transparent",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    transition: "all 0.15s",
+                  }}>
+                    {form.gender === opt.value && <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                  </div>
+                </div>
+              ))}
+              {form.gender === "O" && (
+                <input
+                  className="reg-field"
+                  style={{ ...fieldBase, paddingLeft: 14 }}
+                  placeholder="Genre (facultatif)"
+                  value={form.customGender}
+                  onChange={set("customGender")}
+                  onFocus={fieldFocus}
+                  onBlur={fieldBlur}
+                />
+              )}
+              <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#f0fdf4", border: "1px solid #d1fae5", borderRadius: 12, padding: "9px 12px" }}>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1L2 3v3c0 3 2.1 5.4 5 6 2.9-.6 5-3 5-6V3L7 1z" stroke="#22c55e" strokeWidth="1.2" fill="none"/><path d="M4.5 7l2 2 3-3" stroke="#22c55e" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                <p style={{ margin: 0, fontSize: 12, color: "#15803d", fontWeight: 500 }}>Votre genre restera privé par défaut.</p>
+              </div>
+              <button className="reg-next-btn" onClick={handleNext}>
+                Suivant
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9h12M10.5 5.5L14 9l-3.5 3.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </button>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════
+              ÉTAPE 4 : Contact
+          ═══════════════════════════════════════════ */}
+          {step === 4 && (
+            <div className="reg-step" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <div style={{ display: "flex", borderBottom: "1.5px solid #e5e7eb", marginBottom: 4 }}>
+                <button className={`reg-tab-btn${form.contactMode === "phone" ? " active" : ""}`} onClick={() => setForm(f => ({ ...f, contactMode: "phone" }))}>
+                  Numéro de mobile
+                </button>
+                <button className={`reg-tab-btn${form.contactMode === "email" ? " active" : ""}`} onClick={() => setForm(f => ({ ...f, contactMode: "email" }))}>
+                  Adresse e-mail
+                </button>
+              </div>
+
+              {form.contactMode === "phone" && (
+                <>
+                  <select style={selectBase} className="reg-field" value={form.countryCode} onChange={set("countryCode")} onFocus={fieldFocus} onBlur={fieldBlur}>
+                    {COUNTRIES.map(c => (
+                      <option key={c.code} value={c.code}>{c.flag} {c.name} ({c.phone})</option>
+                    ))}
+                  </select>
+                  <div style={{ display: "flex", gap: 8, alignItems: "stretch" }}>
+                    <div style={{ background: "#f0fdf4", border: "1.5px solid #bbf7d0", borderRadius: 14, padding: "14px 12px", fontWeight: 700, fontSize: 14, whiteSpace: "nowrap", color: "#15803d", display: "flex", alignItems: "center" }}>
+                      {selectedCountry.flag} {selectedCountry.phone}
+                    </div>
+                    <div style={{ flex: 1, position: "relative" }}>
+                      <div style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+                        <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><path d="M3 3h2.5l1 3.5-1.5 1.5a10 10 0 004.5 4.5l1.5-1.5 3.5 1V14.5S13 16 11.5 16C6.5 16 1 10.5 1 5.5 1 4 3 3 3 3z" stroke="#9ca3af" strokeWidth="1.3" strokeLinecap="round"/></svg>
+                      </div>
+                      <input className="reg-field" style={fieldBase} type="tel" placeholder="Numéro de mobile" value={form.phone} onChange={set("phone")} onFocus={fieldFocus} onBlur={fieldBlur} autoFocus />
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {form.contactMode === "email" && (
+                <div style={{ position: "relative" }}>
+                  <div style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+                    <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><rect x="1.5" y="3.5" width="14" height="10" rx="2" stroke="#9ca3af" strokeWidth="1.3"/><path d="M1.5 6l7 4.5 7-4.5" stroke="#9ca3af" strokeWidth="1.3" strokeLinecap="round"/></svg>
+                  </div>
+                  <input className="reg-field" style={fieldBase} type="email" placeholder="Adresse e-mail" value={form.email} onChange={set("email")} onFocus={fieldFocus} onBlur={fieldBlur} autoFocus />
+                </div>
+              )}
+
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 8, background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 12, padding: "10px 12px" }}>
+                <svg width="15" height="15" viewBox="0 0 15 15" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="7.5" cy="7.5" r="6" stroke="#f59e0b" strokeWidth="1.3"/><path d="M7.5 5v3" stroke="#f59e0b" strokeWidth="1.3" strokeLinecap="round"/><circle cx="7.5" cy="10" r="0.7" fill="#f59e0b"/></svg>
+                <p style={{ margin: 0, fontSize: 12, color: "#92400e", lineHeight: 1.5 }}>
+                  Nous vous enverrons un code de confirmation sur{" "}
+                  <strong>{form.contactMode === "phone" ? "votre numéro de mobile" : "votre adresse e-mail"}</strong>.
+                </p>
+              </div>
+
+              <button className="reg-next-btn" onClick={handleNext}>
+                Suivant
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9h12M10.5 5.5L14 9l-3.5 3.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </button>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════
+              ÉTAPE 5 : Mot de passe
+          ═══════════════════════════════════════════ */}
+          {step === 5 && (
+            <div className="reg-step" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <p style={{ margin: 0, fontSize: 13.5, color: "#6b7280", lineHeight: 1.55 }}>
+                Créez un mot de passe d'au moins 6 caractères. Mélangez lettres, chiffres et symboles pour plus de sécurité.
+              </p>
+              <div style={{ position: "relative" }}>
+                <div style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+                  <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><rect x="3" y="7.5" width="11" height="8" rx="2" stroke="#9ca3af" strokeWidth="1.3"/><path d="M5.5 7.5V5.5a3 3 0 016 0v2" stroke="#9ca3af" strokeWidth="1.3" strokeLinecap="round"/><circle cx="8.5" cy="11.5" r="1.2" fill="#9ca3af"/></svg>
+                </div>
+                <input
+                  className="reg-field"
+                  style={{ ...fieldBase, paddingRight: 44 }}
+                  type={showPw ? "text" : "password"}
+                  placeholder="Nouveau mot de passe"
+                  value={form.password}
+                  onChange={set("password")}
+                  autoComplete="new-password"
+                  onFocus={fieldFocus}
+                  onBlur={fieldBlur}
+                  autoFocus
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPw(v => !v)}
+                  style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", padding: 4, color: "#9ca3af", display: "flex", alignItems: "center" }}
+                  tabIndex={-1}
+                >
+                  {showPw ? (
+                    <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><path d="M1 8.5s3-5 7.5-5 7.5 5 7.5 5-3 5-7.5 5-7.5-5-7.5-5z" stroke="#6b7280" strokeWidth="1.3"/><circle cx="8.5" cy="8.5" r="2" stroke="#6b7280" strokeWidth="1.3"/><path d="M2 2l13 13" stroke="#6b7280" strokeWidth="1.3" strokeLinecap="round"/></svg>
+                  ) : (
+                    <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><path d="M1 8.5s3-5 7.5-5 7.5 5 7.5 5-3 5-7.5 5-7.5-5-7.5-5z" stroke="#6b7280" strokeWidth="1.3"/><circle cx="8.5" cy="8.5" r="2" stroke="#6b7280" strokeWidth="1.3"/></svg>
+                  )}
+                </button>
+              </div>
+
+              {/* Indicateur de force */}
+              {form.password.length > 0 && (() => {
+                const len = form.password.length;
+                const hasNum = /\d/.test(form.password);
+                const hasSym = /[^a-zA-Z0-9]/.test(form.password);
+                const strength = len >= 12 && hasNum && hasSym ? 3 : len >= 8 && (hasNum || hasSym) ? 2 : 1;
+                const colors = ["#ef4444","#f59e0b","#22c55e"];
+                const labels = ["Faible","Moyen","Fort"];
+                return (
+                  <div>
+                    <div style={{ display: "flex", gap: 4, marginBottom: 5 }}>
+                      {[0,1,2].map(i => (
+                        <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: i < strength ? colors[strength-1] : "#e5e7eb", transition: "background 0.3s" }} />
+                      ))}
+                    </div>
+                    <span style={{ fontSize: 12, color: colors[strength-1], fontWeight: 600 }}>Sécurité : {labels[strength-1]}</span>
+                  </div>
+                );
+              })()}
+
+              <button className="reg-next-btn" onClick={handleNext}>
+                Suivant
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9h12M10.5 5.5L14 9l-3.5 3.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </button>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════
+              ÉTAPE 6 : Code de confirmation
+          ═══════════════════════════════════════════ */}
+          {step === 6 && (
+            <div className="reg-step" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ width: 56, height: 56, borderRadius: 16, background: "linear-gradient(135deg, #f0fdf4, #dcfce7)", border: "1px solid #bbf7d0", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>
+                  <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><rect x="2" y="5" width="22" height="16" rx="3" stroke="#22c55e" strokeWidth="1.6"/><path d="M2 10l11 7 11-7" stroke="#22c55e" strokeWidth="1.6" strokeLinecap="round"/></svg>
+                </div>
+                <p style={{ margin: 0, fontSize: 14, color: "#374151", lineHeight: 1.6 }}>
+                  Nous avons envoyé un code à 6 chiffres sur{" "}
+                  <strong style={{ color: "#111827" }}>
+                    {form.contactMode === "phone" ? `${selectedCountry.phone} ${form.phone}` : form.email}
+                  </strong>
+                </p>
+              </div>
+
               <input
-                style={{ ...inp, paddingRight: 44 }}
-                type={showPw ? "text" : "password"}
-                placeholder="Nouveau mot de passe"
-                value={form.password}
-                onChange={set("password")}
-                autoComplete="new-password"
+                className="reg-field"
+                style={{ ...fieldBase, paddingLeft: 14, textAlign: "center", fontSize: 28, fontWeight: 800, letterSpacing: 10, paddingTop: 16, paddingBottom: 16 }}
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                placeholder="— — — — — —"
+                value={form.code}
+                onChange={e => setForm(f => ({ ...f, code: e.target.value.replace(/\D/g,"").slice(0,6) }))}
+                onFocus={fieldFocus}
+                onBlur={fieldBlur}
                 autoFocus
               />
+
               <button
-                type="button"
-                onClick={() => setShowPw(v => !v)}
-                style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", fontSize: 18, color: "#606770" }}
-              >{showPw ? "🙈" : "👁️"}</button>
+                className="reg-next-btn"
+                onClick={handleSubmit}
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ animation: "spin 0.8s linear infinite" }}>
+                      <circle cx="9" cy="9" r="7" stroke="rgba(255,255,255,0.4)" strokeWidth="2"/>
+                      <path d="M9 2a7 7 0 017 7" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                    Inscription en cours…
+                  </>
+                ) : (
+                  <>
+                    Confirmer et s'inscrire
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9h12M10.5 5.5L14 9l-3.5 3.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </>
+                )}
+              </button>
+
+              <div style={{ textAlign: "center" }}>
+                <button
+                  type="button"
+                  onClick={() => setForm(f => ({ ...f, code: "123456" }))}
+                  style={{ background: "none", border: "none", color: "#3b82f6", fontSize: 13.5, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}
+                >
+                  Renvoyer le code
+                </button>
+              </div>
+
+              <div style={{ background: "#f0fdf4", border: "1px solid #d1fae5", borderRadius: 12, padding: "9px 12px", display: "flex", gap: 8, alignItems: "flex-start" }}>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="7" cy="7" r="5.5" stroke="#22c55e" strokeWidth="1.2"/><path d="M7 4.5v3" stroke="#22c55e" strokeWidth="1.2" strokeLinecap="round"/><circle cx="7" cy="9.5" r="0.6" fill="#22c55e"/></svg>
+                <p style={{ margin: 0, fontSize: 12, color: "#15803d" }}>Pour les tests : le code <strong>123456</strong> est accepté automatiquement.</p>
+              </div>
             </div>
+          )}
+        </div>
 
-            {/* Strength bar */}
-            {form.password && (() => {
-              const len = form.password.length;
-              const hasNum = /\d/.test(form.password);
-              const hasSym = /[^a-zA-Z0-9]/.test(form.password);
-              const strength = len >= 12 && hasNum && hasSym ? 3 : len >= 8 && (hasNum || hasSym) ? 2 : 1;
-              const colors = ["#f03e3e","#f59f00","#2f9e44"];
-              const labels = ["Faible","Moyen","Fort"];
-              return (
-                <div>
-                  <div style={{ display: "flex", gap: 4, marginBottom: 4 }}>
-                    {[0,1,2].map(i => <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: i < strength ? colors[strength-1] : "#e0e0e0", transition: "background .3s" }} />)}
-                  </div>
-                  <div style={{ fontSize: 12, color: colors[strength-1], fontWeight: 600 }}>{labels[strength-1]}</div>
-                </div>
-              );
-            })()}
-
-            <button style={btnGreen} onClick={handleNext}>Suivant</button>
-          </div>
-        )}
-
-        {/* ── STEP 6 : Code de confirmation ──────────────────── */}
-        {step === 6 && (
-          <div className="reg-step" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            <p style={{ margin: 0, fontSize: 14, color: "#606770", textAlign: "center", lineHeight: 1.6 }}>
-              Nous avons envoyé un code à 6 chiffres sur{" "}
-              <strong>
-                {form.contactMode === "phone"
-                  ? `${selectedCountry.phone} ${form.phone}`
-                  : form.email}
-              </strong>. Saisissez ce code ci-dessous.
-            </p>
-
-            <input
-              className="reg-code-input"
-              style={{ ...inp, textAlign: "center", fontSize: 26, fontWeight: 700, letterSpacing: 10, padding: "14px" }}
-              type="text"
-              inputMode="numeric"
-              maxLength={6}
-              placeholder="------"
-              value={form.code}
-              onChange={e => setForm(f => ({ ...f, code: e.target.value.replace(/\D/g,"").slice(0,6) }))}
-              autoFocus
-            />
-
-            <button
-              style={{ ...btnGreen, opacity: loading ? 0.7 : 1 }}
-              onClick={handleSubmit}
-              disabled={loading}
-            >
-              {loading ? "Inscription en cours…" : "Confirmer et s'inscrire"}
-            </button>
-
-            <div style={{ textAlign: "center" }}>
-              <a href="#" onClick={e => { e.preventDefault(); setForm(f => ({ ...f, code: "123456" })); }} style={{ fontSize: 13, color: "#1877F2" }}>
-                Renvoyer le code
-              </a>
-            </div>
-
-            <p style={{ margin: 0, fontSize: 11.5, color: "#90949c", textAlign: "center" }}>
-              💡 Pour les tests : le code <strong>123456</strong> est accepté automatiquement.
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Footer */}
-      <div style={{ marginTop: 20, fontSize: 12, color: "#90949c", textAlign: "center" }}>
-        Brute Pawa © {currentYear} · Afrique francophone
+        {/* Footer */}
+        <p style={{ marginTop: 24, fontSize: 12, color: "#9ca3af", textAlign: "center" }}>
+          Brute Pawa © 2026 · Afrique francophone
+        </p>
       </div>
     </div>
   );

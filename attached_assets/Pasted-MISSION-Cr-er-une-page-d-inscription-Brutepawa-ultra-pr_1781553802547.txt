@@ -1,0 +1,211 @@
+MISSION :
+
+Créer une page d'inscription Brutepawa ultra premium, moderne et professionnelle.
+
+OBJECTIF :
+
+Donner envie à l'utilisateur de terminer son inscription dès les premières secondes.
+
+Inspirations :
+- Revolut
+- Stripe
+- Notion
+- LinkedIn
+- Airbnb
+
+STYLE :
+
+- Mobile First
+- Design 2026
+- Interface premium
+- Vert Brutepawa comme couleur principale
+- Blanc élégant
+- Coins arrondis 28px
+- Ombres douces
+- SVG uniquement
+- Animations fluides
+- Aucun emoji
+
+========================================
+EN-TÊTE
+========================================
+
+Créer un bandeau vert premium.
+
+Contenu :
+
+- Bouton Accueil
+- Barre d'adresse moderne
+- URL :
+  brutepawa.com/signup
+- Bouton +
+- Menu
+
+Dégradé vert moderne.
+
+========================================
+LOGO
+========================================
+
+Afficher un grand logo Brutepawa.
+
+Style :
+
+- Icône "b" moderne
+- Bulle de discussion intégrée
+- Dégradé vert
+- Ombre légère
+
+Sous le logo :
+
+brutepawa
+
+Police moderne et élégante.
+
+========================================
+SLOGAN
+========================================
+
+Texte :
+
+Rejoignez la première plateforme sociale et professionnelle dédiée à l'Afrique francophone.
+
+Texte centré.
+
+Ajouter de légères formes décoratives en arrière-plan.
+
+========================================
+CARTE D'INSCRIPTION
+========================================
+
+Grande carte blanche premium.
+
+Coins :
+32px
+
+Ombre :
+Très légère.
+
+Titre :
+
+Créer un compte
+
+Sous-titre :
+
+C'est rapide et facile.
+
+========================================
+PROGRESSION
+========================================
+
+Afficher :
+
+Étape 1 sur 6
+
+Barre de progression moderne :
+
+████░░░░░░
+
+Animation fluide.
+
+========================================
+FORMULAIRE
+========================================
+
+Champ Prénom
+
+- Icône utilisateur SVG
+- Bordure légère
+- Fond blanc
+
+Champ Nom de famille
+
+- Icône carte identité SVG
+- Bordure légère
+- Fond blanc
+
+Disposition :
+
+2 champs côte à côte.
+
+========================================
+BOUTON PRINCIPAL
+========================================
+
+Bouton :
+
+Suivant
+
+Style :
+
+- Dégradé vert premium
+- Texte blanc
+- Flèche SVG à droite
+- Hauteur généreuse
+- Ombre légère
+
+========================================
+MENTIONS LÉGALES
+========================================
+
+Sous le bouton :
+
+En cliquant sur Suivant, vous acceptez nos Conditions, notre Politique de confidentialité et notre Politique relative aux cookies.
+
+Mettre les liens en bleu.
+
+Ajouter une icône sécurité SVG.
+
+========================================
+CONNEXION
+========================================
+
+Séparateur moderne :
+
+────── ou ──────
+
+Bouton secondaire :
+
+Vous avez déjà un compte ? Connectez-vous
+
+Style :
+
+- Fond blanc
+- Bordure verte
+- Icône utilisateur SVG
+- Coins arrondis
+
+========================================
+ARRIÈRE-PLAN
+========================================
+
+Fond blanc premium avec :
+
+- Cercles verts flous
+- Formes abstraites
+- Motifs géométriques subtils
+- Effets très légers
+
+========================================
+PIED DE PAGE
+========================================
+
+Texte :
+
+Brute Pawa © 2026 • Afrique francophone
+
+Style discret.
+
+========================================
+IMPORTANT
+========================================
+
+Ne pas simplifier.
+
+Ne pas modifier la structure.
+
+Ne pas utiliser un design générique.
+
+Le résultat doit sembler conçu par une équipe UI/UX professionnelle de niveau international.
+
+Qualité visuelle comparable à Stripe, Revolut ou LinkedIn en 2026.
