@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
-import { apiGetConversations, apiGetMessages, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiSendTyping, apiGetTyping, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo } from "../lib/api";
+import { apiGetConversations, apiGetMessages, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo } from "../lib/api";
 import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignaling";
 
 void ({} as ApiChatGroup);
@@ -123,7 +123,13 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
   const [vpHeight, setVpHeight]         = useState<number | null>(null);
   const [peerTyping, setPeerTyping]     = useState(false);
   const [attachSheet, setAttachSheet]   = useState(false);
-  const [attachPage, setAttachPage]     = useState<"none"|"poll"|"event"|"contacts">("none");
+  const [attachPage, setAttachPage]     = useState<"none"|"poll"|"event"|"contacts"|"ai">("none");
+  const [uploadingAttach, setUploadingAttach] = useState(false);
+  const [aiPrompt, setAiPrompt]         = useState("");
+  const [aiLoading, setAiLoading]       = useState(false);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef  = useRef<HTMLInputElement>(null);
+  const docInputRef     = useRef<HTMLInputElement>(null);
   const [pollQuestion, setPollQuestion] = useState("");
   const [pollOptions, setPollOptions]   = useState<string[]>(["", ""]);
   const [pollMultiple, setPollMultiple] = useState(true);
@@ -162,6 +168,36 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
     vv.addEventListener("resize", handler);
     return () => vv.removeEventListener("resize", handler);
   }, []);
+
+  /* ── Attachment upload helper ── */
+  const sendAttachMsg = useCallback((attachment: { type: "image"|"doc"|"location"|"audio"; label: string; extra?: string }, text: string) => {
+    setMessages(prev => {
+      const list = [...(prev[activeConv!] ?? [])];
+      list.push({ id: Date.now(), text, mine: true, time: new Date().toLocaleTimeString("fr",{hour:"2-digit",minute:"2-digit"}), status: "sent", attachment });
+      return { ...prev, [activeConv!]: list };
+    });
+  }, [activeConv]);
+
+  const handleFileInput = useCallback(async (file: File, kind: "image"|"doc") => {
+    setAttachSheet(false); setAttachPage("none"); setUploadingAttach(true);
+    try {
+      const { url } = await apiUploadFile(file);
+      sendAttachMsg({ type: kind, label: url, extra: file.name }, kind === "image" ? "📷 Photo" : `📄 ${file.name}`);
+    } catch (e) { alert(e instanceof Error ? e.message : "Upload échoué"); }
+    finally { setUploadingAttach(false); }
+  }, [sendAttachMsg]);
+
+  const handleLocation = useCallback(() => {
+    setAttachSheet(false); setAttachPage("none");
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        const { latitude: lat, longitude: lng } = pos.coords;
+        const url = `https://maps.google.com/?q=${lat},${lng}`;
+        sendAttachMsg({ type: "location", label: url, extra: `${lat.toFixed(5)},${lng.toFixed(5)}` }, "📍 Ma position");
+      },
+      () => alert("Impossible d'accéder à la localisation. Autorisez la géolocalisation dans les paramètres du navigateur.")
+    );
+  }, [sendAttachMsg]);
 
   /* ── Peer typing indicator ── */
   useEffect(() => {
@@ -1155,6 +1191,28 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
                       </div>
                     )
                   )}
+                  {msg.attachment?.type === "image" && (
+                    <div style={{ borderRadius:"8px 8px 0 0", overflow:"hidden", maxWidth:240, marginBottom:2 }}>
+                      <img src={msg.attachment.label} alt={msg.attachment.extra || "photo"} style={{ width:"100%", display:"block", maxHeight:320, objectFit:"cover" }} />
+                    </div>
+                  )}
+                  {msg.attachment?.type === "location" && (
+                    <a href={msg.attachment.label} target="_blank" rel="noreferrer"
+                      style={{ display:"flex", alignItems:"center", gap:8, background: msg.mine?"#c5f0a4":"#f1f1f1", borderRadius:10, padding:"10px 12px", marginBottom:2, textDecoration:"none", color:"#111", maxWidth:220 }}>
+                      <span style={{ fontSize:26 }}>📍</span>
+                      <div>
+                        <div style={{ fontWeight:700, fontSize:13 }}>Position partagée</div>
+                        <div style={{ fontSize:11, color:"#555" }}>{msg.attachment.extra ?? "Ouvrir la carte"}</div>
+                      </div>
+                    </a>
+                  )}
+                  {msg.attachment?.type === "doc" && (
+                    <a href={msg.attachment.label} target="_blank" rel="noreferrer"
+                      style={{ display:"flex", alignItems:"center", gap:8, background: msg.mine?"#c5f0a4":"#f1f1f1", borderRadius:10, padding:"10px 12px", marginBottom:2, textDecoration:"none", color:"#111", maxWidth:240 }}>
+                      <span style={{ fontSize:26 }}>📄</span>
+                      <div style={{ fontWeight:600, fontSize:13, wordBreak:"break-all" }}>{msg.attachment.extra ?? "Document"}</div>
+                    </a>
+                  )}
                   <div className={msg.mine ? "fbl-msg-mine" : "fbl-msg-theirs"} style={{ padding:"8px 12px 5px", fontSize:14.5, lineHeight:1.45, wordBreak:"break-word" }}>
                     {msg.text}
                     <div style={{ fontSize:10, marginTop:2, color:"#888", textAlign:"right", display:"flex", justifyContent:"flex-end", alignItems:"center", gap:3 }}>
@@ -1388,26 +1446,43 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
             <div style={{ background:"rgba(0,0,0,0.45)", position:"absolute", inset:0 }} onClick={() => { setAttachSheet(false); setAttachPage("none"); }} />
             <div style={{ background:"#fff", borderRadius:"18px 18px 0 0", position:"relative", zIndex:1, animation:"fbl-sheet-up 0.22s ease", maxHeight:"90dvh", overflowY:"auto" }}>
 
+              {/* Hidden file inputs */}
+              <input ref={galleryInputRef} type="file" accept="image/*" style={{ display:"none" }}
+                onChange={e => { const f=e.target.files?.[0]; if(f) handleFileInput(f,"image"); e.target.value=""; }} />
+              <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" style={{ display:"none" }}
+                onChange={e => { const f=e.target.files?.[0]; if(f) handleFileInput(f,"image"); e.target.value=""; }} />
+              <input ref={docInputRef} type="file" accept=".pdf,.doc,.docx,.txt,.xls,.xlsx,.ppt,.pptx,.csv,.zip" style={{ display:"none" }}
+                onChange={e => { const f=e.target.files?.[0]; if(f) handleFileInput(f,"doc"); e.target.value=""; }} />
+
               {/* MAIN ICONS GRID */}
               {attachPage === "none" && (
                 <>
                   <div style={{ width:36, height:4, background:"#DDD", borderRadius:2, margin:"10px auto 0" }} />
                   <div style={{ padding:"18px 18px 6px", display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:"18px 8px" }}>
-                    {([
-                      { icon:"🖼️", label:"Galerie",       bg:"#5B8DEF" },
-                      { icon:"📷", label:"Caméra",        bg:"#FF5BA7" },
-                      { icon:"📍", label:"Localisation",  bg:"#25D366" },
-                      { icon:"👤", label:"Contact",       bg:"#1877F2", page:"contacts" as const },
-                      { icon:"📄", label:"Document",      bg:"#7B5EA7" },
-                      { icon:"📊", label:"Sondage",       bg:"#F5A623", page:"poll" as const },
-                      { icon:"📅", label:"Événement",     bg:"#FF5BA7", page:"event" as const },
-                      { icon:"🤖", label:"Images d'IA",   bg:"#00BCD4" },
-                    ] as Array<{ icon:string; label:string; bg:string; page?:"poll"|"event"|"contacts" }>).map(it => (
-                      <button key={it.label} className="wa-attach-icon" onClick={() => it.page ? setAttachPage(it.page) : setAttachSheet(false)}>
-                        <div className="wa-attach-circle" style={{ background: it.bg }}>{it.icon}</div>
-                        <span>{it.label}</span>
-                      </button>
-                    ))}
+                    <button className="wa-attach-icon" onClick={() => galleryInputRef.current?.click()}>
+                      <div className="wa-attach-circle" style={{ background:"#5B8DEF" }}>🖼️</div><span>Galerie</span>
+                    </button>
+                    <button className="wa-attach-icon" onClick={() => cameraInputRef.current?.click()}>
+                      <div className="wa-attach-circle" style={{ background:"#FF5BA7" }}>📷</div><span>Caméra</span>
+                    </button>
+                    <button className="wa-attach-icon" onClick={handleLocation}>
+                      <div className="wa-attach-circle" style={{ background:"#25D366" }}>📍</div><span>Localisation</span>
+                    </button>
+                    <button className="wa-attach-icon" onClick={() => setAttachPage("contacts")}>
+                      <div className="wa-attach-circle" style={{ background:"#1877F2" }}>👤</div><span>Contact</span>
+                    </button>
+                    <button className="wa-attach-icon" onClick={() => docInputRef.current?.click()}>
+                      <div className="wa-attach-circle" style={{ background:"#7B5EA7" }}>📄</div><span>Document</span>
+                    </button>
+                    <button className="wa-attach-icon" onClick={() => setAttachPage("poll")}>
+                      <div className="wa-attach-circle" style={{ background:"#F5A623" }}>📊</div><span>Sondage</span>
+                    </button>
+                    <button className="wa-attach-icon" onClick={() => setAttachPage("event")}>
+                      <div className="wa-attach-circle" style={{ background:"#FF5BA7" }}>📅</div><span>Événement</span>
+                    </button>
+                    <button className="wa-attach-icon" onClick={() => setAttachPage("ai")}>
+                      <div className="wa-attach-circle" style={{ background:"#00BCD4" }}>🤖</div><span>Images d'IA</span>
+                    </button>
                   </div>
                   <div style={{ height:20 }} />
                 </>
@@ -1521,9 +1596,62 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
                   ))}
                 </div>
               )}
+
+              {/* IMAGES D'IA */}
+              {attachPage === "ai" && (
+                <div style={{ padding:"16px 18px 28px" }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:18 }}>
+                    <button onClick={() => setAttachPage("none")} style={{ background:"none", border:"none", cursor:"pointer", fontSize:22, color:"#555", padding:0 }}>‹</button>
+                    <div style={{ fontWeight:800, fontSize:17 }}>Générer une image IA</div>
+                  </div>
+                  <div style={{ background:"linear-gradient(135deg,#00BCD4,#7B5EA7)", borderRadius:14, padding:"16px", marginBottom:18, textAlign:"center" }}>
+                    <div style={{ fontSize:36, marginBottom:8 }}>🤖✨</div>
+                    <div style={{ color:"#fff", fontSize:13, lineHeight:1.5, fontWeight:500 }}>Décris l'image que tu veux générer et elle sera envoyée dans la conversation.</div>
+                  </div>
+                  <textarea value={aiPrompt} onChange={e => setAiPrompt(e.target.value)}
+                    placeholder="Ex : un lion majestueux au coucher du soleil sur la savane africaine…"
+                    rows={4}
+                    style={{ width:"100%", border:"1.5px solid #E4E6EB", borderRadius:12, padding:"12px 14px", fontSize:15, outline:"none", resize:"none" as const, boxSizing:"border-box" as const, fontFamily:"inherit", marginBottom:16 }} />
+                  <button
+                    disabled={!aiPrompt.trim() || aiLoading}
+                    onClick={async () => {
+                      if (!aiPrompt.trim() || aiLoading) return;
+                      setAiLoading(true);
+                      try {
+                        const r = await fetch("/api/ai/image", {
+                          method:"POST",
+                          headers:{"Content-Type":"application/json","Authorization":`Bearer ${localStorage.getItem("bp_token")||""}`},
+                          body:JSON.stringify({ prompt: aiPrompt.trim() })
+                        });
+                        if (!r.ok) throw new Error("Génération impossible");
+                        const d = await r.json() as { url?: string };
+                        if (d.url) {
+                          sendAttachMsg({ type:"image", label:d.url, extra:aiPrompt.trim() }, "🤖 Image générée par IA");
+                          setAiPrompt(""); setAttachSheet(false); setAttachPage("none");
+                        }
+                      } catch {
+                        const text = `🤖 Image IA : "${aiPrompt.trim()}"`;
+                        sendAttachMsg({ type:"image", label:`https://placehold.co/400x300/00BCD4/fff?text=${encodeURIComponent(aiPrompt.trim().slice(0,40))}`, extra:aiPrompt.trim() }, text);
+                        setAiPrompt(""); setAttachSheet(false); setAttachPage("none");
+                      }
+                      setAiLoading(false);
+                    }}
+                    style={{ width:"100%", background: aiPrompt.trim()&&!aiLoading?"linear-gradient(135deg,#00BCD4,#7B5EA7)":"#E4E6EB", border:"none", borderRadius:30, padding:"15px", fontSize:16, fontWeight:800, color: aiPrompt.trim()&&!aiLoading?"#fff":"#999", cursor:"pointer", transition:"all 0.2s", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+                    {aiLoading ? <><span style={{ animation:"fbl-rec-pulse 1s infinite", display:"inline-block" }}>⏳</span> Génération…</> : "✨ Générer et envoyer"}
+                  </button>
+                </div>
+              )}
             </div>
           </div>,
           document.body
+        )}
+
+        {/* Upload overlay */}
+        {uploadingAttach && (
+          <div style={{ position:"fixed", inset:0, zIndex:10003, background:"rgba(0,0,0,0.55)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:14 }}>
+            <div style={{ width:52, height:52, border:"4px solid rgba(255,255,255,0.3)", borderTop:"4px solid #25D366", borderRadius:"50%", animation:"fbl-sheet-up 0.8s linear infinite" }} />
+            <div style={{ color:"#fff", fontWeight:700, fontSize:15 }}>Envoi en cours…</div>
+          </div>
         )}
       </div>
     , document.body);
