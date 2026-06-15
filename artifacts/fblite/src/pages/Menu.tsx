@@ -969,9 +969,9 @@ export default function Menu() {
 
           <div style={{ display: "flex", marginTop: 14, paddingTop: 14, borderTop: "1px solid #DCFCE7" }}>
             {[
-              { value: "23", label: "Publications" },
-              { value: "1.2K", label: "Abonnés" },
-              { value: "320", label: "Abonnements" },
+              { value: formatCount(userStats?.postsCount ?? 0), label: "Publications" },
+              { value: formatCount(userStats?.followersCount ?? 0), label: "Abonnés" },
+              { value: formatCount(userStats?.followingCount ?? 0), label: "Abonnements" },
             ].map((stat, i) => (
               <div key={i} style={{ flex: 1, textAlign: "center", borderRight: i < 2 ? "1px solid #DCFCE7" : "none" }}>
                 <div style={{ fontWeight: 900, fontSize: 16, color: "#0D1B2A" }}>{stat.value}</div>
