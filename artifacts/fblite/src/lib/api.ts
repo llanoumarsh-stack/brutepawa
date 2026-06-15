@@ -675,6 +675,12 @@ export async function apiGetConversations(): Promise<ApiConversation[]> {
   return res.json() as Promise<ApiConversation[]>;
 }
 
+export async function apiGetUserStats(userId: number): Promise<{ postsCount: number; followersCount: number; followingCount: number }> {
+  const res = await apiFetch(`/users/${userId}/stats`);
+  if (!res.ok) return { postsCount: 0, followersCount: 0, followingCount: 0 };
+  return res.json() as Promise<{ postsCount: number; followersCount: number; followingCount: number }>;
+}
+
 export async function apiGetMessages(userId: number): Promise<ApiChatMessage[]> {
   const res = await apiFetch(`/messages/${userId}`);
   if (!res.ok) return [];

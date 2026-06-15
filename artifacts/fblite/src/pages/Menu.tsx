@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "../router";
 import { isAdmin, ADMIN_SECRET_PATH } from "../lib/admin";
-import { apiGetTontines, apiGetCourses, apiGetEnrollments, apiGetWallet, apiGetBlockedUsers, apiUnblockUser, type ApiTontine, type ApiCourse, type ApiEnrollment, type BlockedUser } from "../lib/api";
+import { apiGetTontines, apiGetCourses, apiGetEnrollments, apiGetWallet, apiGetBlockedUsers, apiUnblockUser, apiGetConversations, apiGetFriendRequests, apiGetGroups, apiGetUserStats, type ApiTontine, type ApiCourse, type ApiEnrollment, type BlockedUser } from "../lib/api";
 
 const SCORE_MAP: Record<string, { label: string; color: string; next: string; emoji: string; progress: number; bg: string }> = {
   bronze:  { label: "Bronze",  color: "#CD7F32", bg: "#FFF8E1", next: "Argent",  emoji: "🥉", progress: 45 },
@@ -28,6 +28,11 @@ export default function Menu() {
   const [blockedLoading, setBlockedLoading] = useState(false);
   const [blockedFetched, setBlockedFetched] = useState(false);
 
+  const [userStats, setUserStats] = useState<{ postsCount: number; followersCount: number; followingCount: number } | null>(null);
+  const [unreadMessages, setUnreadMessages] = useState(0);
+  const [pendingRequests, setPendingRequests] = useState(0);
+  const [groupsCount, setGroupsCount] = useState(0);
+
   useEffect(() => {
     Promise.all([apiGetTontines(), apiGetCourses(), apiGetEnrollments(), apiGetWallet()]).then(([t, c, e, w]) => {
       setTontines(t);
@@ -35,6 +40,15 @@ export default function Menu() {
       setEnrollments(e);
       if (w) setWallet({ balance: w.balance, currency: w.currency });
     }).catch(() => {});
+
+    if (user.id) {
+      apiGetUserStats(Number(user.id)).then(setUserStats).catch(() => {});
+    }
+    apiGetConversations().then(convs => {
+      setUnreadMessages(convs.reduce((sum, c) => sum + (c.unreadCount ?? 0), 0));
+    }).catch(() => {});
+    apiGetFriendRequests().then(reqs => setPendingRequests(reqs.length)).catch(() => {});
+    apiGetGroups().then(groups => setGroupsCount(groups.length)).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -71,6 +85,12 @@ export default function Menu() {
   const [phoneSaved, setPhoneSaved] = useState(false);
 
   const score = SCORE_MAP["or"];
+
+  const formatCount = (n: number): string => {
+    if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, "") + "M";
+    if (n >= 1_000) return (n / 1_000).toFixed(1).replace(/\.0$/, "") + "K";
+    return String(n);
+  };
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
@@ -691,7 +711,7 @@ export default function Menu() {
   const gridCards: GridCard[] = [
     {
       label: "Reels", sub: "Découvrez et partagez des vidéos courtes",
-      bg: "#FFE8E8", iconColor: "#EF5350", badge: 9, action: () => navigate("/reels"),
+      bg: "#FFE8E8", iconColor: "#EF5350", badge: 0, action: () => navigate("/reels"),
       icon: (_c) => (
         <svg width="30" height="30" viewBox="0 0 30 30">
           <rect x="1" y="6" width="28" height="23" rx="5" fill="#EF5350"/>
@@ -710,7 +730,7 @@ export default function Menu() {
     },
     {
       label: "Messages", sub: "Discutez avec vos amis en privé",
-      bg: "#E8F0FE", iconColor: "#1E88E5", badge: 12, action: () => navigate("/messages"),
+      bg: "#E8F0FE", iconColor: "#1E88E5", badge: unreadMessages, action: () => navigate("/messages"),
       icon: (_c) => (
         <svg width="30" height="30" viewBox="0 0 30 30">
           <path d="M3 3 H27 A3 3 0 0 1 30 6 V20 A3 3 0 0 1 27 23 H11 L3 29 V23 A3 3 0 0 1 0 20 V6 A3 3 0 0 1 3 3 Z" fill="#1E88E5"/>
@@ -722,7 +742,7 @@ export default function Menu() {
     },
     {
       label: "Groupes", sub: "Rejoignez des communautés qui vous passionnent",
-      bg: "#E8F5E9", iconColor: "#43A047", badge: 5, action: () => navigate("/groups"),
+      bg: "#E8F5E9", iconColor: "#43A047", badge: groupsCount, action: () => navigate("/groups"),
       icon: (_c) => (
         <svg width="30" height="30" viewBox="0 0 30 30">
           <circle cx="20" cy="10" r="5" fill="#81C784"/>
@@ -734,7 +754,7 @@ export default function Menu() {
     },
     {
       label: "Ami(e)s", sub: "Retrouvez vos amis et faites-en de nouveaux",
-      bg: "#FFF8E1", iconColor: "#FB8C00", badge: 16, action: () => navigate("/friends"),
+      bg: "#FFF8E1", iconColor: "#FB8C00", badge: pendingRequests, action: () => navigate("/friends"),
       icon: (_c) => (
         <svg width="30" height="30" viewBox="0 0 30 30">
           <circle cx="11" cy="11" r="6.5" fill="#FB8C00"/>

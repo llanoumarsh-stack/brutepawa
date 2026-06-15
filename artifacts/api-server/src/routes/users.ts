@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { db, usersTable, friendRequestsTable, userBlocksTable, userReportsTable, followsTable } from "@workspace/db";
+import { db, usersTable, friendRequestsTable, userBlocksTable, userReportsTable, followsTable, postsTable } from "@workspace/db";
 import { eq, or, and, ne, ilike, sql, inArray } from "drizzle-orm";
 import { UpdateMeBody, GetUserParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
@@ -250,6 +250,21 @@ router.get("/users/:id", requireAuth, async (req, res): Promise<void> => {
   const [user] = await db.select().from(usersTable).where(eq(usersTable.id, params.data.id));
   if (!user) { res.status(404).json({ error: "User not found" }); return; }
   res.json(formatUser(user));
+});
+
+router.get("/users/:id/stats", requireAuth, async (req, res): Promise<void> => {
+  const targetId = Number(req.params.id);
+  if (isNaN(targetId)) { res.status(400).json({ error: "Invalid id" }); return; }
+  const [[postRow], [followersRow], [followingRow]] = await Promise.all([
+    db.select({ count: sql<number>`count(*)::int` }).from(postsTable).where(eq(postsTable.authorId, targetId)),
+    db.select({ count: sql<number>`count(*)::int` }).from(followsTable).where(eq(followsTable.followingId, targetId)),
+    db.select({ count: sql<number>`count(*)::int` }).from(followsTable).where(eq(followsTable.followerId, targetId)),
+  ]);
+  res.json({
+    postsCount: postRow?.count ?? 0,
+    followersCount: followersRow?.count ?? 0,
+    followingCount: followingRow?.count ?? 0,
+  });
 });
 
 // List all users blocked by the caller
