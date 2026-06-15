@@ -416,7 +416,7 @@ export default function JobInboxPage({ initialUserId, initialJobTitle }: Props) 
   if (active && activeConv) {
     const presText = presLabel(presence.online, presence.lastSeenAt);
     return (
-      <div style={{ position:"fixed", top:56, bottom:60, left:0, right:0, display:"flex", flexDirection:"column", zIndex:5, overflow:"hidden" }}>
+      <div style={{ position:"fixed", top:0, bottom:0, left:0, right:0, display:"flex", flexDirection:"column", zIndex:10000, overflow:"hidden" }}>
         <style>{`
           .ji-bg {
             background-color: #e5ddd5;
@@ -658,7 +658,7 @@ export default function JobInboxPage({ initialUserId, initialJobTitle }: Props) 
      INBOX LIST VIEW
   ════════════════════════════════════════ */
   return (
-    <div style={{ position:"fixed", top:56, bottom:60, left:0, right:0, display:"flex", flexDirection:"column", background:"#fff", zIndex:1, overflow:"hidden" }}>
+    <div style={{ position:"fixed", top:0, bottom:0, left:0, right:0, display:"flex", flexDirection:"column", background:"#fff", zIndex:10000, overflow:"hidden" }}>
       <style>{`
         .ji-row:hover  { background: #f7f8fa; }
         .ji-row:active { background: #f0f2f5; }
