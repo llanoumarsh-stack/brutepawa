@@ -244,7 +244,7 @@ export default function JobInboxPage({ initialUserId, initialJobTitle }: Props) 
   const fmtTime    = (s: number) => `${String(Math.floor(s / 60)).padStart(2,"0")}:${String(s % 60).padStart(2,"0")}`;
 
   /* ════════════════════════════════════════
-     CALL INCOMING
+     CALL INCOMING  — Telegram exact
   ════════════════════════════════════════ */
   if (sig.callState === "incoming" && sig.incomingCall) {
     const caller = allUsers.find(u => u.id === sig.incomingCall!.fromUserId);
@@ -252,20 +252,48 @@ export default function JobInboxPage({ initialUserId, initialJobTitle }: Props) 
     const color  = COLORS[sig.incomingCall.fromUserId % COLORS.length];
     const isVid  = sig.incomingCall.callType === "video";
     return (
-      <div style={{ position:"fixed", inset:0, zIndex:300, background:"linear-gradient(160deg,#0d1b2a,#1a3a52)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"48px 32px" }}>
-        <style>{`@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.08);opacity:.85}}`}</style>
-        <div style={{ color:"rgba(255,255,255,.6)", fontSize:13, letterSpacing:1, textTransform:"uppercase", marginBottom:28 }}>{isVid ? "📹 Appel vidéo entrant" : "📞 Appel audio entrant"}</div>
-        <div style={{ width:110, height:110, borderRadius:"50%", background:color, display:"flex", alignItems:"center", justifyContent:"center", fontSize:40, color:"#fff", fontWeight:800, boxShadow:`0 0 0 14px ${color}44,0 0 0 28px ${color}22`, animation:"pulse 1.5s infinite", marginBottom:20 }}>{mkInitials(name)}</div>
-        <div style={{ color:"#fff", fontWeight:900, fontSize:26, marginBottom:6 }}>{name}</div>
-        <div style={{ color:"rgba(255,255,255,.6)", fontSize:15, marginBottom:56 }}>{isVid ? "Appel vidéo" : "Appel audio"}</div>
-        <div style={{ display:"flex", gap:60 }}>
-          <div style={{ textAlign:"center", cursor:"pointer" }} onClick={() => sig.rejectCall()}>
-            <div style={{ width:72, height:72, borderRadius:"50%", background:"#F44336", display:"flex", alignItems:"center", justifyContent:"center", fontSize:28, margin:"0 auto 10px" }}>📵</div>
-            <div style={{ color:"rgba(255,255,255,.7)", fontSize:13 }}>Refuser</div>
+      <div style={{ position:"fixed", inset:0, zIndex:9999, background:"linear-gradient(180deg,#5B86E5 0%,#7A5AF8 55%,#6B21A8 100%)", display:"flex", flexDirection:"column", overflow:"hidden" }}>
+        <style>{`
+          @keyframes tg-ring{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.55),0 0 0 0 rgba(255,255,255,.3)}50%{box-shadow:0 0 0 22px rgba(255,255,255,.18),0 0 0 44px rgba(255,255,255,.07)}}
+          @keyframes tg-dots{0%,80%,100%{opacity:0}40%{opacity:1}}
+          .tg-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.8);margin:0 2px;animation:tg-dots 1.4s infinite ease-in-out both}
+          .tg-dot:nth-child(1){animation-delay:-.32s}
+          .tg-dot:nth-child(2){animation-delay:-.16s}
+        `}</style>
+        {/* top icons */}
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"52px 20px 0", flexShrink:0 }}>
+          <div style={{ width:40 }} />
+          <div style={{ color:"rgba(255,255,255,.75)", fontSize:13, fontWeight:500 }}>{isVid ? "Appel vidéo entrant" : "Appel vocal entrant"}</div>
+          <button style={{ background:"none", border:"none", color:"rgba(255,255,255,.8)", cursor:"pointer", padding:4 }}>
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+          </button>
+        </div>
+        {/* avatar + name + status */}
+        <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:0 }}>
+          <div style={{ width:130, height:130, borderRadius:"50%", background:color, display:"flex", alignItems:"center", justifyContent:"center", fontSize:52, color:"#fff", fontWeight:800, animation:"tg-ring 2s ease-out infinite", marginBottom:24 }}>
+            {mkInitials(name)}
           </div>
-          <div style={{ textAlign:"center", cursor:"pointer" }} onClick={() => sig.acceptCall()}>
-            <div style={{ width:72, height:72, borderRadius:"50%", background:"#42B72A", display:"flex", alignItems:"center", justifyContent:"center", fontSize:28, margin:"0 auto 10px" }}>{isVid ? "📹" : "📞"}</div>
-            <div style={{ color:"rgba(255,255,255,.7)", fontSize:13 }}>Accepter</div>
+          <div style={{ color:"#fff", fontWeight:800, fontSize:26, letterSpacing:.3, marginBottom:10, textAlign:"center", padding:"0 24px" }}>{name}</div>
+          <div style={{ display:"flex", alignItems:"center", gap:6, color:"rgba(255,255,255,.75)", fontSize:15 }}>
+            Sonnerie
+            <span className="tg-dot" /><span className="tg-dot" /><span className="tg-dot" />
+          </div>
+        </div>
+        {/* bottom buttons */}
+        <div style={{ padding:"0 32px 60px", flexShrink:0 }}>
+          <div style={{ display:"flex", justifyContent:"space-around", alignItems:"flex-start" }}>
+            <div style={{ textAlign:"center", cursor:"pointer" }} onClick={() => sig.rejectCall()}>
+              <div style={{ width:68, height:68, borderRadius:"50%", background:"#F44336", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 8px", boxShadow:"0 4px 20px rgba(244,67,54,.5)" }}>
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="#fff"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.12-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
+              </div>
+              <div style={{ color:"rgba(255,255,255,.85)", fontSize:13, fontWeight:500 }}>Raccrocher</div>
+            </div>
+            <div style={{ textAlign:"center", cursor:"pointer" }} onClick={() => sig.acceptCall()}>
+              <div style={{ width:68, height:68, borderRadius:"50%", background:"#4CAF50", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 8px", boxShadow:"0 4px 20px rgba(76,175,80,.5)" }}>
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="#fff"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.12-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
+              </div>
+              <div style={{ color:"rgba(255,255,255,.85)", fontSize:13, fontWeight:500 }}>Accepter</div>
+            </div>
           </div>
         </div>
       </div>
@@ -273,49 +301,111 @@ export default function JobInboxPage({ initialUserId, initialJobTitle }: Props) 
   }
 
   /* ════════════════════════════════════════
-     CALL ACTIVE
+     CALL ACTIVE  — Telegram exact
   ════════════════════════════════════════ */
   if (sig.callState === "calling" || sig.callState === "active") {
     const peer  = active ? (convs.find(c => c.id === active) ?? null) : null;
     const isVid = sig.callType === "video";
+    const status = sig.callState === "active" ? `● ${fmtTime(sig.callDuration)}` : "Connexion en cours...";
     return (
-      <div style={{ position:"fixed", inset:0, zIndex:200, background:"#000", overflow:"hidden" }}>
+      <div style={{ position:"fixed", inset:0, zIndex:9999, overflow:"hidden", display:"flex", flexDirection:"column" }}>
+        <style>{`
+          @keyframes tg-ring{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.55),0 0 0 0 rgba(255,255,255,.3)}50%{box-shadow:0 0 0 22px rgba(255,255,255,.18),0 0 0 44px rgba(255,255,255,.07)}}
+          @keyframes tg-dots{0%,80%,100%{opacity:0}40%{opacity:1}}
+          .tg-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.8);margin:0 2px;animation:tg-dots 1.4s infinite ease-in-out both}
+          .tg-dot:nth-child(1){animation-delay:-.32s}
+          .tg-dot:nth-child(2){animation-delay:-.16s}
+          .tg-btn{background:rgba(255,255,255,.18);border:none;width:62px;height:62px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
+          .tg-btn:active{background:rgba(255,255,255,.35)}
+          .tg-btn-active{background:rgba(255,255,255,.9)!important}
+        `}</style>
         <audio ref={remoteAudio} autoPlay playsInline style={{ display:"none" }} />
-        {isVid && <video ref={remoteVideo} autoPlay playsInline style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover" }} />}
-        {!isVid && (
-          <div style={{ position:"absolute", inset:0, background:"linear-gradient(180deg,#1a1a2e,#16213e)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
-            <div style={{ width:130, height:130, borderRadius:"50%", background:peer?.color ?? "#1877F2", display:"flex", alignItems:"center", justifyContent:"center", fontSize:48, color:"#fff", fontWeight:800 }}>{peer ? mkInitials(peer.name) : "?"}</div>
-            <div style={{ color:"#fff", fontWeight:800, fontSize:24, marginTop:24 }}>{peer?.name ?? "Appel en cours"}</div>
-          </div>
+
+        {/* ── VIDEO CALL ── */}
+        {isVid ? (
+          <>
+            <video ref={remoteVideo} autoPlay playsInline style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover", background:"#111" }} />
+            {/* top gradient + info */}
+            <div style={{ position:"absolute", top:0, left:0, right:0, padding:"48px 16px 60px", background:"linear-gradient(180deg,rgba(0,0,0,.7) 0%,transparent 100%)", zIndex:10 }}>
+              <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                <button style={{ background:"none", border:"none", color:"rgba(255,255,255,.9)", cursor:"pointer", padding:4 }}>
+                  <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M7 14l-5-5 5-5v3h11v4H7v3z"/></svg>
+                </button>
+                <div style={{ flex:1 }}>
+                  <div style={{ color:"#fff", fontWeight:800, fontSize:18, lineHeight:1.2 }}>{peer?.name ?? "Appel vidéo"}</div>
+                  <div style={{ color:"rgba(255,255,255,.8)", fontSize:13, marginTop:2 }}>{status}</div>
+                </div>
+                <button style={{ background:"none", border:"none", color:"rgba(255,255,255,.8)", cursor:"pointer", padding:4 }}>
+                  <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+                </button>
+              </div>
+            </div>
+            {/* self-view */}
+            <div style={{ position:"absolute", top:110, right:14, width:100, height:148, borderRadius:16, overflow:"hidden", border:"2px solid rgba(255,255,255,.55)", zIndex:15, boxShadow:"0 4px 16px rgba(0,0,0,.5)" }}>
+              <video ref={localVideo} autoPlay playsInline muted style={{ width:"100%", height:"100%", objectFit:"cover", transform:sig.cameraFront?"scaleX(-1)":"scaleX(1)" }} />
+            </div>
+            {/* bottom controls */}
+            <div style={{ position:"absolute", bottom:0, left:0, right:0, padding:"0 16px 52px", background:"linear-gradient(0deg,rgba(0,0,0,.75) 0%,transparent 100%)", zIndex:10 }}>
+              <div style={{ display:"flex", justifyContent:"space-around", alignItems:"flex-start" }}>
+                {([
+                  { label:"Retourner",     icon:<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M7.47 21.49C4.2 19.93 1.86 16.76 1.5 13H0c.51 6.16 5.66 11 11.95 11l.66-.03-3.81-3.81-1.33 1.33zm.89-6.52c-.19 0-.38-.03-.56-.08L6 16.68l-.41.41c.28.4.64.74 1.04 1.01.28.18.59.32.9.43.62.22 1.28.28 1.93.17.3-.04.59-.12.87-.23.28-.11.54-.25.78-.42.24-.17.46-.37.65-.59.19-.22.36-.47.49-.73.12-.27.22-.54.28-.83.06-.28.08-.58.06-.87l-.08-.6-1.42.42c-.01.19-.04.38-.1.56-.08.26-.22.49-.4.69-.18.2-.4.36-.64.47-.24.1-.51.16-.78.16z"/><path d="M12.05 0l-.66.03 3.81 3.81 1.33-1.33C19.8 4.07 22.14 7.24 22.5 11H24c-.51-6.16-5.66-11-11.95-11zm-.22 4C8.47 4 5.2 6.28 4.22 9.65l1.42-.42c.73-2.36 2.93-4.23 5.53-4.23 2.1 0 3.96.96 5.2 2.47L14.75 9h4V5l-1.3 1.3C16.07 4.89 14.18 4 12.08 4h-.25z"/></svg>, action:() => sig.flipCamera() },
+                  { label:"Arrêter vidéo", icon:<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M21 6.5l-4-4-12 12 4 4 12-12zM3.27 2L2 3.27 4.73 6H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.21 0 .39-.08.54-.18L19.73 21 21 19.73 3.27 2zM15 17H5V8h1.73l8 8H15v1z"/></svg>, action:() => {} },
+                  { label:"Muet",          icon:<svg viewBox="0 0 24 24" width="26" height="26" fill={sig.isMuted?"#fff":"currentColor"}><path d={sig.isMuted?"M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z":"M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28C16.28 17.23 19 14.41 19 11h-1.7z"}/></svg>, action:() => sig.toggleMute(), active: sig.isMuted },
+                  { label:"Raccrocher",    icon:<svg viewBox="0 0 24 24" width="28" height="28" fill="#fff"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.12-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>, action:() => sig.endCall(), red:true },
+                ] as {label:string;icon:JSX.Element;action:()=>void;active?:boolean;red?:boolean}[]).map(b => (
+                  <div key={b.label} style={{ textAlign:"center", cursor:"pointer" }} onClick={b.action}>
+                    <div className={`tg-btn${b.active?" tg-btn-active":""}`} style={b.red ? { background:"#F44336", boxShadow:"0 4px 18px rgba(244,67,54,.55)" } : {}} >{b.icon}</div>
+                    <div style={{ color:"rgba(255,255,255,.85)", fontSize:11, fontWeight:500, marginTop:7 }}>{b.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        ) : (
+          /* ── AUDIO CALL ── */
+          <>
+            <div style={{ position:"absolute", inset:0, background:"linear-gradient(180deg,#5B86E5 0%,#7A5AF8 55%,#6B21A8 100%)" }} />
+            {/* top bar */}
+            <div style={{ position:"relative", zIndex:10, display:"flex", justifyContent:"space-between", alignItems:"center", padding:"48px 20px 0", flexShrink:0 }}>
+              <button style={{ background:"none", border:"none", color:"rgba(255,255,255,.85)", cursor:"pointer", padding:4 }}>
+                <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M7 14l-5-5 5-5v3h11v4H7v3z"/></svg>
+              </button>
+              <div />
+              <button onClick={() => sig.toggleSpeaker()} style={{ background:"none", border:"none", color:sig.isSpeaker?"#fff":"rgba(255,255,255,.65)", cursor:"pointer", padding:4 }}>
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d={sig.isSpeaker?"M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z":"M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"}/></svg>
+              </button>
+            </div>
+            {/* center avatar */}
+            <div style={{ position:"relative", zIndex:10, flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
+              <div style={{ width:136, height:136, borderRadius:"50%", background:peer?.color ?? "#4C6EF5", display:"flex", alignItems:"center", justifyContent:"center", fontSize:54, color:"#fff", fontWeight:800, animation:"tg-ring 2s ease-out infinite", marginBottom:28 }}>
+                {peer ? mkInitials(peer.name) : "?"}
+              </div>
+              <div style={{ color:"#fff", fontWeight:800, fontSize:26, letterSpacing:.3, marginBottom:12, textAlign:"center", padding:"0 24px" }}>{peer?.name ?? "Appel vocal"}</div>
+              <div style={{ display:"flex", alignItems:"center", gap:6, color:"rgba(255,255,255,.78)", fontSize:15 }}>
+                {sig.callState === "active"
+                  ? <span style={{ color:"#A5F3A5", fontWeight:700 }}>● {fmtTime(sig.callDuration)}</span>
+                  : <><span>Sonnerie</span><span className="tg-dot" /><span className="tg-dot" /><span className="tg-dot" /></>
+                }
+              </div>
+            </div>
+            {/* bottom 4 buttons */}
+            <div style={{ position:"relative", zIndex:10, padding:"0 16px 58px", flexShrink:0 }}>
+              <div style={{ display:"flex", justifyContent:"space-around", alignItems:"flex-start" }}>
+                {([
+                  { label:"Haut-parleur",  icon:<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>, action:() => sig.toggleSpeaker(), active:sig.isSpeaker },
+                  { label:"Activer vidéo", icon:<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>, action:() => {} },
+                  { label:"Muet",          icon:<svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d={sig.isMuted?"M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z":"M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28C16.28 17.23 19 14.41 19 11h-1.7z"}/></svg>, action:() => sig.toggleMute(), active:sig.isMuted },
+                  { label:"Raccrocher",    icon:<svg viewBox="0 0 24 24" width="28" height="28" fill="#fff"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.12-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>, action:() => sig.endCall(), red:true },
+                ] as {label:string;icon:JSX.Element;action:()=>void;active?:boolean;red?:boolean}[]).map(b => (
+                  <div key={b.label} style={{ textAlign:"center", cursor:"pointer" }} onClick={b.action}>
+                    <div className={`tg-btn${b.active?" tg-btn-active":""}`} style={b.red ? { background:"#F44336", boxShadow:"0 4px 18px rgba(244,67,54,.55)" } : {}}>{b.icon}</div>
+                    <div style={{ color:"rgba(255,255,255,.85)", fontSize:11, fontWeight:500, marginTop:7 }}>{b.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
         )}
-        <div style={{ position:"absolute", top:0, left:0, right:0, padding:"52px 20px 40px", background:"linear-gradient(180deg,rgba(0,0,0,.75),transparent)", zIndex:10, textAlign:"center" }}>
-          {isVid && <div style={{ color:"#fff", fontWeight:800, fontSize:20 }}>{peer?.name}</div>}
-          <div style={{ color:"rgba(255,255,255,.85)", fontSize:14, marginTop:4 }}>
-            {sig.callState === "active" ? <span style={{ color:"#42B72A" }}>● {fmtTime(sig.callDuration)}</span> : <span>Connexion…</span>}
-          </div>
-        </div>
-        {isVid && <div style={{ position:"absolute", top:72, right:16, width:110, height:155, borderRadius:14, overflow:"hidden", border:"2px solid rgba(255,255,255,.5)", zIndex:15 }}>
-          <video ref={localVideo} autoPlay playsInline muted style={{ width:"100%", height:"100%", objectFit:"cover", transform:sig.cameraFront ? "scaleX(-1)" : "scaleX(1)" }} />
-        </div>}
-        <div style={{ position:"absolute", bottom:0, left:0, right:0, padding:"40px 32px 54px", background:"linear-gradient(0deg,rgba(0,0,0,.8),transparent)", zIndex:10 }}>
-          <div style={{ display:"flex", justifyContent:"center", gap:28, marginBottom:28 }}>
-            <div onClick={() => sig.toggleMute()} style={{ textAlign:"center", cursor:"pointer" }}>
-              <div style={{ width:54, height:54, borderRadius:"50%", background:sig.isMuted?"rgba(244,67,54,.9)":"rgba(255,255,255,.2)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, margin:"0 auto 6px" }}>{sig.isMuted ? "🔇" : "🎙️"}</div>
-              <div style={{ color:"rgba(255,255,255,.85)", fontSize:11 }}>{sig.isMuted ? "Activé" : "Muet"}</div>
-            </div>
-            {isVid && <div onClick={() => sig.flipCamera()} style={{ textAlign:"center", cursor:"pointer" }}>
-              <div style={{ width:54, height:54, borderRadius:"50%", background:"rgba(255,255,255,.2)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, margin:"0 auto 6px" }}>🔁</div>
-              <div style={{ color:"rgba(255,255,255,.85)", fontSize:11 }}>Caméra</div>
-            </div>}
-            <div onClick={() => sig.toggleSpeaker()} style={{ textAlign:"center", cursor:"pointer" }}>
-              <div style={{ width:54, height:54, borderRadius:"50%", background:"rgba(255,255,255,.2)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, margin:"0 auto 6px" }}>{sig.isSpeaker ? "🔊" : "🔈"}</div>
-              <div style={{ color:"rgba(255,255,255,.85)", fontSize:11 }}>{sig.isSpeaker ? "HP" : "Écouteur"}</div>
-            </div>
-          </div>
-          <div style={{ display:"flex", justifyContent:"center" }}>
-            <div onClick={() => sig.endCall()} style={{ width:68, height:68, borderRadius:"50%", background:"#F44336", display:"flex", alignItems:"center", justifyContent:"center", fontSize:28, cursor:"pointer", boxShadow:"0 4px 20px rgba(244,67,54,.6)" }}>📵</div>
-          </div>
-        </div>
       </div>
     );
   }
