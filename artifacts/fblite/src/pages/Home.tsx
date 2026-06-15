@@ -2,8 +2,10 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "../router";
 import { Post } from "../lib/store";
 import { formatNumber } from "../data/mock";
-import { apiGetStories, apiGetComments, apiPostComment, apiToggleCommentLike, apiToggleSaved, apiReportPost, type StoryGroup, type PostComment } from "../lib/api";
+import { apiGetStories, apiGetComments, apiPostComment, apiPostVoiceComment, apiUploadVoice, apiDeleteComment, apiToggleCommentLike, apiToggleSaved, apiReportPost, type StoryGroup, type PostComment } from "../lib/api";
 import StoryViewer from "../components/StoryViewer";
+import VoiceRecorder from "../components/VoiceRecorder";
+import VoicePlayer from "../components/VoicePlayer";
 import { storyDraftStore } from "../lib/storyDraft";
 
 const AVATAR_COLORS = ["#42B72A","#E91E63","#9C27B0","#F57C00","#388E3C","#212121","#D32F2F","#00838F"];
@@ -82,6 +84,9 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
   const [replyContextName, setReplyContextName] = useState<string>("");
   const [replyContextPostId, setReplyContextPostId] = useState<number | null>(null);
   const commentInputRef = useRef<Record<number, HTMLInputElement | null>>({});
+
+  // Voice recorder
+  const [voiceMode, setVoiceMode] = useState<number | null>(null);
 
   // Reaction picker
   const [reactionType, setReactionType] = useState<Record<number, string>>({});
@@ -279,6 +284,23 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
       setSubmittingComment(null);
     }
   };
+
+  const submitVoiceComment = async (postId: number, blob: Blob, duration: number) => {
+    const parentId = replyContextPostId === postId && replyingTo != null ? replyingTo : undefined;
+    if (parentId != null) cancelReply();
+    const { url } = await apiUploadVoice(blob, duration);
+    const comment = await apiPostVoiceComment(postId, url, Math.round(duration), parentId);
+    setComments(prev => ({ ...prev, [postId]: [...(prev[postId] ?? []), comment] }));
+    setVoiceMode(null);
+  };
+
+  const deleteComment = async (postId: number, commentId: number) => {
+    try {
+      await apiDeleteComment(postId, commentId);
+      setComments(prev => ({ ...prev, [postId]: (prev[postId] ?? []).filter(c => c.id !== commentId) }));
+    } catch { /* silent */ }
+  };
+
 
   const visiblePosts = allPosts.filter(p => !hiddenPosts.has(p.id));
 
@@ -594,7 +616,10 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                             {/* Bubble */}
                             <div style={{ display: "inline-block", background: "#f0f2f5", borderRadius: 18, padding: "8px 12px", maxWidth: "calc(100% - 32px)" }}>
                               <div style={{ fontWeight: 700, fontSize: 13, color: "#050505", marginBottom: 2 }}>{c.authorFirstName} {c.authorLastName}</div>
-                              <div style={{ fontSize: 14, color: "#050505", lineHeight: 1.4 }}>{c.content}</div>
+                              {c.audioUrl
+                                ? <VoicePlayer url={c.audioUrl} duration={c.audioDuration} />
+                                : <div style={{ fontSize: 14, color: "#050505", lineHeight: 1.4 }}>{c.content}</div>
+                              }
                             </div>
                             {/* Like count badge */}
                             {c.likesCount > 0 && (
@@ -602,7 +627,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                                 <span>❤️</span><span style={{ color: "#65676b", fontWeight: 600 }}>{c.likesCount}</span>
                               </span>
                             )}
-                            {/* Time · J'aime · Répondre */}
+                            {/* Time · J'aime · Répondre · Supprimer */}
                             <div style={{ display: "flex", gap: 12, paddingLeft: 4, marginTop: 3, fontSize: 12, fontWeight: 600, color: "#65676b", alignItems: "center" }}>
                               <span style={{ color: "#aaa", fontWeight: 400 }}>{timeAgo(c.createdAt)}</span>
                               <button onClick={() => toggleCommentLike(post.id, c.id)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 12, fontWeight: 700, color: c.likedByMe ? "#1877F2" : "#65676b" }}>
@@ -611,6 +636,11 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                               <button onClick={() => replyingTo === c.id ? cancelReply() : startReply(c, post.id)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 12, fontWeight: 700, color: replyingTo === c.id ? "#1877F2" : "#65676b" }}>
                                 {replyingTo === c.id ? "Annuler" : "Répondre"}
                               </button>
+                              {c.authorId === user.id && (
+                                <button onClick={() => deleteComment(post.id, c.id)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 12, fontWeight: 700, color: "#e53935" }}>
+                                  Supprimer
+                                </button>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -665,35 +695,50 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                   )}
 
                   {/* ── Bottom comment input bar (Facebook style) ── */}
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px 12px", borderTop: topLevel.length > 0 ? "1px solid #e4e6eb" : "none", marginTop: 6 }}>
-                    {user.avatarUrl
-                      ? <img src={user.avatarUrl} alt="moi" style={{ width: 34, height: 34, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
-                      : <div className="avatar xs" style={{ width: 34, height: 34, fontSize: 12, flexShrink: 0, background: "#42B72A" }}>{userInitials}</div>
-                    }
-                    <div style={{ flex: 1, background: "#f0f2f5", borderRadius: 22, display: "flex", alignItems: "center", padding: "0 6px 0 14px", gap: 4 }}>
-                      <input
-                        ref={el => { commentInputRef.current[post.id] = el; }}
-                        style={{ flex: 1, background: "transparent", border: "none", padding: "9px 0", fontSize: 14, outline: "none", color: "#050505", minWidth: 0 }}
-                        placeholder={replyContextPostId === post.id && replyingTo != null ? `Répondre à ${replyContextName.split(" ")[0]}…` : `Commenter en tant que ${user.name.split(" ")[0]}…`}
-                        value={newComment[post.id] ?? ""}
-                        onChange={e => setNewComment(prev => ({ ...prev, [post.id]: e.target.value }))}
-                        onKeyDown={e => { if (e.key === "Enter") submitComment(post.id); if (e.key === "Escape" && replyingTo) cancelReply(); }}
+                  <div style={{ display: "flex", alignItems: voiceMode === post.id ? "flex-start" : "center", gap: 8, padding: "8px 12px 12px", borderTop: topLevel.length > 0 ? "1px solid #e4e6eb" : "none", marginTop: 6 }}>
+                    {voiceMode !== post.id && (
+                      user.avatarUrl
+                        ? <img src={user.avatarUrl} alt="moi" style={{ width: 34, height: 34, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+                        : <div className="avatar xs" style={{ width: 34, height: 34, fontSize: 12, flexShrink: 0, background: "#42B72A" }}>{userInitials}</div>
+                    )}
+
+                    {voiceMode === post.id ? (
+                      <VoiceRecorder
+                        onSend={(blob, dur) => submitVoiceComment(post.id, blob, dur)}
+                        onCancel={() => setVoiceMode(null)}
                         disabled={submittingComment === post.id}
                       />
-                      {!(newComment[post.id] ?? "").trim() ? (
-                        <div style={{ display: "flex", gap: 0, flexShrink: 0 }}>
-                          {[{ icon: "🙂", key: "emoji" }, { icon: "GIF", key: "gif" }, { icon: "😊", key: "sticker" }].map(b => (
-                            <button key={b.key} style={{ background: "none", border: "none", padding: "6px 6px", cursor: "pointer", fontSize: b.key === "gif" ? 10 : 16, fontWeight: b.key === "gif" ? 700 : 400, color: "#65676b" }}>{b.icon}</button>
-                          ))}
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => submitComment(post.id)}
+                    ) : (
+                      <div style={{ flex: 1, background: "#f0f2f5", borderRadius: 22, display: "flex", alignItems: "center", padding: "0 6px 0 14px", gap: 4 }}>
+                        <input
+                          ref={el => { commentInputRef.current[post.id] = el; }}
+                          style={{ flex: 1, background: "transparent", border: "none", padding: "9px 0", fontSize: 14, outline: "none", color: "#050505", minWidth: 0 }}
+                          placeholder={replyContextPostId === post.id && replyingTo != null ? `Répondre à ${replyContextName.split(" ")[0]}…` : `Commenter en tant que ${user.name.split(" ")[0]}…`}
+                          value={newComment[post.id] ?? ""}
+                          onChange={e => setNewComment(prev => ({ ...prev, [post.id]: e.target.value }))}
+                          onKeyDown={e => { if (e.key === "Enter") submitComment(post.id); if (e.key === "Escape" && replyingTo) cancelReply(); }}
                           disabled={submittingComment === post.id}
-                          style={{ background: "none", border: "none", padding: "6px 8px", cursor: "pointer", color: "#1877F2", fontSize: 18, opacity: submittingComment === post.id ? 0.6 : 1, flexShrink: 0 }}
-                        >➤</button>
-                      )}
-                    </div>
+                        />
+                        {!(newComment[post.id] ?? "").trim() ? (
+                          <div style={{ display: "flex", gap: 0, flexShrink: 0 }}>
+                            {[{ icon: "🙂", key: "emoji" }, { icon: "GIF", key: "gif" }, { icon: "😊", key: "sticker" }].map(b => (
+                              <button key={b.key} style={{ background: "none", border: "none", padding: "6px 6px", cursor: "pointer", fontSize: b.key === "gif" ? 10 : 16, fontWeight: b.key === "gif" ? 700 : 400, color: "#65676b" }}>{b.icon}</button>
+                            ))}
+                            <VoiceRecorder
+                              onSend={(blob, dur) => submitVoiceComment(post.id, blob, dur)}
+                              onCancel={() => setVoiceMode(null)}
+                              disabled={submittingComment === post.id}
+                            />
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => submitComment(post.id)}
+                            disabled={submittingComment === post.id}
+                            style={{ background: "none", border: "none", padding: "6px 8px", cursor: "pointer", color: "#1877F2", fontSize: 18, opacity: submittingComment === post.id ? 0.6 : 1, flexShrink: 0 }}
+                          >➤</button>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               );

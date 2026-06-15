@@ -1079,6 +1079,8 @@ export interface PostComment {
   authorId: number;
   parentId: number | null;
   content: string;
+  audioUrl: string | null;
+  audioDuration: number | null;
   likesCount: number;
   likedByMe: boolean;
   createdAt: string;
@@ -1107,6 +1109,54 @@ export async function apiPostComment(
     throw new Error(e.error ?? "Erreur lors du commentaire");
   }
   return res.json();
+}
+
+export async function apiPostVoiceComment(
+  postId: number,
+  audioUrl: string,
+  audioDuration: number,
+  parentId?: number,
+): Promise<PostComment> {
+  const res = await apiFetch(`/posts/${postId}/comments`, {
+    method: "POST",
+    body: JSON.stringify({ content: "", audioUrl, audioDuration, parentId }),
+  });
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(e.error ?? "Erreur lors du commentaire vocal");
+  }
+  return res.json();
+}
+
+export async function apiDeleteComment(postId: number, commentId: number): Promise<void> {
+  const res = await apiFetch(`/posts/${postId}/comments/${commentId}`, { method: "DELETE" });
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(e.error ?? "Suppression échouée");
+  }
+}
+
+export async function apiUploadVoice(blob: Blob, durationSec: number): Promise<{ url: string }> {
+  const token = getBpToken();
+  const ext = blob.type.includes("ogg") ? ".ogg" : blob.type.includes("mp4") ? ".m4a" : ".webm";
+  const filename = `voice_${Date.now()}${ext}`;
+  const headers: Record<string, string> = {
+    "Content-Type": blob.type || "audio/webm",
+    "x-filename": filename,
+    "x-duration": String(Math.round(durationSec)),
+  };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  const res = await fetch(`${BASE}/upload`, {
+    method: "POST",
+    headers,
+    body: blob,
+  });
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(e.error ?? "Upload audio échoué");
+  }
+  const data = await res.json() as { url: string };
+  return { url: data.url };
 }
 
 export async function apiToggleCommentLike(

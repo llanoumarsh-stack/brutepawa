@@ -438,6 +438,8 @@ router.get("/posts/:id/comments", requireAuth, async (req, res): Promise<void> =
       authorId: commentsTable.authorId,
       parentId: commentsTable.parentId,
       content: commentsTable.content,
+      audioUrl: commentsTable.audioUrl,
+      audioDuration: commentsTable.audioDuration,
       likesCount: commentsTable.likesCount,
       createdAt: commentsTable.createdAt,
       authorFirstName: usersTable.firstName,
@@ -518,8 +520,31 @@ router.post("/posts/:id/comments", requireAuth, async (req, res): Promise<void> 
   const postId = parseInt(req.params.id);
   if (isNaN(postId)) { res.status(400).json({ error: "Invalid post id" }); return; }
 
-  const { content, parentId } = req.body as { content?: string; parentId?: number };
-  if (!content?.trim()) { res.status(400).json({ error: "Contenu requis" }); return; }
+  const { content, parentId, audioUrl, audioDuration } = req.body as {
+    content?: string;
+    parentId?: number;
+    audioUrl?: string;
+    audioDuration?: number;
+  };
+
+  const isVoice = !!audioUrl;
+  const textContent = content?.trim() ?? "";
+
+  // Must have either text or audio
+  if (!textContent && !isVoice) {
+    res.status(400).json({ error: "Contenu ou vocal requis" }); return;
+  }
+
+  // Validate voice comment
+  if (isVoice) {
+    const R2_HOST = process.env.R2_PUBLIC_URL ?? "";
+    if (!audioUrl.startsWith(R2_HOST) || !/\/(audio)\//.test(audioUrl)) {
+      res.status(400).json({ error: "URL audio invalide" }); return;
+    }
+    if (audioDuration != null && (audioDuration < 0 || audioDuration > 60)) {
+      res.status(400).json({ error: "Durée audio invalide (max 60 s)" }); return;
+    }
+  }
 
   const authorId = req.userId!;
 
@@ -545,7 +570,14 @@ router.post("/posts/:id/comments", requireAuth, async (req, res): Promise<void> 
   // Insert comment
   const [comment] = await db
     .insert(commentsTable)
-    .values({ postId, authorId, content: content.trim(), parentId: parentId ?? null })
+    .values({
+      postId,
+      authorId,
+      content: textContent,
+      parentId: parentId ?? null,
+      audioUrl: isVoice ? audioUrl : null,
+      audioDuration: isVoice && audioDuration != null ? audioDuration : null,
+    })
     .returning();
 
   // Increment commentsCount on post
@@ -561,7 +593,7 @@ router.post("/posts/:id/comments", requireAuth, async (req, res): Promise<void> 
     .where(eq(usersTable.id, authorId));
 
   const commenterName = commenter ? `${commenter.firstName} ${commenter.lastName}` : "Quelqu'un";
-  const preview = content.trim().length > 60 ? content.trim().slice(0, 60) + "…" : content.trim();
+  const preview = isVoice ? "🎤 Message vocal" : (textContent.length > 60 ? textContent.slice(0, 60) + "…" : textContent);
 
   // Notify parent comment author if this is a reply (and not self)
   if (parentComment && parentComment.authorId !== authorId) {
@@ -583,6 +615,40 @@ router.post("/posts/:id/comments", requireAuth, async (req, res): Promise<void> 
   }
 
   res.status(201).json(comment);
+});
+
+// ─── DELETE comment (author only) ────────────────────────────────────────────
+
+router.delete("/posts/:postId/comments/:commentId", requireAuth, async (req, res): Promise<void> => {
+  const postId    = parseInt(req.params.postId);
+  const commentId = parseInt(req.params.commentId);
+  if (isNaN(postId) || isNaN(commentId)) { res.status(400).json({ error: "Invalid id" }); return; }
+
+  const userId = req.userId!;
+
+  const [comment] = await db
+    .select({ authorId: commentsTable.authorId, audioUrl: commentsTable.audioUrl })
+    .from(commentsTable)
+    .where(and(eq(commentsTable.id, commentId), eq(commentsTable.postId, postId)));
+
+  if (!comment) { res.status(404).json({ error: "Commentaire introuvable" }); return; }
+  if (comment.authorId !== userId) { res.status(403).json({ error: "Non autorisé" }); return; }
+
+  await db.delete(commentsTable).where(eq(commentsTable.id, commentId));
+
+  // Decrement post comment count
+  await db
+    .update(postsTable)
+    .set({ commentsCount: sql`GREATEST(${postsTable.commentsCount} - 1, 0)` })
+    .where(eq(postsTable.id, postId));
+
+  // Delete audio file from R2 if present
+  if (comment.audioUrl) {
+    const key = comment.audioUrl.replace(/^https?:\/\/[^/]+\//, "");
+    releaseStorage([key]).catch(() => {});
+  }
+
+  res.json({ ok: true });
 });
 
 // ─── Notifications ──────────────────────────────────────────────────────────
