@@ -1,0 +1,79 @@
+TRANSFORMER COMPLÈTEMENT L'INTERFACE ACTUELLE EN VERSION ULTRA PREMIUM 2026.
+
+OBJECTIF :
+Créer une interface mobile haut de gamme de niveau Facebook, Revolut, Stripe, TikTok et LinkedIn Premium.
+
+STYLE VISUEL :
+- Design ultra moderne.
+- Fond blanc cassé (#F8FAFC).
+- Couleur principale verte Brute Pawa (#22C55E).
+- Cartes avec coins très arrondis (24px à 32px).
+- Ombres douces et réalistes.
+- Effet glassmorphism léger.
+- Espacements généreux.
+- Hiérarchie visuelle professionnelle.
+- Typographie moderne, nette et premium.
+- Animations fluides.
+- Icônes 3D modernes.
+- Aspect luxueux et international.
+
+SECTIONS À MODIFIER :
+
+1. FORMATIONS
+- Carte premium violette dégradée.
+- Icône diplôme 3D.
+- Sous-titre explicatif.
+- Flèche moderne à droite.
+
+2. SCORE
+- Carte premium dorée.
+- Médaille 3D brillante.
+- Afficher progression du score.
+- Aspect récompense et prestige.
+
+3. EMPLOIS
+- Carte premium verte.
+- Icône mallette 3D.
+- Sous-titre professionnel.
+- Design inspiré LinkedIn.
+
+4. PARAMÈTRES ET CONFIDENTIALITÉ
+- Grande carte premium.
+- Icône bouclier sécurisé.
+- Sous-titre :
+  "Gérez votre compte, sécurité et préférences."
+- Chevron moderne.
+
+5. AIDE ET ASSISTANCE
+- Carte premium.
+- Icône support casque.
+- Sous-titre :
+  "FAQ, assistance et centre d'aide."
+
+6. AJOUTER UN COMPTE
+- Grande carte dégradée verte.
+- Icône + dans un cercle lumineux.
+- Effet premium.
+- Texte :
+  "Ajoutez un autre compte et basculez facilement."
+
+7. DÉCONNEXION
+- Carte premium rouge clair.
+- Icône sortie moderne.
+- Texte rouge élégant.
+- Design sécurisé.
+- Effet visuel de confirmation.
+
+EXIGENCES OBLIGATOIRES :
+- Aucun emoji.
+- Aucune icône ancienne.
+- Utiliser Lucide React ou Material Symbols.
+- Design responsive mobile.
+- Même largeur pour toutes les cartes.
+- Même alignement partout.
+- Aucun élément coupé.
+- Interface identique à une application premium publiée sur App Store ou Play Store.
+- Remplacer entièrement l'ancien design.
+- Ne pas simplifier.
+- Ne pas interpréter.
+- Exécuter exactement le design demandé.

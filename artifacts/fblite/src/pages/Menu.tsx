@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "../router";
 import { isAdmin, ADMIN_SECRET_PATH } from "../lib/admin";
 import { apiGetTontines, apiGetCourses, apiGetEnrollments, apiGetWallet, apiGetBlockedUsers, apiUnblockUser, type ApiTontine, type ApiCourse, type ApiEnrollment, type BlockedUser } from "../lib/api";
@@ -673,173 +673,484 @@ export default function Menu() {
     </div>
   );
 
-  // MAIN MENU — grille 2 colonnes style Facebook
-  const GRID_ITEMS = [
-    { icon: "🎬", label: "Reels",            bg: "#FFE0E0", action: () => navigate("/reels") },
-    { icon: "💬", label: "Messages",         bg: "#E3F2FD", action: () => navigate("/messages") },
-    { icon: "👥", label: "Groupes",          bg: "#E3F2FD", action: () => navigate("/groups") },
-    { icon: "👫", label: "Ami(e)s",          bg: "#E3F2FD", action: () => navigate("/friends") },
-    { icon: "🏪", label: "Marketplace",      bg: "#E0F7FA", action: () => navigate("/marketplace") },
-    { icon: "💳", label: "Wallet",           bg: "#E8F5E9", action: () => navigate("/wallet") },
-    { icon: "🚩", label: "Pages",            bg: "#FFF3E0", action: () => navigate("/pages") },
-    { icon: "🔖", label: "Enregistrements", bg: "#F3E5F5", action: () => navigate("/saved") },
-    { icon: "✨", label: "Souvenirs",        bg: "#E3F2FD", action: () => navigate("/memories") },
-    { icon: "🎁", label: "Anniversaires",    bg: "#E8F5E9", action: () => {} },
-    { icon: "📅", label: "Évènements",       bg: "#FFEBEE", action: () => navigate("/events") },
-    { icon: "✅", label: "Brute Vérifié",   bg: "#E3F2FD", action: () => setActiveSection("settings-verify") },
-    { icon: "💰", label: "Tontines",         bg: "#FFF8E1", action: () => navigate("/tontines") },
-    { icon: "📰", label: "Fils",             bg: "#FFF3E0", action: () => navigate("/") },
-    { icon: "🎓", label: "Formations",       bg: "#F3E5F5", action: () => navigate("/formations") },
-    { icon: "🏅", label: "Score",            bg: "#FFF8E1", action: () => setActiveSection("score") },
-    { icon: "💼", label: "Emplois",          bg: "#E8F5E9", action: () => navigate("/jobs") },
-    ...(isAdmin(user.email) ? [{ icon: "🛡️", label: "Admin", bg: "#FCE4EC", action: () => navigate(ADMIN_SECRET_PATH) }] : []),
+  // ─── MAIN MENU — Ultra Premium 2026 ───
+  const handle = user.name
+    ? "@" + user.name.toLowerCase().replace(/\s+/g, "_")
+    : "@utilisateur";
+
+  type GridCard = {
+    label: string;
+    sub: string;
+    bg: string;
+    iconColor: string;
+    badge: number;
+    action: () => void;
+    icon: (c: string) => React.ReactNode;
+  };
+
+  const gridCards: GridCard[] = [
+    {
+      label: "Reels", sub: "Découvrez et partagez des vidéos courtes",
+      bg: "#FFE8E8", iconColor: "#EF5350", badge: 9, action: () => navigate("/reels"),
+      icon: (c) => (
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="2.5"/>
+          <path d="M7 2v20M17 2v20M2 12h20M2 7h5M17 7h5M2 17h5M17 17h5"/>
+        </svg>
+      ),
+    },
+    {
+      label: "Messages", sub: "Discutez avec vos amis en privé",
+      bg: "#E8F0FE", iconColor: "#1E88E5", badge: 12, action: () => navigate("/messages"),
+      icon: (c) => (
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+        </svg>
+      ),
+    },
+    {
+      label: "Groupes", sub: "Rejoignez des communautés qui vous passionnent",
+      bg: "#E8F5E9", iconColor: "#43A047", badge: 5, action: () => navigate("/groups"),
+      icon: (c) => (
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+        </svg>
+      ),
+    },
+    {
+      label: "Ami(e)s", sub: "Retrouvez vos amis et faites-en de nouveaux",
+      bg: "#FFF8E1", iconColor: "#FB8C00", badge: 16, action: () => navigate("/friends"),
+      icon: (c) => (
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <line x1="19" y1="8" x2="19" y2="14"/>
+          <line x1="22" y1="11" x2="16" y2="11"/>
+        </svg>
+      ),
+    },
+    {
+      label: "Marketplace", sub: "Achetez et vendez en toute sécurité",
+      bg: "#EDE7F6", iconColor: "#7E57C2", badge: 0, action: () => navigate("/marketplace"),
+      icon: (c) => (
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 01-8 0"/>
+        </svg>
+      ),
+    },
+    {
+      label: "Portefeuille", sub: "Gérez vos paiements et transactions",
+      bg: "#E0F2F1", iconColor: "#00897B", badge: 0, action: () => navigate("/wallet"),
+      icon: (c) => (
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 12V7H5a2 2 0 010-4h14v4"/>
+          <path d="M3 5v14a2 2 0 002 2h16v-5"/>
+          <path d="M18 12a2 2 0 100 4h4v-4h-4z"/>
+        </svg>
+      ),
+    },
+    {
+      label: "Pages", sub: "Gérez vos pages et développez votre audience",
+      bg: "#E1F5FE", iconColor: "#039BE5", badge: 0, action: () => {},
+      icon: (c) => (
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+          <line x1="4" y1="22" x2="4" y2="15"/>
+        </svg>
+      ),
+    },
+    {
+      label: "Évènements", sub: "Découvrez les événements autour de vous",
+      bg: "#FFF3E0", iconColor: "#F4511E", badge: 0, action: () => navigate("/events"),
+      icon: (c) => (
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+      ),
+    },
+    {
+      label: "Brute Vérifié", sub: "Compte vérifié et sécurisé",
+      bg: "#E8F5E9", iconColor: "#22C55E", badge: 0, action: () => setActiveSection("settings-verify"),
+      icon: (c) => (
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <polyline points="9 12 11 14 15 10"/>
+        </svg>
+      ),
+    },
+    {
+      label: "Tontines", sub: "Gérez et participez à des tontines",
+      bg: "#FFF8E1", iconColor: "#F9A825", badge: tontines.length, action: () => navigate("/tontines"),
+      icon: (c) => (
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M14.5 9.5a2.5 2.5 0 00-5 0c0 1.5 1 2 2.5 2.5s2.5 1 2.5 2.5a2.5 2.5 0 01-5 0"/>
+          <line x1="12" y1="7" x2="12" y2="8.5"/>
+          <line x1="12" y1="15.5" x2="12" y2="17"/>
+        </svg>
+      ),
+    },
+    {
+      label: "Fils", sub: "Actualités et contenus personnalisés",
+      bg: "#E3F2FD", iconColor: "#1E88E5", badge: 0, action: () => navigate("/"),
+      icon: (c) => (
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+      ),
+    },
+    {
+      label: "Formations", sub: "Développez vos compétences et apprenez",
+      bg: "#EDE7F6", iconColor: "#7E57C2", badge: 0, action: () => navigate("/formations"),
+      icon: (c) => (
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+          <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+        </svg>
+      ),
+    },
+    {
+      label: "Score", sub: "Boostez votre score et gagnez en visibilité",
+      bg: "#FFF8E1", iconColor: "#FB8C00", badge: 0, action: () => setActiveSection("score"),
+      icon: (c) => (
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="8" r="6"/>
+          <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>
+        </svg>
+      ),
+    },
+    ...(isAdmin(user.email) ? [{
+      label: "Admin", sub: "Panneau d'administration",
+      bg: "#FCE4EC", iconColor: "#E91E63", badge: 0, action: () => navigate(ADMIN_SECRET_PATH),
+      icon: (c: string) => (
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      ),
+    } as GridCard] : []),
   ];
 
   return (
-    <div style={{ maxWidth: 600, margin: "0 auto", background: "var(--fb-bg)", minHeight: "100vh" }}>
+    <div style={{ maxWidth: 600, margin: "0 auto", background: "#F8FAFC", minHeight: "100vh", paddingBottom: 80 }}>
 
-      {/* ── Header ── */}
-      <div style={{ background: "var(--fb-white)", padding: "14px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid var(--fb-divider)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <button onClick={() => window.history.back()} style={{ background: "var(--fb-bg)", border: "none", width: 36, height: 36, borderRadius: "50%", cursor: "pointer", fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>‹</button>
-          <span style={{ fontWeight: 900, fontSize: 22 }}>Menu</span>
-        </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button style={{ background: "var(--fb-bg)", border: "none", width: 36, height: 36, borderRadius: "50%", cursor: "pointer", fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>↕</button>
-          <button style={{ background: "var(--fb-bg)", border: "none", width: 36, height: 36, borderRadius: "50%", cursor: "pointer", fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>🔍</button>
+      {/* ── HEADER ── */}
+      <div style={{ background: "#fff", padding: "16px 16px 14px", borderBottom: "1px solid #E8EEF4" }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+          <div>
+            <div style={{ fontWeight: 900, fontSize: 26, color: "#0D1B2A", letterSpacing: -0.5, lineHeight: 1.2 }}>Menu</div>
+            <div style={{ fontSize: 13, color: "#8896A6", marginTop: 3, lineHeight: 1.4 }}>Accédez rapidement à tout ce dont vous avez besoin.</div>
+          </div>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button style={{ background: "#F1F5F9", border: "none", width: 38, height: 38, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/>
+              </svg>
+            </button>
+            <button onClick={() => setActiveSection("settings")} style={{ background: "#F1F5F9", border: "none", width: 38, height: 38, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
-      <div style={{ padding: "10px 12px", display: "flex", flexDirection: "column", gap: 8 }}>
+      <div style={{ padding: "12px 12px", display: "flex", flexDirection: "column", gap: 10 }}>
 
-        {/* ── Profil card ── */}
+        {/* ── USER CARD ── */}
         <div
           onClick={() => navigate("/profile")}
-          style={{ background: "var(--fb-white)", borderRadius: 12, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
+          style={{
+            background: "linear-gradient(135deg, #fff 55%, #F0FDF4)",
+            borderRadius: 20, padding: 16, cursor: "pointer",
+            boxShadow: "0 4px 20px rgba(34,197,94,0.12), 0 1px 4px rgba(0,0,0,0.06)",
+            border: "1px solid #DCFCE7", overflow: "hidden", position: "relative",
+          }}
         >
-          <div style={{ position: "relative", flexShrink: 0 }}>
-            {user.avatarUrl
-              ? <img src={user.avatarUrl} alt="Profil" style={{ width: 56, height: 56, borderRadius: "50%", objectFit: "cover" }} />
-              : <div className="avatar" style={{ width: 56, height: 56, fontSize: 20, background: "#42B72A", flexShrink: 0 }}>{userInitials}</div>
-            }
+          <div style={{ position: "absolute", top: -24, right: -24, width: 110, height: 110, borderRadius: "50%", background: "rgba(34,197,94,0.07)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", bottom: -32, right: 36, width: 90, height: 90, borderRadius: "50%", background: "rgba(34,197,94,0.05)", pointerEvents: "none" }} />
+
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 14, position: "relative" }}>
+            <div style={{ position: "relative", flexShrink: 0 }}>
+              {user.avatarUrl
+                ? <img src={user.avatarUrl} alt="avatar" style={{ width: 64, height: 64, borderRadius: "50%", objectFit: "cover", border: "3px solid #22C55E" }} />
+                : <div style={{ width: 64, height: 64, borderRadius: "50%", background: "linear-gradient(135deg, #22C55E, #16A34A)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 900, color: "#fff", border: "3px solid #fff", boxShadow: "0 2px 8px rgba(34,197,94,0.4)" }}>{userInitials}</div>
+              }
+              <div style={{ position: "absolute", bottom: 2, right: 2, width: 14, height: 14, borderRadius: "50%", background: "#22C55E", border: "2.5px solid #fff" }} />
+            </div>
+
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ fontWeight: 900, fontSize: 17, color: "#0D1B2A" }}>{user.name}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#1E88E5" stroke="none">
+                  <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+              </div>
+              <div style={{ fontSize: 13, color: "#8896A6", marginTop: 2 }}>{handle}</div>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 4, marginTop: 6, background: "#DCFCE7", borderRadius: 20, padding: "3px 10px" }}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  <polyline points="9 12 11 14 15 10"/>
+                </svg>
+                <span style={{ fontSize: 11, fontWeight: 700, color: "#16A34A" }}>Vérifié</span>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10, flexShrink: 0 }}>
+              <div style={{ background: "linear-gradient(135deg, #22C55E, #16A34A)", borderRadius: 20, padding: "4px 10px", display: "flex", alignItems: "center", gap: 4 }}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="#FFD700" stroke="none">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+                <span style={{ fontSize: 11, fontWeight: 800, color: "#fff" }}>Niveau 4</span>
+              </div>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", marginTop: 14, paddingTop: 14, borderTop: "1px solid #DCFCE7" }}>
+            {[
+              { value: "23", label: "Publications" },
+              { value: "1.2K", label: "Abonnés" },
+              { value: "320", label: "Abonnements" },
+            ].map((stat, i) => (
+              <div key={i} style={{ flex: 1, textAlign: "center", borderRight: i < 2 ? "1px solid #DCFCE7" : "none" }}>
+                <div style={{ fontWeight: 900, fontSize: 16, color: "#0D1B2A" }}>{stat.value}</div>
+                <div style={{ fontSize: 11, color: "#8896A6", marginTop: 2 }}>{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── CHANGER DE COMPTE ── */}
+        <div
+          style={{ background: "#fff", borderRadius: 16, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.04)" }}
+          onPointerDown={e => (e.currentTarget.style.background = "#F8FAFC")}
+          onPointerUp={e => (e.currentTarget.style.background = "#fff")}
+          onPointerLeave={e => (e.currentTarget.style.background = "#fff")}
+        >
+          <div style={{ width: 46, height: 46, borderRadius: "50%", background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+            </svg>
           </div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 800, fontSize: 16 }}>{user.name}</div>
-            <div style={{ fontSize: 13, color: "var(--fb-text-secondary)" }}>Voir votre profil</div>
+            <div style={{ fontWeight: 700, fontSize: 15, color: "#0D1B2A" }}>Changer de compte</div>
+            <div style={{ fontSize: 12, color: "#8896A6", marginTop: 2 }}>Gérez vos comptes facilement</div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <div style={{ width: 36, height: 36, borderRadius: "50%", border: "2px solid var(--fb-divider)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>📷</div>
-            <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--fb-bg)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>⌄</div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </div>
+
+        {/* ── INVITER DES AMI(E)S ── */}
+        <div
+          style={{ background: "#fff", borderRadius: 16, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.04)" }}
+          onPointerDown={e => (e.currentTarget.style.background = "#F8FAFC")}
+          onPointerUp={e => (e.currentTarget.style.background = "#fff")}
+          onPointerLeave={e => (e.currentTarget.style.background = "#fff")}
+        >
+          <div style={{ width: 46, height: 46, borderRadius: "50%", background: "#FFF0F0", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="#EF5350" stroke="none">
+              <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+            </svg>
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 700, fontSize: 15, color: "#0D1B2A" }}>Inviter des ami(e)s</div>
+            <div style={{ fontSize: 12, color: "#8896A6", marginTop: 2 }}>Plus d'amis, plus de fun</div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ width: 32, height: 32, borderRadius: 10, background: "#FFF8E1", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FB8C00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 12 20 22 4 22 4 12"/>
+                <rect x="2" y="7" width="20" height="5"/>
+                <line x1="12" y1="22" x2="12" y2="7"/>
+                <path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/>
+                <path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/>
+              </svg>
+            </div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
           </div>
         </div>
 
-        {/* ── Changer de compte ── */}
-        <div style={{ background: "var(--fb-white)", borderRadius: 12, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
-          <div style={{ width: 40, height: 40, borderRadius: "50%", background: "var(--fb-bg)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>👤</div>
-          <div style={{ flex: 1, fontWeight: 600, fontSize: 15 }}>Changer de compte</div>
-          <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--fb-bg)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, position: "relative" }}>
-            ⌄
-            <div style={{ position: "absolute", top: 4, right: 4, width: 8, height: 8, background: "#F44336", borderRadius: "50%", border: "2px solid #fff" }} />
-          </div>
-        </div>
-
-        {/* ── Inviter des ami(e)s ── */}
-        <div style={{ background: "var(--fb-white)", borderRadius: 12, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
-          <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#FFF0F0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>❤️</div>
-          <div style={{ flex: 1, fontWeight: 600, fontSize: 15 }}>Inviter des ami(e)s</div>
-        </div>
-
-        {/* ── Grille 2 colonnes ── */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-          {GRID_ITEMS.map((item, i) => (
+        {/* ── GRILLE 2 COLONNES ── */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+          {gridCards.map((card, i) => (
             <div
               key={i}
-              onClick={item.action}
+              onClick={card.action}
               style={{
-                background: "var(--fb-white)", borderRadius: 12, padding: "16px 14px",
-                cursor: "pointer", boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
-                display: "flex", flexDirection: "column", gap: 8,
-                transition: "background 0.15s",
+                background: "#fff", borderRadius: 16, padding: "14px 14px 12px",
+                cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+                display: "flex", flexDirection: "column", gap: 10, position: "relative",
+                border: "1px solid rgba(0,0,0,0.04)", transition: "transform 0.1s",
               }}
-              onPointerDown={e => (e.currentTarget.style.background = "var(--fb-bg)")}
-              onPointerUp={e => (e.currentTarget.style.background = "var(--fb-white)")}
-              onPointerLeave={e => (e.currentTarget.style.background = "var(--fb-white)")}
+              onPointerDown={e => { e.currentTarget.style.transform = "scale(0.97)"; }}
+              onPointerUp={e => { e.currentTarget.style.transform = "scale(1)"; }}
+              onPointerLeave={e => { e.currentTarget.style.transform = "scale(1)"; }}
             >
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: item.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>
-                {item.icon}
+              {card.badge > 0 && (
+                <div style={{ position: "absolute", top: 10, right: 10, background: "#22C55E", color: "#fff", fontSize: 10, fontWeight: 800, minWidth: 20, height: 20, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 5px" }}>
+                  {card.badge > 99 ? "99+" : card.badge}
+                </div>
+              )}
+              <div style={{ width: 50, height: 50, borderRadius: 14, background: card.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                {card.icon(card.iconColor)}
               </div>
-              <div style={{ fontWeight: 600, fontSize: 14, color: "var(--fb-text)", lineHeight: 1.3 }}>{item.label}</div>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 14, color: "#0D1B2A", lineHeight: 1.3 }}>{card.label}</div>
+                <div style={{ fontSize: 11, color: "#8896A6", marginTop: 3, lineHeight: 1.4 }}>{card.sub}</div>
+              </div>
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <div style={{ width: 26, height: 26, borderRadius: 8, background: card.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={card.iconColor} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </div>
+              </div>
             </div>
           ))}
         </div>
 
-        {/* ── Paramètres et confidentialité (accordéon) ── */}
-        <div style={{ background: "var(--fb-white)", borderRadius: 12, overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
-          <div
-            onClick={() => setSettingsOpen(v => !v)}
-            style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", cursor: "pointer" }}
-          >
-            <div style={{ width: 40, height: 40, borderRadius: "50%", background: "var(--fb-bg)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>⚙️</div>
-            <div style={{ flex: 1, fontWeight: 600, fontSize: 15 }}>Paramètres et confidentialité</div>
-            <span style={{ fontSize: 18, transform: settingsOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>⌄</span>
+        {/* ── EMPLOIS (pleine largeur) ── */}
+        <div
+          onClick={() => navigate("/jobs")}
+          style={{ background: "#fff", borderRadius: 16, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.04)" }}
+          onPointerDown={e => (e.currentTarget.style.background = "#F8FAFC")}
+          onPointerUp={e => (e.currentTarget.style.background = "#fff")}
+          onPointerLeave={e => (e.currentTarget.style.background = "#fff")}
+        >
+          <div style={{ width: 50, height: 50, borderRadius: 14, background: "#E8F5E9", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#43A047" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+              <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>
+            </svg>
           </div>
-          {settingsOpen && (
-            <div style={{ borderTop: "1px solid var(--fb-divider)" }}>
-              {[
-                { label: "Paramètres", action: () => setActiveSection("settings") },
-                { label: "Confidentialité", action: () => setActiveSection("settings-privacy") },
-                { label: "Notifications", action: () => setActiveSection("settings-notifs") },
-                { label: "Langue", action: () => setActiveSection("settings-lang") },
-                { label: "Apparence", action: () => setActiveSection("settings-appearance") },
-                { label: "Mode données", action: () => setActiveSection("settings-data") },
-                { label: "Vérification du compte", action: () => setActiveSection("settings-verify") },
-              ].map((item, i, arr) => (
-                <div key={i} onClick={item.action} style={{ padding: "12px 16px 12px 70px", fontSize: 14, fontWeight: 500, cursor: "pointer", borderBottom: i < arr.length - 1 ? "1px solid var(--fb-divider)" : "none", color: "var(--fb-text)" }}>
-                  {item.label}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* ── Aide et assistance (accordéon) ── */}
-        <div style={{ background: "var(--fb-white)", borderRadius: 12, overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
-          <div
-            onClick={() => setHelpOpen(v => !v)}
-            style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", cursor: "pointer" }}
-          >
-            <div style={{ width: 40, height: 40, borderRadius: "50%", background: "var(--fb-bg)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>❓</div>
-            <div style={{ flex: 1, fontWeight: 600, fontSize: 15 }}>Aide et assistance</div>
-            <span style={{ fontSize: 18, transform: helpOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>⌄</span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 700, fontSize: 15, color: "#0D1B2A" }}>Emplois</div>
+            <div style={{ fontSize: 12, color: "#8896A6", marginTop: 2 }}>Trouvez des offres d'emploi qui vous correspondent</div>
           </div>
-          {helpOpen && (
-            <div style={{ borderTop: "1px solid var(--fb-divider)" }}>
-              {[
-                { label: "Centre d'aide", action: () => setActiveSection("help") },
-                { label: "Signaler un problème", action: () => {} },
-                { label: "Conditions d'utilisation", action: () => {} },
-              ].map((item, i, arr) => (
-                <div key={i} onClick={item.action} style={{ padding: "12px 16px 12px 70px", fontSize: 14, fontWeight: 500, cursor: "pointer", borderBottom: i < arr.length - 1 ? "1px solid var(--fb-divider)" : "none", color: "var(--fb-text)" }}>
-                  {item.label}
-                </div>
-              ))}
-            </div>
-          )}
+          <div style={{ width: 28, height: 28, borderRadius: 8, background: "#E8F5E9", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#43A047" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </div>
         </div>
 
-        {/* ── Ajouter un compte ── */}
-        <div style={{ background: "var(--fb-white)", borderRadius: 12, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
-          <div style={{ width: 40, height: 40, borderRadius: "50%", background: "var(--fb-bg)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>➕</div>
-          <div style={{ flex: 1, fontWeight: 600, fontSize: 15 }}>Ajouter un compte</div>
+        {/* ── PARAMÈTRES ET CONFIDENTIALITÉ ── */}
+        <div
+          onClick={() => setActiveSection("settings")}
+          style={{ background: "#fff", borderRadius: 16, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.04)" }}
+          onPointerDown={e => (e.currentTarget.style.background = "#F8FAFC")}
+          onPointerUp={e => (e.currentTarget.style.background = "#fff")}
+          onPointerLeave={e => (e.currentTarget.style.background = "#fff")}
+        >
+          <div style={{ width: 50, height: 50, borderRadius: 14, background: "#E8F5E9", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <circle cx="12" cy="17" r="0.5" fill="#22C55E"/>
+            </svg>
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 700, fontSize: 15, color: "#0D1B2A" }}>Paramètres et confidentialité</div>
+            <div style={{ fontSize: 12, color: "#8896A6", marginTop: 2 }}>Gérez votre compte, la sécurité et vos préférences.</div>
+          </div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
         </div>
 
-        {/* ── Déconnexion ── */}
+        {/* ── AIDE ET ASSISTANCE ── */}
+        <div
+          onClick={() => setActiveSection("help")}
+          style={{ background: "#fff", borderRadius: 16, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.04)" }}
+          onPointerDown={e => (e.currentTarget.style.background = "#F8FAFC")}
+          onPointerUp={e => (e.currentTarget.style.background = "#fff")}
+          onPointerLeave={e => (e.currentTarget.style.background = "#fff")}
+        >
+          <div style={{ width: 50, height: 50, borderRadius: 14, background: "#E0F2F1", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#00897B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 18v-6a9 9 0 0118 0v6"/>
+              <path d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z"/>
+            </svg>
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 700, fontSize: 15, color: "#0D1B2A" }}>Aide et assistance</div>
+            <div style={{ fontSize: 12, color: "#8896A6", marginTop: 2 }}>FAQ, assistance et centre d'aide.</div>
+          </div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </div>
+
+        {/* ── AJOUTER UN COMPTE ── */}
+        <div
+          style={{
+            background: "linear-gradient(135deg, #22C55E 0%, #16A34A 100%)",
+            borderRadius: 20, padding: "18px 18px",
+            display: "flex", alignItems: "center", gap: 16, cursor: "pointer",
+            boxShadow: "0 8px 24px rgba(34,197,94,0.35)",
+          }}
+          onPointerDown={e => (e.currentTarget.style.opacity = "0.88")}
+          onPointerUp={e => (e.currentTarget.style.opacity = "1")}
+          onPointerLeave={e => (e.currentTarget.style.opacity = "1")}
+        >
+          <div style={{ width: 50, height: 50, borderRadius: "50%", background: "rgba(255,255,255,0.22)", border: "2px solid rgba(255,255,255,0.4)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 800, fontSize: 16, color: "#fff" }}>Ajouter un compte</div>
+            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.82)", marginTop: 3, lineHeight: 1.4 }}>Ajoutez un autre compte et basculez facilement entre vos profils</div>
+          </div>
+          <div style={{ width: 34, height: 34, borderRadius: "50%", background: "rgba(255,255,255,0.22)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </div>
+        </div>
+
+        {/* ── DÉCONNEXION ── */}
         <div
           onClick={logout}
-          style={{ background: "var(--fb-white)", borderRadius: 12, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", boxShadow: "0 1px 3px rgba(0,0,0,0.06)", marginBottom: 16 }}
+          style={{ background: "#FFF1F2", borderRadius: 16, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", boxShadow: "0 2px 8px rgba(239,68,68,0.08)", border: "1px solid #FFE4E6", marginBottom: 8 }}
+          onPointerDown={e => (e.currentTarget.style.background = "#FFE4E6")}
+          onPointerUp={e => (e.currentTarget.style.background = "#FFF1F2")}
+          onPointerLeave={e => (e.currentTarget.style.background = "#FFF1F2")}
         >
-          <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#FFF0F0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>🚪</div>
-          <div style={{ flex: 1, fontWeight: 600, fontSize: 15, color: "#F44336" }}>Déconnexion</div>
+          <div style={{ width: 50, height: 50, borderRadius: 14, background: "#FFE4E6", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 700, fontSize: 15, color: "#EF4444" }}>Déconnexion</div>
+            <div style={{ fontSize: 12, color: "#FDA4AF", marginTop: 2 }}>Se déconnecter de votre compte en toute sécurité</div>
+          </div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
         </div>
 
       </div>
