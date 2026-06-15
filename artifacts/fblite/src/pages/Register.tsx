@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "../router";
 import { COUNTRIES } from "../data/mock";
 import { apiRegister, saveFbUser, setBpToken } from "../lib/api";
@@ -92,6 +92,15 @@ export default function Register() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPw, setShowPw]   = useState(false);
+  const [countdown, setCountdown] = useState(45);
+  const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  useEffect(() => {
+    if (step !== 6) return;
+    setCountdown(45);
+    const t = setInterval(() => setCountdown(c => c > 0 ? c - 1 : 0), 1000);
+    return () => clearInterval(t);
+  }, [step]);
 
   const set = (field: keyof Form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm(f => ({ ...f, [field]: e.target.value }));
@@ -957,68 +966,198 @@ export default function Register() {
               ÉTAPE 6 : Code de confirmation
           ═══════════════════════════════════════════ */}
           {step === 6 && (
-            <div className="reg-step" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ width: 56, height: 56, borderRadius: 16, background: "linear-gradient(135deg, #f0fdf4, #dcfce7)", border: "1px solid #bbf7d0", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>
-                  <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><rect x="2" y="5" width="22" height="16" rx="3" stroke="#22c55e" strokeWidth="1.6"/><path d="M2 10l11 7 11-7" stroke="#22c55e" strokeWidth="1.6" strokeLinecap="round"/></svg>
+            <div className="reg-step" style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+
+              {/* ── Icône centrale ── */}
+              <div style={{ textAlign: "center", paddingTop: 4 }}>
+                <div style={{ position: "relative", display: "inline-block", marginBottom: 14 }}>
+                  <div style={{
+                    width: 72, height: 72, borderRadius: "50%",
+                    background: "linear-gradient(135deg, #dcfce7, #bbf7d0)",
+                    border: "2px solid #86efac",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    boxShadow: "0 4px 20px rgba(34,197,94,0.18)",
+                  }}>
+                    <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+                      <rect x="2" y="7" width="30" height="20" rx="3.5" stroke="#22c55e" strokeWidth="1.8"/>
+                      <path d="M2 13l15 9 15-9" stroke="#22c55e" strokeWidth="1.8" strokeLinecap="round"/>
+                    </svg>
+                  </div>
+                  {/* Badge checkmark */}
+                  <div style={{
+                    position: "absolute", bottom: 2, right: 2,
+                    width: 22, height: 22, borderRadius: "50%",
+                    background: "#16a34a",
+                    border: "2.5px solid #fff",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>
+                    <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+                      <path d="M2 5.5l2.5 2.5L9 2.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
                 </div>
-                <p style={{ margin: 0, fontSize: 14, color: "#374151", lineHeight: 1.6 }}>
-                  Nous avons envoyé un code à 6 chiffres sur{" "}
-                  <strong style={{ color: "#111827" }}>
-                    {form.contactMode === "phone" ? `${selectedCountry.phone} ${form.phone}` : form.email}
-                  </strong>
+                <p style={{ margin: 0, fontSize: 14, color: "#374151", lineHeight: 1.65, textAlign: "center" }}>
+                  Nous avons envoyé un code à 6 chiffres sur
+                </p>
+                <p style={{ margin: "4px 0 0", fontSize: 14.5, fontWeight: 800, color: "#111827", wordBreak: "break-all" }}>
+                  {form.contactMode === "phone" ? `${selectedCountry.phone} ${form.phone}` : form.email}
                 </p>
               </div>
 
-              <input
-                className="reg-field"
-                style={{ ...fieldBase, paddingLeft: 14, textAlign: "center", fontSize: 28, fontWeight: 800, letterSpacing: 10, paddingTop: 16, paddingBottom: 16 }}
-                type="text"
-                inputMode="numeric"
-                maxLength={6}
-                placeholder="— — — — — —"
-                value={form.code}
-                onChange={e => setForm(f => ({ ...f, code: e.target.value.replace(/\D/g,"").slice(0,6) }))}
-                onFocus={fieldFocus}
-                onBlur={fieldBlur}
-                autoFocus
-              />
+              {/* ── 6 cases OTP ── */}
+              <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
+                {[0,1,2,3,4,5].map(i => {
+                  const digit = form.code[i] ?? "";
+                  const isActive = form.code.length === i || (i === 5 && form.code.length >= 5);
+                  return (
+                    <input
+                      key={i}
+                      ref={el => { otpRefs.current[i] = el; }}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      value={digit}
+                      autoFocus={i === 0}
+                      onChange={e => {
+                        const val = e.target.value.replace(/\D/g,"").slice(-1);
+                        const arr = (form.code + "      ").slice(0,6).split("");
+                        arr[i] = val;
+                        const next = arr.join("").replace(/ /g,"");
+                        setForm(f => ({ ...f, code: next }));
+                        if (val && i < 5) otpRefs.current[i+1]?.focus();
+                      }}
+                      onKeyDown={e => {
+                        if (e.key === "Backspace" && !digit && i > 0) {
+                          const arr = form.code.split("");
+                          arr[i-1] = "";
+                          setForm(f => ({ ...f, code: arr.join("") }));
+                          otpRefs.current[i-1]?.focus();
+                        }
+                      }}
+                      style={{
+                        width: 46, height: 54,
+                        textAlign: "center",
+                        fontSize: 22, fontWeight: 800,
+                        color: "#111827",
+                        border: `2px solid ${digit ? "#22c55e" : isActive ? "#22c55e" : "#e5e7eb"}`,
+                        borderRadius: 14,
+                        background: digit ? "#f0fdf4" : "#fff",
+                        boxShadow: isActive ? "0 0 0 3px rgba(34,197,94,0.12)" : "0 1px 3px rgba(0,0,0,0.04)",
+                        outline: "none",
+                        transition: "all 0.15s",
+                        caretColor: "#22c55e",
+                        fontFamily: "inherit",
+                      }}
+                    />
+                  );
+                })}
+              </div>
 
+              {/* ── Compte à rebours ── */}
+              <div style={{ textAlign: "center" }}>
+                {countdown > 0 ? (
+                  <div style={{ display: "inline-flex", alignItems: "center", gap: 7, color: "#6b7280", fontSize: 13, fontWeight: 500 }}>
+                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                      <circle cx="7.5" cy="7.5" r="6" stroke="#9ca3af" strokeWidth="1.3"/>
+                      <path d="M7.5 4.5V7.5l2 1.5" stroke="#9ca3af" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    Renvoyer le code dans{" "}
+                    <span style={{ fontWeight: 800, color: "#16a34a" }}>
+                      {String(Math.floor(countdown/60)).padStart(2,"0")}:{String(countdown%60).padStart(2,"0")}
+                    </span>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => { setCountdown(45); setForm(f => ({ ...f, code: "" })); otpRefs.current[0]?.focus(); }}
+                    style={{ background: "none", border: "none", color: "#16a34a", fontSize: 13.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}
+                  >
+                    Renvoyer le code
+                  </button>
+                )}
+              </div>
+
+              {/* ── Bouton Confirmer ── */}
               <button
                 className="reg-next-btn"
                 onClick={handleSubmit}
                 disabled={loading}
+                style={{ justifyContent: "space-between", padding: "15px 18px" }}
               >
+                {/* Icône bouclier gauche */}
+                <div style={{
+                  width: 32, height: 32, borderRadius: 10,
+                  background: "rgba(255,255,255,0.18)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  flexShrink: 0,
+                }}>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <path d="M9 1.5L2.5 4.5V9c0 4 2.8 7.5 6.5 8 3.7-.5 6.5-4 6.5-8V4.5L9 1.5z" fill="rgba(255,255,255,0.2)" stroke="white" strokeWidth="1.4"/>
+                    <path d="M6 9l2.5 2.5L12 7" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
                 {loading ? (
-                  <>
+                  <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ animation: "spin 0.8s linear infinite" }}>
                       <circle cx="9" cy="9" r="7" stroke="rgba(255,255,255,0.4)" strokeWidth="2"/>
                       <path d="M9 2a7 7 0 017 7" stroke="white" strokeWidth="2" strokeLinecap="round"/>
                     </svg>
                     Inscription en cours…
-                  </>
+                  </span>
                 ) : (
-                  <>
-                    Confirmer et s'inscrire
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9h12M10.5 5.5L14 9l-3.5 3.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  </>
+                  <span style={{ fontWeight: 700, fontSize: 16 }}>Confirmer et s'inscrire</span>
+                )}
+                {!loading && (
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M4 10h12M11 6l4 4-4 4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
                 )}
               </button>
 
-              <div style={{ textAlign: "center" }}>
-                <button
-                  type="button"
-                  onClick={() => setForm(f => ({ ...f, code: "123456" }))}
-                  style={{ background: "none", border: "none", color: "#3b82f6", fontSize: 13.5, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}
-                >
-                  Renvoyer le code
-                </button>
+              {/* ── Carte sécurité ── */}
+              <div style={{
+                background: "#fff",
+                border: "1px solid #d1fae5",
+                borderRadius: 16,
+                padding: "13px 14px",
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                boxShadow: "0 2px 8px rgba(34,197,94,0.06)",
+              }}>
+                <div style={{
+                  width: 40, height: 40, borderRadius: "50%",
+                  background: "linear-gradient(135deg, #f0fdf4, #dcfce7)",
+                  border: "1.5px solid #86efac",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  flexShrink: 0,
+                }}>
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M10 1.5L3 4.5V9.5c0 4.2 3 7.9 7 8.5 4-.6 7-4.3 7-8.5V4.5L10 1.5z" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.4"/>
+                    <path d="M6.5 10l2.5 2.5L13.5 8" stroke="#16a34a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <p style={{ margin: 0, fontSize: 12.5, color: "#374151", lineHeight: 1.45, flex: 1 }}>
+                  Votre {form.contactMode === "email" ? "adresse e-mail" : "numéro"} a été vérifiée de manière sécurisée.
+                </p>
+                <span style={{
+                  display: "flex", alignItems: "center", gap: 4,
+                  background: "#f0fdf4", border: "1px solid #86efac",
+                  borderRadius: 20, padding: "4px 9px",
+                  fontSize: 11, fontWeight: 700, color: "#16a34a",
+                  whiteSpace: "nowrap", flexShrink: 0,
+                }}>
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                    <path d="M2 5l2 2 4-4" stroke="#16a34a" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  Vérification sécurisée
+                </span>
               </div>
 
-              <div style={{ background: "#f0fdf4", border: "1px solid #d1fae5", borderRadius: 12, padding: "9px 12px", display: "flex", gap: 8, alignItems: "flex-start" }}>
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="7" cy="7" r="5.5" stroke="#22c55e" strokeWidth="1.2"/><path d="M7 4.5v3" stroke="#22c55e" strokeWidth="1.2" strokeLinecap="round"/><circle cx="7" cy="9.5" r="0.6" fill="#22c55e"/></svg>
-                <p style={{ margin: 0, fontSize: 12, color: "#15803d" }}>Pour les tests : le code <strong>123456</strong> est accepté automatiquement.</p>
-              </div>
+              {/* Helper test */}
+              <p style={{ margin: 0, fontSize: 11.5, color: "#9ca3af", textAlign: "center", lineHeight: 1.4 }}>
+                Pour les tests, le code <strong style={{ color: "#6b7280" }}>123456</strong> est accepté automatiquement.
+              </p>
             </div>
           )}
         </div>

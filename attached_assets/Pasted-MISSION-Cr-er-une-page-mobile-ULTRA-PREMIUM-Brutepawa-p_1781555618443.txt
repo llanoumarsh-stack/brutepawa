@@ -1,0 +1,199 @@
+MISSION :
+
+Créer une page mobile ULTRA PREMIUM Brutepawa pour la dernière étape d'inscription : Vérification du compte.
+
+Cette page doit être plus belle que Facebook, LinkedIn, TikTok et X.
+
+Style :
+
+- Mobile First
+- Design 2026
+- Blanc premium
+- Vert Brutepawa
+- Glassmorphism léger
+- Coins 32px
+- Ombres douces
+- SVG uniquement
+- Animations fluides
+- Interface fintech haut de gamme
+
+========================================
+EN-TÊTE
+========================================
+
+Logo Brutepawa centré.
+
+Icône :
+
+- Lettre "b" moderne
+- Bulle de discussion intégrée
+- Dégradé vert premium
+- Effet lumineux
+
+Titre :
+
+brutepawa
+
+Sous-titre :
+
+Rejoignez la première plateforme sociale et professionnelle dédiée à l'Afrique francophone.
+
+========================================
+CARTE PRINCIPALE
+========================================
+
+Grande carte blanche premium.
+
+- Coins 32px
+- Ombre élégante
+- Bordure légère
+
+========================================
+TITRE
+========================================
+
+Bouton retour à gauche.
+
+Titre :
+
+Code de confirmation
+
+À droite :
+
+Étape 6 sur 6
+
+========================================
+PROGRESSION
+========================================
+
+Afficher :
+
+100% complété
+
+Créer 6 segments verts remplis.
+
+Animation fluide.
+
+========================================
+ICÔNE CENTRALE
+========================================
+
+Grande icône e-mail SVG moderne.
+
+Ajouter :
+
+- Cercle vert clair
+- Badge validation ✓
+- Effet lumineux subtil
+
+========================================
+MESSAGE
+========================================
+
+Texte :
+
+Nous avons envoyé un code à 6 chiffres sur
+
+junioromarjunior9@gmail.com
+
+Adresse affichée en gras.
+
+========================================
+CHAMP OTP PREMIUM
+========================================
+
+Créer 6 cases séparées.
+
+Exemple :
+
+[1] [2] [3] [4] [5] [6]
+
+Style :
+
+- Carrés arrondis
+- Bordure verte
+- Animation focus
+- Effet glow léger
+
+Remplissage automatique du code.
+
+Passage automatique à la case suivante.
+
+========================================
+COMPTE À REBOURS
+========================================
+
+Icône horloge SVG.
+
+Texte :
+
+Renvoyer le code dans 00:45
+
+Style moderne.
+
+========================================
+BOUTON PRINCIPAL
+========================================
+
+Bouton géant.
+
+Texte :
+
+Confirmer et s'inscrire
+
+Ajouter :
+
+- Icône bouclier
+- Flèche à droite
+- Dégradé vert premium
+- Ombre verte légère
+- Animation clic
+
+========================================
+CARTE SÉCURITÉ
+========================================
+
+Créer une carte premium.
+
+Icône :
+
+Bouclier SVG
+
+Texte :
+
+Votre adresse e-mail a été vérifiée de manière sécurisée.
+
+Badge :
+
+✓ Vérification sécurisée
+
+Fond vert très clair.
+
+========================================
+ARRIÈRE-PLAN
+========================================
+
+Ajouter :
+
+- Cercles flous verts
+- Formes abstraites
+- Motifs géométriques subtils
+- Effets lumineux modernes
+
+========================================
+PIED DE PAGE
+========================================
+
+Brute Pawa © 2026 • Afrique francophone
+
+========================================
+IMPORTANT
+========================================
+
+Le résultat doit ressembler à une application conçue par une équipe UI/UX internationale.
+
+Qualité visuelle équivalente ou supérieure à Stripe, Revolut, Airbnb et LinkedIn.
+
+Aucun élément générique.
+
+Tout doit paraître premium, moderne, sécurisé et professionnel.
