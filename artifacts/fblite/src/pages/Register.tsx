@@ -642,19 +642,18 @@ export default function Register() {
           {step === 4 && (
             <div className="reg-step" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
 
-              {/* ── Tabs avec icônes ── */}
-              <div style={{ display: "flex", background: "#f3f4f6", borderRadius: 14, padding: 4, gap: 4 }}>
+              {/* ── Tabs underline style ── */}
+              <div style={{ display: "flex", borderBottom: "2px solid #e5e7eb" }}>
                 <button
                   onClick={() => setForm(f => ({ ...f, contactMode: "phone" }))}
                   style={{
                     flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
-                    padding: "10px 0",
-                    background: form.contactMode === "phone" ? "#fff" : "transparent",
-                    border: form.contactMode === "phone" ? "1.5px solid #d1fae5" : "1.5px solid transparent",
-                    borderRadius: 11,
-                    color: form.contactMode === "phone" ? "#16a34a" : "#6b7280",
+                    padding: "11px 0 12px",
+                    background: "none", border: "none",
+                    borderBottom: `3px solid ${form.contactMode === "phone" ? "#22c55e" : "transparent"}`,
+                    marginBottom: -2,
+                    color: form.contactMode === "phone" ? "#16a34a" : "#9ca3af",
                     fontSize: 13.5, fontWeight: 700, cursor: "pointer",
-                    boxShadow: form.contactMode === "phone" ? "0 1px 4px rgba(34,197,94,0.15)" : "none",
                     transition: "all 0.15s", fontFamily: "inherit",
                   }}
                 >
@@ -667,13 +666,12 @@ export default function Register() {
                   onClick={() => setForm(f => ({ ...f, contactMode: "email" }))}
                   style={{
                     flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
-                    padding: "10px 0",
-                    background: form.contactMode === "email" ? "#fff" : "transparent",
-                    border: form.contactMode === "email" ? "1.5px solid #d1fae5" : "1.5px solid transparent",
-                    borderRadius: 11,
-                    color: form.contactMode === "email" ? "#16a34a" : "#6b7280",
+                    padding: "11px 0 12px",
+                    background: "none", border: "none",
+                    borderBottom: `3px solid ${form.contactMode === "email" ? "#22c55e" : "transparent"}`,
+                    marginBottom: -2,
+                    color: form.contactMode === "email" ? "#16a34a" : "#9ca3af",
                     fontSize: 13.5, fontWeight: 700, cursor: "pointer",
-                    boxShadow: form.contactMode === "email" ? "0 1px 4px rgba(34,197,94,0.15)" : "none",
                     transition: "all 0.15s", fontFamily: "inherit",
                   }}
                 >
@@ -685,9 +683,9 @@ export default function Register() {
                 </button>
               </div>
 
+              {/* ── MODE TÉLÉPHONE ── */}
               {form.contactMode === "phone" && (
                 <>
-                  {/* Sélecteur de pays — grande carte */}
                   <div style={{ position: "relative" }}>
                     <select
                       className="reg-field"
@@ -710,91 +708,183 @@ export default function Register() {
                       ))}
                     </select>
                   </div>
-
-                  {/* Indicatif + champ numéro */}
                   <div style={{ display: "flex", gap: 10, alignItems: "stretch" }}>
-                    {/* Badge indicatif */}
                     <div style={{
-                      background: "#fff",
-                      border: "1.5px solid #e5e7eb",
-                      borderRadius: 16,
-                      padding: "0 14px",
-                      fontWeight: 800, fontSize: 15,
-                      color: "#15803d",
+                      background: "#fff", border: "1.5px solid #e5e7eb", borderRadius: 16,
+                      padding: "0 14px", fontWeight: 800, fontSize: 15, color: "#15803d",
                       display: "flex", alignItems: "center", justifyContent: "center",
-                      whiteSpace: "nowrap",
-                      minWidth: 68,
+                      whiteSpace: "nowrap", minWidth: 68,
                       boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
                     }}>
                       {selectedCountry.phone}
                     </div>
-                    {/* Champ numéro */}
                     <div style={{ flex: 1, position: "relative" }}>
                       <div style={{ position: "absolute", left: 13, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
                         <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
                           <path d="M3 3h2.2l1 3.2-1.4 1.4a9 9 0 004.6 4.6l1.4-1.4 3.2 1V14S13 15 11.5 15C6.5 15 1 9.5 1 4.5 1 3 3 3 3 3z" stroke="#9ca3af" strokeWidth="1.3" strokeLinecap="round"/>
                         </svg>
                       </div>
-                      <input
-                        className="reg-field"
-                        style={fieldBase}
-                        type="tel"
-                        placeholder="Numéro de mobile"
-                        value={form.phone}
-                        onChange={set("phone")}
-                        onFocus={fieldFocus}
-                        onBlur={fieldBlur}
-                        autoFocus
-                      />
+                      <input className="reg-field" style={fieldBase} type="tel" placeholder="Numéro de mobile" value={form.phone} onChange={set("phone")} onFocus={fieldFocus} onBlur={fieldBlur} autoFocus />
                     </div>
                   </div>
                 </>
               )}
 
+              {/* ── MODE EMAIL ── */}
               {form.contactMode === "email" && (
-                <div style={{ position: "relative" }}>
-                  <div style={{ position: "absolute", left: 13, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
-                    <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><rect x="1.5" y="3.5" width="14" height="10" rx="2" stroke="#9ca3af" strokeWidth="1.3"/><path d="M1.5 6l7 4.5 7-4.5" stroke="#9ca3af" strokeWidth="1.3" strokeLinecap="round"/></svg>
+                <div>
+                  {/* Champ email — bordure verte + icônes vertes */}
+                  <div style={{ position: "relative" }}>
+                    <div style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                        <rect x="1.5" y="4" width="15" height="10" rx="2" stroke="#22c55e" strokeWidth="1.5"/>
+                        <path d="M1.5 7l7.5 5 7.5-5" stroke="#22c55e" strokeWidth="1.5" strokeLinecap="round"/>
+                      </svg>
+                    </div>
+                    <input
+                      className="reg-field"
+                      style={{
+                        ...fieldBase,
+                        paddingRight: 44,
+                        border: "1.5px solid #22c55e",
+                        boxShadow: "0 0 0 3px rgba(34,197,94,0.10)",
+                        background: "#fff",
+                      }}
+                      type="email"
+                      placeholder="Adresse e-mail"
+                      value={form.email}
+                      onChange={set("email")}
+                      onFocus={fieldFocus}
+                      onBlur={fieldBlur}
+                      autoFocus
+                    />
+                    {/* Checkmark vert à droite */}
+                    <div style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
+                      <div style={{
+                        width: 22, height: 22, borderRadius: "50%",
+                        border: "2px solid #22c55e",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                      }}>
+                        <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+                          <path d="M2 5.5l2.5 2.5L9 2.5" stroke="#22c55e" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </div>
+                    </div>
                   </div>
-                  <input className="reg-field" style={fieldBase} type="email" placeholder="Adresse e-mail" value={form.email} onChange={set("email")} onFocus={fieldFocus} onBlur={fieldBlur} autoFocus />
+                  {/* Helper text */}
+                  <p style={{ margin: "6px 0 0 4px", fontSize: 12, color: "#9ca3af" }}>ex : nom@exemple.com</p>
                 </div>
               )}
 
-              {/* Carte sécurité verte */}
-              <div style={{
-                background: "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)",
-                border: "1px solid #bbf7d0",
-                borderRadius: 16,
-                padding: "14px 16px",
-                display: "flex",
-                alignItems: "center",
-                gap: 14,
-              }}>
+              {/* ── Carte sécurité ── */}
+              {form.contactMode === "phone" ? (
+                /* Version téléphone : simple */
                 <div style={{
-                  width: 44, height: 44, borderRadius: "50%",
-                  background: "#fff",
-                  border: "2px solid #86efac",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  flexShrink: 0,
-                  boxShadow: "0 2px 8px rgba(34,197,94,0.15)",
+                  background: "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)",
+                  border: "1px solid #bbf7d0", borderRadius: 16,
+                  padding: "14px 16px", display: "flex", alignItems: "center", gap: 14,
                 }}>
-                  <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-                    <path d="M11 2L3 5.5V10.5c0 4.8 3.4 9 8 9.5 4.6-.5 8-4.7 8-9.5V5.5L11 2z" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.5"/>
-                    <path d="M7.5 11l2.5 2.5L14.5 8" stroke="#16a34a" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
+                  <div style={{
+                    width: 44, height: 44, borderRadius: "50%", background: "#fff",
+                    border: "2px solid #86efac", display: "flex", alignItems: "center", justifyContent: "center",
+                    flexShrink: 0, boxShadow: "0 2px 8px rgba(34,197,94,0.15)",
+                  }}>
+                    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                      <path d="M11 2L3 5.5V10.5c0 4.8 3.4 9 8 9.5 4.6-.5 8-4.7 8-9.5V5.5L11 2z" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.5"/>
+                      <path d="M7.5 11l2.5 2.5L14.5 8" stroke="#16a34a" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <p style={{ margin: 0, fontSize: 13, color: "#15803d", lineHeight: 1.55 }}>
+                    Nous vous enverrons un code de confirmation sur <strong>votre numéro de mobile.</strong>
+                  </p>
                 </div>
-                <p style={{ margin: 0, fontSize: 13, color: "#15803d", lineHeight: 1.55 }}>
-                  Nous vous enverrons un code de confirmation sur{" "}
-                  <strong>
-                    {form.contactMode === "phone" ? "votre numéro de mobile" : "votre adresse e-mail"}.
-                  </strong>
-                </p>
-              </div>
+              ) : (
+                /* Version email : avec titre + badge */
+                <div style={{
+                  background: "#fff",
+                  border: "1px solid #d1fae5",
+                  borderRadius: 16,
+                  padding: "14px 16px",
+                  boxShadow: "0 2px 8px rgba(34,197,94,0.08)",
+                }}>
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                    {/* Icône bouclier */}
+                    <div style={{
+                      width: 42, height: 42, borderRadius: "50%",
+                      background: "linear-gradient(135deg, #f0fdf4, #dcfce7)",
+                      border: "2px solid #86efac",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      flexShrink: 0,
+                    }}>
+                      <svg width="21" height="21" viewBox="0 0 21 21" fill="none">
+                        <path d="M10.5 1.5L3 5V10c0 4.5 3.2 8.5 7.5 9 4.3-.5 7.5-4.5 7.5-9V5L10.5 1.5z" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.4"/>
+                        <path d="M7 10.5l2.5 2.5L14 7.5" stroke="#16a34a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                        <span style={{ fontSize: 13, fontWeight: 800, color: "#15803d" }}>Sécurité de votre compte</span>
+                        {/* Badge Compte protégé */}
+                        <span style={{
+                          display: "flex", alignItems: "center", gap: 4,
+                          background: "#f0fdf4", border: "1px solid #86efac",
+                          borderRadius: 20, padding: "3px 9px",
+                          fontSize: 11, fontWeight: 700, color: "#16a34a",
+                          flexShrink: 0,
+                        }}>
+                          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                            <rect x="3" y="4.5" width="4" height="4" rx="0.8" stroke="#16a34a" strokeWidth="1"/>
+                            <path d="M3.5 4.5V3.5a1.5 1.5 0 013 0V4.5" stroke="#16a34a" strokeWidth="1" strokeLinecap="round"/>
+                          </svg>
+                          Compte protégé
+                        </span>
+                      </div>
+                      <p style={{ margin: 0, fontSize: 12.5, color: "#374151", lineHeight: 1.5 }}>
+                        Nous vous enverrons un code de confirmation sur votre{" "}
+                        <strong style={{ color: "#15803d" }}>adresse e-mail</strong>.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <button className="reg-next-btn" onClick={handleNext}>
                 Suivant
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9h12M10.5 5.5L14 9l-3.5 3.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </button>
+
+              {/* ── Trust badges (mode email uniquement) ── */}
+              {form.contactMode === "email" && (
+                <div style={{ display: "flex", justifyContent: "space-around", paddingTop: 4 }}>
+                  {[
+                    {
+                      icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1L2 4v4.5c0 3.8 2.8 7.3 7 7.5 4.2-.2 7-3.7 7-7.5V4L9 1z" stroke="#22c55e" strokeWidth="1.3" fill="none"/><path d="M6 9l2 2 4-4" stroke="#22c55e" strokeWidth="1.3" strokeLinecap="round"/></svg>,
+                      label: "Données\nsécurisées",
+                    },
+                    {
+                      icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="4" y="8" width="10" height="8" rx="1.5" stroke="#22c55e" strokeWidth="1.3"/><path d="M6 8V6a3 3 0 016 0v2" stroke="#22c55e" strokeWidth="1.3" strokeLinecap="round"/><circle cx="9" cy="12" r="1.2" fill="#22c55e"/></svg>,
+                      label: "Confidentialité\ngarantie",
+                    },
+                    {
+                      icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3" stroke="#22c55e" strokeWidth="1.3"/><path d="M3 16c0-3.3 2.7-5 6-5s6 1.7 6 5" stroke="#22c55e" strokeWidth="1.3" strokeLinecap="round"/></svg>,
+                      label: "Contrôle total\nde vos données",
+                    },
+                  ].map((b, i) => (
+                    <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5, flex: 1 }}>
+                      <div style={{
+                        width: 36, height: 36, borderRadius: 10,
+                        background: "#f0fdf4", border: "1px solid #d1fae5",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                      }}>
+                        {b.icon}
+                      </div>
+                      <span style={{ fontSize: 10.5, color: "#6b7280", textAlign: "center", lineHeight: 1.3, fontWeight: 500, whiteSpace: "pre-line" }}>
+                        {b.label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
