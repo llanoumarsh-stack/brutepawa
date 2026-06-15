@@ -401,7 +401,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
     const isChannel = groupWizardType === "channel";
 
     return (
-      <div style={{ position: "fixed", top: 56, bottom: 60, left: 0, right: 0, display: "flex", flexDirection: "column", background: "#fff", zIndex: 20 }}>
+      <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, display: "flex", flexDirection: "column", background: "#fff", zIndex: 100 }}>
         <style>{`@keyframes wiz-in { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }`}</style>
 
         {/* Header */}
@@ -670,7 +670,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
     const isChannelG = grp?.type === "channel";
 
     return (
-      <div style={{ position: "fixed", top: 56, bottom: 60, left: 0, right: 0, background: "#F0F2F5", zIndex: 15, overflowY: "auto" }}>
+      <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, background: "#F0F2F5", zIndex: 100, overflowY: "auto" }}>
 
         {/* Header */}
         <div style={{ background: "#fff", display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", borderBottom: "1px solid #E4E6EB", position: "sticky", top: 0, zIndex: 5 }}>
@@ -753,7 +753,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
   ══════════════════════════════════════════════════════════════ */
   if (activeConv && activeUser && overlay === "info") {
     return (
-      <div style={{ position: "fixed", top: 56, bottom: 60, left: 0, right: 0, background: "#f0f2f5", zIndex: 10, overflowY: "auto" }}>
+      <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, background: "#f0f2f5", zIndex: 100, overflowY: "auto" }}>
         <div style={{ background: "#1877F2", padding: "10px 14px", display: "flex", alignItems: "center", gap: 12 }}>
           <button onClick={() => setOverlay("none")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#fff", display: "flex", alignItems: "center", padding: 4 }}>←</button>
           <div style={{ fontWeight: 700, fontSize: 17, color: "#fff" }}>Infos du contact</div>
@@ -797,7 +797,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
     const grp = chatGroups.find(g => g.id === activeGroupId);
     const gmsgs = groupMsgs[activeGroupId] ?? [];
     return (
-      <div style={{ position: "fixed", top: 56, bottom: 60, left: 0, right: 0, display: "flex", flexDirection: "column", zIndex: 5, overflow: "hidden", background: "#ECE5DD" }}>
+      <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, display: "flex", flexDirection: "column", zIndex: 100, overflow: "hidden", background: "#ECE5DD" }}>
         <style>{`
           .bp-chat-bg { background-color:#ECE5DD; background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231877F2' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
           .bp-msg-mine { background:#1877F2; color:#fff; border-radius:18px 18px 4px 18px; }
@@ -870,7 +870,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
     const highlightId = searchMatches[chatSearchIdx]?.id ?? null;
 
     return (
-      <div style={{ position:"fixed", top:56, bottom:60, left:0, right:0, display:"flex", flexDirection:"column", zIndex:5, overflow:"hidden" }}>
+      <div style={{ position:"fixed", top:0, bottom:0, left:0, right:0, display:"flex", flexDirection:"column", zIndex:100, overflow:"hidden" }}>
         <style>{`
           .fbl-msg-mine   { background:#0084FF; color:#fff; border-radius:18px 18px 4px 18px; }
           .fbl-msg-theirs { background:#E4E6EB; color:#111; border-radius:18px 18px 18px 4px; }
@@ -1017,7 +1017,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
         {showConvMenu && (
           <>
             <div style={{ position:"fixed", inset:0, zIndex:98 }} onClick={() => { setShowConvMenu(false); setShowNotifSub(false); }} />
-            <div style={{ position:"fixed", top:56+56, right:8, background:"#fff", borderRadius:12, boxShadow:"0 4px 24px rgba(0,0,0,0.22)", zIndex:99, minWidth:234, overflow:"hidden", animation:"fbl-fade-in 0.15s ease" }}
+            <div style={{ position:"fixed", top:56, right:8, background:"#fff", borderRadius:12, boxShadow:"0 4px 24px rgba(0,0,0,0.22)", zIndex:200, minWidth:234, overflow:"hidden", animation:"fbl-fade-in 0.15s ease" }}
               onClick={e => e.stopPropagation()}>
               <button className="fbl-menu-btn" onClick={() => setShowNotifSub(n => !n)}>
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="#555"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
