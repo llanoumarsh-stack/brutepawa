@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, integer, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, integer, boolean, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -66,6 +66,26 @@ export const groupJoinRequestsTable = pgTable("group_join_requests", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });
 
+export const groupBotsTable = pgTable("group_bots", {
+  id: serial("id").primaryKey(),
+  groupId: integer("group_id").notNull(),
+  botType: text("bot_type").notNull(),
+  enabled: boolean("enabled").notNull().default(false),
+  settings: text("settings").notNull().default("{}"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
+});
+
+export const botLogsTable = pgTable("bot_logs", {
+  id: serial("id").primaryKey(),
+  groupId: integer("group_id").notNull(),
+  botType: text("bot_type").notNull(),
+  action: text("action").notNull(),
+  targetUserId: integer("target_user_id"),
+  detail: text("detail"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const insertGroupSchema = createInsertSchema(groupsTable).omit({ id: true, createdAt: true, updatedAt: true, membersCount: true });
 export const insertPageSchema = createInsertSchema(pagesTable).omit({ id: true, createdAt: true, updatedAt: true, followersCount: true });
 export type Group = typeof groupsTable.$inferSelect;
@@ -74,5 +94,7 @@ export type GroupPost = typeof groupPostsTable.$inferSelect;
 export type GroupJoinRequest = typeof groupJoinRequestsTable.$inferSelect;
 export type Page = typeof pagesTable.$inferSelect;
 export type PageFollower = typeof pageFollowersTable.$inferSelect;
+export type GroupBot = typeof groupBotsTable.$inferSelect;
+export type BotLog = typeof botLogsTable.$inferSelect;
 export type InsertGroup = z.infer<typeof insertGroupSchema>;
 export type InsertPage = z.infer<typeof insertPageSchema>;

@@ -2,6 +2,7 @@ import { Router } from "express";
 import { db, groupsTable, groupMembersTable, groupPostsTable, groupJoinRequestsTable, usersTable, notificationsTable } from "@workspace/db";
 import { desc, eq, and, sql, ilike, inArray } from "drizzle-orm";
 import { requireAuth } from "../middlewares/requireAuth";
+import { runWelcomeBot, runContentBots } from "./groupBots";
 
 const router = Router();
 
@@ -231,6 +232,8 @@ router.post("/groups/:id/join", requireAuth, async (req, res): Promise<void> => 
     .set({ membersCount: sql`${groupsTable.membersCount} + 1` })
     .where(eq(groupsTable.id, groupId));
 
+  runWelcomeBot(groupId, userId).catch(() => {});
+
   res.json({ ok: true });
 });
 
@@ -376,6 +379,12 @@ router.post("/groups/:id/posts", requireAuth, async (req, res): Promise<void> =>
     .insert(groupPostsTable)
     .values({ groupId, userId, content: content.trim(), imageUrl: imageUrl ?? null })
     .returning();
+
+  const botResult = await runContentBots(groupId, userId, post.id, content.trim());
+  if (botResult.blocked) {
+    res.status(422).json({ error: botResult.reason ?? "Message bloqué par le bot de modération." });
+    return;
+  }
 
   res.status(201).json(post);
 });
@@ -703,6 +712,7 @@ router.patch("/groups/:id/join-requests/:requestId", requireAuth, async (req, re
         .update(groupsTable)
         .set({ membersCount: sql`${groupsTable.membersCount} + 1` })
         .where(eq(groupsTable.id, groupId));
+      runWelcomeBot(groupId, joinReq.userId).catch(() => {});
     }
 
     await db
