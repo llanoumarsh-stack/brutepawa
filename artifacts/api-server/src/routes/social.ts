@@ -866,4 +866,20 @@ router.post("/posts/archived/delete", requireAuth, async (req, res): Promise<voi
   res.json({ ok: true });
 });
 
+/* ── Typing indicators (in-memory, expires 3s) ── */
+const typingMap = new Map<string, number>();
+router.post("/messages/typing", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const toId = parseInt(req.body?.toUserId, 10);
+  if (!toId) { res.status(400).json({ error: "toUserId required" }); return; }
+  typingMap.set(`${me}-${toId}`, Date.now() + 3000);
+  res.json({ ok: true });
+});
+router.get("/messages/typing/:userId", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const otherId = parseInt(req.params.userId, 10);
+  const expiry = typingMap.get(`${otherId}-${me}`) ?? 0;
+  res.json({ typing: Date.now() < expiry });
+});
+
 export default router;
