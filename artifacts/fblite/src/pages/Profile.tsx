@@ -218,19 +218,18 @@ export default function Profile() {
           }}
           onClick={() => !uploadingWhat && coverInputRef.current?.click()}
         >
-          {/* Abstract wave shapes — only when no custom cover */}
-          {!coverUrl && (
-            <svg style={{ position: "absolute", right: 0, top: 0, pointerEvents: "none", width: "100%", height: "100%" }} viewBox="0 0 400 200" fill="none" preserveAspectRatio="xMaxYMin slice">
-              {/* Large arc — top right */}
-              <circle cx="360" cy="-30" r="160" fill="white" fillOpacity="0.12"/>
-              {/* Medium arc — mid right */}
-              <circle cx="400" cy="120" r="110" fill="white" fillOpacity="0.10"/>
-              {/* Flowing curve line */}
-              <path d="M200 0 Q320 60 400 160" stroke="white" strokeOpacity="0.20" strokeWidth="60" fill="none" strokeLinecap="round"/>
-              {/* Small accent */}
-              <circle cx="310" cy="170" r="50" fill="white" fillOpacity="0.08"/>
-            </svg>
-          )}
+          {/* Clipped layer for abstract shapes + rounded corners */}
+          <div style={{ position: "absolute", inset: 0, borderRadius: "12px 12px 0 0", overflow: "hidden", pointerEvents: "none", zIndex: 1 }}>
+            {!coverUrl && (
+              <svg style={{ position: "absolute", right: 0, top: 0, width: "100%", height: "100%" }} viewBox="0 0 400 200" fill="none" preserveAspectRatio="xMaxYMin slice">
+                <circle cx="360" cy="-20" r="160" fill="white" fillOpacity="0.13"/>
+                <circle cx="410" cy="130" r="110" fill="white" fillOpacity="0.10"/>
+                <path d="M180 0 Q310 55 400 170" stroke="white" strokeOpacity="0.18" strokeWidth="65" fill="none" strokeLinecap="round"/>
+                <circle cx="300" cy="175" r="48" fill="white" fillOpacity="0.07"/>
+              </svg>
+            )}
+            {coverUrl && <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.15)" }} />}
+          </div>
 
           {/* Flag — top right white circle */}
           <div style={{ position: "absolute", top: 12, right: 12, zIndex: 3, width: 44, height: 44, borderRadius: "50%", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.22)", fontSize: 26 }}>
@@ -287,9 +286,7 @@ export default function Profile() {
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                   </div>
                   {/* Medal badge — argent */}
-                  <div style={{ width: 22, height: 22, borderRadius: "50%", background: "#e8e8e8", border: "1.5px solid #bbb", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 13, fontWeight: 800, color: "#888" }}>
-                    2
-                  </div>
+                  <span style={{ fontSize: 18, lineHeight: 1, flexShrink: 0 }}>🥈</span>
                   {/* Flag */}
                   {localUser.flag && <span style={{ fontSize: 18 }}>{localUser.flag}</span>}
                 </div>
