@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { apiGetConversations, apiGetMessages, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo } from "../lib/api";
 import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignaling";
@@ -400,7 +401,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
     ));
     const isChannel = groupWizardType === "channel";
 
-    return (
+    return createPortal(
       <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, display: "flex", flexDirection: "column", background: "#fff", zIndex: 10000 }}>
         <style>{`@keyframes wiz-in { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }`}</style>
 
@@ -566,7 +567,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
           </div>
         )}
       </div>
-    );
+    , document.body);
   }
 
   /* ══════════════════════════════════════════════════════════════
@@ -578,7 +579,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
     const callerColor = CONV_COLORS[sig.incomingCall.fromUserId % CONV_COLORS.length];
     const isVideo     = sig.incomingCall.callType === "video";
 
-    return (
+    return createPortal(
       <div style={{ position: "fixed", inset: 0, zIndex: 10000, background: "linear-gradient(180deg,#5B86E5 0%,#7A5AF8 55%,#6B21A8 100%)", display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <style>{`
           @keyframes tg-ring2{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.55),0 0 0 0 rgba(255,255,255,.3)}50%{box-shadow:0 0 0 22px rgba(255,255,255,.18),0 0 0 44px rgba(255,255,255,.07)}}
@@ -614,7 +615,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
           </div>
         </div>
       </div>
-    );
+    , document.body);
   }
 
   /* ══════════════════════════════════════════════════════════════
@@ -624,7 +625,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
     const peer    = callPeerUser;
     const isVideo = sig.callType === "video";
 
-    return (
+    return createPortal(
       <div style={{ position: "fixed", inset: 0, zIndex: 10000, overflow: "hidden", display: "flex", flexDirection: "column" }}>
         <style>{`
           @keyframes tg-ring3{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.55),0 0 0 0 rgba(255,255,255,.3)}50%{box-shadow:0 0 0 22px rgba(255,255,255,.18),0 0 0 44px rgba(255,255,255,.07)}}
@@ -714,7 +715,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
           </>
         )}
       </div>
-    );
+    , document.body);
   }
 
   /* ══════════════════════════════════════════════════════════════
@@ -725,7 +726,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
     const gInfo = groupInfo;
     const isChannelG = grp?.type === "channel";
 
-    return (
+    return createPortal(
       <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, background: "#F0F2F5", zIndex: 10000, overflowY: "auto" }}>
 
         {/* Header */}
@@ -801,14 +802,14 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
           })}
         </div>
       </div>
-    );
+    , document.body);
   }
 
   /* ══════════════════════════════════════════════════════════════
      INFO OVERLAY — WhatsApp × BP style
   ══════════════════════════════════════════════════════════════ */
   if (activeConv && activeUser && overlay === "info") {
-    return (
+    return createPortal(
       <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, background: "#f0f2f5", zIndex: 10000, overflowY: "auto" }}>
         <div style={{ background: "#1877F2", padding: "10px 14px", display: "flex", alignItems: "center", gap: 12 }}>
           <button onClick={() => setOverlay("none")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#fff", display: "flex", alignItems: "center", padding: 4 }}>←</button>
@@ -843,7 +844,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
           ))}
         </div>
       </div>
-    );
+    , document.body);
   }
 
   /* ══════════════════════════════════════════════════════════════
@@ -852,7 +853,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
   if (activeGroupId !== null) {
     const grp = chatGroups.find(g => g.id === activeGroupId);
     const gmsgs = groupMsgs[activeGroupId] ?? [];
-    return (
+    return createPortal(
       <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, display: "flex", flexDirection: "column", zIndex: 10000, overflow: "hidden", background: "#ECE5DD" }}>
         <style>{`
           .bp-chat-bg { background-color:#ECE5DD; background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231877F2' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
@@ -913,7 +914,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
           )}
         </div>
       </div>
-    );
+    , document.body);
   }
 
   /* ══════════════════════════════════════════════════════════════
@@ -925,7 +926,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
       : [];
     const highlightId = searchMatches[chatSearchIdx]?.id ?? null;
 
-    return (
+    return createPortal(
       <div style={{ position:"fixed", top:0, bottom:0, left:0, right:0, display:"flex", flexDirection:"column", zIndex:10000, overflow:"hidden" }}>
         <style>{`
           .fbl-msg-mine   { background:#0084FF; color:#fff; border-radius:18px 18px 4px 18px; }
@@ -1242,7 +1243,7 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
           </div>
         )}
       </div>
-    );
+    , document.body);
   }
 
   /* ══════════════════════════════════════════════════════════════
