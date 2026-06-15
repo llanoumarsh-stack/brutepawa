@@ -690,6 +690,87 @@ export async function apiSendMessage(toUserId: number, content: string): Promise
   return res.json() as Promise<ApiChatMessage>;
 }
 
+// ── Chat Groups ────────────────────────────────────────────────────────────────
+
+export interface ApiChatGroup {
+  id: number;
+  name: string;
+  avatarUrl: string | null;
+  type: "group" | "channel";
+  membersCount: number;
+  lastMessage: string;
+  lastMessageAt: string;
+  unread: number;
+  role: string;
+  updatedAt: string;
+}
+
+export interface ApiChatGroupMessage {
+  id: number;
+  groupId: number;
+  senderId: number;
+  content: string;
+  type: "text" | "system";
+  createdAt: string;
+  senderName: string;
+}
+
+export interface ApiChatGroupInfo {
+  id: number;
+  name: string;
+  avatarUrl: string | null;
+  type: "group" | "channel";
+  role: string;
+  members: Array<{ userId: number; firstName: string | null; lastName: string | null; avatarUrl: string | null; role: string }>;
+}
+
+export async function apiGetChatGroups(): Promise<ApiChatGroup[]> {
+  const res = await apiFetch("/chat-groups");
+  if (!res.ok) return [];
+  return res.json() as Promise<ApiChatGroup[]>;
+}
+
+export async function apiCreateChatGroup(name: string, type: "group" | "channel", memberIds: number[]): Promise<ApiChatGroup & { createdAt: string }> {
+  const res = await apiFetch("/chat-groups", {
+    method: "POST",
+    body: JSON.stringify({ name, type, memberIds }),
+  });
+  if (!res.ok) throw new Error("Création échouée");
+  return res.json();
+}
+
+export async function apiGetChatGroupInfo(id: number): Promise<ApiChatGroupInfo> {
+  const res = await apiFetch(`/chat-groups/${id}`);
+  if (!res.ok) throw new Error("Groupe introuvable");
+  return res.json() as Promise<ApiChatGroupInfo>;
+}
+
+export async function apiGetChatGroupMessages(id: number): Promise<ApiChatGroupMessage[]> {
+  const res = await apiFetch(`/chat-groups/${id}/messages`);
+  if (!res.ok) return [];
+  return res.json() as Promise<ApiChatGroupMessage[]>;
+}
+
+export async function apiSendChatGroupMessage(id: number, content: string): Promise<ApiChatGroupMessage> {
+  const res = await apiFetch(`/chat-groups/${id}/messages`, {
+    method: "POST",
+    body: JSON.stringify({ content }),
+  });
+  if (!res.ok) throw new Error("Envoi échoué");
+  return res.json() as Promise<ApiChatGroupMessage>;
+}
+
+export async function apiLeaveChatGroup(id: number): Promise<void> {
+  await apiFetch(`/chat-groups/${id}/leave`, { method: "DELETE" });
+}
+
+export async function apiAddChatGroupMembers(id: number, userIds: number[]): Promise<void> {
+  await apiFetch(`/chat-groups/${id}/members`, {
+    method: "POST",
+    body: JSON.stringify({ userIds }),
+  });
+}
+
 export async function apiGetUserPosts(userId: number): Promise<FeedPost[]> {
   const res = await apiFetch(`/posts?authorId=${userId}`);
   if (!res.ok) return [];

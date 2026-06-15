@@ -180,6 +180,37 @@ export const postReportsTable = pgTable("post_reports", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [index("post_reports_status_idx").on(t.status)]);
 
+export const chatGroupTypeEnum = pgEnum("chat_group_type", ["group", "channel"]);
+export const chatGroupMemberRoleEnum = pgEnum("chat_group_member_role", ["owner", "admin", "member"]);
+export const chatGroupMsgTypeEnum = pgEnum("chat_group_msg_type", ["text", "system"]);
+
+export const chatGroupsTable = pgTable("chat_groups", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  avatarUrl: text("avatar_url"),
+  type: chatGroupTypeEnum("type").notNull().default("group"),
+  createdById: integer("created_by_id").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
+});
+
+export const chatGroupMembersTable = pgTable("chat_group_members", {
+  id: serial("id").primaryKey(),
+  groupId: integer("group_id").notNull(),
+  userId: integer("user_id").notNull(),
+  role: chatGroupMemberRoleEnum("role").notNull().default("member"),
+  joinedAt: timestamp("joined_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [uniqueIndex("chat_group_members_unique").on(t.groupId, t.userId)]);
+
+export const chatGroupMessagesTable = pgTable("chat_group_messages", {
+  id: serial("id").primaryKey(),
+  groupId: integer("group_id").notNull(),
+  senderId: integer("sender_id").notNull(),
+  content: text("content").notNull(),
+  type: chatGroupMsgTypeEnum("type").notNull().default("text"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [index("chat_group_messages_group_idx").on(t.groupId)]);
+
 export const insertPostSchema = createInsertSchema(postsTable).omit({ id: true, createdAt: true, updatedAt: true, likesCount: true, commentsCount: true });
 export const insertMessageSchema = createInsertSchema(messagesTable).omit({ id: true, createdAt: true });
 export const insertCommentSchema = createInsertSchema(commentsTable).omit({ id: true, createdAt: true, updatedAt: true, likesCount: true });

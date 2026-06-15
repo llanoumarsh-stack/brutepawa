@@ -20,6 +20,7 @@ import signalingRouter from "./signaling";
 import pushRouter from "./push";
 import storageRouter from "./storage";
 import eventsRouter from "./events";
+import chatGroupsRouter from "./chatGroups";
 
 const router: IRouter = Router();
 
@@ -44,5 +45,6 @@ router.use(signalingRouter);
 router.use(pushRouter);
 router.use(storageRouter);
 router.use(eventsRouter);
+router.use(chatGroupsRouter);
 
 export default router;
