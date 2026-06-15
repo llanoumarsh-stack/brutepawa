@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { db, walletsTable, transactionsTable } from "@workspace/db";
+import { db, walletsTable, transactionsTable, usersTable } from "@workspace/db";
 import { eq, and, or, desc, sql } from "drizzle-orm";
 import { TransferBody, DepositBody, ListTransactionsQueryParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
+import { pushToUserDevice } from "./push";
 
 const router = Router();
 
@@ -69,6 +70,17 @@ router.post("/wallet/transfer", requireAuth, async (req, res): Promise<void> => 
     description: description ?? null, fromUserId: req.userId!, toUserId,
   }).returning();
 
+  // Push au destinataire
+  const [sender] = await db.select({ firstName: usersTable.firstName, lastName: usersTable.lastName })
+    .from(usersTable).where(eq(usersTable.id, req.userId!));
+  const senderName = sender ? `${sender.firstName} ${sender.lastName}`.trim() : "Quelqu'un";
+  pushToUserDevice(toUserId, {
+    title: `💸 Virement reçu de ${senderName}`,
+    body: `${amount.toLocaleString("fr-FR")} ${currency}${description ? ` — ${description}` : ""}`,
+    tag: `transfer-${tx.id}`,
+    data: { url: "/wallet" },
+  }).catch(() => {});
+
   res.status(201).json({ ...tx, amount: Number(tx.amount) });
 });
 
@@ -89,6 +101,14 @@ router.post("/wallet/deposit", requireAuth, async (req, res): Promise<void> => {
     description: `Dépôt via ${operator.toUpperCase()} - ${phone}`,
     toUserId: req.userId!,
   }).returning();
+
+  // Push de confirmation au déposant
+  pushToUserDevice(req.userId!, {
+    title: "✅ Dépôt confirmé",
+    body: `${amount.toLocaleString("fr-FR")} ${currency} ajoutés via ${operator.toUpperCase()}`,
+    tag: `deposit-${tx.id}`,
+    data: { url: "/wallet" },
+  }).catch(() => {});
 
   res.status(201).json({ ...tx, amount: Number(tx.amount) });
 });

@@ -2,6 +2,7 @@ import { Router } from "express";
 import { requireAuth } from "../middlewares/requireAuth";
 import { db, chatGroupsTable, chatGroupMembersTable, chatGroupMessagesTable, usersTable } from "@workspace/db";
 import { eq, and, inArray, desc } from "drizzle-orm";
+import { pushToUserDevice } from "./push";
 
 const router = Router();
 
@@ -165,11 +166,28 @@ router.post("/chat-groups/:id/messages", requireAuth, async (req, res): Promise<
 
   const [user] = await db.select({ firstName: usersTable.firstName, lastName: usersTable.lastName })
     .from(usersTable).where(eq(usersTable.id, me));
+  const senderName = user ? `${user.firstName} ${user.lastName}`.trim() : `#${me}`;
+
+  // Push à tous les membres du groupe sauf l'expéditeur
+  const [group] = await db.select({ name: chatGroupsTable.name })
+    .from(chatGroupsTable).where(eq(chatGroupsTable.id, id));
+  const allMembers = await db.select({ userId: chatGroupMembersTable.userId })
+    .from(chatGroupMembersTable).where(eq(chatGroupMembersTable.groupId, id));
+  const otherMembers = allMembers.filter(m => m.userId !== me);
+  const preview = content.trim().length > 80 ? content.trim().slice(0, 80) + "…" : content.trim();
+  otherMembers.forEach(m => {
+    pushToUserDevice(m.userId, {
+      title: `💬 ${group?.name ?? "Groupe"} — ${senderName}`,
+      body: preview,
+      tag: `chat-group-${id}`,
+      data: { url: `/chat-groups/${id}` },
+    }).catch(() => {});
+  });
 
   res.status(201).json({
     ...msg,
     createdAt: msg.createdAt.toISOString(),
-    senderName: user ? `${user.firstName} ${user.lastName}` : `#${me}`,
+    senderName,
   });
 });
 

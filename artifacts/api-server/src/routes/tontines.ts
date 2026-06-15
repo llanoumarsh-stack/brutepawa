@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { db, tontinesTable, tontineMembersTable, contributionsTable } from "@workspace/db";
+import { db, tontinesTable, tontineMembersTable, contributionsTable, usersTable } from "@workspace/db";
 import { eq, sql } from "drizzle-orm";
 import { CreateTontineBody, GetTontineParams, ContributeBody, ContributeParams, JoinTontineBody, JoinTontineParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
+import { pushToUserDevice } from "./push";
 
 const router = Router();
 
@@ -86,6 +87,21 @@ router.post("/tontines/:id/contribute", requireAuth, async (req, res): Promise<v
     status: "paid",
   }).returning();
 
+  // Push au créateur de la tontine
+  const [tontine] = await db.select({ name: tontinesTable.name, createdById: tontinesTable.createdById })
+    .from(tontinesTable).where(eq(tontinesTable.id, pParams.data.id));
+  const [contributor] = await db.select({ firstName: usersTable.firstName, lastName: usersTable.lastName })
+    .from(usersTable).where(eq(usersTable.id, req.userId!));
+  if (tontine && tontine.createdById !== req.userId!) {
+    const name = contributor ? `${contributor.firstName} ${contributor.lastName}`.trim() : "Un membre";
+    pushToUserDevice(tontine.createdById, {
+      title: `🤝 Nouvelle contribution — ${tontine.name}`,
+      body: `${name} a cotisé ${Number(pBody.data.amount).toLocaleString("fr-FR")} XOF`,
+      tag: `contrib-${contrib.id}`,
+      data: { url: `/tontines/${pParams.data.id}` },
+    }).catch(() => {});
+  }
+
   res.status(201).json({ ...contrib, amount: Number(contrib.amount) });
 });
 
@@ -102,6 +118,21 @@ router.post("/tontines/:id/members", requireAuth, async (req, res): Promise<void
     userId: req.userId!,
     turnOrder: existing.length + 1,
   }).returning();
+
+  // Push au créateur : nouveau membre
+  const [tontine] = await db.select({ name: tontinesTable.name, createdById: tontinesTable.createdById })
+    .from(tontinesTable).where(eq(tontinesTable.id, pParams.data.id));
+  const [joiner] = await db.select({ firstName: usersTable.firstName, lastName: usersTable.lastName })
+    .from(usersTable).where(eq(usersTable.id, req.userId!));
+  if (tontine && tontine.createdById !== req.userId!) {
+    const name = joiner ? `${joiner.firstName} ${joiner.lastName}`.trim() : "Quelqu'un";
+    pushToUserDevice(tontine.createdById, {
+      title: `👥 Nouveau membre — ${tontine.name}`,
+      body: `${name} a rejoint votre tontine`,
+      tag: `join-tontine-${pParams.data.id}-${req.userId}`,
+      data: { url: `/tontines/${pParams.data.id}` },
+    }).catch(() => {});
+  }
 
   res.status(201).json(member);
 });
