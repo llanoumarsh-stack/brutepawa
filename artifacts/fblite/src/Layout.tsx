@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, ReactNode } from "react";
+import { useState, useEffect, useRef, ReactNode, type ReactElement } from "react";
 import { useLocation, useNavigate } from "./router";
 import CreateModal from "./components/CreateModal";
 import PostModal from "./components/PostModal";
@@ -117,80 +117,102 @@ export default function Layout({ children, onNewPost }: Props) {
 
   const unreadMessages = 0;
 
+  const FB_TABS: { id: Tab; path: string; badge?: number; Icon: () => ReactElement }[] = [
+    {
+      id: "home", path: "/",
+      Icon: () => activeTab === "home"
+        ? <svg width="24" height="24" viewBox="0 0 24 24" fill="#1877F2"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        : <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#65676b" strokeWidth="2" strokeLinejoin="round"><path d="M3 12L12 3l9 9M5 10v9a1 1 0 0 0 1 1h4v-5h4v5h4a1 1 0 0 0 1-1v-9"/></svg>,
+    },
+    {
+      id: "community", path: "/community", badge: pendingRequests || undefined,
+      Icon: () => {
+        const c = activeTab === "community" ? "#1877F2" : "#65676b";
+        return <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="3.5" stroke={c} strokeWidth="1.8"/><circle cx="17" cy="8" r="2.5" stroke={c} strokeWidth="1.8"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6" stroke={c} strokeWidth="1.8" strokeLinecap="round"/><path d="M19 14c2.5.5 4 2 4 4.5" stroke={c} strokeWidth="1.8" strokeLinecap="round"/></svg>;
+      },
+    },
+    {
+      id: "notifications" as Tab, path: "/messages",
+      Icon: () => {
+        const c = activeTab === "notifications" ? "#1877F2" : "#65676b";
+        return <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke={c} strokeWidth="1.8" strokeLinejoin="round" fill={activeTab === "notifications" ? "#1877F2" : "none"} fillOpacity={activeTab === "notifications" ? .15 : 0}/></svg>;
+      },
+    },
+    {
+      id: "marketplace", path: "/notifications", badge: unreadNotifs || undefined,
+      Icon: () => {
+        const active = activeTab === "marketplace" || path === "/notifications";
+        const c = active ? "#1877F2" : "#65676b";
+        return <svg width="24" height="24" viewBox="0 0 24 24" fill={active ? "#1877F2" : "none"}><path d="M18 8a6 6 0 0 0-12 0c0 4-2 5-2 5h16s-2-1-2-5" stroke={c} strokeWidth="1.8" strokeLinecap="round"/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke={c} strokeWidth="1.8" strokeLinecap="round"/></svg>;
+      },
+    },
+    {
+      id: "menu", path: "/marketplace",
+      Icon: () => {
+        const c = activeTab === "menu" ? "#1877F2" : "#65676b";
+        return <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" stroke={c} strokeWidth="1.8"/><line x1="3" y1="6" x2="21" y2="6" stroke={c} strokeWidth="1.8"/><path d="M16 10a4 4 0 0 1-8 0" stroke={c} strokeWidth="1.8" fill="none"/></svg>;
+      },
+    },
+  ];
+
   return (
     <div className="app-shell">
 
-      {/* ── Top Navbar ── */}
-      <nav className="navbar">
-        <button onClick={() => navigate("/")} style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-          <img src="/logo.png" alt="Brute Pawa" style={{ width: 36, height: 36, borderRadius: 8, display: "block" }} />
-        </button>
+      {/* ══════════════════════════════════════════════════
+          FACEBOOK LITE STICKY HEADER — 3 rows
+      ══════════════════════════════════════════════════ */}
+      <div style={{ position: "sticky", top: 0, zIndex: 100, background: "#fff", boxShadow: "0 1px 0 #e4e6eb" }}>
 
-        <div className="navbar-search-wrap" ref={searchWrapRef}>
-          <input
-            className="navbar-search"
-            placeholder="🔍 Rechercher sur Brute Pawa"
-            value={searchQuery}
-            onChange={e => {
-              setSearchQuery(e.target.value);
-              setShowSuggestions(true);
-            }}
-            onFocus={() => setShowSuggestions(true)}
-            onKeyDown={e => {
-              if (e.key === "Enter" && searchQuery.trim()) {
-                saveRecent(searchQuery);
-                setShowSuggestions(false);
-                navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-                (e.target as HTMLInputElement).blur();
-              }
-              if (e.key === "Escape") {
-                setShowSuggestions(false);
-                setSearchQuery("");
-                (e.target as HTMLInputElement).blur();
-              }
-            }}
-          />
-          {showSuggestions && (searchQuery.length >= 2 || recentSearches.length > 0) && (
-            <SearchSuggestionsDropdown
-              query={searchQuery}
-              onClose={() => setShowSuggestions(false)}
-              navigate={navigate}
-              recentSearches={recentSearches}
-              onSelectRecent={q => {
-                setSearchQuery(q);
-                saveRecent(q);
-                setShowSuggestions(true);
-              }}
-              onRemoveRecent={removeRecent}
-              onCommitSearch={saveRecent}
-            />
-          )}
-        </div>
-
-        <div className="navbar-actions">
-          <div className="relative">
-            <button className="nav-btn" title="Messenger" onClick={() => navigate("/messages")}>💬</button>
-            {unreadMessages > 0 && <span className="badge">{unreadMessages}</span>}
+        {/* Row 1 — Mode payant */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "7px 14px", borderBottom: "1px solid #f0f2f5" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontWeight: 600, fontSize: 13.5, color: "#050505" }}>Mode payant</span>
+            <div style={{ width: 17, height: 17, borderRadius: "50%", background: "#ccd0d5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: "#fff", lineHeight: 1 }}>?</div>
           </div>
-          <div className="relative">
-            <button className="nav-btn" title="Notifications" onClick={() => navigate("/notifications")}>🔔</button>
-            {unreadNotifs > 0 && <span className="badge">{unreadNotifs}</span>}
-          </div>
-          <button
-            className="nav-btn"
-            title="Profil"
-            onClick={() => navigate("/profile")}
-            style={{ padding: 0, overflow: "hidden", borderRadius: "50%", width: 32, height: 32 }}
-          >
-            {user.avatarUrl
-              ? <img src={user.avatarUrl} alt="Profil" style={{ width: 32, height: 32, borderRadius: "50%", objectFit: "cover" }} />
-              : <span style={{ width: 32, height: 32, borderRadius: "50%", background: "#1877F2", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 13, fontWeight: 700 }}>
-                  {userInitials}
-                </span>
-            }
+          <button style={{ background: "#e4e6eb", border: "none", borderRadius: 6, padding: "6px 13px", fontWeight: 600, fontSize: 13, cursor: "pointer", color: "#050505" }}>
+            Changer de mode
           </button>
         </div>
-      </nav>
+
+        {/* Row 2 — Brand logo + icon buttons */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 14px" }}>
+          <button onClick={() => navigate("/")} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1 }}>
+            <span style={{ color: "#1877F2", fontWeight: 900, fontSize: 28, fontFamily: "'Georgia', serif", fontStyle: "italic", letterSpacing: -1 }}>brutepawa</span>
+          </button>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button onClick={() => setShowCreate(true)} title="Créer"
+              style={{ width: 40, height: 40, borderRadius: "50%", background: "#e4e6eb", border: "none", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 700, color: "#050505", cursor: "pointer" }}>
+              +
+            </button>
+            <button onClick={() => setShowSearchOverlay(true)} title="Rechercher"
+              style={{ width: 40, height: 40, borderRadius: "50%", background: "#e4e6eb", border: "none", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, cursor: "pointer" }}>
+              🔍
+            </button>
+            <button onClick={() => navigate("/menu")} title="Menu"
+              style={{ width: 40, height: 40, borderRadius: "50%", background: "#e4e6eb", border: "none", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, cursor: "pointer" }}>
+              ☰
+            </button>
+          </div>
+        </div>
+
+        {/* Row 3 — 5 tab icons */}
+        <div style={{ display: "flex", borderTop: "1px solid #e4e6eb" }}>
+          {FB_TABS.map(({ id, path: tabPath, badge, Icon }) => {
+            const isActive = activeTab === id || (id === "marketplace" && path === "/notifications");
+            return (
+              <button key={id} onClick={() => navigate(tabPath)}
+                style={{ flex: 1, background: "none", border: "none", padding: "10px 0 8px", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", borderBottom: isActive ? "3px solid #1877F2" : "3px solid transparent", cursor: "pointer" }}>
+                <Icon />
+                {badge && badge > 0 && (
+                  <span style={{ position: "absolute", top: 6, right: "20%", background: "#E41E3F", color: "#fff", borderRadius: 10, minWidth: 16, height: 16, fontSize: 10, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 3px", border: "1.5px solid #fff" }}>
+                    {badge > 9 ? "9+" : badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* ── Body: sidebar + main ── */}
       <div className="app-body">
@@ -282,51 +304,6 @@ export default function Layout({ children, onNewPost }: Props) {
         </main>
       </div>
 
-      {/* ── Bottom Nav (mobile only) ── */}
-      <nav className="bottom-nav-main">
-        {TABS.slice(0, 2).map(tab => (
-          <button
-            key={tab.id}
-            className={`bottom-nav-btn-main${activeTab === tab.id ? " active" : ""}`}
-            onClick={() => navigate(tab.path)}
-            title={tab.label}
-            style={{ position: "relative" }}
-          >
-            <span className="tab-icon">{tab.icon}</span>
-            {tab.id === "community" && pendingRequests > 0 && (
-              <span style={{ position: "absolute", top: 6, right: 6, background: "#E41E3F", color: "#fff", borderRadius: 10, minWidth: 16, height: 16, padding: "0 4px", fontSize: 10, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1 }}>
-                {pendingRequests > 9 ? "9+" : pendingRequests}
-              </span>
-            )}
-          </button>
-        ))}
-
-        <button className="create-btn-fab" onClick={() => setShowCreate(true)} title="Créer">
-          <span style={{ fontSize: 24, lineHeight: 1 }}>＋</span>
-        </button>
-
-        <button
-          className="bottom-nav-btn-main"
-          onClick={() => setShowSearchOverlay(true)}
-          title="Rechercher"
-        >
-          <span className="tab-icon">🔍</span>
-        </button>
-
-        {TABS.slice(2).map(tab => (
-          <button
-            key={tab.id}
-            className={`bottom-nav-btn-main${activeTab === tab.id ? " active" : ""}`}
-            onClick={() => navigate(tab.path)}
-            title={tab.label}
-          >
-            <span className="tab-icon">{tab.icon}</span>
-            {tab.id === "notifications" && unreadNotifs > 0 && (
-              <span className="tab-badge">{unreadNotifs}</span>
-            )}
-          </button>
-        ))}
-      </nav>
 
       {showCreate && (
         <CreateModal onClose={() => setShowCreate(false)} onSelect={handleCreateSelect} />
