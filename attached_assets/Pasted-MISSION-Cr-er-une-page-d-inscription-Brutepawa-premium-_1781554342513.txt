@@ -1,0 +1,212 @@
+MISSION :
+
+Créer une page d'inscription Brutepawa premium pour l'étape 2 : Date de naissance.
+
+OBJECTIF :
+
+Créer une interface moderne, élégante et rassurante tout en conservant les trois champs séparés :
+Jour, Mois et Année.
+
+STYLE :
+
+- Mobile First
+- Design 2026
+- Vert Brutepawa
+- Blanc premium
+- Coins arrondis 28px
+- Ombres douces
+- SVG uniquement
+- Animations fluides
+- Interface haut de gamme
+
+========================================
+EN-TÊTE
+========================================
+
+Créer un bandeau vert premium.
+
+Contenu :
+
+- Bouton Accueil
+- Barre d'adresse moderne
+- URL :
+  brutepawa.com/signup
+- Bouton +
+- Menu
+
+Dégradé vert moderne.
+
+========================================
+LOGO
+========================================
+
+Grand logo Brutepawa centré.
+
+- Icône "b" moderne
+- Bulle de discussion intégrée
+- Dégradé vert
+- Ombre légère
+
+Texte :
+
+brutepawa
+
+========================================
+SLOGAN
+========================================
+
+Texte :
+
+Connecte-toi partout en Afrique francophone.
+
+Texte centré.
+
+Ajouter des formes abstraites très discrètes en arrière-plan.
+
+========================================
+CARTE PRINCIPALE
+========================================
+
+Grande carte blanche premium.
+
+Coins :
+32px
+
+Ombre :
+Très légère
+
+Titre :
+
+Quand êtes-vous né(e) ?
+
+Sous-titre :
+
+Indiquez votre date de naissance.
+
+========================================
+PROGRESSION
+========================================
+
+Afficher :
+
+Étape 2 sur 6
+
+Barre de progression moderne.
+
+La deuxième étape doit être active.
+
+========================================
+DATE DE NAISSANCE
+========================================
+
+Afficher :
+
+Votre date de naissance
+
+Créer 3 sélecteurs premium alignés horizontalement :
+
+[ Jour ] [ Mois ] [ Année ]
+
+Champ Jour :
+
+- Label : Jour
+- Valeur : 01
+- Flèche déroulante SVG
+
+Champ Mois :
+
+- Label : Mois
+- Valeur : Janvier
+- Flèche déroulante SVG
+
+Champ Année :
+
+- Label : Année
+- Valeur : 2006
+- Flèche déroulante SVG
+
+Style :
+
+- Même largeur visuelle
+- Coins arrondis 18px
+- Bordure légère
+- Fond blanc
+- Animation focus
+- Ombre très légère
+
+Ne pas fusionner les trois champs.
+
+========================================
+CONFIDENTIALITÉ
+========================================
+
+Créer une carte de confidentialité.
+
+Fond :
+Vert très clair.
+
+Icône :
+Bouclier SVG.
+
+Titre :
+
+Votre date de naissance reste privée.
+
+Texte :
+
+Seuls les membres que vous autorisez peuvent la voir.
+
+Coins arrondis.
+
+========================================
+BOUTON PRINCIPAL
+========================================
+
+Bouton :
+
+Suivant
+
+Style :
+
+- Dégradé vert premium
+- Texte blanc
+- Flèche SVG à droite
+- Largeur complète
+- Hauteur confortable
+- Ombre légère
+
+========================================
+ARRIÈRE-PLAN
+========================================
+
+Fond blanc premium.
+
+Ajouter :
+
+- Cercles verts flous
+- Motifs géométriques légers
+- Formes abstraites élégantes
+
+Très subtil.
+
+========================================
+PIED DE PAGE
+========================================
+
+Texte :
+
+Brute Pawa © 2026 • Afrique francophone
+
+Style discret.
+
+========================================
+IMPORTANT
+========================================
+
+Respecter exactement la structure.
+
+Conserver les trois champs Jour, Mois et Année.
+
+Ne pas remplacer par un seul champ date.
+
+Le résultat doit être comparable à une application conçue par une équipe UI/UX professionnelle de niveau international.

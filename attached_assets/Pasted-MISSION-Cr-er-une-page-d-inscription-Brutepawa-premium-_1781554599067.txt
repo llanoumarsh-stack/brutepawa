@@ -1,0 +1,201 @@
+MISSION :
+
+Créer une page d'inscription Brutepawa premium pour l'étape 3 : Genre.
+
+OBJECTIF :
+
+Créer une interface moderne, élégante, rassurante et haut de gamme inspirée de Stripe, Revolut, LinkedIn et Airbnb.
+
+STYLE :
+
+- Mobile First
+- Design 2026
+- Vert Brutepawa
+- Blanc premium
+- SVG uniquement
+- Coins arrondis 28px
+- Ombres douces
+- Animations fluides
+- Interface professionnelle
+
+========================================
+LOGO ET IDENTITÉ
+========================================
+
+Afficher le logo Brutepawa centré.
+
+Icône :
+
+- Lettre "b" moderne
+- Bulle de discussion intégrée
+- Dégradé vert premium
+- Ombre légère
+
+Texte :
+
+brutepawa
+
+Sous-titre :
+
+Rejoignez la première plateforme sociale et professionnelle dédiée à l'Afrique francophone.
+
+Texte centré.
+
+========================================
+CARTE PRINCIPALE
+========================================
+
+Créer une grande carte blanche premium.
+
+Coins :
+32px
+
+Ombre :
+Très légère
+
+========================================
+EN-TÊTE ÉTAPE
+========================================
+
+À gauche :
+
+Bouton retour moderne.
+
+Centre :
+
+Titre :
+
+Votre genre
+
+À droite :
+
+Étape 3 sur 6
+
+========================================
+PROGRESSION
+========================================
+
+Barre de progression moderne.
+
+Afficher :
+
+50% complété
+
+La troisième étape doit être active.
+
+Animation fluide.
+
+========================================
+DESCRIPTION
+========================================
+
+Texte :
+
+Vous pouvez modifier qui voit votre genre sur votre profil plus tard.
+
+Couleur discrète.
+
+========================================
+CHOIX DU GENRE
+========================================
+
+Créer trois cartes de sélection premium.
+
+Carte 1 :
+
+Femme
+
+- Icône SVG moderne
+- Bordure verte
+- Fond vert très léger lorsqu'elle est sélectionnée
+- Coche premium à droite
+
+Carte 2 :
+
+Homme
+
+- Icône SVG moderne
+- Fond blanc
+- Bouton radio à droite
+
+Carte 3 :
+
+Personnalisé
+
+- Icône SVG moderne
+- Fond blanc
+- Bouton radio à droite
+
+Les cartes doivent être grandes, élégantes et faciles à toucher.
+
+========================================
+CONFIDENTIALITÉ
+========================================
+
+Créer une carte sécurité.
+
+Fond vert très clair.
+
+Icône bouclier SVG.
+
+Titre :
+
+Votre genre restera privé par défaut.
+
+Texte :
+
+Seuls les membres que vous autorisez peuvent le voir.
+
+Coins arrondis.
+
+========================================
+BOUTON PRINCIPAL
+========================================
+
+Bouton :
+
+Suivant
+
+Style :
+
+- Dégradé vert premium
+- Texte blanc
+- Icône flèche SVG à droite
+- Largeur complète
+- Ombre légère
+- Coins arrondis 20px
+
+========================================
+ARRIÈRE-PLAN
+========================================
+
+Fond blanc premium.
+
+Ajouter :
+
+- Cercles verts flous
+- Formes abstraites
+- Motifs géométriques subtils
+- Effets très légers
+
+========================================
+PIED DE PAGE
+========================================
+
+Texte :
+
+Brute Pawa © 2026 • Afrique francophone
+
+Style discret.
+
+========================================
+IMPORTANT
+========================================
+
+Ne rien simplifier.
+
+Respecter exactement cette structure.
+
+Ne pas utiliser un design générique.
+
+Le résultat doit avoir la qualité visuelle d'une application conçue par une équipe UI/UX professionnelle internationale en 2026.

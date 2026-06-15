@@ -34,11 +34,20 @@ const TOTAL_STEPS = 6;
 
 const STEP_TITLES = [
   "Créer un compte",
-  "Date de naissance",
+  "Quand êtes-vous né(e) ?",
   "Votre genre",
   "Coordonnées de contact",
   "Mot de passe",
   "Code de confirmation",
+];
+
+const STEP_SUBTITLES = [
+  "C'est rapide et facile.",
+  "Indiquez votre date de naissance.",
+  "Vous pourrez le modifier sur votre profil.",
+  "Choisissez comment vous connecter.",
+  "Protégez votre compte.",
+  "Vérifiez votre identité.",
 ];
 
 /* ── Shared field style ── */
@@ -221,7 +230,9 @@ export default function Register() {
 
         {/* Slogan */}
         <p style={{ textAlign: "center", fontSize: 14.5, fontWeight: 500, color: "#374151", lineHeight: 1.5, margin: "12px 0 20px" }}>
-          Rejoignez la première plateforme sociale et professionnelle dédiée à l'Afrique francophone.
+          {step === 1
+            ? "Rejoignez la première plateforme sociale et professionnelle dédiée à l'Afrique francophone."
+            : "Connecte-toi partout en Afrique francophone."}
         </p>
 
         {/* ── Carte d'inscription ── */}
@@ -235,32 +246,51 @@ export default function Register() {
         }}>
 
           {/* En-tête de carte */}
-          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 6 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              {step > 1 && (
+          {step === 1 ? (
+            <div style={{ marginBottom: 6 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: "#111827", lineHeight: 1.2 }}>
+                    {STEP_TITLES[0]}
+                  </div>
+                  <div style={{ fontSize: 13, color: "#6b7280", marginTop: 2, fontWeight: 400 }}>C'est rapide et facile.</div>
+                </div>
+                <div style={{ textAlign: "right", flexShrink: 0, marginLeft: 8 }}>
+                  <span style={{ fontSize: 12, color: "#9ca3af", fontWeight: 500 }}>Étape </span>
+                  <span style={{ fontSize: 13, color: "#16a34a", fontWeight: 800 }}>1</span>
+                  <span style={{ fontSize: 12, color: "#9ca3af", fontWeight: 500 }}> sur {TOTAL_STEPS}</span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div style={{ marginBottom: 6 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
                 <button
                   onClick={back}
-                  style={{ background: "#f3f4f6", border: "none", borderRadius: 10, width: 32, height: 32, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
+                  style={{ background: "#f3f4f6", border: "none", borderRadius: 10, width: 34, height: 34, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
                 >
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8l4-4" stroke="#374151" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </button>
-              )}
-              <div>
-                <div style={{ fontSize: 20, fontWeight: 800, color: "#111827", lineHeight: 1.2 }}>
-                  {STEP_TITLES[step - 1]}
+                <div style={{ flex: 1, textAlign: "center" }}>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: "#111827", lineHeight: 1.2 }}>
+                    {STEP_TITLES[step - 1]}
+                  </div>
+                  <div style={{ fontSize: 13, color: "#6b7280", marginTop: 3, fontWeight: 400 }}>
+                    {STEP_SUBTITLES[step - 1]}
+                  </div>
                 </div>
-                {step === 1 && <div style={{ fontSize: 13, color: "#6b7280", marginTop: 2, fontWeight: 400 }}>C'est rapide et facile.</div>}
+                <div style={{ width: 34, flexShrink: 0 }} />
+              </div>
+              <div style={{ textAlign: "center", marginBottom: 2 }}>
+                <span style={{ fontSize: 12, color: "#9ca3af", fontWeight: 500 }}>Étape </span>
+                <span style={{ fontSize: 13, color: "#16a34a", fontWeight: 800 }}>{step}</span>
+                <span style={{ fontSize: 12, color: "#9ca3af", fontWeight: 500 }}> sur {TOTAL_STEPS}</span>
               </div>
             </div>
-            <div style={{ textAlign: "right", flexShrink: 0, marginLeft: 8 }}>
-              <span style={{ fontSize: 12, color: "#9ca3af", fontWeight: 500 }}>Étape </span>
-              <span style={{ fontSize: 13, color: "#16a34a", fontWeight: 800 }}>{step}</span>
-              <span style={{ fontSize: 12, color: "#9ca3af", fontWeight: 500 }}> sur {TOTAL_STEPS}</span>
-            </div>
-          </div>
+          )}
 
           {/* Barre de progression */}
-          <div style={{ display: "flex", gap: 4, marginBottom: 20, marginTop: 8 }}>
+          <div style={{ display: "flex", gap: 4, marginBottom: 20, marginTop: 6 }}>
             {Array.from({ length: TOTAL_STEPS }, (_, i) => (
               <div key={i} style={{
                 flex: 1, height: 5, borderRadius: 3,
@@ -356,25 +386,133 @@ export default function Register() {
               ÉTAPE 2 : Date de naissance
           ═══════════════════════════════════════════ */}
           {step === 2 && (
-            <div className="reg-step" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <p style={{ margin: 0, fontSize: 13.5, color: "#6b7280", lineHeight: 1.55 }}>
-                Indiquez votre vrai anniversaire, même si ce compte est destiné à une entreprise, un animal de compagnie ou autre chose.
+            <div className="reg-step" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              {/* Label section */}
+              <p style={{ margin: 0, fontSize: 13, color: "#6b7280", fontWeight: 600, letterSpacing: 0.2 }}>
+                Votre date de naissance
               </p>
-              <div style={{ display: "flex", gap: 8 }}>
-                <select style={{ ...selectBase, flex: 1 }} className="reg-field" value={form.day} onChange={set("day")} onFocus={fieldFocus} onBlur={fieldBlur}>
-                  {DAYS.map(d => <option key={d} value={d}>{d}</option>)}
-                </select>
-                <select style={{ ...selectBase, flex: 1.7 }} className="reg-field" value={form.month} onChange={set("month")} onFocus={fieldFocus} onBlur={fieldBlur}>
-                  {MONTHS.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
-                </select>
-                <select style={{ ...selectBase, flex: 1.3 }} className="reg-field" value={form.year} onChange={set("year")} onFocus={fieldFocus} onBlur={fieldBlur}>
-                  {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
-                </select>
+
+              {/* 3 selects avec labels flottants */}
+              <div style={{ display: "flex", gap: 10 }}>
+                {/* Jour */}
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: "block", fontSize: 11.5, fontWeight: 600, color: "#16a34a", marginBottom: 5, letterSpacing: 0.3 }}>Jour</label>
+                  <div style={{ position: "relative" }}>
+                    <select
+                      className="reg-field"
+                      style={{
+                        ...selectBase,
+                        width: "100%",
+                        borderRadius: 16,
+                        padding: "13px 32px 13px 12px",
+                        fontSize: 15,
+                        fontWeight: 600,
+                        color: "#111827",
+                        background: "#fff",
+                        boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+                      }}
+                      value={form.day}
+                      onChange={set("day")}
+                      onFocus={fieldFocus}
+                      onBlur={fieldBlur}
+                    >
+                      {DAYS.map(d => <option key={d} value={d}>{String(d).padStart(2,"0")}</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Mois */}
+                <div style={{ flex: 1.8 }}>
+                  <label style={{ display: "block", fontSize: 11.5, fontWeight: 600, color: "#16a34a", marginBottom: 5, letterSpacing: 0.3 }}>Mois</label>
+                  <div style={{ position: "relative" }}>
+                    <select
+                      className="reg-field"
+                      style={{
+                        ...selectBase,
+                        width: "100%",
+                        borderRadius: 16,
+                        padding: "13px 32px 13px 12px",
+                        fontSize: 15,
+                        fontWeight: 600,
+                        color: "#111827",
+                        background: "#fff",
+                        boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+                      }}
+                      value={form.month}
+                      onChange={set("month")}
+                      onFocus={fieldFocus}
+                      onBlur={fieldBlur}
+                    >
+                      {MONTHS.map((m, i) => (
+                        <option key={m} value={i + 1}>
+                          {m.charAt(0).toUpperCase() + m.slice(1)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Année */}
+                <div style={{ flex: 1.4 }}>
+                  <label style={{ display: "block", fontSize: 11.5, fontWeight: 600, color: "#16a34a", marginBottom: 5, letterSpacing: 0.3 }}>Année</label>
+                  <div style={{ position: "relative" }}>
+                    <select
+                      className="reg-field"
+                      style={{
+                        ...selectBase,
+                        width: "100%",
+                        borderRadius: 16,
+                        padding: "13px 32px 13px 12px",
+                        fontSize: 15,
+                        fontWeight: 600,
+                        color: "#111827",
+                        background: "#fff",
+                        boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+                      }}
+                      value={form.year}
+                      onChange={set("year")}
+                      onFocus={fieldFocus}
+                      onBlur={fieldBlur}
+                    >
+                      {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+                    </select>
+                  </div>
+                </div>
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#f0fdf4", border: "1px solid #d1fae5", borderRadius: 12, padding: "9px 12px" }}>
-                <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1.5L2 4v3.5c0 3.2 2.3 5.8 5.5 6.5 3.2-.7 5.5-3.3 5.5-6.5V4L7.5 1.5z" stroke="#22c55e" strokeWidth="1.2" fill="none"/><path d="M5 7.5l2 2 3-3" stroke="#22c55e" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                <p style={{ margin: 0, fontSize: 12, color: "#15803d", fontWeight: 500 }}>Seuls les membres autorisés peuvent voir votre anniversaire.</p>
+
+              {/* Carte de confidentialité premium */}
+              <div style={{
+                background: "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)",
+                border: "1px solid #bbf7d0",
+                borderRadius: 16,
+                padding: "14px 16px",
+                display: "flex",
+                alignItems: "flex-start",
+                gap: 12,
+              }}>
+                <div style={{
+                  width: 38, height: 38, borderRadius: 12,
+                  background: "#fff",
+                  border: "1.5px solid #86efac",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  flexShrink: 0,
+                  boxShadow: "0 2px 6px rgba(34,197,94,0.15)",
+                }}>
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M10 1.5L3 4.5V9.5c0 4.2 3 7.9 7 8.5 4-0.6 7-4.3 7-8.5V4.5L10 1.5z" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.4"/>
+                    <path d="M7 10l2.5 2.5L13 7" stroke="#16a34a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: "#15803d", lineHeight: 1.3 }}>
+                    Votre date de naissance reste privée.
+                  </p>
+                  <p style={{ margin: "3px 0 0", fontSize: 12, color: "#374151", lineHeight: 1.4 }}>
+                    Seuls les membres que vous autorisez peuvent la voir.
+                  </p>
+                </div>
               </div>
+
               <button className="reg-next-btn" onClick={handleNext}>
                 Suivant
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9h12M10.5 5.5L14 9l-3.5 3.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
