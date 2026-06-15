@@ -341,13 +341,7 @@ export default function Layout({ children, onNewPost }: Props) {
       {/* ══════════════════════════════════════════════════
           BOTTOM NAV — mobile only
       ══════════════════════════════════════════════════ */}
-      <nav style={{
-        position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 100,
-        background: "#fff", borderTop: "1px solid #e4e6eb",
-        display: "flex", alignItems: "center",
-        height: 58, paddingBottom: "env(safe-area-inset-bottom, 0px)",
-        boxShadow: "0 -2px 10px rgba(0,0,0,0.06)",
-      }} className="bottom-nav-main">
+      <nav className="bottom-nav-main" style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
         {/* Accueil */}
         {(() => {
           const active = path === "/";
