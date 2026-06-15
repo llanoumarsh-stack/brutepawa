@@ -230,9 +230,7 @@ export default function Register() {
 
         {/* Slogan */}
         <p style={{ textAlign: "center", fontSize: 14.5, fontWeight: 500, color: "#374151", lineHeight: 1.5, margin: "12px 0 20px" }}>
-          {step === 1
-            ? "Rejoignez la première plateforme sociale et professionnelle dédiée à l'Afrique francophone."
-            : "Connecte-toi partout en Afrique francophone."}
+          Rejoignez la première plateforme sociale et professionnelle dédiée à l'Afrique francophone.
         </p>
 
         {/* ── Carte d'inscription ── */}
@@ -264,42 +262,43 @@ export default function Register() {
             </div>
           ) : (
             <div style={{ marginBottom: 6 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
                 <button
                   onClick={back}
                   style={{ background: "#f3f4f6", border: "none", borderRadius: 10, width: 34, height: 34, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
                 >
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 12L6 8l4-4" stroke="#374151" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </button>
-                <div style={{ flex: 1, textAlign: "center" }}>
-                  <div style={{ fontSize: 20, fontWeight: 800, color: "#111827", lineHeight: 1.2 }}>
-                    {STEP_TITLES[step - 1]}
-                  </div>
-                  <div style={{ fontSize: 13, color: "#6b7280", marginTop: 3, fontWeight: 400 }}>
-                    {STEP_SUBTITLES[step - 1]}
-                  </div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: "#111827", lineHeight: 1.2, flex: 1 }}>
+                  {STEP_TITLES[step - 1]}
                 </div>
-                <div style={{ width: 34, flexShrink: 0 }} />
-              </div>
-              <div style={{ textAlign: "center", marginBottom: 2 }}>
-                <span style={{ fontSize: 12, color: "#9ca3af", fontWeight: 500 }}>Étape </span>
-                <span style={{ fontSize: 13, color: "#16a34a", fontWeight: 800 }}>{step}</span>
-                <span style={{ fontSize: 12, color: "#9ca3af", fontWeight: 500 }}> sur {TOTAL_STEPS}</span>
+                <div style={{ textAlign: "right", flexShrink: 0 }}>
+                  <span style={{ fontSize: 12, color: "#9ca3af", fontWeight: 500 }}>Étape </span>
+                  <span style={{ fontSize: 13, color: "#16a34a", fontWeight: 800 }}>{step}</span>
+                  <span style={{ fontSize: 12, color: "#9ca3af", fontWeight: 500 }}> sur {TOTAL_STEPS}</span>
+                </div>
               </div>
             </div>
           )}
 
           {/* Barre de progression */}
-          <div style={{ display: "flex", gap: 4, marginBottom: 20, marginTop: 6 }}>
-            {Array.from({ length: TOTAL_STEPS }, (_, i) => (
-              <div key={i} style={{
-                flex: 1, height: 5, borderRadius: 3,
-                background: i + 1 <= step
-                  ? `linear-gradient(90deg, #22c55e, #16a34a)`
-                  : "#e5e7eb",
-                transition: "background 0.3s",
-              }} />
-            ))}
+          <div style={{ marginBottom: step === 1 ? 20 : 4, marginTop: 6 }}>
+            <div style={{ display: "flex", gap: 4 }}>
+              {Array.from({ length: TOTAL_STEPS }, (_, i) => (
+                <div key={i} style={{
+                  flex: 1, height: 5, borderRadius: 3,
+                  background: i + 1 <= step
+                    ? `linear-gradient(90deg, #22c55e, #16a34a)`
+                    : "#e5e7eb",
+                  transition: "background 0.3s",
+                }} />
+              ))}
+            </div>
+            {step > 1 && (
+              <div style={{ marginTop: 5, marginBottom: 14, fontSize: 12, fontWeight: 600, color: "#16a34a" }}>
+                {Math.round((step / TOTAL_STEPS) * 100)}% complété
+              </div>
+            )}
           </div>
 
           {/* Erreur */}
@@ -529,31 +528,64 @@ export default function Register() {
                 Vous pouvez modifier qui voit votre genre sur votre profil plus tard.
               </p>
               {[
-                { value: "F", label: "Femme",        icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.4"/><path d="M9 11.5V16M7 14h4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg> },
-                { value: "M", label: "Homme",         icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="8" cy="10" r="4.5" stroke="currentColor" strokeWidth="1.4"/><path d="M11.5 6.5L15 3M15 3h-3M15 3v3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg> },
-                { value: "O", label: "Personnalisé",  icon: <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="4.5" stroke="currentColor" strokeWidth="1.4"/><path d="M9 4.5V2M9 16v-2.5M4.5 9H2M16 9h-2.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg> },
-              ].map(opt => (
-                <div
-                  key={opt.value}
-                  className={`reg-radio-opt${form.gender === opt.value ? " selected" : ""}`}
-                  onClick={() => setForm(f => ({ ...f, gender: opt.value }))}
-                  style={{ color: form.gender === opt.value ? "#16a34a" : "#111827" }}
-                >
-                  <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <span style={{ color: form.gender === opt.value ? "#22c55e" : "#9ca3af" }}>{opt.icon}</span>
-                    {opt.label}
-                  </span>
-                  <div style={{
-                    width: 20, height: 20, borderRadius: "50%",
-                    border: `2px solid ${form.gender === opt.value ? "#22c55e" : "#d1d5db"}`,
-                    background: form.gender === opt.value ? "#22c55e" : "transparent",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    transition: "all 0.15s",
-                  }}>
-                    {form.gender === opt.value && <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                {
+                  value: "F", label: "Femme",
+                  icon: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="8" r="5" stroke="currentColor" strokeWidth="1.5"/><path d="M11 13V19M9 17h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+                },
+                {
+                  value: "M", label: "Homme",
+                  icon: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="10" cy="13" r="5" stroke="currentColor" strokeWidth="1.5"/><path d="M14 8L19 3M19 3h-4M19 3v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+                },
+                {
+                  value: "O", label: "Personnalisé",
+                  icon: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="5" stroke="currentColor" strokeWidth="1.5"/><path d="M11 4V2M11 20v-2M4 11H2M20 11h-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><circle cx="11" cy="11" r="2" fill="currentColor" fillOpacity="0.25"/></svg>,
+                },
+              ].map(opt => {
+                const selected = form.gender === opt.value;
+                return (
+                  <div
+                    key={opt.value}
+                    onClick={() => setForm(f => ({ ...f, gender: opt.value }))}
+                    style={{
+                      display: "flex", alignItems: "center", justifyContent: "space-between",
+                      padding: "15px 16px",
+                      border: `1.5px solid ${selected ? "#22c55e" : "#e5e7eb"}`,
+                      borderRadius: 16,
+                      background: selected ? "linear-gradient(135deg, #f0fdf4, #dcfce7)" : "#fafafa",
+                      cursor: "pointer",
+                      transition: "all 0.15s",
+                      boxShadow: selected ? "0 2px 8px rgba(34,197,94,0.12)" : "0 1px 3px rgba(0,0,0,0.04)",
+                    }}
+                  >
+                    <span style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                      <span style={{
+                        width: 40, height: 40, borderRadius: 12,
+                        background: selected ? "#fff" : "#f3f4f6",
+                        border: `1.5px solid ${selected ? "#86efac" : "#e5e7eb"}`,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        color: selected ? "#16a34a" : "#6b7280",
+                        flexShrink: 0,
+                        transition: "all 0.15s",
+                      }}>
+                        {opt.icon}
+                      </span>
+                      <span style={{ fontSize: 16, fontWeight: 600, color: selected ? "#15803d" : "#111827" }}>
+                        {opt.label}
+                      </span>
+                    </span>
+                    <div style={{
+                      width: 24, height: 24, borderRadius: "50%",
+                      border: `2px solid ${selected ? "#22c55e" : "#d1d5db"}`,
+                      background: selected ? "#22c55e" : "transparent",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      transition: "all 0.15s",
+                      flexShrink: 0,
+                    }}>
+                      {selected && <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5L9.5 3" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
               {form.gender === "O" && (
                 <input
                   className="reg-field"
@@ -565,9 +597,37 @@ export default function Register() {
                   onBlur={fieldBlur}
                 />
               )}
-              <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#f0fdf4", border: "1px solid #d1fae5", borderRadius: 12, padding: "9px 12px" }}>
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1L2 3v3c0 3 2.1 5.4 5 6 2.9-.6 5-3 5-6V3L7 1z" stroke="#22c55e" strokeWidth="1.2" fill="none"/><path d="M4.5 7l2 2 3-3" stroke="#22c55e" strokeWidth="1.2" strokeLinecap="round"/></svg>
-                <p style={{ margin: 0, fontSize: 12, color: "#15803d", fontWeight: 500 }}>Votre genre restera privé par défaut.</p>
+              {/* Carte confidentialité */}
+              <div style={{
+                background: "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)",
+                border: "1px solid #bbf7d0",
+                borderRadius: 16,
+                padding: "14px 16px",
+                display: "flex",
+                alignItems: "flex-start",
+                gap: 12,
+              }}>
+                <div style={{
+                  width: 38, height: 38, borderRadius: 12,
+                  background: "#fff",
+                  border: "1.5px solid #86efac",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  flexShrink: 0,
+                  boxShadow: "0 2px 6px rgba(34,197,94,0.15)",
+                }}>
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M10 1.5L3 4.5V9.5c0 4.2 3 7.9 7 8.5 4-0.6 7-4.3 7-8.5V4.5L10 1.5z" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.4"/>
+                    <path d="M7 10l2.5 2.5L13 7" stroke="#16a34a" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: "#15803d", lineHeight: 1.3 }}>
+                    Votre genre restera privé par défaut.
+                  </p>
+                  <p style={{ margin: "3px 0 0", fontSize: 12, color: "#374151", lineHeight: 1.4 }}>
+                    Seuls les membres que vous autorisez peuvent le voir.
+                  </p>
+                </div>
               </div>
               <button className="reg-next-btn" onClick={handleNext}>
                 Suivant
