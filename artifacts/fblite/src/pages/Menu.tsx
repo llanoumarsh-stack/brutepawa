@@ -72,6 +72,9 @@ export default function Menu() {
 
   const score = SCORE_MAP["or"];
 
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
+
   const logout = () => {
     localStorage.removeItem("fb_user");
     navigate("/login");
@@ -670,95 +673,175 @@ export default function Menu() {
     </div>
   );
 
-  // MAIN MENU
-  const MENU_ITEMS = [
-    { emoji: "👤", label: "Profil", desc: "Voir et modifier votre profil", action: () => navigate("/profile") },
-    { emoji: "📅", label: "Événements", desc: "Créer et rejoindre des événements", action: () => navigate("/events") },
-    { emoji: "🔖", label: "Enregistrements", desc: "Publications que vous avez sauvegardées", action: () => navigate("/saved") },
-    { emoji: "✨", label: "Souvenirs", desc: "Vos publications d'il y a 1 an, 2 ans…", action: () => navigate("/memories") },
-    { emoji: "⭐", label: "Compte Premium", desc: isPremium ? "✅ Actif · Renouvellement 11 juil." : "Passer à Premium · 2 500 FCFA/mois", action: () => setActiveSection("premium"), highlight: !isPremium },
-    { emoji: "⚙️", label: "Paramètres", desc: "Confidentialité, notifications, langue", action: () => setActiveSection("settings") },
-    { emoji: "✅", label: "Vérification du compte", desc: "Obtenir le badge vérifié · 2 500 FCFA", action: () => setActiveSection("settings") },
-    { emoji: "💳", label: "Mon portefeuille", desc: `Solde : ${(wallet?.balance ?? 0).toLocaleString()} ${wallet?.currency ?? "FCFA"}`, action: () => navigate("/wallet") },
-    { emoji: "💰", label: "Mes tontines", desc: `${tontines.length} groupes actifs`, action: () => navigate("/tontines") },
-    { emoji: "🎓", label: "Mes formations", desc: `${enrollments.length} cours en cours`, action: () => navigate("/formations") },
-    { emoji: "🏪", label: "Mes boutiques", desc: "Gérer mes boutiques", action: () => setActiveSection("boutiques") },
-    { emoji: "💼", label: "Mes offres d'emploi", desc: "Publier et gérer les offres", action: () => setActiveSection("emplois") },
-    { emoji: "🏅", label: "Mon score de confiance", desc: "Niveau Or · 88%", action: () => setActiveSection("score") },
-    ...(isAdmin(user.email) ? [{ emoji: "🛡️", label: "Administration", desc: "Tableau de bord & statistiques", action: () => navigate(ADMIN_SECRET_PATH) }] : []),
-    { emoji: "❓", label: "Centre d'aide", desc: "FAQ, support, signalement", action: () => setActiveSection("help") },
-    { emoji: "🚪", label: "Déconnexion", desc: "Se déconnecter de l'application", action: logout, danger: true },
+  // MAIN MENU — grille 2 colonnes style Facebook
+  const GRID_ITEMS = [
+    { icon: "🎬", label: "Reels",            bg: "#FFE0E0", action: () => navigate("/reels") },
+    { icon: "💬", label: "Messages",         bg: "#E3F2FD", action: () => navigate("/messages") },
+    { icon: "👥", label: "Groupes",          bg: "#E3F2FD", action: () => navigate("/groups") },
+    { icon: "👫", label: "Ami(e)s",          bg: "#E3F2FD", action: () => navigate("/friends") },
+    { icon: "🏪", label: "Marketplace",      bg: "#E0F7FA", action: () => navigate("/marketplace") },
+    { icon: "💳", label: "Wallet",           bg: "#E8F5E9", action: () => navigate("/wallet") },
+    { icon: "🚩", label: "Pages",            bg: "#FFF3E0", action: () => navigate("/pages") },
+    { icon: "🔖", label: "Enregistrements", bg: "#F3E5F5", action: () => navigate("/saved") },
+    { icon: "✨", label: "Souvenirs",        bg: "#E3F2FD", action: () => navigate("/memories") },
+    { icon: "🎁", label: "Anniversaires",    bg: "#E8F5E9", action: () => {} },
+    { icon: "📅", label: "Évènements",       bg: "#FFEBEE", action: () => navigate("/events") },
+    { icon: "✅", label: "Brute Vérifié",   bg: "#E3F2FD", action: () => setActiveSection("settings-verify") },
+    { icon: "💰", label: "Tontines",         bg: "#FFF8E1", action: () => navigate("/tontines") },
+    { icon: "📰", label: "Fils",             bg: "#FFF3E0", action: () => navigate("/") },
+    { icon: "🎓", label: "Formations",       bg: "#F3E5F5", action: () => navigate("/formations") },
+    { icon: "🏅", label: "Score",            bg: "#FFF8E1", action: () => setActiveSection("score") },
+    { icon: "💼", label: "Emplois",          bg: "#E8F5E9", action: () => navigate("/jobs") },
+    ...(isAdmin(user.email) ? [{ icon: "🛡️", label: "Admin", bg: "#FCE4EC", action: () => navigate(ADMIN_SECRET_PATH) }] : []),
   ];
 
   return (
-    <div style={{ maxWidth: 600, margin: "0 auto" }}>
-      {/* User header */}
-      <div style={{ background: "var(--fb-white)", padding: "16px", display: "flex", gap: 14, alignItems: "center", cursor: "pointer", borderBottom: "1px solid var(--fb-divider)" }} onClick={() => navigate("/profile")}>
-        {user.avatarUrl
-          ? <img src={user.avatarUrl} alt="Profil" style={{ width: 56, height: 56, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
-          : <div className="avatar" style={{ width: 56, height: 56, fontSize: 20, background: "var(--fb-blue)", flexShrink: 0 }}>{userInitials}</div>
-        }
-        <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 800, fontSize: 17, display: "flex", alignItems: "center", gap: 6 }}>
-            {user.name}
-            {user.flag && <span style={{ fontSize: 18 }}>{user.flag}</span>}
-            <span style={{ color: "var(--fb-blue)", fontSize: 14 }}>✔️</span>
-            <span style={{ fontSize: 16 }}>🏅</span>
-          </div>
-          <div style={{ fontSize: 13, color: "var(--fb-blue)" }}>Voir votre profil</div>
-          {user.country && <div style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>📍 {user.country}</div>}
+    <div style={{ maxWidth: 600, margin: "0 auto", background: "var(--fb-bg)", minHeight: "100vh" }}>
+
+      {/* ── Header ── */}
+      <div style={{ background: "var(--fb-white)", padding: "14px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid var(--fb-divider)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <button onClick={() => window.history.back()} style={{ background: "var(--fb-bg)", border: "none", width: 36, height: 36, borderRadius: "50%", cursor: "pointer", fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>‹</button>
+          <span style={{ fontWeight: 900, fontSize: 22 }}>Menu</span>
         </div>
-        {isPremium && <span style={{ background: "linear-gradient(135deg, #9C27B0, #E91E63)", color: "#fff", fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 20 }}>⭐ PREMIUM</span>}
-        <span style={{ color: "var(--fb-text-secondary)", fontSize: 20 }}>›</span>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button style={{ background: "var(--fb-bg)", border: "none", width: 36, height: 36, borderRadius: "50%", cursor: "pointer", fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>↕</button>
+          <button style={{ background: "var(--fb-bg)", border: "none", width: 36, height: 36, borderRadius: "50%", cursor: "pointer", fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>🔍</button>
+        </div>
       </div>
 
-      {/* Shortcuts */}
-      <div style={{ background: "var(--fb-white)", borderBottom: "1px solid var(--fb-divider)", padding: "12px 16px" }}>
-        <div style={{ fontWeight: 700, marginBottom: 10, fontSize: 14 }}>Raccourcis</div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
-          {[
-            { emoji: "💳", label: "Wallet",        action: () => navigate("/wallet") },
-            { emoji: "💰", label: "Tontines",      action: () => navigate("/tontines") },
-            { emoji: "📅", label: "Événements",    action: () => navigate("/events") },
-            { emoji: "🔖", label: "Enregistrés",  action: () => navigate("/saved") },
-            { emoji: "✨", label: "Souvenirs",     action: () => navigate("/memories") },
-            { emoji: "🎓", label: "Cours",         action: () => navigate("/formations") },
-            { emoji: "📊", label: "Créateur",      action: () => navigate("/creator") },
-            { emoji: "⭐", label: "Premium",       action: () => setActiveSection("premium") },
-          ].map(item => (
-            <button key={item.label} onClick={item.action} style={{ background: "var(--fb-bg)", border: "none", borderRadius: 10, padding: "12px 4px", cursor: "pointer", textAlign: "center" }}>
-              <div style={{ fontSize: 22 }}>{item.emoji}</div>
-              <div style={{ fontSize: 11, fontWeight: 600, marginTop: 4, color: "var(--fb-text)" }}>{item.label}</div>
-            </button>
+      <div style={{ padding: "10px 12px", display: "flex", flexDirection: "column", gap: 8 }}>
+
+        {/* ── Profil card ── */}
+        <div
+          onClick={() => navigate("/profile")}
+          style={{ background: "var(--fb-white)", borderRadius: 12, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
+        >
+          <div style={{ position: "relative", flexShrink: 0 }}>
+            {user.avatarUrl
+              ? <img src={user.avatarUrl} alt="Profil" style={{ width: 56, height: 56, borderRadius: "50%", objectFit: "cover" }} />
+              : <div className="avatar" style={{ width: 56, height: 56, fontSize: 20, background: "#42B72A", flexShrink: 0 }}>{userInitials}</div>
+            }
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 800, fontSize: 16 }}>{user.name}</div>
+            <div style={{ fontSize: 13, color: "var(--fb-text-secondary)" }}>Voir votre profil</div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <div style={{ width: 36, height: 36, borderRadius: "50%", border: "2px solid var(--fb-divider)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>📷</div>
+            <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--fb-bg)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>⌄</div>
+          </div>
+        </div>
+
+        {/* ── Changer de compte ── */}
+        <div style={{ background: "var(--fb-white)", borderRadius: 12, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
+          <div style={{ width: 40, height: 40, borderRadius: "50%", background: "var(--fb-bg)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>👤</div>
+          <div style={{ flex: 1, fontWeight: 600, fontSize: 15 }}>Changer de compte</div>
+          <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--fb-bg)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, position: "relative" }}>
+            ⌄
+            <div style={{ position: "absolute", top: 4, right: 4, width: 8, height: 8, background: "#F44336", borderRadius: "50%", border: "2px solid #fff" }} />
+          </div>
+        </div>
+
+        {/* ── Inviter des ami(e)s ── */}
+        <div style={{ background: "var(--fb-white)", borderRadius: 12, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
+          <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#FFF0F0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>❤️</div>
+          <div style={{ flex: 1, fontWeight: 600, fontSize: 15 }}>Inviter des ami(e)s</div>
+        </div>
+
+        {/* ── Grille 2 colonnes ── */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+          {GRID_ITEMS.map((item, i) => (
+            <div
+              key={i}
+              onClick={item.action}
+              style={{
+                background: "var(--fb-white)", borderRadius: 12, padding: "16px 14px",
+                cursor: "pointer", boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+                display: "flex", flexDirection: "column", gap: 8,
+                transition: "background 0.15s",
+              }}
+              onPointerDown={e => (e.currentTarget.style.background = "var(--fb-bg)")}
+              onPointerUp={e => (e.currentTarget.style.background = "var(--fb-white)")}
+              onPointerLeave={e => (e.currentTarget.style.background = "var(--fb-white)")}
+            >
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: item.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>
+                {item.icon}
+              </div>
+              <div style={{ fontWeight: 600, fontSize: 14, color: "var(--fb-text)", lineHeight: 1.3 }}>{item.label}</div>
+            </div>
           ))}
         </div>
-      </div>
 
-      {/* Menu items */}
-      <div style={{ padding: "8px 0" }}>
-        {MENU_ITEMS.map((item, i) => (
-          <button
-            key={i}
-            onClick={item.action}
-            style={{
-              display: "flex", alignItems: "center", gap: 14, width: "100%", padding: "12px 16px",
-              background: (item as any).highlight ? "var(--fb-blue-light)" : "none", border: "none",
-              textAlign: "left", cursor: "pointer",
-              borderBottom: i < MENU_ITEMS.length - 1 ? "1px solid var(--fb-divider)" : "none",
-            }}
-            onMouseEnter={e => (e.currentTarget.style.background = "var(--fb-bg)")}
-            onMouseLeave={e => (e.currentTarget.style.background = (item as any).highlight ? "var(--fb-blue-light)" : "none")}
+        {/* ── Paramètres et confidentialité (accordéon) ── */}
+        <div style={{ background: "var(--fb-white)", borderRadius: 12, overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
+          <div
+            onClick={() => setSettingsOpen(v => !v)}
+            style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", cursor: "pointer" }}
           >
-            <div style={{ fontSize: 20, width: 40, height: 40, background: "var(--fb-bg)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              {item.emoji}
+            <div style={{ width: 40, height: 40, borderRadius: "50%", background: "var(--fb-bg)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>⚙️</div>
+            <div style={{ flex: 1, fontWeight: 600, fontSize: 15 }}>Paramètres et confidentialité</div>
+            <span style={{ fontSize: 18, transform: settingsOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>⌄</span>
+          </div>
+          {settingsOpen && (
+            <div style={{ borderTop: "1px solid var(--fb-divider)" }}>
+              {[
+                { label: "Paramètres", action: () => setActiveSection("settings") },
+                { label: "Confidentialité", action: () => setActiveSection("settings-privacy") },
+                { label: "Notifications", action: () => setActiveSection("settings-notifs") },
+                { label: "Langue", action: () => setActiveSection("settings-lang") },
+                { label: "Apparence", action: () => setActiveSection("settings-appearance") },
+                { label: "Mode données", action: () => setActiveSection("settings-data") },
+                { label: "Vérification du compte", action: () => setActiveSection("settings-verify") },
+              ].map((item, i, arr) => (
+                <div key={i} onClick={item.action} style={{ padding: "12px 16px 12px 70px", fontSize: 14, fontWeight: 500, cursor: "pointer", borderBottom: i < arr.length - 1 ? "1px solid var(--fb-divider)" : "none", color: "var(--fb-text)" }}>
+                  {item.label}
+                </div>
+              ))}
             </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 600, fontSize: 15, color: (item as any).danger ? "#F44336" : "var(--fb-text)" }}>{item.label}</div>
-              <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", marginTop: 1 }}>{item.desc}</div>
+          )}
+        </div>
+
+        {/* ── Aide et assistance (accordéon) ── */}
+        <div style={{ background: "var(--fb-white)", borderRadius: 12, overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
+          <div
+            onClick={() => setHelpOpen(v => !v)}
+            style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", cursor: "pointer" }}
+          >
+            <div style={{ width: 40, height: 40, borderRadius: "50%", background: "var(--fb-bg)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>❓</div>
+            <div style={{ flex: 1, fontWeight: 600, fontSize: 15 }}>Aide et assistance</div>
+            <span style={{ fontSize: 18, transform: helpOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>⌄</span>
+          </div>
+          {helpOpen && (
+            <div style={{ borderTop: "1px solid var(--fb-divider)" }}>
+              {[
+                { label: "Centre d'aide", action: () => setActiveSection("help") },
+                { label: "Signaler un problème", action: () => {} },
+                { label: "Conditions d'utilisation", action: () => {} },
+              ].map((item, i, arr) => (
+                <div key={i} onClick={item.action} style={{ padding: "12px 16px 12px 70px", fontSize: 14, fontWeight: 500, cursor: "pointer", borderBottom: i < arr.length - 1 ? "1px solid var(--fb-divider)" : "none", color: "var(--fb-text)" }}>
+                  {item.label}
+                </div>
+              ))}
             </div>
-            {!(item as any).danger && <span style={{ color: "var(--fb-text-secondary)", fontSize: 18 }}>›</span>}
-          </button>
-        ))}
+          )}
+        </div>
+
+        {/* ── Ajouter un compte ── */}
+        <div style={{ background: "var(--fb-white)", borderRadius: 12, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
+          <div style={{ width: 40, height: 40, borderRadius: "50%", background: "var(--fb-bg)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>➕</div>
+          <div style={{ flex: 1, fontWeight: 600, fontSize: 15 }}>Ajouter un compte</div>
+        </div>
+
+        {/* ── Déconnexion ── */}
+        <div
+          onClick={logout}
+          style={{ background: "var(--fb-white)", borderRadius: 12, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", boxShadow: "0 1px 3px rgba(0,0,0,0.06)", marginBottom: 16 }}
+        >
+          <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#FFF0F0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>🚪</div>
+          <div style={{ flex: 1, fontWeight: 600, fontSize: 15, color: "#F44336" }}>Déconnexion</div>
+        </div>
+
       </div>
     </div>
   );
