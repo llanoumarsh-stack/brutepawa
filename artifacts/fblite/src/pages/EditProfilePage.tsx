@@ -919,109 +919,420 @@ export default function EditProfilePage() {
   /* MAIN LIST                                                                  */
   /* ══════════════════════════════════════════════════════════════════════════ */
 
+  const personalFields = [city, ext.hometown, birthLabel, ext.relationship, ext.family, ext.gender, ext.languages];
+  const personalFilled = personalFields.filter(Boolean).length;
+  const allFields = [...personalFields, bio, ext.experience, ext.education, ext.hobbies,
+    ext.interestMusic, ext.interestTv, ext.interestMovies, ext.interestGames, ext.interestSports,
+    ext.travelPlaces, ext.websites, ext.socialLinks, phone];
+  const completion = Math.min(95, Math.round(10 + (allFields.filter(Boolean).length / allFields.length) * 85));
+  const userName = localUser.name || "Utilisateur";
+  const userHandle = "@" + (localUser.name || "utilisateur").toLowerCase().replace(/\s+/g, "").slice(0, 14);
+  const ic = {
+    music:  ext.interestMusic.split(",").filter(Boolean).length,
+    tv:     ext.interestTv.split(",").filter(Boolean).length,
+    movies: ext.interestMovies.split(",").filter(Boolean).length,
+    games:  ext.interestGames.split(",").filter(Boolean).length,
+    sports: ext.interestSports.split(",").filter(Boolean).length,
+  };
+  const totalInterests = Object.values(ic).reduce((a, b) => a + b, 0);
+  const C_CIRC = 2 * Math.PI * 20;
+
   return (
-    <div style={{ maxWidth: 600, margin: "0 auto", paddingBottom: 40, background: "var(--fb-white)", minHeight: "100vh" }}>
-      {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", borderBottom: "1px solid var(--fb-divider)", position: "sticky", top: 0, background: "var(--fb-white)", zIndex: 10 }}>
-        <button onClick={() => navigate("/profile")} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "var(--fb-blue)", padding: "4px 10px 4px 0" }}>‹</button>
-        <span style={{ fontWeight: 800, fontSize: 17, flex: 1, textAlign: "center", marginRight: 34 }}>Modifier le profil</span>
+    <div style={{ background: "#f3f6f3", minHeight: "100vh", maxWidth: 480, margin: "0 auto", paddingBottom: 108, fontFamily: "system-ui,-apple-system,sans-serif" }}>
+
+      {/* ── HEADER ── */}
+      <div style={{ position: "sticky", top: 0, zIndex: 20, background: "#fff", borderBottom: "1px solid #f0f0f0", padding: "14px 20px" }}>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <button onClick={() => navigate("/profile")} style={{ background: "#f4f4f4", border: "none", width: 36, height: 36, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M11 4L6 9l5 5" stroke="#111827" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </button>
+          <div style={{ flex: 1, textAlign: "center" }}>
+            <div style={{ fontSize: 17, fontWeight: 800, color: "#111827" }}>Modifier le profil</div>
+            <div style={{ fontSize: 11.5, color: "#9ca3af", marginTop: 1 }}>Complétez votre profil pour une meilleure expérience</div>
+          </div>
+          <div style={{ width: 36 }} />
+        </div>
       </div>
 
-      {/* ── INTRO ── */}
-      <SectionHeader label="Intro" open={open.intro} onToggle={() => toggleSection("intro")} />
-      {open.intro && (
-        <>
-          <Row icon="👋" label="À propos de vous" value={bio || null} onEdit={() => openView("bio")} />
-          <Row icon="📌" label="Détails épinglés" value={ext.hometown || city || null} onEdit={() => openView("pinned")} />
-        </>
-      )}
+      <div style={{ padding: "14px 14px 0" }}>
 
-      {/* ── INFORMATIONS PERSONNELLES ── */}
-      <SectionHeader label="Informations personnelles" open={open.info} onToggle={() => toggleSection("info")} />
-      {open.info && (
-        <>
-          <Row icon="📍" label={city || "Ville actuelle"} value={city ? "🌐 Public" : null} onEdit={() => openView("city")} dimLabel={!city} />
-          <Row icon="🏠" label={ext.hometown || "Ville d'origine"} value={null} onEdit={() => openView("hometown")} dimLabel={!ext.hometown} />
-          <Row icon="🎂" label={birthLabel ?? "Date de naissance"} value={birthLabel ? `${PRIVACY_ICON[ext.birthPrivacy]} ${PRIVACY_LABEL[ext.birthPrivacy]}` : null} onEdit={() => openView("birthdate")} dimLabel={!birthLabel} />
-          <Row icon="❤️" label={ext.relationship || "Situation amoureuse"} value={null} onEdit={() => openView("relationship")} dimLabel={!ext.relationship} />
-          <Row icon="🌳" label={ext.family || "Famille"} value={null} onEdit={() => openView("family")} dimLabel={!ext.family} />
-          <Row icon="⚥" label={ext.gender || "Genre"} value={ext.gender ? `${PRIVACY_ICON[ext.genderPrivacy]} ${PRIVACY_LABEL[ext.genderPrivacy]}` : null} onEdit={() => openView("gender")} dimLabel={!ext.gender} />
-          <Row icon="🗣️" label={ext.languages || "Langues"} value={null} onEdit={() => openView("languages")} dimLabel={!ext.languages} />
-        </>
-      )}
-
-      {/* ── EXPÉRIENCES PRO ── */}
-      <SectionHeader label="Expériences professionnelles" open={open.exp} onToggle={() => toggleSection("exp")} />
-      {open.exp && (
-        <Row icon="💼" label={ext.experience || "Expérience professionnelle"} value={null} onEdit={() => openView("experience")} dimLabel={!ext.experience} />
-      )}
-
-      {/* ── FORMATION ── */}
-      <SectionHeader label="Formation" open={open.edu} onToggle={() => toggleSection("edu")} />
-      {open.edu && (
-        <Row icon="🏫" label={ext.education || "Lycée ou université"} value={null} onEdit={() => openView("education")} dimLabel={!ext.education} />
-      )}
-
-      {/* ── LOISIRS ── */}
-      <SectionHeader label="Loisirs" open={open.loisirs} onToggle={() => toggleSection("loisirs")} />
-      {open.loisirs && (
-        <Row icon="🎮" label={ext.hobbies || "Passe-temps"} value={null} onEdit={() => openView("hobbies")} dimLabel={!ext.hobbies} />
-      )}
-
-      {/* ── CENTRES D'INTÉRÊT ── */}
-      <SectionHeader label="Centres d'intérêt" open={open.interests} onToggle={() => toggleSection("interests")} />
-      {open.interests && (
-        <>
-          <Row icon="🎵" label={ext.interestMusic || "Musique"} value={null} onEdit={() => openView("music")} dimLabel={!ext.interestMusic} />
-          <Row icon="📺" label={ext.interestTv || "Séries télé"} value={null} onEdit={() => openView("tv")} dimLabel={!ext.interestTv} />
-          <Row icon="🎬" label={ext.interestMovies || "Films"} value={null} onEdit={() => openView("movies")} dimLabel={!ext.interestMovies} />
-          <Row icon="🕹️" label={ext.interestGames || "Jeux"} value={null} onEdit={() => openView("games")} dimLabel={!ext.interestGames} />
-          <Row icon="👕" label={ext.interestSports || "Équipes sportives et athlètes"} value={null} onEdit={() => openView("sports")} dimLabel={!ext.interestSports} />
-        </>
-      )}
-
-      {/* ── VOYAGE ── */}
-      <SectionHeader label="Voyage" open={open.voyage} onToggle={() => toggleSection("voyage")} />
-      {open.voyage && (
-        <Row icon="✈️" label={ext.travelPlaces || "Lieux"} value={null} onEdit={() => openView("places")} dimLabel={!ext.travelPlaces} />
-      )}
-
-      {/* ── LIENS ── */}
-      <SectionHeader label="Liens" open={open.liens} onToggle={() => toggleSection("liens")} />
-      {open.liens && (
-        <Row icon="🔗" label={ext.websites || "Sites Web, blogs, portfolios"} value={null} onEdit={() => openView("websites")} dimLabel={!ext.websites} />
-      )}
-
-      {/* ── COORDONNÉES ── */}
-      <SectionHeader label="Coordonnées" open={open.coords} onToggle={() => toggleSection("coords")} />
-      {open.coords && (
-        <>
-          <Row icon="@" label={ext.socialLinks || "Réseaux sociaux"} value={null} onEdit={() => openView("social")} dimLabel={!ext.socialLinks} />
-          {phone && (
-            <Row icon="📞" label={phone} value={`🔒 Moi uniquement`} onEdit={() => openView("phone")} />
-          )}
-          {ext.extraPhones.filter(p => p.trim()).map((p, i) => (
-            <Row key={i} icon="📞" label={p} value="🔒 Moi uniquement" onEdit={() => openView("phone")} />
-          ))}
-          {!phone && (
-            <Row icon="📞" label="Ajouter un numéro de téléphone" value={null} onEdit={() => openView("phone")} dimLabel />
-          )}
-          <Row icon="✉️" label={localUser.email || "Ajouter une adresse e-mail"} value={localUser.email ? "🔒 Moi uniquement" : null} onEdit={() => openView("email")} dimLabel={!localUser.email} />
-        </>
-      )}
-
-      {/* ── STOCKAGE ── */}
-      <div style={{ borderTop: "8px solid var(--fb-bg, #f0f2f5)", marginTop: 8 }}>
-        <div style={{
-          padding: "12px 16px 4px",
-          fontWeight: 800, fontSize: 14,
-          color: "var(--fb-text-secondary)",
-          letterSpacing: 0.3,
-          textTransform: "uppercase",
-        }}>
-          Stockage
+        {/* ── PROFIL CARD ── */}
+        <div style={{ background: "linear-gradient(135deg, #166534 0%, #22c55e 100%)", borderRadius: 24, padding: "20px 20px 22px", marginBottom: 12, position: "relative", overflow: "hidden", cursor: "pointer" }}>
+          <div style={{ position: "absolute", top: -24, right: -24, width: 110, height: 110, borderRadius: "50%", background: "rgba(255,255,255,0.06)" }} />
+          <div style={{ position: "absolute", bottom: -28, left: 40, width: 90, height: 90, borderRadius: "50%", background: "rgba(255,255,255,0.04)" }} />
+          <div style={{ display: "flex", alignItems: "center", gap: 16, position: "relative" }}>
+            <div style={{ position: "relative", flexShrink: 0 }}>
+              <div style={{ width: 72, height: 72, borderRadius: "50%", background: "linear-gradient(135deg, #0f4d28, #166534)", border: "3px solid rgba(255,255,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <span style={{ color: "#fff", fontWeight: 900, fontSize: 22, letterSpacing: -1 }}>bp</span>
+              </div>
+              <div style={{ position: "absolute", bottom: 0, left: 0, width: 26, height: 26, borderRadius: "50%", background: "#fff", border: "2px solid #22c55e", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M9.5 2L11 3.5 4 10.5H2.5V9L9.5 2z" stroke="#22c55e" strokeWidth="1.2" strokeLinejoin="round"/><path d="M8.5 3l1.5 1.5" stroke="#22c55e" strokeWidth="1.2" strokeLinecap="round"/></svg>
+              </div>
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
+                <span style={{ color: "#fff", fontWeight: 800, fontSize: 18 }}>{userName}</span>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" fill="rgba(255,255,255,0.25)"/><path d="M5 8l2.5 2.5L11.5 5.5" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </div>
+              <div style={{ color: "rgba(255,255,255,0.72)", fontSize: 12.5, marginBottom: 10 }}>{userHandle}</div>
+              <div style={{ color: "rgba(255,255,255,0.9)", fontSize: 12, marginBottom: 5 }}>Profil complété à {completion}%</div>
+              <div style={{ height: 5, background: "rgba(255,255,255,0.2)", borderRadius: 3, overflow: "hidden" }}>
+                <div style={{ height: "100%", width: `${completion}%`, background: "#fff", borderRadius: 3 }} />
+              </div>
+            </div>
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M7 5l5 5-5 5" stroke="rgba(255,255,255,0.6)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </div>
         </div>
-        <StorageSection />
+
+        {/* ── INTRO ── */}
+        <PCard>
+          <PSectionHeader
+            icon={<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M8 3.5c.5-1.5 2.5-1.5 3 0 .2.6 0 1.3-.5 1.8L4 12H2v-2l5.5-5.5A2 2 0 008 3.5z" stroke="#22c55e" strokeWidth="1.4" strokeLinejoin="round"/><path d="M2 12h2" stroke="#22c55e" strokeWidth="1.4" strokeLinecap="round"/></svg>}
+            title="Intro"
+            badge={bio ? "1 champ rempli" : "0 champ rempli"}
+            badgeGreen={!!bio}
+            open={open.intro}
+            onToggle={() => toggleSection("intro")}
+          />
+          {open.intro && (
+            <div style={{ padding: "0 0 4px" }}>
+              <PRow
+                icon={<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="#22c55e" strokeWidth="1.3"/><path d="M2 15c0-3.3 2.7-5 6-5s6 1.7 6 5" stroke="#22c55e" strokeWidth="1.3" strokeLinecap="round"/></svg>}
+                label="À propos de vous"
+                sub="Parlez de vous, de vos passions et de vos objectifs."
+                onClick={() => openView("bio")}
+                showArrow
+              />
+              <PRow
+                icon={<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1.5L2 4.5V8c0 3.5 2.5 6.5 6 7 3.5-.5 6-3.5 6-7V4.5L8 1.5z" stroke="#22c55e" strokeWidth="1.3" strokeLinejoin="round"/></svg>}
+                label="Détails épinglés"
+                sub={city || "CI"}
+                onClick={() => openView("pinned")}
+                showEdit
+                last
+              />
+            </div>
+          )}
+        </PCard>
+
+        {/* ── INFORMATIONS PERSONNELLES ── */}
+        <PCard>
+          <PSectionHeader
+            icon={<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3.5" stroke="#22c55e" strokeWidth="1.4"/><path d="M2 17c0-3.9 3.1-6 7-6s7 2.1 7 6" stroke="#22c55e" strokeWidth="1.4" strokeLinecap="round"/></svg>}
+            title="Informations personnelles"
+            badge={`${personalFilled}/7 remplis`}
+            badgeGreen={personalFilled > 0}
+            open={open.info}
+            onToggle={() => toggleSection("info")}
+          />
+          {open.info && (
+            <div style={{ padding: "4px 12px 12px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                {([
+                  { icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1.5C4.5 1.5 2 4 2 6.5c0 3.8 5 8.5 5 8.5s5-4.7 5-8.5C12 4 9.5 1.5 7 1.5z" stroke="#22c55e" strokeWidth="1.2"/><circle cx="7" cy="6.5" r="1.5" fill="#22c55e"/></svg>, label: city || "CI", sub: city ? "Public" : "Non renseigné", onClick: () => openView("city") },
+                  { icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1.5" y="6" width="11" height="7" rx="1.5" stroke="#22c55e" strokeWidth="1.2"/><path d="M4 6V4.5a3 3 0 016 0V6" stroke="#22c55e" strokeWidth="1.2" strokeLinecap="round"/></svg>, label: ext.hometown || "Ville d'origine", sub: "Non renseigné", onClick: () => openView("hometown") },
+                  { icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="3" width="12" height="9.5" rx="1.5" stroke="#22c55e" strokeWidth="1.2"/><path d="M4 1.5v3M10 1.5v3M1 6.5h12" stroke="#22c55e" strokeWidth="1.2" strokeLinecap="round"/></svg>, label: birthLabel ?? "Date de naissance", sub: birthLabel ? PRIVACY_LABEL[ext.birthPrivacy] : "Non renseigné", onClick: () => openView("birthdate") },
+                  { icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1.5c1.5-1.5 4 .5 4 2.5 0 2.5-4 6-4 6S3 6.5 3 4c0-2 2.5-4 4-2.5z" fill="#fca5a5" stroke="none"/></svg>, label: ext.relationship || "Situation amoureuse", sub: "Non renseigné", onClick: () => openView("relationship") },
+                  { icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2C8.5.5 11 3 7 6 3 3 5.5.5 7 2z" fill="#22c55e"/><path d="M3.5 8c-1.5.5-2.5 1.7-2.5 3.5h12c0-1.8-1-3-2.5-3.5" stroke="#22c55e" strokeWidth="1.2" strokeLinecap="round"/></svg>, label: ext.family || "Famille", sub: "Non renseigné", onClick: () => openView("family") },
+                  { icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#22c55e" strokeWidth="1.2"/><path d="M5 5.5s.5-1.5 2-1.5 2 1 2 1.5-1 1.5-2 2v1M7 10.5v.5" stroke="#22c55e" strokeWidth="1.1" strokeLinecap="round"/></svg>, label: ext.gender || "Genre", sub: ext.gender ? PRIVACY_LABEL[ext.genderPrivacy] : "Non renseigné", onClick: () => openView("gender") },
+                ] as { icon: React.ReactNode; label: string; sub: string; onClick: () => void }[]).map((item, i) => (
+                  <div key={i} onClick={item.onClick} style={{ background: "#f9fafb", borderRadius: 12, padding: "10px 11px", cursor: "pointer", border: "1px solid #f0f0f0" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                      <div style={{ width: 26, height: 26, borderRadius: 8, background: "#f0fdf4", border: "1px solid #d1fae5", display: "flex", alignItems: "center", justifyContent: "center" }}>{item.icon}</div>
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 4.5l2 3 2-3" stroke="#22c55e" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                    </div>
+                    <div style={{ fontSize: 12.5, fontWeight: 700, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.label}</div>
+                    <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>{item.sub}</div>
+                  </div>
+                ))}
+              </div>
+              <div onClick={() => openView("languages")} style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 8, padding: "10px 11px", background: "#f9fafb", borderRadius: 12, cursor: "pointer", border: "1px solid #f0f0f0" }}>
+                <div style={{ width: 30, height: 30, borderRadius: 9, background: "#f0fdf4", border: "1px solid #d1fae5", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#22c55e" strokeWidth="1.2"/><path d="M8 1.5C8 1.5 5 4.5 5 8s3 6.5 3 6.5M8 1.5c0 0 3 3 3 6.5s-3 6.5-3 6.5M1.5 8h13" stroke="#22c55e" strokeWidth="1.1" strokeLinecap="round"/></svg>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13.5, fontWeight: 700, color: "#111827" }}>Langues</div>
+                  <div style={{ fontSize: 11.5, color: "#9ca3af" }}>{ext.languages || "Non renseignées"}</div>
+                </div>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#22c55e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </div>
+            </div>
+          )}
+        </PCard>
+
+        {/* ── EXPÉRIENCES PRO ── */}
+        <PCard>
+          <PSectionHeader
+            icon={<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="7" width="14" height="9" rx="2" stroke="#22c55e" strokeWidth="1.4"/><path d="M6 7V5a2 2 0 014 0v2" stroke="#22c55e" strokeWidth="1.4" strokeLinecap="round"/><path d="M2 11h14" stroke="#22c55e" strokeWidth="1.4"/></svg>}
+            title="Expériences professionnelles"
+            badge={ext.experience ? "1 ajoutée" : "0 ajoutée"}
+            open={open.exp}
+            onToggle={() => toggleSection("exp")}
+          />
+          {open.exp && (
+            <PAddRow
+              icon={<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="5.5" width="12" height="8" rx="1.5" stroke="#22c55e" strokeWidth="1.3"/><path d="M5 5.5V4.5a3 3 0 016 0v1" stroke="#22c55e" strokeWidth="1.3" strokeLinecap="round"/></svg>}
+              label="Expérience professionnelle"
+              sub="Ajoutez vos expériences et compétences"
+              onClick={() => openView("experience")}
+            />
+          )}
+        </PCard>
+
+        {/* ── FORMATION ── */}
+        <PCard>
+          <PSectionHeader
+            icon={<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2L1 6l8 4 8-4-8-4z" stroke="#22c55e" strokeWidth="1.4" strokeLinejoin="round"/><path d="M4 8v5c0 1.5 2.2 3 5 3s5-1.5 5-3V8" stroke="#22c55e" strokeWidth="1.4" strokeLinecap="round"/></svg>}
+            title="Formation"
+            badge={ext.education ? "1 ajoutée" : "0 ajoutée"}
+            open={open.edu}
+            onToggle={() => toggleSection("edu")}
+          />
+          {open.edu && (
+            <PAddRow
+              icon={<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1.5L1.5 5l6.5 3 6.5-3L8 1.5z" stroke="#22c55e" strokeWidth="1.3" strokeLinejoin="round"/><path d="M3.5 7v4c0 1.2 2 2.5 4.5 2.5S12.5 12.2 12.5 11V7" stroke="#22c55e" strokeWidth="1.3" strokeLinecap="round"/></svg>}
+              label="Lycée ou université"
+              sub="Ajoutez vos établissements et diplômes"
+              onClick={() => openView("education")}
+            />
+          )}
+        </PCard>
+
+        {/* ── LOISIRS ── */}
+        <PCard>
+          <PSectionHeader
+            icon={<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="8" width="14" height="8" rx="2" stroke="#22c55e" strokeWidth="1.4"/><circle cx="6" cy="12" r="1.2" fill="#22c55e"/><circle cx="12" cy="12" r="1.2" fill="#22c55e"/><path d="M8 10.5v3M7.5 12h1" stroke="#22c55e" strokeWidth="1.3" strokeLinecap="round"/><path d="M6 8V6.5a2 2 0 014 0V8" stroke="#22c55e" strokeWidth="1.4" strokeLinecap="round"/></svg>}
+            title="Loisirs"
+            badge={ext.hobbies ? "1 ajouté" : "0 ajouté"}
+            open={open.loisirs}
+            onToggle={() => toggleSection("loisirs")}
+          />
+          {open.loisirs && (
+            <PAddRow
+              icon={<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2.5 8l1.5-4.5L8 5.5l4-3.5 1.5 4.5-1 5.5H3.5l-1-5.5z" stroke="#22c55e" strokeWidth="1.3" strokeLinejoin="round"/></svg>}
+              label="Passe-temps"
+              sub="Partagez vos activités et hobbies"
+              onClick={() => openView("hobbies")}
+            />
+          )}
+        </PCard>
+
+        {/* ── CENTRES D'INTÉRÊT ── */}
+        <PCard>
+          <PSectionHeader
+            icon={<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 15C9 15 2.5 11 2.5 6.5a3.5 3.5 0 017-0c0-.1 0 0 0 0a3.5 3.5 0 017 0C16.5 11 9 15 9 15z" fill="#fca5a5" stroke="#22c55e" strokeWidth="1.4" strokeLinejoin="round"/></svg>}
+            title="Centres d'intérêt"
+            badge={totalInterests > 0 ? `${totalInterests} sélectionnés` : "0 sélectionné"}
+            badgeGreen={totalInterests > 0}
+            open={open.interests}
+            onToggle={() => toggleSection("interests")}
+          />
+          {open.interests && (
+            <div style={{ padding: "0 12px 14px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+                {([
+                  { label: "Musique", count: ic.music, onClick: () => openView("music"), icon: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M16 3v9a4 4 0 11-1-2.7V5L8 7v8a4 4 0 11-1-2.7V5l9-2z" stroke="#22c55e" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg> },
+                  { label: "Séries télé", count: ic.tv, onClick: () => openView("tv"), icon: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="5" width="18" height="12" rx="2" stroke="#22c55e" strokeWidth="1.4"/><path d="M7 19h8M11 17v2" stroke="#22c55e" strokeWidth="1.4" strokeLinecap="round"/></svg> },
+                  { label: "Films", count: ic.movies, onClick: () => openView("movies"), icon: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="4" width="18" height="14" rx="2" stroke="#22c55e" strokeWidth="1.4"/><path d="M2 8h18M6 4v4M11 4v4M16 4v4" stroke="#22c55e" strokeWidth="1.3" strokeLinecap="round"/></svg> },
+                  { label: "Jeux", count: ic.games, onClick: () => openView("games"), icon: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="7" width="18" height="10" rx="2" stroke="#22c55e" strokeWidth="1.4"/><circle cx="7" cy="12" r="1.3" fill="#22c55e"/><circle cx="13" cy="12" r="1.3" fill="#22c55e"/><path d="M10 10v4M9 12h2" stroke="#22c55e" strokeWidth="1.3" strokeLinecap="round"/></svg> },
+                  { label: "Équipes sportives", count: ic.sports, onClick: () => openView("sports"), icon: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M5 5h12l2 4-8 8.5L3 9l2-4z" stroke="#22c55e" strokeWidth="1.4" strokeLinejoin="round"/><path d="M8 5l3 11.5M14 5l-3 11.5M3 9h16" stroke="#22c55e" strokeWidth="1.2" strokeLinecap="round"/></svg> },
+                ] as { label: string; count: number; onClick: () => void; icon: React.ReactNode }[]).map((item, i) => (
+                  <div key={i} onClick={item.onClick} style={{ border: `1.5px solid ${item.count > 0 ? "#22c55e" : "#e5e7eb"}`, borderRadius: 14, padding: "11px 7px 10px", cursor: "pointer", textAlign: "center", position: "relative", background: item.count > 0 ? "#f0fdf4" : "#fff" }}>
+                    {item.count > 0 && (
+                      <div style={{ position: "absolute", top: 5, right: 5, width: 17, height: 17, borderRadius: "50%", background: "#22c55e", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5l2 2 4-4" stroke="white" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      </div>
+                    )}
+                    <div style={{ display: "flex", justifyContent: "center", marginBottom: 6 }}>{item.icon}</div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#111827", lineHeight: 1.2 }}>{item.label}</div>
+                    {item.count > 0 && <div style={{ fontSize: 10, color: "#22c55e", marginTop: 3, fontWeight: 600 }}>{item.count} sélectionné{item.count > 1 ? "s" : ""}</div>}
+                  </div>
+                ))}
+              </div>
+              <button type="button" style={{ width: "100%", marginTop: 10, padding: "11px", background: "none", border: "1.5px solid #e5e7eb", borderRadius: 12, fontSize: 13, fontWeight: 700, color: "#22c55e", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontFamily: "inherit" }}>
+                Voir tous les centres d'intérêt
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#22c55e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </button>
+            </div>
+          )}
+        </PCard>
+
+        {/* ── VOYAGE ── */}
+        <PCard>
+          <PSectionHeader
+            icon={<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M15.5 5L11 9l2 7.5-2-1L9 10l-4 2L4 14.5 2.5 14l1-3.5L2 8.5l1.5-.5 2 3 4.5-2.5L6 3.5l2-1.5 3.5 6.5 4-4z" stroke="#22c55e" strokeWidth="1.4" strokeLinejoin="round"/></svg>}
+            title="Voyage"
+            badge={ext.travelPlaces ? "1 ajouté" : "0 ajouté"}
+            open={open.voyage}
+            onToggle={() => toggleSection("voyage")}
+          />
+          {open.voyage && (
+            <PAddRow
+              icon={<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="7" r="5.5" stroke="#22c55e" strokeWidth="1.3"/><path d="M1.5 8h13M8 1.5c-2 2.5-3 3.5-3 5.5s1 3 3 5.5M8 1.5c2 2.5 3 3.5 3 5.5s-1 3-3 5.5" stroke="#22c55e" strokeWidth="1.1" strokeLinecap="round"/></svg>}
+              label="Lieux"
+              sub="Ajoutez les lieux que vous avez visités ou que vous aimez"
+              onClick={() => openView("places")}
+            />
+          )}
+        </PCard>
+
+        {/* ── LIENS ── */}
+        <PCard>
+          <PSectionHeader
+            icon={<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M7 9a4 4 0 006 0l2-2a4 4 0 00-6-5.7L8 2.5" stroke="#22c55e" strokeWidth="1.4" strokeLinecap="round"/><path d="M11 9a4 4 0 01-6 0L3 11a4 4 0 006 5.7l1-1.2" stroke="#22c55e" strokeWidth="1.4" strokeLinecap="round"/></svg>}
+            title="Liens"
+            badge={ext.websites ? "1 ajouté" : "0 ajouté"}
+            open={open.liens}
+            onToggle={() => toggleSection("liens")}
+          />
+          {open.liens && (
+            <PAddRow
+              icon={<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 8a3.5 3.5 0 005 0l2-2a3.5 3.5 0 00-5-4.9L7 2.5" stroke="#22c55e" strokeWidth="1.3" strokeLinecap="round"/><path d="M10 8a3.5 3.5 0 01-5 0L3 10a3.5 3.5 0 005 4.9l1-1" stroke="#22c55e" strokeWidth="1.3" strokeLinecap="round"/></svg>}
+              label="Sites Web, blogs, portfolios"
+              sub="Ajoutez vos liens professionnels"
+              onClick={() => openView("websites")}
+            />
+          )}
+        </PCard>
+
+        {/* ── COORDONNÉES ── */}
+        <PCard>
+          <PSectionHeader
+            icon={<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="6" r="3.5" stroke="#22c55e" strokeWidth="1.4"/><path d="M2 17c0-3.9 3.1-6 7-6s7 2.1 7 6" stroke="#22c55e" strokeWidth="1.4" strokeLinecap="round"/></svg>}
+            title="Coordonnées"
+            open={open.coords}
+            onToggle={() => toggleSection("coords")}
+          />
+          {open.coords && (
+            <div style={{ padding: "0 0 4px" }}>
+              {/* Réseaux sociaux */}
+              <div onClick={() => openView("social")} style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 16px", borderBottom: "1px solid #f5f5f5", cursor: "pointer" }}>
+                <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#f0fdf4", border: "1px solid #d1fae5", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M12 2.5a2 2 0 100 4 2 2 0 000-4zM5 7.5a2 2 0 100 4 2 2 0 000-4zM12 12.5a2 2 0 100 4 2 2 0 000-4z" stroke="#22c55e" strokeWidth="1.3"/><path d="M7 8.7l3.5-2.2M7 10.2l3.5 2" stroke="#22c55e" strokeWidth="1.3" strokeLinecap="round"/></svg>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: "#111827" }}>Réseaux sociaux</div>
+                  <div style={{ fontSize: 12, color: "#9ca3af" }}>{ext.socialLinks || "Ajoutez vos réseaux sociaux"}</div>
+                </div>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#22c55e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </div>
+              {/* Téléphone */}
+              <div onClick={() => openView("phone")} style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 16px", borderBottom: "1px solid #f5f5f5", cursor: "pointer" }}>
+                <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#f0fdf4", border: "1px solid #d1fae5", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3.5 2.5h3l1.5 3.5-2 1.5a8 8 0 003.5 3.5l1.5-2 3.5 1.5v3c0 .8-.7 1.5-1.5 1.5C5.5 15.5 1.5 11.5 1.5 4c0-.8.7-1.5 1.5-1.5z" stroke="#22c55e" strokeWidth="1.3" strokeLinejoin="round"/></svg>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: "#111827" }}>{phone || "+225 5 00 00 00 00"}</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="2" y="4.5" width="6" height="4.5" rx="1" stroke="#9ca3af" strokeWidth="0.9"/><path d="M3.5 4.5V3.5a1.5 1.5 0 013 0V4.5" stroke="#9ca3af" strokeWidth="0.9" strokeLinecap="round"/></svg>
+                    <span style={{ fontSize: 11.5, color: "#9ca3af" }}>Moi uniquement</span>
+                  </div>
+                </div>
+                <div style={{ width: 30, height: 30, borderRadius: "50%", background: "#f0fdf4", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M9 2.5L10.5 4 4 10.5H2.5V9L9 2.5z" stroke="#22c55e" strokeWidth="1.2" strokeLinejoin="round"/></svg>
+                </div>
+              </div>
+              {/* Email */}
+              <div onClick={() => openView("email")} style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 16px", cursor: "pointer" }}>
+                <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#f0fdf4", border: "1px solid #d1fae5", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="5" width="14" height="9" rx="2" stroke="#22c55e" strokeWidth="1.3"/><path d="M2 7.5l7 4.5 7-4.5" stroke="#22c55e" strokeWidth="1.3" strokeLinecap="round"/></svg>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: "#111827" }}>{localUser.email || "5@brutepawa.com"}</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="2" y="4.5" width="6" height="4.5" rx="1" stroke="#9ca3af" strokeWidth="0.9"/><path d="M3.5 4.5V3.5a1.5 1.5 0 013 0V4.5" stroke="#9ca3af" strokeWidth="0.9" strokeLinecap="round"/></svg>
+                    <span style={{ fontSize: 11.5, color: "#9ca3af" }}>Moi uniquement</span>
+                  </div>
+                </div>
+                <div style={{ width: 30, height: 30, borderRadius: "50%", background: "#f0fdf4", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M9 2.5L10.5 4 4 10.5H2.5V9L9 2.5z" stroke="#22c55e" strokeWidth="1.2" strokeLinejoin="round"/></svg>
+                </div>
+              </div>
+            </div>
+          )}
+        </PCard>
+
+        {/* ── STOCKAGE ── */}
+        <PCard>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 16px 12px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{ width: 42, height: 42, borderRadius: 12, background: "#f0fdf4", border: "1.5px solid #d1fae5", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2L3 5.5v5c0 5 3.5 9.5 8 10 4.5-.5 8-5 8-10V5.5L11 2z" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.4"/><path d="M7 11l3 3 5.5-5" stroke="#22c55e" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </div>
+              <div>
+                <div style={{ fontSize: 15, fontWeight: 800, color: "#111827" }}>Stockage</div>
+                <div style={{ fontSize: 11.5, color: "#9ca3af" }}>Votre espace de stockage Brutepawa</div>
+              </div>
+            </div>
+            <span style={{ background: "#f0fdf4", border: "1px solid #86efac", borderRadius: 20, padding: "4px 12px", fontSize: 12, fontWeight: 700, color: "#16a34a" }}>Gratuit</span>
+          </div>
+          <div style={{ padding: "0 16px 16px", display: "flex", alignItems: "center", gap: 16 }}>
+            <div style={{ position: "relative", width: 76, height: 76, flexShrink: 0 }}>
+              <svg width="76" height="76" viewBox="0 0 76 76">
+                <circle cx="38" cy="38" r="30" fill="none" stroke="#e5e7eb" strokeWidth="6"/>
+                <circle cx="38" cy="38" r="30" fill="none" stroke="#22c55e" strokeWidth="6" strokeLinecap="round"
+                  strokeDasharray={`${2 * Math.PI * 30 * 0.005} ${2 * Math.PI * 30}`}
+                  transform="rotate(-90 38 38)"
+                />
+              </svg>
+              <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                <span style={{ fontSize: 15, fontWeight: 900, color: "#111827" }}>0%</span>
+                <span style={{ fontSize: 9.5, color: "#9ca3af", marginTop: 1 }}>utilisé</span>
+              </div>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#111827" }}>0 Go utilisés</div>
+              <div style={{ fontSize: 12.5, color: "#6b7280" }}>1.00 Go au total</div>
+              <div style={{ height: 5, background: "#e5e7eb", borderRadius: 3, margin: "8px 0" }}>
+                <div style={{ height: "100%", width: "1%", background: "linear-gradient(90deg, #22c55e, #16a34a)", borderRadius: 3 }} />
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#22c55e" strokeWidth="1.2"/><path d="M4 6.5l2 2 3-3" stroke="#22c55e" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <span style={{ fontSize: 12.5, color: "#22c55e", fontWeight: 700 }}>1.00 Go disponibles</span>
+              </div>
+            </div>
+          </div>
+          <div style={{ margin: "0 14px 14px", background: "linear-gradient(135deg, #fffbeb, #fef9e7)", border: "1px solid #fde68a", borderRadius: 14, padding: "13px 14px", display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ width: 38, height: 38, borderRadius: 11, background: "#fef3c7", border: "1px solid #fde68a", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 15L5 5l5 6 4-8 2 12H2z" fill="#f59e0b" stroke="none"/></svg>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 13.5, fontWeight: 800, color: "#92400e" }}>Passez à Brutepawa Premium</div>
+              <div style={{ fontSize: 11.5, color: "#b45309", marginTop: 1 }}>Plus d'espace, plus de fonctionnalités.</div>
+            </div>
+            <button style={{ background: "#fff", border: "1px solid #fde68a", borderRadius: 10, padding: "8px 12px", fontSize: 12.5, fontWeight: 700, color: "#d97706", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, whiteSpace: "nowrap", fontFamily: "inherit" }}>
+              Découvrir
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2l4 4-4 4" stroke="#d97706" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </button>
+          </div>
+        </PCard>
+
+      </div>
+
+      {/* ── BOTTOM BAR (fixe) ── */}
+      <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 480, zIndex: 30, padding: "0 14px 18px", boxSizing: "border-box" }}>
+        <div style={{ background: "linear-gradient(135deg, #15803d, #22c55e)", borderRadius: 20, padding: "14px 18px", display: "flex", alignItems: "center", gap: 12, boxShadow: "0 8px 32px rgba(34,197,94,0.3)" }}>
+          <div style={{ width: 42, height: 42, borderRadius: 13, background: "rgba(255,255,255,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2L3 6v5c0 5 3.5 9.5 8 10 4.5-.5 8-5 8-10V6L11 2z" fill="rgba(255,255,255,0.15)" stroke="white" strokeWidth="1.6"/><path d="M7.5 11l2.5 3L15 8" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ color: "#fff", fontWeight: 800, fontSize: 14 }}>Complétez votre profil</div>
+            <div style={{ color: "rgba(255,255,255,0.8)", fontSize: 11, marginTop: 1, lineHeight: 1.4 }}>Un profil complet vous aide à créer de meilleures connexions et opportunités.</div>
+          </div>
+          <div style={{ position: "relative", width: 50, height: 50, flexShrink: 0 }}>
+            <svg width="50" height="50" viewBox="0 0 50 50">
+              <circle cx="25" cy="25" r="20" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" strokeWidth="3"/>
+              <circle cx="25" cy="25" r="20" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round"
+                strokeDasharray={`${C_CIRC * completion / 100} ${C_CIRC}`}
+                strokeDashoffset={C_CIRC * 0.25}
+                transform="rotate(-90 25 25)"
+              />
+            </svg>
+            <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <span style={{ color: "#fff", fontWeight: 900, fontSize: 12 }}>{completion}%</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -1056,32 +1367,79 @@ function SubPage({ title, onClose, onBack, backLabel, children }: {
   );
 }
 
-function SectionHeader({ label, open, onToggle }: { label: string; open: boolean; onToggle: () => void }) {
+function PCard({ children }: { children: React.ReactNode }) {
   return (
-    <div onClick={onToggle} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 16px", cursor: "pointer", borderTop: "6px solid var(--fb-bg)" }}>
-      <span style={{ fontWeight: 900, fontSize: 16 }}>{label}</span>
-      <span style={{ fontSize: 18, color: "var(--fb-text-secondary)" }}>{open ? "∧" : "∨"}</span>
+    <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.05)", marginBottom: 12, overflow: "hidden", border: "1px solid rgba(0,0,0,0.04)" }}>
+      {children}
     </div>
   );
 }
 
-function Row({ icon, label, value, onEdit, dimLabel }: {
-  icon: string; label: string; value: string | null; onEdit: () => void; dimLabel?: boolean;
+function PSectionHeader({ icon, title, badge, badgeGreen, open, onToggle }: {
+  icon: React.ReactNode; title: string; badge?: string; badgeGreen?: boolean; open: boolean; onToggle: () => void;
 }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "13px 16px", borderBottom: "1px solid var(--fb-divider)", cursor: "pointer" }} onClick={onEdit}>
-      <span style={{ fontSize: 20, width: 28, textAlign: "center", flexShrink: 0 }}>{icon}</span>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 15, fontWeight: value ? 700 : 400, color: dimLabel ? "var(--fb-text-secondary)" : "var(--fb-text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-          {label}
-        </div>
-        {value && (
-          <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", marginTop: 1 }}>{value}</div>
-        )}
+    <div onClick={onToggle} style={{ display: "flex", alignItems: "center", gap: 12, padding: "15px 16px", cursor: "pointer", borderBottom: open && badge !== undefined ? "1px solid #f5f5f5" : "none" }}>
+      <div style={{ width: 40, height: 40, borderRadius: 13, background: "#f0fdf4", border: "1.5px solid #d1fae5", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        {icon}
       </div>
-      {value && (
-        <button onClick={e => { e.stopPropagation(); onEdit(); }} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 16, color: "var(--fb-text-secondary)", padding: "4px 6px" }}>✏️</button>
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: 15, fontWeight: 800, color: "#111827" }}>{title}</div>
+      </div>
+      {badge && (
+        <span style={{ background: badgeGreen ? "#f0fdf4" : "#f9fafb", border: `1px solid ${badgeGreen ? "#86efac" : "#e5e7eb"}`, borderRadius: 20, padding: "4px 10px", fontSize: 11.5, fontWeight: 700, color: badgeGreen ? "#16a34a" : "#6b7280", whiteSpace: "nowrap" }}>
+          {badge}
+        </span>
       )}
+      <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#f9fafb", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ transition: "transform 0.2s", transform: open ? "rotate(180deg)" : "none" }}>
+          <path d="M3 5l4 4 4-4" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+function PRow({ icon, label, sub, onClick, showArrow, showEdit, last }: {
+  icon: React.ReactNode; label: string; sub?: string; onClick: () => void;
+  showArrow?: boolean; showEdit?: boolean; last?: boolean;
+}) {
+  return (
+    <div onClick={onClick} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", borderBottom: last ? "none" : "1px solid #f5f5f5", cursor: "pointer" }}>
+      <div style={{ width: 34, height: 34, borderRadius: 10, background: "#f0fdf4", border: "1px solid #d1fae5", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        {icon}
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 14, fontWeight: 700, color: "#111827" }}>{label}</div>
+        {sub && <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{sub}</div>}
+      </div>
+      {showEdit && (
+        <div style={{ width: 30, height: 30, borderRadius: "50%", background: "#f0fdf4", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M9 2.5L10.5 4 4 10.5H2.5V9L9 2.5z" stroke="#22c55e" strokeWidth="1.2" strokeLinejoin="round"/></svg>
+        </div>
+      )}
+      {showArrow && (
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#22c55e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+      )}
+    </div>
+  );
+}
+
+function PAddRow({ icon, label, sub, onClick }: { icon: React.ReactNode; label: string; sub: string; onClick: () => void }) {
+  return (
+    <div style={{ padding: "10px 14px 14px" }}>
+      <div onClick={onClick} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 14, border: "1.5px dashed #d1fae5", cursor: "pointer", background: "#fafffe" }}>
+        <div style={{ width: 36, height: 36, borderRadius: 11, background: "#f0fdf4", border: "1px solid #d1fae5", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          {icon}
+        </div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#111827" }}>{label}</div>
+          <div style={{ fontSize: 12, color: "#9ca3af" }}>{sub}</div>
+        </div>
+        <div style={{ width: 30, height: 30, borderRadius: "50%", background: "#22c55e", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v10M2 7h10" stroke="white" strokeWidth="2" strokeLinecap="round"/></svg>
+        </div>
+      </div>
     </div>
   );
 }
