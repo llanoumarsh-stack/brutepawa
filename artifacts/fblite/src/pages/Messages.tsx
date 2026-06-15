@@ -1809,7 +1809,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       </div>
 
       {/* ── FAB ── */}
-      <div style={{ position: "absolute", bottom: 20, right: 16, zIndex: 50 }}>
+      <div style={{ position: "absolute", bottom: 80, right: 16, zIndex: 50 }}>
         {fabOpen && (
           <>
             <div onClick={() => setFabOpen(false)} style={{ position: "fixed", inset: 0, zIndex: -1, background: "rgba(0,0,0,0.1)" }} />
