@@ -1,0 +1,204 @@
+Refond complètement l'interface utilisateur de Brutepawa pour lui donner une apparence moderne, premium, professionnelle et comparable aux grandes applications sociales actuelles.
+
+OBJECTIF
+
+Conserver toutes les fonctionnalités existantes mais améliorer fortement le design, l'expérience utilisateur et la perception de qualité.
+
+====================================================
+DESIGN GÉNÉRAL
+====================================================
+
+- Utiliser un design moderne 2026.
+- Coins arrondis harmonieux.
+- Ombres légères et élégantes.
+- Espacements cohérents.
+- Animations fluides.
+- Respecter les couleurs principales de Brutepawa.
+- Donner une impression premium dès l'ouverture.
+
+====================================================
+PAGE MESSAGES
+====================================================
+
+Refaire complètement l'écran Messages.
+
+Actuellement l'écran paraît vide.
+
+Créer un header moderne :
+
+Messages
+
+Afficher :
+
+- Nombre de messages non lus
+- Recherche moderne
+- Nouveau message
+- Menu
+
+Ajouter sous le header :
+
+- Discussions récentes
+- Groupes récents
+- Canaux récents
+
+Supprimer les grands espaces vides.
+
+Ajouter des cartes modernes.
+
+====================================================
+BOUTON FLOTTANT
+====================================================
+
+Remplacer le simple bouton crayon.
+
+Créer un bouton flottant moderne.
+
+Au clic :
+
+Menu animé :
+
+💬 Nouvelle discussion
+👥 Nouveau groupe
+📢 Nouveau canal
+
+Animation fluide.
+
+====================================================
+CRÉATION DE GROUPE
+====================================================
+
+Refaire entièrement la page.
+
+Ajouter :
+
+- Photo du groupe
+- Nom du groupe
+- Description
+- Groupe public ou privé
+- Couleur du groupe
+- Bots du groupe
+
+Interface moderne.
+
+====================================================
+LISTE DES DISCUSSIONS
+====================================================
+
+Afficher :
+
+Photo de profil
+Nom
+Dernier message
+Heure
+Nombre de messages non lus
+
+Style similaire aux meilleures applications de messagerie.
+
+====================================================
+GROUPES
+====================================================
+
+Créer une présentation moderne :
+
+- Photo
+- Nom
+- Membres
+- Dernière activité
+
+Cartes élégantes.
+
+====================================================
+CANAUX
+====================================================
+
+Créer un style inspiré des chaînes modernes.
+
+Afficher :
+
+- Nom
+- Description
+- Nombre d'abonnés
+- Dernière publication
+
+====================================================
+ANIMATIONS
+====================================================
+
+Ajouter :
+
+- Effets de pression des boutons
+- Animations d'ouverture
+- Transitions entre pages
+- Skeleton loading pendant le chargement
+
+====================================================
+ICÔNES
+====================================================
+
+Supprimer les emojis utilisés comme icônes.
+
+Créer ou utiliser des icônes professionnelles cohérentes pour :
+
+- Messages
+- Groupes
+- Marketplace
+- Emplois
+- Wallet
+- Lives
+- Notifications
+- Reels
+
+Toutes les icônes doivent avoir le même style graphique.
+
+====================================================
+VIDE INTELLIGENT
+====================================================
+
+Quand il n'y a aucune discussion :
+
+Afficher une illustration moderne.
+
+Exemple :
+
+💬
+
+Aucune discussion
+
+Commencez une conversation avec vos amis.
+
+Bouton :
+Nouvelle discussion
+
+====================================================
+TYPOGRAPHIE
+====================================================
+
+Améliorer :
+
+- Tailles
+- Épaisseurs
+- Hiérarchie visuelle
+
+Les titres doivent être plus visibles.
+
+====================================================
+EXPÉRIENCE PREMIUM
+====================================================
+
+L'application doit donner l'impression d'un vrai réseau social professionnel et non d'un prototype.
+
+Chaque écran doit paraître travaillé.
+
+Réduire les espaces inutiles.
+Améliorer les alignements.
+Uniformiser les boutons.
+Uniformiser les couleurs.
+Uniformiser les cartes.
+
+====================================================
+RÉSULTAT ATTENDU
+====================================================
+
+Conserver toutes les fonctionnalités existantes mais transformer Brutepawa visuellement afin qu'un nouvel utilisateur pense immédiatement :
+
+"Cette application est moderne, sérieuse et professionnelle."

@@ -1,0 +1,122 @@
+MISSION :
+
+Refondre complètement la page "À propos" du profil Brutepawa avec un design moderne, premium et professionnel.
+
+OBJECTIF :
+Créer une page comparable à Facebook 2026, LinkedIn Premium ou Threads tout en conservant l'identité verte de Brutepawa.
+
+STYLE GÉNÉRAL :
+- Design mobile first.
+- Coins arrondis 20px.
+- Ombres légères.
+- Couleurs principales :
+  - Vert Brutepawa #2ECC40
+  - Blanc
+  - Gris très clair #F5F7FA
+- Icônes SVG professionnelles.
+- Espacement généreux.
+- Aspect haut de gamme.
+
+SECTION STATISTIQUES :
+Afficher :
+
+1 Amis
+0 Abonnés
+2 Publications
+
+avec typographie moderne et alignement parfait.
+
+BOUTONS :
+
+Bouton principal :
+"+ Ajouter à l'histoire"
+
+- Fond vert Brutepawa
+- Texte blanc
+- Icône SVG plus
+
+Bouton secondaire :
+"Modifier le profil"
+
+- Fond blanc
+- Bordure légère
+- Icône crayon SVG
+
+ONGLETS :
+
+Publications
+À propos
+Amis
+Photos
+
+- Onglet actif avec soulignement vert animé.
+- Police semi-bold.
+
+CARTE INFORMATIONS :
+
+Créer une grande carte premium avec :
+
+💼 Profession :
+Entrepreneur • Brute Pawa • TG
+
+📍 Résidence :
+Habite à TG
+
+📞 Téléphone :
++228 015949494
+
+✉️ Email :
+015949494@brutepawa.com
+
+📅 Date d'inscription :
+Membre depuis Mai 2024
+
+✅ Statut :
+Profil vérifié
+
+RÈGLES :
+- Utiliser uniquement des icônes SVG cohérentes.
+- Chaque ligne doit avoir une icône à gauche.
+- Chevron discret à droite.
+- Séparateurs très légers.
+
+SECTION SCORE DE CONFIANCE :
+
+Créer une carte moderne.
+
+Titre :
+Score de confiance
+
+Contenu :
+
+Médaille Argent SVG moderne.
+
+Niveau Argent
+
+Progression : 21%
+
+Barre de progression verte animée.
+
+Texte :
+19 points pour atteindre le niveau Or
+
+À droite :
+Carte verte affichant :
+
+✓
+21 Points
+
+STYLE PREMIUM :
+
+- Effets subtils.
+- Pas d'emojis.
+- Pas d'images bitmap.
+- SVG uniquement.
+- Design comparable aux meilleures applications mobiles de 2026.
+
+IMPORTANT :
+
+Ne pas simplifier.
+Ne pas modifier la structure.
+Ne pas utiliser un design générique.
+Le résultat doit être visuellement très proche d'une maquette professionnelle UI/UX.

@@ -1,0 +1,170 @@
+MISSION CRITIQUE
+
+Refondre complètement la page d'accueil Brutepawa.
+
+IMPORTANT :
+- Ne pas interpréter.
+- Ne pas improviser.
+- Ne pas créer une variante.
+- Reproduire le design de la maquette fournie à 99%.
+- Respecter les espacements, tailles, couleurs, bordures, ombres et positions.
+- Le résultat final doit être pratiquement identique à la maquette.
+
+RÈGLES ABSOLUES :
+
+1. DESIGN
+- Style moderne 2026.
+- Inspiré de Facebook, Threads et Telegram.
+- Coins arrondis partout.
+- Ombres douces.
+- Fond #F5F7FA.
+- Cartes blanches.
+- Interface premium.
+
+2. BARRE SUPÉRIEURE
+- Logo Brutepawa à gauche.
+- Bouton recherche.
+- Bouton créer.
+- Bouton notifications.
+- Bouton menu.
+- Boutons parfaitement alignés.
+
+3. NAVIGATION
+- Accueil.
+- Amis.
+- Messages.
+- Notifications.
+- Portefeuille.
+
+Onglet actif :
+- Icône verte.
+- Trait vert dessous.
+
+4. ZONE DE PUBLICATION
+
+Afficher :
+
+Avatar utilisateur.
+
+Champ :
+
+"Quoi de neuf, Lanou ?"
+
+À droite :
+
+📷 Image
+🎤 Vocal
+
+Sous le champ :
+
+━━━━━━━━━━━━━━━━━━
+
+📷 Photo
+🎤 Vocal
+🎥 Vidéo
+📍 Localisation
+😊 Humeur
+📊 Sondage
+
+━━━━━━━━━━━━━━━━━━
+
+Chaque bouton doit être :
+- Cliquable.
+- Aligné horizontalement.
+- Séparé par un trait vertical fin.
+- Icône colorée.
+- Texte noir.
+
+Le bouton Vocal doit être visible immédiatement sans défilement.
+
+5. STORIES
+
+Carte Créer une story :
+
+Fond dégradé vert.
+
+Puis :
+
+Story utilisateur 1
+Story utilisateur 2
+Story utilisateur 3
+Story utilisateur 4
+
+Bordures colorées.
+
+Avatar en ligne :
+Petit point vert.
+
+6. CARTES DE PUBLICATION
+
+Structure :
+
+Avatar
+Nom
+Suivre
+Temps
+Menu
+Fermer
+
+Contenu
+
+Compteurs :
+
+👍 likes
+💬 commentaires
+↗ partages
+
+Puis :
+
+👍 J'aime
+💬 Commenter
+↗ Partager
+
+Les boutons doivent être centrés.
+
+7. NAVIGATION BASSE
+
+Accueil
+Amis
+Créer
+Messages
+Profil
+
+Bouton Créer :
+
+Grand cercle vert.
+Position centrale.
+Plus gros que les autres.
+
+8. INTERDICTIONS
+
+INTERDIT :
+
+- Design Android basique.
+- Boutons carrés.
+- Listes simples.
+- Interface années 2015.
+- Composants Material UI standards sans personnalisation.
+- Éléments mal alignés.
+
+9. QUALITÉ
+
+Objectif :
+
+Donner l'impression d'une application de plusieurs millions de dollars.
+
+L'utilisateur doit immédiatement penser :
+
+"Cette application est aussi moderne que Facebook ou Telegram."
+
+10. LIVRABLE
+
+Modifier directement le code existant.
+
+Ne pas générer une nouvelle page.
+
+Ne pas faire de prototype.
+
+Ne pas faire de maquette.
+
+Appliquer les changements réels dans le projet.
