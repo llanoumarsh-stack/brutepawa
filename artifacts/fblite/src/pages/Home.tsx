@@ -305,7 +305,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
   const visiblePosts = allPosts.filter(p => !hiddenPosts.has(p.id));
 
   return (
-    <div className="feed-container">
+    <div className="feed-container" style={{ paddingBottom: 80 }}>
 
       {viewerOpen && storyGroups.length > 0 && (
         <StoryViewer
@@ -321,74 +321,149 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
 
       {/* ─── Stories Row ─── */}
       <input ref={storyFileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleStoryFileSelect} />
-      <div className="stories-row">
-        {/* Add story — triggers gallery directly */}
-        <div className="story-card" onClick={() => storyFileRef.current?.click()} style={{ cursor: "pointer" }}>
-          <div className="story-bg" style={{ background: "#e4e6e9", position: "relative", overflow: "hidden" }}>
-            {user.avatarUrl
-              ? <img src={user.avatarUrl} alt="moi" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              : <div style={{ width: "100%", height: "100%", background: "#42B72A", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 22 }}>{userInitials}</div>
-            }
-            <div style={{ position: "absolute", bottom: 8, left: "50%", transform: "translateX(-50%)", width: 28, height: 28, borderRadius: "50%", background: "#42B72A", border: "3px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 16, fontWeight: 900, lineHeight: 1 }}>+</div>
-          </div>
-          <div className="story-label">Créer une story</div>
-        </div>
 
-        {/* Real story groups */}
-        {storyGroups.map((group, idx) => {
-          const initials = group.authorName.slice(0, 2).toUpperCase();
-          const avatarBg = AVATAR_COLORS[group.authorId % AVATAR_COLORS.length];
-          const preview = group.stories[0];
-          return (
-            <div key={group.authorId} className="story-card" onClick={() => { setViewerGroupIdx(idx); setViewerOpen(true); }} style={{ cursor: "pointer" }}>
-              <div className="story-bg" style={{ background: preview?.mediaUrl ? `url(${preview.mediaUrl}) center/cover no-repeat` : (preview?.bgColor ?? "#1877F2"), position: "relative", overflow: "hidden" }}>
-                {preview?.emoji && !preview?.mediaUrl && (
-                  <div style={{ fontSize: 32, position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>{preview.emoji}</div>
-                )}
-                {preview?.content && !preview?.mediaUrl && !preview?.emoji && (
-                  <div style={{ fontSize: 11, fontWeight: 700, color: "#fff", padding: "4px 6px", textAlign: "center", position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>{preview.content.slice(0, 40)}</div>
-                )}
-                <div style={{ position: "absolute", top: 8, left: 8, width: 34, height: 34, borderRadius: "50%", border: "3px solid #42B72A", background: avatarBg, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-                  {group.authorAvatarUrl
-                    ? <img src={group.authorAvatarUrl} alt={group.authorName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                    : <span style={{ color: "#fff", fontWeight: 700, fontSize: 12 }}>{initials}</span>}
-                </div>
-                {group.storiesCount > 1 && (
-                  <div style={{ position: "absolute", top: 6, right: 6, background: "#42B72A", color: "#fff", borderRadius: 10, minWidth: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, padding: "0 4px" }}>{group.storiesCount}</div>
-                )}
+      <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e4e6eb", boxShadow: "0 1px 4px rgba(0,0,0,0.06)", padding: "12px 10px" }}>
+        <div style={{ display: "flex", gap: 8, overflowX: "auto", scrollbarWidth: "none" as const }}>
+
+          {/* ── Créer une story card ── */}
+          <div
+            onClick={() => storyFileRef.current?.click()}
+            style={{ flex: "0 0 90px", cursor: "pointer", display: "flex", flexDirection: "column" as const, alignItems: "center" as const }}
+          >
+            <div style={{
+              width: 90, height: 126, borderRadius: 10, overflow: "hidden", position: "relative",
+              background: "linear-gradient(160deg, #42B72A 0%, #2D8C1E 100%)",
+              display: "flex", flexDirection: "column" as const, alignItems: "center" as const, justifyContent: "center",
+            }}>
+              {user.avatarUrl
+                ? <img src={user.avatarUrl} alt="moi" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.35 }} />
+                : null
+              }
+              {/* Initials */}
+              <div style={{ position: "relative", zIndex: 1, color: "#fff", fontWeight: 900, fontSize: 26, letterSpacing: -1, lineHeight: 1, marginBottom: 10 }}>{userInitials}</div>
+              {/* + circle */}
+              <div style={{ position: "relative", zIndex: 1, width: 32, height: 32, borderRadius: "50%", background: "#42B72A", border: "3px solid #fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
               </div>
-              <div className="story-label">{group.authorName.split(" ")[0]}</div>
             </div>
-          );
-        })}
-
-        {/* No stories yet */}
-        {storyGroups.length === 0 && (
-          <div style={{ display: "flex", alignItems: "center", padding: "0 8px", color: "var(--fb-text-secondary)", fontSize: 12, fontStyle: "italic" }}>
-            Sois le premier à partager une story !
+            <div style={{ marginTop: 6, textAlign: "center" as const }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#050505", lineHeight: 1.2 }}>Créer</div>
+              <div style={{ fontSize: 11, color: "#65676b", lineHeight: 1.2 }}>une story</div>
+            </div>
           </div>
-        )}
+
+          {/* ── Real story groups ── */}
+          {storyGroups.map((group, idx) => {
+            const initials = group.authorName.slice(0, 2).toUpperCase();
+            const avatarBg = AVATAR_COLORS[group.authorId % AVATAR_COLORS.length];
+            const preview = group.stories[0];
+            const ringColors = ["#42B72A","#1877F2","#E91E63","#FF9800","#9C27B0","#00BCD4","#F44336"];
+            const ring = ringColors[group.authorId % ringColors.length];
+            return (
+              <div
+                key={group.authorId}
+                onClick={() => { setViewerGroupIdx(idx); setViewerOpen(true); }}
+                style={{ flex: "0 0 90px", cursor: "pointer", display: "flex", flexDirection: "column" as const, alignItems: "center" as const }}
+              >
+                <div style={{
+                  width: 90, height: 126, borderRadius: 10, overflow: "hidden", position: "relative",
+                  background: preview?.mediaUrl ? `url(${preview.mediaUrl}) center/cover no-repeat` : (preview?.bgColor ?? avatarBg),
+                  border: `3px solid ${ring}`,
+                  boxSizing: "border-box" as const,
+                }}>
+                  {preview?.emoji && !preview?.mediaUrl && (
+                    <div style={{ fontSize: 36, position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>{preview.emoji}</div>
+                  )}
+                  {preview?.content && !preview?.mediaUrl && !preview?.emoji && (
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#fff", padding: "4px 6px", textAlign: "center" as const, position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>{preview.content.slice(0, 40)}</div>
+                  )}
+                  {/* Avatar ring at top */}
+                  <div style={{ position: "absolute", top: 6, left: 6, width: 34, height: 34, borderRadius: "50%", border: `3px solid ${ring}`, background: avatarBg, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", boxShadow: "0 0 0 2px #fff" }}>
+                    {group.authorAvatarUrl
+                      ? <img src={group.authorAvatarUrl} alt={group.authorName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      : <span style={{ color: "#fff", fontWeight: 700, fontSize: 12 }}>{initials}</span>}
+                  </div>
+                  {/* Online dot */}
+                  <div style={{ position: "absolute", top: 6, left: 30, width: 10, height: 10, borderRadius: "50%", background: "#42B72A", border: "2px solid #fff" }} />
+                  {group.storiesCount > 1 && (
+                    <div style={{ position: "absolute", top: 6, right: 6, background: "#42B72A", color: "#fff", borderRadius: 10, minWidth: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, padding: "0 4px" }}>{group.storiesCount}</div>
+                  )}
+                </div>
+                <div style={{ marginTop: 6, fontSize: 11, fontWeight: 600, color: "#050505", textAlign: "center" as const, width: 86, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>
+                  {group.authorName.split(" ")[0]}
+                </div>
+              </div>
+            );
+          })}
+
+          {/* ── Voir plus (if 3+ story groups) ── */}
+          {storyGroups.length >= 3 && (
+            <div style={{ flex: "0 0 70px", cursor: "pointer", display: "flex", flexDirection: "column" as const, alignItems: "center" as const, justifyContent: "center" }}>
+              <div style={{ width: 70, height: 126, borderRadius: 10, background: "#f0f2f5", border: "1px solid #e4e6eb", display: "flex", flexDirection: "column" as const, alignItems: "center" as const, justifyContent: "center", gap: 6 }}>
+                <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#e4e6eb", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#65676b" strokeWidth="2"><circle cx="5" cy="12" r="1.5" fill="#65676b"/><circle cx="12" cy="12" r="1.5" fill="#65676b"/><circle cx="19" cy="12" r="1.5" fill="#65676b"/></svg>
+                </div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: "#65676b", textAlign: "center" as const, padding: "0 4px" }}>Voir plus</div>
+              </div>
+            </div>
+          )}
+
+          {/* ── No stories yet ── */}
+          {storyGroups.length === 0 && (
+            <div style={{ display: "flex", alignItems: "center", padding: "0 8px", color: "#65676b", fontSize: 12, fontStyle: "italic" }}>
+              Sois le premier à publier une story !
+            </div>
+          )}
+
+        </div>
       </div>
 
-      {/* Create post bar */}
-      <div
-        onClick={() => navigate("/create-post")}
-        style={{
-          background: "var(--fb-white)", borderRadius: 10,
-          border: "1px solid var(--fb-divider)", padding: "10px 14px",
-          display: "flex", gap: 10, alignItems: "center", cursor: "pointer",
-        }}
-      >
-        {user.avatarUrl
-          ? <img src={user.avatarUrl} alt="Avatar" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
-          : <div className="avatar" style={{ background: "#42B72A", width: 40, height: 40, fontSize: 15, flexShrink: 0 }}>{userInitials}</div>
-        }
-        <div style={{
-          flex: 1, background: "var(--fb-bg)", borderRadius: 22, padding: "10px 16px",
-          fontSize: 15, color: "var(--fb-text-secondary)", fontWeight: 400,
-          border: "1px solid var(--fb-divider)",
-        }}>
-          Quoi de neuf, {user.name.split(" ")[0]} ?
+      {/* ─── Create post card ─── */}
+      <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e4e6eb", boxShadow: "0 1px 4px rgba(0,0,0,0.06)", overflow: "hidden" }}>
+        {/* Top row: avatar + input + icons */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 14px 10px" }}>
+          {user.avatarUrl
+            ? <img src={user.avatarUrl} alt="Avatar" style={{ width: 44, height: 44, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+            : <div style={{ width: 44, height: 44, borderRadius: "50%", background: "#42B72A", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 16, flexShrink: 0 }}>{userInitials}</div>
+          }
+          <div
+            onClick={() => navigate("/create-post")}
+            style={{ flex: 1, background: "#f0f2f5", borderRadius: 30, padding: "11px 16px", fontSize: 15, color: "#8a8d91", cursor: "pointer", fontWeight: 400, lineHeight: 1 }}
+          >
+            Quoi de neuf, {user.name.split(" ")[0]} ?
+          </div>
+          {/* Photo icon */}
+          <button onClick={() => navigate("/create-post")} style={{ background: "none", border: "none", cursor: "pointer", padding: 6, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="16" rx="3" stroke="#65676b" strokeWidth="1.8"/><circle cx="9" cy="12" r="3" stroke="#65676b" strokeWidth="1.8"/><path d="M2 9l5-5 3 4" stroke="#65676b" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><circle cx="17" cy="8" r="1.5" fill="#65676b"/></svg>
+          </button>
+          {/* Mic icon */}
+          <button onClick={() => navigate("/create-post")} style={{ background: "none", border: "none", cursor: "pointer", padding: 6, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="12" rx="3" stroke="#42B72A" strokeWidth="1.8"/><path d="M5 11a7 7 0 0 0 14 0" stroke="#42B72A" strokeWidth="1.8" strokeLinecap="round"/><path d="M12 18v4M9 22h6" stroke="#42B72A" strokeWidth="1.8" strokeLinecap="round"/></svg>
+          </button>
+        </div>
+
+        {/* Divider */}
+        <div style={{ height: 1, background: "#e4e6eb", margin: "0 14px" }} />
+
+        {/* Action buttons row */}
+        <div style={{ display: "flex", overflowX: "auto", scrollbarWidth: "none" as const }}>
+          {[
+            { label: "Photo",       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="3" fill="#45BD62"/><circle cx="12" cy="12" r="4" fill="#fff" fillOpacity=".9"/><circle cx="9" cy="7" r="1.5" fill="#fff" fillOpacity=".7"/></svg>, action: "/create-post" },
+            { label: "Vocal",       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="8" y="2" width="8" height="12" rx="4" fill="#E91E63"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/></svg>, action: "/create-post" },
+            { label: "Vidéo",       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="14" height="12" rx="2" fill="#E53935"/><path d="M16 9l5-3v12l-5-3V9z" fill="#E53935"/></svg>, action: "/create-post" },
+            { label: "Localisation", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#E91E63"/><circle cx="12" cy="9" r="2.5" fill="#fff"/></svg>, action: "/create-post" },
+            { label: "Humeur",      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#FFC107"/><path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/><circle cx="9" cy="10" r="1.5" fill="#fff"/><circle cx="15" cy="10" r="1.5" fill="#fff"/></svg>, action: "/create-post" },
+            { label: "Sondage",     icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="15" width="4" height="6" rx="1" fill="#1877F2"/><rect x="10" y="10" width="4" height="11" rx="1" fill="#1877F2"/><rect x="16" y="5" width="4" height="16" rx="1" fill="#1877F2"/></svg>, action: "/create-post" },
+          ].map((btn, i, arr) => (
+            <button
+              key={btn.label}
+              onClick={() => navigate(btn.action)}
+              style={{ flex: "0 0 auto", display: "flex", flexDirection: "column" as const, alignItems: "center" as const, justifyContent: "center" as const, gap: 4, padding: "10px 14px 12px", background: "none", border: "none", cursor: "pointer", borderRight: i < arr.length - 1 ? "1px solid #e4e6eb" : "none", minWidth: 80 }}
+            >
+              {btn.icon}
+              <span style={{ fontSize: 12, fontWeight: 600, color: "#444", whiteSpace: "nowrap" as const }}>{btn.label}</span>
+            </button>
+          ))}
         </div>
       </div>
 
@@ -434,7 +509,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                     onClick={() => navigate(post.authorId === user.id ? "/profile" : `/user/${post.authorId}`)}
                   >{displayName}</div>
                   {!post.sponsored && (
-                    <span style={{ color: "var(--fb-text)", fontSize: 12, fontWeight: 600, cursor: "pointer", marginLeft: 2 }}>
+                    <span style={{ color: "#42B72A", fontSize: 12, fontWeight: 700, cursor: "pointer", marginLeft: 2 }}>
                       · Suivre
                     </span>
                   )}
@@ -493,26 +568,28 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
             })()}
             {/* ── Stats bar ── */}
             {(post.likes > 0 || (post.comments + postComments.length) > 0 || post.shares > 0) && (
-              <div style={{ padding: "6px 14px 6px", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 13.5, color: "#65676b" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  {post.likes > 0 && (
-                    <>
-                      <span style={{ display: "inline-flex", position: "relative", width: post.likes > 5 ? 36 : 20, height: 20, flexShrink: 0 }}>
-                        <span style={{ position: "absolute", left: 0, fontSize: 16 }}>👍</span>
-                        {post.likes > 5 && <span style={{ position: "absolute", left: 14, fontSize: 16 }}>❤️</span>}
-                      </span>
-                      <span style={{ marginLeft: post.likes > 5 ? 2 : 0 }}>{formatNumber(post.likes)}</span>
-                    </>
-                  )}
-                </div>
-                <div style={{ display: "flex", gap: 10 }}>
-                  {(post.comments + postComments.length) > 0 && (
-                    <span style={{ cursor: "pointer" }} onClick={() => toggleComments(post.id)}>
-                      {formatNumber(post.comments + postComments.length)} commentaire{(post.comments + postComments.length) > 1 ? "s" : ""}
+              <div style={{ padding: "6px 14px 4px", display: "flex", alignItems: "center", gap: 12, fontSize: 13.5, color: "#65676b" }}>
+                {post.likes > 0 && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                    <span style={{ display: "inline-flex", position: "relative", width: post.likes > 5 ? 36 : 22, height: 22, flexShrink: 0 }}>
+                      <span style={{ position: "absolute", left: 0, fontSize: 17 }}>👍</span>
+                      {post.likes > 5 && <span style={{ position: "absolute", left: 15, fontSize: 17 }}>❤️</span>}
                     </span>
-                  )}
-                  {post.shares > 0 && <span>{formatNumber(post.shares)} partages</span>}
-                </div>
+                    <span style={{ marginLeft: post.likes > 5 ? 2 : 0 }}>{formatNumber(post.likes)}</span>
+                  </div>
+                )}
+                {(post.comments + postComments.length) > 0 && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 3, cursor: "pointer" }} onClick={() => toggleComments(post.id)}>
+                    <span style={{ fontSize: 15 }}>💬</span>
+                    <span>{formatNumber(post.comments + postComments.length)}</span>
+                  </div>
+                )}
+                {post.shares > 0 && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                    <span style={{ fontSize: 15 }}>↗</span>
+                    <span>{formatNumber(post.shares)}</span>
+                  </div>
+                )}
               </div>
             )}
 
