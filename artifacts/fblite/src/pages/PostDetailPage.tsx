@@ -205,7 +205,7 @@ export default function PostDetailPage({ postId }: Props) {
   const authorColor   = avatarColor(post.authorName);
 
   return (
-    <div style={{ background: "#f0f2f5", minHeight: "100vh", display: "flex", flexDirection: "column", paddingBottom: 72 }}>
+    <div style={{ background: "#f0f2f5", minHeight: "100vh", display: "flex", flexDirection: "column", paddingBottom: voiceMode ? 220 : 72 }}>
 
       {/* ── Header ── */}
       <div style={{ position: "sticky", top: 0, zIndex: 50, background: "#fff", borderBottom: "1px solid #e4e6eb", display: "flex", alignItems: "center", padding: "10px 14px", gap: 10 }}>
