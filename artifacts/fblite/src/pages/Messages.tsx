@@ -98,6 +98,14 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
   const [wizardCreating, setWizardCreating]     = useState(false);
   const [fabOpen, setFabOpen]   = useState(false);
   const [inboxTab, setInboxTab] = useState<"all" | "unread" | "groups">("all");
+  const [showInboxSearch, setShowInboxSearch] = useState(false);
+  const [settingsPage, setSettingsPage] = useState<"none"|"status"|"notifs"|"invitations"|"archive"|"privacy">("none");
+  const [onlineStatus, setOnlineStatus] = useState(true);
+  const [notifMsgs, setNotifMsgs] = useState(true);
+  const [notifReminders, setNotifReminders] = useState(true);
+  const [notifPreview, setNotifPreview] = useState(false);
+  const [notifOffline, setNotifOffline] = useState(false);
+  const [invitTab, setInvitTab] = useState<"known"|"spam">("known");
 
   const [showConvMenu, setShowConvMenu]       = useState(false);
   const [showNotifSub, setShowNotifSub]       = useState(false);
@@ -1262,89 +1270,72 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
   );
 
   return (
-    <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, display: "flex", flexDirection: "column", background: "#F0F2F5", zIndex: 1, overflow: "hidden" }}>
-      <style>{`
-        .bp-conv-row { transition: background 0.12s; }
-        .bp-conv-row:active { background: #EEF2F8 !important; }
-        .bp-conv-row:hover  { background: #F7F9FC !important; }
-        @keyframes bp-fab-in { from{opacity:0;transform:scale(0.7) translateY(12px)} to{opacity:1;transform:scale(1) translateY(0)} }
-        @keyframes bp-slide-up { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-        .bp-tab-btn { transition: color 0.15s, border-color 0.15s; }
-        .bp-tab-btn:active { opacity: 0.8; }
-      `}</style>
+    <>
+    <style>{`
+      .fbl-row{transition:background .1s}.fbl-row:active{background:#f2f3f5!important}
+      @keyframes fbl-fab-in{from{opacity:0;transform:scale(.7) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+      .fbl-toggle{width:51px;height:31px;border-radius:16px;border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+      .fbl-toggle::after{content:'';position:absolute;top:3px;width:25px;height:25px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.3);transition:left .2s}
+      .fbl-toggle-on{background:#1877F2}.fbl-toggle-on::after{left:23px}
+      .fbl-toggle-off{background:#ccc}.fbl-toggle-off::after{left:3px}
+      .fbl-settings-row{display:flex;align-items:center;padding:14px 16px;gap:14px;border-bottom:1px solid #f0f0f0;cursor:pointer;background:#fff}
+      .fbl-settings-row:active{background:#f5f5f5}
+    `}</style>
+
+    <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, display: "flex", flexDirection: "column", background: "#fff", zIndex: 1, overflow: "hidden" }}>
 
       {/* ── HEADER ── */}
-      <div style={{ background: "#1877F2", flexShrink: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", padding: "14px 16px 8px", gap: 12 }}>
-          <div style={{ flex: 1 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-              <span style={{ fontWeight: 900, fontSize: 24, color: "#fff", letterSpacing: -0.5 }}>Messages</span>
-              {totalUnread > 0 && (
-                <span style={{ background: "#42B72A", color: "#fff", borderRadius: 12, padding: "2px 9px", fontSize: 12, fontWeight: 800, letterSpacing: 0, animation: "bp-slide-up 0.3s ease" }}>
-                  {totalUnread > 99 ? "99+" : totalUnread}
-                </span>
-              )}
-            </div>
+      <div style={{ background: "#fff", flexShrink: 0, borderBottom: showInboxSearch ? "none" : "1px solid #e5e5e5" }}>
+        {!showInboxSearch ? (
+          <div style={{ display: "flex", alignItems: "center", padding: "10px 8px 10px 4px", gap: 2 }}>
+            <button onClick={() => navigate("/")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 10px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="#050505"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            </button>
+            <span style={{ flex: 1, fontWeight: 700, fontSize: 22, color: "#050505", letterSpacing: -0.3 }}>Messages</span>
+            <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 10px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="#050505"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+            </button>
+            <button onClick={() => setShowInboxSearch(true)} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 10px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="#050505"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            </button>
           </div>
-          <button title="Menu" style={{ background: "rgba(255,255,255,0.18)", border: "none", borderRadius: "50%", width: 40, height: 40, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 20, fontWeight: 700 }}>⋮</button>
-        </div>
-
-        {/* Search */}
-        <div style={{ padding: "0 12px 12px", position: "relative" }}>
-          <span style={{ position: "absolute", left: 24, top: "50%", transform: "translateY(-55%)", fontSize: 13, color: "#999", pointerEvents: "none" }}>🔍</span>
-          <input value={search} onChange={e => { setSearch(e.target.value); setInboxTab("all"); }}
-            placeholder="Rechercher des discussions…"
-            style={{ width: "100%", background: "#fff", border: "none", borderRadius: 24, padding: "10px 16px 10px 34px", fontSize: 14, outline: "none", boxSizing: "border-box", color: "#111", boxShadow: "0 1px 4px rgba(0,0,0,0.1)" }} />
-        </div>
+        ) : (
+          <div style={{ display: "flex", alignItems: "center", padding: "8px 12px", gap: 8, borderBottom: "1px solid #e5e5e5" }}>
+            <button onClick={() => { setShowInboxSearch(false); setSearch(""); }} style={{ background: "none", border: "none", cursor: "pointer", padding: "6px 4px", display: "flex", alignItems: "center" }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="#050505"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            </button>
+            <input autoFocus value={search} onChange={e => setSearch(e.target.value)}
+              placeholder="Rechercher des discussions…"
+              style={{ flex: 1, background: "#f0f2f5", border: "none", borderRadius: 20, padding: "9px 14px", fontSize: 15, outline: "none", color: "#050505" }} />
+            {search && <button onClick={() => setSearch("")} style={{ background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: 18, padding: "0 4px" }}>✕</button>}
+          </div>
+        )}
       </div>
 
-      {/* ── TABS ── */}
-      {!search && (
-        <div style={{ background: "#fff", display: "flex", borderBottom: "1.5px solid #E4E6EB", flexShrink: 0 }}>
-          {([
-            ["all",    "Tout",     0] as const,
-            ["unread", "Non lus",  convList.filter(c => c.unread > 0).length + chatGroups.filter(g => g.unread > 0).length] as const,
-            ["groups", "Groupes",  chatGroups.length] as const,
-          ]).map(([id, label, count]) => {
-            const active = inboxTab === id;
-            return (
-              <button key={id} onClick={() => setInboxTab(id)} className="bp-tab-btn"
-                style={{ flex: 1, background: "none", border: "none", cursor: "pointer", padding: "12px 4px 10px", fontSize: 13.5, fontWeight: active ? 800 : 500, color: active ? "#1877F2" : "#65676B", borderBottom: `2.5px solid ${active ? "#1877F2" : "transparent"}`, display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>
-                {label}
-                {count > 0 && (
-                  <span style={{ background: active ? "#1877F2" : "#E4E6EB", color: active ? "#fff" : "#65676B", borderRadius: 10, padding: "1px 6px", fontSize: 10, fontWeight: 800, transition: "all 0.15s" }}>
-                    {count}
-                  </span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      )}
-
       {/* ── BODY ── */}
-      <div style={{ flex: 1, overflowY: "auto" }}>
+      <div style={{ flex: 1, overflowY: "auto", background: "#fff" }}>
 
-        {/* Stories bar */}
-        {!search && inboxTab === "all" && convList.length > 0 && (
-          <div style={{ background: "#fff", borderBottom: "1px solid #E4E6EB" }}>
-            <div style={{ display: "flex", gap: 0, overflowX: "auto", scrollbarWidth: "none", padding: "10px 8px 12px" }}>
-              <div style={{ flexShrink: 0, textAlign: "center", width: 68, padding: "0 4px" }}>
+        {/* Story / contacts bar */}
+        {!search && convList.length > 0 && (
+          <div style={{ background: "#fff", borderBottom: "1px solid #e5e5e5" }}>
+            <div style={{ display: "flex", overflowX: "auto", scrollbarWidth: "none", padding: "10px 8px 12px", gap: 0 }}>
+              {/* "Votre note" */}
+              <div style={{ flexShrink: 0, textAlign: "center", width: 72, padding: "0 4px" }}>
                 <div style={{ position: "relative", marginBottom: 5 }}>
-                  <div className="avatar" style={{ width: 52, height: 52, fontSize: 18, margin: "0 auto", background: "#1877F2", border: "3px solid #fff", boxShadow: "0 0 0 2px #1877F2" }}>
-                    {(() => { try { return (JSON.parse(localStorage.getItem("fb_user") ?? "{}") as { name?: string }).name?.slice(0,2).toUpperCase() ?? "Moi"; } catch { return "Moi"; } })()}
+                  <div className="avatar" style={{ width: 56, height: 56, fontSize: 19, margin: "0 auto", background: "#E4E6EB", color: "#65676B", border: "3px solid #fff" }}>
+                    {(() => { try { return (JSON.parse(localStorage.getItem("fb_user") ?? "{}") as { name?: string }).name?.slice(0,2).toUpperCase() ?? "??"; } catch { return "??"; } })()}
                   </div>
-                  <div style={{ position: "absolute", bottom: 0, right: 8, width: 18, height: 18, background: "#1877F2", borderRadius: "50%", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 12, fontWeight: 900 }}>+</div>
+                  <div style={{ position: "absolute", bottom: 0, right: 6, width: 20, height: 20, background: "#1877F2", borderRadius: "50%", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 14, fontWeight: 900, lineHeight: 1 }}>+</div>
                 </div>
-                <div style={{ fontSize: 10.5, color: "#555", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Mon statut</div>
+                <div style={{ fontSize: 11, color: "#444", fontWeight: 400, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Votre note</div>
               </div>
-              {convList.slice(0, 6).map(conv => (
-                <div key={conv.id} onClick={() => setActiveConv(conv.id)} style={{ flexShrink: 0, textAlign: "center", width: 68, padding: "0 4px", cursor: "pointer" }}>
+              {convList.slice(0, 8).map(conv => (
+                <div key={conv.id} onClick={() => setActiveConv(conv.id)} style={{ flexShrink: 0, textAlign: "center", width: 72, padding: "0 4px", cursor: "pointer" }}>
                   <div style={{ position: "relative", marginBottom: 5 }}>
-                    <div className="avatar" style={{ width: 52, height: 52, fontSize: 18, margin: "0 auto", background: conv.user.color, border: `3px solid ${conv.unread > 0 ? "#1877F2" : "#E4E6EB"}`, boxShadow: conv.unread > 0 ? "0 0 0 1.5px #1877F2" : "none" }}>{conv.user.initials}</div>
-                    <div style={{ position: "absolute", bottom: 0, right: 8, width: 14, height: 14, background: "#42B72A", borderRadius: "50%", border: "2px solid #fff" }} />
+                    <div className="avatar" style={{ width: 56, height: 56, fontSize: 19, margin: "0 auto", background: conv.user.color, border: "3px solid #fff" }}>{conv.user.initials}</div>
+                    <div style={{ position: "absolute", bottom: 0, right: 6, width: 14, height: 14, background: "#42B72A", borderRadius: "50%", border: "2.5px solid #fff" }} />
                   </div>
-                  <div style={{ fontSize: 10.5, color: "#333", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  <div style={{ fontSize: 11, color: "#444", fontWeight: 400, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     {conv.user.name.split(" ")[0]}
                   </div>
                 </div>
@@ -1353,111 +1344,48 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
           </div>
         )}
 
-        {/* Groups section */}
-        {visibleGroups.length > 0 && (
-          <div style={{ background: "#fff", marginBottom: 8 }}>
-            {inboxTab !== "groups" && (
-              <div style={{ padding: "10px 16px 6px", fontSize: 11, fontWeight: 700, color: "#888", letterSpacing: 0.8, textTransform: "uppercase" }}>
-                Groupes & Canaux
-              </div>
-            )}
-            {visibleGroups.map((grp, idx) => {
-              const ts = grp.lastMessageAt
-                ? new Date(grp.lastMessageAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" })
-                : "";
-              const isChan = grp.type === "channel";
-              return (
-                <div key={grp.id} className="bp-conv-row" onClick={() => setActiveGroupId(grp.id)}
-                  style={{ display: "flex", gap: 12, padding: "12px 16px", cursor: "pointer", background: "#fff", borderBottom: idx < visibleGroups.length - 1 ? "1px solid #F2F3F5" : "none", animation: "bp-slide-up 0.18s ease both" }}>
-                  <div style={{ position: "relative", flexShrink: 0 }}>
-                    <div style={{ width: 56, height: 56, borderRadius: "50%", background: isChan ? "linear-gradient(135deg,#00838F,#00ACC1)" : "linear-gradient(135deg,#1877F2,#42A5F5)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, boxShadow: "0 1px 6px rgba(0,0,0,0.12)" }}>
-                      {isChan ? "📢" : "👥"}
-                    </div>
-                    {grp.unread > 0 && (
-                      <div style={{ position: "absolute", top: -3, right: -3, minWidth: 18, height: 18, borderRadius: 9, background: "#42B72A", border: "2px solid #F0F2F5", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 10, fontWeight: 800, padding: "0 3px" }}>
-                        {grp.unread > 99 ? "99+" : grp.unread}
-                      </div>
-                    )}
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 3 }}>
-                      <span style={{ fontWeight: grp.unread > 0 ? 800 : 600, fontSize: 15.5, color: "#111", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "70%", letterSpacing: -0.2 }}>{grp.name}</span>
-                      <span style={{ fontSize: 11.5, color: grp.unread > 0 ? "#1877F2" : "#aaa", flexShrink: 0, fontWeight: grp.unread > 0 ? 700 : 400 }}>{ts}</span>
-                    </div>
-                    <div style={{ fontSize: 13.5, color: grp.lastMessage ? (grp.unread > 0 ? "#333" : "#888") : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: grp.unread > 0 ? 600 : 400 }}>
-                      {grp.lastMessage || `${grp.membersCount} membre${grp.membersCount !== 1 ? "s" : ""}`}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Conversations */}
-        {inboxTab !== "groups" && visibleConvs.length > 0 && (
-          <div style={{ background: "#fff", marginBottom: 8 }}>
-            {(inboxTab === "all" && chatGroups.length > 0) && (
-              <div style={{ padding: "10px 16px 6px", fontSize: 11, fontWeight: 700, color: "#888", letterSpacing: 0.8, textTransform: "uppercase" }}>
-                Discussions
-              </div>
-            )}
-            {visibleConvs.map((conv, idx) => (
-              <div key={conv.id} className="bp-conv-row" onClick={() => setActiveConv(conv.id)}
-                style={{ display: "flex", gap: 12, padding: "12px 16px", cursor: "pointer", background: "#fff", borderBottom: idx < visibleConvs.length - 1 ? "1px solid #F2F3F5" : "none", animation: "bp-slide-up 0.18s ease both" }}>
-                <div style={{ position: "relative", flexShrink: 0 }}>
-                  <div className="avatar" style={{ background: conv.user.color, width: 56, height: 56, fontSize: 20, boxShadow: "0 1px 5px rgba(0,0,0,0.1)" }}>{conv.user.initials}</div>
-                  <div style={{ position: "absolute", bottom: 1, right: 1, width: 14, height: 14, background: "#42B72A", borderRadius: "50%", border: "2.5px solid #fff" }} />
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 3 }}>
-                    <span style={{ fontWeight: conv.unread > 0 ? 800 : 600, fontSize: 15.5, color: "#111", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "70%", letterSpacing: -0.2 }}>{conv.user.name}</span>
-                    <span style={{ fontSize: 11.5, color: conv.unread > 0 ? "#1877F2" : "#aaa", flexShrink: 0, fontWeight: conv.unread > 0 ? 700 : 400 }}>{conv.time}</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <span style={{ flex: 1, fontSize: 13.5, color: conv.unread > 0 ? "#333" : "#888", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: conv.unread > 0 ? 600 : 400 }}>
-                      {conv.lastMessage || "Démarrer une conversation"}
-                    </span>
-                    {conv.unread > 0 && (
-                      <span style={{ background: "#1877F2", color: "#fff", borderRadius: 10, minWidth: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, padding: "0 4px", flexShrink: 0 }}>
-                        {conv.unread > 99 ? "99+" : conv.unread}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Empty states */}
-        {inboxTab === "unread" && visibleConvs.length === 0 && visibleGroups.length === 0 && (
-          <div style={{ padding: "60px 32px", textAlign: "center", animation: "bp-slide-up 0.3s ease" }}>
-            <div style={{ width: 80, height: 80, borderRadius: "50%", background: "linear-gradient(135deg, #E8F5E9, #C8E6C9)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 38, margin: "0 auto 18px" }}>✅</div>
-            <div style={{ fontWeight: 800, fontSize: 18, color: "#111", marginBottom: 6 }}>Tout est lu !</div>
-            <div style={{ fontSize: 14, color: "#888" }}>Vous n'avez aucun message non lu.</div>
-          </div>
-        )}
-
-        {!search && inboxTab === "all" && convList.length === 0 && chatGroups.length === 0 && (
-          <div style={{ padding: "64px 32px", textAlign: "center", animation: "bp-slide-up 0.3s ease" }}>
-            <div style={{ width: 100, height: 100, borderRadius: "50%", background: "linear-gradient(135deg, #E3F2FD, #BBDEFB)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 48, margin: "0 auto 22px", boxShadow: "0 4px 20px rgba(24,119,242,0.15)" }}>💬</div>
-            <div style={{ fontWeight: 900, fontSize: 20, color: "#111", marginBottom: 8 }}>Aucune discussion</div>
-            <div style={{ fontSize: 14, color: "#888", lineHeight: 1.6, marginBottom: 32, maxWidth: 260, margin: "0 auto 32px" }}>
-              Commencez une conversation avec vos amis et votre famille.
+        {/* All conversations + groups merged */}
+        {[
+          ...visibleConvs.map(c => ({ type: "conv" as const, id: c.id, key: `c${c.id}`, name: c.user.name, preview: c.lastMessage || "Démarrer une conversation", time: c.time, unread: c.unread, color: c.user.color, initials: c.user.initials, online: true, grp: null })),
+          ...visibleGroups.map(g => {
+            const isChan = g.type === "channel";
+            const ts = g.lastMessageAt ? new Date(g.lastMessageAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }) : "";
+            return { type: "group" as const, id: g.id, key: `g${g.id}`, name: g.name, preview: g.lastMessage || `${g.membersCount} membre${g.membersCount !== 1 ? "s" : ""}`, time: ts, unread: g.unread, color: isChan ? "#00838F" : "#1877F2", initials: isChan ? "📢" : "👥", online: false, grp: g };
+          }),
+        ].map(item => (
+          <div key={item.key} className="fbl-row"
+            onClick={() => item.type === "conv" ? setActiveConv(item.id) : setActiveGroupId(item.id)}
+            style={{ display: "flex", alignItems: "center", gap: 12, padding: "8px 16px", background: "#fff" }}>
+            <div style={{ position: "relative", flexShrink: 0 }}>
+              <div className="avatar" style={{ width: 56, height: 56, fontSize: item.type === "group" ? 24 : 20, background: item.color }}>{item.initials}</div>
+              {item.online && <div style={{ position: "absolute", bottom: 1, right: 1, width: 14, height: 14, background: "#42B72A", borderRadius: "50%", border: "2.5px solid #fff" }} />}
             </div>
-            <button onClick={() => setFabOpen(true)}
-              style={{ background: "#1877F2", color: "#fff", border: "none", borderRadius: 30, padding: "14px 32px", fontSize: 15, fontWeight: 800, cursor: "pointer", boxShadow: "0 4px 16px rgba(24,119,242,0.4)" }}>
-              Nouvelle discussion
-            </button>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 2 }}>
+                <span style={{ fontWeight: item.unread > 0 ? 700 : 400, fontSize: 15, color: "#050505", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "72%" }}>{item.name}</span>
+                <span style={{ fontSize: 12, color: item.unread > 0 ? "#050505" : "#888", fontWeight: item.unread > 0 ? 600 : 400, flexShrink: 0 }}>{item.time}</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ flex: 1, fontSize: 13, color: "#888", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: item.unread > 0 ? 600 : 400 }}>{item.preview}</span>
+                {item.unread > 0 && <div style={{ width: 10, height: 10, background: "#1877F2", borderRadius: "50%", flexShrink: 0 }} />}
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {/* Empty */}
+        {!search && convList.length === 0 && chatGroups.length === 0 && (
+          <div style={{ padding: "64px 32px", textAlign: "center" }}>
+            <div style={{ fontSize: 64, marginBottom: 16 }}>💬</div>
+            <div style={{ fontWeight: 700, fontSize: 19, color: "#050505", marginBottom: 8 }}>Aucune discussion</div>
+            <div style={{ fontSize: 14, color: "#888", lineHeight: 1.6 }}>Commencez une conversation avec vos amis.</div>
           </div>
         )}
-
         {search && visibleConvs.length === 0 && visibleGroups.length === 0 && (
           <div style={{ padding: "56px 24px", textAlign: "center" }}>
             <div style={{ fontSize: 44, marginBottom: 14 }}>🔍</div>
             <div style={{ fontWeight: 700, fontSize: 16, color: "#333", marginBottom: 6 }}>Aucun résultat</div>
-            <div style={{ fontSize: 13, color: "#888" }}>Aucune discussion ne correspond à «&nbsp;{search}&nbsp;»</div>
+            <div style={{ fontSize: 13, color: "#888" }}>Aucune discussion pour «{search}»</div>
           </div>
         )}
       </div>
@@ -1466,27 +1394,210 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
       <div style={{ position: "absolute", bottom: 20, right: 16, zIndex: 50 }}>
         {fabOpen && (
           <>
-            <div onClick={() => setFabOpen(false)} style={{ position: "fixed", inset: 0, zIndex: -1, background: "rgba(0,0,0,0.08)" }} />
-            <div style={{ position: "absolute", bottom: 66, right: 0, display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-end" }}>
+            <div onClick={() => setFabOpen(false)} style={{ position: "fixed", inset: 0, zIndex: -1, background: "rgba(0,0,0,0.1)" }} />
+            <div style={{ position: "absolute", bottom: 68, right: 0, display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-end" }}>
               {[
-                { label: "Nouveau canal",       color: "#00838F", emoji: "📢", action: () => { setGroupWizardType("channel"); setGroupWizard("members"); setWizardSearch(""); setWizardMembers(new Set()); setFabOpen(false); } },
-                { label: "Nouveau groupe",       color: "#1877F2", emoji: "👥", action: () => { setGroupWizardType("group"); setGroupWizard("members"); setWizardSearch(""); setWizardMembers(new Set()); setFabOpen(false); } },
-                { label: "Nouvelle discussion",  color: "#42B72A", emoji: "✉️", action: () => { setFabOpen(false); } },
+                { label: "Nouveau canal",      color: "#00838F", icon: "📢", action: () => { setGroupWizardType("channel"); setGroupWizard("members"); setWizardSearch(""); setWizardMembers(new Set()); setFabOpen(false); } },
+                { label: "Nouveau groupe",      color: "#1877F2", icon: "👥", action: () => { setGroupWizardType("group"); setGroupWizard("members"); setWizardSearch(""); setWizardMembers(new Set()); setFabOpen(false); } },
+                { label: "Nouvelle discussion", color: "#42B72A", icon: "✉️", action: () => setFabOpen(false) },
               ].map((item, i) => (
-                <div key={item.label} onClick={item.action}
-                  style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", animation: `bp-fab-in 0.2s ease ${i * 0.06}s both` }}>
-                  <div style={{ background: "#fff", borderRadius: 24, padding: "9px 18px", boxShadow: "0 3px 16px rgba(0,0,0,0.2)", fontSize: 13.5, fontWeight: 700, color: "#111", whiteSpace: "nowrap" }}>{item.label}</div>
-                  <div style={{ width: 48, height: 48, borderRadius: "50%", background: item.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, boxShadow: `0 4px 14px ${item.color}99`, flexShrink: 0 }}>{item.emoji}</div>
+                <div key={item.label} onClick={item.action} style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", animation: `fbl-fab-in .2s ease ${i*.06}s both` }}>
+                  <div style={{ background: "#fff", borderRadius: 22, padding: "8px 16px", boxShadow: "0 2px 12px rgba(0,0,0,.18)", fontSize: 13, fontWeight: 700, color: "#050505", whiteSpace: "nowrap" }}>{item.label}</div>
+                  <div style={{ width: 46, height: 46, borderRadius: "50%", background: item.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0, boxShadow: `0 3px 12px ${item.color}88` }}>{item.icon}</div>
                 </div>
               ))}
             </div>
           </>
         )}
         <button onClick={() => setFabOpen(!fabOpen)}
-          style={{ width: 58, height: 58, borderRadius: "50%", background: "#1877F2", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", boxShadow: "0 4px 20px rgba(24,119,242,0.55)", transition: "transform 0.25s ease, box-shadow 0.2s", transform: fabOpen ? "rotate(45deg)" : "rotate(0deg)", fontSize: 26 }}>
-          {fabOpen ? "✕" : "✏️"}
+          style={{ width: 56, height: 56, borderRadius: "50%", background: "#1877F2", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 18px rgba(24,119,242,.55)", transition: "transform .2s" }}>
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="#fff"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
         </button>
       </div>
     </div>
+
+    {/* ── SETTINGS OVERLAY (portaled) ── */}
+    {settingsPage !== "none" && createPortal(
+      <div style={{ position: "fixed", inset: 0, zIndex: 10000, background: "#fff", display: "flex", flexDirection: "column" }}>
+        {/* Settings: main list */}
+        {settingsPage === "main" && <>
+          <div style={{ display: "flex", alignItems: "center", padding: "10px 8px", borderBottom: "1px solid #e5e5e5", gap: 4 }}>
+            <button onClick={() => setSettingsPage("none")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 10px" }}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="#050505"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            </button>
+            <span style={{ flex: 1, fontWeight: 600, fontSize: 18, color: "#050505" }}>Paramètres de messagerie</span>
+          </div>
+          <div style={{ flex: 1, overflowY: "auto" }}>
+            {[
+              { icon: <svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="12" r="10" fill="none" stroke="#050505" strokeWidth="2"/><circle cx="12" cy="8" r="3" fill="#050505"/><path d="M6 20c0-3.31 2.69-6 6-6s6 2.69 6 6" fill="#050505"/></svg>, label: "Statut En ligne", right: onlineStatus ? "Oui" : "Non", page: "status" },
+              { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="#050505"><path d="M18 8a6 6 0 0 0-12 0c0 4-2 5-2 5h16s-2-1-2-5"/><path d="M13.73 21a2 2 0 0 1-3.46 0" fill="none" stroke="#050505" strokeWidth="2"/></svg>, label: "Notifications de messages", right: null, page: "notifs" },
+              { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="#050505"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>, label: "Invitations", right: null, page: "invitations" },
+              { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="#050505"><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27z"/></svg>, label: "Archive", right: null, page: "archive" },
+              { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="#050505"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>, label: "Confidentialité et sécurité", right: null, page: "privacy" },
+            ].map(item => (
+              <div key={item.label} className="fbl-settings-row" onClick={() => setSettingsPage(item.page as typeof settingsPage)}>
+                <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#f0f2f5", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.icon}</div>
+                <span style={{ flex: 1, fontSize: 15, color: "#050505" }}>{item.label}</span>
+                {item.right ? <span style={{ fontSize: 14, color: "#888" }}>{item.right}</span> : <svg viewBox="0 0 24 24" width="18" height="18" fill="#888"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>}
+              </div>
+            ))}
+          </div>
+        </>}
+
+        {/* Settings: Statut En ligne */}
+        {settingsPage === "status" && <>
+          <div style={{ display: "flex", alignItems: "center", padding: "10px 8px", borderBottom: "1px solid #e5e5e5", gap: 4 }}>
+            <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 10px" }}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="#050505"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            </button>
+            <span style={{ flex: 1, fontWeight: 600, fontSize: 18, color: "#050505" }}>Statut En ligne</span>
+          </div>
+          <div style={{ padding: "16px 0" }}>
+            <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", borderBottom: "1px solid #f0f0f0" }}>
+              <span style={{ flex: 1, fontSize: 15, color: "#050505" }}>Indiquer si vous êtes en ligne</span>
+              <button onClick={() => setOnlineStatus(p => !p)} className={`fbl-toggle ${onlineStatus ? "fbl-toggle-on" : "fbl-toggle-off"}`} />
+            </div>
+            <div style={{ padding: "16px 16px 0", fontSize: 13, color: "#65676B", lineHeight: 1.6 }}>
+              Lorsque ce paramètre est activé, votre statut En ligne est visible par les personnes avec qui vous êtes en contact sur Facebook et Messenger, et par celles auxquelles vous avez envoyé une invitation. Vous ne pouvez voir le statut En ligne des autres que si le vôtre est activé.
+              <br/><br/>
+              Pour ne plus afficher votre statut En ligne, désactivez-le partout où vous utilisez Facebook et Messenger. <span style={{ color: "#1877F2", fontWeight: 600 }}>En savoir plus</span>
+            </div>
+          </div>
+        </>}
+
+        {/* Settings: Notifications */}
+        {settingsPage === "notifs" && <>
+          <div style={{ display: "flex", alignItems: "center", padding: "10px 8px", borderBottom: "1px solid #e5e5e5", gap: 4 }}>
+            <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 10px" }}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="#050505"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            </button>
+            <span style={{ flex: 1, fontWeight: 600, fontSize: 18, color: "#050505" }}>Notifications de messages</span>
+          </div>
+          <div style={{ flex: 1, overflowY: "auto" }}>
+            <div style={{ padding: "16px 16px 8px", fontWeight: 700, fontSize: 16, color: "#050505" }}>Messages</div>
+            <div style={{ padding: "0 16px 12px", fontSize: 13, color: "#65676B" }}>Recevez des notifications push en temps réel lorsque vous recevez de nouveaux messages.</div>
+            <div style={{ display: "flex", alignItems: "center", padding: "14px 16px", borderBottom: "1px solid #f0f0f0", borderTop: "1px solid #f0f0f0" }}>
+              <span style={{ flex: 1, fontSize: 15, color: "#050505" }}>Messages des discussions</span>
+              <button onClick={() => setNotifMsgs(p => !p)} className={`fbl-toggle ${notifMsgs ? "fbl-toggle-on" : "fbl-toggle-off"}`} />
+            </div>
+            <div style={{ padding: "16px 16px 8px", fontWeight: 700, fontSize: 16, color: "#050505" }}>Rappels de messages</div>
+            <div style={{ padding: "0 16px 12px", fontSize: 13, color: "#65676B" }}>Recevez des rappels occasionnels concernant des messages non lus dans des discussions récentes.</div>
+            <div style={{ display: "flex", alignItems: "center", padding: "14px 16px", borderBottom: "1px solid #f0f0f0", borderTop: "1px solid #f0f0f0" }}>
+              <span style={{ flex: 1, fontSize: 15, color: "#050505" }}>Rappels de messages</span>
+              <button onClick={() => setNotifReminders(p => !p)} className={`fbl-toggle ${notifReminders ? "fbl-toggle-on" : "fbl-toggle-off"}`} />
+            </div>
+            <div style={{ padding: "16px 16px 8px", fontWeight: 700, fontSize: 16, color: "#050505" }}>Aperçu des messages</div>
+            <div style={{ padding: "0 16px 12px", fontSize: 13, color: "#65676B" }}>Afficher les messages sur les notifications.</div>
+            <div style={{ display: "flex", alignItems: "center", padding: "14px 16px", borderBottom: "1px solid #f0f0f0", borderTop: "1px solid #f0f0f0" }}>
+              <span style={{ flex: 1, fontSize: 15, color: "#050505" }}>Aperçu des messages</span>
+              <button onClick={() => setNotifPreview(p => !p)} className={`fbl-toggle ${notifPreview ? "fbl-toggle-on" : "fbl-toggle-off"}`} />
+            </div>
+            <div style={{ padding: "16px 16px 8px", fontWeight: 700, fontSize: 16, color: "#050505" }}>Notifications en mode déconnecté</div>
+            <div style={{ padding: "0 16px 12px", fontSize: 13, color: "#65676B" }}>Continuez de recevoir les rappels de messages lorsqu'un autre compte est connecté.</div>
+            <div style={{ display: "flex", alignItems: "center", padding: "14px 16px", borderBottom: "1px solid #f0f0f0", borderTop: "1px solid #f0f0f0" }}>
+              <span style={{ flex: 1, fontSize: 15, color: "#050505" }}>Notifications en mode déconnecté</span>
+              <button onClick={() => setNotifOffline(p => !p)} className={`fbl-toggle ${notifOffline ? "fbl-toggle-on" : "fbl-toggle-off"}`} />
+            </div>
+          </div>
+        </>}
+
+        {/* Settings: Invitations */}
+        {settingsPage === "invitations" && <>
+          <div style={{ display: "flex", alignItems: "center", padding: "10px 8px", borderBottom: "1px solid #e5e5e5", gap: 4 }}>
+            <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 10px" }}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="#050505"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            </button>
+            <span style={{ flex: 1, fontWeight: 600, fontSize: 18, color: "#050505" }}>Invitations par message</span>
+          </div>
+          <div style={{ display: "flex", borderBottom: "1px solid #e5e5e5", padding: "0 16px" }}>
+            {(["known","spam"] as const).map(t => (
+              <button key={t} onClick={() => setInvitTab(t)}
+                style={{ flex: 1, background: "none", border: "none", cursor: "pointer", padding: "14px 4px", fontSize: 14, fontWeight: invitTab === t ? 700 : 400, color: invitTab === t ? "#1877F2" : "#65676B", borderBottom: `2px solid ${invitTab === t ? "#1877F2" : "transparent"}` }}>
+                {t === "known" ? "Vous connaissez peut-être" : "Spam"}
+              </button>
+            ))}
+          </div>
+          <div style={{ padding: "12px 16px", fontSize: 13, color: "#65676B", lineHeight: 1.5 }}>
+            Ouvrez une invitation pour en savoir plus sur la personne qui vous envoie le message. Elle n'en saura rien tant que vous ne l'aurez pas acceptée. <span style={{ color: "#1877F2", fontWeight: 600 }}>Décidez qui peut vous envoyer un message</span>
+          </div>
+          <div style={{ flex: 1, overflowY: "auto" }}>
+            {convList.slice(0, 5).map(c => (
+              <div key={c.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", borderBottom: "1px solid #f0f0f0" }}>
+                <div className="avatar" style={{ width: 46, height: 46, fontSize: 17, background: c.user.color, flexShrink: 0 }}>{c.user.initials}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 600, fontSize: 15, color: "#050505" }}>{c.user.name}</div>
+                  <div style={{ fontSize: 13, color: "#888", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.lastMessage || "Aucun message"}</div>
+                </div>
+              </div>
+            ))}
+            {convList.length === 0 && <div style={{ padding: "40px", textAlign: "center", color: "#888", fontSize: 14 }}>Aucune invitation</div>}
+          </div>
+        </>}
+
+        {/* Settings: Archive */}
+        {settingsPage === "archive" && <>
+          <div style={{ display: "flex", alignItems: "center", padding: "10px 8px", borderBottom: "1px solid #e5e5e5", gap: 4 }}>
+            <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 10px" }}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="#050505"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            </button>
+            <span style={{ flex: 1, fontWeight: 600, fontSize: 18, color: "#050505" }}>Archiver</span>
+          </div>
+          <div style={{ flex: 1, overflowY: "auto" }}>
+            {convList.slice(0, 5).map(c => (
+              <div key={c.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", borderBottom: "1px solid #f0f0f0" }}>
+                <div className="avatar" style={{ width: 50, height: 50, fontSize: 18, background: c.user.color, flexShrink: 0 }}>{c.user.initials}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 500, fontSize: 15, color: "#050505" }}>{c.user.name}</div>
+                  <div style={{ fontSize: 13, color: "#888" }}>Les messages et les appels sont sécurisés...</div>
+                </div>
+              </div>
+            ))}
+            {convList.length === 0 && <div style={{ padding: "40px", textAlign: "center", color: "#888", fontSize: 14 }}>Aucune discussion archivée</div>}
+          </div>
+        </>}
+
+        {/* Settings: Confidentialité */}
+        {settingsPage === "privacy" && <>
+          <div style={{ display: "flex", alignItems: "center", padding: "10px 8px", borderBottom: "1px solid #e5e5e5", gap: 4 }}>
+            <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 10px" }}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="#050505"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            </button>
+            <span style={{ flex: 1, fontWeight: 600, fontSize: 18, color: "#050505" }}>Confidentialité et sécurité</span>
+          </div>
+          <div style={{ flex: 1, overflowY: "auto" }}>
+            {[
+              { section: "Qui peut vous contacter", items: [
+                { label: "Diffusion des messages", sub: "Choisissez qui peut vous envoyer un message" },
+                { label: "Comptes bloqués", sub: "Empêchez quelqu'un de vous contacter" },
+                { label: "Contacts masqués", sub: "Masquez des personnes dans vos suggestions de contacts" },
+              ]},
+              { section: "Ce que voient les personnes", items: [
+                { label: "Confirmations de lecture", sub: "Indiquez aux personnes que vous avez lu leurs messages" },
+              ]},
+              { section: "Discussions chiffrées de bout en bout", items: [
+                { label: "Alertes de sécurité", sub: "Consultez et gérez les alertes pour les connexions et les modifications de clé" },
+                { label: "Stockage des messages", sub: "Gérez l'accès à votre historique des discussions et son stockage" },
+                { label: "Aperçus", sub: "Affichez les aperçus du contenu partagé depuis les applications Meta" },
+                { label: "Vérifier les clés dans la discussion", sub: "Appuyez longuement pour voir les clés" },
+              ]},
+            ].map(group => (
+              <div key={group.section}>
+                <div style={{ padding: "12px 16px 6px", fontWeight: 700, fontSize: 14, color: "#050505" }}>{group.section}</div>
+                {group.items.map(item => (
+                  <div key={item.label} style={{ display: "flex", alignItems: "center", padding: "12px 16px", borderBottom: "1px solid #f0f0f0", gap: 12, cursor: "pointer" }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 15, color: "#050505", marginBottom: 2 }}>{item.label}</div>
+                      <div style={{ fontSize: 13, color: "#888" }}>{item.sub}</div>
+                    </div>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="#bbb"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </>}
+      </div>
+    , document.body)}
+    </>
   );
 }
