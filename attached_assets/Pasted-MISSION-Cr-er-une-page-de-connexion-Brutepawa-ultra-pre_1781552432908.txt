@@ -1,0 +1,210 @@
+MISSION :
+
+Créer une page de connexion Brutepawa ultra premium, moderne et professionnelle.
+
+OBJECTIF :
+
+Donner immédiatement confiance à l'utilisateur.
+
+Inspirations :
+- Stripe
+- Revolut
+- Notion
+- LinkedIn
+- Meta
+
+Style :
+- Mobile First
+- Design 2026
+- Vert Brutepawa comme couleur principale
+- Blanc premium
+- Ombres très douces
+- Coins arrondis 24px
+- SVG uniquement
+- Interface épurée
+- Aspect haut de gamme
+
+========================================
+EN-TÊTE
+========================================
+
+Créer un bandeau supérieur vert moderne.
+
+Contenu :
+
+- Icône Accueil
+- Barre d'adresse moderne
+- Domaine :
+  brutepawa.com/login
+- Bouton +
+- Bouton Menu
+
+Fond :
+Dégradé vert premium.
+
+========================================
+SECTION LOGO
+========================================
+
+Grand logo Brutepawa centré.
+
+Icône :
+
+- Fond vert dégradé
+- Lettre "b" blanche
+- Bulle de discussion intégrée
+
+Sous le logo :
+
+brutepawa
+
+Texte vert.
+
+========================================
+SECTION SLOGAN
+========================================
+
+Afficher :
+
+Connecte-toi, vends, recrute et développe ton activité partout en Afrique francophone.
+
+Texte centré.
+
+Typographie moderne.
+
+Sous le slogan :
+
+Badge de confiance :
+
+✓ Simple
+✓ Sécurisé
+✓ 100% Africain
+
+Fond vert très léger.
+
+========================================
+CARTE CONNEXION
+========================================
+
+Grande carte blanche.
+
+Coins :
+28px
+
+Ombre :
+Très légère.
+
+Contenu :
+
+Champ Email
+
+- Icône enveloppe SVG
+- Placeholder :
+Adresse e-mail
+
+Champ Mot de passe
+
+- Icône cadenas SVG
+- Bouton afficher/masquer mot de passe
+
+Bouton principal :
+
+Se connecter
+
+Style :
+
+- Dégradé vert premium
+- Texte blanc
+- Grande largeur
+- Icône flèche à droite
+
+Lien :
+
+Mot de passe oublié ?
+
+Couleur :
+Bleu discret.
+
+========================================
+CRÉATION DE COMPTE
+========================================
+
+Séparateur :
+
+──────── ou ────────
+
+Bouton secondaire :
+
+Créer un compte
+
+Style :
+
+- Fond blanc
+- Bordure verte
+- Icône utilisateur SVG
+- Coins arrondis
+
+========================================
+PREUVE SOCIALE
+========================================
+
+Créer un badge sous le formulaire :
+
+👥 Rejoins des milliers d'entrepreneurs, vendeurs et recruteurs.
+
+Version SVG professionnelle.
+
+Pas d'emoji.
+
+========================================
+ARRIÈRE-PLAN
+========================================
+
+Fond blanc avec :
+
+- Cercles flous verts
+- Formes abstraites
+- Motifs subtils
+- Effets très légers
+
+Doit rester élégant.
+
+========================================
+PIED DE PAGE
+========================================
+
+Langues :
+
+Français (France)
+English (US)
+العربية
+Português (Brasil)
+Español
+
+Liens :
+
+Créer une Page
+Publicité
+Confidentialité
+Conditions
+Aide
+
+Texte :
+
+Brute Pawa © 2025
+
+========================================
+IMPORTANT
+========================================
+
+Ne pas simplifier.
+
+Ne pas utiliser un design générique.
+
+Ne pas remplacer les éléments.
+
+Le résultat doit être visuellement comparable aux meilleures applications web et mobiles de 2026.
+
+Design premium.
+Interface élégante.
+Aspect professionnel.
