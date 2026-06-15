@@ -1,0 +1,192 @@
+Améliore complètement l'interface des commentaires vocaux de Brutepawa pour obtenir une expérience moderne inspirée de WhatsApp, Telegram et Messenger.
+
+OBJECTIF
+
+Créer un système de commentaires vocaux fluide, élégant et intuitif.
+
+====================================================
+ENREGISTREMENT
+====================================================
+
+Supprimer l'ancien système.
+
+Ajouter un bouton micro moderne.
+
+Au clic sur le micro :
+
+- Agrandir automatiquement la zone d'enregistrement.
+- Afficher une animation.
+- Afficher un chronomètre.
+- Afficher une onde sonore animée en temps réel.
+
+Design :
+
+🔴 Enregistrement...
+00:12 / 01:00
+
+━━━━━━━━━━━━━━━━━━
+
+Animation fluide.
+
+====================================================
+ANNULATION
+====================================================
+
+Pendant l'enregistrement :
+
+Afficher :
+
+← Glisser pour annuler
+
+Si l'utilisateur glisse vers la gauche :
+
+- Annuler le vocal.
+- Supprimer le fichier temporaire.
+- Afficher une animation d'annulation.
+
+====================================================
+VERROUILLAGE
+====================================================
+
+Permettre de verrouiller l'enregistrement.
+
+L'utilisateur :
+
+- Maintient le bouton micro.
+- Glisse vers le haut.
+- Le micro reste actif sans maintenir le doigt.
+
+Afficher :
+
+🔒 Verrouillé
+
+====================================================
+APERÇU AVANT ENVOI
+====================================================
+
+Lorsque l'utilisateur termine :
+
+Ne pas envoyer directement.
+
+Afficher une carte moderne :
+
+┌────────────────────┐
+🎤 Vocal enregistré
+
+▶️ 0:00 ━━━━━━━ 0:23
+
+🗑️ Supprimer
+📤 Envoyer
+└────────────────────┘
+
+L'utilisateur peut :
+
+- Écouter
+- Rejouer
+- Supprimer
+- Envoyer
+
+====================================================
+LECTEUR AUDIO MODERNE
+====================================================
+
+Après publication :
+
+Afficher :
+
+┌────────────────────┐
+🎤 Vocal
+
+▶️ ━━━━━━━━━━━━ 0:27
+
+👁 Vu
+❤️ 3 👍 5
+└────────────────────┘
+
+Fonctionnalités :
+
+- Lecture
+- Pause
+- Barre de progression
+- Durée
+- Temps restant
+
+====================================================
+ONDE SONORE
+====================================================
+
+Afficher une vraie visualisation audio.
+
+Pendant l'enregistrement :
+
+▂▅▇▃▆▂▇▅▃▂
+
+Pendant la lecture :
+
+L'onde doit s'animer.
+
+====================================================
+RÉACTIONS
+====================================================
+
+Permettre :
+
+👍
+❤️
+😂
+😮
+😢
+
+sur les commentaires vocaux.
+
+====================================================
+RÉPONSES
+====================================================
+
+Permettre :
+
+Répondre à un commentaire vocal :
+
+- par texte
+- par vocal
+
+====================================================
+LIMITES
+====================================================
+
+Durée maximale :
+
+60 secondes.
+
+Afficher :
+
+58s
+59s
+60s
+
+Puis arrêt automatique.
+
+====================================================
+ANIMATIONS
+====================================================
+
+Ajouter :
+
+- Animations fluides
+- Effets de transition
+- Effets de pression du bouton micro
+- Vibrations légères pendant l'enregistrement
+
+====================================================
+DESIGN
+====================================================
+
+Respecter les couleurs de Brutepawa.
+
+Interface moderne.
+
+Style premium.
+
+Compatible Android, iPhone et Web.
+
+Le résultat doit être comparable aux meilleures applications sociales actuelles et beaucoup plus professionnel que la version actuelle.

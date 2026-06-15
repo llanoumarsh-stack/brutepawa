@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "../router";
-import { apiGetConversations, apiGetMessages, apiSendMessage, apiGetUsers, apiGetUserPresence, type PublicUser } from "../lib/api";
+import { apiGetConversations, apiGetMessages, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo } from "../lib/api";
 import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignaling";
 
 function presenceLabel(online: boolean, lastSeenAt: string | null): string {
@@ -34,6 +34,27 @@ interface NormConv {
   time: string;
 }
 
+interface ChatGroupConv {
+  id: number;
+  name: string;
+  avatarUrl: string | null;
+  type: "group" | "channel";
+  membersCount: number;
+  lastMessage: string;
+  lastMessageAt: string;
+  unread: number;
+  role: string;
+}
+
+interface GroupMsg {
+  id: number;
+  text: string;
+  senderName: string;
+  mine: boolean;
+  time: string;
+  type: "text" | "system";
+}
+
 const CONV_COLORS = ["#1877F2","#E91E8C","#7B1FA2","#F57C00","#388E3C","#00838F","#D32F2F"];
 const mkInitials = (name: string) =>
   name.split(" ").filter(Boolean).map(w => w[0]).join("").slice(0, 2).toUpperCase() || "?";
@@ -59,7 +80,26 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
   const [deleteForAll, setDeleteForAll]         = useState(false);
   const [presence, setPresence] = useState<{ online: boolean; lastSeenAt: string | null }>({ online: false, lastSeenAt: null });
   const [presenceTick, setPresenceTick] = useState(0);
+
+  // ── Group conversations ──────────────────────────────────────────────────────
+  const [chatGroups, setChatGroups]         = useState<ChatGroupConv[]>([]);
+  const [activeGroupId, setActiveGroupId]   = useState<number | null>(null);
+  const [groupMsgs, setGroupMsgs]           = useState<Record<number, GroupMsg[]>>({});
+  const [groupInfo, setGroupInfo]           = useState<ApiChatGroupInfo | null>(null);
+  const [showGroupInfo, setShowGroupInfo]   = useState(false);
+  const [groupNewMsg, setGroupNewMsg]       = useState("");
+
+  // ── Group creation wizard ────────────────────────────────────────────────────
+  const [groupWizard, setGroupWizard]           = useState<"none" | "members" | "name">("none");
+  const [groupWizardType, setGroupWizardType]   = useState<"group" | "channel">("group");
+  const [wizardMembers, setWizardMembers]       = useState<Set<number>>(new Set());
+  const [wizardGroupName, setWizardGroupName]   = useState("");
+  const [wizardSearch, setWizardSearch]         = useState("");
+  const [wizardCreating, setWizardCreating]     = useState(false);
+
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const activeGroupRef = useRef<number | null>(null);
+  const groupBottomRef = useRef<HTMLDivElement>(null);
 
   const bottomRef      = useRef<HTMLDivElement>(null);
   const remoteAudioRef = useRef<HTMLAudioElement>(null);
@@ -272,6 +312,53 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
     return () => clearInterval(poll);
   }, []);
 
+  /* Load chat groups on mount, poll every 15s */
+  useEffect(() => {
+    apiGetChatGroups().then(groups => {
+      setChatGroups(groups.map(g => ({
+        id: g.id, name: g.name, avatarUrl: g.avatarUrl, type: g.type,
+        membersCount: g.membersCount, lastMessage: g.lastMessage,
+        lastMessageAt: g.lastMessageAt, unread: g.unread, role: g.role,
+      })));
+    }).catch(() => {});
+    const poll = setInterval(() => {
+      apiGetChatGroups().then(groups => {
+        setChatGroups(groups.map(g => ({
+          id: g.id, name: g.name, avatarUrl: g.avatarUrl, type: g.type,
+          membersCount: g.membersCount, lastMessage: g.lastMessage,
+          lastMessageAt: g.lastMessageAt, unread: g.unread, role: g.role,
+        })));
+      }).catch(() => {});
+    }, 15000);
+    return () => clearInterval(poll);
+  }, []);
+
+  /* Load + poll messages for active group */
+  useEffect(() => {
+    activeGroupRef.current = activeGroupId;
+    if (!activeGroupId) return;
+    const loadMsgs = () => {
+      apiGetChatGroupMessages(activeGroupId).then(msgs => {
+        setGroupMsgs(prev => {
+          const next = msgs.map(m => ({
+            id: m.id, text: m.content, senderName: m.senderName,
+            mine: m.senderId === meId,
+            time: new Date(m.createdAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }),
+            type: m.type,
+          }));
+          if (JSON.stringify(next.map(x => x.id)) === JSON.stringify((prev[activeGroupId] ?? []).map(x => x.id))) return prev;
+          return { ...prev, [activeGroupId]: next };
+        });
+      }).catch(() => {});
+    };
+    loadMsgs();
+    apiGetChatGroupInfo(activeGroupId).then(setGroupInfo).catch(() => {});
+    const poll = setInterval(loadMsgs, 3000);
+    return () => clearInterval(poll);
+  }, [activeGroupId, meId]);
+
+  useEffect(() => { groupBottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [groupMsgs, activeGroupId]);
+
   const fmtTime = (s: number) =>
     `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 
@@ -285,6 +372,34 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
     setConvList(prev => prev.map(c => c.id === activeConv ? { ...c, lastMessage: content, time: now } : c));
     if (!text) setNewMsg("");
     apiSendMessage(activeConv, content).catch(() => {});
+  };
+
+  const sendGroupMsg = () => {
+    const content = groupNewMsg.trim();
+    if (!content || !activeGroupId) return;
+    const now = new Date().toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
+    const optimistic: GroupMsg = { id: Date.now(), text: content, senderName: "Moi", mine: true, time: now, type: "text" };
+    setGroupMsgs(prev => ({ ...prev, [activeGroupId]: [...(prev[activeGroupId] ?? []), optimistic] }));
+    setChatGroups(prev => prev.map(g => g.id === activeGroupId ? { ...g, lastMessage: content, lastMessageAt: new Date().toISOString() } : g));
+    setGroupNewMsg("");
+    apiSendChatGroupMessage(activeGroupId, content).catch(() => {});
+  };
+
+  const createGroup = async () => {
+    const name = wizardGroupName.trim();
+    if (!name || wizardCreating) return;
+    setWizardCreating(true);
+    try {
+      const g = await apiCreateChatGroup(name, groupWizardType, [...wizardMembers]);
+      const newGroup: ChatGroupConv = {
+        id: g.id, name: g.name, avatarUrl: g.avatarUrl, type: g.type,
+        membersCount: wizardMembers.size + 1, lastMessage: "", lastMessageAt: g.createdAt,
+        unread: 0, role: "owner",
+      };
+      setChatGroups(prev => [newGroup, ...prev]);
+      setGroupWizard("none"); setWizardGroupName(""); setWizardMembers(new Set()); setWizardSearch("");
+      setActiveGroupId(g.id);
+    } catch { /* silent */ } finally { setWizardCreating(false); }
   };
 
   // ── Long-press / selection helpers ───────────────────────────────────────
@@ -337,6 +452,115 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
   };
 
   navigate;
+
+  /* ══════════════════════════════════════════════════════════════
+     GROUP CREATION WIZARD
+  ══════════════════════════════════════════════════════════════ */
+  if (groupWizard !== "none") {
+    const filteredUsers = allUsers.filter(u => u.id !== meId && (
+      wizardSearch.trim() === "" ||
+      `${u.firstName} ${u.lastName}`.toLowerCase().includes(wizardSearch.toLowerCase())
+    ));
+    return (
+      <div style={{ position: "fixed", top: 56, bottom: 60, left: 0, right: 0, display: "flex", flexDirection: "column", background: "#fff", zIndex: 20 }}>
+        {/* Header */}
+        <div style={{ background: "#1877F2", padding: "10px 14px", display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
+          <button onClick={() => { if (groupWizard === "name") { setGroupWizard("members"); } else { setGroupWizard("none"); setWizardMembers(new Set()); setWizardSearch(""); } }}
+            style={{ background: "none", border: "none", color: "#fff", fontSize: 22, cursor: "pointer" }}>←</button>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 800, fontSize: 17, color: "#fff" }}>
+              {groupWizard === "members" ? `Nouveau ${groupWizardType === "channel" ? "canal" : "groupe"}` : "Nommer le groupe"}
+            </div>
+            {groupWizard === "members" && wizardMembers.size > 0 && (
+              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.8)" }}>{wizardMembers.size} membre{wizardMembers.size > 1 ? "s" : ""} sélectionné{wizardMembers.size > 1 ? "s" : ""}</div>
+            )}
+          </div>
+          {groupWizard === "members" && (
+            <button onClick={() => { if (wizardMembers.size > 0) setGroupWizard("name"); }}
+              style={{ background: wizardMembers.size > 0 ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.1)", border: "none", borderRadius: 20, padding: "6px 16px", color: "#fff", fontSize: 14, fontWeight: 700, cursor: wizardMembers.size > 0 ? "pointer" : "default", opacity: wizardMembers.size === 0 ? 0.5 : 1 }}>
+              Suivant →
+            </button>
+          )}
+        </div>
+
+        {groupWizard === "members" ? (
+          <>
+            {/* Search */}
+            <div style={{ padding: "10px 14px", borderBottom: "1px solid #f0f2f5", flexShrink: 0 }}>
+              <input value={wizardSearch} onChange={e => setWizardSearch(e.target.value)}
+                placeholder="Qui souhaitez-vous ajouter ?"
+                style={{ width: "100%", background: "#f0f2f5", border: "none", borderRadius: 22, padding: "9px 16px", fontSize: 14, outline: "none", boxSizing: "border-box" }} />
+            </div>
+            {/* Selected chips */}
+            {wizardMembers.size > 0 && (
+              <div style={{ display: "flex", gap: 8, padding: "8px 14px", overflowX: "auto", borderBottom: "1px solid #f0f2f5", scrollbarWidth: "none", flexShrink: 0 }}>
+                {[...wizardMembers].map(uid => {
+                  const u = allUsers.find(x => x.id === uid);
+                  const name = u ? `${u.firstName} ${u.lastName}` : `#${uid}`;
+                  return (
+                    <div key={uid} onClick={() => setWizardMembers(prev => { const s = new Set(prev); s.delete(uid); return s; })}
+                      style={{ flexShrink: 0, textAlign: "center", cursor: "pointer" }}>
+                      <div style={{ position: "relative" }}>
+                        <div className="avatar" style={{ width: 46, height: 46, fontSize: 16, background: CONV_COLORS[uid % CONV_COLORS.length], margin: "0 auto" }}>{mkInitials(name)}</div>
+                        <div style={{ position: "absolute", top: -2, right: -2, width: 18, height: 18, background: "#555", borderRadius: "50%", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 900 }}>✕</div>
+                      </div>
+                      <div style={{ fontSize: 10, marginTop: 3, color: "#333", maxWidth: 52, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{name.split(" ")[0]}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            {/* User list */}
+            <div style={{ flex: 1, overflowY: "auto" }}>
+              {filteredUsers.map(u => {
+                const name = `${u.firstName} ${u.lastName}`;
+                const selected = wizardMembers.has(u.id);
+                return (
+                  <div key={u.id} onClick={() => setWizardMembers(prev => { const s = new Set(prev); if (s.has(u.id)) s.delete(u.id); else s.add(u.id); return s; })}
+                    style={{ display: "flex", gap: 12, padding: "10px 14px", alignItems: "center", cursor: "pointer", borderBottom: "1px solid #f5f5f5", background: selected ? "#f0f6ff" : "#fff" }}>
+                    <div style={{ position: "relative" }}>
+                      <div className="avatar" style={{ width: 48, height: 48, fontSize: 17, background: CONV_COLORS[u.id % CONV_COLORS.length] }}>{mkInitials(name)}</div>
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 700, fontSize: 15, color: "#111" }}>{name}</div>
+                    </div>
+                    <div style={{ width: 24, height: 24, borderRadius: "50%", border: selected ? "none" : "2px solid #ccc", background: selected ? "#1877F2" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      {selected && <span style={{ color: "#fff", fontSize: 13, fontWeight: 700 }}>✓</span>}
+                    </div>
+                  </div>
+                );
+              })}
+              {filteredUsers.length === 0 && (
+                <div style={{ padding: "40px 20px", textAlign: "center", color: "#888", fontSize: 14 }}>Aucun contact trouvé</div>
+              )}
+            </div>
+          </>
+        ) : (
+          /* Step 2: Name the group */
+          <div style={{ flex: 1, padding: "24px 20px" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 28 }}>
+              <div style={{ width: 88, height: 88, borderRadius: "50%", background: groupWizardType === "channel" ? "#00838F" : "#1877F2", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, marginBottom: 10, cursor: "pointer" }}>
+                {groupWizardType === "channel" ? "📢" : "👥"}
+              </div>
+              <div style={{ fontSize: 12, color: "#888" }}>Appuyez pour changer la photo</div>
+            </div>
+            <input
+              value={wizardGroupName} onChange={e => setWizardGroupName(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter") createGroup(); }}
+              placeholder={`Nom du ${groupWizardType === "channel" ? "canal" : "groupe"}...`}
+              autoFocus
+              style={{ width: "100%", border: "none", borderBottom: "2px solid #1877F2", padding: "10px 0", fontSize: 17, outline: "none", boxSizing: "border-box", color: "#111", marginBottom: 28 }}
+            />
+            <div style={{ fontSize: 13, color: "#888", marginBottom: 28 }}>{wizardMembers.size + 1} participant{wizardMembers.size > 0 ? "s" : ""}</div>
+            <button onClick={createGroup} disabled={!wizardGroupName.trim() || wizardCreating}
+              style={{ width: "100%", background: wizardGroupName.trim() ? "#1877F2" : "#ddd", border: "none", borderRadius: 26, padding: "14px", fontSize: 16, fontWeight: 800, color: "#fff", cursor: wizardGroupName.trim() ? "pointer" : "default", transition: "background 0.2s" }}>
+              {wizardCreating ? "Création…" : `Créer le ${groupWizardType === "channel" ? "canal" : "groupe"}`}
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   /* ══════════════════════════════════════════════════════════════
      INCOMING CALL OVERLAY
@@ -564,6 +788,67 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
   }
 
   /* ══════════════════════════════════════════════════════════════
+     GROUP INFO VIEW
+  ══════════════════════════════════════════════════════════════ */
+  if (activeGroupId !== null && showGroupInfo) {
+    const grp = chatGroups.find(g => g.id === activeGroupId);
+    const gInfo = groupInfo;
+    return (
+      <div style={{ position: "fixed", top: 56, bottom: 60, left: 0, right: 0, background: "#f0f2f5", zIndex: 15, overflowY: "auto" }}>
+        <div style={{ background: "#1877F2", padding: "10px 14px", display: "flex", alignItems: "center", gap: 12 }}>
+          <button onClick={() => setShowGroupInfo(false)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#fff" }}>←</button>
+          <div style={{ fontWeight: 700, fontSize: 17, color: "#fff" }}>Infos du groupe</div>
+        </div>
+        {/* Profile card */}
+        <div style={{ background: "#fff", padding: "28px 20px 24px", textAlign: "center", marginBottom: 8 }}>
+          <div style={{ width: 96, height: 96, borderRadius: "50%", background: grp?.type === "channel" ? "#00838F" : "#1877F2", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 38, margin: "0 auto 14px" }}>
+            {grp?.type === "channel" ? "📢" : "👥"}
+          </div>
+          <div style={{ fontWeight: 900, fontSize: 22, color: "#111", marginBottom: 4 }}>{grp?.name ?? "Groupe"}</div>
+          <div style={{ fontSize: 13, color: "#888" }}>{gInfo?.members.length ?? grp?.membersCount ?? 0} membre{(gInfo?.members.length ?? 1) !== 1 ? "s" : ""}</div>
+          {/* Action buttons */}
+          <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 20 }}>
+            {[
+              { icon: "💬", label: "Message", color: "#1877F2", action: () => setShowGroupInfo(false) },
+              { icon: "🔕", label: "Désactiver", color: "#607D8B", action: () => {} },
+              { icon: "🎥", label: "Salon vidéo", color: "#9C27B0", action: () => {} },
+              { icon: "🚪", label: "Quitter", color: "#F44336", action: async () => { await apiLeaveChatGroup(activeGroupId); setChatGroups(p => p.filter(g => g.id !== activeGroupId)); setActiveGroupId(null); setShowGroupInfo(false); } },
+            ].map(a => (
+              <div key={a.label} onClick={a.action} style={{ cursor: "pointer", textAlign: "center" }}>
+                <div style={{ width: 52, height: 52, borderRadius: "50%", background: a.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, margin: "0 auto 6px", boxShadow: `0 2px 8px ${a.color}55` }}>{a.icon}</div>
+                <div style={{ fontSize: 10.5, color: "#555", fontWeight: 600 }}>{a.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* Add members */}
+        <div style={{ background: "#fff", marginBottom: 8 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 20px", cursor: "pointer", borderBottom: "1px solid #f5f5f5" }}>
+            <div style={{ width: 42, height: 42, borderRadius: "50%", background: "#1877F2", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, color: "#fff", flexShrink: 0 }}>+</div>
+            <div style={{ fontWeight: 600, fontSize: 15, color: "#1877F2" }}>Ajouter des membres</div>
+          </div>
+        </div>
+        {/* Members list */}
+        <div style={{ background: "#fff" }}>
+          {(gInfo?.members ?? []).map((m, i) => {
+            const name = m.firstName && m.lastName ? `${m.firstName} ${m.lastName}` : `Utilisateur #${m.userId}`;
+            const roleLabel = m.role === "owner" ? "Propriétaire" : m.role === "admin" ? "Administrateur" : "";
+            return (
+              <div key={m.userId} style={{ display: "flex", gap: 12, padding: "10px 20px", alignItems: "center", borderBottom: i < (gInfo?.members.length ?? 0) - 1 ? "1px solid #f5f5f5" : "none" }}>
+                <div className="avatar" style={{ width: 44, height: 44, fontSize: 16, background: CONV_COLORS[m.userId % CONV_COLORS.length], flexShrink: 0 }}>{mkInitials(name)}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 700, fontSize: 14.5, color: "#111" }}>{name}</div>
+                </div>
+                {roleLabel && <div style={{ fontSize: 11, color: "#1877F2", fontWeight: 700, background: "#e8f0fe", borderRadius: 12, padding: "3px 10px" }}>{roleLabel}</div>}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  /* ══════════════════════════════════════════════════════════════
      INFO OVERLAY — WhatsApp × BP style
   ══════════════════════════════════════════════════════════════ */
   if (activeConv && activeUser && overlay === "info") {
@@ -614,6 +899,106 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
               <span style={{ fontSize: 15, color: "#111" }}>{r.label}</span>
             </div>
           ))}
+        </div>
+      </div>
+    );
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     GROUP CHAT VIEW
+  ══════════════════════════════════════════════════════════════ */
+  if (activeGroupId !== null) {
+    const grp = chatGroups.find(g => g.id === activeGroupId);
+    const gmsgs = groupMsgs[activeGroupId] ?? [];
+    return (
+      <div style={{ position: "fixed", top: 56, bottom: 60, left: 0, right: 0, display: "flex", flexDirection: "column", zIndex: 5, overflow: "hidden", background: "#ECE5DD" }}>
+        <style>{`
+          .bp-chat-bg { background-color:#ECE5DD; background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231877F2' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+          .bp-msg-mine { background:#1877F2; color:#fff; border-radius:18px 18px 4px 18px; }
+          .bp-msg-theirs { background:#fff; color:#111; border-radius:18px 18px 18px 4px; box-shadow:0 1px 2px rgba(0,0,0,0.12); }
+        `}</style>
+
+        {/* Header */}
+        <div style={{ background: "#1877F2", padding: "8px 10px", display: "flex", alignItems: "center", gap: 8, flexShrink: 0, boxShadow: "0 2px 4px rgba(0,0,0,0.18)" }}>
+          <button onClick={() => { setActiveGroupId(null); setShowGroupInfo(false); }} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "#fff", padding: "4px 2px" }}>←</button>
+          <div style={{ width: 40, height: 40, borderRadius: "50%", background: grp?.type === "channel" ? "#00838F" : "rgba(255,255,255,0.25)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, cursor: "pointer", border: "2px solid rgba(255,255,255,0.4)", flexShrink: 0 }}
+            onClick={() => setShowGroupInfo(true)}>
+            {grp?.type === "channel" ? "📢" : "👥"}
+          </div>
+          <div style={{ flex: 1, minWidth: 0, cursor: "pointer" }} onClick={() => setShowGroupInfo(true)}>
+            <div style={{ fontWeight: 700, fontSize: 15, color: "#fff", lineHeight: 1.2 }}>{grp?.name ?? "Groupe"}</div>
+            <div style={{ fontSize: 11.5, color: "rgba(255,255,255,0.85)" }}>{grp?.membersCount ?? 0} membre{(grp?.membersCount ?? 0) !== 1 ? "s" : ""}</div>
+          </div>
+          <button onClick={() => setShowGroupInfo(true)} style={{ background: "rgba(255,255,255,0.15)", border: "none", borderRadius: "50%", width: 38, height: 38, cursor: "pointer", color: "#fff", fontSize: 18, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>⋮</button>
+        </div>
+
+        {/* Messages area */}
+        <div className="bp-chat-bg" style={{ flex: 1, overflowY: "auto", padding: "10px 10px 6px", display: "flex", flexDirection: "column", gap: 2 }}>
+          {/* "Vous avez créé ce groupe" banner */}
+          <div style={{ textAlign: "center", fontSize: 11.5, color: "#555", background: "rgba(255,255,255,0.85)", borderRadius: 20, padding: "4px 14px", margin: "2px auto 10px", display: "inline-block", alignSelf: "center", boxShadow: "0 1px 2px rgba(0,0,0,0.08)" }}>
+            Aujourd'hui
+          </div>
+
+          {gmsgs.map((msg, i) => {
+            const isFirst = i === 0 || gmsgs[i - 1]?.mine !== msg.mine;
+            if (msg.type === "system") {
+              return (
+                <div key={msg.id} style={{ textAlign: "center", fontSize: 11.5, color: "#555", background: "rgba(255,255,255,0.85)", borderRadius: 20, padding: "4px 14px", margin: "6px auto", display: "inline-block", alignSelf: "center", boxShadow: "0 1px 2px rgba(0,0,0,0.08)" }}>
+                  {msg.text}
+                </div>
+              );
+            }
+            return (
+              <div key={msg.id} style={{ display: "flex", justifyContent: msg.mine ? "flex-end" : "flex-start", alignItems: "flex-end", gap: 6, marginTop: isFirst ? 6 : 1 }}>
+                {!msg.mine && (
+                  <div style={{ width: 28, flexShrink: 0, alignSelf: "flex-end", paddingBottom: 2 }}>
+                    {isFirst && (
+                      <div className="avatar xs" style={{ width: 26, height: 26, fontSize: 10, background: CONV_COLORS[Math.abs(msg.text.length + i) % CONV_COLORS.length] }}>
+                        {mkInitials(msg.senderName)}
+                      </div>
+                    )}
+                  </div>
+                )}
+                <div style={{ maxWidth: "72%", display: "flex", flexDirection: "column" }}>
+                  {!msg.mine && isFirst && (
+                    <div style={{ fontSize: 11, color: "#1877F2", fontWeight: 700, marginBottom: 2, paddingLeft: 2 }}>{msg.senderName}</div>
+                  )}
+                  <div className={msg.mine ? "bp-msg-mine" : "bp-msg-theirs"} style={{ padding: "8px 12px 6px", fontSize: 14.5, lineHeight: 1.45, wordBreak: "break-word" }}>
+                    {msg.text}
+                    <div style={{ fontSize: 10, marginTop: 2, color: msg.mine ? "rgba(255,255,255,0.75)" : "#888", textAlign: "right" }}>
+                      {msg.time}{msg.mine && <span style={{ marginLeft: 3 }}>✓</span>}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          {gmsgs.length === 0 && (
+            <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "40px 0" }}>
+              <div style={{ background: "rgba(255,255,255,0.85)", borderRadius: 16, padding: "12px 20px", fontSize: 13, color: "#555", textAlign: "center" }}>
+                🔒 Les messages sont chiffrés de bout en bout
+              </div>
+            </div>
+          )}
+          <div ref={groupBottomRef} />
+        </div>
+
+        {/* Bottom bar */}
+        <div style={{ background: "#f0f2f5", padding: "6px 8px", display: "flex", gap: 6, alignItems: "center", flexShrink: 0 }}>
+          <div style={{ flex: 1, position: "relative" }}>
+            <input value={groupNewMsg}
+              onChange={e => setGroupNewMsg(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendGroupMsg(); } }}
+              placeholder="Message..."
+              style={{ width: "100%", background: "#fff", border: "none", borderRadius: 22, padding: "10px 14px", fontSize: 15, outline: "none", boxSizing: "border-box", color: "#111", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}
+            />
+          </div>
+          {groupNewMsg.trim() ? (
+            <button onClick={sendGroupMsg} style={{ background: "#1877F2", border: "none", borderRadius: "50%", width: 40, height: 40, color: "#fff", cursor: "pointer", fontSize: 16, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(24,119,242,0.5)" }}>➤</button>
+          ) : (
+            <button style={{ background: "#1877F2", border: "none", borderRadius: "50%", width: 40, height: 40, color: "#fff", cursor: "pointer", fontSize: 18, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(24,119,242,0.5)" }}>🎤</button>
+          )}
         </div>
       </div>
     );
@@ -1004,6 +1389,50 @@ export default function Messages({ initialUserId }: { initialUserId?: number }) 
 
       {/* ── SCROLLABLE BODY ── */}
       <div style={{ flex: 1, overflowY: "auto" }}>
+
+        {/* ── Nouveau groupe / Nouveau canal ── */}
+        {!search && (
+          <div style={{ borderBottom: "1px solid #f0f2f5" }}>
+            {[
+              { icon: "👥", label: "Nouveau groupe", color: "#1877F2", action: () => { setGroupWizardType("group"); setGroupWizard("members"); setWizardSearch(""); setWizardMembers(new Set()); } },
+              { icon: "📢", label: "Nouveau canal", color: "#00838F", action: () => { setGroupWizardType("channel"); setGroupWizard("members"); setWizardSearch(""); setWizardMembers(new Set()); } },
+            ].map(item => (
+              <div key={item.label} onClick={item.action} style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 16px", cursor: "pointer", borderBottom: "1px solid #f5f5f5" }}
+                className="bp-conv-row">
+                <div style={{ width: 46, height: 46, borderRadius: "50%", background: item.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>{item.icon}</div>
+                <div style={{ fontWeight: 600, fontSize: 15, color: "#111" }}>{item.label}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ── Groupes actifs ── */}
+        {!search && chatGroups.length > 0 && (
+          <div>
+            <div style={{ padding: "8px 16px 4px", fontSize: 11.5, fontWeight: 700, color: "#888", letterSpacing: 0.5, textTransform: "uppercase", background: "#f7f8fa", borderBottom: "1px solid #f0f2f5" }}>Groupes & Canaux</div>
+            {chatGroups.filter(g => !search || g.name.toLowerCase().includes(search.toLowerCase())).map((grp, idx) => {
+              const ts = grp.lastMessageAt ? new Date(grp.lastMessageAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }) : "";
+              return (
+                <div key={grp.id} className="bp-conv-row" onClick={() => setActiveGroupId(grp.id)}
+                  style={{ display: "flex", gap: 12, padding: "10px 14px", cursor: "pointer", background: "#fff", borderBottom: idx < chatGroups.length - 1 ? "1px solid #f5f5f5" : "none", transition: "background 0.1s" }}>
+                  <div style={{ width: 52, height: 52, borderRadius: "50%", background: grp.type === "channel" ? "#00838F" : "#1877F2", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>
+                    {grp.type === "channel" ? "📢" : "👥"}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0, alignSelf: "center" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 3 }}>
+                      <span style={{ fontWeight: grp.unread > 0 ? 800 : 600, fontSize: 15.5, color: "#111", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "68%" }}>{grp.name}</span>
+                      <span style={{ fontSize: 11.5, color: grp.unread > 0 ? "#1877F2" : "#aaa", flexShrink: 0 }}>{ts}</span>
+                    </div>
+                    <div style={{ fontSize: 13.5, color: grp.lastMessage ? (grp.unread > 0 ? "#222" : "#888") : "#bbb", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {grp.lastMessage || `${grp.membersCount} membre${grp.membersCount !== 1 ? "s" : ""}`}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            <div style={{ height: 8, background: "#f7f8fa", borderBottom: "1px solid #f0f2f5" }} />
+          </div>
+        )}
 
         {/* Statuts actifs (like WhatsApp status bar) */}
         {convList.length > 0 && (
