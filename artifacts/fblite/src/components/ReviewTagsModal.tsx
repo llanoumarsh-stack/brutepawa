@@ -22,16 +22,18 @@ function timeAgo(iso: string) {
   return `${Math.floor(s / 86400)} j`;
 }
 
+const AVATAR_COLORS = [
+  "#1877F2","#E91E8C","#7B1FA2","#F57C00","#388E3C","#00838F","#C62828",
+];
+
 export default function ReviewTagsModal({ onClose }: Props) {
   const [posts, setPosts] = useState<TaggedPost[]>([]);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<"pending" | "approved">("pending");
+  const [tab, setTab] = useState<"pending" | "reviewed">("pending");
   const [actions, setActions] = useState<Record<number, "approved" | "rejected">>({});
 
   useEffect(() => {
-    apiFetch("/posts?authorId=tagged")
-      .then(() => {})
-      .catch(() => {});
+    apiFetch("/posts?authorId=tagged").catch(() => {});
     const DEMO: TaggedPost[] = [
       {
         id: 1001,
@@ -50,89 +52,256 @@ export default function ReviewTagsModal({ onClose }: Props) {
         createdAt: new Date(Date.now() - 86400 * 1000).toISOString(),
       },
     ];
-    setTimeout(() => { setPosts(DEMO); setLoading(false); }, 600);
+    const t = setTimeout(() => { setPosts(DEMO); setLoading(false); }, 500);
+    return () => clearTimeout(t);
   }, []);
 
   const handleAction = (postId: number, action: "approved" | "rejected") => {
     setActions(prev => ({ ...prev, [postId]: action }));
   };
 
-  const pending = posts.filter(p => !actions[p.id]);
+  const pending  = posts.filter(p => !actions[p.id]);
   const reviewed = posts.filter(p => !!actions[p.id]);
   const displayed = tab === "pending" ? pending : reviewed;
 
   return createPortal(
-    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", zIndex: 200, display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
-      <div style={{ background: "#fff", borderRadius: "20px 20px 0 0", width: "100%", maxWidth: 600, maxHeight: "85vh", display: "flex", flexDirection: "column" }}>
-        <div style={{ padding: "12px 16px 0" }}>
-          <div style={{ width: 40, height: 4, background: "#e0e0e0", borderRadius: 2, margin: "0 auto 16px" }} />
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <div style={{ fontWeight: 800, fontSize: 18 }}>👁️ Examiner les identifications</div>
-            <button onClick={onClose} style={{ background: "#f0f2f5", border: "none", borderRadius: "50%", width: 32, height: 32, cursor: "pointer", fontSize: 16 }}>✕</button>
-          </div>
-          <div style={{ fontSize: 13, color: "#65676b", marginBottom: 14 }}>
-            Gérez les publications dans lesquelles vous avez été identifié(e) avant qu'elles apparaissent sur votre profil.
-          </div>
-          <div style={{ display: "flex", borderBottom: "1px solid #e4e6eb" }}>
-            {([["pending", `En attente (${pending.length})`], ["approved", `Examinées (${reviewed.length})`]] as const).map(([id, label]) => (
-              <button key={id} onClick={() => setTab(id)}
-                style={{ flex: 1, background: "none", border: "none", padding: "10px", fontWeight: tab === id ? 700 : 400, fontSize: 14, color: tab === id ? "#1877F2" : "#65676b", borderBottom: tab === id ? "3px solid #1877F2" : "3px solid transparent", cursor: "pointer" }}>
-                {label}
-              </button>
-            ))}
-          </div>
+    /* ── overlay ── */
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed", inset: 0,
+        background: "rgba(0,0,0,0.55)",
+        zIndex: 200,
+        display: "flex", alignItems: "flex-end", justifyContent: "center",
+      }}
+    >
+      {/* ── bottom sheet ── */}
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          background: "#fff",
+          borderRadius: "20px 20px 0 0",
+          width: "100%",
+          maxWidth: 600,
+          maxHeight: "88vh",
+          display: "flex",
+          flexDirection: "column",
+          overflowY: "hidden",
+        }}
+      >
+        {/* drag handle */}
+        <div style={{ paddingTop: 10, paddingBottom: 4, display: "flex", justifyContent: "center" }}>
+          <div style={{
+            width: 40, height: 4, borderRadius: 4,
+            background: "#ccd0d5",
+          }} />
         </div>
 
-        <div style={{ flex: 1, overflowY: "auto", padding: 16 }}>
+        {/* header */}
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "8px 16px 10px",
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ fontSize: 20 }}>👁️</span>
+            <span style={{ fontWeight: 800, fontSize: 18, color: "#050505" }}>
+              Examiner les identifications
+            </span>
+          </div>
+          <button
+            onClick={onClose}
+            style={{
+              background: "#f0f2f5", border: "none", borderRadius: "50%",
+              width: 32, height: 32, cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 16, color: "#050505", fontWeight: 700, flexShrink: 0,
+            }}
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* description */}
+        <p style={{
+          margin: 0, padding: "0 16px 14px",
+          fontSize: 13, color: "#65676b", lineHeight: 1.45,
+        }}>
+          Gérez les publications dans lesquelles vous avez été identifié(e) avant
+          qu'elles apparaissent sur votre profil.
+        </p>
+
+        {/* tabs */}
+        <div style={{
+          display: "flex",
+          borderBottom: "1px solid #e4e6eb",
+          padding: "0 4px",
+        }}>
+          {([
+            ["pending",  `En attente (${pending.length})`],
+            ["reviewed", `Examinées (${reviewed.length})`],
+          ] as const).map(([id, label]) => (
+            <button
+              key={id}
+              onClick={() => setTab(id)}
+              style={{
+                flex: 1,
+                background: "none", border: "none",
+                padding: "12px 8px",
+                fontWeight: tab === id ? 700 : 500,
+                fontSize: 14,
+                color: tab === id ? "#1877F2" : "#65676b",
+                borderBottom: tab === id ? "3px solid #1877F2" : "3px solid transparent",
+                cursor: "pointer",
+                transition: "color .15s",
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* content */}
+        <div style={{ flex: 1, overflowY: "auto", padding: "12px 12px 24px" }}>
+          {/* loading */}
           {loading && (
-            <div style={{ textAlign: "center", padding: 30, color: "#65676b" }}>
-              <div style={{ fontSize: 28, marginBottom: 8 }}>⏳</div>Chargement…
+            <div style={{ textAlign: "center", padding: 40, color: "#65676b" }}>
+              <div style={{
+                width: 28, height: 28, border: "3px solid #e4e6eb",
+                borderTopColor: "#1877F2", borderRadius: "50%",
+                animation: "rt-spin .7s linear infinite",
+                margin: "0 auto 10px",
+              }} />
+              Chargement…
             </div>
           )}
+
+          {/* empty state */}
           {!loading && displayed.length === 0 && (
-            <div style={{ textAlign: "center", padding: 30, color: "#65676b" }}>
-              <div style={{ fontSize: 48, marginBottom: 8 }}>✅</div>
-              <div style={{ fontWeight: 700, marginBottom: 4 }}>
-                {tab === "pending" ? "Aucune identification en attente" : "Aucune identification examinée"}
+            <div style={{
+              textAlign: "center", padding: "36px 16px",
+              color: "#65676b",
+            }}>
+              <svg width="64" height="64" viewBox="0 0 64 64" fill="none"
+                style={{ display: "block", margin: "0 auto 12px" }}>
+                {tab === "pending" ? (
+                  <path
+                    d="M42 10H22a5 5 0 0 0-5 5v22a5 5 0 0 0 1.5 3.5l18 18a5 5 0 0 0 7 0l16-16a5 5 0 0 0 0-7L41.5 11.5A5 5 0 0 0 42 10z"
+                    stroke="#bcc0c4" strokeWidth="3" fill="none"
+                  />
+                ) : (
+                  <path d="M20 32l10 10 14-20" stroke="#bcc0c4"
+                    strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+                )}
+              </svg>
+              <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 4, color: "#050505" }}>
+                {tab === "pending"
+                  ? "Aucune identification en attente"
+                  : "Aucune identification examinée"}
               </div>
               <div style={{ fontSize: 13 }}>
-                {tab === "pending" ? "Vous êtes à jour !" : "Les publications approuvées ou refusées s'afficheront ici."}
+                {tab === "pending"
+                  ? "Vous êtes à jour !"
+                  : "Les éléments approuvés ou refusés s'afficheront ici."}
               </div>
             </div>
           )}
-          {displayed.map(post => {
-            const inits = post.authorName.slice(0, 2).toUpperCase();
+
+          {/* cards */}
+          {displayed.map((post, i) => {
+            const color = AVATAR_COLORS[i % AVATAR_COLORS.length];
+            const inits = post.authorName.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
             const status = actions[post.id];
             return (
-              <div key={post.id} style={{ background: "#f8f9fa", borderRadius: 12, padding: 14, marginBottom: 12, border: "1px solid #e4e6eb" }}>
-                <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
-                  {post.authorAvatarUrl
-                    ? <img src={post.authorAvatarUrl} alt="" style={{ width: 38, height: 38, borderRadius: "50%", objectFit: "cover" }} />
-                    : <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#1877F2", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 14 }}>{inits}</div>
-                  }
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 700, fontSize: 14 }}>{post.authorName}</div>
-                    <div style={{ fontSize: 12, color: "#65676b" }}>vous a identifié(e) · {timeAgo(post.createdAt)}</div>
+              <div
+                key={post.id}
+                style={{
+                  background: "#fff",
+                  borderRadius: 12,
+                  border: "1px solid #e4e6eb",
+                  padding: "14px 14px 12px",
+                  marginBottom: 10,
+                }}
+              >
+                {/* author row */}
+                <div style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 10 }}>
+                  {post.authorAvatarUrl ? (
+                    <img
+                      src={post.authorAvatarUrl} alt=""
+                      style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }}
+                    />
+                  ) : (
+                    <div style={{
+                      width: 40, height: 40, borderRadius: "50%",
+                      background: color,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      color: "#fff", fontWeight: 800, fontSize: 15, flexShrink: 0,
+                    }}>
+                      {inits}
+                    </div>
+                  )}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 700, fontSize: 14, color: "#050505" }}>
+                      {post.authorName}
+                    </div>
+                    <div style={{ fontSize: 12, color: "#65676b", marginTop: 1 }}>
+                      vous a identifié(e) · {timeAgo(post.createdAt)}
+                    </div>
                   </div>
                   {status && (
                     <span style={{
-                      fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 10,
-                      background: status === "approved" ? "#e6f4ea" : "#fff0f0",
-                      color: status === "approved" ? "#2e7d32" : "#c62828",
+                      fontSize: 11, fontWeight: 700, padding: "3px 9px",
+                      borderRadius: 20, flexShrink: 0,
+                      background: status === "approved" ? "#e6f4ea" : "#fce8e6",
+                      color: status === "approved" ? "#1e7e34" : "#c62828",
                     }}>
                       {status === "approved" ? "✅ Approuvé" : "❌ Refusé"}
                     </span>
                   )}
                 </div>
-                <div style={{ fontSize: 14, marginBottom: 12, color: "#050505" }}>{post.content}</div>
-                {tab === "pending" && (
+
+                {/* post content */}
+                <div style={{
+                  fontSize: 14, color: "#050505", marginBottom: 12,
+                  lineHeight: 1.45,
+                }}>
+                  {post.content}
+                </div>
+
+                {/* post image */}
+                {post.imageUrl && (
+                  <img
+                    src={post.imageUrl} alt=""
+                    style={{
+                      width: "100%", borderRadius: 8,
+                      objectFit: "cover", maxHeight: 200, display: "block",
+                      marginBottom: 12,
+                    }}
+                  />
+                )}
+
+                {/* action buttons — only for pending */}
+                {tab === "pending" && !status && (
                   <div style={{ display: "flex", gap: 8 }}>
-                    <button onClick={() => handleAction(post.id, "approved")}
-                      style={{ flex: 1, background: "#e7f3ff", color: "#1877F2", border: "none", borderRadius: 8, padding: "9px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+                    <button
+                      onClick={() => handleAction(post.id, "approved")}
+                      style={{
+                        flex: 1, background: "#e7f3ff",
+                        color: "#1877F2", border: "1px solid #cfe2ff",
+                        borderRadius: 8, padding: "9px 0",
+                        fontWeight: 700, fontSize: 13, cursor: "pointer",
+                      }}
+                    >
                       ✅ Approuver
                     </button>
-                    <button onClick={() => handleAction(post.id, "rejected")}
-                      style={{ flex: 1, background: "#fff0f0", color: "#c62828", border: "none", borderRadius: 8, padding: "9px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+                    <button
+                      onClick={() => handleAction(post.id, "rejected")}
+                      style={{
+                        flex: 1, background: "#fff0f0",
+                        color: "#c62828", border: "1px solid #fdd",
+                        borderRadius: 8, padding: "9px 0",
+                        fontWeight: 700, fontSize: 13, cursor: "pointer",
+                      }}
+                    >
                       ❌ Refuser
                     </button>
                   </div>
@@ -142,6 +311,8 @@ export default function ReviewTagsModal({ onClose }: Props) {
           })}
         </div>
       </div>
+
+      <style>{`@keyframes rt-spin { to { transform: rotate(360deg); } }`}</style>
     </div>,
     document.body
   );
