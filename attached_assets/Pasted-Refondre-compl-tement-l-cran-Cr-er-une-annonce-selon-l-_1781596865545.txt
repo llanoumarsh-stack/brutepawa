@@ -1,0 +1,338 @@
+Refondre complètement l'écran "Créer une annonce" selon l'identité visuelle officielle BrutePawa.
+
+Le résultat doit être comparable à Airbnb, Shopify, Revolut, Apple Marketplace et Facebook Marketplace nouvelle génération.
+
+Ne pas créer un simple formulaire. Concevoir une expérience premium qui inspire confiance, professionnalisme et qualité.
+
+
+---
+
+Structure générale
+
+Créer une interface en deux zones :
+
+Zone gauche
+
+Formulaire de création.
+
+Zone droite
+
+Aperçu en temps réel de l'annonce.
+
+Chaque modification effectuée dans le formulaire doit mettre à jour instantanément l'aperçu.
+
+
+---
+
+En-tête premium
+
+Afficher :
+
+Retour
+
+Titre : Créer une annonce
+
+Badge Nouveau
+
+Sous-titre : "Vendez rapidement à des milliers d'utilisateurs"
+
+
+À droite :
+
+Conseils pour bien vendre
+
+
+Style :
+
+Fond blanc
+
+Coins 24px
+
+Ombres douces
+
+Design aéré
+
+
+
+---
+
+Informations générales
+
+Titre
+
+Champ premium avec :
+
+Icône SVG
+
+Validation visuelle
+
+Compteur de caractères
+
+
+Prix
+
+Champ intelligent :
+
+Format automatique FCFA
+
+Séparateur de milliers
+
+Icône portefeuille
+
+
+Exemple :
+
+25 000 FCFA
+
+
+---
+
+Catégories visuelles
+
+Afficher des cartes SVG :
+
+Mode
+
+Électronique
+
+Maison
+
+Beauté
+
+Automobile
+
+Immobilier
+
+Artisanat
+
+Services
+
+
+Style :
+
+Cartes cliquables
+
+État actif vert BrutePawa
+
+Animation fluide
+
+
+
+---
+
+État du produit
+
+Cartes sélectionnables :
+
+Neuf
+
+Très bon état
+
+Bon état
+
+Occasion
+
+
+Style type Airbnb.
+
+
+---
+
+Localisation intelligente
+
+Pré-remplir automatiquement :
+
+Pays depuis le profil utilisateur
+
+Ville depuis le profil utilisateur
+
+
+Exemple :
+
+Pays : Mali Ville : Bamako
+
+Ne jamais utiliser d'emojis.
+
+Utiliser uniquement :
+
+Drapeaux SVG officiels
+
+Icônes localisation SVG
+
+
+Ajouter :
+
+"Vous publiez depuis Bamako, Mali"
+
+
+---
+
+Description avancée
+
+Zone riche :
+
+Compteur de caractères
+
+Conseils rédactionnels
+
+Validation dynamique
+
+
+Exemple :
+
+"Sac à main vert de luxe, élégant et spacieux..."
+
+
+---
+
+Gestion des photos
+
+Créer une zone moderne :
+
+Drag & drop
+
+Sélection multiple
+
+Jusqu'à 10 photos
+
+
+Fonctions :
+
+Définir photo principale
+
+Réorganiser les photos
+
+Supprimer une photo
+
+
+Afficher les miniatures sous la zone.
+
+
+---
+
+Aperçu en direct
+
+Afficher une véritable carte Marketplace BrutePawa.
+
+Inclure :
+
+Badge état du produit
+
+Bouton favori
+
+Galerie photo
+
+Prix
+
+Ville
+
+Pays
+
+Description
+
+Date de publication
+
+
+Le rendu doit ressembler exactement à une annonce visible dans le Marketplace.
+
+
+---
+
+Conseils pour mieux vendre
+
+Carte verte légère :
+
+✓ Ajoutez des photos claires
+
+✓ Décrivez précisément votre article
+
+✓ Choisissez le bon prix
+
+✓ Sélectionnez la bonne catégorie
+
+✓ Répondez rapidement aux acheteurs
+
+
+---
+
+Booster l'annonce
+
+Créer une carte premium :
+
+Titre :
+
+"Boostez votre annonce"
+
+Texte :
+
+"Mettez votre annonce en avant pour atteindre davantage d'acheteurs."
+
+Bouton :
+
+"Booster maintenant"
+
+
+---
+
+Actions finales
+
+Bouton principal :
+
+Publier maintenant
+
+Style :
+
+Dégradé vert BrutePawa
+
+Coins 24px
+
+Ombre douce
+
+Largeur complète
+
+
+Bouton secondaire :
+
+Enregistrer comme brouillon
+
+
+---
+
+Design BrutePawa obligatoire
+
+Palette :
+
+Vert BrutePawa
+
+Blanc premium
+
+Gris très clair
+
+
+Effets :
+
+Glassmorphism léger
+
+Ombres douces
+
+Coins 20 à 24px
+
+SVG premium
+
+Espacement généreux
+
+
+Interdictions :
+
+Emojis système
+
+Icônes emoji
+
+Bordures Android classiques
+
+Design ancien style Facebook
+
+
+Objectif final :
+
+Créer une page de publication Marketplace capable de rivaliser visuellement avec Airbnb, Shopify, Jumia, Facebook Marketplace et LinkedIn, tout en respectant parfaitement l'identité premium BrutePawa.

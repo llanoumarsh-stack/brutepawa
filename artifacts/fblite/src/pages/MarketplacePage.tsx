@@ -307,7 +307,7 @@ export default function MarketplacePage() {
           <>
             {/* Sell button */}
             <button
-              onClick={() => setShowSellForm(true)}
+              onClick={() => navigate("/marketplace/create")}
               style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: BP_GREEN, color: "#fff", border: "none", borderRadius: 14, padding: "13px 0", fontWeight: 700, fontSize: 15, cursor: "pointer", marginBottom: 16, boxShadow: `0 4px 14px ${BP_GREEN}50` }}
             >
               <IconPlus />

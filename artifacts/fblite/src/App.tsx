@@ -36,6 +36,7 @@ import EventsPage from "./pages/EventsPage";
 import SavedPage from "./pages/SavedPage";
 import MemoriesPage from "./pages/MemoriesPage";
 import JobInboxPage from "./pages/JobInboxPage";
+import CreateListingPage from "./pages/CreateListingPage";
 
 import { ADMIN_SECRET_PATH } from "./lib/admin";
 import { Post } from "./lib/store";
@@ -234,6 +235,14 @@ function AppContent() {
   const groupMatch = matchDynamic("/groups/:id", path);
   const chatGroupMatch = matchDynamic("/chat-groups/:id", path);
   const tontineDetailMatch = matchDynamic("/tontines/:id", path);
+
+  if (path === "/marketplace/create") {
+    return (
+      <Layout onNewPost={handleNewPost}>
+        <CreateListingPage />
+      </Layout>
+    );
+  }
 
   if (productMatch) {
     return (
