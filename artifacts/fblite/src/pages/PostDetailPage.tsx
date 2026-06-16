@@ -245,7 +245,7 @@ export default function PostDetailPage({ postId }: Props) {
         @keyframes bp-pop{0%{transform:scale(.7) translateY(8px);opacity:0}100%{transform:scale(1) translateY(0);opacity:1}}
         @keyframes bp-like{0%,100%{transform:scale(1)}35%{transform:scale(1.4)}}
         @keyframes bp-item-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-        .bp-capsule{display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:50px;background:#F3F4F6;border:none;cursor:pointer;font-size:13px;font-weight:700;color:#374151;transition:background .14s,color .14s,transform .1s}
+        .bp-capsule{display:flex;align-items:center;gap:5px;padding:8px 11px;border-radius:50px;background:#F3F4F6;border:none;cursor:pointer;font-size:12.5px;font-weight:700;color:#374151;transition:background .14s,color .14s,transform .1s;white-space:nowrap}
         .bp-capsule:active{transform:scale(.95)}
         .bp-capsule-active{background:#DCFCE7!important;color:#15803D!important}
         .bp-capsule-saved{background:#DCFCE7!important;color:#15803D!important}
@@ -278,10 +278,9 @@ export default function PostDetailPage({ postId }: Props) {
           <div style={{ flex:1, minWidth:0 }}>
             <div style={{ display:"flex", alignItems:"center", gap:7, flexWrap:"wrap" }}>
               <span style={{ fontWeight:900, fontSize:17, color:"#0F172A" }}>{post.authorName}</span>
-              {/* Premium verified badge */}
-              <div style={{ display:"flex", alignItems:"center", gap:3, background:"linear-gradient(135deg,#22C55E,#16A34A)", borderRadius:20, padding:"2px 7px 2px 4px" }}>
-                <svg viewBox="0 0 16 16" width="11" height="11" fill="#fff"><path d="M8 1l1.545 3.133 3.455.501-2.5 2.436.59 3.43L8 9l-3.09 1.5.59-3.43L3 4.634l3.455-.501L8 1z"/></svg>
-                <span style={{ color:"#fff", fontSize:10, fontWeight:800, letterSpacing:0.2 }}>BrutePawa</span>
+              {/* Verified badge — cercle compact */}
+              <div style={{ width:18, height:18, borderRadius:"50%", background:"linear-gradient(135deg,#22C55E,#16A34A)", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 1px 4px rgba(34,197,94,0.35)", flexShrink:0 }}>
+                <svg viewBox="0 0 12 12" width="10" height="10" fill="none"><path d="M2 6l2.5 2.5L10 3.5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </div>
             </div>
             <div style={{ display:"flex", alignItems:"center", gap:5, marginTop:3 }}>
@@ -326,10 +325,24 @@ export default function PostDetailPage({ postId }: Props) {
                 {likesCount} réaction{likesCount > 1 ? "s" : ""}
               </span>
             </div>
-            {post.commentsCount > 0 && (
-              <span style={{ fontSize:13, color:"#94A3B8" }}>
-                {post.commentsCount} commentaire{post.commentsCount > 1 ? "s" : ""}
-              </span>
+            {/* Mini-avatar stack + chevron */}
+            {comments.length > 0 && (
+              <div style={{ display:"flex", alignItems:"center", gap:4 }}>
+                <div style={{ display:"flex" }}>
+                  {comments.slice(0, 3).map((c, i) => {
+                    const n = `${c.authorFirstName} ${c.authorLastName}`;
+                    return (
+                      <div key={c.id} style={{ width:24, height:24, borderRadius:"50%", marginLeft: i === 0 ? 0 : -8, border:"2px solid #fff", overflow:"hidden", background:avatarColor(n), display:"flex", alignItems:"center", justifyContent:"center", zIndex: 3 - i, flexShrink:0 }}>
+                        {c.authorAvatarUrl
+                          ? <img src={c.authorAvatarUrl} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                          : <span style={{ fontSize:8, fontWeight:800, color:"#fff" }}>{getInitials(n)}</span>
+                        }
+                      </div>
+                    );
+                  })}
+                </div>
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="#94A3B8"><path d="M9 18l6-6-6-6"/></svg>
+              </div>
             )}
           </div>
         )}
@@ -338,7 +351,7 @@ export default function PostDetailPage({ postId }: Props) {
         <div style={{ borderTop:"1px solid #F1F5F9", margin:"0 14px" }} />
 
         {/* ── Action capsules ─────────────────────────── */}
-        <div style={{ display:"flex", padding:"10px 10px", gap:6, position:"relative", justifyContent:"space-between", flexWrap:"wrap" }}>
+        <div style={{ display:"flex", padding:"10px 10px", gap:4, position:"relative", justifyContent:"space-between", flexWrap:"nowrap" }}>
 
           {/* Reactions popup */}
           {showReactions && (
@@ -365,7 +378,7 @@ export default function PostDetailPage({ postId }: Props) {
             onTouchStart={startReactionTimer} onTouchEnd={cancelReactionTimer}
           >
             {activeReaction.icon(liked)}
-            <span>{liked ? activeReaction.label : "J'aime"}{liked && likesCount > 0 ? ` · ${likesCount}` : ""}</span>
+            <span>{liked ? activeReaction.label : "J'aime"}{liked && likesCount > 0 ? ` ${likesCount}` : ""}</span>
           </button>
 
           {/* Commenter */}
