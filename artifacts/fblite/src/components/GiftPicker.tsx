@@ -191,6 +191,14 @@ export default function GiftPicker({
           from { opacity: 0; transform: translateY(12px); }
           to   { opacity: 1; transform: translateY(0); }
         }
+        @keyframes pulseGlow {
+          0%,100% { opacity: 0.7; transform: scaleX(1); }
+          50%      { opacity: 1;   transform: scaleX(1.03); }
+        }
+        @keyframes twinkle {
+          0%,100% { opacity: 0; transform: scale(0.5) rotate(0deg); }
+          50%      { opacity: 1; transform: scale(1.2) rotate(20deg); }
+        }
       `}</style>
 
       {/* Backdrop */}
@@ -475,71 +483,208 @@ export default function GiftPicker({
           )}
 
           {/* ── Send button ── */}
-          <div style={{ padding: "6px 14px 28px", flexShrink: 0 }}>
-            {!selected && (
-              <div style={{ textAlign: "center", padding: "10px 0 4px", fontSize: 13, color: "rgba(255,255,255,0.35)" }}>
-                Sélectionne un cadeau pour l'envoyer
-              </div>
-            )}
-            {selected && (
-              <button
-                onClick={handleSend}
-                disabled={loading || success || !canAffordSel}
-                style={{
-                  width: "100%", padding: "15px 0", borderRadius: 18, border: "none",
-                  background: !loading && !success && canAffordSel
-                    ? "linear-gradient(135deg,#1ED45A,#0DA83A,#0A8A30)"
-                    : "rgba(255,255,255,0.08)",
-                  color: canAffordSel ? "#fff" : "rgba(255,255,255,0.3)",
-                  fontWeight: 900, fontSize: 16,
-                  cursor: !loading && !success && canAffordSel ? "pointer" : "not-allowed",
-                  boxShadow: canAffordSel && !loading && !success
-                    ? "0 6px 28px rgba(22,194,74,0.55), inset 0 1px 0 rgba(255,255,255,0.25)"
-                    : "none",
-                  transition: "all 0.2s",
-                  overflow: "hidden", position: "relative",
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: 9,
-                }}
-              >
-                {/* Shimmer */}
-                {canAffordSel && !loading && !success && (
+          <div style={{ padding: "6px 14px 26px", flexShrink: 0 }}>
+            <button
+              onClick={selected ? handleSend : onBuyTokens}
+              disabled={loading || success}
+              style={{
+                width: "100%", border: "none", borderRadius: 50,
+                padding: 0, cursor: loading || success ? "not-allowed" : "pointer",
+                background: "none", position: "relative", overflow: "visible",
+                display: "block",
+              }}
+            >
+              {/* Outer glow ring */}
+              {!loading && !success && (
+                <div style={{
+                  position: "absolute", inset: -4, borderRadius: 54,
+                  background: "radial-gradient(ellipse at 50% 120%, rgba(22,194,74,0.55) 0%, transparent 70%)",
+                  animation: "pulseGlow 2s ease-in-out infinite",
+                  pointerEvents: "none",
+                }} />
+              )}
+
+              {/* Main pill */}
+              <div style={{
+                borderRadius: 50,
+                background: loading || success
+                  ? "linear-gradient(135deg,#1a4a2a,#142e1a)"
+                  : selected && canAffordSel
+                    ? "linear-gradient(135deg, #22e060 0%, #16C24A 35%, #0da83a 65%, #089030 100%)"
+                    : selected
+                      ? "linear-gradient(135deg, #1a5a2a, #143d1e)"
+                      : "linear-gradient(135deg, #16C24A 0%, #0aa83a 60%, #088a30 100%)",
+                boxShadow: loading || success
+                  ? "none"
+                  : selected && canAffordSel
+                    ? "0 0 0 1.5px rgba(100,255,140,0.5), 0 4px 24px rgba(22,194,74,0.7), 0 8px 40px rgba(22,194,74,0.4), inset 0 1px 0 rgba(255,255,255,0.35)"
+                    : "0 0 0 1.5px rgba(22,194,74,0.4), 0 4px 20px rgba(22,194,74,0.4), inset 0 1px 0 rgba(255,255,255,0.25)",
+                padding: selected && !loading && !success ? "11px 20px 11px 14px" : "14px 20px",
+                display: "flex", alignItems: "center",
+                gap: 0,
+                position: "relative", overflow: "hidden",
+                transition: "all 0.2s",
+              }}>
+
+                {/* Shimmer sweep */}
+                {!loading && !success && (
                   <div style={{
-                    position: "absolute", top: 0, left: 0, bottom: 0, width: "60%",
-                    background: "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.18) 50%, transparent 70%)",
-                    animation: "shimmer 2.2s linear infinite",
-                    pointerEvents: "none",
+                    position: "absolute", top: 0, bottom: 0, left: "-80%", width: "60%",
+                    background: "linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.22) 50%, transparent 80%)",
+                    animation: "shimmer 2.8s linear infinite",
+                    pointerEvents: "none", borderRadius: 50,
                   }} />
                 )}
-                {loading ? (
+
+                {/* Top-left highlight arc */}
+                <div style={{
+                  position: "absolute", top: 0, left: 0, right: 0, height: "45%",
+                  background: "linear-gradient(to bottom, rgba(255,255,255,0.18) 0%, transparent 100%)",
+                  borderRadius: "50px 50px 0 0", pointerEvents: "none",
+                }} />
+
+                {/* Sparkle stars */}
+                {!loading && !success && selected && canAffordSel && (
                   <>
-                    <div style={{ width: 18, height: 18, border: "2.5px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
-                    <span>Envoi en cours…</span>
-                  </>
-                ) : success ? (
-                  <>
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-                    <span>Envoyé !</span>
-                  </>
-                ) : !canAffordSel ? (
-                  <>
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="rgba(255,255,255,0.4)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-                    <span>Solde insuffisant — Recharger</span>
-                  </>
-                ) : (
-                  <>
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="#fff"><path d="M20 6h-2.18c.07-.31.18-.59.18-.9C18 3.4 16.6 2 14.9 2c-.92 0-1.73.42-2.3 1.08L12 3.7l-.6-.62C10.83 2.42 10.02 2 9.1 2 7.4 2 6 3.4 6 5.1c0 .31.11.59.18.9H4c-1.11 0-2 .89-2 2v13c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2z"/></svg>
-                    <div>
-                      <div>Envoyer le cadeau</div>
-                      <div style={{ fontSize: 12, fontWeight: 600, opacity: 0.85 }}>{totalCost.toLocaleString()} Jetons</div>
-                    </div>
+                    {[
+                      { top: "18%", left: "62%", size: 8, delay: "0s" },
+                      { top: "60%", left: "75%", size: 6, delay: "0.6s" },
+                      { top: "25%", right: "12%", size: 7, delay: "1.2s" },
+                      { top: "55%", right: "20%", size: 5, delay: "0.3s" },
+                    ].map((s, i) => (
+                      <div key={i} style={{
+                        position: "absolute", top: s.top, left: s.left, right: (s as { right?: string }).right,
+                        width: s.size, height: s.size, pointerEvents: "none",
+                        animation: `twinkle 1.8s ${s.delay} ease-in-out infinite`,
+                      }}>
+                        <svg viewBox="0 0 10 10" width={s.size} height={s.size}>
+                          <path d="M5 0 L5.6 4 L10 5 L5.6 6 L5 10 L4.4 6 L0 5 L4.4 4 Z" fill="rgba(255,255,255,0.9)"/>
+                        </svg>
+                      </div>
+                    ))}
                   </>
                 )}
-              </button>
-            )}
+
+                {/* Content */}
+                {loading ? (
+                  <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
+                    <div style={{ width: 20, height: 20, border: "2.5px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+                    <span style={{ color: "#fff", fontWeight: 800, fontSize: 16 }}>Envoi en cours…</span>
+                  </div>
+                ) : success ? (
+                  <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="#4ade80"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                    <span style={{ color: "#4ade80", fontWeight: 900, fontSize: 18 }}>Envoyé !</span>
+                  </div>
+                ) : selected ? (
+                  <>
+                    {/* 3D Gift box SVG */}
+                    <div style={{ flexShrink: 0, width: 56, height: 56, marginRight: 4, position: "relative", zIndex: 1 }}>
+                      <svg viewBox="0 0 56 56" width="56" height="56">
+                        {/* Box body */}
+                        <rect x="8" y="24" width="40" height="26" rx="3" fill="#1a7a32"/>
+                        <rect x="8" y="24" width="40" height="26" rx="3" fill="url(#boxGrad)"/>
+                        {/* Box lid */}
+                        <rect x="6" y="18" width="44" height="10" rx="3" fill="#1d8c3a"/>
+                        <rect x="6" y="18" width="44" height="10" rx="3" fill="url(#lidGrad)"/>
+                        {/* Ribbon vertical */}
+                        <rect x="24" y="18" width="8" height="32" fill="#cc1a1a" opacity="0.95"/>
+                        <rect x="24" y="18" width="8" height="32" fill="url(#ribGrad)"/>
+                        {/* Ribbon horizontal */}
+                        <rect x="8" y="22" width="40" height="6" fill="#cc1a1a" opacity="0.95"/>
+                        <rect x="8" y="22" width="40" height="6" fill="url(#ribGrad)"/>
+                        {/* Bow loops */}
+                        <ellipse cx="22" cy="18" rx="8" ry="5" fill="#e62020" transform="rotate(-20 22 18)"/>
+                        <ellipse cx="34" cy="18" rx="8" ry="5" fill="#e62020" transform="rotate(20 34 18)"/>
+                        <ellipse cx="22" cy="18" rx="5" ry="3" fill="#ff4444" transform="rotate(-20 22 18)"/>
+                        <ellipse cx="34" cy="18" rx="5" ry="3" fill="#ff4444" transform="rotate(20 34 18)"/>
+                        {/* Bow center */}
+                        <circle cx="28" cy="17" r="4" fill="#ff2222"/>
+                        <circle cx="28" cy="17" r="2.5" fill="#ff5555"/>
+                        {/* Shine on lid */}
+                        <rect x="10" y="19" width="18" height="3" rx="1.5" fill="rgba(255,255,255,0.18)"/>
+                        {/* "b" letter */}
+                        <text x="28" y="39" textAnchor="middle" fontSize="10" fontWeight="bold" fill="rgba(255,255,255,0.5)" fontFamily="serif" fontStyle="italic">b</text>
+                        {/* Glow halo */}
+                        <ellipse cx="28" cy="52" rx="16" ry="3" fill="rgba(22,194,74,0.45)"/>
+                        <defs>
+                          <linearGradient id="boxGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="rgba(255,255,255,0.15)"/>
+                            <stop offset="100%" stopColor="rgba(0,0,0,0.2)"/>
+                          </linearGradient>
+                          <linearGradient id="lidGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="rgba(255,255,255,0.22)"/>
+                            <stop offset="100%" stopColor="rgba(0,0,0,0.1)"/>
+                          </linearGradient>
+                          <linearGradient id="ribGrad" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stopColor="rgba(0,0,0,0.15)"/>
+                            <stop offset="50%" stopColor="rgba(255,255,255,0.18)"/>
+                            <stop offset="100%" stopColor="rgba(0,0,0,0.15)"/>
+                          </linearGradient>
+                        </defs>
+                      </svg>
+                    </div>
+
+                    {/* Divider */}
+                    <div style={{ width: 1, height: 40, background: "rgba(255,255,255,0.2)", flexShrink: 0, marginRight: 14, zIndex: 1 }} />
+
+                    {/* Text + badge */}
+                    <div style={{ flex: 1, zIndex: 1 }}>
+                      <div style={{ color: "#fff", fontWeight: 900, fontSize: 20, letterSpacing: -0.3, lineHeight: 1.1, textShadow: "0 1px 6px rgba(0,0,0,0.3)" }}>
+                        Envoyer le cadeau
+                      </div>
+                      {/* Gold token badge */}
+                      <div style={{
+                        display: "inline-flex", alignItems: "center", gap: 5,
+                        background: "rgba(0,0,0,0.35)",
+                        border: "1px solid rgba(255,215,0,0.4)",
+                        borderRadius: 20, padding: "3px 10px", marginTop: 5,
+                      }}>
+                        <svg viewBox="0 0 20 20" width="14" height="14">
+                          <circle cx="10" cy="10" r="9" fill="#FFD700"/>
+                          <circle cx="10" cy="10" r="7" fill="#FFC200"/>
+                          <text x="10" y="14" textAnchor="middle" fontSize="8" fontWeight="bold" fill="#7A4500">J</text>
+                        </svg>
+                        <span style={{ color: "#FFD700", fontWeight: 800, fontSize: 14, letterSpacing: 0.5 }}>
+                          {totalCost.toLocaleString()} Jetons
+                        </span>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  /* No gift selected — placeholder */
+                  <>
+                    <div style={{ flexShrink: 0, width: 48, height: 48, marginRight: 4, position: "relative", zIndex: 1 }}>
+                      <svg viewBox="0 0 56 56" width="48" height="48">
+                        <rect x="8" y="24" width="40" height="26" rx="3" fill="#1a7a32"/>
+                        <rect x="6" y="18" width="44" height="10" rx="3" fill="#1d8c3a"/>
+                        <rect x="24" y="18" width="8" height="32" fill="#cc1a1a" opacity="0.95"/>
+                        <rect x="8" y="22" width="40" height="6" fill="#cc1a1a" opacity="0.95"/>
+                        <ellipse cx="22" cy="18" rx="8" ry="5" fill="#e62020" transform="rotate(-20 22 18)"/>
+                        <ellipse cx="34" cy="18" rx="8" ry="5" fill="#e62020" transform="rotate(20 34 18)"/>
+                        <circle cx="28" cy="17" r="4" fill="#ff2222"/>
+                        <ellipse cx="28" cy="52" rx="14" ry="2.5" fill="rgba(22,194,74,0.35)"/>
+                      </svg>
+                    </div>
+                    <div style={{ width: 1, height: 36, background: "rgba(255,255,255,0.2)", flexShrink: 0, marginRight: 14, zIndex: 1 }} />
+                    <span style={{ color: "#fff", fontWeight: 900, fontSize: 19, zIndex: 1, letterSpacing: -0.2, textShadow: "0 1px 6px rgba(0,0,0,0.3)" }}>
+                      Envoyer un jeton
+                    </span>
+                  </>
+                )}
+              </div>
+            </button>
+
+            {/* Security line */}
             {selected && canAffordSel && !loading && !success && (
-              <div style={{ textAlign: "center", marginTop: 7, fontSize: 11, color: "rgba(255,255,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}>
-                <svg viewBox="0 0 24 24" width="11" height="11" fill="rgba(22,194,74,0.5)"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+              <div style={{ textAlign: "center", marginTop: 8, fontSize: 11, color: "rgba(255,255,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}>
+                <svg viewBox="0 0 24 24" width="10" height="10" fill="rgba(22,194,74,0.5)"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
                 Paiement 100% sécurisé avec vos jetons BrutePawa
+              </div>
+            )}
+            {selected && !canAffordSel && !loading && !success && (
+              <div style={{ textAlign: "center", marginTop: 8, fontSize: 12, color: "#ff6b6b", fontWeight: 600 }}>
+                Solde insuffisant — appuie sur Recharger ci-dessus
               </div>
             )}
           </div>
