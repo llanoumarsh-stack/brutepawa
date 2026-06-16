@@ -1,0 +1,247 @@
+🎥 BRUTEPAWA – AMÉLIORATION ULTRA PREMIUM DU LIVE ET DES DONS VIDÉO
+
+Refondre complètement l’expérience Live et Cadeaux afin qu’elle soit moderne, fluide, immersive et digne d’une plateforme premium tout en restant fidèle à l’identité BrutePawa (vert, noir, blanc).
+
+═══════════════════════
+1. ÉCRAN VIDÉO / REELS
+═══════════════════════
+
+- La vidéo doit occuper le maximum d’espace disponible.
+- Le lecteur vidéo doit être parfaitement centré.
+- Supprimer tous les espaces vides inutiles.
+- Adapter automatiquement le format :
+  • vidéo verticale = plein écran vertical
+  • vidéo horizontale = lecteur horizontal optimisé
+- Ajouter un léger dégradé sombre en haut et en bas pour améliorer la lisibilité.
+
+Actions flottantes à droite :
+
+❤️ J’aime
+💬 Commentaire
+🔄 Partager
+🎁 Cadeau
+
+Chaque bouton doit avoir :
+
+- animation au toucher
+- compteur animé
+- effet de rebond léger
+- retour haptique sur mobile
+
+═══════════════════════
+2. BOUTON CADEAU PREMIUM
+═══════════════════════
+
+Remplacer le simple bouton rose actuel.
+
+Créer un bouton premium :
+
+- dégradé vert BrutePawa → vert clair
+- icône cadeau 3D
+- léger glow
+- animation pulsation douce
+
+Texte :
+
+🎁 Envoyer un cadeau à [Nom utilisateur]
+
+Au clic :
+
+- ouverture fluide en bottom sheet
+- animation spring
+- fond assombri avec blur
+
+═══════════════════════
+3. PANNEAU CADEAUX ULTRA PREMIUM
+═══════════════════════
+
+Transformer totalement la grille actuelle.
+
+Chaque cadeau devient une carte premium :
+
+- fond verre sombre (glassmorphism)
+- coins très arrondis
+- bord lumineux subtil
+- ombre élégante
+
+Afficher :
+
+Image cadeau
+Nom
+Prix en jetons
+
+Exemple :
+
+🌹 Rose        10
+❤️ Cœur        50
+🧸 Ours       100
+🎂 Gâteau     250
+👑 Couronne   500
+🏎 Voiture   1000
+💎 Diamant   2000
+✈️ Jet Privé 5000
+🦁 Lion Royal 10000
+🏰 Château Royal 25000
+🌍 Afrique d'Or 50000
+
+═══════════════════════
+4. SYSTÈME DE CATÉGORIES
+═══════════════════════
+
+Ajouter des onglets :
+
+🔥 Populaires
+❤️ Amour
+👑 Prestige
+🎉 Fun
+🚀 Premium
+
+Défilement horizontal fluide.
+
+Animation lors du changement.
+
+═══════════════════════
+5. SOLDE JETONS
+═══════════════════════
+
+Carte premium en haut à droite.
+
+Afficher :
+
+🪙 Solde actuel
+Nombre de jetons
+
+Bouton :
+
+➕ Recharger
+
+Design :
+
+- glassmorphism
+- contour vert lumineux
+- animation hover
+
+═══════════════════════
+6. SÉLECTION D'UN CADEAU
+═══════════════════════
+
+Lorsqu’un cadeau est sélectionné :
+
+- bordure verte animée
+- glow lumineux
+- légère élévation
+- effet premium
+
+Afficher sous la grille :
+
+Grande carte descriptive
+
+Exemple :
+
+💎 Diamant
+Premium
+
+2000 Jetons
+
+"Cadeau prestigieux permettant de soutenir fortement le créateur."
+
+═══════════════════════
+7. ENVOI DE CADEAU
+═══════════════════════
+
+Créer un bouton principal premium.
+
+Dégradé :
+
+Vert BrutePawa → Vert clair
+
+Texte :
+
+🎁 Envoyer le cadeau
+
+Afficher :
+
+Prix total
+
+Animations :
+
+- glow
+- pulsation
+- rebond au clic
+
+═══════════════════════
+8. ANIMATION LORS DE LA RÉCEPTION
+═══════════════════════
+
+Quand un cadeau est envoyé :
+
+Rose :
+- pluie de pétales
+
+Cœur :
+- explosion de cœurs
+
+Ours :
+- apparition de peluches
+
+Couronne :
+- effet royal doré
+
+Diamant :
+- éclats lumineux
+
+Jet Privé :
+- avion traversant l’écran
+
+Lion Royal :
+- rugissement + lumière dorée
+
+Château Royal :
+- apparition du château avec particules
+
+Afrique d'Or :
+- animation majestueuse de l’Afrique dorée
+
+═══════════════════════
+9. CLASSEMENT DES DONATEURS
+═══════════════════════
+
+Ajouter un panneau :
+
+🏆 Top Donateurs
+
+Afficher :
+
+#1 Nom — montant
+#2 Nom — montant
+#3 Nom — montant
+
+Mise à jour en temps réel.
+
+═══════════════════════
+10. LIVE BRUTEPAWA PREMIUM
+═══════════════════════
+
+Refondre l’écran Live.
+
+Ajouter :
+
+- compteur spectateurs animé
+- compteur cadeaux reçus
+- compteur jetons gagnés
+- badge LIVE rouge pulsant
+- qualité vidéo adaptative
+- réactions flottantes en temps réel
+- affichage des dons en overlay
+
+Exemple :
+
+🎁 Omar a envoyé un Diamant (2000 jetons)
+
+Animation spectaculaire.
+
+═══════════════════════
+OBJECTIF FINAL
+═══════════════════════
+
+Obtenir une expérience Live et Cadeaux au niveau des grandes plateformes modernes (TikTok Live, Bigo Live, Kick, Twitch), mais avec une identité visuelle propre à BrutePawa, élégante, premium, fluide et centrée sur la monétisation des créateurs.
