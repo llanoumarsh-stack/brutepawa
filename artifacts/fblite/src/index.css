@@ -143,7 +143,12 @@ select:focus { border-color: var(--fb-blue); }
   flex: 1;
   min-width: 0;
   padding-bottom: 68px; /* bottom nav height on mobile */
-  animation: fadeInUp 0.25s ease forwards;
+  animation: appMainFadeIn 0.25s ease forwards;
+}
+/* Opacity-only — NO transform, so position:fixed children escape to viewport */
+@keyframes appMainFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* ===== NAV BAR ===== */

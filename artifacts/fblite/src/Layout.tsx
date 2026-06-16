@@ -157,13 +157,18 @@ export default function Layout({ children, onNewPost }: Props) {
     },
   ];
 
+  /* Pages that manage their own fullscreen header — hide the 3-row Layout header */
+  const FULLSCREEN_PATHS = ["/messages", "/community", "/menu", "/wallet", "/notifications", "/jobs", "/formations", "/tontines", "/marketplace"];
+  const isFullscreen = FULLSCREEN_PATHS.some(p => path === p || path.startsWith(p + "?") || path.startsWith(p + "/"));
+
   return (
     <div className="app-shell">
 
       {/* ══════════════════════════════════════════════════
           FACEBOOK LITE STICKY HEADER — 3 rows
+          Hidden on fullscreen-managed pages
       ══════════════════════════════════════════════════ */}
-      <div style={{ position: "sticky", top: 0, zIndex: 100, background: "#fff", boxShadow: "0 1px 0 #e4e6eb" }}>
+      <div style={{ position: "sticky", top: 0, zIndex: 100, background: "#fff", boxShadow: "0 1px 0 #e4e6eb", display: isFullscreen ? "none" : undefined }}>
 
         {/* Row 1 — Mode payant */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "7px 14px", borderBottom: "1px solid #f0f2f5" }}>
