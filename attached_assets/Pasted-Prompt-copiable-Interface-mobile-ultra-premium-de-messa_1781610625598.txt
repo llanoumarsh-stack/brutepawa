@@ -1,0 +1,32 @@
+Prompt copiable :
+
+> Interface mobile ultra premium de messagerie BrutePawa, design moderne 2025 inspiré d’Apple Messages, WhatsApp, Telegram Premium et Facebook Messenger, palette officielle BrutePawa vert #22C55E et blanc, style glassmorphism léger, ombres douces, coins très arrondis, interface élégante et professionnelle.
+
+Écran "Aucune discussion" avec grand header comprenant logo BrutePawa à gauche, titre "Messages" centré, icônes recherche, paramètres et avatar utilisateur à droite. Grande barre de recherche moderne avec placeholder "Rechercher des personnes, groupes, canaux...".
+
+Au centre, magnifique illustration 3D de trois jeunes africains souriants utilisant leurs smartphones, entourés de bulles de discussion vertes, ambiance communautaire et sociale, style vectoriel premium, couleurs harmonieuses.
+
+Sous l’illustration, grand titre "Aucune discussion", texte descriptif élégant : "Commencez une conversation avec vos amis ou rejoignez des groupes et canaux."
+
+Grand bouton principal vert BrutePawa "Nouvelle discussion" avec icône message.
+
+En bas à droite, bouton flottant principal vert BrutePawa avec icône "+" ouvert, révélant un menu radial professionnel avec animations modernes et boutons colorés :
+
+Nouvelle discussion (vert)
+
+Nouveau groupe (bleu)
+
+Créer un canal (violet)
+
+Diffuser une annonce (orange)
+
+Inviter des amis (violet clair)
+
+Fermer (vert)
+
+
+Chaque action possède une capsule blanche flottante avec ombre douce et texte noir. Les boutons sont parfaitement alignés verticalement.
+
+Navigation inférieure fixe avec Accueil, Amis, bouton central BrutePawa vert plus grand, Messages actif avec badge notification, Profil.
+
+Interface responsive adaptée à tous les smartphones Android et iPhone, proportions parfaites, aucun élément coupé, espacement généreux, design système cohérent, qualité Dribbble, Behance, Figma Community, startup licorne africaine, ultra réaliste, haute fidélité, lumière douce, rendu 8K, capture d’écran mobile professionnelle.
