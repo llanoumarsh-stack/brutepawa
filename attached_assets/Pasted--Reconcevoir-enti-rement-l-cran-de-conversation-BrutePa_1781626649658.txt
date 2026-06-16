@@ -1,0 +1,150 @@
+> Reconcevoir entièrement l'écran de conversation BrutePawa avec une expérience moderne inspirée de WhatsApp, Telegram et Messenger tout en conservant l'identité verte de BrutePawa.
+
+L'écran doit afficher :
+
+En-tête avec avatar, nom du contact, statut en ligne/hors ligne, boutons appel audio, appel vidéo et menu.
+
+Fond de conversation très léger vert pâle avec motifs subtils.
+
+Messages texte sortants verts BrutePawa avec coins arrondis modernes.
+
+Messages entrants blancs avec ombre légère.
+
+
+Notes vocales
+
+Refaire complètement les bulles vocales :
+
+Bouton lecture circulaire moderne.
+
+Onde audio dynamique professionnelle.
+
+Durée affichée.
+
+Heure du message.
+
+Vitesse 1x, 1.5x, 2x.
+
+Double coche livraison/lecture.
+
+Animation de lecture.
+
+
+Liens intelligents
+
+Tous les liens doivent être automatiquement détectés.
+
+Exemple :
+
+brutepawa.com
+
+devient automatiquement une carte enrichie :
+
+Logo BrutePawa.
+
+Titre du site.
+
+Description.
+
+URL cliquable.
+
+Ouverture dans Chrome ou navigateur par défaut.
+
+
+États des messages
+
+Système temps réel :
+
+Pending = horloge.
+
+Sending = animation.
+
+Sent = ✓.
+
+Delivered = ✓✓.
+
+Read = ✓✓ bleu.
+
+
+Les changements doivent être automatiques sans rechargement.
+
+Enregistrement vocal
+
+Appui long sur le microphone :
+
+Démarrage instantané.
+
+Affichage chrono.
+
+Onde audio temps réel.
+
+Micro qui suit exactement le doigt.
+
+
+Verrouillage :
+
+Un cadenas fixe apparaît au-dessus.
+
+Le micro doit être glissé jusqu'au cadenas.
+
+Le verrouillage ne s'active que lorsque le micro entre réellement dans la zone du cadenas.
+
+Si le doigt est relâché avant d'atteindre le cadenas, l'enregistrement s'arrête et s'envoie normalement.
+
+Si le micro atteint le cadenas :
+
+
+isRecording = true
+isLocked = true
+
+L'utilisateur peut continuer à enregistrer sans maintenir le doigt.
+
+
+Barre d'enregistrement verrouillée
+
+Afficher :
+
+Bouton Annuler.
+
+Onde audio animée.
+
+Chronomètre.
+
+Bouton Envoyer.
+
+
+Design inspiré Telegram Premium.
+
+Upload des notes vocales
+
+Après envoi :
+
+Afficher progression réelle.
+
+Afficher pending si réseau lent.
+
+Synchronisation automatique quand la connexion revient.
+
+
+Qualité visuelle
+
+Style 2025.
+
+Très haut de gamme.
+
+Coins arrondis modernes.
+
+Ombres douces.
+
+Espacement parfait.
+
+Palette verte BrutePawa.
+
+Responsive Android/iOS.
+
+Aucun chevauchement d'icônes.
+
+Animations fluides 60 FPS.
+
+
+Résultat attendu : une messagerie premium de niveau WhatsApp, Telegram Premium et Messenger, adaptée à l'écosystème BrutePawa.

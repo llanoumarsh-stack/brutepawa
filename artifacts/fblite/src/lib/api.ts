@@ -1472,3 +1472,19 @@ export async function apiGetMemories(): Promise<MemoryPost[]> {
 export async function apiReportPost(postId: number, reason: string = "spam"): Promise<void> {
   await apiFetch(`/posts/${postId}/report`, { method: "POST", body: JSON.stringify({ reason }) });
 }
+
+export interface LinkPreview {
+  title: string | null;
+  description: string | null;
+  image: string | null;
+  favicon: string | null;
+  siteName: string | null;
+  url: string;
+}
+export async function apiGetLinkPreview(url: string): Promise<LinkPreview | null> {
+  try {
+    const r = await fetch(`${BASE}/link-preview?url=${encodeURIComponent(url)}`);
+    if (!r.ok) return null;
+    return r.json();
+  } catch { return null; }
+}

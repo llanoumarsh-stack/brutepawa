@@ -921,4 +921,50 @@ router.get("/messages/typing/:userId", requireAuth, async (req, res): Promise<vo
   res.json({ typing: Date.now() < expiry });
 });
 
+/* ── Link preview (OG metadata scraper) ── */
+const lpCache = new Map<string, { data: object; expires: number }>();
+router.get("/link-preview", async (req, res): Promise<void> => {
+  const url = typeof req.query.url === "string" ? req.query.url.trim() : null;
+  if (!url || !url.startsWith("http")) { res.status(400).json({ error: "url required" }); return; }
+  const cached = lpCache.get(url);
+  if (cached && cached.expires > Date.now()) { res.json(cached.data); return; }
+  try {
+    const r = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0 BrutePawa/1.0 (+https://brutepawa.com) LinkPreview" },
+      signal: AbortSignal.timeout(6000),
+    });
+    const html = await r.text();
+    const getOg = (prop: string) => {
+      const re1 = new RegExp(`<meta[^>]+property=["']og:${prop}["'][^>]+content=["']([^"']+)["']`, "i");
+      const re2 = new RegExp(`<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:${prop}["']`, "i");
+      return (html.match(re1) || html.match(re2))?.[1] ?? null;
+    };
+    const getMeta = (name: string) => {
+      const re = new RegExp(`<meta[^>]+name=["']${name}["'][^>]+content=["']([^"']+)["']`, "i");
+      return html.match(re)?.[1] ?? null;
+    };
+    const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+    const favicon = (() => {
+      const m = html.match(/<link[^>]+rel=["'][^"']*icon[^"']*["'][^>]+href=["']([^"']+)["']/i)
+        || html.match(/<link[^>]+href=["']([^"']+)["'][^>]+rel=["'][^"']*icon[^"']*["']/i);
+      if (!m) return null;
+      const href = m[1];
+      if (href.startsWith("http")) return href;
+      try { return new URL(href, url).href; } catch { return null; }
+    })();
+    const data = {
+      title: getOg("title") || titleMatch?.[1]?.trim() || null,
+      description: getOg("description") || getMeta("description") || null,
+      image: getOg("image") || null,
+      favicon,
+      siteName: getOg("site_name") || null,
+      url: getOg("url") || url,
+    };
+    lpCache.set(url, { data, expires: Date.now() + 30 * 60_000 });
+    res.json(data);
+  } catch {
+    res.status(500).json({ error: "fetch failed" });
+  }
+});
+
 export default router;

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
-import { apiGetConversations, apiGetMessages, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadVoice, apiDeleteConversation, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo } from "../lib/api";
+import { apiGetConversations, apiGetMessages, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadVoice, apiDeleteConversation, apiGetLinkPreview, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview } from "../lib/api";
 import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignaling";
 
 void ({} as ApiChatGroup);
@@ -53,7 +53,7 @@ interface Message {
   text: string;
   mine: boolean;
   time: string;
-  status?: "sent" | "read";
+  status?: "pending" | "sent" | "delivered" | "read";
   attachment?: { type: "image" | "doc" | "location" | "audio"; label: string; extra?: string };
 }
 
@@ -93,6 +93,34 @@ const mkInitials = (name: string) =>
   name.split(" ").filter(Boolean).map(w => w[0]).join("").slice(0, 2).toUpperCase() || "?";
 
 const URL_RE = /https?:\/\/[^\s<>"]+[^\s<>".,;:!?)/]/g;
+
+function MsgStatus({ status, dark }: { status?: string; dark: boolean }) {
+  const color = dark ? "rgba(255,255,255,0.65)" : "#9CA3AF";
+  const blue  = dark ? "#93C5FD" : "#3B82F6";
+  const green = dark ? "#86EFAC" : "#16C24A";
+  if (status === "pending") return (
+    <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke={color} strokeWidth="1.5">
+      <circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/>
+    </svg>
+  );
+  if (status === "sent") return (
+    <svg viewBox="0 0 16 12" width="16" height="11" fill="none" stroke={color} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 6l4 4 8-8"/>
+    </svg>
+  );
+  if (status === "delivered") return (
+    <svg viewBox="0 0 20 12" width="20" height="11" fill="none" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 6l4 4 8-8" stroke={color}/><path d="M7 6l4 4 8-8" stroke={color}/>
+    </svg>
+  );
+  if (status === "read") return (
+    <svg viewBox="0 0 20 12" width="20" height="11" fill="none" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 6l4 4 8-8" stroke={blue}/><path d="M7 6l4 4 8-8" stroke={green}/>
+    </svg>
+  );
+  return null;
+}
+
 function renderText(text: string, textColor: string) {
   const parts: React.ReactNode[] = [];
   let last = 0;
@@ -254,9 +282,33 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const audioChunksRef    = useRef<Blob[]>([]);
   const recTimerRef       = useRef<ReturnType<typeof setInterval> | null>(null);
   const recSecondsRef     = useRef(0);
+  const linkPreviewCacheRef = useRef<Map<string, LinkPreview | "loading" | null>>(new Map());
+  const [linkPreviews, setLinkPreviews] = useState<Record<string, LinkPreview | null>>({});
 
   useEffect(() => { activeConvRef.current = activeConv; }, [activeConv]);
   useEffect(() => { allUsersRef.current = allUsers; }, [allUsers]);
+
+  /* ── Fetch link previews for visible messages ── */
+  useEffect(() => {
+    if (!activeConv) return;
+    const msgs = messages[activeConv] ?? [];
+    const seen = new Set<string>();
+    for (const m of msgs) {
+      if (!m.text) continue;
+      URL_RE.lastIndex = 0;
+      const match = URL_RE.exec(m.text);
+      if (!match) continue;
+      const url = match[0];
+      if (seen.has(url)) continue;
+      seen.add(url);
+      if (linkPreviewCacheRef.current.has(url)) continue;
+      linkPreviewCacheRef.current.set(url, "loading");
+      apiGetLinkPreview(url).then(preview => {
+        linkPreviewCacheRef.current.set(url, preview);
+        setLinkPreviews(p => ({ ...p, [url]: preview }));
+      });
+    }
+  }, [activeConv, messages]);
 
   /* ── Deep-link: réagir aux changements de props (navigation SW) ── */
   useEffect(() => {
@@ -666,11 +718,19 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     if (!content && !attachment) return;
     if (!activeConv) return;
     const now = new Date().toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
-    const msg: Message = { id: Date.now(), text: content, mine: true, time: now, status: "sent", attachment };
+    const tmpId = Date.now();
+    const msg: Message = { id: tmpId, text: content, mine: true, time: now, status: "pending", attachment };
     setMessages(ms => ({ ...ms, [activeConv]: [...(ms[activeConv] ?? []), msg] }));
     setConvList(prev => prev.map(c => c.id === activeConv ? { ...c, lastMessage: content, time: now } : c));
     if (!text) setNewMsg("");
-    apiSendMessage(activeConv, content).catch(() => {});
+    const convId = activeConv;
+    apiSendMessage(convId, content)
+      .then(() => {
+        setMessages(ms => ({ ...ms, [convId]: (ms[convId] ?? []).map(m => m.id === tmpId ? { ...m, status: "sent" as const } : m) }));
+      })
+      .catch(() => {
+        setMessages(ms => ({ ...ms, [convId]: (ms[convId] ?? []).map(m => m.id === tmpId ? { ...m, status: "pending" as const } : m) }));
+      });
   };
 
   const sendGroupMsg = () => {
@@ -1876,13 +1936,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                           </span>
                           <div style={{ display:"flex", alignItems:"center", gap:4 }}>
                             <span style={{ fontSize:11, color: msg.mine ? "rgba(255,255,255,0.7)" : "#94A3B8" }}>{msg.time}</span>
-                            {msg.mine && (
-                              <svg viewBox="0 0 20 12" width="18" height="10"
-                                fill={msg.status==="read" ? "#A5F3C0" : "rgba(255,255,255,0.6)"}>
-                                <path d="M1 6l4 4 8-8" stroke={msg.status==="read" ? "#A5F3C0" : "rgba(255,255,255,0.6)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                                <path d="M7 6l4 4 8-8" stroke={msg.status==="read" ? "#A5F3C0" : "rgba(255,255,255,0.6)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                              </svg>
-                            )}
+                            {msg.mine && <MsgStatus status={msg.status} dark={true} />}
                           </div>
                         </div>
                       </div>
@@ -1915,19 +1969,70 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       <div style={{ fontWeight:600, fontSize:13, wordBreak:"break-all" }}>{msg.attachment.extra ?? "Document"}</div>
                     </a>
                   )}
-                  {!isAudio && (
-                  <div className={msg.mine ? "fbl-msg-mine" : "fbl-msg-theirs"}
-                    style={{ padding:"8px 12px 5px", fontSize:14.5, lineHeight:1.45, wordBreak:"break-word",
-                      background: msg.mine ? CONV_THEMES[convThemeKey].mine : CONV_THEMES[convThemeKey].theirs,
-                      color: msg.mine ? CONV_THEMES[convThemeKey].mineText : CONV_THEMES[convThemeKey].theirsText }}>
-                    {renderText(msg.text, msg.mine ? CONV_THEMES[convThemeKey].mineText : CONV_THEMES[convThemeKey].theirsText)}
-                    <div style={{ fontSize:10, marginTop:2, textAlign:"right", display:"flex", justifyContent:"flex-end", alignItems:"center", gap:3,
-                      color: msg.mine ? "rgba(255,255,255,0.72)" : "#888" }}>
-                      {msg.time}
-                      {msg.mine && <span style={{ fontSize:11, color: msg.status === "read" ? "#4FC3F7" : "rgba(255,255,255,0.72)" }}>{msg.status === "read" ? "✓✓" : "✓"}</span>}
+                  {!isAudio && (() => {
+                    /* Detect first URL for link preview */
+                    URL_RE.lastIndex = 0;
+                    const urlMatch = URL_RE.exec(msg.text || "");
+                    const firstUrl = urlMatch?.[0] ?? null;
+                    const preview = firstUrl ? linkPreviews[firstUrl] : null;
+                    const isMine = msg.mine;
+                    const theme = CONV_THEMES[convThemeKey];
+                    const bgColor = isMine ? theme.mine : theme.theirs;
+                    const txtColor = isMine ? theme.mineText : theme.theirsText;
+                    return (
+                    <div className={isMine ? "fbl-msg-mine" : "fbl-msg-theirs"}
+                      style={{ overflow:"hidden", background: bgColor,
+                        color: txtColor, wordBreak:"break-word" }}>
+                      {/* Link preview card */}
+                      {preview && (
+                        <a href={preview.url} target="_blank" rel="noreferrer noopener"
+                          onClick={e => e.stopPropagation()}
+                          style={{ display:"block", textDecoration:"none", borderBottom:`1px solid ${isMine ? "rgba(255,255,255,0.15)" : "#E4E6EB"}` }}>
+                          {preview.image && (
+                            <img src={preview.image} alt="" onError={e => { (e.currentTarget as HTMLImageElement).style.display="none"; }}
+                              style={{ width:"100%", height:140, objectFit:"cover", display:"block" }} />
+                          )}
+                          <div style={{ padding:"8px 10px", background: isMine ? "rgba(0,0,0,0.12)" : "#F8FAFC" }}>
+                            <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:3 }}>
+                              {preview.favicon && (
+                                <img src={preview.favicon} alt="" width={14} height={14}
+                                  onError={e => { (e.currentTarget as HTMLImageElement).style.display="none"; }}
+                                  style={{ borderRadius:3, flexShrink:0 }} />
+                              )}
+                              <span style={{ fontSize:10, fontWeight:700, color: isMine ? "rgba(255,255,255,0.65)" : "#94A3B8",
+                                textTransform:"uppercase", letterSpacing:"0.05em" }}>
+                                {preview.siteName || (() => { try { return new URL(preview.url).hostname.replace("www.",""); } catch { return preview.url; } })()}
+                              </span>
+                            </div>
+                            {preview.title && (
+                              <div style={{ fontSize:13, fontWeight:700, color: isMine ? "#fff" : "#0F172A",
+                                lineHeight:1.35, marginBottom:2, display:"-webkit-box",
+                                WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>
+                                {preview.title}
+                              </div>
+                            )}
+                            {preview.description && (
+                              <div style={{ fontSize:11, color: isMine ? "rgba(255,255,255,0.7)" : "#64748B",
+                                lineHeight:1.4, display:"-webkit-box", WebkitLineClamp:2,
+                                WebkitBoxOrient:"vertical", overflow:"hidden" }}>
+                                {preview.description}
+                              </div>
+                            )}
+                          </div>
+                        </a>
+                      )}
+                      {/* Text content */}
+                      <div style={{ padding:"8px 12px 5px", fontSize:14.5, lineHeight:1.45 }}>
+                        {renderText(msg.text, txtColor)}
+                        <div style={{ fontSize:10, marginTop:2, textAlign:"right", display:"flex", justifyContent:"flex-end", alignItems:"center", gap:3,
+                          color: isMine ? "rgba(255,255,255,0.72)" : "#888" }}>
+                          {msg.time}
+                          {isMine && <MsgStatus status={msg.status} dark={isMine} />}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  )}
+                    );
+                  })()}
                 </div>
               </div>
             );
