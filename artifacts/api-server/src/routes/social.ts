@@ -87,6 +87,11 @@ router.post("/posts", requireAuth, async (req, res): Promise<void> => {
   const thumbnailUrl = (typeof rawThumb === "string" && rawThumb.length > 0) ? rawThumb : null;
   const rawImage = req.body.imageUrl;
   const imageUrl = (typeof rawImage === "string" && rawImage.length > 0) ? rawImage : null;
+  const musicTrackName  = typeof req.body.musicTrackName  === "string" && req.body.musicTrackName  ? req.body.musicTrackName  : null;
+  const musicArtist     = typeof req.body.musicArtist     === "string" && req.body.musicArtist     ? req.body.musicArtist     : null;
+  const musicUrl        = typeof req.body.musicUrl        === "string" && req.body.musicUrl        ? req.body.musicUrl        : null;
+  const musicArtworkUrl = typeof req.body.musicArtworkUrl === "string" && req.body.musicArtworkUrl ? req.body.musicArtworkUrl : null;
+  const musicDuration   = typeof req.body.musicDuration   === "string" && req.body.musicDuration   ? req.body.musicDuration   : null;
 
   try {
     const [post] = await db.insert(postsTable).values({
@@ -94,6 +99,11 @@ router.post("/posts", requireAuth, async (req, res): Promise<void> => {
       content: contentVal,
       imageUrl,
       thumbnailUrl,
+      musicTrackName,
+      musicArtist,
+      musicUrl,
+      musicArtworkUrl,
+      musicDuration,
     }).returning();
     res.status(201).json(post);
   } catch (dbErr: unknown) {
@@ -115,6 +125,11 @@ router.get("/posts/:id", requireAuth, async (req, res): Promise<void> => {
     content:       postsTable.content,
     imageUrl:      postsTable.imageUrl,
     thumbnailUrl:  postsTable.thumbnailUrl,
+    musicTrackName:  postsTable.musicTrackName,
+    musicArtist:     postsTable.musicArtist,
+    musicUrl:        postsTable.musicUrl,
+    musicArtworkUrl: postsTable.musicArtworkUrl,
+    musicDuration:   postsTable.musicDuration,
     likesCount:    postsTable.likesCount,
     commentsCount: postsTable.commentsCount,
     createdAt:     postsTable.createdAt,

@@ -116,7 +116,108 @@ interface PostData {
   authorFirstName: string | null; authorLastName: string | null;
   authorAvatarUrl: string | null; content: string;
   imageUrl: string | null; thumbnailUrl: string | null;
+  musicTrackName: string | null; musicArtist: string | null;
+  musicUrl: string | null; musicArtworkUrl: string | null; musicDuration: string | null;
   likesCount: number; commentsCount: number; createdAt: string; liked: boolean;
+}
+
+/* ─── Inline music player ─────────────────────────────────── */
+function MusicPlayer({ trackName, artist, artworkUrl, url, duration }: {
+  trackName: string; artist: string; artworkUrl: string | null; url: string | null; duration: string | null;
+}) {
+  const [playing, setPlaying]     = useState(false);
+  const [progress, setProgress]   = useState(0);
+  const [current, setCurrent]     = useState("0:00");
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    if (!url) return;
+    const a = new Audio(url);
+    audioRef.current = a;
+    a.addEventListener("timeupdate", () => {
+      if (!a.duration) return;
+      setProgress((a.currentTime / a.duration) * 100);
+      const m = Math.floor(a.currentTime / 60);
+      const s = Math.floor(a.currentTime % 60);
+      setCurrent(`${m}:${s.toString().padStart(2, "0")}`);
+    });
+    a.addEventListener("ended", () => { setPlaying(false); setProgress(0); setCurrent("0:00"); });
+    return () => { a.pause(); a.src = ""; };
+  }, [url]);
+
+  const toggle = () => {
+    const a = audioRef.current;
+    if (!a) return;
+    if (playing) { a.pause(); setPlaying(false); }
+    else { a.play().catch(() => {}); setPlaying(true); }
+  };
+
+  const total = duration ?? "0:00";
+
+  return (
+    <div style={{ margin:"0 14px 14px", background:"#0F172A", borderRadius:20, padding:"14px 16px", display:"flex", alignItems:"center", gap:12 }}>
+      {/* Album art */}
+      <div style={{ width:60, height:60, borderRadius:12, overflow:"hidden", background:"#1E293B", flexShrink:0, position:"relative" }}>
+        {artworkUrl
+          ? <img src={artworkUrl} alt={trackName} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+          : (
+            <div style={{ width:"100%", height:"100%", display:"flex", alignItems:"center", justifyContent:"center" }}>
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="#475569"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+            </div>
+          )
+        }
+        {/* Vinyl ring */}
+        <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", pointerEvents:"none" }}>
+          <div style={{ width:16, height:16, borderRadius:"50%", border:"3px solid rgba(0,0,0,0.5)", background:"rgba(0,0,0,0.3)" }} />
+        </div>
+      </div>
+
+      {/* Track info + controls */}
+      <div style={{ flex:1, minWidth:0 }}>
+        <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:2 }}>
+          {/* Music note in green circle */}
+          <div style={{ width:18, height:18, borderRadius:"50%", background:"#22C55E", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="#fff"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+          </div>
+          <span style={{ fontSize:13, fontWeight:800, color:"#F1F5F9", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{trackName}</span>
+        </div>
+        <div style={{ fontSize:11, color:"#94A3B8", marginBottom:8, paddingLeft:24 }}>{artist}</div>
+
+        {/* Progress bar */}
+        <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+          <span style={{ fontSize:10, color:"#64748B", flexShrink:0, minWidth:28 }}>{current}</span>
+          <div style={{ flex:1, height:4, background:"#1E293B", borderRadius:2, position:"relative", cursor:"pointer" }}
+            onClick={e => {
+              if (!audioRef.current?.duration) return;
+              const rect = e.currentTarget.getBoundingClientRect();
+              const pct = (e.clientX - rect.left) / rect.width;
+              audioRef.current.currentTime = pct * audioRef.current.duration;
+            }}
+          >
+            <div style={{ width:`${progress}%`, height:"100%", background:"linear-gradient(90deg,#22C55E,#16A34A)", borderRadius:2, position:"relative" }}>
+              <div style={{ position:"absolute", right:-4, top:-4, width:12, height:12, borderRadius:"50%", background:"#22C55E", boxShadow:"0 0 6px rgba(34,197,94,0.6)" }} />
+            </div>
+          </div>
+          <span style={{ fontSize:10, color:"#64748B", flexShrink:0, minWidth:28, textAlign:"right" }}>{total}</span>
+        </div>
+      </div>
+
+      {/* Play / Pause */}
+      <button onClick={toggle} style={{ width:38, height:38, borderRadius:"50%", background:"transparent", border:"none", cursor:url ? "pointer" : "default", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, opacity: url ? 1 : 0.4 }}>
+        {playing
+          ? <svg viewBox="0 0 24 24" width="22" height="22" fill="#F1F5F9"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+          : <svg viewBox="0 0 24 24" width="22" height="22" fill="#F1F5F9"><path d="M8 5v14l11-7z"/></svg>
+        }
+      </button>
+
+      {/* Signal bars (static decoration) */}
+      <div style={{ display:"flex", alignItems:"flex-end", gap:2, flexShrink:0 }}>
+        {[6,10,14,10,6].map((h, i) => (
+          <div key={i} style={{ width:3, height:h, borderRadius:2, background: playing ? "#22C55E" : "#334155", transition:"background .3s" }} />
+        ))}
+      </div>
+    </div>
+  );
 }
 interface Props { postId: number; }
 
@@ -297,6 +398,17 @@ export default function PostDetailPage({ postId }: Props) {
         {/* Text content */}
         {post.content && (
           <div style={{ padding:"0 18px 16px", fontSize:15, color:"#1E293B", lineHeight:1.65, fontWeight:400 }}>{post.content}</div>
+        )}
+
+        {/* Music player */}
+        {post.musicTrackName && (
+          <MusicPlayer
+            trackName={post.musicTrackName}
+            artist={post.musicArtist ?? "Artiste inconnu"}
+            artworkUrl={post.musicArtworkUrl}
+            url={post.musicUrl}
+            duration={post.musicDuration}
+          />
         )}
 
         {/* Media */}
