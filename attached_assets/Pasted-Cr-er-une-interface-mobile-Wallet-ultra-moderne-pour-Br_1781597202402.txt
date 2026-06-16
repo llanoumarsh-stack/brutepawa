@@ -1,0 +1,21 @@
+Créer une interface mobile Wallet ultra moderne pour BrutePawa, inspirée de Revolut, Wise, PayPal, Nubank et Wave. Design fintech premium international, fond blanc cassé, identité verte BrutePawa, coins ultra arrondis (24px), ombres douces, glassmorphism léger, interface propre, élégante et rassurante.
+
+Grande carte portefeuille premium avec dégradé vert BrutePawa affichant : « Mon Portefeuille BrutePawa », badge compte vérifié, niveau utilisateur, solde disponible « 0 FCFA », équivalent USD, nombre de jetons, bouton afficher/masquer le solde, illustration discrète de portefeuille numérique en arrière-plan.
+
+Section Actions rapides sous forme de grille moderne avec cartes premium : Déposer, Retirer, Envoyer, Recevoir, Acheter des jetons, Historique. Icônes SVG professionnelles, style fintech haut de gamme.
+
+Section statistiques avec cartes analytiques modernes : Transactions du mois, Montant reçu, Montant envoyé, Revenus Marketplace.
+
+Section Opérateurs supportés avec logos modernes : Orange Money, MTN Mobile Money, Moov Money, Wave, Airtel Money, Free Money. Chaque opérateur possède un badge « Disponible » ou « Bientôt disponible ».
+
+Graphique financier moderne intitulé « Évolution du solde » avec courbe verte élégante et filtres 7J, 30J, 3M, 1A.
+
+Section Transactions récentes avec liste premium affichant icône, nom de transaction, date, statut et montant. Exemple : Dépôt Orange Money, Aujourd’hui, +50 000 FCFA, Réussi.
+
+Section Programme Jetons avec compteur de jetons, cadeaux virtuels, promotions Marketplace, mise en avant d’annonces, abonnements premium et bouton principal « Acheter des jetons ».
+
+Carte sécurité premium affichant : Compte vérifié, Transactions protégées, Connexion sécurisée, Authentification renforcée.
+
+Navigation inférieure BrutePawa : Accueil, Amis, Créer, Messages, Profil.
+
+Style visuel : design mobile 2025, fintech premium internationale, qualité Figma haute fidélité, qualité App Store et Google Play, ultra moderne, élégant, professionnel, photoréaliste, 4K, UI/UX de niveau mondial, inspiré de Revolut, Wise, Stripe, PayPal et Wave.
