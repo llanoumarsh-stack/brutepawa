@@ -2274,13 +2274,92 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       </button>
                     </>
                   )}
-                  {/* Mic button — hidden during recording */}
-                  {!isRecording && (
-                  <button
-                    onPointerDown={e => { e.preventDefault(); startVoice(); }}
-                    style={{ background:"#16C24A", border:"none", borderRadius:"50%", width:44, height:44, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", boxShadow:"0 3px 12px rgba(22,194,74,0.45)" }}>
-                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-                  </button>
+                  {/* Mic button — always visible; gesture: hold+slide-up=lock, slide-left=cancel, release=send */}
+                  {!recLocked && (
+                  <div style={{ position:"relative", flexShrink:0 }}>
+                    {/* Lock tooltip floating above when sliding up */}
+                    {isRecording && recDragY < -28 && (
+                      <div style={{
+                        position:"absolute", bottom:"calc(100% + 14px)", left:"50%",
+                        transform:"translateX(-50%)",
+                        width:44, height:44, borderRadius:"50%",
+                        background: recDragY < -68 ? "#1877F2" : "#fff",
+                        boxShadow:"0 6px 24px rgba(0,0,0,0.20)",
+                        display:"flex", alignItems:"center", justifyContent:"center",
+                        animation:"fbl-fade-in 0.15s ease",
+                        transition:"background 0.18s",
+                        pointerEvents:"none",
+                      }}>
+                        <svg viewBox="0 0 24 24" width="20" height="20">
+                          <rect x="5" y="11" width="14" height="10" rx="2" fill={recDragY < -68 ? "#fff" : "#1877F2"}/>
+                          <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke={recDragY < -68 ? "#fff" : "#1877F2"} strokeWidth="2.2" fill="none" strokeLinecap="round"/>
+                        </svg>
+                      </div>
+                    )}
+                    {/* Cancel hint */}
+                    {isRecording && recDragX < -45 && (
+                      <div style={{
+                        position:"absolute", right:"calc(100% + 10px)", top:"50%",
+                        transform:"translateY(-50%)",
+                        background:"#EF4444", borderRadius:12, padding:"4px 10px",
+                        whiteSpace:"nowrap", pointerEvents:"none",
+                        animation:"fbl-fade-in 0.15s ease",
+                      }}>
+                        <span style={{ fontSize:12, fontWeight:700, color:"#fff" }}>
+                          {recDragX < -80 ? "Relâcher pour annuler" : "← Annuler"}
+                        </span>
+                      </div>
+                    )}
+                    <button
+                      onPointerDown={e => {
+                        if (isRecording) return;
+                        e.preventDefault();
+                        recDragStartRef.current = { x: e.clientX, y: e.clientY };
+                        recIsDraggingRef.current = true;
+                        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+                        startVoice();
+                      }}
+                      onPointerMove={e => {
+                        if (!recDragStartRef.current) return;
+                        setRecDragX(Math.min(0, e.clientX - recDragStartRef.current.x));
+                        setRecDragY(Math.min(0, e.clientY - recDragStartRef.current.y));
+                      }}
+                      onPointerUp={() => {
+                        const dx = recDragX; const dy = recDragY;
+                        setRecDragX(0); setRecDragY(0);
+                        recDragStartRef.current = null;
+                        recIsDraggingRef.current = false;
+                        if (!isRecording) return;
+                        if (dy < -68) { setRecLocked(true); }
+                        else if (dx < -80) { cancelVoice(); }
+                        else { stopVoice(); }
+                      }}
+                      onPointerCancel={() => {
+                        setRecDragX(0); setRecDragY(0);
+                        recDragStartRef.current = null;
+                        recIsDraggingRef.current = false;
+                      }}
+                      style={{
+                        background:"linear-gradient(135deg,#16C24A 0%,#0ea541 100%)",
+                        border:"none", borderRadius:"50%",
+                        width: isRecording ? 52 : 44,
+                        height: isRecording ? 52 : 44,
+                        flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center",
+                        cursor:"pointer", touchAction:"none",
+                        boxShadow: isRecording
+                          ? "0 0 0 10px rgba(22,194,74,0.18), 0 4px 20px rgba(22,194,74,0.55)"
+                          : "0 3px 12px rgba(22,194,74,0.45)",
+                        transform: isRecording ? `translateY(${recDragY * 0.3}px) translateX(${recDragX * 0.15}px)` : "none",
+                        transition: recIsDraggingRef.current ? "box-shadow 0.1s, width 0.2s, height 0.2s" : "all 0.2s",
+                      }}>
+                      <svg viewBox="0 0 24 24" width={isRecording ? 24 : 22} height={isRecording ? 24 : 22} fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                        <line x1="12" y1="19" x2="12" y2="23"/>
+                        <line x1="8" y1="23" x2="16" y2="23"/>
+                      </svg>
+                    </button>
+                  </div>
                   )}
                 </>
               )}
