@@ -1847,7 +1847,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             <div style={{ flex:1, minWidth:0, cursor:"pointer" }} onClick={() => setOverlay("info")}>
               <div style={{ display:"flex", alignItems:"center", gap:5 }}>
                 <span style={{ fontWeight:800, fontSize:16, color:"#0F172A", lineHeight:1.2 }}>{activeUser.name}</span>
-                <svg viewBox="0 0 24 24" width="15" height="15" fill="#16C24A"><path d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
+                <img src="/badge-verified.jpg" alt="Vérifié" style={{ width:18, height:18, objectFit:"cover", borderRadius:"50%", flexShrink:0 }} />
               </div>
               <div style={{ fontSize:12, fontWeight: (presence.online || peerTyping.typing) ? 600 : 400, color: peerTyping.typing ? "#F59E0B" : presence.online ? "#16C24A" : "#94A3B8" }}>
                 {peerTyping.typing
