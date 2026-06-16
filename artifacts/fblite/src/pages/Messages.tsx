@@ -1913,7 +1913,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             const isAudio    = msg.attachment?.type === "audio";
             const isVoicePlaying = isAudio && playingAudioId === msg.id;
             const wfBars     = isAudio ? voiceWaveform(msg.id) : [];
-            const playedBars = isAudio ? Math.floor(wfBars.length * audioProgress) : 0;
+            const playedBars = isVoicePlaying ? Math.floor(wfBars.length * audioProgress) : 0;
             return (
               <div key={msg.id}
                 style={{ display:"flex", justifyContent: msg.mine ? "flex-end" : "flex-start", alignItems:"flex-end", gap:6, marginTop:2,
@@ -2008,10 +2008,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                           <span style={{ fontSize:11, fontWeight:700, color: msg.mine ? "rgba(255,255,255,0.75)" : "#94A3B8", fontVariantNumeric:"tabular-nums" }}>
                             {isVoicePlaying
                               ? (() => {
-                                  const el = voicePlayerRef.current;
-                                  if (!el || !el.duration) return msg.attachment!.extra || "0:00";
-                                  const s = Math.floor(el.currentTime);
-                                  return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,"0")}`;
+                                  const durStr = msg.attachment!.extra || "0:00";
+                                  const [mm, ss] = durStr.split(":").map(Number);
+                                  const totalSecs = (mm || 0) * 60 + (ss || 0);
+                                  const cur = Math.floor(totalSecs * audioProgress);
+                                  return `${Math.floor(cur / 60)}:${(cur % 60).toString().padStart(2, "0")}`;
                                 })()
                               : (msg.attachment!.extra || "0:00")
                             }
