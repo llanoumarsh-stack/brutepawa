@@ -99,6 +99,11 @@ export interface FeedPost {
   content: string;
   imageUrl: string | null;
   thumbnailUrl: string | null;
+  musicTrackName: string | null;
+  musicArtist: string | null;
+  musicUrl: string | null;
+  musicArtworkUrl: string | null;
+  musicDuration: string | null;
   likesCount: number;
   commentsCount: number;
   createdAt: string;
