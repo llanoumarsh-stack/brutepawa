@@ -1569,7 +1569,22 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           ...(convWpKey !== "none" && wpUrl(convWpKey) ? {
             backgroundImage:`url(${wpUrl(convWpKey)})`, backgroundSize:"cover", backgroundPosition:"center", backgroundAttachment:"local"
           } : { background: convWallpaper ?? CONV_THEMES[convThemeKey].bg }) }}>
-          <div style={{ textAlign:"center", fontSize:11.5, color:"#888", background:"rgba(0,0,0,0.05)", borderRadius:20, padding:"3px 14px", margin:"4px auto 10px", display:"inline-block", alignSelf:"center" }}>Aujourd'hui</div>
+
+          {currentMessages.length === 0 ? (
+            <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:10, padding:"60px 32px", textAlign:"center" }}>
+              <div style={{ width:58, height:58, borderRadius:"50%", background:"rgba(0,0,0,0.08)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="rgba(0,0,0,0.35)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+              </div>
+              <div style={{ fontSize:14, fontWeight:600, color:"rgba(0,0,0,0.45)", lineHeight:1.5 }}>
+                Démarrer une conversation
+              </div>
+            </div>
+          ) : (
+            <div style={{ textAlign:"center", fontSize:11.5, color:"#888", background:"rgba(0,0,0,0.05)", borderRadius:20, padding:"3px 14px", margin:"4px auto 10px", display:"inline-block", alignSelf:"center" }}>Aujourd'hui</div>
+          )}
+
           {currentMessages.map((msg, i) => {
             const isLast     = i === currentMessages.length - 1 || currentMessages[i + 1]?.mine !== msg.mine;
             const isHL       = showChatSearch && chatSearchQ.trim() && msg.text.toLowerCase().includes(chatSearchQ.toLowerCase());
@@ -1973,11 +1988,12 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 Fond d'écran
               </button>
               <div style={{ height:1, background:"#F0F2F5" }} />
-              <button className="fbl-menu-btn" onClick={() => {
+              <button className="fbl-menu-btn" onClick={async () => {
                 const id = activeConv!;
                 setMessages(prev => ({ ...prev, [id]: [] }));
                 setConvList(prev => prev.map(c => c.id === id ? { ...c, lastMessage: "", unread: 0 } : c));
                 setShowConvMenu(false);
+                await apiDeleteConversation(id).catch(() => {});
               }}>
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="#555"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
                 Effacer l'historique
