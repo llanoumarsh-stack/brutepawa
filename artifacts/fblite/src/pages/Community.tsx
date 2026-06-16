@@ -7,490 +7,585 @@ import {
   PublicUser, PublicUserWithStatus, FriendRequest, ApiGroup,
 } from "../lib/api";
 
-type SubTab = "personnes" | "amis" | "abonnes" | "groupes" | "pages" | "entreprises" | "messagerie";
+const BP_GREEN = "#16C24A";
 
-const SUB_TABS: { id: SubTab; label: string; emoji: string }[] = [
-  { id: "personnes", label: "Personnes", emoji: "🔍" },
-  { id: "amis", label: "Ami(e)s", emoji: "👥" },
-  { id: "abonnes", label: "Abonnés", emoji: "➕" },
-  { id: "groupes", label: "Groupes", emoji: "🏘️" },
-  { id: "pages", label: "Pages", emoji: "📢" },
-  { id: "entreprises", label: "Entreprises", emoji: "🏢" },
-  { id: "messagerie", label: "Messages", emoji: "💬" },
-];
+/* ─── Types ────────────────────────────────────────────────── */
+type SubTab = "personnes"|"amis"|"abonnes"|"groupes"|"pages"|"entreprises"|"messagerie";
 
-const COUNTRY_FILTERS = ["Tous", "Côte d'Ivoire", "Sénégal", "Cameroun", "Mali", "Burkina Faso", "Guinée", "Togo", "Gabon", "R.D. Congo"];
-
-const AVATAR_COLORS = ["#1877F2", "#E91E63", "#9C27B0", "#FF9800", "#4CAF50", "#00BCD4", "#F44336", "#3F51B5"];
-function avatarColor(id: number) { return AVATAR_COLORS[id % AVATAR_COLORS.length]; }
+/* ─── Helpers ──────────────────────────────────────────────── */
+const AV_COLORS = ["#1877F2","#E91E63","#9C27B0","#FF9800",BP_GREEN,"#0EA5E9","#D32F2F","#00838F"];
+function avColor(id: number) { return AV_COLORS[id % AV_COLORS.length]; }
 function fullName(u: { firstName: string; lastName: string }) { return `${u.firstName} ${u.lastName}`.trim(); }
 function initials(u: { firstName: string; lastName: string }) {
-  return ((u.firstName?.[0] ?? "") + (u.lastName?.[0] ?? "")).toUpperCase() || "??";
+  return ((u.firstName?.[0]??"") + (u.lastName?.[0]??"")).toUpperCase() || "?";
 }
-
+function bpScore(id: number) { return 50 + (id * 17) % 50; }
+function mutualCount(id: number, total: number) { return Math.min(total, 5 + (id * 7) % 30); }
 function relTime(iso: string) {
   const d = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
-  if (d < 60) return "À l'instant";
-  if (d < 3600) return `Il y a ${Math.floor(d / 60)} min`;
-  if (d < 86400) return `Il y a ${Math.floor(d / 3600)} h`;
-  const weeks = Math.floor(d / 604800);
-  if (weeks < 52) return `Il y a ${weeks} sem.`;
-  return `Il y a ${Math.floor(weeks / 52)} an(s)`;
+  if (d < 60)    return "À l'instant";
+  if (d < 3600)  return `Il y a ${Math.floor(d/60)} min`;
+  if (d < 86400) return `Il y a ${Math.floor(d/3600)} h`;
+  return `Il y a ${Math.floor(d/86400)} j`;
+}
+const COUNTRY_FLAGS: Record<string, string> = {
+  "Côte d'Ivoire":"🇨🇮","Sénégal":"🇸🇳","Cameroun":"🇨🇲","Mali":"🇲🇱",
+  "Bénin":"🇧🇯","Burkina Faso":"🇧🇫","Guinée":"🇬🇳","Niger":"🇳🇪",
+  "Togo":"🇹🇬","Gabon":"🇬🇦","R.D. Congo":"🇨🇩",
+};
+function countryFlag(country?: string|null) {
+  if (!country) return "🌍";
+  for (const [k,v] of Object.entries(COUNTRY_FLAGS)) if (country.includes(k)) return v;
+  return "🌍";
 }
 
-function Avatar({ user, size = 50 }: { user: { id: number; firstName: string; lastName: string; avatarUrl?: string | null }; size?: number }) {
-  return user.avatarUrl
-    ? <img src={user.avatarUrl} alt="" style={{ width: size, height: size, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
-    : <div style={{ width: size, height: size, borderRadius: "50%", background: avatarColor(user.id), display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: size * 0.36, flexShrink: 0 }}>{initials(user)}</div>;
-}
+const COUNTRY_FILTERS = ["Tous","Côte d'Ivoire","Sénégal","Cameroun","Mali","Bénin","Burkina Faso","Niger"];
 
-function EmptyState({ emoji, title, sub }: { emoji: string; title: string; sub: string }) {
+/* ─── SVG Icons ─────────────────────────────────────────────── */
+const Ico = {
+  search: <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#94A3B8" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
+  filter: <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#475569" strokeWidth="2" strokeLinecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>,
+  addFriend: <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>,
+  message: <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
+  check: <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>,
+  checkBlue: <svg viewBox="0 0 24 24" width="14" height="14" fill="#1877F2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5l-3.5-3.5 1.41-1.41L10 13.67l6.09-6.09 1.41 1.41L10 16.5z"/></svg>,
+  more: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="5" r="1" fill="#94A3B8"/><circle cx="12" cy="12" r="1" fill="#94A3B8"/><circle cx="12" cy="19" r="1" fill="#94A3B8"/></svg>,
+  people: <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
+  shield: <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke={BP_GREEN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+  send: <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>,
+  arrowR: <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke={BP_GREEN} strokeWidth="2.5" strokeLinecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>,
+  groupIcon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
+  loc: <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>,
+};
+
+/* ─── Avatar ────────────────────────────────────────────────── */
+function Avatar({ user, size=52, online=false }: {
+  user: { id:number; firstName:string; lastName:string; avatarUrl?:string|null };
+  size?: number; online?: boolean;
+}) {
   return (
-    <div style={{ textAlign: "center", padding: "48px 20px", color: "var(--fb-text-secondary)" }}>
-      <div style={{ fontSize: 48, marginBottom: 12 }}>{emoji}</div>
-      <div style={{ fontWeight: 700, fontSize: 16, color: "var(--fb-text)" }}>{title}</div>
-      <div style={{ fontSize: 13, marginTop: 6 }}>{sub}</div>
+    <div style={{ position:"relative", flexShrink:0, width:size, height:size }}>
+      <div style={{ width:size, height:size, borderRadius:"50%", background:avColor(user.id), overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center" }}>
+        {user.avatarUrl
+          ? <img src={user.avatarUrl} alt={fullName(user)} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+          : <span style={{ color:"#fff", fontWeight:800, fontSize:size*0.35 }}>{initials(user)}</span>
+        }
+      </div>
+      {online && (
+        <div style={{ position:"absolute", bottom:1, right:1, width:13, height:13, borderRadius:"50%", background:BP_GREEN, border:"2.5px solid #fff" }} />
+      )}
     </div>
   );
 }
 
+/* ─── Sub-tab config ─────────────────────────────────────────── */
+const SUB_TABS: { id:SubTab; label:string; icon:JSX.Element }[] = [
+  { id:"personnes",   label:"Personnes",   icon:<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> },
+  { id:"amis",        label:"Amis",        icon:<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> },
+  { id:"abonnes",     label:"Abonnés",     icon:<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> },
+  { id:"groupes",     label:"Groupes",     icon:<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> },
+  { id:"pages",       label:"Pages",       icon:<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-5m-1.414-9.414a2 2 0 1 1 2.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg> },
+  { id:"entreprises", label:"Entreprises", icon:<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg> },
+  { id:"messagerie",  label:"Messages",    icon:<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> },
+];
+
+/* ═══════════════════════════════════════════════════════════════ */
 export default function Community() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<SubTab>("personnes");
-  const [search, setSearch] = useState("");
-  const [countryFilter, setCountryFilter] = useState("Tous");
+  const [search, setSearch]       = useState("");
+  const [country, setCountry]     = useState("Tous");
 
-  const [users, setUsers] = useState<PublicUserWithStatus[]>([]);
+  const [users,   setUsers]   = useState<PublicUserWithStatus[]>([]);
   const [friends, setFriends] = useState<PublicUser[]>([]);
-  const [requests, setRequests] = useState<FriendRequest[]>([]);
-  const [groups, setGroups] = useState<ApiGroup[]>([]);
+  const [requests,setRequests]= useState<FriendRequest[]>([]);
+  const [groups,  setGroups]  = useState<ApiGroup[]>([]);
   const [groupSearch, setGroupSearch] = useState("");
   const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState<Record<number, boolean>>({});
-  const [groupActionLoading, setGroupActionLoading] = useState<Record<number, boolean>>({});
+  const [actionLoading, setActionLoading]   = useState<Record<number,boolean>>({});
+  const [groupActionLoading, setGroupActionLoading] = useState<Record<number,boolean>>({});
 
   const loadAll = useCallback(async () => {
     setLoading(true);
     try {
-      const [u, f, r, g] = await Promise.all([
-        apiGetUsersWithStatus(),
-        apiGetFriends(),
-        apiGetFriendRequests(),
-        apiGetGroups(),
+      const [u,f,r,g] = await Promise.all([
+        apiGetUsersWithStatus(), apiGetFriends(),
+        apiGetFriendRequests(),  apiGetGroups(),
       ]);
-      setUsers(u);
-      setFriends(f);
-      setRequests(r);
-      setGroups(g);
+      setUsers(u); setFriends(f); setRequests(r); setGroups(g);
     } catch { /* ignore */ }
     setLoading(false);
   }, []);
 
   useEffect(() => { loadAll(); }, [loadAll]);
 
-  const setLoaderFor = (id: number, val: boolean) =>
-    setActionLoading(prev => ({ ...prev, [id]: val }));
+  const setLoader = (id:number, v:boolean) => setActionLoading(p=>({...p,[id]:v}));
 
-  const handleSendRequest = async (userId: number) => {
-    setLoaderFor(userId, true);
+  const handleSendRequest = async (userId:number) => {
+    setLoader(userId,true);
     try {
       await apiSendFriendRequest(userId);
-      setUsers(prev => prev.map(u => u.id === userId
-        ? { ...u, friendshipStatus: "pending_sent" }
-        : u
-      ));
+      setUsers(p=>p.map(u=>u.id===userId?{...u,friendshipStatus:"pending_sent"}:u));
     } catch { /* ignore */ }
-    setLoaderFor(userId, false);
+    setLoader(userId,false);
   };
 
-  const handleAccept = async (req: FriendRequest) => {
-    setLoaderFor(req.id, true);
+  const handleAccept = async (req:FriendRequest) => {
+    setLoader(req.id,true);
     try {
       await apiAcceptFriendRequest(req.id);
-      setRequests(prev => prev.filter(r => r.id !== req.id));
-      setFriends(prev => [...prev, req.fromUser]);
-      setUsers(prev => prev.map(u => u.id === req.fromUser.id
-        ? { ...u, friendshipStatus: "friends" }
-        : u
-      ));
+      setRequests(p=>p.filter(r=>r.id!==req.id));
+      setFriends(p=>[...p,req.fromUser]);
+      setUsers(p=>p.map(u=>u.id===req.fromUser.id?{...u,friendshipStatus:"friends"}:u));
     } catch { /* ignore */ }
-    setLoaderFor(req.id, false);
+    setLoader(req.id,false);
   };
 
-  const handleReject = async (req: FriendRequest) => {
-    setLoaderFor(req.id, true);
+  const handleReject = async (req:FriendRequest) => {
+    setLoader(req.id,true);
     try {
       await apiRejectFriendRequest(req.id);
-      setRequests(prev => prev.filter(r => r.id !== req.id));
-      setUsers(prev => prev.map(u => u.id === req.fromUser.id
-        ? { ...u, friendshipStatus: "none", requestId: undefined }
-        : u
-      ));
+      setRequests(p=>p.filter(r=>r.id!==req.id));
+      setUsers(p=>p.map(u=>u.id===req.fromUser.id?{...u,friendshipStatus:"none",requestId:undefined}:u));
     } catch { /* ignore */ }
-    setLoaderFor(req.id, false);
+    setLoader(req.id,false);
   };
 
-  const handleCancelRequest = async (user: PublicUserWithStatus) => {
+  const handleCancelRequest = async (user:PublicUserWithStatus) => {
     if (!user.requestId) return;
-    setLoaderFor(user.id, true);
+    setLoader(user.id,true);
     try {
       await apiRejectFriendRequest(user.requestId);
-      setUsers(prev => prev.map(u => u.id === user.id
-        ? { ...u, friendshipStatus: "none", requestId: undefined }
-        : u
-      ));
+      setUsers(p=>p.map(u=>u.id===user.id?{...u,friendshipStatus:"none",requestId:undefined}:u));
     } catch { /* ignore */ }
-    setLoaderFor(user.id, false);
+    setLoader(user.id,false);
   };
 
   const filtered = users.filter(u => {
-    const name = fullName(u).toLowerCase();
-    const matchSearch = name.includes(search.toLowerCase()) || (u.country ?? "").toLowerCase().includes(search.toLowerCase());
-    const matchCountry = countryFilter === "Tous" || (u.country ?? "").includes(countryFilter);
+    const nm = fullName(u).toLowerCase();
+    const matchSearch = nm.includes(search.toLowerCase()) || (u.country??"").toLowerCase().includes(search.toLowerCase());
+    const matchCountry = country==="Tous" || (u.country??"").includes(country);
     return matchSearch && matchCountry;
   });
 
   const pendingCount = requests.length;
+  const popularUsers = [...users].sort((a,b) => bpScore(b.id)-bpScore(a.id)).slice(0,6);
+  const newMembers   = [...users].sort((a,b) => b.id-a.id).slice(0,6);
 
-  return (
-    <div style={{ maxWidth: 600, margin: "0 auto", padding: "0 0 16px" }}>
-      {/* Sub-tabs */}
-      <div style={{ background: "var(--fb-white)", borderBottom: "1px solid var(--fb-divider)", display: "flex", overflowX: "auto", scrollbarWidth: "none" }}>
-        {SUB_TABS.map(tab => (
-          <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-            style={{
-              flex: "0 0 auto", padding: "12px 14px", background: "none", border: "none",
-              borderBottom: activeTab === tab.id ? "3px solid var(--fb-blue)" : "3px solid transparent",
-              color: activeTab === tab.id ? "var(--fb-blue)" : "var(--fb-text-secondary)",
-              fontWeight: activeTab === tab.id ? 700 : 500, fontSize: 13, cursor: "pointer",
-              whiteSpace: "nowrap", position: "relative",
-            }}>
-            {tab.emoji} {tab.label}
-            {tab.id === "amis" && pendingCount > 0 && (
-              <span style={{ marginLeft: 5, background: "var(--fb-red, #E41E3F)", color: "#fff", borderRadius: 12, padding: "1px 6px", fontSize: 11, fontWeight: 800 }}>
-                {pendingCount}
+  /* ─── User action button ─────────────────────────────────── */
+  function ActionBtn({ user }: { user: PublicUserWithStatus }) {
+    const busy = actionLoading[user.id];
+    if (user.friendshipStatus === "friends") {
+      return (
+        <button onClick={()=>navigate(`/messages?userId=${user.id}`)} style={btnOutline}>
+          <span style={{ color:BP_GREEN }}>{Ico.message}</span>
+          <span>Message</span>
+        </button>
+      );
+    }
+    if (user.friendshipStatus === "pending_sent") {
+      return (
+        <button disabled={busy} onClick={()=>handleCancelRequest(user)} style={{ ...btnOutline, borderColor:"#CBD5E1", color:"#94A3B8" }}>
+          {busy ? "…" : "Envoyée"}
+        </button>
+      );
+    }
+    if (user.friendshipStatus === "pending_received") {
+      const req = requests.find(r=>r.fromUser.id===user.id);
+      return (
+        <div style={{ display:"flex", gap:6 }}>
+          <button disabled={busy} onClick={()=>req&&handleAccept(req)} style={{ ...btnSolid, padding:"7px 12px", fontSize:12 }}>Confirmer</button>
+          <button disabled={busy} onClick={()=>req&&handleReject(req)} style={{ ...btnOutline, fontSize:12, padding:"7px 10px" }}>Refuser</button>
+        </div>
+      );
+    }
+    return (
+      <button disabled={busy} onClick={()=>handleSendRequest(user.id)} style={btnOutline}>
+        <span style={{ color:BP_GREEN }}>{Ico.addFriend}</span>
+        <span>{busy?"…":"Ajouter"}</span>
+      </button>
+    );
+  }
+
+  /* ─── Premium user card ──────────────────────────────────── */
+  function UserCard({ user }: { user: PublicUserWithStatus }) {
+    const score   = bpScore(user.id);
+    const mutual  = mutualCount(user.id, friends.length);
+    const isOnline = user.id % 3 !== 0;
+    const flag = countryFlag(user.country);
+    const prof = user.bio ?? "Membre BrutePawa";
+    return (
+      <div style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 16px", borderBottom:"1px solid #F8FAFC" }}>
+        {/* Avatar */}
+        <div onClick={()=>navigate(`/profile/${user.id}`)} style={{ cursor:"pointer", flexShrink:0 }}>
+          <Avatar user={user} size={58} online={isOnline} />
+        </div>
+        {/* Info */}
+        <div style={{ flex:1, minWidth:0, cursor:"pointer" }} onClick={()=>navigate(`/profile/${user.id}`)}>
+          <div style={{ display:"flex", alignItems:"center", gap:5, marginBottom:2 }}>
+            <span style={{ fontWeight:800, fontSize:15, color:"#0F172A" }}>{fullName(user)}</span>
+            {Ico.checkBlue}
+          </div>
+          <div style={{ fontSize:12.5, color:"#64748B", marginBottom:4, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{prof}</div>
+          <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
+            <span style={{ fontSize:12, color:"#94A3B8", display:"flex", alignItems:"center", gap:3 }}>
+              {flag} {user.country ?? "Afrique"}
+            </span>
+            {mutual > 0 && (
+              <span style={{ fontSize:12, color:"#94A3B8", display:"flex", alignItems:"center", gap:3 }}>
+                · {Ico.people} {mutual} amis communs
               </span>
             )}
-          </button>
-        ))}
+          </div>
+          <div style={{ display:"inline-flex", alignItems:"center", gap:4, background:`${BP_GREEN}12`, borderRadius:20, padding:"2px 9px", marginTop:5 }}>
+            {Ico.shield}
+            <span style={{ fontSize:11, fontWeight:700, color:BP_GREEN }}>Score BrutePawa</span>
+            <span style={{ fontSize:12, fontWeight:800, color:BP_GREEN }}>{score}</span>
+          </div>
+        </div>
+        {/* Actions */}
+        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:8, flexShrink:0 }}>
+          <ActionBtn user={user} />
+          <button style={{ background:"none", border:"none", cursor:"pointer", padding:2 }}>{Ico.more}</button>
+        </div>
+      </div>
+    );
+  }
+
+  /* ─── render ─────────────────────────────────────────────── */
+  return (
+    <div style={{ background:"#F8FAFC", minHeight:"100vh", maxWidth:640, margin:"0 auto" }}>
+
+      {/* ══ 1. CATEGORY TABS ════════════════════════════════ */}
+      <div style={{ background:"#fff", borderBottom:"1px solid #F1F5F9", overflowX:"auto", scrollbarWidth:"none", display:"flex", padding:"8px 12px", gap:8 }}>
+        {SUB_TABS.map(tab => {
+          const active = activeTab === tab.id;
+          return (
+            <button key={tab.id} onClick={()=>setActiveTab(tab.id)} style={{
+              flex:"0 0 auto", display:"flex", alignItems:"center", gap:6,
+              padding:"8px 14px", borderRadius:999, border:"none", cursor:"pointer",
+              background: active ? BP_GREEN : "#F1F5F9",
+              color: active ? "#fff" : "#64748B",
+              fontWeight: active ? 700 : 500, fontSize:13, transition:"all .15s",
+              position:"relative",
+            }}>
+              <span style={{ opacity: active?1:0.7 }}>{tab.icon}</span>
+              {tab.label}
+              {tab.id==="amis" && pendingCount>0 && (
+                <span style={{ background:"#EF4444", color:"#fff", borderRadius:"50%", width:16, height:16, display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, fontWeight:800, position:"absolute", top:-3, right:-3 }}>{pendingCount}</span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
-      <div style={{ padding: "12px" }}>
+      {/* ══ 2. SEARCH BAR ═══════════════════════════════════ */}
+      <div style={{ background:"#fff", padding:"12px 14px 0" }}>
+        <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+          <div style={{ flex:1, display:"flex", alignItems:"center", gap:10, background:"#F8FAFC", border:"1.5px solid #E2E8F0", borderRadius:14, padding:"11px 14px" }}>
+            {Ico.search}
+            <input
+              value={search}
+              onChange={e=>setSearch(e.target.value)}
+              placeholder="Rechercher des personnes, métiers, centres d'intérêt..."
+              style={{ flex:1, border:"none", outline:"none", background:"transparent", fontSize:14, color:"#0F172A", fontFamily:"inherit" }}
+            />
+          </div>
+          <button style={{ width:42, height:42, borderRadius:12, background:"#F1F5F9", border:"1.5px solid #E2E8F0", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", flexShrink:0 }}>
+            {Ico.filter}
+          </button>
+        </div>
 
-        {/* ─── PERSONNES ─── */}
-        {activeTab === "personnes" && (
-          <>
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="🔍 Rechercher des personnes..." style={{ marginBottom: 10 }} />
-            <div style={{ display: "flex", gap: 8, overflowX: "auto", scrollbarWidth: "none", marginBottom: 12, paddingBottom: 4 }}>
-              {COUNTRY_FILTERS.map(c => (
-                <button key={c} onClick={() => setCountryFilter(c)}
-                  style={{ flex: "0 0 auto", padding: "5px 12px", borderRadius: 20, border: "1px solid var(--fb-border)",
-                    background: countryFilter === c ? "var(--fb-blue)" : "var(--fb-white)",
-                    color: countryFilter === c ? "#fff" : "var(--fb-text)", fontWeight: 600, fontSize: 12, cursor: "pointer" }}>
-                  {c}
+        {/* Country chips */}
+        <div style={{ display:"flex", gap:8, overflowX:"auto", scrollbarWidth:"none", padding:"10px 0 14px" }}>
+          {COUNTRY_FILTERS.map(c => {
+            const active = country===c;
+            return (
+              <button key={c} onClick={()=>setCountry(c)} style={{
+                flex:"0 0 auto", padding:"7px 14px", borderRadius:999,
+                border:`1.5px solid ${active?BP_GREEN:"#E2E8F0"}`,
+                background: active?BP_GREEN:"#fff",
+                color: active?"#fff":"#475569",
+                fontSize:13, fontWeight: active?700:500, cursor:"pointer", transition:"all .15s",
+                display:"flex", alignItems:"center", gap:5,
+              }}>
+                {c!=="Tous" && <span>{countryFlag(c)}</span>}
+                {c}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ══ 3. PERSONNES TAB ════════════════════════════════ */}
+      {activeTab==="personnes" && (
+        <div>
+          {loading ? (
+            <div style={{ textAlign:"center", padding:"48px 20px" }}>
+              <div style={{ width:32, height:32, border:`3px solid #E2E8F0`, borderTopColor:BP_GREEN, borderRadius:"50%", animation:"bp-spin .7s linear infinite", margin:"0 auto 12px" }} />
+              <div style={{ color:"#94A3B8", fontSize:14 }}>Chargement…</div>
+              <style>{`@keyframes bp-spin { to { transform:rotate(360deg); } }`}</style>
+            </div>
+          ) : (
+            <>
+              {/* Suggestions pour vous */}
+              {filtered.length > 0 && (
+                <div style={{ background:"#fff", borderRadius:20, margin:"10px 12px 0", boxShadow:"0 2px 10px rgba(0,0,0,0.05)", overflow:"hidden" }}>
+                  <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 16px 4px" }}>
+                    <span style={{ fontWeight:700, fontSize:15, color:"#0F172A" }}>Suggestions pour vous</span>
+                    <button style={{ background:"none", border:"none", color:BP_GREEN, fontWeight:700, fontSize:12.5, cursor:"pointer" }}>Voir tout</button>
+                  </div>
+                  {filtered.slice(0,6).map(u => <UserCard key={u.id} user={u} />)}
+                </div>
+              )}
+
+              {filtered.length===0 && (
+                <div style={{ background:"#fff", borderRadius:20, margin:"10px 12px 0", padding:"40px 20px", textAlign:"center", boxShadow:"0 2px 10px rgba(0,0,0,0.05)" }}>
+                  <div style={{ width:56, height:56, borderRadius:18, background:`${BP_GREEN}15`, display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 12px" }}>
+                    {Ico.groupIcon}
+                  </div>
+                  <div style={{ fontWeight:700, fontSize:15, color:"#0F172A", marginBottom:6 }}>Aucune personne trouvée</div>
+                  <div style={{ fontSize:13, color:"#94A3B8" }}>Modifiez votre recherche ou invitez des amis.</div>
+                </div>
+              )}
+
+              {/* Invite banner */}
+              <div style={{ background:"#fff", borderRadius:20, margin:"10px 12px 0", padding:"16px", boxShadow:"0 2px 10px rgba(0,0,0,0.05)", display:"flex", alignItems:"center", gap:14 }}>
+                <div style={{ width:48, height:48, borderRadius:16, background:`${BP_GREEN}15`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke={BP_GREEN} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ fontWeight:700, fontSize:14, color:"#0F172A" }}>Invitez vos amis sur BrutePawa</div>
+                  <div style={{ fontSize:12, color:"#94A3B8", marginTop:2 }}>Plus vous êtes nombreux, plus l'expérience est enrichissante.</div>
+                </div>
+                <button style={{ flexShrink:0, display:"flex", alignItems:"center", gap:6, background:BP_GREEN, color:"#fff", border:"none", borderRadius:12, padding:"9px 14px", fontWeight:700, fontSize:13, cursor:"pointer", boxShadow:`0 3px 12px ${BP_GREEN}40` }}>
+                  {Ico.send}
+                  Inviter
                 </button>
+              </div>
+
+              {/* Two-column bottom sections */}
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, margin:"10px 12px 20px" }}>
+                {/* Personnes populaires */}
+                <div style={{ background:"#fff", borderRadius:20, padding:"14px 12px", boxShadow:"0 2px 8px rgba(0,0,0,0.05)" }}>
+                  <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12 }}>
+                    <span style={{ fontWeight:700, fontSize:13, color:"#0F172A" }}>Personnes populaires</span>
+                    <button style={{ background:"none", border:"none", color:BP_GREEN, fontSize:10.5, fontWeight:700, cursor:"pointer" }}>Voir tout</button>
+                  </div>
+                  <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                    {popularUsers.slice(0,4).map(u => (
+                      <div key={u.id} onClick={()=>navigate(`/profile/${u.id}`)} style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer" }}>
+                        <div style={{ position:"relative", flexShrink:0 }}>
+                          <Avatar user={u} size={36} />
+                          <div style={{ position:"absolute", bottom:-1, right:-1, width:10, height:10, borderRadius:"50%", background:BP_GREEN, border:"2px solid #fff" }} />
+                        </div>
+                        <div style={{ minWidth:0 }}>
+                          <div style={{ fontWeight:700, fontSize:11.5, color:"#0F172A", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{u.firstName} {u.lastName.charAt(0)}.</div>
+                          <div style={{ fontSize:10, color:"#94A3B8", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{u.bio?.split(" ").slice(0,2).join(" ") ?? "Membre BP"}</div>
+                        </div>
+                      </div>
+                    ))}
+                    {popularUsers.length===0 && <div style={{ fontSize:12, color:"#94A3B8", textAlign:"center", padding:"12px 0" }}>Aucun membre</div>}
+                  </div>
+                </div>
+
+                {/* Nouveaux membres */}
+                <div style={{ background:"#fff", borderRadius:20, padding:"14px 12px", boxShadow:"0 2px 8px rgba(0,0,0,0.05)" }}>
+                  <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12 }}>
+                    <span style={{ fontWeight:700, fontSize:13, color:"#0F172A" }}>Nouveaux membres</span>
+                    <button style={{ background:"none", border:"none", color:BP_GREEN, fontSize:10.5, fontWeight:700, cursor:"pointer" }}>Voir tout</button>
+                  </div>
+                  <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                    {newMembers.slice(0,4).map(u => (
+                      <div key={u.id} onClick={()=>navigate(`/profile/${u.id}`)} style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer" }}>
+                        <div style={{ position:"relative", flexShrink:0 }}>
+                          <Avatar user={u} size={36} />
+                          <div style={{ position:"absolute", top:-3, right:-3, background:BP_GREEN, color:"#fff", fontSize:7, fontWeight:800, borderRadius:6, padding:"1px 4px", border:"1.5px solid #fff", whiteSpace:"nowrap" }}>Nouveau</div>
+                        </div>
+                        <div style={{ minWidth:0 }}>
+                          <div style={{ fontWeight:700, fontSize:11.5, color:"#0F172A", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{u.firstName} {u.lastName.charAt(0)}.</div>
+                          <div style={{ fontSize:10, color:"#94A3B8", display:"flex", alignItems:"center", gap:2 }}>
+                            {countryFlag(u.country)} {u.country?.split(",")[0] ?? "Afrique"}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {newMembers.length===0 && <div style={{ fontSize:12, color:"#94A3B8", textAlign:"center", padding:"12px 0" }}>Aucun membre</div>}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* ══ 4. AMI(E)S TAB ══════════════════════════════════ */}
+      {activeTab==="amis" && (
+        <div style={{ padding:"12px" }}>
+          {/* Invitations */}
+          {requests.length > 0 && (
+            <div style={{ background:"#fff", borderRadius:20, marginBottom:12, overflow:"hidden", boxShadow:"0 2px 10px rgba(0,0,0,0.05)" }}>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 16px 8px" }}>
+                <span style={{ fontWeight:700, fontSize:14.5, color:"#0F172A" }}>Invitations reçues</span>
+                <span style={{ background:"#EF4444", color:"#fff", borderRadius:20, padding:"2px 9px", fontSize:11, fontWeight:800 }}>{requests.length}</span>
+              </div>
+              {requests.map(req => (
+                <div key={req.id} style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 16px", borderTop:"1px solid #F8FAFC" }}>
+                  <div onClick={()=>navigate(`/profile/${req.fromUser.id}`)} style={{ cursor:"pointer", flexShrink:0 }}>
+                    <Avatar user={req.fromUser} size={50} />
+                  </div>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ fontWeight:700, fontSize:14, color:"#0F172A" }}>{fullName(req.fromUser)}</div>
+                    {req.fromUser.country && <div style={{ fontSize:12, color:"#94A3B8" }}>{countryFlag(req.fromUser.country)} {req.fromUser.country}</div>}
+                    <div style={{ fontSize:11.5, color:"#94A3B8", marginTop:2 }}>{relTime(req.createdAt)}</div>
+                  </div>
+                  <div style={{ display:"flex", gap:6, flexShrink:0 }}>
+                    <button disabled={actionLoading[req.id]} onClick={()=>handleAccept(req)} style={btnSolid}>{actionLoading[req.id]?"…":"Confirmer"}</button>
+                    <button disabled={actionLoading[req.id]} onClick={()=>handleReject(req)} style={btnOutline}>{actionLoading[req.id]?"…":"Refuser"}</button>
+                  </div>
+                </div>
               ))}
             </div>
+          )}
 
-            {loading ? (
-              <div style={{ textAlign: "center", padding: 32, color: "var(--fb-text-secondary)" }}>Chargement…</div>
-            ) : filtered.length === 0 ? (
-              <EmptyState emoji="👤" title="Aucune personne trouvée" sub="Modifiez votre recherche ou invitez des amis." />
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {filtered.map(user => (
-                  <div key={user.id} style={{ background: "var(--fb-white)", borderRadius: 10, border: "1px solid var(--fb-divider)", padding: "12px 16px", display: "flex", alignItems: "center", gap: 12 }}>
-                    <div onClick={() => navigate(`/profile/${user.id}`)} style={{ cursor: "pointer", flexShrink: 0 }}>
-                      <Avatar user={user} />
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0, cursor: "pointer" }} onClick={() => navigate(`/profile/${user.id}`)}>
-                      <div style={{ fontWeight: 700, fontSize: 15 }}>{fullName(user)}</div>
-                      {user.country && <div style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>📍 {user.country}</div>}
-                      {user.bio && <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.bio}</div>}
-                    </div>
-
-                    {user.friendshipStatus === "none" && (
-                      <button
-                        className="btn-primary"
-                        style={{ width: "auto", padding: "8px 14px", fontSize: 13, flexShrink: 0 }}
-                        disabled={actionLoading[user.id]}
-                        onClick={() => handleSendRequest(user.id)}
-                      >
-                        {actionLoading[user.id] ? "…" : "+ Ajouter"}
-                      </button>
-                    )}
-                    {user.friendshipStatus === "pending_sent" && (
-                      <button
-                        style={{ width: "auto", padding: "8px 12px", fontSize: 12, flexShrink: 0, background: "var(--fb-divider)", border: "none", borderRadius: 8, color: "var(--fb-text)", fontWeight: 600, cursor: "pointer" }}
-                        disabled={actionLoading[user.id]}
-                        onClick={() => handleCancelRequest(user)}
-                      >
-                        {actionLoading[user.id] ? "…" : "⏳ Envoyée"}
-                      </button>
-                    )}
-                    {user.friendshipStatus === "pending_received" && (
-                      <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
-                        <button
-                          className="btn-primary"
-                          style={{ width: "auto", padding: "7px 12px", fontSize: 12 }}
-                          disabled={actionLoading[user.id]}
-                          onClick={() => {
-                            const r = requests.find(r => r.fromUser.id === user.id);
-                            if (r) handleAccept(r);
-                          }}
-                        >Confirmer</button>
-                        <button
-                          style={{ width: "auto", padding: "7px 12px", fontSize: 12, background: "var(--fb-divider)", border: "none", borderRadius: 8, fontWeight: 600, cursor: "pointer" }}
-                          disabled={actionLoading[user.id]}
-                          onClick={() => {
-                            const r = requests.find(r => r.fromUser.id === user.id);
-                            if (r) handleReject(r);
-                          }}
-                        >Supprimer</button>
-                      </div>
-                    )}
-                    {user.friendshipStatus === "friends" && (
-                      <span style={{ fontSize: 12, color: "var(--fb-blue)", fontWeight: 700, flexShrink: 0 }}>✓ Amis</span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </>
-        )}
-
-        {/* ─── AMI(E)S ─── */}
-        {activeTab === "amis" && (
-          <>
-            {/* Invitations section */}
-            {requests.length > 0 && (
-              <div style={{ marginBottom: 20 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                  <div style={{ fontWeight: 800, fontSize: 17 }}>Invitations ({requests.length})</div>
-                  <span style={{ color: "var(--fb-blue)", fontSize: 13, fontWeight: 600 }}>Voir tout</span>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  {requests.map(req => (
-                    <div key={req.id} style={{ background: "var(--fb-white)", borderRadius: 10, border: "1px solid var(--fb-divider)", padding: "12px 16px" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
-                        <Avatar user={{ ...req.fromUser, id: req.fromUser.id }} />
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontWeight: 700, fontSize: 15 }}>{fullName(req.fromUser)}</div>
-                          {req.fromUser.country && <div style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>📍 {req.fromUser.country}</div>}
-                          <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", marginTop: 2 }}>{relTime(req.createdAt)}</div>
-                        </div>
-                      </div>
-                      <div style={{ display: "flex", gap: 8 }}>
-                        <button
-                          className="btn-primary"
-                          style={{ flex: 1, padding: "10px 0", fontSize: 14 }}
-                          disabled={actionLoading[req.id]}
-                          onClick={() => handleAccept(req)}
-                        >
-                          {actionLoading[req.id] ? "…" : "Confirmer"}
-                        </button>
-                        <button
-                          style={{ flex: 1, padding: "10px 0", fontSize: 14, background: "var(--fb-divider)", border: "none", borderRadius: 8, fontWeight: 700, cursor: "pointer", color: "var(--fb-text)" }}
-                          disabled={actionLoading[req.id]}
-                          onClick={() => handleReject(req)}
-                        >
-                          Supprimer
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Friend list section */}
-            <div style={{ fontWeight: 800, fontSize: 17, marginBottom: 10 }}>
-              {requests.length > 0 ? "Vos ami(e)s" : "Ami(e)s"}
-              {friends.length > 0 && <span style={{ fontSize: 14, fontWeight: 500, color: "var(--fb-text-secondary)", marginLeft: 6 }}>({friends.length})</span>}
+          {/* Friends list */}
+          <div style={{ background:"#fff", borderRadius:20, overflow:"hidden", boxShadow:"0 2px 10px rgba(0,0,0,0.05)" }}>
+            <div style={{ padding:"14px 16px 8px", display:"flex", alignItems:"center", gap:8 }}>
+              <span style={{ fontWeight:700, fontSize:14.5, color:"#0F172A" }}>Vos amis</span>
+              {friends.length>0 && <span style={{ background:"#F1F5F9", color:"#64748B", borderRadius:20, padding:"2px 9px", fontSize:11, fontWeight:700 }}>{friends.length}</span>}
             </div>
-
             {loading ? (
-              <div style={{ textAlign: "center", padding: 32, color: "var(--fb-text-secondary)" }}>Chargement…</div>
-            ) : friends.length === 0 ? (
-              <EmptyState emoji="👥" title="Aucun ami pour l'instant" sub="Ajoutez des personnes depuis l'onglet Personnes." />
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {friends.map(friend => (
-                  <div key={friend.id} style={{ background: "var(--fb-white)", borderRadius: 10, border: "1px solid var(--fb-divider)", padding: "12px 16px", display: "flex", alignItems: "center", gap: 12 }}>
-                    <div onClick={() => navigate(`/profile/${friend.id}`)} style={{ cursor: "pointer", flexShrink: 0 }}>
-                      <Avatar user={friend} />
-                    </div>
-                    <div style={{ flex: 1, cursor: "pointer" }} onClick={() => navigate(`/profile/${friend.id}`)}>
-                      <div style={{ fontWeight: 700, fontSize: 15 }}>{fullName(friend)}</div>
-                      {friend.country && <div style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>📍 {friend.country}</div>}
-                      {friend.bio && <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", marginTop: 2 }}>{friend.bio}</div>}
-                    </div>
-                    <button
-                      onClick={() => navigate(`/messages?userId=${friend.id}`)}
-                      style={{ flexShrink: 0, padding: "8px 12px", background: "var(--fb-divider)", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: "pointer" }}
-                    >💬 Message</button>
-                  </div>
-                ))}
+              <div style={{ textAlign:"center", padding:"32px", color:"#94A3B8", fontSize:14 }}>Chargement…</div>
+            ) : friends.length===0 ? (
+              <div style={{ textAlign:"center", padding:"40px 20px" }}>
+                <div style={{ width:56, height:56, borderRadius:18, background:`${BP_GREEN}15`, display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 12px" }}>{Ico.groupIcon}</div>
+                <div style={{ fontWeight:700, fontSize:15, color:"#0F172A", marginBottom:4 }}>Aucun ami pour l'instant</div>
+                <div style={{ fontSize:13, color:"#94A3B8" }}>Ajoutez des personnes depuis l'onglet Personnes.</div>
               </div>
+            ) : (
+              friends.map(friend => (
+                <div key={friend.id} style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 16px", borderTop:"1px solid #F8FAFC" }}>
+                  <div onClick={()=>navigate(`/profile/${friend.id}`)} style={{ cursor:"pointer", flexShrink:0 }}>
+                    <Avatar user={friend} size={50} online={friend.id%3!==0} />
+                  </div>
+                  <div style={{ flex:1, cursor:"pointer", minWidth:0 }} onClick={()=>navigate(`/profile/${friend.id}`)}>
+                    <div style={{ fontWeight:700, fontSize:14.5, color:"#0F172A" }}>{fullName(friend)}</div>
+                    {friend.country && <div style={{ fontSize:12, color:"#94A3B8", marginTop:2 }}>{countryFlag(friend.country)} {friend.country}</div>}
+                    {friend.bio && <div style={{ fontSize:12, color:"#64748B", marginTop:2, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{friend.bio}</div>}
+                  </div>
+                  <button onClick={()=>navigate(`/messages?userId=${friend.id}`)} style={{ ...btnOutline, flexShrink:0 }}>
+                    <span style={{ color:BP_GREEN }}>{Ico.message}</span> Message
+                  </button>
+                </div>
+              ))
             )}
-          </>
-        )}
+          </div>
+        </div>
+      )}
 
-        {/* ─── ABONNÉS ─── */}
-        {activeTab === "abonnes" && (
-          <EmptyState emoji="➕" title="Aucun abonnement" sub="Commencez à suivre des personnes depuis l'onglet Personnes." />
-        )}
+      {/* ══ 5. ABONNÉS TAB ══════════════════════════════════ */}
+      {activeTab==="abonnes" && (
+        <EmptyPlaceholder icon={<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke={BP_GREEN} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>} title="Aucun abonnement" sub="Commencez à suivre des personnes depuis l'onglet Personnes." />
+      )}
 
-        {/* ─── GROUPES ─── */}
-        {activeTab === "groupes" && (
-          <>
+      {/* ══ 6. GROUPES TAB ══════════════════════════════════ */}
+      {activeTab==="groupes" && (
+        <div style={{ padding:"12px" }}>
+          <div style={{ display:"flex", alignItems:"center", gap:10, background:"#fff", border:"1.5px solid #E2E8F0", borderRadius:14, padding:"11px 14px", marginBottom:12 }}>
+            {Ico.search}
             <input
               value={groupSearch}
-              onChange={e => setGroupSearch(e.target.value)}
-              placeholder="🔍 Rechercher des groupes..."
-              style={{ marginBottom: 12 }}
+              onChange={e=>setGroupSearch(e.target.value)}
+              placeholder="Rechercher des groupes..."
+              style={{ flex:1, border:"none", outline:"none", background:"transparent", fontSize:14, color:"#0F172A", fontFamily:"inherit" }}
             />
-
-            {loading ? (
-              <div style={{ textAlign: "center", padding: 32, color: "var(--fb-text-secondary)" }}>Chargement…</div>
-            ) : (() => {
-              const q = groupSearch.toLowerCase().trim();
-              const filtered = q
-                ? groups.filter(g =>
-                    g.name.toLowerCase().includes(q) ||
-                    (g.description ?? "").toLowerCase().includes(q) ||
-                    g.category.toLowerCase().includes(q),
-                  )
-                : groups;
-
-              if (filtered.length === 0) {
-                return (
-                  <EmptyState
-                    emoji="🏘️"
-                    title={q ? "Aucun groupe trouvé" : "Aucun groupe disponible"}
-                    sub={q ? "Modifiez votre recherche." : "Les groupes seront bientôt disponibles."}
-                  />
-                );
-              }
-
-              return (
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  {filtered.map(group => (
-                    <div
-                      key={group.id}
-                      style={{ background: "var(--fb-white)", borderRadius: 12, border: "1px solid var(--fb-divider)", overflow: "hidden" }}
-                    >
-                      {/* Cover strip */}
-                      <div
-                        onClick={() => navigate(`/groups/${group.id}`)}
-                        style={{
-                          height: 64,
-                          background: group.coverUrl
-                            ? `url(${group.coverUrl}) center/cover no-repeat`
-                            : "linear-gradient(135deg, #1877F2 0%, #42A5F5 100%)",
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          cursor: "pointer", fontSize: 32,
-                        }}
-                      >
-                        {!group.coverUrl && group.emoji}
-                      </div>
-
-                      {/* Body */}
-                      <div style={{ padding: "12px 14px", display: "flex", alignItems: "center", gap: 12 }}>
-                        <div
-                          style={{ flex: 1, minWidth: 0, cursor: "pointer" }}
-                          onClick={() => navigate(`/groups/${group.id}`)}
-                        >
-                          <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 2 }}>{group.emoji} {group.name}</div>
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: "2px 10px" }}>
-                            <span style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>
-                              👥 {group.membersCount.toLocaleString()} membre{group.membersCount !== 1 ? "s" : ""}
-                            </span>
-                            <span style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>
-                              {group.privacy === "public" ? "🌍 Public" : "🔒 Privé"}
-                            </span>
-                            {group.country && (
-                              <span style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>📍 {group.country}</span>
-                            )}
-                          </div>
-                          {group.description && (
-                            <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", marginTop: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                              {group.description}
-                            </div>
-                          )}
-                        </div>
-
-                        {group.isMember ? (
-                          <button
-                            disabled={groupActionLoading[group.id]}
-                            onClick={async () => {
-                              setGroupActionLoading(prev => ({ ...prev, [group.id]: true }));
-                              try {
-                                await apiLeaveGroup(group.id);
-                                setGroups(prev => prev.map(g => g.id === group.id ? { ...g, isMember: false, membersCount: Math.max(0, g.membersCount - 1) } : g));
-                              } catch { /* ignore */ }
-                              setGroupActionLoading(prev => ({ ...prev, [group.id]: false }));
-                            }}
-                            style={{ flexShrink: 0, padding: "8px 14px", borderRadius: 8, border: "1px solid var(--fb-border)", background: "var(--fb-white)", color: "var(--fb-text)", fontWeight: 600, fontSize: 13, cursor: "pointer" }}
-                          >
-                            {groupActionLoading[group.id] ? "…" : "✓ Membre"}
-                          </button>
-                        ) : (
-                          <button
-                            disabled={groupActionLoading[group.id]}
-                            onClick={async () => {
-                              setGroupActionLoading(prev => ({ ...prev, [group.id]: true }));
-                              try {
-                                await apiJoinGroup(group.id);
-                                setGroups(prev => prev.map(g => g.id === group.id ? { ...g, isMember: true, membersCount: g.membersCount + 1 } : g));
-                              } catch { /* ignore */ }
-                              setGroupActionLoading(prev => ({ ...prev, [group.id]: false }));
-                            }}
-                            className="btn-primary"
-                            style={{ flexShrink: 0, width: "auto", padding: "8px 14px", fontSize: 13, fontWeight: 700 }}
-                          >
-                            {groupActionLoading[group.id] ? "…" : "+ Rejoindre"}
-                          </button>
-                        )}
-                      </div>
+          </div>
+          {loading ? (
+            <div style={{ textAlign:"center", padding:"32px", color:"#94A3B8" }}>Chargement…</div>
+          ) : (() => {
+            const q = groupSearch.toLowerCase().trim();
+            const fg = q ? groups.filter(g=>g.name.toLowerCase().includes(q)||(g.description??"").toLowerCase().includes(q)) : groups;
+            if (!fg.length) return <EmptyPlaceholder icon={<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke={BP_GREEN} strokeWidth="1.8" strokeLinecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>} title={q?"Aucun groupe trouvé":"Aucun groupe disponible"} sub="Les groupes arrivent bientôt." />;
+            return (
+              <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                {fg.map(group => (
+                  <div key={group.id} style={{ background:"#fff", borderRadius:20, overflow:"hidden", boxShadow:"0 2px 8px rgba(0,0,0,0.05)" }}>
+                    <div onClick={()=>navigate(`/groups/${group.id}`)} style={{ height:72, background:group.coverUrl?`url(${group.coverUrl}) center/cover no-repeat`:`linear-gradient(135deg, ${BP_GREEN}80 0%, ${BP_GREEN} 100%)`, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", fontSize:32 }}>
+                      {!group.coverUrl && <span style={{ opacity:0.6, fontSize:28 }}>🏘</span>}
                     </div>
-                  ))}
-                </div>
-              );
-            })()}
-          </>
-        )}
+                    <div style={{ padding:"12px 14px", display:"flex", alignItems:"center", gap:12 }}>
+                      <div style={{ flex:1, cursor:"pointer", minWidth:0 }} onClick={()=>navigate(`/groups/${group.id}`)}>
+                        <div style={{ fontWeight:700, fontSize:14.5, color:"#0F172A", marginBottom:3 }}>{group.name}</div>
+                        <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
+                          <span style={{ fontSize:12, color:"#94A3B8" }}>{Ico.people} {group.membersCount.toLocaleString()} membres</span>
+                          <span style={{ fontSize:12, color:"#94A3B8" }}>{group.privacy==="public"?"Public":"Privé"}</span>
+                          {group.country && <span style={{ fontSize:12, color:"#94A3B8" }}>{countryFlag(group.country)} {group.country}</span>}
+                        </div>
+                        {group.description && <div style={{ fontSize:12, color:"#64748B", marginTop:4, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{group.description}</div>}
+                      </div>
+                      {group.isMember ? (
+                        <button disabled={groupActionLoading[group.id]} onClick={async()=>{ setGroupActionLoading(p=>({...p,[group.id]:true})); try { await apiLeaveGroup(group.id); setGroups(p=>p.map(g=>g.id===group.id?{...g,isMember:false,membersCount:Math.max(0,g.membersCount-1)}:g)); } catch{} setGroupActionLoading(p=>({...p,[group.id]:false})); }} style={{ ...btnOutline, borderColor: BP_GREEN, color:BP_GREEN }}>
+                          {groupActionLoading[group.id]?"…":"Membre"}
+                        </button>
+                      ) : (
+                        <button disabled={groupActionLoading[group.id]} onClick={async()=>{ setGroupActionLoading(p=>({...p,[group.id]:true})); try { await apiJoinGroup(group.id); setGroups(p=>p.map(g=>g.id===group.id?{...g,isMember:true,membersCount:g.membersCount+1}:g)); } catch{} setGroupActionLoading(p=>({...p,[group.id]:false})); }} style={btnSolid}>
+                          {groupActionLoading[group.id]?"…":"Rejoindre"}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
+        </div>
+      )}
 
-        {/* ─── PAGES ─── */}
-        {activeTab === "pages" && (
-          <>
-            <button className="btn-primary" style={{ marginBottom: 16 }}>+ Créer une page</button>
-            <EmptyState emoji="📢" title="Aucune page disponible" sub="Les pages arrivent bientôt." />
-          </>
-        )}
+      {/* ══ 7. PAGES TAB ════════════════════════════════════ */}
+      {activeTab==="pages" && (
+        <div style={{ padding:"12px" }}>
+          <button style={{ ...btnSolid, marginBottom:16, width:"100%" }}>Créer une page</button>
+          <EmptyPlaceholder icon={<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke={BP_GREEN} strokeWidth="1.8" strokeLinecap="round"><path d="M11 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-5m-1.414-9.414a2 2 0 1 1 2.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>} title="Aucune page disponible" sub="Les pages arrivent bientôt." />
+        </div>
+      )}
 
-        {/* ─── ENTREPRISES ─── */}
-        {activeTab === "entreprises" && (
-          <>
-            <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 4 }}>🏢 Annuaire des entreprises</div>
-            <div style={{ fontSize: 13, color: "var(--fb-text-secondary)", marginBottom: 12 }}>Réseau professionnel & B2B — Afrique francophone</div>
-            <EmptyState emoji="🏢" title="Aucune entreprise enregistrée" sub="Les entreprises seront disponibles prochainement." />
-          </>
-        )}
+      {/* ══ 8. ENTREPRISES TAB ══════════════════════════════ */}
+      {activeTab==="entreprises" && (
+        <EmptyPlaceholder icon={<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke={BP_GREEN} strokeWidth="1.8" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>} title="Annuaire des entreprises" sub="Réseau professionnel B2B — Afrique francophone. Bientôt disponible." />
+      )}
 
-        {/* ─── MESSAGERIE ─── */}
-        {activeTab === "messagerie" && (
-          <>
-            <input placeholder="🔍 Rechercher dans les messages..." style={{ marginBottom: 10 }} />
-            <div onClick={() => navigate("/messages")} style={{ textAlign: "center", padding: "32px 20px", color: "var(--fb-text-secondary)", cursor: "pointer" }}>
-              <div style={{ fontSize: 40, marginBottom: 10 }}>💬</div>
-              <div style={{ fontWeight: 700, fontSize: 15, color: "var(--fb-text)" }}>Accéder à la messagerie</div>
-              <div style={{ fontSize: 13, marginTop: 6 }}>Vos conversations privées sont dans Messagerie</div>
-            </div>
-          </>
-        )}
+      {/* ══ 9. MESSAGERIE TAB ═══════════════════════════════ */}
+      {activeTab==="messagerie" && (
+        <div onClick={()=>navigate("/messages")} style={{ padding:"12px" }}>
+          <EmptyPlaceholder icon={<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke={BP_GREEN} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>} title="Accéder à la messagerie" sub="Vos conversations privées sont dans Messagerie. Appuyez pour y accéder." />
+        </div>
+      )}
 
-      </div>
+    </div>
+  );
+}
+
+/* ─── Shared styles ─────────────────────────────────────────── */
+const btnSolid: React.CSSProperties = {
+  display:"flex", alignItems:"center", justifyContent:"center", gap:5,
+  background:BP_GREEN, color:"#fff", border:"none", borderRadius:12,
+  padding:"8px 14px", fontWeight:700, fontSize:13, cursor:"pointer",
+  boxShadow:`0 2px 8px ${BP_GREEN}40`, whiteSpace:"nowrap",
+};
+const btnOutline: React.CSSProperties = {
+  display:"flex", alignItems:"center", justifyContent:"center", gap:5,
+  background:"#fff", color:"#475569", border:`1.5px solid ${BP_GREEN}`,
+  borderRadius:12, padding:"7px 13px", fontWeight:700, fontSize:13, cursor:"pointer",
+  whiteSpace:"nowrap",
+};
+
+/* ─── Empty state component ─────────────────────────────────── */
+function EmptyPlaceholder({ icon, title, sub }: { icon:React.ReactNode; title:string; sub:string }) {
+  return (
+    <div style={{ textAlign:"center", padding:"48px 20px", margin:"12px" }}>
+      <div style={{ width:64, height:64, borderRadius:20, background:`${BP_GREEN}15`, display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 16px" }}>{icon}</div>
+      <div style={{ fontWeight:700, fontSize:15, color:"#0F172A", marginBottom:6 }}>{title}</div>
+      <div style={{ fontSize:13, color:"#94A3B8", lineHeight:1.5 }}>{sub}</div>
     </div>
   );
 }
