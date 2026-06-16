@@ -121,6 +121,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [isRecording, setIsRecording]   = useState(false);
   const [recSeconds, setRecSeconds]     = useState(0);
   const [vpHeight, setVpHeight]         = useState<number | null>(null);
+  const [vpOffset, setVpOffset]         = useState(0);
   const [peerTyping, setPeerTyping]     = useState(false);
   const [attachSheet, setAttachSheet]   = useState(false);
   const [attachPage, setAttachPage]     = useState<"none"|"poll"|"event"|"contacts"|"ai">("none");
@@ -151,6 +152,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const mediaRecorderRef  = useRef<MediaRecorder | null>(null);
   const audioChunksRef    = useRef<Blob[]>([]);
   const recTimerRef       = useRef<ReturnType<typeof setInterval> | null>(null);
+  const recSecondsRef     = useRef(0);
 
   useEffect(() => { activeConvRef.current = activeConv; }, [activeConv]);
   useEffect(() => { allUsersRef.current = allUsers; }, [allUsers]);
@@ -176,12 +178,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     if (!vv) return;
     const handler = () => {
       setVpHeight(vv.height);
+      setVpOffset(vv.offsetTop);
       // auto-scroll to last message when keyboard pushes content up
       setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "instant" as ScrollBehavior }), 50);
     };
     handler();
     vv.addEventListener("resize", handler);
-    return () => vv.removeEventListener("resize", handler);
+    vv.addEventListener("scroll", handler);
+    return () => { vv.removeEventListener("resize", handler); vv.removeEventListener("scroll", handler); };
   }, []);
 
   /* ── Attachment upload helper ── */
@@ -233,7 +237,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       mr.onstop = () => {
         const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
         const url  = URL.createObjectURL(blob);
-        const secs = recSeconds;
+        const secs = recSecondsRef.current; // use ref — avoids stale closure
         stream.getTracks().forEach(t => t.stop());
         if (secs < 1) return;
         const now  = new Date().toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
@@ -251,8 +255,12 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       mr.start(100);
       mediaRecorderRef.current = mr;
       setIsRecording(true);
+      recSecondsRef.current = 0;
       setRecSeconds(0);
-      recTimerRef.current = setInterval(() => setRecSeconds(s => s + 1), 1000);
+      recTimerRef.current = setInterval(() => {
+        recSecondsRef.current += 1;
+        setRecSeconds(recSecondsRef.current);
+      }, 1000);
     } catch {
       alert("Accès au microphone refusé.");
     }
@@ -1410,7 +1418,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     const highlightId = searchMatches[chatSearchIdx]?.id ?? null;
 
     return createPortal(
-      <div style={{ position:"fixed", top:0, left:0, right:0, height: vpHeight ? `${vpHeight}px` : "100dvh", display:"flex", flexDirection:"column", zIndex:10000, overflow:"hidden" }}>
+      <div style={{ position:"fixed", top: vpOffset ? `${vpOffset}px` : 0, left:0, right:0, height: vpHeight ? `${vpHeight}px` : "100dvh", display:"flex", flexDirection:"column", zIndex:10000, overflow:"hidden" }}>
         <style>{`
           .fbl-msg-mine   { background:#DCF8C6; color:#111; border-radius:8px 8px 2px 8px; box-shadow:0 1px 1px rgba(0,0,0,0.12); }
           .fbl-msg-theirs { background:#fff; color:#111; border-radius:8px 8px 8px 2px; box-shadow:0 1px 1px rgba(0,0,0,0.10); }
