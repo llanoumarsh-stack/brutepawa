@@ -1,3 +1,4 @@
 - [Gift/Token system](gift-token-system.md) — token balance is on walletsTable (tokenBalance integer), 1 token = 5 XOF, min withdraw = 1000 tokens
 - [SSE live gifts](sse-live-gifts.md) — GET /api/stream/live/:id/events uses DB polling (2s interval), dbId comes from cfStream.session.id
 - [MoneyFusion simulation](moneyfusion-sim.md) — webhook uses HMAC via MONEYFUSION_SECRET env; if unset, webhook is open for dev testing
+- [Supabase-only DB rule](supabase-db-rule.md) — always use APP_DATABASE_URL (Supabase), never Replit executeSql; prod migrations need explicit file path to apply-migration.mjs

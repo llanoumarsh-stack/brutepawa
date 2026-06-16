@@ -62,7 +62,8 @@ AfriConnect is a 6-module super-app:
 
 ## User preferences
 
-- **Toujours pusher vers GitHub** après chaque modification : `git push "https://x-access-token:${GITHUB_PERSONAL_ACCESS_TOKEN}@github.com/llanoumarsh-stack/brutepawa.git" main`
+- **DB exclusive** : Utiliser uniquement la DB Supabase (`APP_DATABASE_URL`). Ne jamais utiliser la DB Replit managée (`executeSql` / `checkDatabase`). Pour les migrations en production, toujours passer le fichier SQL explicitement à `apply-migration.mjs` : `APP_DATABASE_URL="..." node lib/db/apply-migration.mjs lib/db/drizzle/<fichier>.sql`
+- **Toujours pusher vers GitHub** après chaque fin de travaux : `git push "https://x-access-token:${GITHUB_PERSONAL_ACCESS_TOKEN}@github.com/llanoumarsh-stack/brutepawa.git" main`
 
 ## Gotchas
 
