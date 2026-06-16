@@ -1,0 +1,114 @@
+Ce qui est bien
+
+✅ Carte publication arrondie
+✅ Photo avec coins arrondis
+✅ Boutons plus modernes
+✅ Champ commentaire amélioré
+
+Ce qui ne va pas
+
+❌ Toujours un design très proche de Facebook
+
+❌ Couleurs grises partout
+
+❌ Aucun effet premium Brutepawa
+
+❌ Icônes génériques
+
+❌ Pas de dégradés verts
+
+❌ Pas de glassmorphism
+
+❌ Pas de compteur de réactions moderne
+
+❌ Boutons trop plats
+
+❌ Zone commentaire vide et sans personnalité
+
+❌ Avatar simple avec initiales
+
+❌ Aucune hiérarchie visuelle
+
+❌ Pas de badge vérifié premium
+
+❌ Le post semble "collé" sur la page
+
+
+---
+
+Ce que ça devrait ressembler
+
+Version Brutepawa 2026
+
+Fond gris très clair #F7F9FB
+
+Carte blanche avec ombre douce
+
+Coins 28px
+
+Avatar avec bordure dégradée verte
+
+Badge vérifié moderne
+
+Nom utilisateur plus imposant
+
+Temps de publication plus discret
+
+Réactions Facebook supprimées
+
+Réactions Brutepawa :
+
+👍 J'aime
+
+❤️ J'adore
+
+🔥 Impressionnant
+
+👏 Bravo
+
+
+Affichage :
+
+
+"34 réactions"
+
+avec avatars miniatures
+
+Boutons :
+
+J'aime
+
+Commenter
+
+Partager
+
+Enregistrer
+
+
+
+dans des capsules arrondies
+
+Effet tactile premium
+
+Commentaires dans une vraie carte
+
+Champ commentaire glassmorphism
+
+Icônes SVG professionnelles
+
+Animations micro-interactions
+
+Design identique Instagram Threads + X Premium + LinkedIn Premium
+
+Compatible Afrique, Europe, Amérique, Asie
+
+Aucun emoji utilisé comme icône système
+
+
+Ce que tu dois dire à Replit
+
+> STOP. Tu as amélioré l'UI mais tu es resté sur un style Facebook classique. Je veux une refonte complète dans l'identité Brutepawa Premium 2026. Supprime tout aspect Facebook. Utilise des cartes premium avec coins 28px, ombres douces, badges vérifiés modernes, avatars avec bordures dégradées, réactions Brutepawa personnalisées, boutons capsules, icônes SVG professionnelles, commentaires dans des cartes dédiées, champ commentaire glassmorphism, palette verte Brutepawa, micro-animations et hiérarchie visuelle premium. L'objectif est un niveau visuel comparable à LinkedIn Premium, Threads et les meilleures applications internationales. Aucun élément ne doit sembler daté ou générique.
+
+
+
+Regarde bien encore la maquette
