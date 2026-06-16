@@ -2043,32 +2043,59 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
     <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, display: "flex", flexDirection: "column", background: "#fff", zIndex: 1, overflow: "hidden" }}>
 
-      {/* ── HEADER ── */}
-      <div style={{ background: "#fff", flexShrink: 0, borderBottom: showInboxSearch ? "none" : "1px solid #e5e5e5" }}>
+      {/* ── PREMIUM HEADER ── */}
+      <div style={{ background: "#fff", flexShrink: 0, paddingTop: "env(safe-area-inset-top, 0px)" }}>
+        {/* Row 1 — Logo + title + actions */}
+        <div style={{ display: "flex", alignItems: "center", padding: "12px 16px 8px", gap: 10 }}>
+          {/* BP Logo */}
+          <button onClick={() => navigate("/")} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+            <div style={{ width: 32, height: 32, borderRadius: 10, background: "#16C24A", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+            </div>
+            <span style={{ color: "#16C24A", fontWeight: 900, fontSize: 17, fontFamily: "Georgia, serif", fontStyle: "italic", letterSpacing: -0.5 }}>brutepawa</span>
+          </button>
+          <span style={{ fontWeight: 800, fontSize: 20, color: "#0F172A", letterSpacing: -0.4, flex: 1 }}>Messages</span>
+          {totalUnread > 0 && (
+            <div style={{ background: "#16C24A", color: "#fff", borderRadius: 99, minWidth: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, padding: "0 6px" }}>
+              {totalUnread > 99 ? "99+" : totalUnread}
+            </div>
+          )}
+          <button onClick={() => setShowInboxSearch(true)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex", alignItems: "center" }}>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0F172A" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+          </button>
+          <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex", alignItems: "center" }}>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0F172A" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </button>
+          <button onClick={() => navigate("/")} style={{ width: 34, height: 34, borderRadius: "50%", background: "#16C24A", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        {/* Row 2 — Search bar */}
         {!showInboxSearch ? (
-          <div style={{ display: "flex", alignItems: "center", padding: "10px 8px 10px 4px", gap: 2 }}>
-            <button onClick={() => navigate("/")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 10px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="#050505"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-            </button>
-            <span style={{ flex: 1, fontWeight: 700, fontSize: 22, color: "#050505", letterSpacing: -0.3 }}>Messages</span>
-            <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 10px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg viewBox="0 0 24 24" width="26" height="26" fill="#050505"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-            </button>
-            <button onClick={() => setShowInboxSearch(true)} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 10px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg viewBox="0 0 24 24" width="26" height="26" fill="#050505"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 16px 12px" }}>
+            <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10, background: "#F1F5F9", borderRadius: 14, padding: "10px 14px" }}>
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#94A3B8" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher des personnes, groupes, canaux..." style={{ flex: 1, background: "none", border: "none", outline: "none", fontSize: 14, color: "#0F172A" }} />
+              {search && <button onClick={() => setSearch("")} style={{ background: "none", border: "none", cursor: "pointer", color: "#94A3B8", padding: 0, lineHeight: 1 }}>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#94A3B8" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>}
+            </div>
+            <button style={{ width: 44, height: 44, borderRadius: 14, background: "#F1F5F9", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#475569" strokeWidth="2.2" strokeLinecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="12" y1="18" x2="20" y2="18"/></svg>
             </button>
           </div>
         ) : (
-          <div style={{ display: "flex", alignItems: "center", padding: "8px 12px", gap: 8, borderBottom: "1px solid #e5e5e5" }}>
+          <div style={{ display: "flex", alignItems: "center", padding: "0 12px 12px", gap: 8 }}>
             <button onClick={() => { setShowInboxSearch(false); setSearch(""); }} style={{ background: "none", border: "none", cursor: "pointer", padding: "6px 4px", display: "flex", alignItems: "center" }}>
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="#050505"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0F172A" strokeWidth="2.2" strokeLinecap="round"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
             </button>
-            <input autoFocus value={search} onChange={e => setSearch(e.target.value)}
-              placeholder="Rechercher des discussions…"
-              style={{ flex: 1, background: "#f0f2f5", border: "none", borderRadius: 20, padding: "9px 14px", fontSize: 15, outline: "none", color: "#050505" }} />
-            {search && <button onClick={() => setSearch("")} style={{ background: "none", border: "none", cursor: "pointer", color: "#888", fontSize: 18, padding: "0 4px" }}>✕</button>}
+            <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher des personnes, groupes, canaux…" style={{ flex: 1, background: "#F1F5F9", border: "none", borderRadius: 14, padding: "10px 14px", fontSize: 14, outline: "none", color: "#0F172A" }} />
+            {search && <button onClick={() => setSearch("")} style={{ background: "none", border: "none", cursor: "pointer", padding: "0 2px" }}>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#94A3B8" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>}
           </div>
         )}
+        <div style={{ height: 1, background: "#F1F5F9" }} />
       </div>
 
       {/* ── BODY ── */}
@@ -2132,12 +2159,156 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           </div>
         ))}
 
-        {/* Empty */}
+        {/* ── Premium Empty State ── */}
         {!search && convList.length === 0 && chatGroups.length === 0 && (
-          <div style={{ padding: "64px 32px", textAlign: "center" }}>
-            <div style={{ fontSize: 64, marginBottom: 16 }}>💬</div>
-            <div style={{ fontWeight: 700, fontSize: 19, color: "#050505", marginBottom: 8 }}>Aucune discussion</div>
-            <div style={{ fontSize: 14, color: "#888", lineHeight: 1.6 }}>Commencez une conversation avec vos amis.</div>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "16px 0 24px" }}>
+
+            {/* Illustration SVG */}
+            <div style={{ width: "100%", maxWidth: 380, padding: "0 12px" }}>
+              <svg viewBox="0 0 380 280" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "auto" }}>
+                {/* Background circle */}
+                <circle cx="190" cy="150" r="120" fill="#DCFCE7" opacity="0.6"/>
+                <circle cx="190" cy="150" r="90" fill="#DCFCE7" opacity="0.4"/>
+
+                {/* ── Person 1 — left, standing, hoodie ── */}
+                {/* Body */}
+                <rect x="60" y="130" width="44" height="60" rx="10" fill="#16C24A"/>
+                {/* Head */}
+                <circle cx="82" cy="118" r="18" fill="#8B5E3C"/>
+                {/* Hair */}
+                <ellipse cx="82" cy="103" rx="18" ry="8" fill="#2D1A0E"/>
+                {/* Eyes */}
+                <circle cx="76" cy="117" r="2.5" fill="#fff"/>
+                <circle cx="88" cy="117" r="2.5" fill="#fff"/>
+                <circle cx="77" cy="117" r="1.2" fill="#1A0A00"/>
+                <circle cx="89" cy="117" r="1.2" fill="#1A0A00"/>
+                {/* Legs */}
+                <rect x="64" y="185" width="14" height="42" rx="7" fill="#1E293B"/>
+                <rect x="82" y="185" width="14" height="42" rx="7" fill="#1E293B"/>
+                {/* Shoes */}
+                <ellipse cx="71" cy="228" rx="10" ry="5" fill="#0F172A"/>
+                <ellipse cx="89" cy="228" rx="10" ry="5" fill="#0F172A"/>
+                {/* Phone in hand */}
+                <rect x="95" y="148" width="18" height="28" rx="4" fill="#0F172A"/>
+                <rect x="97" y="151" width="14" height="20" rx="2" fill="#38BDF8"/>
+                {/* Arm */}
+                <path d="M104 148 Q100 138 95 148" stroke="#8B5E3C" strokeWidth="6" strokeLinecap="round" fill="none"/>
+                {/* Bag strap */}
+                <path d="M60 135 Q48 155 55 175" stroke="#0F172A" strokeWidth="3" strokeLinecap="round" fill="none"/>
+
+                {/* ── Person 2 — center, sitting on big chat bubble ── */}
+                {/* Big green chat bubble as seat */}
+                <rect x="140" y="190" width="100" height="60" rx="20" fill="#16C24A"/>
+                <path d="M165 248 L155 265 L180 248" fill="#16C24A"/>
+                {/* 3 dots inside bubble */}
+                <circle cx="173" cy="220" r="5" fill="#fff"/>
+                <circle cx="190" cy="220" r="5" fill="#fff"/>
+                <circle cx="207" cy="220" r="5" fill="#fff"/>
+                {/* Body sitting */}
+                <rect x="163" y="155" width="44" height="40" rx="10" fill="#fff"/>
+                {/* Legs dangling */}
+                <rect x="167" y="190" width="13" height="30" rx="6" fill="#1E293B"/>
+                <rect x="183" y="190" width="13" height="30" rx="6" fill="#1E293B"/>
+                <ellipse cx="174" cy="221" rx="9" ry="5" fill="white"/>
+                <ellipse cx="190" cy="221" rx="9" ry="5" fill="white"/>
+                {/* Head */}
+                <circle cx="185" cy="140" r="20" fill="#5C3A1E"/>
+                {/* Bun hair */}
+                <ellipse cx="185" cy="122" rx="12" ry="9" fill="#2D1A0E"/>
+                <circle cx="185" cy="117" r="7" fill="#2D1A0E"/>
+                {/* Eyes */}
+                <circle cx="179" cy="139" r="2.5" fill="#fff"/>
+                <circle cx="191" cy="139" r="2.5" fill="#fff"/>
+                <circle cx="180" cy="139" r="1.2" fill="#1A0A00"/>
+                <circle cx="192" cy="139" r="1.2" fill="#1A0A00"/>
+                {/* Phone */}
+                <rect x="195" y="158" width="18" height="28" rx="4" fill="#0F172A"/>
+                <rect x="197" y="161" width="14" height="20" rx="2" fill="#A78BFA"/>
+                {/* Arm to phone */}
+                <path d="M207 158 Q206 150 200 158" stroke="#5C3A1E" strokeWidth="6" strokeLinecap="round" fill="none"/>
+
+                {/* ── Person 3 — right, sitting cross-legged ── */}
+                {/* Body */}
+                <rect x="262" y="155" width="44" height="48" rx="10" fill="#16C24A" opacity="0.9"/>
+                {/* Crossed legs */}
+                <path d="M262 198 Q255 215 268 222 Q280 230 280 215" stroke="#1E293B" strokeWidth="12" strokeLinecap="round" fill="none"/>
+                <path d="M306 198 Q313 215 300 222 Q288 230 288 215" stroke="#1E293B" strokeWidth="12" strokeLinecap="round" fill="none"/>
+                {/* Head */}
+                <circle cx="284" cy="142" r="18" fill="#3D2009"/>
+                {/* Short hair */}
+                <ellipse cx="284" cy="126" rx="18" ry="7" fill="#1A0A00"/>
+                {/* Eyes */}
+                <circle cx="278" cy="141" r="2.5" fill="#fff"/>
+                <circle cx="290" cy="141" r="2.5" fill="#fff"/>
+                <circle cx="279" cy="141" r="1.2" fill="#1A0A00"/>
+                <circle cx="291" cy="141" r="1.2" fill="#1A0A00"/>
+                {/* Phone in lap */}
+                <rect x="272" y="175" width="24" height="16" rx="4" fill="#0F172A"/>
+                <rect x="274" y="177" width="20" height="12" rx="2" fill="#FDE68A"/>
+                {/* Arm down */}
+                <path d="M275 168 Q272 174 277 175" stroke="#3D2009" strokeWidth="6" strokeLinecap="round" fill="none"/>
+
+                {/* ── Floating chat bubbles ── */}
+                {/* Top left white bubble */}
+                <rect x="18" y="80" width="72" height="36" rx="14" fill="#fff" style={{filter:"drop-shadow(0 2px 8px rgba(0,0,0,0.12))"}}/>
+                <path d="M30 115 L22 126 L42 115" fill="#fff"/>
+                <circle cx="36" cy="98" r="4" fill="#CBD5E1"/>
+                <circle cx="50" cy="98" r="4" fill="#CBD5E1"/>
+                <circle cx="64" cy="98" r="4" fill="#CBD5E1"/>
+                {/* Top right green bubble */}
+                <rect x="288" y="60" width="72" height="36" rx="14" fill="#16C24A"/>
+                <path d="M348 95 L360 106 L340 95" fill="#16C24A"/>
+                <rect x="296" y="73" width="20" height="5" rx="2.5" fill="#fff" opacity="0.8"/>
+                <rect x="296" y="82" width="50" height="5" rx="2.5" fill="#fff" opacity="0.6"/>
+                {/* Small bubble top center */}
+                <rect x="145" y="40" width="54" height="30" rx="12" fill="#16C24A" opacity="0.8"/>
+                <path d="M155 69 L148 78 L165 69" fill="#16C24A" opacity="0.8"/>
+                <circle cx="159" cy="55" r="3.5" fill="#fff"/>
+                <circle cx="172" cy="55" r="3.5" fill="#fff"/>
+                <circle cx="185" cy="55" r="3.5" fill="#fff"/>
+                {/* Person icon top right area */}
+                <rect x="308" y="110" width="32" height="32" rx="16" fill="#fff" opacity="0.9" style={{filter:"drop-shadow(0 1px 4px rgba(0,0,0,0.1))"}}/>
+                <circle cx="324" cy="120" r="5" fill="#94A3B8"/>
+                <path d="M316 134c0-4.4 3.6-8 8-8s8 3.6 8 8" fill="#94A3B8"/>
+                {/* Video icon left */}
+                <rect x="22" y="155" width="32" height="32" rx="16" fill="#fff" opacity="0.9" style={{filter:"drop-shadow(0 1px 4px rgba(0,0,0,0.1))"}}/>
+                <rect x="29" y="163" width="14" height="10" rx="2" fill="#94A3B8"/>
+                <path d="M43 165 l6 3 -6 3 z" fill="#94A3B8"/>
+              </svg>
+            </div>
+
+            {/* Text + actions row */}
+            <div style={{ display: "flex", alignItems: "flex-start", padding: "0 20px", width: "100%", gap: 16, marginTop: 4 }}>
+              {/* Left: text + button */}
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 800, fontSize: 22, color: "#0F172A", marginBottom: 8, lineHeight: 1.2 }}>Aucune discussion</div>
+                <div style={{ fontSize: 13.5, color: "#64748B", lineHeight: 1.6, marginBottom: 20 }}>Commencez une conversation avec vos amis ou rejoignez des groupes et canaux.</div>
+                <button
+                  onClick={() => setFabOpen(true)}
+                  style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "#16C24A", color: "#fff", border: "none", borderRadius: 99, padding: "13px 22px", fontWeight: 700, fontSize: 15, cursor: "pointer", boxShadow: "0 4px 16px rgba(22,194,74,0.4)" }}
+                >
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  Nouvelle discussion
+                </button>
+              </div>
+
+              {/* Right: expanded FAB actions */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-end", flexShrink: 0 }}>
+                {([
+                  { label: "Nouvelle discussion", iconBg: "#16C24A", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>, action: () => setFabOpen(false) },
+                  { label: "Nouveau groupe", iconBg: "#3B82F6", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, action: () => { setGroupWizardType("group"); setGroupWizard("members"); setWizardSearch(""); setWizardMembers(new Set()); } },
+                  { label: "Créer un canal", iconBg: "#8B5CF6", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>, action: () => { setGroupWizardType("channel"); setGroupWizard("members"); setWizardSearch(""); setWizardMembers(new Set()); } },
+                  { label: "Diffuser une annonce", iconBg: "#F59E0B", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 11a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 0h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 7.91a16 16 0 0 0 6.1 6.1l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>, action: () => {} },
+                  { label: "Inviter des amis", iconBg: "#8B5CF6", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>, action: () => {} },
+                ] as {label:string;iconBg:string;svg:React.ReactNode;action:()=>void}[]).map((item, i) => (
+                  <div key={i} onClick={item.action} style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", animation: `fbl-fab-in .2s ease ${i*.05}s both` }}>
+                    <div style={{ background: "#fff", borderRadius: 99, padding: "8px 14px", boxShadow: "0 2px 12px rgba(0,0,0,0.12)", fontSize: 13.5, fontWeight: 600, color: "#0F172A", whiteSpace: "nowrap" }}>{item.label}</div>
+                    <div style={{ width: 46, height: 46, borderRadius: "50%", background: item.iconBg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: `0 4px 14px ${item.iconBg}66` }}>{item.svg}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
           </div>
         )}
         {search && visibleConvs.length === 0 && visibleGroups.length === 0 && (
@@ -2149,30 +2320,36 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         )}
       </div>
 
-      {/* ── FAB ── */}
-      <div style={{ position: "absolute", bottom: 80, right: 16, zIndex: 50 }}>
-        {fabOpen && (
-          <>
-            <div onClick={() => setFabOpen(false)} style={{ position: "fixed", inset: 0, zIndex: -1, background: "rgba(0,0,0,0.1)" }} />
-            <div style={{ position: "absolute", bottom: 68, right: 0, display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-end" }}>
-              {[
-                { label: "Nouveau canal",      color: "#00838F", icon: "📢", action: () => { setGroupWizardType("channel"); setGroupWizard("members"); setWizardSearch(""); setWizardMembers(new Set()); setFabOpen(false); } },
-                { label: "Nouveau groupe",      color: "#1877F2", icon: "👥", action: () => { setGroupWizardType("group"); setGroupWizard("members"); setWizardSearch(""); setWizardMembers(new Set()); setFabOpen(false); } },
-                { label: "Nouvelle discussion", color: "#42B72A", icon: "✉️", action: () => setFabOpen(false) },
-              ].map((item, i) => (
-                <div key={item.label} onClick={item.action} style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", animation: `fbl-fab-in .2s ease ${i*.06}s both` }}>
-                  <div style={{ background: "#fff", borderRadius: 22, padding: "8px 16px", boxShadow: "0 2px 12px rgba(0,0,0,.18)", fontSize: 13, fontWeight: 700, color: "#050505", whiteSpace: "nowrap" }}>{item.label}</div>
-                  <div style={{ width: 46, height: 46, borderRadius: "50%", background: item.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0, boxShadow: `0 3px 12px ${item.color}88` }}>{item.icon}</div>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
-        <button onClick={() => setFabOpen(!fabOpen)}
-          style={{ width: 56, height: 56, borderRadius: "50%", background: "#1877F2", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 18px rgba(24,119,242,.55)", transition: "transform .2s" }}>
-          <svg viewBox="0 0 24 24" width="26" height="26" fill="#fff"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-        </button>
-      </div>
+      {/* ── FAB — visible only when conversations exist ── */}
+      {(convList.length > 0 || chatGroups.length > 0) && (
+        <div style={{ position: "absolute", bottom: 80, right: 16, zIndex: 50 }}>
+          {fabOpen && (
+            <>
+              <div onClick={() => setFabOpen(false)} style={{ position: "fixed", inset: 0, zIndex: -1, background: "rgba(0,0,0,0.1)" }} />
+              <div style={{ position: "absolute", bottom: 68, right: 0, display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-end" }}>
+                {([
+                  { label: "Nouvelle discussion", iconBg: "#16C24A", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>, action: () => setFabOpen(false) },
+                  { label: "Nouveau groupe", iconBg: "#3B82F6", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, action: () => { setGroupWizardType("group"); setGroupWizard("members"); setWizardSearch(""); setWizardMembers(new Set()); setFabOpen(false); } },
+                  { label: "Créer un canal", iconBg: "#8B5CF6", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>, action: () => { setGroupWizardType("channel"); setGroupWizard("members"); setWizardSearch(""); setWizardMembers(new Set()); setFabOpen(false); } },
+                  { label: "Diffuser une annonce", iconBg: "#F59E0B", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 11a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 0h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 7.91a16 16 0 0 0 6.1 6.1l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>, action: () => setFabOpen(false) },
+                  { label: "Inviter des amis", iconBg: "#8B5CF6", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>, action: () => setFabOpen(false) },
+                ] as {label:string;iconBg:string;svg:React.ReactNode;action:()=>void}[]).map((item, i) => (
+                  <div key={i} onClick={item.action} style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", animation: `fbl-fab-in .2s ease ${i*.06}s both` }}>
+                    <div style={{ background: "#fff", borderRadius: 99, padding: "8px 16px", boxShadow: "0 2px 12px rgba(0,0,0,.14)", fontSize: 13.5, fontWeight: 600, color: "#0F172A", whiteSpace: "nowrap" }}>{item.label}</div>
+                    <div style={{ width: 46, height: 46, borderRadius: "50%", background: item.iconBg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: `0 4px 14px ${item.iconBg}55` }}>{item.svg}</div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+          <button onClick={() => setFabOpen(!fabOpen)} style={{ width: 56, height: 56, borderRadius: "50%", background: fabOpen ? "#16C24A" : "#16C24A", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 18px rgba(22,194,74,.5)", transition: "transform .2s" }}>
+            {fabOpen
+              ? <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              : <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            }
+          </button>
+        </div>
+      )}
     </div>
 
     {/* ── SETTINGS OVERLAY (portaled) ── */}
