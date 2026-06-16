@@ -1,0 +1,165 @@
+> Reconcevoir entièrement l'écran de publication BrutePawa avec un design premium, moderne et international inspiré d'Instagram, Threads, LinkedIn Premium et Apple Design System.
+
+Respecter strictement l'identité visuelle BrutePawa :
+
+Couleur principale : vert BrutePawa (#22C55E)
+
+Fond blanc premium
+
+Coins arrondis 24px
+
+Ombres douces
+
+Glassmorphism léger
+
+Interface élégante et minimaliste
+
+Aucune apparence Facebook ancienne génération
+
+Design responsive Android et iPhone
+
+
+En-tête
+
+Bouton retour moderne
+
+Titre : "Publication de Kassim"
+
+Bouton recherche circulaire premium
+
+Fond blanc avec séparation discrète
+
+
+Carte publication
+
+Grande carte blanche premium
+
+Ombre légère
+
+Coins 28px
+
+
+Profil utilisateur
+
+Avatar photo réel avec bordure verte
+
+Indicateur en ligne
+
+Nom en gras
+
+Badge vérifié BrutePawa vert
+
+Temps de publication
+
+Icône visibilité publique
+
+Menu trois points moderne
+
+
+Lecteur musique intégré
+
+Carte audio premium :
+
+Pochette d'album
+
+Icône musique verte
+
+Titre du morceau
+
+Nom de l'artiste
+
+Barre de progression
+
+Bouton lecture circulaire
+
+Animation d'ondes audio
+
+
+Publication photo
+
+Grande photo immersive
+
+Coins arrondis 24px
+
+Affichage haute qualité
+
+Zoom fluide
+
+Double tap pour aimer
+
+
+Réactions
+
+Afficher :
+
+J'aime
+
+Cœur
+
+Feu
+
+
+avec avatars miniatures des utilisateurs ayant réagi.
+
+Actions
+
+Boutons modernes :
+
+J'aime
+
+Commenter
+
+Partager
+
+Enregistrer
+
+
+avec icônes SVG premium.
+
+Zone commentaire
+
+Avatar utilisateur
+
+Champ "Écrire un commentaire..."
+
+Emoji
+
+GIF
+
+Micro
+
+Galerie photo
+
+
+Design similaire aux applications sociales internationales de 2026.
+
+Micro-interactions
+
+Animations fluides
+
+Effet tactile
+
+Transitions premium
+
+Retour haptique
+
+
+Qualité attendue
+
+Créer une interface capable de rivaliser avec Instagram, Threads, LinkedIn Premium, TikTok et X.
+
+Aspect :
+
+ultra professionnel
+
+moderne
+
+propre
+
+international
+
+haut de gamme
+
+cohérent avec tout l'écosystème BrutePawa
+
+prêt pour plusieurs millions d'utilisateurs dans le monde.
