@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
-import { apiGetConversations, apiGetMessages, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiDeleteConversation, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo } from "../lib/api";
+import { apiGetConversations, apiGetMessages, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadVoice, apiDeleteConversation, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo } from "../lib/api";
 import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignaling";
 
 void ({} as ApiChatGroup);
@@ -276,23 +276,40 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       const mr = new MediaRecorder(stream);
       audioChunksRef.current = [];
       mr.ondataavailable = (e) => { if (e.data.size > 0) audioChunksRef.current.push(e.data); };
-      mr.onstop = () => {
-        const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-        const url  = URL.createObjectURL(blob);
-        const secs = recSecondsRef.current; // use ref — avoids stale closure
+      mr.onstop = async () => {
+        const blob  = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        const secs  = recSecondsRef.current;
         stream.getTracks().forEach(t => t.stop());
         if (secs < 1) return;
-        const now  = new Date().toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
+        const convId = activeConvRef.current;
+        if (!convId) return;
         const mins = Math.floor(secs / 60);
         const s    = secs % 60;
         const dur  = `${mins}:${s.toString().padStart(2, "0")}`;
-        setMessages(prev => ({
-          ...prev,
-          [activeConv!]: [...(prev[activeConv!] ?? []), {
-            id: Date.now(), text: "", mine: true, time: now, status: "sent",
-            attachment: { type: "audio", label: url, extra: dur } as { type: "audio"; label: string; extra?: string },
-          }],
-        }));
+        try {
+          const { url } = await apiUploadVoice(blob, secs);
+          const content = `__audio__:${secs}:${url}`;
+          const sent = await apiSendMessage(convId, content);
+          const now = new Date(sent.createdAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
+          setMessages(prev => ({
+            ...prev,
+            [convId]: [...(prev[convId] ?? []).filter(m => m.id !== sent.id), {
+              id: sent.id, text: "", mine: true, time: now, status: "sent",
+              attachment: { type: "audio" as const, label: url, extra: dur },
+            }],
+          }));
+        } catch {
+          // Fallback: show locally with blob URL (won't survive refresh)
+          const url = URL.createObjectURL(blob);
+          const now = new Date().toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
+          setMessages(prev => ({
+            ...prev,
+            [convId]: [...(prev[convId] ?? []), {
+              id: Date.now(), text: "", mine: true, time: now, status: "sent",
+              attachment: { type: "audio" as const, label: url, extra: dur },
+            }],
+          }));
+        }
       };
       mr.start(100);
       mediaRecorderRef.current = mr;
@@ -408,16 +425,29 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       }).catch(() => {}).finally(() => setConvLoading(false));
   }, []);
 
+  const parseApiMsg = useCallback((m: { id: number; content: string; fromUserId: number; createdAt: string; isRead: boolean }) => {
+    const time   = new Date(m.createdAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
+    const status = m.isRead ? "read" as const : "sent" as const;
+    const base   = { id: m.id, mine: m.fromUserId === meId, time, status };
+    if (m.content.startsWith("__audio__:")) {
+      const rest  = m.content.slice("__audio__:".length);
+      const colon = rest.indexOf(":");
+      const totalSecs = parseInt(rest.slice(0, colon), 10) || 0;
+      const url   = rest.slice(colon + 1);
+      const mins  = Math.floor(totalSecs / 60);
+      const s     = totalSecs % 60;
+      const dur   = `${mins}:${s.toString().padStart(2, "0")}`;
+      return { ...base, text: "", attachment: { type: "audio" as const, label: url, extra: dur } };
+    }
+    return { ...base, text: m.content };
+  }, [meId]);
+
   useEffect(() => {
     if (!activeConv || messages[activeConv]) return;
     apiGetMessages(activeConv).then(msgs => {
       setMessages(prev => ({
         ...prev,
-        [activeConv]: msgs.map(m => ({
-          id: m.id, text: m.content, mine: m.fromUserId === meId,
-          time: new Date(m.createdAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }),
-          status: m.isRead ? "read" as const : "sent" as const,
-        })),
+        [activeConv]: msgs.map(m => parseApiMsg(m)),
       }));
     }).catch(() => {});
   }, [activeConv]);
@@ -440,18 +470,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     const poll = setInterval(() => {
       apiGetMessages(activeConv).then(msgs => {
         setMessages(prev => {
-          const next = msgs.map(m => ({
-            id: m.id, text: m.content, mine: m.fromUserId === meId,
-            time: new Date(m.createdAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }),
-            status: m.isRead ? "read" as const : "sent" as const,
-          }));
+          const next = msgs.map(m => parseApiMsg(m));
           if (JSON.stringify(next.map(x => x.id)) === JSON.stringify((prev[activeConv] ?? []).map(x => x.id))) return prev;
           return { ...prev, [activeConv]: next };
         });
       }).catch(() => {});
     }, 3000);
     return () => clearInterval(poll);
-  }, [activeConv, meId]);
+  }, [activeConv, parseApiMsg]);
 
   useEffect(() => {
     const poll = setInterval(() => {
@@ -566,7 +592,12 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   };
 
   const startLongPress = (msgId: number) => {
-    longPressTimer.current = setTimeout(() => { setLongPressMsg(msgId); }, 500);
+    if (selectionMode) { toggleSelect(msgId); return; }
+    longPressTimer.current = setTimeout(() => {
+      setSelectionMode(true);
+      setSelectedMsgs(new Set([msgId]));
+      setLongPressMsg(msgId);
+    }, 500);
   };
   const cancelLongPress = () => {
     if (longPressTimer.current) { clearTimeout(longPressTimer.current); longPressTimer.current = null; }
@@ -1482,20 +1513,31 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         `}</style>
 
         {/* ── HEADER ── */}
-        {longPressMsg !== null ? (
-          /* SELECTION BAR */
-          <div style={{ background:"#075E54", padding:"10px 16px", display:"flex", alignItems:"center", gap:18, flexShrink:0, boxShadow:"0 1px 3px rgba(0,0,0,0.18)" }}>
-            <button onClick={() => setLongPressMsg(null)}
-              style={{ background:"none", border:"none", cursor:"pointer", color:"#fff", display:"flex", alignItems:"center", padding:4 }}>
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        {selectionMode ? (
+          /* ── PREMIUM SELECTION HEADER ── */
+          <div style={{ background:"linear-gradient(135deg,#16C24A,#0ea541)", padding:"0 10px", height:58, display:"flex", alignItems:"center", gap:8, flexShrink:0, boxShadow:"0 2px 16px rgba(22,194,74,0.35)" }}>
+            {/* Back arrow */}
+            <button onClick={() => { setSelectionMode(false); setSelectedMsgs(new Set()); setLongPressMsg(null); }}
+              style={{ background:"none", border:"none", cursor:"pointer", color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", padding:8, borderRadius:"50%", flexShrink:0 }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
             </button>
-            <span style={{ flex:1, fontWeight:700, fontSize:17, color:"#fff" }}>1</span>
-            <button style={{ background:"none", border:"none", cursor:"pointer", color:"#fff", display:"flex", alignItems:"center", padding:6 }}>
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M21 8.5L16.5 4 7 13.5l-3 9 9-3L21 8.5zM5.92 17.08l1.55-4.64L11 16.08 5.92 17.08zM15 6l3 3-8.25 8.25-3-3L15 6z"/></svg>
+            {/* Count capsule */}
+            <div style={{ background:"rgba(255,255,255,0.22)", borderRadius:20, padding:"4px 14px", display:"flex", alignItems:"center", gap:7, backdropFilter:"blur(8px)", flex:1 }}>
+              <span style={{ color:"#fff", fontWeight:900, fontSize:19, lineHeight:1 }}>{selectedMsgs.size}</span>
+              <span style={{ color:"rgba(255,255,255,0.92)", fontSize:13, fontWeight:500 }}>{selectedMsgs.size <= 1 ? "sélectionné" : "sélectionnés"}</span>
+            </div>
+            {/* Edit icon */}
+            <button style={{ background:"rgba(255,255,255,0.18)", border:"none", width:38, height:38, borderRadius:"50%", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, backdropFilter:"blur(8px)" }}>
+              <svg viewBox="0 0 24 24" width="19" height="19" fill="#fff"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
             </button>
-            <button onClick={() => { setMessages(prev => ({ ...prev, [activeConv!]: (prev[activeConv!] ?? []).filter(x => x.id !== longPressMsg) })); setLongPressMsg(null); }}
-              style={{ background:"none", border:"none", cursor:"pointer", color:"#fff", display:"flex", alignItems:"center", padding:6 }}>
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            {/* Delete icon */}
+            <button onClick={() => { confirmDelete(); setLongPressMsg(null); }}
+              style={{ background:"rgba(255,255,255,0.18)", border:"none", width:38, height:38, borderRadius:"50%", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, backdropFilter:"blur(8px)" }}>
+              <svg viewBox="0 0 24 24" width="19" height="19" fill="#fff"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            </button>
+            {/* More icon */}
+            <button style={{ background:"rgba(255,255,255,0.18)", border:"none", width:38, height:38, borderRadius:"50%", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, backdropFilter:"blur(8px)" }}>
+              <svg viewBox="0 0 24 24" width="19" height="19" fill="#fff"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
             </button>
           </div>
         ) : showChatSearch ? (
@@ -1589,22 +1631,30 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             const isLast     = i === currentMessages.length - 1 || currentMessages[i + 1]?.mine !== msg.mine;
             const isHL       = showChatSearch && chatSearchQ.trim() && msg.text.toLowerCase().includes(chatSearchQ.toLowerCase());
             const isAct      = msg.id === highlightId;
-            const isSelected = longPressMsg !== null && msg.id === longPressMsg;
+            const isSelected = selectionMode && selectedMsgs.has(msg.id);
             return (
               <div key={msg.id}
                 style={{ display:"flex", justifyContent: msg.mine ? "flex-end" : "flex-start", alignItems:"flex-end", gap:6, marginTop:2,
-                  background: isSelected ? "rgba(0,120,212,0.13)" : isAct ? "rgba(24,119,242,0.15)" : isHL ? "rgba(255,235,59,0.25)" : "transparent",
-                  borderRadius:8, transition:"background 0.2s", paddingLeft: longPressMsg !== null ? 36 : 0, position:"relative" }}
-                onMouseDown={() => startLongPress(msg.id)} onMouseUp={cancelLongPress} onMouseLeave={cancelLongPress}
-                onTouchStart={() => startLongPress(msg.id)} onTouchEnd={cancelLongPress} onTouchMove={cancelLongPress}
-                onContextMenu={e => { e.preventDefault(); cancelLongPress(); setLongPressMsg(msg.id); }}>
-                {/* Telegram-style selection circle indicator */}
-                {longPressMsg !== null && (
-                  <div style={{ position:"absolute", left:6, top:"50%", transform:"translateY(-50%)", width:22, height:22, borderRadius:"50%",
-                    background: isSelected ? "#1877F2" : "transparent", border: `2px solid ${isSelected ? "#1877F2" : "#B0B3B8"}`,
-                    display:"flex", alignItems:"center", justifyContent:"center", transition:"all 0.15s", flexShrink:0 }}>
-                    {isSelected && <svg viewBox="0 0 24 24" width="12" height="12" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>}
+                  background: isSelected ? "rgba(22,194,74,0.10)" : isAct ? "rgba(24,119,242,0.15)" : isHL ? "rgba(255,235,59,0.25)" : "transparent",
+                  borderRadius:10, transition:"all 0.2s", paddingLeft: selectionMode ? 38 : 0, paddingRight: selectionMode ? 6 : 0, position:"relative",
+                  cursor: selectionMode ? "pointer" : "default" }}
+                onClick={() => { if (selectionMode) toggleSelect(msg.id); }}
+                onPointerDown={() => { if (!selectionMode) startLongPress(msg.id); }}
+                onPointerUp={cancelLongPress} onPointerLeave={cancelLongPress}
+                onContextMenu={e => { e.preventDefault(); cancelLongPress(); setSelectionMode(true); setSelectedMsgs(new Set([msg.id])); setLongPressMsg(msg.id); }}>
+                {/* Premium selection circle */}
+                {selectionMode && (
+                  <div style={{ position:"absolute", left:7, top:"50%", transform:"translateY(-50%)", width:26, height:26, borderRadius:"50%",
+                    background: isSelected ? "#16C24A" : "#fff",
+                    border: `2.5px solid ${isSelected ? "#16C24A" : "#CBD5E1"}`,
+                    boxShadow: isSelected ? "0 0 0 4px rgba(22,194,74,0.2), 0 2px 8px rgba(22,194,74,0.3)" : "0 1px 4px rgba(0,0,0,0.1)",
+                    display:"flex", alignItems:"center", justifyContent:"center", transition:"all 0.18s", flexShrink:0, zIndex:2 }}>
+                    {isSelected && <svg viewBox="0 0 24 24" width="14" height="14" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>}
                   </div>
+                )}
+                {/* Green glow outline on selected bubble */}
+                {isSelected && (
+                  <div style={{ position:"absolute", inset:1, borderRadius:10, border:"2px solid rgba(22,194,74,0.55)", boxShadow:"0 0 14px rgba(22,194,74,0.22)", pointerEvents:"none", zIndex:1 }} />
                 )}
                 {!msg.mine && (
                   <div style={{ width:28, flexShrink:0, alignSelf:"flex-end", paddingBottom:2 }}>
@@ -1832,34 +1882,65 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         </div>
 
         {/* ── INPUT BAR ── */}
-        {longPressMsg !== null ? (
-          /* TELEGRAM SELECTION BOTTOM: reactions + action pills */
-          <div style={{ background:"#F0F2F5", flexShrink:0, borderTop:"1px solid #E4E6EB" }}>
-            {/* Emoji reaction strip */}
-            <div style={{ display:"flex", alignItems:"center", background:"#fff", margin:"8px 12px 0", borderRadius:30, padding:"6px 4px", boxShadow:"0 1px 6px rgba(0,0,0,0.12)", gap:0 }}>
-              {["😊","❤️","👍","👎","🔥","😍","👏"].map(em => (
-                <button key={em} onClick={() => setLongPressMsg(null)}
-                  style={{ background:"none", border:"none", fontSize:26, cursor:"pointer", flex:1, padding:"4px 2px", lineHeight:1, transition:"transform 0.1s" }}
-                  onMouseEnter={e => (e.currentTarget.style.transform="scale(1.35)")}
-                  onMouseLeave={e => (e.currentTarget.style.transform="scale(1)")}>
+        {selectionMode ? (
+          /* ── PREMIUM GLASSMORPHISM SELECTION PANEL ── */
+          <div style={{ background:"rgba(248,250,252,0.94)", backdropFilter:"blur(24px)", WebkitBackdropFilter:"blur(24px)", borderRadius:"24px 24px 0 0", boxShadow:"0 -8px 40px rgba(0,0,0,0.13), 0 -1px 0 rgba(255,255,255,0.8)", flexShrink:0, paddingBottom:"env(safe-area-inset-bottom, 12px)" }}>
+            {/* Drag handle */}
+            <div style={{ width:40, height:4, borderRadius:2, background:"#CBD5E1", margin:"10px auto 14px" }} />
+
+            {/* Reaction bubbles row */}
+            <div style={{ display:"flex", gap:6, padding:"0 12px 14px", overflowX:"auto", scrollbarWidth:"none", WebkitOverflowScrolling:"touch" } as React.CSSProperties}>
+              {["😊","❤️","👍","👎","🔥","😍","👏","😂","😮","😢"].map(em => (
+                <button key={em}
+                  onClick={() => { setSelectionMode(false); setSelectedMsgs(new Set()); setLongPressMsg(null); }}
+                  style={{ background:"#fff", border:"1.5px solid #F1F5F9", borderRadius:"50%", width:50, height:50, flexShrink:0, fontSize:26, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(0,0,0,0.08)", transition:"transform 0.12s, box-shadow 0.12s" }}
+                  onMouseEnter={e => { e.currentTarget.style.transform="scale(1.28)"; e.currentTarget.style.boxShadow="0 4px 16px rgba(22,194,74,0.25)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform="scale(1)"; e.currentTarget.style.boxShadow="0 2px 8px rgba(0,0,0,0.08)"; }}>
                   {em}
                 </button>
               ))}
-              <button style={{ background:"none", border:"none", cursor:"pointer", color:"#888", fontSize:18, padding:"4px 8px", flexShrink:0, display:"flex", alignItems:"center" }}>
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
-              </button>
             </div>
-            {/* Action pill buttons */}
-            <div style={{ display:"flex", gap:10, padding:"10px 12px 14px" }}>
-              <button onClick={() => setLongPressMsg(null)}
-                style={{ flex:1, background:"#fff", border:"1.5px solid #E4E6EB", borderRadius:24, padding:"11px 8px", fontSize:15, fontWeight:700, cursor:"pointer", color:"#111", display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"/></svg>
-                Répondre
+
+            {/* Separator */}
+            <div style={{ height:1, background:"linear-gradient(90deg,transparent,#E2E8F0 20%,#E2E8F0 80%,transparent)", margin:"0 16px 14px" }} />
+
+            {/* Actions grid 3×2 */}
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(6,1fr)", gap:6, padding:"0 10px 16px" }}>
+              {/* Répondre */}
+              <button onClick={() => { setSelectionMode(false); setSelectedMsgs(new Set()); setLongPressMsg(null); }}
+                style={{ background:"#fff", border:"1.5px solid #F1F5F9", borderRadius:18, padding:"12px 4px 8px", display:"flex", flexDirection:"column", alignItems:"center", gap:5, cursor:"pointer", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="#16C24A"><path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"/></svg>
+                <span style={{ fontSize:9.5, fontWeight:700, color:"#334155", lineHeight:1.1, textAlign:"center" }}>Répondre</span>
               </button>
-              <button onClick={() => setLongPressMsg(null)}
-                style={{ flex:1, background:"#fff", border:"1.5px solid #E4E6EB", borderRadius:24, padding:"11px 8px", fontSize:15, fontWeight:700, cursor:"pointer", color:"#111", display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
-                Transférer
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M14 15l7-7-7-7v4.1c-5 0-8.5-1.6-11-5.1 1 5 4 10 11 11V15z"/></svg>
+              {/* Transférer */}
+              <button onClick={() => { setSelectionMode(false); setSelectedMsgs(new Set()); setLongPressMsg(null); }}
+                style={{ background:"#fff", border:"1.5px solid #F1F5F9", borderRadius:18, padding:"12px 4px 8px", display:"flex", flexDirection:"column", alignItems:"center", gap:5, cursor:"pointer", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="#16C24A"><path d="M14 15l7-7-7-7v4.1c-5 0-8.5-1.6-11-5.1 1 5 4 10 11 11V15z"/></svg>
+                <span style={{ fontSize:9.5, fontWeight:700, color:"#334155", lineHeight:1.1, textAlign:"center" }}>Transférer</span>
+              </button>
+              {/* Copier */}
+              <button onClick={() => { copySelected(); }}
+                style={{ background:"#fff", border:"1.5px solid #F1F5F9", borderRadius:18, padding:"12px 4px 8px", display:"flex", flexDirection:"column", alignItems:"center", gap:5, cursor:"pointer", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="#16C24A"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                <span style={{ fontSize:9.5, fontWeight:700, color:"#334155", lineHeight:1.1, textAlign:"center" }}>Copier</span>
+              </button>
+              {/* Épingler */}
+              <button onClick={() => { setSelectionMode(false); setSelectedMsgs(new Set()); setLongPressMsg(null); }}
+                style={{ background:"#fff", border:"1.5px solid #F1F5F9", borderRadius:18, padding:"12px 4px 8px", display:"flex", flexDirection:"column", alignItems:"center", gap:5, cursor:"pointer", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="#16C24A"><path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/></svg>
+                <span style={{ fontSize:9.5, fontWeight:700, color:"#334155", lineHeight:1.1, textAlign:"center" }}>Épingler</span>
+              </button>
+              {/* Enregistrer */}
+              <button onClick={() => { setSelectionMode(false); setSelectedMsgs(new Set()); setLongPressMsg(null); }}
+                style={{ background:"#fff", border:"1.5px solid #F1F5F9", borderRadius:18, padding:"12px 4px 8px", display:"flex", flexDirection:"column", alignItems:"center", gap:5, cursor:"pointer", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="#16C24A"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                <span style={{ fontSize:9.5, fontWeight:700, color:"#334155", lineHeight:1.1, textAlign:"center" }}>Enregistrer</span>
+              </button>
+              {/* Supprimer */}
+              <button onClick={() => { confirmDelete(); setLongPressMsg(null); }}
+                style={{ background:"#FFF5F5", border:"1.5px solid #FEE2E2", borderRadius:18, padding:"12px 4px 8px", display:"flex", flexDirection:"column", alignItems:"center", gap:5, cursor:"pointer", boxShadow:"0 1px 6px rgba(239,68,68,0.08)" }}>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="#EF4444"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                <span style={{ fontSize:9.5, fontWeight:700, color:"#EF4444", lineHeight:1.1, textAlign:"center" }}>Supprimer</span>
               </button>
             </div>
           </div>
