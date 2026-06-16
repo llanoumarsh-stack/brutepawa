@@ -79,7 +79,8 @@ function PushAutoSubscribe() {
 
   useEffect(() => {
     if (!isAuth) return;
-    if (permission === "default" && !subscribed) {
+    // Subscribe if permission not yet asked, OR if already granted but subscription is missing/expired
+    if ((permission === "default" || permission === "granted") && !subscribed) {
       const t = setTimeout(() => subscribe(), 5000);
       return () => clearTimeout(t);
     }

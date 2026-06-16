@@ -4,6 +4,7 @@ import { eq, and, or, desc, sql, gt } from "drizzle-orm";
 import { CreatePostBody, GetPostParams, DeletePostParams, LikePostParams, LikePostBody, SendMessageBody, GetConversationParams, ListPostsQueryParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
 import { pushToUserDevice } from "./push";
+import { pushToUser } from "./signaling";
 import { extractKeyFromUrl, ownerIdFromKey } from "../lib/r2";
 import { releaseStorage } from "../lib/storage";
 
@@ -281,19 +282,34 @@ router.post("/messages", requireAuth, async (req, res): Promise<void> => {
     content: parsed.data.content,
   }).returning();
 
-  // Push notification to recipient
+  // SSE: notify recipient in real-time (if app is open)
+  pushToUser(toId, "message:new", {
+    id:         msg.id,
+    fromUserId: me,
+    toUserId:   toId,
+    content:    msg.content,
+    createdAt:  msg.createdAt,
+  });
+
+  // Push notification to recipient (if app is closed / offline)
   const [sender] = await db.select({ firstName: usersTable.firstName, lastName: usersTable.lastName })
     .from(usersTable).where(eq(usersTable.id, me));
   const senderName = sender ? `${sender.firstName} ${sender.lastName}`.trim() : "Quelqu'un";
   const rawContent = parsed.data.content;
   const notifBody = rawContent.startsWith("__audio__")
     ? "🎤 Message vocal"
+    : rawContent.startsWith("__video__")
+    ? "📹 Message vidéo"
     : rawContent.length > 80 ? rawContent.slice(0, 80) + "…" : rawContent;
   pushToUserDevice(toId, {
-    title: senderName,
-    body: notifBody,
-    tag: `msg-${me}`,
-    data: { url: `/messages?userId=${me}` },
+    title:              senderName,
+    body:               notifBody,
+    icon:               "/icons/icon-192.png",
+    badge:              "/icons/icon-192.png",
+    tag:                `msg-${me}`,
+    renotify:           true,
+    vibrate:            [200, 100, 200],
+    data:               { url: `/messages?userId=${me}` },
   }).catch(() => {});
 
   res.status(201).json(msg);
