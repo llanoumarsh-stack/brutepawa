@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { Post } from "../lib/store";
 import { formatNumber } from "../data/mock";
@@ -834,12 +835,12 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
       </div>
 
       {/* ── POST MENU BOTTOM SHEET ──────────────────────────── */}
-      {openMenu && (
+      {openMenu && createPortal(
         <>
           {/* Backdrop */}
-          <div onClick={closeMenu} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)", zIndex: 90 }} />
+          <div onClick={closeMenu} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)", zIndex: 9000 }} />
           {/* Sheet */}
-          <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 100, background: "#fff", borderRadius: "28px 28px 0 0", boxShadow: "0 -8px 40px rgba(0,0,0,0.18)", maxHeight: "88vh", overflowY: "auto", animation: "slideUpSheet 0.28s cubic-bezier(0.32,0.72,0,1)" }}>
+          <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 9001, background: "#fff", borderRadius: "28px 28px 0 0", boxShadow: "0 -8px 40px rgba(0,0,0,0.18)", maxHeight: "88vh", overflowY: "auto", animation: "slideUpSheet 0.28s cubic-bezier(0.32,0.72,0,1)" }}>
             {/* Handle */}
             <div style={{ display: "flex", justifyContent: "center", paddingTop: 12, paddingBottom: 6 }}>
               <div style={{ width: 44, height: 5, background: "#E2E8F0", borderRadius: 99 }} />
@@ -923,9 +924,9 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
 
             </div>
           </div>
-        </>
+        </>,
+        document.body
       )}
-
 
       {/* ── TOAST ──────────────────────────────────────────── */}
       {toast && (

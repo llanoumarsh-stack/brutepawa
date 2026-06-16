@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { useR2Upload } from "../hooks/useR2Upload";
 import { apiGetMe, apiUpdateMe, saveFbUser, apiGetFriends, apiGetUserPosts, type PublicUser, type FeedPost } from "../lib/api";
@@ -156,14 +157,14 @@ export default function Profile() {
       </div>
 
       {/* Profile options bottom sheet — premium design */}
-      {showProfileMenu && (
+      {showProfileMenu && createPortal(
         <>
           {/* scroll lock */}
           {(() => { document.documentElement.style.overflow = "hidden"; document.body.style.overflow = "hidden"; return null; })()}
           {/* Backdrop */}
-          <div onClick={() => { setShowProfileMenu(false); document.documentElement.style.overflow = ""; document.body.style.overflow = ""; }} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(5px)", WebkitBackdropFilter: "blur(5px)", zIndex: 100 }} />
+          <div onClick={() => { setShowProfileMenu(false); document.documentElement.style.overflow = ""; document.body.style.overflow = ""; }} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(5px)", WebkitBackdropFilter: "blur(5px)", zIndex: 9000 }} />
           {/* Sheet */}
-          <div onClick={e => e.stopPropagation()} style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 101, background: "#fff", borderRadius: "28px 28px 0 0", boxShadow: "0 -8px 48px rgba(0,0,0,0.18)", maxHeight: "92vh", overflowY: "auto" }}>
+          <div onClick={e => e.stopPropagation()} style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 9001, background: "#fff", borderRadius: "28px 28px 0 0", boxShadow: "0 -8px 48px rgba(0,0,0,0.18)", maxHeight: "92vh", overflowY: "auto", animation: "slideUpSheet 0.28s cubic-bezier(0.32,0.72,0,1)" }}>
 
             {/* Handle */}
             <div style={{ display: "flex", justifyContent: "center", padding: "12px 0 0" }}>
@@ -277,7 +278,8 @@ export default function Profile() {
 
             </div>
           </div>
-        </>
+        </>,
+        document.body
       )}
 
       {displayError && (
