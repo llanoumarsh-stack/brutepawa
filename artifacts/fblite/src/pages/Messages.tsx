@@ -213,6 +213,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [recDragX, setRecDragX]         = useState(0);
   const [recDragY, setRecDragY]         = useState(0);
   const [recLocked, setRecLocked]       = useState(false);
+  const [recPaused, setRecPaused]       = useState(false);
   const [playingAudioId, setPlayingAudioId] = useState<number|null>(null);
   const [audioProgress, setAudioProgress]   = useState(0);
   const [voiceSpeed, setVoiceSpeed]         = useState<1|1.5|2>(1);
@@ -396,7 +397,23 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
   const cancelVoice = () => {
     recCancelledRef.current = true;
+    setRecPaused(false);
     stopVoice();
+  };
+
+  const pauseVoice = () => {
+    try { mediaRecorderRef.current?.pause(); } catch { /* unsupported */ }
+    if (recTimerRef.current) { clearInterval(recTimerRef.current); recTimerRef.current = null; }
+    setRecPaused(true);
+  };
+
+  const resumeVoice = () => {
+    try { mediaRecorderRef.current?.resume(); } catch { /* unsupported */ }
+    recTimerRef.current = setInterval(() => {
+      recSecondsRef.current += 1;
+      setRecSeconds(recSecondsRef.current);
+    }, 1000);
+    setRecPaused(false);
   };
 
   const recGestureDown = (e: React.PointerEvent) => {
@@ -2148,113 +2165,99 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           /* NORMAL INPUT BAR — Premium white design */
           <div style={{ background:"#fff", borderTop:"1px solid #F1F5F9", flexShrink:0 }}>
 
-            {/* ── Premium recording bar — WhatsApp 2026 style ── */}
-            {isRecording && (
-              <div style={{ position:"relative", margin:"6px 10px 2px" }}>
-
-                {/* Floating lock icon — shows when dragging up */}
-                {recDragY < -35 && !recLocked && (
-                  <div style={{
-                    position:"absolute", top:-52, left:"50%", transform:"translateX(-50%)",
-                    width:44, height:44, borderRadius:"50%",
-                    background: recDragY < -75 ? "#1877F2" : "#fff",
-                    boxShadow:"0 6px 24px rgba(0,0,0,0.18)",
-                    display:"flex", alignItems:"center", justifyContent:"center",
-                    animation:"fbl-fade-in 0.18s ease",
-                    transition:"background 0.2s",
-                  }}>
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill={recDragY < -75 ? "#fff" : "#1877F2"}>
-                      <rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4" strokeWidth="2" stroke={recDragY < -75 ? "#fff" : "#1877F2"} fill="none" strokeLinecap="round"/>
-                    </svg>
-                  </div>
-                )}
-
-                {/* Lock badge when locked */}
-                {recLocked && (
-                  <div style={{ display:"flex", alignItems:"center", gap:6, paddingBottom:6, paddingLeft:4 }}>
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="#1877F2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4" strokeWidth="2" stroke="#1877F2" fill="none" strokeLinecap="round"/></svg>
-                    <span style={{ fontSize:12, fontWeight:700, color:"#1877F2" }}>Verrouillé — appuyez sur Envoyer</span>
-                  </div>
-                )}
-
-                {/* Main capsule */}
-                <div
-                  onPointerDown={!recLocked ? recGestureDown : undefined}
-                  onPointerMove={!recLocked ? recGestureMove : undefined}
-                  onPointerUp={!recLocked ? recGestureUp : undefined}
-                  style={{
-                    display:"flex", alignItems:"center", gap:10,
-                    background:"rgba(255,255,255,0.97)",
-                    backdropFilter:"blur(24px)", WebkitBackdropFilter:"blur(24px)",
-                    borderRadius:28,
-                    padding:"9px 10px 9px 12px",
-                    boxShadow:"0 8px 32px rgba(0,0,0,0.13), 0 2px 8px rgba(0,0,0,0.07)",
-                    border:"1px solid rgba(226,232,240,0.8)",
-                    transform:`translateX(${recDragX * 0.38}px)`,
-                    transition: recIsDraggingRef.current ? "none" : "transform 0.28s cubic-bezier(0.34,1.56,0.64,1)",
-                    cursor: recLocked ? "default" : "grab",
-                    userSelect:"none", touchAction:"none",
-                  }}>
-
-                  {/* Trash button */}
-                  <button onClick={cancelVoice}
-                    style={{
-                      width:40, height:40, borderRadius:"50%", border:"none", flexShrink:0,
-                      background:"#fff", cursor:"pointer",
-                      display:"flex", alignItems:"center", justifyContent:"center",
-                      boxShadow:"0 2px 10px rgba(0,0,0,0.10)",
-                    }}>
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
-                    </svg>
-                  </button>
-
-                  {/* Center: dot + timer + waveform + ANNULER */}
-                  <div style={{ flex:1, display:"flex", alignItems:"center", gap:8, overflow:"hidden" }}>
-                    {/* Red pulsing dot */}
-                    <div style={{ width:9, height:9, borderRadius:"50%", background:"#EF4444", flexShrink:0, animation:"fbl-rec-pulse 1s ease-in-out infinite" }} />
-
-                    {/* Timer */}
-                    <span style={{ fontSize:15, fontWeight:800, color:"#EF4444", fontVariantNumeric:"tabular-nums", flexShrink:0, minWidth:42 }}>
-                      {`${Math.floor(recSeconds/60).toString().padStart(2,"0")}:${(recSeconds%60).toString().padStart(2,"0")}`}
-                    </span>
-
-                    {/* Waveform OR swipe-cancel hint */}
-                    {recDragX < -55 ? (
-                      <span style={{ flex:1, fontSize:12, fontWeight:700, color: recDragX < -80 ? "#EF4444" : "#94A3B8", textAlign:"center" }}>
-                        {recDragX < -80 ? "Relâchez pour annuler" : "← Glisser pour annuler"}
-                      </span>
-                    ) : (
-                      <div style={{ flex:1, display:"flex", alignItems:"center", gap:1.5, height:34 }}>
-                        {[0.38,0.62,0.90,0.55,0.80,0.45,0.72,0.95,0.60,0.40,0.85,0.50,0.75,0.35,0.68,0.92,0.48,0.70,0.38,0.80].map((h,i) => (
-                          <div key={i} style={{
-                            flex:1, borderRadius:2, background:"#16C24A",
-                            height:`${Math.round(h*100)}%`,
-                            animation:`wa-typing-dot ${0.55+i*0.07}s ease-in-out ${i*0.045}s infinite alternate`,
-                            opacity:0.7+h*0.3,
-                          }} />
-                        ))}
-                      </div>
-                    )}
-
-                    {/* ANNULER text */}
-                    <span style={{ fontSize:12, fontWeight:700, color:"#94A3B8", flexShrink:0, letterSpacing:"0.03em" }}>ANNULER</span>
-                  </div>
-
-                  {/* Send button */}
-                  <button onClick={stopVoice}
-                    style={{
-                      width:48, height:48, borderRadius:"50%", border:"none", flexShrink:0,
-                      background:"linear-gradient(135deg,#16C24A 0%,#0ea541 100%)",
-                      display:"flex", alignItems:"center", justifyContent:"center",
-                      cursor:"pointer",
-                      boxShadow:"0 4px 20px rgba(22,194,74,0.5)",
-                    }}>
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2" fill="#fff" stroke="none"/>
-                    </svg>
-                  </button>
+            {/* ── UNLOCKED RECORDING: mini info bar (gesture on mic button) ── */}
+            {isRecording && !recLocked && (
+              <div style={{ display:"flex", alignItems:"center", gap:10, padding:"6px 14px 2px" }}>
+                {/* Red pulsing dot */}
+                <div style={{ width:9, height:9, borderRadius:"50%", background:"#EF4444", flexShrink:0,
+                  animation: recPaused ? "none" : "fbl-rec-pulse 1s ease-in-out infinite",
+                  opacity: recPaused ? 0.4 : 1 }} />
+                {/* Timer */}
+                <span style={{ fontSize:15, fontWeight:800, color:"#EF4444", fontVariantNumeric:"tabular-nums", flexShrink:0, minWidth:44 }}>
+                  {`${Math.floor(recSeconds/60).toString().padStart(2,"0")}:${(recSeconds%60).toString().padStart(2,"0")}`}
+                </span>
+                {/* Waveform */}
+                <div style={{ flex:1, display:"flex", alignItems:"center", gap:2, height:30, overflow:"hidden" }}>
+                  {[0.38,0.62,0.90,0.55,0.80,0.45,0.72,0.95,0.60,0.40,0.85,0.50,0.75,0.35,0.68,0.92,0.48,0.70,0.38,0.80,0.60,0.44,0.88].map((h,i) => (
+                    <div key={i} style={{ flex:1, borderRadius:2,
+                      background: recPaused ? "#CBD5E1" : "#16C24A",
+                      height:`${Math.round(h*100)}%`,
+                      animation: recPaused ? "none" : `wa-typing-dot ${0.55+i*0.07}s ease-in-out ${i*0.045}s infinite alternate`,
+                      opacity: recPaused ? 0.5 : 0.7+h*0.3 }} />
+                  ))}
                 </div>
+                {/* Slide-left cancel hint */}
+                {recDragX < -50 && (
+                  <span style={{ fontSize:12, fontWeight:700,
+                    color: recDragX < -100 ? "#EF4444" : "#94A3B8",
+                    flexShrink:0, animation:"fbl-fade-in 0.15s ease" }}>
+                    {recDragX < -100 ? "Relâcher pour annuler" : "← Annuler"}
+                  </span>
+                )}
+              </div>
+            )}
+
+            {/* ── LOCKED RECORDING: full capsule with controls ── */}
+            {isRecording && recLocked && (
+              <div style={{ margin:"6px 10px 2px", display:"flex", alignItems:"center", gap:8,
+                background:"rgba(255,255,255,0.97)",
+                backdropFilter:"blur(24px)", WebkitBackdropFilter:"blur(24px)",
+                borderRadius:28, padding:"9px 10px 9px 12px",
+                boxShadow:"0 8px 32px rgba(0,0,0,0.13), 0 2px 8px rgba(0,0,0,0.07)",
+                border:"1px solid rgba(226,232,240,0.8)" }}>
+
+                {/* Trash */}
+                <button onClick={cancelVoice} style={{ width:40, height:40, borderRadius:"50%", border:"none",
+                  background:"#FEF2F2", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
+                  flexShrink:0, boxShadow:"0 2px 8px rgba(0,0,0,0.08)" }}>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                    <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+                  </svg>
+                </button>
+
+                {/* Timer + waveform */}
+                <div style={{ flex:1, display:"flex", alignItems:"center", gap:8, overflow:"hidden" }}>
+                  <div style={{ width:9, height:9, borderRadius:"50%", background:"#EF4444", flexShrink:0,
+                    animation: recPaused ? "none" : "fbl-rec-pulse 1s ease-in-out infinite",
+                    opacity: recPaused ? 0.4 : 1 }} />
+                  <span style={{ fontSize:15, fontWeight:800, color:"#EF4444", fontVariantNumeric:"tabular-nums", flexShrink:0, minWidth:44 }}>
+                    {`${Math.floor(recSeconds/60).toString().padStart(2,"0")}:${(recSeconds%60).toString().padStart(2,"0")}`}
+                  </span>
+                  <div style={{ flex:1, display:"flex", alignItems:"center", gap:1.5, height:34 }}>
+                    {[0.38,0.62,0.90,0.55,0.80,0.45,0.72,0.95,0.60,0.40,0.85,0.50,0.75,0.35,0.68,0.92,0.48,0.70,0.38,0.80].map((h,i) => (
+                      <div key={i} style={{ flex:1, borderRadius:2,
+                        background: recPaused ? "#CBD5E1" : "#16C24A",
+                        height:`${Math.round(h*100)}%`,
+                        animation: recPaused ? "none" : `wa-typing-dot ${0.55+i*0.07}s ease-in-out ${i*0.045}s infinite alternate`,
+                        opacity: recPaused ? 0.5 : 0.7+h*0.3 }} />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Pause / Resume */}
+                <button onClick={recPaused ? resumeVoice : pauseVoice}
+                  style={{ width:40, height:40, borderRadius:"50%", border:"none", flexShrink:0,
+                    background: recPaused ? "#EEF2FF" : "#F8FAFC", cursor:"pointer",
+                    display:"flex", alignItems:"center", justifyContent:"center",
+                    boxShadow:"0 2px 8px rgba(0,0,0,0.08)" }}>
+                  {recPaused ? (
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="#1877F2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  ) : (
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="#64748B"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+                  )}
+                </button>
+
+                {/* Send */}
+                <button onClick={stopVoice}
+                  style={{ width:48, height:48, borderRadius:"50%", border:"none", flexShrink:0,
+                    background:"linear-gradient(135deg,#16C24A 0%,#0ea541 100%)",
+                    display:"flex", alignItems:"center", justifyContent:"center",
+                    cursor:"pointer", boxShadow:"0 4px 20px rgba(22,194,74,0.5)" }}>
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2" fill="#fff" stroke="none"/>
+                  </svg>
+                </button>
               </div>
             )}
 
@@ -2296,93 +2299,135 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       </button>
                     </>
                   )}
-                  {/* Mic button — always visible; gesture: hold+slide-up=lock, slide-left=cancel, release=send */}
-                  {!recLocked && (
-                  <div style={{ position:"relative", flexShrink:0 }}>
-                    {/* Lock tooltip floating above when sliding up */}
-                    {isRecording && recDragY < -28 && (
-                      <div style={{
-                        position:"absolute", bottom:"calc(100% + 14px)", left:"50%",
-                        transform:"translateX(-50%)",
-                        width:44, height:44, borderRadius:"50%",
-                        background: recDragY < -68 ? "#1877F2" : "#fff",
-                        boxShadow:"0 6px 24px rgba(0,0,0,0.20)",
-                        display:"flex", alignItems:"center", justifyContent:"center",
-                        animation:"fbl-fade-in 0.15s ease",
-                        transition:"background 0.18s",
-                        pointerEvents:"none",
-                      }}>
-                        <svg viewBox="0 0 24 24" width="20" height="20">
-                          <rect x="5" y="11" width="14" height="10" rx="2" fill={recDragY < -68 ? "#fff" : "#1877F2"}/>
-                          <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke={recDragY < -68 ? "#fff" : "#1877F2"} strokeWidth="2.2" fill="none" strokeLinecap="round"/>
+                  {/* ── MIC BUTTON — gesture lock/cancel/send ── */}
+                  {!recLocked && (() => {
+                    // Lock icon is fixed 110px above mic center
+                    const LOCK_DIST = 110; // px from mic center to lock center
+                    const LOCK_RADIUS = 24; // half-size of lock zone
+                    const isNearLock = recDragY < -(LOCK_DIST - LOCK_RADIUS - 8); // -78px
+                    const isAtLock   = recDragY < -(LOCK_DIST - LOCK_RADIUS);     // -86px
+                    // Clamp mic movement: can't go past lock center
+                    const micDy = Math.max(-LOCK_DIST, recDragY);
+                    // Slight magnetic pull near lock (mic accelerates into lock)
+                    const visualDy = micDy < -70
+                      ? micDy + (micDy + 70) * 0.18   // extra pull
+                      : micDy;
+                    const visualDx = Math.max(-100, recDragX) * 0.35;
+                    const SIZE = isRecording ? 52 : 44;
+
+                    return (
+                    <div style={{ position:"relative", flexShrink:0, width:SIZE, height:SIZE,
+                      overflow:"visible" }}>
+
+                      {/* ── LOCK ICON — fixed 110px above mic (never moves) ── */}
+                      {isRecording && (
+                        <div style={{
+                          position:"absolute",
+                          /* center lock above mic center: top = -(LOCK_DIST - SIZE/2 + 22) */
+                          top: -(LOCK_DIST - SIZE/2 + 22),
+                          left:"50%", transform:"translateX(-50%)",
+                          width:44, height:44, borderRadius:"50%",
+                          background: isAtLock ? "#1877F2" : isNearLock ? "#EEF2FF" : "#fff",
+                          boxShadow: isAtLock
+                            ? "0 0 0 8px rgba(24,119,242,0.18), 0 6px 24px rgba(24,119,242,0.45)"
+                            : "0 6px 24px rgba(0,0,0,0.14)",
+                          display:"flex", alignItems:"center", justifyContent:"center",
+                          transition:"background 0.15s, box-shadow 0.15s",
+                          pointerEvents:"none", zIndex:10,
+                          animation: "fbl-fade-in 0.18s ease",
+                        }}>
+                          {isAtLock ? (
+                            /* Locked padlock */
+                            <svg viewBox="0 0 24 24" width="20" height="20">
+                              <rect x="5" y="11" width="14" height="10" rx="2" fill="#fff"/>
+                              <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="#fff" strokeWidth="2.2" fill="none" strokeLinecap="round"/>
+                            </svg>
+                          ) : (
+                            /* Open padlock */
+                            <svg viewBox="0 0 24 24" width="20" height="20">
+                              <rect x="5" y="11" width="14" height="10" rx="2" fill={isNearLock ? "#1877F2" : "#94A3B8"}/>
+                              <path d="M8 11V7a4 4 0 0 1 7-1.7" stroke={isNearLock ? "#1877F2" : "#94A3B8"} strokeWidth="2.2" fill="none" strokeLinecap="round"/>
+                            </svg>
+                          )}
+                        </div>
+                      )}
+
+                      {/* ── GUIDE LINE — mic to lock ── */}
+                      {isRecording && recDragY < -20 && (
+                        <svg style={{ position:"absolute", top:-(LOCK_DIST - SIZE/2 + 22), left:"50%",
+                          transform:"translateX(-50%)", pointerEvents:"none", zIndex:5,
+                          overflow:"visible" }}
+                          width="2" height={LOCK_DIST - SIZE/2 - 22 + Math.abs(visualDy)}>
+                          <line
+                            x1="1" y1="0"
+                            x1_="1" y2={LOCK_DIST - SIZE/2 - 22 + Math.abs(visualDy)}
+                            stroke={isNearLock ? "#1877F2" : "#CBD5E1"}
+                            strokeWidth="2" strokeDasharray="4 4"
+                            strokeLinecap="round"
+                            style={{ transition:"stroke 0.15s" }}/>
                         </svg>
-                      </div>
-                    )}
-                    {/* Cancel hint */}
-                    {isRecording && recDragX < -45 && (
-                      <div style={{
-                        position:"absolute", right:"calc(100% + 10px)", top:"50%",
-                        transform:"translateY(-50%)",
-                        background:"#EF4444", borderRadius:12, padding:"4px 10px",
-                        whiteSpace:"nowrap", pointerEvents:"none",
-                        animation:"fbl-fade-in 0.15s ease",
-                      }}>
-                        <span style={{ fontSize:12, fontWeight:700, color:"#fff" }}>
-                          {recDragX < -80 ? "Relâcher pour annuler" : "← Annuler"}
-                        </span>
-                      </div>
-                    )}
-                    <button
-                      onPointerDown={e => {
-                        if (isRecording) return;
-                        e.preventDefault();
-                        recDragStartRef.current = { x: e.clientX, y: e.clientY };
-                        recIsDraggingRef.current = true;
-                        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-                        startVoice();
-                      }}
-                      onPointerMove={e => {
-                        if (!recDragStartRef.current) return;
-                        setRecDragX(Math.min(0, e.clientX - recDragStartRef.current.x));
-                        setRecDragY(Math.min(0, e.clientY - recDragStartRef.current.y));
-                      }}
-                      onPointerUp={() => {
-                        const dx = recDragX; const dy = recDragY;
-                        setRecDragX(0); setRecDragY(0);
-                        recDragStartRef.current = null;
-                        recIsDraggingRef.current = false;
-                        if (!isRecording) return;
-                        if (dy < -68) { setRecLocked(true); }
-                        else if (dx < -80) { cancelVoice(); }
-                        else { stopVoice(); }
-                      }}
-                      onPointerCancel={() => {
-                        setRecDragX(0); setRecDragY(0);
-                        recDragStartRef.current = null;
-                        recIsDraggingRef.current = false;
-                      }}
-                      style={{
-                        background:"linear-gradient(135deg,#16C24A 0%,#0ea541 100%)",
-                        border:"none", borderRadius:"50%",
-                        width: isRecording ? 52 : 44,
-                        height: isRecording ? 52 : 44,
-                        flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center",
-                        cursor:"pointer", touchAction:"none",
-                        boxShadow: isRecording
-                          ? "0 0 0 10px rgba(22,194,74,0.18), 0 4px 20px rgba(22,194,74,0.55)"
-                          : "0 3px 12px rgba(22,194,74,0.45)",
-                        transform: isRecording ? `translateY(${recDragY * 0.3}px) translateX(${recDragX * 0.15}px)` : "none",
-                        transition: recIsDraggingRef.current ? "box-shadow 0.1s, width 0.2s, height 0.2s" : "all 0.2s",
-                      }}>
-                      <svg viewBox="0 0 24 24" width={isRecording ? 24 : 22} height={isRecording ? 24 : 22} fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round">
-                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                        <line x1="12" y1="19" x2="12" y2="23"/>
-                        <line x1="8" y1="23" x2="16" y2="23"/>
-                      </svg>
-                    </button>
-                  </div>
-                  )}
+                      )}
+
+                      {/* ── MIC BUTTON — follows finger fully ── */}
+                      <button
+                        onPointerDown={e => {
+                          if (isRecording) return;
+                          e.preventDefault();
+                          recDragStartRef.current = { x: e.clientX, y: e.clientY };
+                          recIsDraggingRef.current = true;
+                          (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+                          startVoice();
+                        }}
+                        onPointerMove={e => {
+                          if (!recDragStartRef.current) return;
+                          setRecDragX(Math.min(0, e.clientX - recDragStartRef.current.x));
+                          setRecDragY(Math.min(0, e.clientY - recDragStartRef.current.y));
+                        }}
+                        onPointerUp={() => {
+                          const dx = recDragX; const dy = recDragY;
+                          setRecDragX(0); setRecDragY(0);
+                          recDragStartRef.current = null;
+                          recIsDraggingRef.current = false;
+                          if (!isRecording) return;
+                          if (dy < -(LOCK_DIST - LOCK_RADIUS)) { setRecLocked(true); }
+                          else if (dx < -100) { cancelVoice(); }
+                          else { stopVoice(); }
+                        }}
+                        onPointerCancel={() => {
+                          setRecDragX(0); setRecDragY(0);
+                          recDragStartRef.current = null;
+                          recIsDraggingRef.current = false;
+                          if (isRecording) stopVoice();
+                        }}
+                        style={{
+                          position:"absolute", top:0, left:0,
+                          background:"linear-gradient(135deg,#16C24A 0%,#0ea541 100%)",
+                          border:"none", borderRadius:"50%",
+                          width: SIZE, height: SIZE,
+                          display:"flex", alignItems:"center", justifyContent:"center",
+                          cursor:"pointer", touchAction:"none",
+                          boxShadow: isRecording
+                            ? "0 0 0 10px rgba(22,194,74,0.18), 0 4px 20px rgba(22,194,74,0.55)"
+                            : "0 3px 12px rgba(22,194,74,0.45)",
+                          transform: isRecording
+                            ? `translateY(${visualDy}px) translateX(${visualDx}px)`
+                            : "none",
+                          transition: recIsDraggingRef.current
+                            ? "box-shadow 0.1s, width 0.2s, height 0.2s"
+                            : "transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s, width 0.2s, height 0.2s",
+                          zIndex:20,
+                        }}>
+                        <svg viewBox="0 0 24 24" width={isRecording ? 24 : 22} height={isRecording ? 24 : 22}
+                          fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round">
+                          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                          <line x1="12" y1="19" x2="12" y2="23"/>
+                          <line x1="8" y1="23" x2="16" y2="23"/>
+                        </svg>
+                      </button>
+                    </div>
+                    );
+                  })()}
                 </>
               )}
             </div>

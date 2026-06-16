@@ -1,0 +1,119 @@
+Correction du système d'enregistrement vocal BrutePawa
+
+Corriger complètement la logique d'enregistrement vocal.
+
+Problème actuel
+
+Le verrouillage de l'enregistrement se déclenche avant que le microphone n'atteigne réellement le cadenas.
+
+Le microphone et le cadenas ne sont pas synchronisés visuellement.
+
+Cela provoque des verrouillages involontaires.
+
+---
+
+Comportement attendu
+
+Appui long sur le microphone
+
+- Démarrer immédiatement l'enregistrement.
+- Afficher le chronomètre.
+- Afficher l'onde audio en temps réel.
+- Afficher un cadenas au-dessus.
+- Le microphone doit suivre exactement le doigt.
+
+À ce stade :
+
+isRecording = true
+isLocked = false
+
+---
+
+Glissement vers le haut
+
+- Le microphone suit le doigt.
+- Le cadenas reste fixe.
+- Afficher une ligne guide entre le microphone et le cadenas.
+- Ajouter une légère attraction magnétique lorsque le micro approche du cadenas.
+
+---
+
+Verrouillage
+
+Le verrouillage ne doit être activé que lorsque le centre du microphone entre dans la zone du cadenas.
+
+Condition :
+
+microphone intersecte zone du cadenas
+
+Alors :
+
+- vibration légère
+- animation de fusion
+- cadenas fermé
+- activation du mode verrouillé
+
+isLocked = true
+
+---
+
+Relâchement avant le cadenas
+
+Si l'utilisateur relâche le doigt sans atteindre le cadenas :
+
+- arrêter l'enregistrement
+- créer automatiquement la note vocale
+- utiliser uniquement la durée réellement enregistrée
+
+Exemple :
+
+Maintien 4 secondes
+
+Résultat :
+
+Message vocal • 0:04
+
+Aucun verrouillage.
+
+---
+
+Annulation
+
+Pendant l'enregistrement :
+
+Glisser vers la gauche.
+
+Afficher :
+
+"Relâcher pour annuler"
+
+Puis :
+
+- supprimer l'enregistrement
+- fermer l'interface
+
+---
+
+Mode verrouillé
+
+Après verrouillage :
+
+Afficher :
+
+- chronomètre
+- onde audio
+- bouton pause
+- bouton supprimer
+- bouton envoyer
+
+Le microphone initial doit disparaître.
+
+Le bouton Envoyer doit être visible immédiatement.
+
+---
+
+Règle principale
+
+Le verrouillage ne doit jamais être déclenché avant que le microphone ne touche réellement la zone du cadenas.
+
+Le microphone doit être physiquement glissé dans le cadenas pour verrouiller l'enregistrement.
