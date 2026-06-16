@@ -63,6 +63,8 @@ interface NormConv {
   lastMessage: string;
   unread: number;
   time: string;
+  online?: boolean;
+  lastSeenAt?: string | null;
 }
 
 interface ChatGroupConv {
@@ -124,6 +126,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [convList, setConvList]       = useState<NormConv[]>([]);
   const [convLoading, setConvLoading] = useState(true);
   const [allUsers, setAllUsers]       = useState<PublicUser[]>([]);
+  const [convPresence, setConvPresence] = useState<Record<number, {online:boolean;lastSeenAt:string|null}>>({});
   const [newMsg, setNewMsg]           = useState("");
   const [search, setSearch]           = useState("");
   const [overlay, setOverlay]         = useState<Overlay>("none");
@@ -484,6 +487,12 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           }
         }
         setConvList(normalized);
+        // Batch-fetch presence for all convs (non-blocking)
+        normalized.forEach(c => {
+          apiGetUserPresence(c.id).then(p => {
+            setConvPresence(prev => ({ ...prev, [c.id]: p }));
+          }).catch(() => {});
+        });
       }).catch(() => {}).finally(() => setConvLoading(false));
   }, []);
 
@@ -2898,46 +2907,97 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 </div>
                 <div style={{ fontSize: 11, color: "#444", fontWeight: 400, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Votre note</div>
               </div>
-              {convList.slice(0, 8).map(conv => (
+              {convList.slice(0, 8).map(conv => {
+                const isOnline = convPresence[conv.id]?.online ?? false;
+                return (
                 <div key={conv.id} onClick={() => setActiveConv(conv.id)} style={{ flexShrink: 0, textAlign: "center", width: 72, padding: "0 4px", cursor: "pointer" }}>
                   <div style={{ position: "relative", marginBottom: 5 }}>
                     <div className="avatar" style={{ width: 56, height: 56, fontSize: 19, margin: "0 auto", background: conv.user.color, border: "3px solid #fff" }}>{conv.user.initials}</div>
-                    <div style={{ position: "absolute", bottom: 0, right: 6, width: 14, height: 14, background: "#42B72A", borderRadius: "50%", border: "2.5px solid #fff" }} />
+                    <div style={{ position: "absolute", bottom: 0, right: 6, width: 14, height: 14, background: isOnline ? "#22C55E" : "#CBD5E1", borderRadius: "50%", border: "2.5px solid #fff" }} />
                   </div>
                   <div style={{ fontSize: 11, color: "#444", fontWeight: 400, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     {conv.user.name.split(" ")[0]}
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
 
         {/* All conversations + groups merged */}
         {[
-          ...visibleConvs.map(c => ({ type: "conv" as const, id: c.id, key: `c${c.id}`, name: c.user.name, preview: c.lastMessage || "Démarrer une conversation", time: c.time, unread: c.unread, color: c.user.color, initials: c.user.initials, online: true, grp: null })),
+          ...visibleConvs.map(c => {
+            const pres = convPresence[c.id];
+            const { text: previewText, isAudio } = fmtConvPreview(c.lastMessage);
+            return { type: "conv" as const, id: c.id, key: `c${c.id}`, name: c.user.name, previewText, isAudio, time: c.time, unread: c.unread, color: c.user.color, initials: c.user.initials, online: pres?.online ?? false, lastSeenAt: pres?.lastSeenAt ?? null, grp: null };
+          }),
           ...visibleGroups.map(g => {
             const isChan = g.type === "channel";
             const ts = g.lastMessageAt ? new Date(g.lastMessageAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }) : "";
-            return { type: "group" as const, id: g.id, key: `g${g.id}`, name: g.name, preview: g.lastMessage || `${g.membersCount} membre${g.membersCount !== 1 ? "s" : ""}`, time: ts, unread: g.unread, color: isChan ? "#00838F" : "#1877F2", initials: isChan ? "📢" : "👥", online: false, grp: g };
+            const { text: previewText, isAudio } = fmtConvPreview(g.lastMessage || `${g.membersCount} membre${g.membersCount !== 1 ? "s" : ""}`);
+            return { type: "group" as const, id: g.id, key: `g${g.id}`, name: g.name, previewText, isAudio, time: ts, unread: g.unread, color: isChan ? "#00838F" : "#1877F2", initials: isChan ? "📢" : "👥", online: false, lastSeenAt: null as string|null, grp: g };
           }),
         ].map(item => (
           <div key={item.key} className="fbl-row"
             onClick={() => item.type === "conv" ? setActiveConv(item.id) : setActiveGroupId(item.id)}
-            style={{ display: "flex", alignItems: "center", gap: 12, padding: "8px 16px", background: "#fff" }}>
-            <div style={{ position: "relative", flexShrink: 0 }}>
-              <div className="avatar" style={{ width: 56, height: 56, fontSize: item.type === "group" ? 24 : 20, background: item.color }}>{item.initials}</div>
-              {item.online && <div style={{ position: "absolute", bottom: 1, right: 1, width: 14, height: 14, background: "#42B72A", borderRadius: "50%", border: "2.5px solid #fff" }} />}
+            style={{ display:"flex", alignItems:"center", gap:12, padding:"11px 16px", background:"#fff", borderBottom:"1px solid #F1F5F9", cursor:"pointer" }}>
+
+            {/* Avatar + online dot */}
+            <div style={{ position:"relative", flexShrink:0 }}>
+              <div className="avatar" style={{ width:56, height:56, fontSize: item.type==="group" ? 24 : 20, background:item.color, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:700, color:"#fff" }}>
+                {item.initials}
+              </div>
+              {item.online ? (
+                <div style={{ position:"absolute", bottom:1, right:1, width:14, height:14, background:"#22C55E", borderRadius:"50%", border:"2.5px solid #fff" }} />
+              ) : item.type === "conv" ? (
+                <div style={{ position:"absolute", bottom:1, right:1, width:14, height:14, background:"#CBD5E1", borderRadius:"50%", border:"2.5px solid #fff" }} />
+              ) : null}
             </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 2 }}>
-                <span style={{ fontWeight: item.unread > 0 ? 700 : 400, fontSize: 15, color: "#050505", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "72%" }}>{item.name}</span>
-                <span style={{ fontSize: 12, color: item.unread > 0 ? "#050505" : "#888", fontWeight: item.unread > 0 ? 600 : 400, flexShrink: 0 }}>{item.time}</span>
+
+            {/* Content */}
+            <div style={{ flex:1, minWidth:0 }}>
+              {/* Row 1: name + time */}
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:3 }}>
+                <span style={{ fontWeight: item.unread > 0 ? 700 : 600, fontSize:15.5, color:"#0F172A", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:"70%" }}>
+                  {item.name}
+                </span>
+                <span style={{ fontSize:12, color: item.unread > 0 ? "#16C24A" : "#94A3B8", fontWeight: item.unread > 0 ? 700 : 400, flexShrink:0 }}>
+                  {item.time}
+                </span>
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ flex: 1, fontSize: 13, color: "#888", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: item.unread > 0 ? 600 : 400 }}>{item.preview}</span>
-                {item.unread > 0 && <div style={{ width: 10, height: 10, background: "#1877F2", borderRadius: "50%", flexShrink: 0 }} />}
+
+              {/* Row 2: preview + badge */}
+              <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+                {item.isAudio ? (
+                  <div style={{ flex:1, display:"flex", alignItems:"center", gap:5, overflow:"hidden" }}>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="#16C24A">
+                      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                      <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="#16C24A" strokeWidth="2.2" fill="none" strokeLinecap="round"/>
+                      <line x1="12" y1="19" x2="12" y2="23" stroke="#16C24A" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                    <span style={{ fontSize:13.5, color: item.unread > 0 ? "#334155" : "#64748B", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontWeight: item.unread > 0 ? 600 : 400 }}>
+                      {item.previewText}
+                    </span>
+                  </div>
+                ) : (
+                  <span style={{ flex:1, fontSize:13.5, color: item.unread > 0 ? "#334155" : "#64748B", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontWeight: item.unread > 0 ? 600 : 400 }}>
+                    {item.previewText}
+                  </span>
+                )}
+                {item.unread > 0 && (
+                  <div style={{ background:"#16C24A", color:"#fff", borderRadius:99, minWidth:20, height:20, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:800, padding:"0 5px", flexShrink:0, boxShadow:"0 2px 8px rgba(22,194,74,0.35)" }}>
+                    {item.unread > 99 ? "99+" : item.unread}
+                  </div>
+                )}
               </div>
+
+              {/* Row 3: last seen (offline users only) */}
+              {!item.online && item.type === "conv" && item.lastSeenAt && (
+                <div style={{ fontSize:11.5, color:"#94A3B8", marginTop:2 }}>
+                  {presenceLabel(false, item.lastSeenAt)}
+                </div>
+              )}
             </div>
           </div>
         ))}
