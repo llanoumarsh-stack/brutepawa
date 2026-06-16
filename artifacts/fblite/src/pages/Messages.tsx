@@ -1598,7 +1598,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               </div>
             );
           })}
-          {currentMessages.length === 0 && (
+          {false && currentMessages.length === 0 && (
             <div style={{ display:"flex", flexDirection:"column", alignItems:"center", padding:"8px 16px 24px", gap:0 }}>
 
               {/* ── Illustration ── */}
@@ -2459,7 +2459,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         )}
 
         {/* ── Premium Empty State ── */}
-        {!convLoading && !search && convList.length === 0 && chatGroups.length === 0 && (
+        {false && !convLoading && !search && convList.length === 0 && chatGroups.length === 0 && (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "16px 0 24px" }}>
 
             {/* Illustration SVG */}
