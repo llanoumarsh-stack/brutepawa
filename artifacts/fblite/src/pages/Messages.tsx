@@ -2441,36 +2441,17 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               </svg>
             </div>
 
-            {/* Text + actions row */}
-            <div style={{ display: "flex", alignItems: "flex-start", padding: "0 20px", width: "100%", gap: 16, marginTop: 4 }}>
-              {/* Left: text + button */}
-              <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 800, fontSize: 22, color: "#0F172A", marginBottom: 8, lineHeight: 1.2 }}>Aucune discussion</div>
-                <div style={{ fontSize: 13.5, color: "#64748B", lineHeight: 1.6, marginBottom: 20 }}>Commencez une conversation avec vos amis ou rejoignez des groupes et canaux.</div>
-                <button
-                  onClick={() => setFabOpen(true)}
-                  style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "#16C24A", color: "#fff", border: "none", borderRadius: 99, padding: "13px 22px", fontWeight: 700, fontSize: 15, cursor: "pointer", boxShadow: "0 4px 16px rgba(22,194,74,0.4)" }}
-                >
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                  Nouvelle discussion
-                </button>
-              </div>
-
-              {/* Right: expanded FAB actions */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-end", flexShrink: 0 }}>
-                {([
-                  { label: "Nouvelle discussion", iconBg: "#16C24A", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>, action: () => setFabOpen(false) },
-                  { label: "Nouveau groupe", iconBg: "#3B82F6", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, action: () => { setGroupWizardType("group"); setGroupWizard("members"); setWizardSearch(""); setWizardMembers(new Set()); } },
-                  { label: "Créer un canal", iconBg: "#8B5CF6", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>, action: () => { setGroupWizardType("channel"); setGroupWizard("members"); setWizardSearch(""); setWizardMembers(new Set()); } },
-                  { label: "Diffuser une annonce", iconBg: "#F59E0B", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 11a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 0h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 7.91a16 16 0 0 0 6.1 6.1l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>, action: () => {} },
-                  { label: "Inviter des amis", iconBg: "#8B5CF6", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>, action: () => {} },
-                ] as {label:string;iconBg:string;svg:React.ReactNode;action:()=>void}[]).map((item, i) => (
-                  <div key={i} onClick={item.action} style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", animation: `fbl-fab-in .2s ease ${i*.05}s both` }}>
-                    <div style={{ background: "#fff", borderRadius: 99, padding: "8px 14px", boxShadow: "0 2px 12px rgba(0,0,0,0.12)", fontSize: 13.5, fontWeight: 600, color: "#0F172A", whiteSpace: "nowrap" }}>{item.label}</div>
-                    <div style={{ width: 46, height: 46, borderRadius: "50%", background: item.iconBg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: `0 4px 14px ${item.iconBg}66` }}>{item.svg}</div>
-                  </div>
-                ))}
-              </div>
+            {/* Text + button — centered */}
+            <div style={{ padding: "0 24px 24px", width: "100%", boxSizing: "border-box", textAlign: "center" }}>
+              <div style={{ fontWeight: 800, fontSize: 22, color: "#0F172A", marginBottom: 10, lineHeight: 1.2 }}>Aucune discussion</div>
+              <div style={{ fontSize: 14, color: "#64748B", lineHeight: 1.6, marginBottom: 24 }}>Commencez une conversation avec vos amis ou rejoignez des groupes et canaux.</div>
+              <button
+                onClick={() => setFabOpen(true)}
+                style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "#16C24A", color: "#fff", border: "none", borderRadius: 99, padding: "14px 28px", fontWeight: 700, fontSize: 15, cursor: "pointer", boxShadow: "0 4px 18px rgba(22,194,74,0.45)" }}
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Nouvelle discussion
+              </button>
             </div>
 
           </div>
