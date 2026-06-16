@@ -1,0 +1,32 @@
+Interface mobile premium de messagerie privée BrutePawa, design ultra moderne inspiré de WhatsApp Premium, Telegram Premium, iMessage et Facebook Messenger 2025. Respect strict de l'identité visuelle BrutePawa avec palette officielle verte (#22C55E, #16A34A, #FFFFFF).
+
+En haut : barre de conversation élégante avec avatar circulaire vert portant les initiales "KS", nom "Kassim Salif", badge vérifié vert, statut "Hors ligne", boutons appel audio, appel vidéo et menu vertical. Design propre, professionnel et moderne.
+
+Au centre : grande illustration vectorielle premium représentant un jeune homme africain et une jeune femme africaine utilisant leurs smartphones. Les deux portent des vêtements verts BrutePawa avec logo discret. Bulles de conversation vertes flottantes autour d'eux, icônes de messagerie, symbole de sécurité et cadenas vert au centre. Style illustration moderne, startup africaine, très professionnel.
+
+Titre principal :
+"Commencez une conversation avec Kassim Salif"
+
+Carte de sécurité premium :
+"Vos messages sont protégés par un chiffrement de bout en bout."
+avec icône cadenas vert et fond blanc légèrement ombré.
+
+Section "Suggestions pour démarrer" avec cartes modernes :
+👋 Dire bonjour
+😊 Envoyer un emoji
+📷 Partager une photo
+🎵 Partager une musique
+🎁 Envoyer un cadeau
+
+Chaque carte possède un design minimaliste, coins très arrondis, ombres douces et icônes vertes.
+
+Carte informative :
+"Sécurité garantie"
+"Personne en dehors de cette discussion ne peut lire vos messages, pas même BrutePawa."
+
+En bas : barre de saisie premium avec placeholder "Écrire un message...", bouton emoji, pièce jointe, caméra et bouton microphone circulaire vert lumineux.
+
+Navigation inférieure BrutePawa avec :
+Accueil, Amis, bouton central + vert, Messages actif avec badge de notifications, Profil.
+
+Style UI/UX international, startup licorne africaine, finition Dribbble, Behance, Apple Human Interface Guidelines, Google Material Design 3, glassmorphism léger, ombres réalistes, espacement parfait, interface responsive adaptée à tous les smartphones Android et iPhone, ultra réaliste, haute fidélité, qualité 8K, capture d'écran d'application mobile premium.

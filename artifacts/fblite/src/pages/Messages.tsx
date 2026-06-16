@@ -1468,25 +1468,36 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             </div>
           </div>
         ) : (
-          /* NORMAL HEADER */
-          <div style={{ background:"#075E54", padding:"8px 10px", display:"flex", alignItems:"center", gap:8, flexShrink:0, boxShadow:"0 2px 4px rgba(0,0,0,0.18)" }}>
+          /* NORMAL HEADER — Premium white design */
+          <div style={{ background:"#fff", padding:"10px 12px", display:"flex", alignItems:"center", gap:10, flexShrink:0, borderBottom:"1px solid #F1F5F9", boxShadow:"0 1px 8px rgba(0,0,0,0.06)" }}>
             <button onClick={() => { setActiveConv(null); setOverlay("none"); setShowConvMenu(false); }}
-              style={{ background:"none", border:"none", fontSize:24, cursor:"pointer", color:"#fff", display:"flex", alignItems:"center", padding:"2px 4px 2px 0", lineHeight:1 }}>‹</button>
+              style={{ background:"none", border:"none", cursor:"pointer", color:"#16C24A", display:"flex", alignItems:"center", padding:"4px 6px 4px 0", flexShrink:0 }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16C24A" strokeWidth="2.5" strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+            </button>
             <div style={{ position:"relative", cursor:"pointer", flexShrink:0 }} onClick={() => setOverlay("info")}>
-              <div className="avatar" style={{ background:"rgba(255,255,255,0.25)", width:40, height:40, fontSize:14, color:"#fff", border:"2px solid rgba(255,255,255,0.4)" }}>{activeUser.initials}</div>
-              {presence.online && <div style={{ position:"absolute", bottom:1, right:1, width:11, height:11, background:"#25D366", borderRadius:"50%", border:"2px solid #075E54" }} />}
+              <div style={{ width:44, height:44, borderRadius:"50%", background:"linear-gradient(135deg,#16C24A,#0ea541)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, fontWeight:800, color:"#fff", boxShadow:"0 2px 8px rgba(22,194,74,0.35)" }}>{activeUser.initials}</div>
+              {presence.online && <div style={{ position:"absolute", bottom:1, right:1, width:12, height:12, background:"#16C24A", borderRadius:"50%", border:"2.5px solid #fff" }} />}
             </div>
             <div style={{ flex:1, minWidth:0, cursor:"pointer" }} onClick={() => setOverlay("info")}>
-              <div style={{ fontWeight:700, fontSize:15, color:"#fff", lineHeight:1.2 }}>{activeUser.name}</div>
-              <div style={{ fontSize:11, color:"rgba(255,255,255,0.85)" }}>{presText}</div>
+              <div style={{ display:"flex", alignItems:"center", gap:5 }}>
+                <span style={{ fontWeight:800, fontSize:16, color:"#0F172A", lineHeight:1.2 }}>{activeUser.name}</span>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="#16C24A"><path d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
+              </div>
+              <div style={{ fontSize:12, color: presence.online ? "#16C24A" : "#94A3B8", fontWeight: presence.online ? 600 : 400 }}>{presText}</div>
             </div>
             <button onClick={() => sig.startCall(activeConv, "audio")}
-              style={{ background:"none", border:"none", width:38, height:38, cursor:"pointer", color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.24 1.01L6.6 10.8z"/></svg>
+              style={{ background:"#F0FDF4", border:"none", width:38, height:38, borderRadius:"50%", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.24 1.01L6.6 10.8z"/></svg>
+            </button>
+            <button onClick={() => sig.startCall(activeConv, "video")}
+              style={{ background:"#F0FDF4", border:"none", width:38, height:38, borderRadius:"50%", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
             </button>
             <div style={{ position:"relative", flexShrink:0 }}>
               <button onClick={() => { setShowConvMenu(m => !m); setShowNotifSub(false); }}
-                style={{ background:"none", border:"none", width:38, height:38, cursor:"pointer", color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, fontWeight:900 }}>⋮</button>
+                style={{ background:"none", border:"none", width:34, height:34, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#64748B" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="5" r="1.2" fill="#64748B"/><circle cx="12" cy="12" r="1.2" fill="#64748B"/><circle cx="12" cy="19" r="1.2" fill="#64748B"/></svg>
+              </button>
             </div>
           </div>
         )}
@@ -1502,7 +1513,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         )}
 
         {/* ── MESSAGES AREA ── */}
-        <div style={{ flex:1, overflowY:"auto", padding:"8px 10px 4px", display:"flex", flexDirection:"column", gap:2, background: convWallpaper ?? "#ECE5DD" }}>
+        <div style={{ flex:1, overflowY:"auto", padding:"8px 10px 4px", display:"flex", flexDirection:"column", gap:2, background: convWallpaper ?? "#F8FAFC" }}>
           <div style={{ textAlign:"center", fontSize:11.5, color:"#888", background:"rgba(0,0,0,0.05)", borderRadius:20, padding:"3px 14px", margin:"4px auto 10px", display:"inline-block", alignSelf:"center" }}>Aujourd'hui</div>
           {currentMessages.map((msg, i) => {
             const isLast     = i === currentMessages.length - 1 || currentMessages[i + 1]?.mine !== msg.mine;
@@ -1581,10 +1592,159 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             );
           })}
           {currentMessages.length === 0 && (
-            <div style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", padding:"40px 0" }}>
-              <div style={{ background:"rgba(0,0,0,0.06)", borderRadius:16, padding:"12px 20px", fontSize:13, color:"#555" }}>
-                🔒 Les messages sont chiffrés de bout en bout
+            <div style={{ display:"flex", flexDirection:"column", alignItems:"center", padding:"8px 16px 24px", gap:0 }}>
+
+              {/* ── Illustration ── */}
+              <div style={{ width:"100%", maxWidth:340 }}>
+                <svg viewBox="0 0 340 240" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width:"100%", height:"auto" }}>
+                  {/* Green background circle */}
+                  <circle cx="170" cy="130" r="105" fill="#DCFCE7" opacity="0.7"/>
+                  <circle cx="170" cy="130" r="75" fill="#DCFCE7" opacity="0.4"/>
+
+                  {/* ── Man (left) — green hoodie ── */}
+                  {/* Hoodie body */}
+                  <rect x="55" y="120" width="52" height="72" rx="12" fill="#16C24A"/>
+                  {/* Hood */}
+                  <path d="M55 132 Q55 120 81 118 Q107 120 107 132" fill="#0ea541"/>
+                  {/* BP logo on hoodie */}
+                  <circle cx="81" cy="148" r="10" fill="#0ea541"/>
+                  <text x="81" y="152" textAnchor="middle" fontSize="8" fontWeight="900" fill="#fff" fontFamily="Georgia, serif">bp</text>
+                  {/* Legs */}
+                  <rect x="62" y="188" width="14" height="40" rx="7" fill="#1E293B"/>
+                  <rect x="83" y="188" width="14" height="40" rx="7" fill="#1E293B"/>
+                  {/* Shoes */}
+                  <ellipse cx="69" cy="229" rx="11" ry="5" fill="#0F172A"/>
+                  <ellipse cx="90" cy="229" rx="11" ry="5" fill="#0F172A"/>
+                  {/* Head */}
+                  <circle cx="81" cy="106" r="20" fill="#4A2C0A"/>
+                  {/* Hair short */}
+                  <ellipse cx="81" cy="88" rx="20" ry="8" fill="#1A0A00"/>
+                  {/* Eyes */}
+                  <circle cx="75" cy="105" r="2.8" fill="#fff"/>
+                  <circle cx="87" cy="105" r="2.8" fill="#fff"/>
+                  <circle cx="76" cy="105" r="1.4" fill="#1A0A00"/>
+                  <circle cx="88" cy="105" r="1.4" fill="#1A0A00"/>
+                  {/* Smile */}
+                  <path d="M77 112 Q81 116 85 112" stroke="#1A0A00" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+                  {/* Phone */}
+                  <rect x="105" y="140" width="20" height="32" rx="4" fill="#0F172A"/>
+                  <rect x="107" y="143" width="16" height="24" rx="2" fill="#A7F3D0"/>
+                  {/* Arm */}
+                  <path d="M107 140 Q106 128 104 140" stroke="#4A2C0A" strokeWidth="8" strokeLinecap="round" fill="none"/>
+
+                  {/* ── Woman (right) — green BrutePawa t-shirt ── */}
+                  {/* T-shirt body */}
+                  <rect x="207" y="118" width="52" height="70" rx="12" fill="#16C24A"/>
+                  {/* BP logo on t-shirt */}
+                  <circle cx="233" cy="148" r="10" fill="#0ea541"/>
+                  <text x="233" y="152" textAnchor="middle" fontSize="8" fontWeight="900" fill="#fff" fontFamily="Georgia, serif">bp</text>
+                  {/* Skirt/pants */}
+                  <rect x="211" y="182" width="18" height="42" rx="8" fill="#1E293B"/>
+                  <rect x="234" y="182" width="18" height="42" rx="8" fill="#1E293B"/>
+                  <ellipse cx="220" cy="225" rx="11" ry="5" fill="#0F172A"/>
+                  <ellipse cx="243" cy="225" rx="11" ry="5" fill="#0F172A"/>
+                  {/* Head */}
+                  <circle cx="233" cy="104" r="20" fill="#3D1F07"/>
+                  {/* Bun hair */}
+                  <ellipse cx="233" cy="87" rx="14" ry="9" fill="#1A0A00"/>
+                  <circle cx="233" cy="80" r="8" fill="#1A0A00"/>
+                  {/* Earring */}
+                  <circle cx="253" cy="106" r="3" fill="#FCD34D"/>
+                  {/* Eyes */}
+                  <circle cx="227" cy="103" r="2.8" fill="#fff"/>
+                  <circle cx="239" cy="103" r="2.8" fill="#fff"/>
+                  <circle cx="228" cy="103" r="1.4" fill="#1A0A00"/>
+                  <circle cx="240" cy="103" r="1.4" fill="#1A0A00"/>
+                  {/* Smile */}
+                  <path d="M229 110 Q233 114 237 110" stroke="#1A0A00" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+                  {/* Phone */}
+                  <rect x="192" y="140" width="20" height="32" rx="4" fill="#0F172A"/>
+                  <rect x="194" y="143" width="16" height="24" rx="2" fill="#BBF7D0"/>
+                  {/* Arm */}
+                  <path d="M207 155 Q202 148 204 140" stroke="#3D1F07" strokeWidth="8" strokeLinecap="round" fill="none"/>
+
+                  {/* ── Floating chat bubbles ── */}
+                  {/* Top left */}
+                  <rect x="14" y="60" width="70" height="36" rx="14" fill="#16C24A"/>
+                  <path d="M25 95 L16 106 L38 95" fill="#16C24A"/>
+                  <rect x="22" y="71" width="22" height="5" rx="2.5" fill="#fff" opacity="0.9"/>
+                  <rect x="22" y="80" width="52" height="5" rx="2.5" fill="#fff" opacity="0.7"/>
+                  {/* Top right */}
+                  <rect x="256" y="50" width="70" height="36" rx="14" fill="#fff" style={{filter:"drop-shadow(0 2px 8px rgba(0,0,0,0.10))"}}/>
+                  <path d="M315 85 L326 96 L304 85" fill="#fff"/>
+                  <circle cx="274" cy="68" r="4" fill="#CBD5E1"/>
+                  <circle cx="286" cy="68" r="4" fill="#CBD5E1"/>
+                  <circle cx="298" cy="68" r="4" fill="#CBD5E1"/>
+                  {/* Lock icon center */}
+                  <rect x="149" y="82" width="42" height="42" rx="21" fill="#fff" style={{filter:"drop-shadow(0 4px 12px rgba(22,194,74,0.25))"}}/>
+                  <rect x="160" y="94" width="20" height="16" rx="3" fill="#16C24A"/>
+                  <path d="M163 94 Q163 88 170 88 Q177 88 177 94" stroke="#16C24A" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
+                  <circle cx="170" cy="101" r="2.5" fill="#fff"/>
+                  {/* Small heart top right */}
+                  <path d="M302 120 C302 117 298 116 297 119 C296 116 292 117 292 120 C292 124 297 128 297 128 C297 128 302 124 302 120z" fill="#F87171"/>
+                  {/* Small green dot decorations */}
+                  <circle cx="145" cy="55" r="5" fill="#16C24A" opacity="0.5"/>
+                  <circle cx="200" cy="45" r="3.5" fill="#16C24A" opacity="0.4"/>
+                  <circle cx="30" cy="140" r="4" fill="#16C24A" opacity="0.35"/>
+                </svg>
               </div>
+
+              {/* Title */}
+              <div style={{ fontWeight:800, fontSize:20, color:"#0F172A", textAlign:"center", lineHeight:1.3, margin:"4px 0 12px" }}>
+                Commencez une conversation<br/>
+                avec <span style={{ color:"#16C24A" }}>{activeUser.name}</span>
+              </div>
+
+              {/* Security card */}
+              <div style={{ display:"flex", alignItems:"center", gap:10, background:"#fff", border:"1px solid #E2E8F0", borderRadius:16, padding:"12px 16px", margin:"0 4px 16px", width:"100%", boxSizing:"border-box", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
+                <div style={{ width:36, height:36, borderRadius:"50%", background:"#DCFCE7", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </div>
+                <div style={{ fontSize:13, color:"#475569", lineHeight:1.5 }}>
+                  Vos messages sont protégés par un <span style={{ fontWeight:700, color:"#16C24A" }}>chiffrement de bout en bout.</span>
+                </div>
+              </div>
+
+              {/* Suggestions header */}
+              <div style={{ width:"100%", fontSize:14, fontWeight:700, color:"#0F172A", marginBottom:10, textAlign:"left" }}>
+                Suggestions pour démarrer
+              </div>
+
+              {/* Suggestion chips */}
+              <div style={{ display:"flex", gap:8, width:"100%", overflowX:"auto", scrollbarWidth:"none", paddingBottom:4 }}>
+                {([
+                  { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16C24A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 11v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1h3zM20.293 8.293A1 1 0 0 0 19.586 8H17V6a4 4 0 0 0-4-4 1 1 0 0 0-1 1v.667a4 4 0 0 1-1.902 3.43l-1.547.773A1 1 0 0 0 8 8.866V19a2 2 0 0 0 2 2h6.234a2 2 0 0 0 1.994-1.832l.582-7A2 2 0 0 0 20.293 8.293z"/></svg>, label:"Dire bonjour", msg:"Bonjour ! 👋" },
+                  { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16C24A" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="#16C24A"/><circle cx="15" cy="9" r="1" fill="#16C24A"/></svg>, label:"Un emoji", msg:"😄" },
+                  { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16C24A" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>, label:"Une photo", msg:"Je voulais partager cette photo avec toi 📷" },
+                  { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16C24A" strokeWidth="2" strokeLinecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>, label:"Une musique", msg:"Tu connais cette chanson ? 🎵" },
+                  { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16C24A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>, label:"Un cadeau", msg:"J'ai quelque chose pour toi 🎁" },
+                ] as {icon:React.ReactNode; label:string; msg:string}[]).map((s, i) => (
+                  <button key={i}
+                    onClick={() => {
+                      if (!activeConv) return;
+                      const id = Date.now();
+                      setMessages(prev => ({ ...prev, [activeConv]: [...(prev[activeConv] ?? []), { id, text: s.msg, mine: true, time: new Date().toLocaleTimeString("fr", { hour:"2-digit", minute:"2-digit" }), status: "sent" }] }));
+                      import("../lib/api").then(m => m.apiSendMessage(activeConv, s.msg).catch(() => {}));
+                    }}
+                    style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:8, background:"#fff", border:"1px solid #E2E8F0", borderRadius:16, padding:"12px 14px", cursor:"pointer", flexShrink:0, minWidth:72, boxShadow:"0 1px 4px rgba(0,0,0,0.06)", transition:"all 0.15s" }}>
+                    {s.icon}
+                    <span style={{ fontSize:11, color:"#475569", fontWeight:600, textAlign:"center", lineHeight:1.2 }}>{s.label}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Security guarantee card */}
+              <div style={{ display:"flex", alignItems:"center", gap:12, background:"#fff", border:"1px solid #E2E8F0", borderRadius:16, padding:"14px 16px", marginTop:14, width:"100%", boxSizing:"border-box", cursor:"pointer", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
+                <div style={{ width:42, height:42, borderRadius:12, background:"#DCFCE7", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontWeight:700, fontSize:14, color:"#0F172A", marginBottom:2 }}>Sécurité garantie</div>
+                  <div style={{ fontSize:12, color:"#64748B", lineHeight:1.5 }}>Personne en dehors de cette discussion ne peut lire vos messages, pas même BrutePawa.</div>
+                </div>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#CBD5E1" strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>
+              </div>
+
             </div>
           )}
           {peerTyping && (
@@ -1630,11 +1790,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             </div>
           </div>
         ) : (
-          /* NORMAL INPUT BAR — WhatsApp style */
-          <div style={{ background:"#F0F2F5", padding:"6px 8px", display:"flex", gap:4, alignItems:"center", flexShrink:0 }}>
-            <button style={{ background:"none", border:"none", fontSize:22, cursor:"pointer", color:"#777", padding:"4px 4px", flexShrink:0, display:"flex", alignItems:"center" }}>
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm4.24 16L12 15.45 7.77 18l1.12-4.81-3.73-3.23 4.92-.42L12 5l1.92 4.53 4.92.42-3.73 3.23L16.23 18z"/></svg>
+          /* NORMAL INPUT BAR — Premium white design */
+          <div style={{ background:"#fff", padding:"8px 12px", display:"flex", gap:8, alignItems:"center", flexShrink:0, borderTop:"1px solid #F1F5F9" }}>
+            {/* Emoji button */}
+            <button style={{ background:"none", border:"none", cursor:"pointer", padding:0, flexShrink:0, display:"flex", alignItems:"center" }}>
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="#94A3B8"/><circle cx="15" cy="9" r="1" fill="#94A3B8"/></svg>
             </button>
+            {/* Text input */}
             <div style={{ flex:1 }}>
               <input value={newMsg}
                 onChange={e => {
@@ -1644,40 +1806,40 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   typingDebounceRef.current = setTimeout(() => { typingDebounceRef.current = null; }, 2500);
                 }}
                 onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMsg(); } }}
-                placeholder="Message"
-                style={{ width:"100%", background:"#fff", border:"none", borderRadius:22, padding:"10px 14px", fontSize:15, outline:"none", boxSizing:"border-box", color:"#111", boxShadow:"0 1px 2px rgba(0,0,0,0.1)" }} />
+                placeholder="Écrire un message..."
+                style={{ width:"100%", background:"#F8FAFC", border:"1.5px solid #E2E8F0", borderRadius:24, padding:"10px 16px", fontSize:15, outline:"none", boxSizing:"border-box", color:"#0F172A" }} />
             </div>
             {newMsg.trim() ? (
               <button onClick={() => sendMsg()}
-                style={{ background:"#25D366", border:"none", borderRadius:"50%", width:42, height:42, color:"#fff", cursor:"pointer", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(37,211,102,0.4)" }}>
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                style={{ background:"#16C24A", border:"none", borderRadius:"50%", width:44, height:44, color:"#fff", cursor:"pointer", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 3px 12px rgba(22,194,74,0.45)" }}>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
               </button>
             ) : (
               <>
                 <button onClick={() => { setAttachSheet(true); setAttachPage("none"); }}
-                  style={{ background:"none", border:"none", cursor:"pointer", color:"#777", padding:"4px 4px", flexShrink:0, display:"flex", alignItems:"center" }}>
-                  <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
+                  style={{ background:"none", border:"none", cursor:"pointer", padding:0, flexShrink:0, display:"flex", alignItems:"center" }}>
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
                 </button>
-                <button style={{ background:"none", border:"none", cursor:"pointer", color:"#777", padding:"4px 2px", flexShrink:0, display:"flex", alignItems:"center" }}>
-                  <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 15.2l-4.4-4.4L9 9.4l3 3.1 3-3.1 1.4 1.4L12 15.2zM20 4h-3.17L15 2H9L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h4.05l.59-.65L9.88 4h4.24l1.24 1.35.59.65H20v12z"/><circle cx="12" cy="11" r="3.2"/></svg>
+                <button style={{ background:"none", border:"none", cursor:"pointer", padding:0, flexShrink:0, display:"flex", alignItems:"center" }}>
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                 </button>
                 <div style={{ position:"relative", flexShrink:0 }}>
                   {isRecording ? (
-                    <div style={{ display:"flex", alignItems:"center", gap:6, background:"#fff", border:"2px solid #e53935", borderRadius:24, padding:"4px 10px" }}>
-                      <div style={{ width:10, height:10, borderRadius:"50%", background:"#e53935", animation:"fbl-rec-pulse 1s infinite" }} />
-                      <span style={{ fontSize:13, fontWeight:700, color:"#e53935", minWidth:28 }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:6, background:"#FEF2F2", border:"2px solid #EF4444", borderRadius:24, padding:"4px 10px" }}>
+                      <div style={{ width:9, height:9, borderRadius:"50%", background:"#EF4444", animation:"fbl-rec-pulse 1s infinite" }} />
+                      <span style={{ fontSize:13, fontWeight:700, color:"#EF4444", minWidth:28 }}>
                         {`${Math.floor(recSeconds/60)}:${(recSeconds%60).toString().padStart(2,"0")}`}
                       </span>
                       <button onPointerUp={stopVoice} onPointerLeave={stopVoice}
-                        style={{ background:"#e53935", border:"none", borderRadius:"50%", width:32, height:32, color:"#fff", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
-                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+                        style={{ background:"#EF4444", border:"none", borderRadius:"50%", width:30, height:30, color:"#fff", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
                       </button>
                     </div>
                   ) : (
                     <button
                       onPointerDown={e => { e.preventDefault(); startVoice(); }}
-                      style={{ background:"#25D366", border:"none", borderRadius:"50%", width:42, height:42, color:"#fff", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(37,211,102,0.4)" }}>
-                      <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.49 6-3.31 6-6.72h-1.7z"/></svg>
+                      style={{ background:"#16C24A", border:"none", borderRadius:"50%", width:44, height:44, color:"#fff", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 3px 12px rgba(22,194,74,0.45)" }}>
+                      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
                     </button>
                   )}
                 </div>
