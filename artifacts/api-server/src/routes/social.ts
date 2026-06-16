@@ -925,19 +925,21 @@ router.post("/posts/archived/delete", requireAuth, async (req, res): Promise<voi
 });
 
 /* ── Typing indicators (in-memory, expires 3s) ── */
-const typingMap = new Map<string, number>();
+const typingMap = new Map<string, { expiry: number; activity: string }>();
 router.post("/messages/typing", requireAuth, async (req, res): Promise<void> => {
   const me = req.userId!;
   const toId = parseInt(req.body?.toUserId, 10);
   if (!toId) { res.status(400).json({ error: "toUserId required" }); return; }
-  typingMap.set(`${me}-${toId}`, Date.now() + 3000);
+  const activity = (req.body?.activity as string) || "typing";
+  typingMap.set(`${me}-${toId}`, { expiry: Date.now() + 3500, activity });
   res.json({ ok: true });
 });
 router.get("/messages/typing/:userId", requireAuth, async (req, res): Promise<void> => {
   const me = req.userId!;
   const otherId = parseInt(req.params.userId, 10);
-  const expiry = typingMap.get(`${otherId}-${me}`) ?? 0;
-  res.json({ typing: Date.now() < expiry });
+  const entry = typingMap.get(`${otherId}-${me}`);
+  const active = !!entry && Date.now() < entry.expiry;
+  res.json({ typing: active, activity: active ? entry!.activity : "typing" });
 });
 
 /* ── Link preview (OG metadata scraper) ── */

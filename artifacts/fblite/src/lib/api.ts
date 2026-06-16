@@ -709,15 +709,15 @@ export async function apiSendMessage(toUserId: number, content: string): Promise
   return res.json() as Promise<ApiChatMessage>;
 }
 
-export async function apiSendTyping(toUserId: number): Promise<void> {
-  await apiFetch("/messages/typing", { method: "POST", body: JSON.stringify({ toUserId }) }).catch(() => {});
+export async function apiSendTyping(toUserId: number, activity = "typing"): Promise<void> {
+  await apiFetch("/messages/typing", { method: "POST", body: JSON.stringify({ toUserId, activity }) }).catch(() => {});
 }
 
-export async function apiGetTyping(userId: number): Promise<boolean> {
+export async function apiGetTyping(userId: number): Promise<{ typing: boolean; activity: string }> {
   const r = await apiFetch(`/messages/typing/${userId}`).catch(() => null);
-  if (!r || !r.ok) return false;
-  const d = await r.json() as { typing: boolean };
-  return d.typing ?? false;
+  if (!r || !r.ok) return { typing: false, activity: "typing" };
+  const d = await r.json() as { typing: boolean; activity?: string };
+  return { typing: d.typing ?? false, activity: d.activity ?? "typing" };
 }
 
 // ── Chat Groups ────────────────────────────────────────────────────────────────

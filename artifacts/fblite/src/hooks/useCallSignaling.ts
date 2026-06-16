@@ -409,10 +409,23 @@ export function useCallSignaling(
 
     connect();
 
+    // Bridge offline push notifications → call:invite signal
+    const onSwCall = (e: Event) => {
+      const d = (e as CustomEvent).detail;
+      if (!d?.fromUserId) return;
+      handleSignalRef.current?.({
+        type: "call:invite",
+        from: Number(d.fromUserId),
+        payload: { callType: d.callType ?? "audio" },
+      });
+    };
+    window.addEventListener("bp:sw-call", onSwCall);
+
     return () => {
       destroyed = true;
       if (retryTimeout) clearTimeout(retryTimeout);
       es?.close();
+      window.removeEventListener("bp:sw-call", onSwCall);
     };
   }, [meId]);
 

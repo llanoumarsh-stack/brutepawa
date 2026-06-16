@@ -25,6 +25,9 @@ if ("serviceWorker" in navigator) {
     if (type === "bp:navigate" && data?.url) {
       window.location.href = data.url;
     }
+    if (type === "bp:incoming-call" && data) {
+      window.dispatchEvent(new CustomEvent("bp:sw-call", { detail: data }));
+    }
   });
 }
 

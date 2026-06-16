@@ -254,7 +254,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [voiceSpeed, setVoiceSpeed]         = useState<1|1.5|2>(1);
   const [vpHeight, setVpHeight]         = useState<number | null>(null);
   const [vpOffset, setVpOffset]         = useState(0);
-  const [peerTyping, setPeerTyping]     = useState(false);
+  const [peerTyping, setPeerTyping]     = useState<{ typing: boolean; activity: string }>({ typing: false, activity: "typing" });
   const [attachSheet, setAttachSheet]   = useState(false);
   const [attachPage, setAttachPage]     = useState<"none"|"poll"|"event"|"contacts"|"ai">("none");
   const [uploadingAttach, setUploadingAttach] = useState(false);
@@ -410,7 +410,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     );
   }, [sendAttachMsg]);
 
-  /* ── Peer typing indicator ── */
+  /* ── Peer typing / activity indicator ── */
   useEffect(() => {
     if (!activeConv) return;
     const poll = () => apiGetTyping(activeConv).then(t => setPeerTyping(t));
@@ -418,6 +418,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     const id = setInterval(poll, 2000);
     return () => clearInterval(id);
   }, [activeConv]);
+
+  /* ── Broadcast audio-recording activity to peer ── */
+  useEffect(() => {
+    if (!isRecording || !activeConv) return;
+    apiSendTyping(activeConv, "audio").catch(() => {});
+    const id = setInterval(() => apiSendTyping(activeConv, "audio").catch(() => {}), 2000);
+    return () => clearInterval(id);
+  }, [isRecording, activeConv]);
 
   /* ── Voice recording helpers ── */
   const startVoice = async () => {
@@ -1844,7 +1852,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 <span style={{ fontWeight:800, fontSize:16, color:"#0F172A", lineHeight:1.2 }}>{activeUser.name}</span>
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="#16C24A"><path d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
               </div>
-              <div style={{ fontSize:12, color: presence.online ? "#16C24A" : "#94A3B8", fontWeight: presence.online ? 600 : 400 }}>{presText}</div>
+              <div style={{ fontSize:12, fontWeight: (presence.online || peerTyping.typing) ? 600 : 400, color: peerTyping.typing ? "#F59E0B" : presence.online ? "#16C24A" : "#94A3B8" }}>
+                {peerTyping.typing
+                  ? peerTyping.activity === "audio" ? "En train d'envoyer un vocal 🎤"
+                    : peerTyping.activity === "video" ? "En train d'envoyer une vidéo 📹"
+                    : "En train d'écrire..."
+                  : presText}
+              </div>
             </div>
             <button onClick={() => sig.startCall(activeConv, "audio")}
               style={{ background:"#F0FDF4", border:"none", width:38, height:38, borderRadius:"50%", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
@@ -2264,11 +2278,25 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
             </div>
           )}
-          {peerTyping && (
-            <div style={{ display:"flex", alignItems:"center", gap:8, alignSelf:"flex-start", background:"#fff", borderRadius:"8px 8px 8px 2px", padding:"8px 14px", boxShadow:"0 1px 1px rgba(0,0,0,0.10)", marginBottom:4, maxWidth:100 }}>
-              <span className="wa-typing-dot" />
-              <span className="wa-typing-dot" />
-              <span className="wa-typing-dot" />
+          {peerTyping.typing && (
+            <div style={{ display:"flex", alignItems:"center", gap:6, alignSelf:"flex-start", background:"#fff", borderRadius:"18px 18px 18px 4px", padding:"8px 14px", boxShadow:"0 1px 4px rgba(0,0,0,0.10)", marginBottom:4 }}>
+              {peerTyping.activity === "audio" ? (
+                <>
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#F59E0B" strokeWidth="2.5" strokeLinecap="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                  <span style={{ fontSize:12, color:"#92400E", fontWeight:600 }}>En train d'envoyer un vocal...</span>
+                </>
+              ) : peerTyping.activity === "video" ? (
+                <>
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#8B5CF6" strokeWidth="2.5" strokeLinecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                  <span style={{ fontSize:12, color:"#5B21B6", fontWeight:600 }}>En train d'envoyer une vidéo...</span>
+                </>
+              ) : (
+                <>
+                  <span className="wa-typing-dot" />
+                  <span className="wa-typing-dot" />
+                  <span className="wa-typing-dot" />
+                </>
+              )}
             </div>
           )}
           <div ref={bottomRef} />
@@ -2449,7 +2477,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   onChange={e => {
                     setNewMsg(e.target.value);
                     if (typingDebounceRef.current) clearTimeout(typingDebounceRef.current);
-                    apiSendTyping(activeConv!).catch(() => {});
+                    apiSendTyping(activeConv!, "typing").catch(() => {});
                     typingDebounceRef.current = setTimeout(() => { typingDebounceRef.current = null; }, 2500);
                   }}
                   onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMsg(); } }}
