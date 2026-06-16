@@ -236,6 +236,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [longPressMsg, setLongPressMsg]       = useState<number | null>(null);
   const [showMicTip, setShowMicTip]           = useState(false);
 
+  const [isOnline, setIsOnline]         = useState(navigator.onLine);
   const [isRecording, setIsRecording]   = useState(false);
   const [recSeconds, setRecSeconds]     = useState(0);
   const [recDragX, setRecDragX]         = useState(0);
@@ -287,6 +288,35 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
   useEffect(() => { activeConvRef.current = activeConv; }, [activeConv]);
   useEffect(() => { allUsersRef.current = allUsers; }, [allUsers]);
+
+  /* ── Suivi réseau + retry des messages en attente ── */
+  useEffect(() => {
+    const goOnline = () => {
+      setIsOnline(true);
+      /* Retry tous les messages "pending" */
+      setMessages(prev => {
+        const updated = { ...prev };
+        for (const convId in updated) {
+          updated[convId] = (updated[convId] ?? []).map(m => {
+            if (m.mine && m.status === "pending" && m.text) {
+              apiSendMessage(Number(convId), m.text)
+                .then(() => setMessages(ms => ({
+                  ...ms,
+                  [convId]: (ms[convId] ?? []).map(x => x.id === m.id ? { ...x, status: "sent" as const } : x)
+                })))
+                .catch(() => {});
+            }
+            return m;
+          });
+        }
+        return updated;
+      });
+    };
+    const goOffline = () => setIsOnline(false);
+    window.addEventListener("online", goOnline);
+    window.addEventListener("offline", goOffline);
+    return () => { window.removeEventListener("online", goOnline); window.removeEventListener("offline", goOffline); };
+  }, []);
 
   /* ── Fetch link previews for visible messages ── */
   useEffect(() => {
@@ -723,6 +753,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     setMessages(ms => ({ ...ms, [activeConv]: [...(ms[activeConv] ?? []), msg] }));
     setConvList(prev => prev.map(c => c.id === activeConv ? { ...c, lastMessage: content, time: now } : c));
     if (!text) setNewMsg("");
+    /* Si hors-ligne, le message reste "pending" — le retry se fera au retour du réseau */
+    if (!navigator.onLine) return;
     const convId = activeConv;
     apiSendMessage(convId, content)
       .then(() => {

@@ -284,7 +284,12 @@ export default function CreatePostPage({ onPublish }: Props) {
       <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", borderBottom: "1px solid var(--fb-divider)", flexShrink: 0, background: "var(--fb-white)", position: "sticky", top: 0, zIndex: 10 }}>
         <button onClick={() => navigate("/")} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "var(--fb-blue)", padding: "4px 10px 4px 0" }}>←</button>
         <div style={{ flex: 1, fontWeight: 800, fontSize: 17 }}>Créer une publication</div>
-        <button onClick={handlePublish} disabled={!canPublish} style={{ background: canPublish ? "var(--fb-blue)" : "var(--fb-bg)", color: canPublish ? "#fff" : "var(--fb-text-secondary)", border: "none", borderRadius: 8, padding: "8px 18px", fontWeight: 800, fontSize: 15, cursor: canPublish ? "pointer" : "not-allowed" }}>
+        <button onClick={handlePublish} disabled={!canPublish}
+          style={{ background: canPublish ? "linear-gradient(135deg,#16C24A,#0DA63E)" : "#E2E8F0",
+            color: canPublish ? "#fff" : "#94A3B8", border: "none", borderRadius: 10, padding: "9px 20px",
+            fontWeight: 800, fontSize: 15, cursor: canPublish ? "pointer" : "not-allowed",
+            boxShadow: canPublish ? "0 2px 10px rgba(22,194,74,0.35)" : "none", display: "flex", alignItems: "center", gap: 6 }}>
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
           PUBLIER
         </button>
       </div>
@@ -424,8 +429,20 @@ export default function CreatePostPage({ onPublish }: Props) {
         ))}
       </div>
 
-      <div style={{ padding: 16, flexShrink: 0 }}>
-        <button onClick={handlePublish} disabled={!canPublish} style={{ width: "100%", padding: 14, borderRadius: 10, border: "none", background: canPublish ? "var(--fb-blue)" : "#bbb", color: "#fff", fontWeight: 900, fontSize: 16, cursor: canPublish ? "pointer" : "not-allowed" }}>PUBLIER</button>
+      <div style={{ padding: "12px 16px 20px", flexShrink: 0 }}>
+        <button onClick={handlePublish} disabled={!canPublish}
+          style={{ width: "100%", padding: "15px 0", borderRadius: 16, border: "none",
+            background: canPublish ? "linear-gradient(135deg,#16C24A,#0DA63E)" : "#E2E8F0",
+            color: canPublish ? "#fff" : "#94A3B8", fontWeight: 900, fontSize: 17,
+            cursor: canPublish ? "pointer" : "not-allowed",
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+            boxShadow: canPublish ? "0 4px 20px rgba(22,194,74,0.4)" : "none",
+            transition: "all 0.2s", transform: "scale(1)" }}
+          onMouseDown={e => { if (canPublish) (e.currentTarget as HTMLButtonElement).style.transform = "scale(0.97)"; }}
+          onMouseUp={e => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)"; }}>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="#fff"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          PUBLIER
+        </button>
       </div>
 
       {/* ══════════ MOOD OVERLAY ══════════ */}
@@ -447,32 +464,99 @@ export default function CreatePostPage({ onPublish }: Props) {
         </BottomSheet>
       )}
 
-      {/* ══════════ LOCATION OVERLAY ══════════ */}
+      {/* ══════════ LOCATION OVERLAY premium ══════════ */}
       {showLocation && (
-        <BottomSheet onClose={() => setShowLocation(false)} title="📍 Où êtes-vous ?">
-          <div style={{ position: "relative", marginBottom: 4 }}>
-            <input autoFocus value={locationQuery} onChange={e => setLocationQuery(e.target.value)} placeholder="Rechercher une ville ou un pays…"
-              style={{ width: "100%", padding: "10px 36px 10px 14px", border: "1px solid var(--fb-divider)", borderRadius: 10, fontSize: 15, outline: "none", background: "var(--fb-bg)", boxSizing: "border-box" }} />
-            {locationQuery && <button onClick={() => setLocationQuery("")} style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", fontSize: 16, color: "var(--fb-text-secondary)" }}>✕</button>}
-          </div>
-          <div style={{ overflowY: "auto", maxHeight: 380 }}>
-            {locationResults.map((place, i) => {
-              const sel = selectedLocation?.city === place.city && selectedLocation?.country === place.country;
-              return (
-                <div key={i} onClick={() => { setSelectedLocation(place); setShowLocation(false); setLocationQuery(""); }} style={{ padding: "13px 4px", display: "flex", alignItems: "center", gap: 12, background: sel ? "#E8F0FE" : "var(--fb-white)", borderBottom: "1px solid var(--fb-divider)", cursor: "pointer" }}>
-                  <span style={{ fontSize: 22 }}>{place.flag}</span>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: sel ? 700 : 500, fontSize: 15, color: sel ? "var(--fb-blue)" : "var(--fb-text)" }}>{place.city}</div>
-                    <div style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>{place.country}</div>
-                  </div>
-                  {sel && <span style={{ color: "var(--fb-blue)" }}>✓</span>}
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 100, display: "flex", alignItems: "flex-end" }} onClick={() => setShowLocation(false)}>
+          <div style={{ background: "#fff", borderRadius: "24px 24px 0 0", width: "100%", maxHeight: "88vh", display: "flex", flexDirection: "column", boxShadow: "0 -8px 40px rgba(0,0,0,0.18)" }} onClick={e => e.stopPropagation()}>
+            {/* Handle bar */}
+            <div style={{ display: "flex", justifyContent: "center", padding: "10px 0 0" }}>
+              <div style={{ width: 40, height: 4, borderRadius: 2, background: "#D1D5DB" }} />
+            </div>
+            {/* Header */}
+            <div style={{ padding: "16px 20px 8px", flexShrink: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+                <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#FEE2E2", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="#EF4444"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg>
                 </div>
-              );
-            })}
-            {locationResults.length === 0 && <div style={{ padding: "24px", textAlign: "center", color: "var(--fb-text-secondary)" }}>Aucune ville trouvée</div>}
-            {selectedLocation && <div onClick={() => { setSelectedLocation(null); setShowLocation(false); }} style={{ padding: "13px 4px", cursor: "pointer", fontSize: 15, fontWeight: 600, color: "#F44336" }}>✕ Supprimer le lieu</div>}
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: 17 }}>Où êtes-vous ?</div>
+                  <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 1 }}>Ajoutez votre position pour aider vos amis à vous retrouver.</div>
+                </div>
+              </div>
+            </div>
+            {/* Search field */}
+            <div style={{ padding: "0 16px 10px", flexShrink: 0 }}>
+              <div style={{ position: "relative" }}>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="#94A3B8" style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)" }}><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                <input autoFocus value={locationQuery} onChange={e => setLocationQuery(e.target.value)}
+                  placeholder="Rechercher une ville ou un pays..."
+                  style={{ width: "100%", padding: "12px 40px 12px 42px", border: "1.5px solid #E2E8F0", borderRadius: 24, fontSize: 15, outline: "none", background: "#F8FAFC", boxSizing: "border-box", transition: "border-color 0.2s" }}
+                  onFocus={e => (e.currentTarget.style.borderColor = "#16C24A")}
+                  onBlur={e => (e.currentTarget.style.borderColor = "#E2E8F0")}
+                />
+                {locationQuery && (
+                  <button onClick={() => setLocationQuery("")}
+                    style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", width: 22, height: 22, borderRadius: "50%", background: "#94A3B8", border: "none", color: "#fff", fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1 }}>✕</button>
+                )}
+              </div>
+            </div>
+            {/* GPS option */}
+            <div style={{ padding: "0 16px 6px", flexShrink: 0 }}>
+              <div onClick={() => {
+                if (!navigator.geolocation) return;
+                navigator.geolocation.getCurrentPosition(pos => {
+                  const fake: Place = { city: "Ma position actuelle", country: "GPS", flag: "📡", countryCode: "GPS" };
+                  setSelectedLocation(fake); setShowLocation(false); setLocationQuery("");
+                }, () => {});
+              }} style={{ display: "flex", alignItems: "center", gap: 14, padding: "13px 14px", background: "#F0FDF4", borderRadius: 14, cursor: "pointer", border: "1.5px solid #BBF7D0" }}>
+                <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#16C24A22", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="#16C24A"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 700, fontSize: 15, color: "#16C24A" }}>Ma position actuelle</div>
+                  <div style={{ fontSize: 12, color: "#94A3B8" }}>Utiliser ma position actuelle</div>
+                </div>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="#16C24A"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+              </div>
+            </div>
+            {/* Divider */}
+            <div style={{ padding: "0 16px 4px", flexShrink: 0 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "#94A3B8", textTransform: "uppercase", letterSpacing: "0.05em" }}>Suggestions</div>
+            </div>
+            {/* City list */}
+            <div style={{ overflowY: "auto", flex: 1, paddingBottom: 20 }}>
+              {locationResults.map((place, i) => {
+                const sel = selectedLocation?.city === place.city && selectedLocation?.country === place.country;
+                return (
+                  <div key={i} onClick={() => { setSelectedLocation(place); setShowLocation(false); setLocationQuery(""); }}
+                    style={{ display: "flex", alignItems: "center", gap: 14, padding: "13px 20px", cursor: "pointer", background: sel ? "#F0FDF4" : "#fff", borderBottom: "1px solid #F1F5F9", transition: "background 0.12s" }}
+                    onMouseEnter={e => { if (!sel) (e.currentTarget as HTMLDivElement).style.background = "#F8FAFC"; }}
+                    onMouseLeave={e => { if (!sel) (e.currentTarget as HTMLDivElement).style.background = "#fff"; }}>
+                    <span style={{ fontSize: 24, flexShrink: 0 }}>{place.flag}</span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: sel ? 700 : 600, fontSize: 15, color: sel ? "#16C24A" : "#0F172A" }}>{place.city}</div>
+                      <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 1 }}>{place.country}</div>
+                    </div>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill={sel ? "#16C24A" : "#CBD5E1"}><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg>
+                  </div>
+                );
+              })}
+              {locationResults.length === 0 && (
+                <div style={{ padding: "32px", textAlign: "center", color: "#94A3B8" }}>
+                  <svg viewBox="0 0 24 24" width="40" height="40" fill="#CBD5E1" style={{ display: "block", margin: "0 auto 8px" }}><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg>
+                  Aucune ville trouvée
+                </div>
+              )}
+              {selectedLocation && (
+                <div onClick={() => { setSelectedLocation(null); setShowLocation(false); }}
+                  style={{ padding: "14px 20px", cursor: "pointer", fontSize: 15, fontWeight: 600, color: "#EF4444", display: "flex", alignItems: "center", gap: 8, borderTop: "1px solid #FEE2E2" }}>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="#EF4444"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                  Supprimer le lieu
+                </div>
+              )}
+            </div>
           </div>
-        </BottomSheet>
+        </div>
       )}
 
       {/* ══════════ MUSIC OVERLAY ══════════ */}

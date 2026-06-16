@@ -1,0 +1,234 @@
+# CORRECTIONS UI/UX PREMIUM À APPLIQUER
+
+Analyse l'application entière et applique les corrections suivantes pour obtenir une expérience comparable à Facebook, Messenger, WhatsApp et Telegram.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. DÉSACTIVER TOUS LES APPUIS LONGS
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Problème :
+Un appui long affiche actuellement les menus Android :
+
+- Copier
+- Partager
+- Traduire
+- Recherche Google
+- Sélection de texte
+- Poignées bleues
+
+Ce comportement est interdit.
+
+Comportement attendu :
+
+✓ Aucun texte sélectionnable
+✓ Aucun menu Android
+✓ Aucun menu contextuel
+✓ Aucun appui long sur publication
+✓ Aucun appui long sur profil
+✓ Aucun appui long sur commentaire
+✓ Aucun appui long sur nom d'utilisateur
+✓ Aucun déclenchement de Google
+
+Appliquer globalement :
+
+user-select: none;
+-webkit-user-select: none;
+-webkit-touch-callout: none;
+
+Bloquer également :
+
+contextmenu
+selectstart
+longpress
+
+sur toute l'application.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+2. MODAL "CRÉER UNE PUBLICATION" ULTRA PREMIUM
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Refaire complètement la fenêtre de création.
+
+Design attendu :
+
+✓ Style Facebook 2025
+✓ Coins 30px
+✓ Ombres modernes
+✓ Glassmorphism léger
+✓ Animation d'ouverture fluide
+✓ Avatar plus grand
+✓ Interface aérée
+✓ Espacements harmonieux
+
+Zone de texte :
+
+- Très grande
+- Curseur animé
+- Placeholder élégant
+- Auto-expansion
+
+Actions :
+
+□ Photo/Vidéo
+□ Musique
+□ Identifier des amis
+□ Lieu
+□ Humeur / Activité
+
+Présentées sous forme de cartes modernes.
+
+Bouton Publier :
+
+✓ Dégradé vert premium
+✓ Icône avion papier
+✓ Animation au clic
+✓ Désactivé si vide
+✓ Effet de chargement
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+3. SÉLECTEUR DE LIEU ULTRA PREMIUM
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Refaire totalement le popup de localisation.
+
+Header :
+
+📍 Où êtes-vous ?
+
+Sous-titre :
+
+Ajoutez votre position pour aider vos amis à vous retrouver.
+
+Champ recherche :
+
+✓ Coins très arrondis
+✓ Icône recherche
+✓ Bouton effacer
+
+Ajouter :
+
+📡 Ma position actuelle
+
+en première position.
+
+Liste des villes :
+
+Pour chaque ville afficher :
+
+- Drapeau
+- Nom
+- Pays
+- Icône localisation à droite
+
+Animations :
+
+✓ Apparition fluide
+✓ Scroll moderne
+✓ Effet de sélection
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+4. GESTION INTELLIGENTE DES LIENS
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Actuellement les liens sont affichés comme du texte simple.
+
+Corriger :
+
+Détecter automatiquement :
+
+https://
+http://
+www.
+
+Comportement :
+
+✓ Texte bleu
+✓ Souligné
+✓ Clicable
+
+Au clic :
+
+- Ouvrir Chrome
+- Ouvrir le navigateur par défaut
+
+Utiliser :
+
+window.open(url, '_blank')
+
+Bonus :
+
+Afficher automatiquement un aperçu du lien :
+
+- Favicon
+- Domaine
+- Description
+- Carte de prévisualisation
+
+comme Messenger ou Facebook.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+5. ENVOI DE MESSAGE DYNAMIQUE AVEC ÉTAT RÉSEAU
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Problème :
+
+Les messages apparaissent envoyés immédiatement même sans connexion.
+
+Comportement attendu :
+
+Quand un utilisateur envoie un message :
+
+Si internet est absent :
+
+✓ Afficher le message
+✓ Afficher une horloge grise
+✓ Statut "En attente"
+
+Le message reste visible.
+
+Lorsque la connexion revient :
+
+Horloge
+↓
+Une coche
+↓
+Deux coches
+
+sans rechargement.
+
+Utiliser :
+
+navigator.onLine
+
+ou WebSocket temps réel.
+
+Animation :
+
+✓ Fluide
+✓ Instantanée
+✓ Sans refresh manuel
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+OBJECTIF FINAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Le résultat doit ressembler à une application moderne de niveau :
+
+✓ Facebook
+✓ Messenger
+✓ WhatsApp
+✓ Telegram
+
+avec :
+
+- Interface ultra premium
+- Animations fluides
+- Performance mobile optimale
+- Design moderne 2025
+- Expérience utilisateur professionnelle
+- Responsive Android/iPhone
+- Aucune interaction native Android indésirable
+- Gestion intelligente des liens
+- Gestion réseau temps réel
+- Modals premium
+- UX haut de gamme
