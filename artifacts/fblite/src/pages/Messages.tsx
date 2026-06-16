@@ -6,6 +6,29 @@ import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignal
 
 void ({} as ApiChatGroup);
 
+const CONV_THEMES = {
+  "bp-green": { label:"BrutePawa Vert",  bg:"#F0FDF4", mine:"#16C24A", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#16C24A" },
+  "ocean":    { label:"Océan Bleu",      bg:"#EFF6FF", mine:"#3B82F6", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#3B82F6" },
+  "orange":   { label:"Soleil Orange",   bg:"#FFF7ED", mine:"#F97316", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#F97316" },
+  "violet":   { label:"Violet Premium",  bg:"#FAF5FF", mine:"#8B5CF6", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#8B5CF6" },
+  "rose":     { label:"Rose Moderne",    bg:"#FFF1F2", mine:"#F43F5E", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#F43F5E" },
+  "indigo":   { label:"Indigo",          bg:"#EEF2FF", mine:"#6366F1", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#6366F1" },
+  "cyan":     { label:"Cyan",            bg:"#ECFEFF", mine:"#06B6D4", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#06B6D4" },
+  "gold":     { label:"Or",              bg:"#FEFCE8", mine:"#D97706", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#D97706" },
+  "dark":     { label:"Nuit Sombre",     bg:"#0F172A", mine:"#334155", mineText:"#CBD5E1", theirs:"#1E293B", theirsText:"#CBD5E1", accent:"#94A3B8" },
+} as const;
+type ThemeKey = keyof typeof CONV_THEMES;
+
+const CONV_WALLPAPERS = [
+  { key:"none",    gradient:"#F0FDF4",                                              label:"Aucun" },
+  { key:"sunset",  gradient:"linear-gradient(135deg,#FF6B6B 0%,#FFE66D 100%)",     label:"Coucher" },
+  { key:"night",   gradient:"linear-gradient(135deg,#0F0C29 0%,#302B63 50%,#24243E 100%)", label:"Nuit" },
+  { key:"nature",  gradient:"linear-gradient(135deg,#134E5E 0%,#71B280 100%)",     label:"Nature" },
+  { key:"ocean",   gradient:"linear-gradient(135deg,#2193b0 0%,#6dd5ed 100%)",     label:"Océan" },
+  { key:"dark",    gradient:"linear-gradient(135deg,#1a1a2e 0%,#0f3460 100%)",     label:"Sombre" },
+] as const;
+type WallpaperKey = typeof CONV_WALLPAPERS[number]["key"];
+
 function presenceLabel(online: boolean, lastSeenAt: string | null): string {
   if (online) return "En ligne";
   if (!lastSeenAt) return "Hors ligne";
@@ -113,6 +136,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [showDeleteConv, setShowDeleteConv]   = useState(false);
   const [showWallpaper, setShowWallpaper]     = useState(false);
   const [convWallpaper, setConvWallpaper]     = useState<string | null>(null);
+  const [convThemeKey, setConvThemeKey]       = useState<ThemeKey>("bp-green");
+  const [pendingThemeKey, setPendingThemeKey] = useState<ThemeKey>("bp-green");
+  const [convWpKey, setConvWpKey]             = useState<WallpaperKey>("none");
+  const [pendingWpKey, setPendingWpKey]       = useState<WallpaperKey>("none");
   const [showChatSearch, setShowChatSearch]   = useState(false);
   const [chatSearchQ, setChatSearchQ]         = useState("");
   const [chatSearchIdx, setChatSearchIdx]     = useState(0);
@@ -1520,7 +1547,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         )}
 
         {/* ── MESSAGES AREA ── */}
-        <div style={{ flex:1, overflowY:"auto", padding:"8px 10px 4px", display:"flex", flexDirection:"column", gap:2, background: convWallpaper ?? "#F8FAFC" }}>
+        <div style={{ flex:1, overflowY:"auto", padding:"8px 10px 4px", display:"flex", flexDirection:"column", gap:2, background: convWpKey !== "none" ? (CONV_WALLPAPERS.find(w=>w.key===convWpKey)?.gradient ?? CONV_THEMES[convThemeKey].bg) : (convWallpaper ?? CONV_THEMES[convThemeKey].bg) }}>
           <div style={{ textAlign:"center", fontSize:11.5, color:"#888", background:"rgba(0,0,0,0.05)", borderRadius:20, padding:"3px 14px", margin:"4px auto 10px", display:"inline-block", alignSelf:"center" }}>Aujourd'hui</div>
           {currentMessages.map((msg, i) => {
             const isLast     = i === currentMessages.length - 1 || currentMessages[i + 1]?.mine !== msg.mine;
@@ -1587,11 +1614,15 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       <div style={{ fontWeight:600, fontSize:13, wordBreak:"break-all" }}>{msg.attachment.extra ?? "Document"}</div>
                     </a>
                   )}
-                  <div className={msg.mine ? "fbl-msg-mine" : "fbl-msg-theirs"} style={{ padding:"8px 12px 5px", fontSize:14.5, lineHeight:1.45, wordBreak:"break-word" }}>
+                  <div className={msg.mine ? "fbl-msg-mine" : "fbl-msg-theirs"}
+                    style={{ padding:"8px 12px 5px", fontSize:14.5, lineHeight:1.45, wordBreak:"break-word",
+                      background: msg.mine ? CONV_THEMES[convThemeKey].mine : CONV_THEMES[convThemeKey].theirs,
+                      color: msg.mine ? CONV_THEMES[convThemeKey].mineText : CONV_THEMES[convThemeKey].theirsText }}>
                     {msg.text}
-                    <div style={{ fontSize:10, marginTop:2, color:"#888", textAlign:"right", display:"flex", justifyContent:"flex-end", alignItems:"center", gap:3 }}>
+                    <div style={{ fontSize:10, marginTop:2, textAlign:"right", display:"flex", justifyContent:"flex-end", alignItems:"center", gap:3,
+                      color: msg.mine ? "rgba(255,255,255,0.72)" : "#888" }}>
                       {msg.time}
-                      {msg.mine && <span style={{ fontSize:11, color: msg.status === "read" ? "#4FC3F7" : "#888" }}>{msg.status === "read" ? "✓✓" : "✓"}</span>}
+                      {msg.mine && <span style={{ fontSize:11, color: msg.status === "read" ? "#4FC3F7" : "rgba(255,255,255,0.72)" }}>{msg.status === "read" ? "✓✓" : "✓"}</span>}
                     </div>
                   </div>
                 </div>
@@ -1916,7 +1947,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="#555"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
                 Rechercher
               </button>
-              <button className="fbl-menu-btn" onClick={() => { setShowWallpaper(true); setShowConvMenu(false); }}>
+              <button className="fbl-menu-btn" onClick={() => { setPendingThemeKey(convThemeKey); setPendingWpKey(convWpKey); setShowWallpaper(true); setShowConvMenu(false); }}>
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="#555"><path d="M21 3H3C2 3 1 4 1 5v14c0 1.1.9 2 2 2h18c1 0 2-1 2-2V5c0-1-1-2-2-2zM5 17l3.5-4.5 2.5 3.01L14.5 11l4.5 6H5z"/></svg>
                 Fond d'écran
               </button>
@@ -1941,34 +1972,121 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
         {/* long-press modal removed — handled inline by selection header + bottom bar */}
 
-        {/* ── WALLPAPER / FOND D'ÉCRAN SELECTOR ── */}
+        {/* ── WALLPAPER / THEME SELECTOR PREMIUM ── */}
         {showWallpaper && (
-          <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", zIndex:10001, display:"flex", flexDirection:"column", justifyContent:"flex-end", animation:"fbl-fade-in 0.15s ease" }}
+          <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.45)", zIndex:10001, display:"flex", flexDirection:"column", justifyContent:"flex-end", animation:"fbl-fade-in 0.18s ease" }}
             onClick={() => setShowWallpaper(false)}>
-            <div style={{ background:"#fff", borderRadius:"20px 20px 0 0", padding:"20px 16px 32px", animation:"fbl-sheet-up 0.25s ease" }} onClick={e => e.stopPropagation()}>
-              <div style={{ fontWeight:700, fontSize:16, color:"#111", marginBottom:18, textAlign:"center" }}>Sélectionnez un thème</div>
-              <div style={{ display:"grid", gridTemplateColumns:"repeat(5, 1fr)", gap:14 }}>
-                {([
-                  { color:null,      label:"Défaut" },
-                  { color:"#FFF3E0", label:"Chaud"  },
-                  { color:"#E8F5E9", label:"Vert"   },
-                  { color:"#E3F2FD", label:"Bleu"   },
-                  { color:"#FCE4EC", label:"Rose"   },
-                  { color:"#F3E5F5", label:"Violet" },
-                  { color:"#E8EAF6", label:"Indigo" },
-                  { color:"#E0F7FA", label:"Cyan"   },
-                  { color:"#FFFDE7", label:"Jaune"  },
-                  { color:"#EFEBE9", label:"Brun"   },
-                ] as { color:string|null; label:string }[]).map(t => {
-                  const active = convWallpaper === t.color;
-                  return (
-                    <div key={t.label} style={{ textAlign:"center", cursor:"pointer" }}
-                      onClick={() => { setConvWallpaper(t.color); setShowWallpaper(false); }}>
-                      <div style={{ width:52, height:52, borderRadius:"50%", background: t.color ?? "#fff", border: active ? "3px solid #1877F2" : "2px solid #E4E6EB", margin:"0 auto 4px", boxShadow: active ? "0 0 0 2px rgba(24,119,242,0.3)" : "none" }} />
-                      <div style={{ fontSize:11, color: active ? "#1877F2" : "#555", fontWeight: active ? 700 : 400 }}>{t.label}</div>
+            <div style={{ background:"#fff", borderRadius:"24px 24px 0 0", maxHeight:"82dvh", overflowY:"auto", animation:"fbl-sheet-up 0.25s ease" }}
+              onClick={e => e.stopPropagation()}>
+
+              {/* Drag handle */}
+              <div style={{ display:"flex", justifyContent:"center", padding:"10px 0 0" }}>
+                <div style={{ width:36, height:4, borderRadius:2, background:"#E2E8F0" }} />
+              </div>
+
+              {/* Title */}
+              <div style={{ padding:"14px 20px 6px", fontWeight:800, fontSize:17, color:"#0F172A", textAlign:"center" }}>
+                Personnaliser la conversation
+              </div>
+
+              {/* ── Live preview strip ── */}
+              <div style={{ margin:"8px 16px 0", borderRadius:16, overflow:"hidden", border:"1px solid #E2E8F0", background: CONV_THEMES[pendingThemeKey].bg }}>
+                <div style={{ padding:"10px 14px", display:"flex", flexDirection:"column", gap:6 }}>
+                  {/* Received */}
+                  <div style={{ display:"flex", justifyContent:"flex-start" }}>
+                    <div style={{ background:CONV_THEMES[pendingThemeKey].theirs, color:CONV_THEMES[pendingThemeKey].theirsText, borderRadius:"8px 8px 8px 2px", padding:"7px 11px", fontSize:12.5, maxWidth:"62%", boxShadow:"0 1px 2px rgba(0,0,0,0.10)" }}>
+                      Salut ! Comment tu vas ? 😊
                     </div>
-                  );
-                })}
+                  </div>
+                  {/* Sent */}
+                  <div style={{ display:"flex", justifyContent:"flex-end" }}>
+                    <div style={{ background:CONV_THEMES[pendingThemeKey].mine, color:CONV_THEMES[pendingThemeKey].mineText, borderRadius:"8px 8px 2px 8px", padding:"7px 11px", fontSize:12.5, maxWidth:"62%", boxShadow:"0 1px 2px rgba(0,0,0,0.12)" }}>
+                      Très bien merci ! Et toi ? 🙌
+                    </div>
+                  </div>
+                  {/* Received */}
+                  <div style={{ display:"flex", justifyContent:"flex-start" }}>
+                    <div style={{ background:CONV_THEMES[pendingThemeKey].theirs, color:CONV_THEMES[pendingThemeKey].theirsText, borderRadius:"8px 8px 8px 2px", padding:"7px 11px", fontSize:12.5, maxWidth:"55%", boxShadow:"0 1px 2px rgba(0,0,0,0.10)" }}>
+                      Super ! 🎉
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* ── Couleurs de discussion ── */}
+              <div style={{ padding:"18px 16px 4px" }}>
+                <div style={{ fontWeight:700, fontSize:14, color:"#0F172A", marginBottom:12 }}>Couleurs de discussion</div>
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(5, 1fr)", gap:8 }}>
+                  {(Object.entries(CONV_THEMES) as [ThemeKey, typeof CONV_THEMES[ThemeKey]][]).map(([key, t]) => {
+                    const sel = pendingThemeKey === key;
+                    return (
+                      <div key={key} onClick={() => setPendingThemeKey(key)}
+                        style={{ cursor:"pointer", borderRadius:14, border: sel ? `2.5px solid #16C24A` : "2px solid #E2E8F0", overflow:"hidden", position:"relative", transition:"border-color 0.15s", boxShadow: sel ? "0 0 0 3px rgba(22,194,74,0.18)" : "none" }}>
+                        {/* Mini preview */}
+                        <div style={{ background:t.bg, padding:"6px 6px 4px", display:"flex", flexDirection:"column", gap:3 }}>
+                          {/* Their bubble */}
+                          <div style={{ background:t.theirs, borderRadius:"5px 5px 5px 1px", height:8, width:"68%", boxShadow:"0 1px 1px rgba(0,0,0,0.08)" }} />
+                          {/* Mine bubble */}
+                          <div style={{ background:t.mine, borderRadius:"5px 5px 1px 5px", height:8, width:"55%", alignSelf:"flex-end", boxShadow:"0 1px 2px rgba(0,0,0,0.14)" }} />
+                          {/* Their bubble 2 */}
+                          <div style={{ background:t.theirs, borderRadius:"5px 5px 5px 1px", height:6, width:"50%", boxShadow:"0 1px 1px rgba(0,0,0,0.08)", marginBottom:2 }} />
+                        </div>
+                        {/* Label */}
+                        <div style={{ background:"#fff", padding:"3px 4px 5px", textAlign:"center" }}>
+                          <span style={{ fontSize:9.5, fontWeight: sel ? 700 : 500, color: sel ? "#16C24A" : "#475569", lineHeight:1.1, display:"block" }}>{t.label}</span>
+                        </div>
+                        {/* Selected badge */}
+                        {sel && (
+                          <div style={{ position:"absolute", top:4, right:4, width:16, height:16, borderRadius:"50%", background:"#16C24A", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                            <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* ── Fond d'écran ── */}
+              <div style={{ padding:"16px 16px 4px" }}>
+                <div style={{ fontWeight:700, fontSize:14, color:"#0F172A", marginBottom:12 }}>Fond d'écran</div>
+                <div style={{ display:"flex", gap:8, overflowX:"auto", scrollbarWidth:"none", paddingBottom:4 }}>
+                  {CONV_WALLPAPERS.map(w => {
+                    const sel = pendingWpKey === w.key;
+                    return (
+                      <div key={w.key} onClick={() => setPendingWpKey(w.key)}
+                        style={{ flexShrink:0, width:64, cursor:"pointer", borderRadius:12, overflow:"hidden", border: sel ? "2.5px solid #16C24A" : "2px solid #E2E8F0", position:"relative", boxShadow: sel ? "0 0 0 3px rgba(22,194,74,0.18)" : "none", transition:"all 0.15s" }}>
+                        <div style={{ width:"100%", height:64, background:w.gradient }} />
+                        <div style={{ background:"#fff", padding:"3px 2px 4px", textAlign:"center", fontSize:9.5, fontWeight: sel ? 700 : 500, color: sel ? "#16C24A" : "#475569" }}>{w.label}</div>
+                        {sel && (
+                          <div style={{ position:"absolute", top:4, right:4, width:16, height:16, borderRadius:"50%", background:"#16C24A", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                            <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* ── Appliquer button ── */}
+              <div style={{ padding:"16px 16px 32px" }}>
+                <button onClick={() => {
+                  setConvThemeKey(pendingThemeKey);
+                  setConvWpKey(pendingWpKey);
+                  setConvWallpaper(null);
+                  setShowWallpaper(false);
+                }}
+                  style={{ width:"100%", background:"linear-gradient(135deg,#16C24A,#0ea541)", border:"none", borderRadius:99, padding:"15px", fontSize:16, fontWeight:800, color:"#fff", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8, boxShadow:"0 4px 18px rgba(22,194,74,0.45)", letterSpacing:0.2 }}>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                  </svg>
+                  Appliquer
+                </button>
               </div>
             </div>
           </div>
