@@ -367,10 +367,8 @@ export default function Profile() {
                 {/* Name + badges */}
                 <div style={{ display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap" }}>
                   <span className="profile-name">{localUser.name}</span>
-                  {/* Verified green badge */}
-                  <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#2ECC40", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                  </div>
+                  {/* Verified blue badge */}
+                  <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 22, height: 22, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />
                   {/* Medal badge — argent, SVG custom */}
                   <svg width="20" height="22" viewBox="0 0 20 22" fill="none" style={{ flexShrink: 0 }}>
                     {/* Ribbon */}
@@ -388,8 +386,7 @@ export default function Profile() {
                     {/* Number 2 */}
                     <text x="10" y="19" textAnchor="middle" fontSize="6" fontWeight="800" fill="#666">2</text>
                   </svg>
-                  {/* Flag */}
-                  {localUser.flag && <span style={{ fontSize: 18 }}>{localUser.flag}</span>}
+                  {/* Flag removed */}
                 </div>
 
                 {/* Bio */}

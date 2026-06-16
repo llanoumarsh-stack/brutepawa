@@ -363,11 +363,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
         <div style={{ position: "absolute", top: -60, right: -60, width: 220, height: 220, borderRadius: "50%", background: "rgba(255,255,255,0.12)" }} />
         <div style={{ position: "absolute", bottom: -40, right: 60, width: 140, height: 140, borderRadius: "50%", background: "rgba(255,255,255,0.07)" }} />
         <div style={{ position: "absolute", top: 30, left: "50%", transform: "translateX(-50%)", width: 80, height: 80, borderRadius: "50%", background: "rgba(255,255,255,0.06)" }} />
-        {flag && (
-          <div style={{ position: "absolute", top: 14, right: 14, background: "rgba(255,255,255,0.92)", borderRadius: "50%", width: 46, height: 46, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, boxShadow: "0 2px 12px rgba(0,0,0,0.15)" }}>
-            {flag}
-          </div>
-        )}
+        {/* Flag circle removed from cover */}
         {/* avatar overlap */}
         <div style={{ position: "absolute", bottom: -48, left: 20, zIndex: 5 }}>
           {user.avatarUrl
@@ -385,9 +381,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
           {/* Name + verified */}
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
             <span style={{ fontWeight: 900, fontSize: 23, color: "#0D1B2A", lineHeight: 1.2 }}>{name}</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="#1E88E5">
-              <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-            </svg>
+            <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 24, height: 24, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />
           </div>
 
           <div style={{ fontSize: 13, color: "#8896A6", marginTop: 3 }}>@{name.toLowerCase().replace(/\s+/g, "_")}</div>
@@ -397,7 +391,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
           {user.country && (
             <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 8 }}>
               <IconMapPin />
-              <span style={{ fontSize: 13, color: "#8896A6" }}>{flag} {user.country}</span>
+              <span style={{ fontSize: 13, color: "#8896A6" }}>{user.country}</span>
             </div>
           )}
 
