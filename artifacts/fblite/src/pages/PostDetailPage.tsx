@@ -188,7 +188,10 @@ export default function PostDetailPage({ postId }: Props) {
     setSubmitting(true); setNewComment("");
     const parentId = replyingTo ?? undefined;
     if (parentId) cancelReply();
-    try { setComments(prev => [...prev, await apiPostComment(postId, text, parentId)]); }
+    try {
+      const c = await apiPostComment(postId, text, parentId);
+      setComments(prev => [...prev, c]);
+    }
     catch { setNewComment(text); } finally { setSubmitting(false); }
   };
 
