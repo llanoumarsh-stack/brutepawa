@@ -155,23 +155,14 @@ export default function Feed() {
   // Lock body scroll when bottom sheet is open to prevent layout shift
   useEffect(() => {
     if (postMenuId !== null) {
-      const scrollY = window.scrollY;
-      document.body.style.position = "fixed";
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = "100%";
+      document.documentElement.style.overflow = "hidden";
       document.body.style.overflow = "hidden";
     } else {
-      const scrollY = document.body.style.top;
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.width = "";
+      document.documentElement.style.overflow = "";
       document.body.style.overflow = "";
-      if (scrollY) window.scrollTo(0, -parseInt(scrollY));
     }
     return () => {
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.width = "";
+      document.documentElement.style.overflow = "";
       document.body.style.overflow = "";
     };
   }, [postMenuId]);
