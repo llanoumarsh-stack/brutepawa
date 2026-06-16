@@ -11,15 +11,24 @@ const router = Router();
 
 // ── Seed default catalog (idempotent) ────────────────────────────────────────
 const DEFAULT_GIFTS = [
-  { name: "Rose",     iconEmoji: "🌹", tokenCost: 10,   animationType: "float"  },
-  { name: "Cœur",    iconEmoji: "❤️",  tokenCost: 50,   animationType: "pulse"  },
-  { name: "Couronne", iconEmoji: "👑", tokenCost: 500,  animationType: "spin"   },
-  { name: "Diamant",  iconEmoji: "💎", tokenCost: 2000, animationType: "burst"  },
+  { name: "Rose",          iconEmoji: "🌹", iconUrl: "/gifts/rose.jpg",         tokenCost: 10,    animationType: "float"  },
+  { name: "Cœur",          iconEmoji: "❤️",  iconUrl: "/gifts/coeur.jpg",        tokenCost: 50,    animationType: "pulse"  },
+  { name: "Ours",          iconEmoji: "🧸", iconUrl: "/gifts/ours.jpg",          tokenCost: 100,   animationType: "float"  },
+  { name: "Gâteau",        iconEmoji: "🎂", iconUrl: "/gifts/gateau.jpg",        tokenCost: 250,   animationType: "float"  },
+  { name: "Couronne",      iconEmoji: "👑", iconUrl: "/gifts/couronne.jpg",      tokenCost: 500,   animationType: "spin"   },
+  { name: "Voiture",       iconEmoji: "🏎", iconUrl: "/gifts/voiture.jpg",       tokenCost: 1000,  animationType: "burst"  },
+  { name: "Diamant",       iconEmoji: "💎", iconUrl: "/gifts/diamant.jpg",       tokenCost: 2000,  animationType: "burst"  },
+  { name: "Jet Privé",     iconEmoji: "✈️",  iconUrl: "/gifts/jet-prive.jpg",    tokenCost: 5000,  animationType: "burst"  },
+  { name: "Lion Royal",    iconEmoji: "🦁", iconUrl: "/gifts/lion-royal.jpg",    tokenCost: 10000, animationType: "burst"  },
+  { name: "Château Royal", iconEmoji: "🏰", iconUrl: "/gifts/chateau-royal.jpg", tokenCost: 25000, animationType: "burst"  },
+  { name: "Afrique d'Or",  iconEmoji: "🌍", iconUrl: "/gifts/afrique-or.jpg",   tokenCost: 50000, animationType: "burst"  },
 ];
 
 export async function seedGiftCatalog() {
   const existing = await db.select({ cnt: sql<number>`count(*)::int` }).from(giftCatalogTable);
-  if (existing[0].cnt > 0) return;
+  if (existing[0].cnt >= DEFAULT_GIFTS.length) return;
+  // Full refresh — wipe incomplete catalog and reseed
+  await db.delete(giftCatalogTable);
   await db.insert(giftCatalogTable).values(DEFAULT_GIFTS);
 }
 

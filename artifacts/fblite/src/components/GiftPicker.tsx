@@ -5,8 +5,28 @@ interface GiftItem {
   id: number;
   name: string;
   iconEmoji: string;
+  iconUrl?: string;
   tokenCost: number;
   animationType: string;
+}
+
+/* ── Name → local image map (fallback if iconUrl not in API yet) ── */
+const GIFT_IMG: Record<string, string> = {
+  "Rose":          "/gifts/rose.jpg",
+  "Cœur":          "/gifts/coeur.jpg",
+  "Ours":          "/gifts/ours.jpg",
+  "Gâteau":        "/gifts/gateau.jpg",
+  "Couronne":      "/gifts/couronne.jpg",
+  "Voiture":       "/gifts/voiture.jpg",
+  "Diamant":       "/gifts/diamant.jpg",
+  "Jet Privé":     "/gifts/jet-prive.jpg",
+  "Lion Royal":    "/gifts/lion-royal.jpg",
+  "Château Royal": "/gifts/chateau-royal.jpg",
+  "Afrique d'Or":  "/gifts/afrique-or.jpg",
+};
+
+function giftImg(g: GiftItem): string | null {
+  return g.iconUrl || GIFT_IMG[g.name] || null;
 }
 
 interface Props {
@@ -221,31 +241,58 @@ export default function GiftPicker({
             {catalog.length === 0 ? (
               <div style={{ textAlign: "center", color: "rgba(255,255,255,0.4)", padding: "32px 0", fontSize: 14 }}>Chargement…</div>
             ) : (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 8, paddingBottom: 8 }}>
-                {filtered.map(g => {
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, paddingBottom: 8 }}>
+                {filtered.map((g, idx) => {
                   const canAfford = balance >= g.tokenCost;
                   const isSel    = selected?.id === g.id;
+                  const img      = giftImg(g);
+                  const num      = String(catalog.findIndex(c => c.id === g.id) + 1).padStart(2, "0");
+                  const price    = g.tokenCost >= 1000
+                    ? `${(g.tokenCost / 1000).toFixed(g.tokenCost % 1000 === 0 ? 0 : 1)} 000`
+                    : String(g.tokenCost);
                   return (
                     <button
                       key={g.id}
                       onClick={() => { if (canAfford) { setSelected(g); setQty(1); setError(null); } }}
                       style={{
-                        background: isSel
-                          ? "linear-gradient(135deg,rgba(22,194,74,0.25),rgba(13,166,62,0.15))"
-                          : "rgba(255,255,255,0.06)",
-                        border: isSel ? "1.5px solid #16C24A" : "1.5px solid rgba(255,255,255,0.08)",
-                        borderRadius: 14, padding: "10px 4px 8px",
+                        background: img ? "transparent" : isSel ? "rgba(22,194,74,0.15)" : "rgba(255,255,255,0.06)",
+                        border: isSel ? "2px solid #16C24A" : "2px solid transparent",
+                        borderRadius: 16, padding: 0, overflow: "hidden",
                         cursor: canAfford ? "pointer" : "not-allowed",
-                        opacity: canAfford ? 1 : 0.38,
-                        textAlign: "center",
-                        boxShadow: isSel ? "0 0 14px rgba(22,194,74,0.35)" : "none",
+                        opacity: canAfford ? 1 : 0.38, textAlign: "left", position: "relative",
+                        boxShadow: isSel ? "0 0 20px rgba(22,194,74,0.55)" : "0 2px 8px rgba(0,0,0,0.5)",
                         transition: "all 0.15s",
-                        transform: isSel ? "scale(1.05)" : "scale(1)",
+                        transform: isSel ? "scale(1.04)" : "scale(1)",
+                        aspectRatio: "3/4",
                       }}
                     >
-                      <div style={{ fontSize: 28, lineHeight: 1, marginBottom: 4 }}>{g.iconEmoji}</div>
-                      <div style={{ fontSize: 10, fontWeight: 700, color: isSel ? "#16C24A" : "rgba(255,255,255,0.8)", lineHeight: 1.2, marginBottom: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", padding: "0 2px" }}>{g.name}</div>
-                      <div style={{ fontSize: 10, color: "#FFD700", fontWeight: 700 }}>{g.tokenCost >= 1000 ? `${(g.tokenCost/1000).toFixed(g.tokenCost % 1000 === 0 ? 0 : 1)}K` : g.tokenCost}</div>
+                      {/* Image or emoji fallback */}
+                      {img ? (
+                        <img
+                          src={img} alt={g.name} draggable={false}
+                          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", borderRadius: 14, display: "block" }}
+                        />
+                      ) : (
+                        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40 }}>{g.iconEmoji}</div>
+                      )}
+                      {/* Dark gradient overlay at bottom */}
+                      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "55%", background: "linear-gradient(to top,rgba(0,0,0,0.92) 0%,rgba(0,0,0,0.5) 60%,transparent 100%)", borderRadius: "0 0 14px 14px", pointerEvents: "none" }} />
+                      {/* Number top-left */}
+                      <div style={{ position: "absolute", top: 8, left: 8, color: "#16C24A", fontWeight: 900, fontSize: 11, textShadow: "0 1px 4px rgba(0,0,0,0.8)", lineHeight: 1 }}>{num}</div>
+                      {/* Selected check */}
+                      {isSel && (
+                        <div style={{ position: "absolute", top: 6, right: 6, width: 18, height: 18, borderRadius: "50%", background: "#16C24A", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <svg viewBox="0 0 24 24" width="12" height="12" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                        </div>
+                      )}
+                      {/* Name + price */}
+                      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 8px 8px" }}>
+                        <div style={{ color: "#fff", fontWeight: 700, fontSize: 11, lineHeight: 1.2, marginBottom: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{g.name}</div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                          <svg viewBox="0 0 24 24" width="12" height="12" fill="#FFD700"><circle cx="12" cy="12" r="10"/><text x="12" y="16" textAnchor="middle" fontSize="10" fill="#000" fontWeight="bold">J</text></svg>
+                          <span style={{ color: "#FFD700", fontWeight: 800, fontSize: 11 }}>{price}</span>
+                        </div>
+                      </div>
                     </button>
                   );
                 })}
@@ -261,7 +308,14 @@ export default function GiftPicker({
                 borderRadius: 18, padding: "14px 16px",
                 display: "flex", alignItems: "center", gap: 14,
               }}>
-                <div style={{ fontSize: 48, lineHeight: 1, filter: "drop-shadow(0 0 12px rgba(22,194,74,0.5))" }}>{selected.iconEmoji}</div>
+                {/* Large image or emoji */}
+                {giftImg(selected) ? (
+                  <div style={{ width: 70, height: 90, borderRadius: 12, overflow: "hidden", flexShrink: 0, boxShadow: "0 0 20px rgba(22,194,74,0.35)" }}>
+                    <img src={giftImg(selected)!} alt={selected.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                  </div>
+                ) : (
+                  <div style={{ fontSize: 56, lineHeight: 1, flexShrink: 0, filter: "drop-shadow(0 0 12px rgba(22,194,74,0.5))" }}>{selected.iconEmoji}</div>
+                )}
                 <div style={{ flex: 1 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ fontWeight: 800, fontSize: 16, color: "#fff" }}>{selected.name}</span>
