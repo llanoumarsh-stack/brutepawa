@@ -1,0 +1,139 @@
+Refondre entièrement la page Marketplace selon l'identité visuelle officielle BrutePawa 2026.
+L'objectif est d'obtenir un résultat équivalent à Airbnb, Revolut, Shopify, LinkedIn Premium et Jumia nouvelle génération.
+Aucune apparence Android classique.
+Structure générale
+Créer une page moderne composée de :
+Header Premium
+Logo BrutePawa
+Bouton recherche
+Bouton création
+Notifications
+Menu
+Style :
+Fond blanc premium
+Glassmorphism subtil
+Ombres très douces
+Coins 20px
+SVG outline premium
+Navigation Marketplace
+Créer 4 onglets :
+Marketplace
+Produits
+Services
+Emplois
+Style :
+Capsules arrondies
+Onglet actif vert BrutePawa
+Icônes SVG professionnelles
+Animations fluides
+Ne jamais utiliser d'emojis.
+Recherche Premium
+Créer une grande barre :
+Placeholder :
+Plain text
+Rechercher un produit, service ou emploi...
+Style :
+Hauteur 56px
+Coins 28px
+Ombre légère
+Icône SVG
+À droite :
+Bouton Filtres premium.
+Catégories
+Créer des capsules :
+Tous
+Mode
+Électronique
+Beauté
+Maison
+Artisanat
+Automobile
+Immobilier
+Style :
+Coins 999px
+Fond blanc
+Ombre douce
+État actif vert BrutePawa
+Produits populaires
+Créer une section :
+Plain text
+Produits populaires
+Cartes premium :
+Grande photo
+Badge réduction
+Bouton favoris
+Nom produit
+Prix
+Localisation
+Nombre de vues
+Disposition :
+2 colonnes responsive.
+Exemples :
+Chaussures
+Téléphones
+Sacs
+Canapés
+Ordinateurs
+Services recommandés
+Créer une section :
+Plain text
+Services recommandés
+Chaque carte contient :
+Photo du prestataire
+Nom
+Profession
+Note
+Nombre d'avis
+Badge vérifié
+Bouton Contacter
+Exemples :
+Plombier
+Électricien
+Développeur
+Designer
+Femme de ménage
+Emplois récents
+Créer une section :
+Plain text
+Emplois récents
+Chaque carte :
+Logo entreprise
+Poste
+Entreprise
+Ville
+Salaire
+Badge vérifié
+Bouton enregistrer
+Identité visuelle BrutePawa
+Palette :
+Vert BrutePawa #16C24A
+Blanc premium
+Gris très clair
+Effets :
+Glassmorphism léger
+Ombres douces
+Coins 20 à 24px
+Espacement généreux
+Design respirant
+Responsive
+Doit être parfait sur :
+Android
+iPhone
+Tablette
+Interdictions
+Ne pas utiliser :
+Emojis système
+Icônes emoji
+Bordures Android classiques
+Boutons gris standards
+Design Facebook 2018
+Utiliser uniquement des SVG premium modernes.
+Résultat attendu
+Le Marketplace doit donner immédiatement l'impression d'une plateforme internationale capable de concurrencer :
+Facebook Marketplace
+Jumia
+Alibaba
+LinkedIn Jobs
+Fiverr
+Upwork
+Tout doit respirer le premium, la confiance, la modernité et la qualité BrutePawa.
