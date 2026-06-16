@@ -1,4 +1,4 @@
-const CACHE = "brutepawa-v1";
+const CACHE = "brutepawa-v20260616";
 const PRECACHE = ["/", "/manifest.webmanifest"];
 
 self.addEventListener("install", (e) => {
@@ -19,17 +19,20 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(e.request.url);
   if (e.request.method !== "GET") return;
   if (url.pathname.startsWith("/api/")) return;
+
+  /* ── Network-first : toujours chercher la version fraîche sur le réseau ──
+     On met en cache seulement si le réseau répond, sinon on sert le cache
+     comme fallback (mode hors-ligne). */
   e.respondWith(
-    caches.match(e.request).then((cached) => {
-      const network = fetch(e.request).then((res) => {
+    fetch(e.request)
+      .then((res) => {
         if (res.ok && res.type === "basic") {
           const clone = res.clone();
           caches.open(CACHE).then((c) => c.put(e.request, clone));
         }
         return res;
-      });
-      return cached || network;
-    })
+      })
+      .catch(() => caches.match(e.request))
   );
 });
 
@@ -61,7 +64,6 @@ self.addEventListener("notificationclick", (e) => {
   const action = e.action;
   const isCall = !!d.callType;
 
-  // Bouton "Refuser" sur une notification d'appel
   if (action === "reject") {
     if (d.rejectUrl) {
       fetch(d.rejectUrl, {
@@ -80,20 +82,16 @@ self.addEventListener("notificationclick", (e) => {
       if (appClient) {
         appClient.focus();
         if (isCall) {
-          // Appel entrant → signaler via postMessage pour ouvrir le modal d'appel
           appClient.postMessage({ type: "bp:incoming-call", data: d });
         } else {
-          // Notification régulière → naviguer vers la page concernée
           const target = new URL(url, self.location.origin).href;
           appClient.navigate(target).catch(() => {
-            // fallback : postMessage si navigate() n'est pas supporté
             appClient.postMessage({ type: "bp:navigate", data: { url } });
           });
         }
         return;
       }
 
-      // App fermée → ouvrir directement la bonne URL
       return clients.openWindow(new URL(url, self.location.origin).href).then((w) => {
         if (w && isCall) {
           setTimeout(() => w.postMessage({ type: "bp:incoming-call", data: d }), 1500);
