@@ -66,6 +66,7 @@ export default function Menu() {
   }, [activeSection, blockedFetched, blockedLoading]);
 
   const [isPremium, setIsPremium] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<"monthly"|"annual">("annual");
 
   // Settings state
   const [notifLikes, setNotifLikes] = useState(true);
@@ -296,66 +297,230 @@ export default function Menu() {
     </div>
   );
 
-  if (activeSection === "premium") return (
-    <div style={{ maxWidth: 600, margin: "0 auto", padding: 16 }}>
-      <Back label="⭐ Compte Premium" />
-      {isPremium ? (
-        <div style={{ background: "linear-gradient(135deg, #9C27B0, #E91E63)", borderRadius: 16, padding: "24px 20px", color: "#fff", textAlign: "center", marginBottom: 20 }}>
-          <div style={{ fontSize: 48, marginBottom: 8 }}>👑</div>
-          <div style={{ fontSize: 22, fontWeight: 900 }}>Vous êtes Premium !</div>
-          <div style={{ fontSize: 13, opacity: 0.85, marginTop: 6 }}>Renouvellement le 11 juillet 2026</div>
-        </div>
-      ) : (
-        <div style={{ background: "linear-gradient(135deg, #1877F2, #9C27B0)", borderRadius: 16, padding: "24px 20px", color: "#fff", textAlign: "center", marginBottom: 20 }}>
-          <div style={{ fontSize: 48, marginBottom: 8 }}>⭐</div>
-          <div style={{ fontSize: 22, fontWeight: 900 }}>Passez à Premium</div>
-          <div style={{ fontSize: 13, opacity: 0.85, marginTop: 6 }}>Boostez votre visibilité sur toute l'Afrique</div>
-        </div>
-      )}
+  if (activeSection === "premium") {
+    const BENEFITS = [
+      {
+        color:"#16C24A", bg:"#ECFDF5",
+        icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="#16C24A"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>,
+        title:"Profil mis en avant", desc:"Apparaissez en premier dans les recherches"
+      },
+      {
+        color:"#F59E0B", bg:"#FFFBEB",
+        icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="#F59E0B"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>,
+        title:"Publications boostées", desc:"+3x de visibilité sur vos publications"
+      },
+      {
+        color:"#16C24A", bg:"#ECFDF5",
+        icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="#16C24A"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>,
+        title:"Badge vérifié doré", desc:"Confiance et crédibilité renforcées"
+      },
+      {
+        color:"#3B82F6", bg:"#EFF6FF",
+        icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="#3B82F6"><path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z"/></svg>,
+        title:"Statistiques avancées", desc:"Vues, clics, portée par pays"
+      },
+      {
+        color:"#8B5CF6", bg:"#F5F3FF",
+        icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="#8B5CF6"><path d="M19 6H17.82C17.4 4.84 16.3 4 15 4c-1.3 0-2.4.84-2.82 2H2v2h1v9c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V8h1V6zm-4 0h-2.28C12.87 5.4 13.39 5 14 5s1.13.4 1.28 1zM15 19H5V8h10v11z"/></svg>,
+        title:"Boutique Premium", desc:"Bannière publicitaire + catalogue enrichi"
+      },
+      {
+        color:"#EF4444", bg:"#FEF2F2",
+        icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="#EF4444"><path d="M20 6h-2.18c.07-.44.18-.88.18-1.34C18 2.54 15.42.12 12.24.12 9.74.12 7.69 1.8 6.84 4.12L6 6H4c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM4 18c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-6H4v6z"/></svg>,
+        title:"Offres d'emploi sponsorisées", desc:"Vos annonces en tête de liste"
+      },
+      {
+        color:"#06B6D4", bg:"#ECFEFF",
+        icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="#06B6D4"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>,
+        title:"Messagerie prioritaire", desc:"Notifications push en temps réel"
+      },
+      {
+        color:"#16C24A", bg:"#ECFDF5",
+        icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="#16C24A"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>,
+        title:"Visibilité multi-pays", desc:"Diffusion dans les 14 pays BrutePawa"
+      },
+      {
+        color:"#F59E0B", bg:"#FFFBEB",
+        icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="#F59E0B"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93V18c0-.55-.45-1-1-1s-1 .45-1 1v1.93C7.06 19.44 4.56 16.94 4.07 13H6c.55 0 1-.45 1-1s-.45-1-1-1H4.07C4.56 7.06 7.06 4.56 11 4.07V6c0 .55.45 1 1 1s1-.45 1-1V4.07C16.94 4.56 19.44 7.06 19.93 11H18c-.55 0-1 .45-1 1s.45 1 1 1h1.93C19.44 16.94 16.94 19.44 13 19.93zM12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>,
+        title:"Support VIP 24h/24", desc:"Assistance prioritaire dédiée"
+      },
+      {
+        color:"#8B5CF6", bg:"#F5F3FF",
+        icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="#8B5CF6"><path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"/></svg>,
+        title:"Création de canaux premium", desc:"Audience illimitée"
+      },
+      {
+        color:"#EF4444", bg:"#FEF2F2",
+        icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="#EF4444"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4 6h-1.25C14.34 8 14 7.66 14 7.25V6H10v1.25C10 7.66 9.66 8 9.25 8H8v8h8V8zm-3 7H9l3-4v2h2l-3 4v-2z"/></svg>,
+        title:"Publicités avancées", desc:"Ciblage intelligent par pays"
+      },
+      {
+        color:"#16C24A", bg:"#ECFDF5",
+        icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="#16C24A"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>,
+        title:"Monétisation du profil", desc:"Génération de revenus via BrutePawa"
+      },
+    ];
 
-      <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
-        {[
-          { label: "Mensuel", price: "2 500 FCFA/mois" },
-          { label: "Annuel", price: "24 000 FCFA/an", badge: "-20%" },
-        ].map((plan, i) => (
-          <button
-            key={i}
-            onClick={() => setIsPremium(true)}
-            style={{ flex: 1, background: i === 1 ? "var(--fb-blue)" : "var(--fb-white)", color: i === 1 ? "#fff" : "var(--fb-text)", border: `2px solid ${i === 1 ? "var(--fb-blue)" : "var(--fb-border)"}`, borderRadius: 10, padding: "14px 10px", cursor: "pointer", position: "relative", textAlign: "center" }}
-          >
-            {plan.badge && <span style={{ position: "absolute", top: -10, right: 8, background: "#42B72A", color: "#fff", fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 10 }}>{plan.badge}</span>}
-            <div style={{ fontWeight: 700 }}>{plan.label}</div>
-            <div style={{ fontSize: 13, marginTop: 4, opacity: 0.85 }}>{plan.price}</div>
+    const FREE_FEATURES   = ["Publications normales", "Profil standard", "Messagerie basique"];
+    const PREMIUM_FEATURES = ["Profil prioritaire", "Badge vérifié doré", "Statistiques avancées", "Multi-pays", "Support VIP", "Publicités boostées"];
+
+    return (
+      <div style={{ maxWidth:600, margin:"0 auto", background:"#F8FAFC", minHeight:"100vh", display:"flex", flexDirection:"column" }}>
+
+        {/* ── HEADER ── */}
+        <div style={{ background:"linear-gradient(135deg,#16C24A,#0ea541)", padding:"0 16px", height:60, display:"flex", alignItems:"center", gap:12, flexShrink:0, boxShadow:"0 2px 16px rgba(22,194,74,0.3)" }}>
+          <button onClick={() => setActiveSection("settings")} style={{ background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", padding:6 }}>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
           </button>
-        ))}
-      </div>
-
-      <div style={{ fontWeight: 700, marginBottom: 12 }}>Avantages Premium</div>
-      {[
-        { icon: "🔝", title: "Profil mis en avant", desc: "Apparaissez en premier dans les recherches" },
-        { icon: "📢", title: "Publications boostées", desc: "+3x de visibilité sur vos posts" },
-        { icon: "✅", title: "Badge vérifié doré", desc: "Crédibilité et confiance renforcées" },
-        { icon: "📊", title: "Statistiques avancées", desc: "Vues, clics, portée par pays" },
-        { icon: "🛍️", title: "Boutique Premium", desc: "Bannière publicitaire + catalogue enrichi" },
-        { icon: "💼", title: "Offres d'emploi sponsorisées", desc: "Vos annonces en tête de liste" },
-        { icon: "💬", title: "Messagerie prioritaire", desc: "Notifications push en temps réel" },
-        { icon: "🌍", title: "Visibilité multi-pays", desc: "Diffusion dans les 14 pays cibles" },
-      ].map((benefit, i) => (
-        <div key={i} style={{ background: "var(--fb-white)", borderRadius: 10, border: "1px solid var(--fb-divider)", padding: "12px 14px", marginBottom: 8, display: "flex", gap: 12, alignItems: "center" }}>
-          <div style={{ fontSize: 22, width: 40, height: 40, background: "var(--fb-blue-light)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{benefit.icon}</div>
-          <div>
-            <div style={{ fontWeight: 700, fontSize: 14 }}>{benefit.title}</div>
-            <div style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>{benefit.desc}</div>
-          </div>
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="#FFD700"><path d="M12 2l2.09 6.26H21l-5.47 3.97 2.09 6.26L12 14.52l-5.62 3.97 2.09-6.26L3 8.26h6.91z"/></svg>
+          <span style={{ fontWeight:900, fontSize:19, color:"#fff", flex:1 }}>Compte Premium</span>
+          {isPremium && <span style={{ background:"rgba(255,255,255,0.25)", borderRadius:12, padding:"3px 10px", fontSize:12, fontWeight:700, color:"#fff" }}>Actif</span>}
         </div>
-      ))}
-      {!isPremium && (
-        <button className="btn-primary" style={{ width: "100%", padding: 14, marginTop: 8, fontSize: 16 }} onClick={() => setIsPremium(true)}>
-          ⭐ Activer Premium maintenant
-        </button>
-      )}
-    </div>
-  );
+
+        <div style={{ overflowY:"auto", flex:1 }}>
+
+          {/* ── PREMIUM BANNER ── */}
+          <div style={{ margin:"16px 16px 0", borderRadius:20, overflow:"hidden", background:"linear-gradient(135deg,#065F2E 0%,#16C24A 45%,#0D9440 100%)", padding:"24px 20px 20px", position:"relative", boxShadow:"0 8px 32px rgba(22,194,74,0.4)" }}>
+            {/* Decorative circles */}
+            <div style={{ position:"absolute", top:-30, right:-30, width:120, height:120, borderRadius:"50%", background:"rgba(255,255,255,0.07)" }} />
+            <div style={{ position:"absolute", bottom:-20, right:60, width:80, height:80, borderRadius:"50%", background:"rgba(255,255,255,0.06)" }} />
+            {/* SVG Illustration */}
+            <div style={{ position:"absolute", top:12, right:16 }}>
+              <svg viewBox="0 0 120 110" width="120" height="110" fill="none">
+                {/* Crown */}
+                <path d="M30 85 L20 40 L45 60 L60 25 L75 60 L100 40 L90 85 Z" fill="#FFD700" opacity="0.95"/>
+                <path d="M30 85 L90 85 L88 90 Q60 95 32 90 Z" fill="#FFA500"/>
+                <circle cx="60" cy="25" r="6" fill="#fff" opacity="0.9"/>
+                <circle cx="20" cy="40" r="5" fill="#fff" opacity="0.85"/>
+                <circle cx="100" cy="40" r="5" fill="#fff" opacity="0.85"/>
+                {/* Diamond */}
+                <polygon points="85,5 100,20 85,40 70,20" fill="#A7F3D0" opacity="0.9"/>
+                <polygon points="85,5 100,20 85,40 70,20" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1"/>
+                <polygon points="85,20 100,20 85,40 70,20" fill="#6EE7B7" opacity="0.7"/>
+                {/* Stars */}
+                <path d="M15 15 L17 10 L19 15 L24 15 L20 18 L21 23 L17 20 L13 23 L14 18 L10 15 Z" fill="#FFD700" opacity="0.85"/>
+                <path d="M108 65 L110 60 L112 65 L117 65 L113 68 L114 73 L110 70 L106 73 L107 68 L103 65 Z" fill="#FCD34D" opacity="0.75"/>
+                <path d="M8 70 L9 67 L10 70 L13 70 L11 72 L11.5 75 L9 73.5 L6.5 75 L7 72 L5 70 Z" fill="#FCD34D" opacity="0.7"/>
+              </svg>
+            </div>
+            <div style={{ maxWidth:"60%" }}>
+              <div style={{ fontWeight:900, fontSize:22, color:"#fff", lineHeight:1.2, marginBottom:8 }}>Passez à Premium</div>
+              <div style={{ fontSize:13, color:"rgba(255,255,255,0.88)", lineHeight:1.5 }}>Boostez votre visibilité{"\n"}sur toute l'Afrique</div>
+            </div>
+          </div>
+
+          {/* ── PLAN SELECTOR ── */}
+          <div style={{ display:"flex", gap:12, margin:"16px 16px 0" }}>
+            {/* Mensuel */}
+            <button onClick={() => setSelectedPlan("monthly")}
+              style={{ flex:1, background:selectedPlan==="monthly" ? "#fff" : "#fff", border:`2.5px solid ${selectedPlan==="monthly" ? "#16C24A" : "#E2E8F0"}`, borderRadius:16, padding:"16px 12px", cursor:"pointer", position:"relative", textAlign:"center", boxShadow:selectedPlan==="monthly" ? "0 4px 16px rgba(22,194,74,0.18)" : "none", transition:"all 0.18s" }}>
+              {selectedPlan==="monthly" && (
+                <div style={{ position:"absolute", top:10, right:10, width:20, height:20, borderRadius:"50%", background:"#16C24A", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                </div>
+              )}
+              <div style={{ fontSize:12, color:"#64748B", fontWeight:500, marginBottom:4 }}>Mensuel</div>
+              <div style={{ fontWeight:900, fontSize:20, color: selectedPlan==="monthly" ? "#16C24A" : "#0F172A" }}>2 500</div>
+              <div style={{ fontSize:12, color:"#64748B", fontWeight:500 }}>FCFA/mois</div>
+              <div style={{ fontSize:11, color:"#94A3B8", marginTop:4 }}>Sans engagement</div>
+            </button>
+            {/* Annuel */}
+            <button onClick={() => setSelectedPlan("annual")}
+              style={{ flex:1, background:"#fff", border:`2.5px solid ${selectedPlan==="annual" ? "#16C24A" : "#E2E8F0"}`, borderRadius:16, padding:"16px 12px", cursor:"pointer", position:"relative", textAlign:"center", boxShadow:selectedPlan==="annual" ? "0 4px 16px rgba(22,194,74,0.18)" : "none", transition:"all 0.18s" }}>
+              {/* -20% badge */}
+              <div style={{ position:"absolute", top:-10, right:10, background:"#EF4444", borderRadius:10, padding:"2px 9px", fontSize:11, fontWeight:800, color:"#fff", boxShadow:"0 2px 8px rgba(239,68,68,0.4)" }}>-20%</div>
+              {selectedPlan==="annual" && (
+                <div style={{ position:"absolute", top:10, right:10, width:20, height:20, borderRadius:"50%", background:"#16C24A", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                </div>
+              )}
+              <div style={{ fontSize:12, color:"#64748B", fontWeight:500, marginBottom:4 }}>Annuel</div>
+              <div style={{ fontWeight:900, fontSize:20, color: selectedPlan==="annual" ? "#16C24A" : "#0F172A" }}>24 000</div>
+              <div style={{ fontSize:12, color:"#64748B", fontWeight:500 }}>FCFA/an</div>
+              <div style={{ fontSize:11, color:"#16C24A", fontWeight:600, marginTop:4 }}>Soit 2 000/mois</div>
+            </button>
+          </div>
+
+          {/* ── AVANTAGES ── */}
+          <div style={{ margin:"20px 16px 0" }}>
+            <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:14 }}>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="#FFD700"><path d="M12 2l2.09 6.26H21l-5.47 3.97 2.09 6.26L12 14.52l-5.62 3.97 2.09-6.26L3 8.26h6.91z"/></svg>
+              <span style={{ fontWeight:800, fontSize:17, color:"#0F172A" }}>Avantages Premium</span>
+            </div>
+            {BENEFITS.map((b, i) => (
+              <div key={i} style={{ background:"#fff", borderRadius:14, padding:"12px 14px", marginBottom:8, display:"flex", gap:12, alignItems:"center", boxShadow:"0 1px 6px rgba(0,0,0,0.05)" }}>
+                <div style={{ width:44, height:44, borderRadius:12, background:b.bg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                  {b.icon}
+                </div>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontWeight:700, fontSize:14, color:"#0F172A" }}>{b.title}</div>
+                  <div style={{ fontSize:12, color:"#64748B", marginTop:2 }}>{b.desc}</div>
+                </div>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="#CBD5E1"><path d="M8 5l8 7-8 7"/></svg>
+              </div>
+            ))}
+          </div>
+
+          {/* ── COMPARISON ── */}
+          <div style={{ margin:"20px 16px 0", background:"#fff", borderRadius:16, overflow:"hidden", boxShadow:"0 1px 8px rgba(0,0,0,0.06)" }}>
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr" }}>
+              {/* Gratuit */}
+              <div style={{ padding:"16px 14px", borderRight:"1px solid #F1F5F9" }}>
+                <div style={{ fontWeight:700, fontSize:14, color:"#64748B", marginBottom:12, textAlign:"center" }}>Gratuit</div>
+                {FREE_FEATURES.map((f,i) => (
+                  <div key={i} style={{ display:"flex", alignItems:"center", gap:6, marginBottom:8 }}>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="#CBD5E1"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                    <span style={{ fontSize:12, color:"#64748B" }}>{f}</span>
+                  </div>
+                ))}
+              </div>
+              {/* Premium */}
+              <div style={{ padding:"16px 14px", background:"#F0FDF4" }}>
+                <div style={{ fontWeight:800, fontSize:14, color:"#16C24A", marginBottom:12, textAlign:"center", display:"flex", alignItems:"center", justifyContent:"center", gap:5 }}>
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="#FFD700"><path d="M12 2l2.09 6.26H21l-5.47 3.97 2.09 6.26L12 14.52l-5.62 3.97 2.09-6.26L3 8.26h6.91z"/></svg>
+                  Premium
+                </div>
+                {PREMIUM_FEATURES.map((f,i) => (
+                  <div key={i} style={{ display:"flex", alignItems:"center", gap:6, marginBottom:8 }}>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="#16C24A"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                    <span style={{ fontSize:12, color:"#0F172A", fontWeight:600 }}>{f}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* ── CTA + PAYMENT ── */}
+          <div style={{ margin:"20px 16px 24px" }}>
+            <button onClick={() => setIsPremium(true)}
+              style={{ width:"100%", background:"linear-gradient(135deg,#16C24A,#0ea541)", border:"none", borderRadius:16, padding:"17px 20px", cursor:"pointer", boxShadow:"0 6px 24px rgba(22,194,74,0.45)", display:"flex", alignItems:"center", justifyContent:"center", gap:10 }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="#FFD700"><path d="M12 2l2.09 6.26H21l-5.47 3.97 2.09 6.26L12 14.52l-5.62 3.97 2.09-6.26L3 8.26h6.91z"/></svg>
+              <span style={{ color:"#fff", fontWeight:900, fontSize:17 }}>Activer Premium maintenant</span>
+            </button>
+            <div style={{ textAlign:"center", marginTop:10, fontSize:12, color:"#94A3B8" }}>Débloquez tous les avantages</div>
+
+            {/* Payment row */}
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8, marginTop:16, flexWrap:"wrap" }}>
+              <div style={{ background:"#fff", borderRadius:8, padding:"5px 10px", boxShadow:"0 1px 6px rgba(0,0,0,0.08)", fontSize:11, fontWeight:700, color:"#FF6B00" }}>Orange Money</div>
+              <div style={{ background:"#fff", borderRadius:8, padding:"5px 10px", boxShadow:"0 1px 6px rgba(0,0,0,0.08)", fontSize:11, fontWeight:700, color:"#0066CC" }}>Moov Money</div>
+              <div style={{ background:"#fff", borderRadius:8, padding:"5px 10px", boxShadow:"0 1px 6px rgba(0,0,0,0.08)", fontSize:11, fontWeight:700, color:"#1F9CE4" }}>Wave</div>
+              <div style={{ background:"#fff", borderRadius:8, padding:"5px 10px", boxShadow:"0 1px 6px rgba(0,0,0,0.08)", display:"flex", alignItems:"center", gap:3 }}>
+                <svg viewBox="0 0 48 48" width="28" height="18"><rect width="48" height="48" rx="8" fill="#1A1F71"/><path d="M20 14h8c3.3 0 5 1.6 5 4.5 0 4.5-3.5 7-9 7H21L19.5 34H16L20 14z" fill="#fff"/><path d="M22.5 22.5l1-5h2c1.5 0 2.5.7 2.5 2.2 0 2-1.5 2.8-3.5 2.8H22.5z" fill="#F7B600"/></svg>
+              </div>
+              <div style={{ background:"#fff", borderRadius:8, padding:"5px 10px", boxShadow:"0 1px 6px rgba(0,0,0,0.08)", display:"flex", alignItems:"center", gap:3 }}>
+                <svg viewBox="0 0 50 32" width="36" height="22"><rect width="50" height="32" rx="6" fill="#EB001B" opacity="0.15"/><circle cx="20" cy="16" r="10" fill="#EB001B"/><circle cx="30" cy="16" r="10" fill="#F79E1B"/><path d="M25 9.4a10 10 0 0 1 0 13.2A10 10 0 0 1 25 9.4z" fill="#FF5F00"/></svg>
+              </div>
+            </div>
+            <div style={{ textAlign:"center", marginTop:8, fontSize:11, color:"#CBD5E1", display:"flex", alignItems:"center", justifyContent:"center", gap:4 }}>
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="#CBD5E1"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+              Paiement sécurisé SSL
+            </div>
+          </div>
+
+        </div>
+      </div>
+    );
+  }
 
   if (activeSection === "emplois") return (
     <div style={{ maxWidth: 600, margin: "0 auto", padding: 16 }}>
