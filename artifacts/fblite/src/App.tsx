@@ -192,11 +192,7 @@ function AppContent() {
   const videoPostMatch = matchDynamic("/video/:id", path);
   if (videoPostMatch) {
     const pid = parseInt(videoPostMatch.id, 10);
-    if (!isNaN(pid)) return (
-      <Layout onNewPost={handleNewPost}>
-        <VideoPostPage postId={pid} />
-      </Layout>
-    );
+    if (!isNaN(pid)) return <VideoPostPage postId={pid} />;
   }
 
   const postDetailMatch = matchDynamic("/post/:id", path);
