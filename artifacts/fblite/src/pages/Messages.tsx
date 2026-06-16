@@ -1972,19 +1972,86 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
         {/* ── SUPPRIMER L'ÉCHANGE DIALOG ── */}
         {showDeleteConv && (
-          <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:10001, padding:"0 24px", animation:"fbl-fade-in 0.15s ease" }}
+          <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.45)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:10001, padding:"0 20px", animation:"fbl-fade-in 0.18s ease" }}
             onClick={e => { if (e.target === e.currentTarget) setShowDeleteConv(false); }}>
-            <div style={{ background:"#fff", borderRadius:16, width:"100%", maxWidth:340, padding:"24px 20px 16px", boxShadow:"0 8px 32px rgba(0,0,0,0.28)" }}>
-              <div style={{ fontWeight:800, fontSize:16, color:"#111", marginBottom:10 }}>Supprimer l'échange</div>
-              <div style={{ fontSize:14, color:"#555", marginBottom:18, lineHeight:1.55 }}>
-                Voulez-vous vraiment supprimer l'échange avec <strong>{activeUser.name}</strong> ?
+            <div style={{ background:"#fff", borderRadius:28, width:"100%", maxWidth:360, boxShadow:"0 24px 64px rgba(0,0,0,0.22), 0 4px 16px rgba(0,0,0,0.10)", overflow:"hidden", animation:"fbl-sheet-up 0.22s ease" }}
+              onClick={e => e.stopPropagation()}>
+
+              {/* Top icon area */}
+              <div style={{ padding:"32px 24px 20px", textAlign:"center" }}>
+                {/* Trash icon in layered circles */}
+                <div style={{ position:"relative", display:"inline-flex", alignItems:"center", justifyContent:"center", marginBottom:20 }}>
+                  <div style={{ width:88, height:88, borderRadius:"50%", background:"rgba(239,68,68,0.10)" }} />
+                  <div style={{ position:"absolute", width:66, height:66, borderRadius:"50%", background:"rgba(239,68,68,0.16)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                    <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#EF4444" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="3 6 5 6 21 6"/>
+                      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                      <path d="M10 11v6"/>
+                      <path d="M14 11v6"/>
+                      <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Title */}
+                <div style={{ fontWeight:800, fontSize:20, color:"#0F172A", marginBottom:8, letterSpacing:-0.3 }}>
+                  Supprimer la discussion
+                </div>
+
+                {/* Subtitle */}
+                <div style={{ fontSize:14, color:"#64748B", lineHeight:1.6, marginBottom:0 }}>
+                  Cette action supprimera définitivement votre conversation avec <strong style={{ color:"#0F172A" }}>{activeUser?.name ?? "cet utilisateur"}</strong>.
+                </div>
               </div>
-              <label style={{ display:"flex", alignItems:"center", gap:10, marginBottom:22, cursor:"pointer" }}>
-                <input type="checkbox" checked={deleteForAll} onChange={e => setDeleteForAll(e.target.checked)}
-                  style={{ width:18, height:18, accentColor:"#1877F2", cursor:"pointer" }} />
-                <span style={{ fontSize:14, color:"#333" }}>Supprimer aussi pour {activeUser.name}</span>
+
+              {/* Divider */}
+              <div style={{ height:1, background:"#F1F5F9", margin:"0 0" }} />
+
+              {/* User card */}
+              <div style={{ padding:"16px 24px", display:"flex", alignItems:"center", gap:12 }}>
+                <div style={{ width:46, height:46, borderRadius:"50%", background: activeUser?.color ?? "#16C24A", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                  <span style={{ color:"#fff", fontWeight:800, fontSize:17 }}>{activeUser?.initials ?? "?"}</span>
+                </div>
+                <div style={{ flex:1 }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:5 }}>
+                    <span style={{ fontWeight:700, fontSize:15, color:"#0F172A" }}>{activeUser?.name ?? "Utilisateur"}</span>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="10" fill="#16C24A"/>
+                      <polyline points="8,12 11,15 16,9" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                    </svg>
+                  </div>
+                  <div style={{ fontSize:13, color:"#94A3B8", marginTop:1 }}>Hors ligne</div>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div style={{ height:1, background:"#F1F5F9" }} />
+
+              {/* Checkbox option */}
+              <label style={{ display:"flex", alignItems:"center", gap:14, padding:"16px 24px", cursor:"pointer" }}>
+                {/* Custom checkbox */}
+                <div onClick={() => setDeleteForAll(v => !v)}
+                  style={{ width:22, height:22, borderRadius:6, border: deleteForAll ? "none" : "2px solid #CBD5E1", background: deleteForAll ? "#16C24A" : "#fff", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, transition:"all 0.15s" }}>
+                  {deleteForAll && (
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  )}
+                </div>
+                <span style={{ fontSize:14, color:"#334155", fontWeight:500 }}>
+                  Supprimer également pour <strong style={{ color:"#0F172A" }}>{activeUser?.name ?? "cet utilisateur"}</strong>
+                </span>
               </label>
-              <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+
+              {/* Divider */}
+              <div style={{ height:1, background:"#F1F5F9" }} />
+
+              {/* Action buttons */}
+              <div style={{ display:"flex", gap:10, padding:"16px 20px 20px" }}>
+                <button onClick={() => setShowDeleteConv(false)}
+                  style={{ flex:1, background:"#fff", border:"1.5px solid #E2E8F0", borderRadius:50, padding:"13px", fontSize:15, fontWeight:700, color:"#16C24A", cursor:"pointer" }}>
+                  Annuler
+                </button>
                 <button onClick={() => {
                   const id = activeConv!;
                   setMessages(prev => { const n = { ...prev }; delete n[id]; return n; });
@@ -1993,12 +2060,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   setShowDeleteConv(false);
                   setDeleteForAll(false);
                 }}
-                  style={{ background:"#E02020", border:"none", borderRadius:8, padding:"13px", fontSize:15, fontWeight:700, color:"#fff", cursor:"pointer" }}>
-                  Supprimer l'échange
-                </button>
-                <button onClick={() => setShowDeleteConv(false)}
-                  style={{ background:"none", border:"none", padding:"10px", fontSize:15, fontWeight:600, color:"#1877F2", cursor:"pointer" }}>
-                  Annuler
+                  style={{ flex:1.4, background:"linear-gradient(135deg,#EF4444,#DC2626)", border:"none", borderRadius:50, padding:"13px 18px", fontSize:15, fontWeight:700, color:"#fff", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:7, boxShadow:"0 4px 14px rgba(239,68,68,0.4)" }}>
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                    <path d="M10 11v6"/><path d="M14 11v6"/>
+                    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                  </svg>
+                  Supprimer
                 </button>
               </div>
             </div>
