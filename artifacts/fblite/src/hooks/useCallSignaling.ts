@@ -159,11 +159,13 @@ export function useCallSignaling(
   const [incomingCall, setIncomingCall] = useState<IncomingCallInfo | null>(null);
   const [localStream, setLocalStream]   = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
-  const [isMuted, setIsMuted]           = useState(false);
+  const [isMuted, setIsMuted]             = useState(false);
+  const [isVideoEnabled, setIsVideoEnabled] = useState(true);
+  const [isScreenSharing, setIsScreenSharing] = useState(false);
   // Start in earpiece mode (false). Speaker-on is the #1 cause of echo/whistle
   // on Android because the loudspeaker saturates the mic before AEC can cancel it.
-  const [isSpeaker, setIsSpeaker]       = useState(false);
-  const [cameraFront, setCameraFront]   = useState(true);
+  const [isSpeaker, setIsSpeaker]         = useState(false);
+  const [cameraFront, setCameraFront]     = useState(true);
   const [callDuration, setCallDuration] = useState(0);
   const [mediaError, setMediaError]     = useState<string | null>(null);
 
@@ -224,6 +226,8 @@ export function useCallSignaling(
     setIncomingCall(null);
     isMutedRef.current = false;
     setIsMuted(false);
+    setIsVideoEnabled(true);
+    setIsScreenSharing(false);
     setIsSpeaker(false); // Reset to earpiece, not speaker
     setCameraFront(true);
     setMediaError(null);
@@ -488,6 +492,49 @@ export function useCallSignaling(
     localStreamRef.current?.getAudioTracks().forEach(t => { t.enabled = !next; });
   }, []);
 
+  const toggleVideo = useCallback(() => {
+    setIsVideoEnabled(prev => {
+      const next = !prev;
+      localStreamRef.current?.getVideoTracks().forEach(t => { t.enabled = next; });
+      return next;
+    });
+  }, []);
+
+  const toggleScreenShare = useCallback(async () => {
+    if (isScreenSharing) {
+      // Stop screen share — re-acquire camera
+      try {
+        const camStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } },
+          audio: false,
+        });
+        const camTrack = camStream.getVideoTracks()[0];
+        const sender = pcRef.current?.getSenders().find(s => s.track?.kind === "video");
+        if (sender && camTrack) await sender.replaceTrack(camTrack);
+        const audioTracks = localStreamRef.current?.getAudioTracks() ?? [];
+        const combined = new MediaStream([...audioTracks, camTrack]);
+        localStreamRef.current = combined;
+        setLocalStream(combined);
+      } catch { /* ignore */ }
+      setIsScreenSharing(false);
+    } else {
+      // Start screen share
+      try {
+        const screenStream = await (navigator.mediaDevices as MediaDevices & { getDisplayMedia: (c: object) => Promise<MediaStream> }).getDisplayMedia({ video: true, audio: false });
+        const screenTrack = screenStream.getVideoTracks()[0];
+        const sender = pcRef.current?.getSenders().find(s => s.track?.kind === "video");
+        if (sender && screenTrack) await sender.replaceTrack(screenTrack);
+        const audioTracks = localStreamRef.current?.getAudioTracks() ?? [];
+        const combined = new MediaStream([...audioTracks, screenTrack]);
+        localStreamRef.current = combined;
+        setLocalStream(combined);
+        // Auto-stop when user ends share via browser UI
+        screenTrack.onended = () => setIsScreenSharing(false);
+        setIsScreenSharing(true);
+      } catch { /* user cancelled or unsupported */ }
+    }
+  }, [isScreenSharing]);
+
   const toggleSpeaker = useCallback(async (audioEl: HTMLAudioElement | null) => {
     const next = !isSpeaker;
     setIsSpeaker(next);
@@ -527,6 +574,8 @@ export function useCallSignaling(
     localStream,
     remoteStream,
     isMuted,
+    isVideoEnabled,
+    isScreenSharing,
     isSpeaker,
     cameraFront,
     callDuration,
@@ -536,6 +585,8 @@ export function useCallSignaling(
     rejectCall,
     endCall,
     toggleMute,
+    toggleVideo,
+    toggleScreenShare,
     toggleSpeaker,
     flipCamera,
   };

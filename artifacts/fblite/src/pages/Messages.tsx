@@ -300,7 +300,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   useEffect(() => {
     const el = remoteAudioRef.current;
     if (!el) return;
-    if (sig.remoteStream && sig.callType === "audio") {
+    // Always route remote audio through the dedicated <audio> element for both
+    // audio and video calls — this is the most reliable path on Android Chrome.
+    if (sig.remoteStream) {
       if (el.srcObject !== sig.remoteStream) { el.srcObject = sig.remoteStream; el.play().catch(() => {}); }
     } else { el.srcObject = null; }
   }, [sig.remoteStream, sig.callType]);
@@ -831,8 +833,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               .bpv-btn-on{background:rgba(34,197,94,0.5)!important;border-color:rgba(34,197,94,0.7)!important}
             `}</style>
 
-            {/* Remote video — full screen */}
-            <video ref={remoteVideoRef} autoPlay playsInline style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover", background:"linear-gradient(180deg,#071d0c,#020b05)" }} />
+            {/* Remote video — full screen (audio routed via <audio> element, video only here) */}
+            <video ref={remoteVideoRef} autoPlay playsInline muted style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover", background:"linear-gradient(180deg,#071d0c,#020b05)" }} />
 
             {/* Top gradient overlay */}
             <div style={{ position:"absolute", top:0, left:0, right:0, height:"38%", background:"linear-gradient(180deg,rgba(0,0,0,0.82) 0%,rgba(0,0,0,0.35) 60%,transparent 100%)", zIndex:10, pointerEvents:"none" }} />
@@ -912,14 +914,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 <div style={{ display:"flex", justifyContent:"space-around", alignItems:"flex-start" }}>
                   {([
                     {
-                      label:"Basculer\ncaméra",
-                      icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="rgba(255,255,255,.9)"><path d="M20 5h-3.17L15 3H9L7.17 5H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-8 13c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>,
-                      action:() => sig.flipCamera(), active:false,
-                    },
-                    {
-                      label:"Désactiver\nvidéo",
-                      icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="rgba(255,255,255,.9)"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>,
-                      action:() => {}, active:false,
+                      label: sig.isVideoEnabled ? "Désactiver\nvidéo" : "Activer\nvidéo",
+                      icon:<svg viewBox="0 0 24 24" width="24" height="24" fill={sig.isVideoEnabled ? "rgba(255,255,255,.9)" : "#022c0f"}>{sig.isVideoEnabled ? <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/> : <path d="M21 6.5l-4 4V7c0-.55-.45-1-1-1H9.82L21 17.18V6.5zM3.27 2L2 3.27 4.73 6H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.21 0 .39-.08.54-.18L19.73 21 21 19.73 3.27 2z"/>}</svg>,
+                      action:() => sig.toggleVideo(), active:!sig.isVideoEnabled,
                     },
                     {
                       label:"Muet",
@@ -927,14 +924,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       action:() => sig.toggleMute(), active:sig.isMuted,
                     },
                     {
-                      label:"Partager\nécran",
-                      icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="rgba(255,255,255,.9)"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zm-7-3.53v-2.19c-2.78.48-4.34 1.71-5.5 3.72.14-1.39.73-4.47 3.93-5.81L9.5 8.47C11.27 7.28 13.8 6.86 16 9.5l1.5-1.5v4.47H13z"/></svg>,
-                      action:() => {}, active:false,
+                      label: sig.isScreenSharing ? "Arrêter\npartage" : "Partager\nécran",
+                      icon:<svg viewBox="0 0 24 24" width="24" height="24" fill={sig.isScreenSharing ? "#022c0f" : "rgba(255,255,255,.9)"}><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zm-7-3.53v-2.19c-2.78.48-4.34 1.71-5.5 3.72.14-1.39.73-4.47 3.93-5.81L9.5 8.47C11.27 7.28 13.8 6.86 16 9.5l1.5-1.5v4.47H13z"/></svg>,
+                      action:() => sig.toggleScreenShare(), active:sig.isScreenSharing,
                     },
                     {
-                      label:"Effets",
-                      icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="rgba(255,255,255,.9)"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7zm1-11h-2v3H8v2h3v3h2v-3h3v-2h-3z"/><circle cx="12" cy="12" r="1.5" fill="rgba(255,255,255,.9)"/><path d="M12 2l1.09 3.26L16 4l-2.18 2.55L15.5 10l-3.5-2-3.5 2 1.68-3.45L8 4l2.91 1.26z" fill="rgba(255,255,255,.6)"/></svg>,
-                      action:() => {}, active:false,
+                      label:"Basculer\ncaméra",
+                      icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="rgba(255,255,255,.9)"><path d="M20 5h-3.17L15 3H9L7.17 5H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-8 13c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>,
+                      action:() => sig.flipCamera(), active:false,
                     },
                     {
                       label:"Raccrocher",
@@ -1922,7 +1919,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 Fond d'écran
               </button>
               <div style={{ height:1, background:"#F0F2F5" }} />
-              <button className="fbl-menu-btn" onClick={() => { setMessages(prev => ({ ...prev, [activeConv!]: [] })); setShowConvMenu(false); }}>
+              <button className="fbl-menu-btn" onClick={() => {
+                setMessages(prev => ({ ...prev, [activeConv!]: [] }));
+                setConvList(prev => prev.map(c => c.id === activeConv ? { ...c, lastMessage: "", unread: 0 } : c));
+                setShowConvMenu(false);
+              }}>
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="#555"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
                 Effacer l'historique
               </button>
@@ -1984,7 +1985,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 <span style={{ fontSize:14, color:"#333" }}>Supprimer aussi pour {activeUser.name}</span>
               </label>
               <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
-                <button onClick={() => { setMessages(prev => ({ ...prev, [activeConv!]: [] })); setActiveConv(null); setShowDeleteConv(false); setDeleteForAll(false); }}
+                <button onClick={() => {
+                  const id = activeConv!;
+                  setMessages(prev => { const n = { ...prev }; delete n[id]; return n; });
+                  setConvList(prev => prev.filter(c => c.id !== id));
+                  setActiveConv(null);
+                  setShowDeleteConv(false);
+                  setDeleteForAll(false);
+                }}
                   style={{ background:"#E02020", border:"none", borderRadius:8, padding:"13px", fontSize:15, fontWeight:700, color:"#fff", cursor:"pointer" }}>
                   Supprimer l'échange
                 </button>
