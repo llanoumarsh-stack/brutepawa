@@ -209,19 +209,20 @@ export default function LiveWatchPage({ streamId }: Props) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-black text-white">
-        <p>Chargement du live…</p>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", background: "#000", color: "#fff" }}>
+        <div style={{ width: 36, height: 36, border: "3px solid rgba(255,255,255,0.15)", borderTopColor: "#16C24A", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
 
   if (error || !stream) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-black text-white gap-4">
-        <p>{error ?? "Live introuvable."}</p>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh", background: "#000", color: "#fff", gap: 16 }}>
+        <p style={{ color: "rgba(255,255,255,0.6)" }}>{error ?? "Live introuvable."}</p>
         <button
           onClick={() => navigate("/")}
-          className="px-4 py-2 rounded-full bg-white text-black text-sm font-medium"
+          style={{ padding: "10px 24px", borderRadius: 24, background: "#fff", color: "#000", border: "none", cursor: "pointer", fontSize: 14, fontWeight: 600 }}
         >
           Retour
         </button>
@@ -233,36 +234,34 @@ export default function LiveWatchPage({ streamId }: Props) {
   const token = getBpToken();
 
   return (
-    <div className="flex flex-col h-screen bg-black text-white relative overflow-hidden">
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: "#000", color: "#fff", position: "relative", overflow: "hidden" }}>
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 bg-black/80 z-10">
-        <button onClick={() => navigate("/")} className="text-white text-xl">✕</button>
-        <div className="flex items-center gap-2">
-          <span className="bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded">LIVE</span>
-          <span className="text-sm font-semibold">
-            {stream.userFlag} {stream.userName}
-          </span>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", background: "rgba(0,0,0,0.8)", zIndex: 10 }}>
+        <button onClick={() => navigate("/")} style={{ background: "none", border: "none", color: "#fff", fontSize: 22, cursor: "pointer", padding: 4 }}>✕</button>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ background: "#E53935", color: "#fff", fontSize: 11, fontWeight: 800, padding: "2px 8px", borderRadius: 4, animation: "livePulse 1.5s ease-in-out infinite", letterSpacing: 0.5 }}>LIVE</span>
+          <span style={{ fontSize: 14, fontWeight: 700 }}>{stream.userFlag} {stream.userName}</span>
         </div>
-        <div className="flex items-center gap-3 text-sm text-gray-300">
-          <div className="flex items-center gap-1">
-            <span>👁</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="rgba(255,255,255,0.7)"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
             <span>{stream.viewerCount}</span>
           </div>
-          <div className="flex items-center gap-1 text-yellow-400 font-bold">
-            <span>🪙</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 4, color: "#FFD700", fontWeight: 700 }}>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="#FFD700"><circle cx="12" cy="12" r="10"/></svg>
             <span>{tokenBalance.toLocaleString()}</span>
           </div>
         </div>
       </div>
 
       {/* Video player */}
-      <div className="flex-1 flex items-center justify-center bg-black relative">
+      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", background: "#000", position: "relative" }}>
         <video
           src={stream.playbackUrl}
           autoPlay
           playsInline
           controls
-          className="w-full h-full object-contain"
+          style={{ width: "100%", height: "100%", objectFit: "contain" }}
         />
 
         {/* Floating gift animations */}
@@ -466,7 +465,7 @@ export default function LiveWatchPage({ streamId }: Props) {
         <button
           onClick={() => setShowGiftPicker(true)}
           style={{
-            background: "linear-gradient(135deg, #E91E8C, #9C27B0)",
+            background: "linear-gradient(135deg, #16C24A, #0DA63E)",
             border: "none",
             borderRadius: 24,
             padding: "9px 16px",
@@ -478,9 +477,10 @@ export default function LiveWatchPage({ streamId }: Props) {
             alignItems: "center",
             gap: 5,
             flexShrink: 0,
+            boxShadow: "0 0 16px rgba(22,194,74,0.45)",
           }}
         >
-          🎁
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M20 6h-2.18c.07-.31.18-.59.18-.9C18 3.4 16.6 2 14.9 2c-.92 0-1.73.42-2.3 1.08L12 3.7l-.6-.62C10.83 2.42 10.02 2 9.1 2 7.4 2 6 3.4 6 5.1c0 .31.11.59.18.9H4c-1.11 0-2 .89-2 2v13c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2z"/></svg>
         </button>
       </div>
 
@@ -515,6 +515,11 @@ export default function LiveWatchPage({ streamId }: Props) {
           from { transform: translateX(-16px); opacity: 0; }
           to   { transform: translateX(0);     opacity: 1; }
         }
+        @keyframes livePulse {
+          0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(229,57,53,0.6); }
+          50%      { opacity: 0.85; box-shadow: 0 0 0 5px rgba(229,57,53,0); }
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
     </div>
   );

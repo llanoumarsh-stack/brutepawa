@@ -286,6 +286,10 @@ export default function LiveStreamPage() {
   const fmtTime = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 
   // ── PRE-LAUNCH SCREEN ──────────────────────────────────────────────────────
+  const GOAL_FOLLOWERS = 7000;
+  const followPct = eligibility ? Math.min(100, (eligibility.followersCount / GOAL_FOLLOWERS) * 100) : 0;
+  const locked = eligibility !== null && !eligibility.canGoLive;
+
   if (!isLive) {
     return (
       <div style={{
@@ -304,136 +308,169 @@ export default function LiveStreamPage() {
             transition: "opacity 0.4s",
           }}
         />
-        <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", pointerEvents: "none" }} />
+        <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.62)", pointerEvents: "none" }} />
 
-        {/* Close */}
-        <button onClick={() => { stopLocalStream(); navigate("/"); }} style={{
-          position: "absolute", top: 20, left: 16,
-          background: "rgba(255,255,255,0.15)", border: "none", borderRadius: "50%",
-          width: 40, height: 40, color: "#fff", fontSize: 20, cursor: "pointer",
-          display: "flex", alignItems: "center", justifyContent: "center", zIndex: 10,
-        }}>✕</button>
+        {/* Top bar */}
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 16px", zIndex: 10 }}>
+          <button onClick={() => { stopLocalStream(); navigate("/"); }} style={{
+            background: "rgba(255,255,255,0.15)", backdropFilter: "blur(6px)", border: "none", borderRadius: "50%",
+            width: 44, height: 44, color: "#fff", fontSize: 18, cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="#fff"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+          </button>
+          <span style={{ color: "#fff", fontWeight: 800, fontSize: 15 }}>Fermer</span>
 
-        {/* Flip camera (pre-launch) */}
-        {cameraReady && !isConnecting && (
-          <button onClick={flipCamera} style={{
-            position: "absolute", top: 20, right: 16,
-            background: "rgba(255,255,255,0.15)", border: "none", borderRadius: "50%",
-            width: 40, height: 40, color: "#fff", fontSize: 18, cursor: "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center", zIndex: 10,
-            transition: "transform 0.3s",
-            transform: cameraFlipping ? "rotate(180deg)" : "rotate(0deg)",
-          }}>🔁</button>
-        )}
+          {cameraReady && !isConnecting && (
+            <button onClick={flipCamera} style={{
+              background: "rgba(255,255,255,0.15)", backdropFilter: "blur(6px)", border: "none", borderRadius: "50%",
+              width: 44, height: 44, color: "#fff", cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              transition: "transform 0.3s",
+              transform: cameraFlipping ? "rotate(180deg)" : "rotate(0deg)",
+            }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M20 5h-3.17L15 3H9L7.17 5H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-10 9V9l5 2.5-5 2.5z"/></svg>
+            </button>
+          )}
+          {(!cameraReady || isConnecting) && <div style={{ width: 44 }} />}
+        </div>
 
-        {/* Center content */}
+        {/* Main content */}
         <div style={{
           position: "absolute", inset: 0, display: "flex", flexDirection: "column",
-          alignItems: "center", justifyContent: "center", gap: 20, padding: 32,
+          alignItems: "center", justifyContent: "center", gap: 0, padding: "0 24px",
         }}>
-          {!cameraReady && !cameraLoading && !cameraError && (
-            <div style={{ fontSize: 64 }}>🔴</div>
-          )}
-          <div style={{ color: "#fff", fontWeight: 900, fontSize: 26, textAlign: "center" }}>
-            {isConnecting ? "Connexion au direct…" : "Lancer un Direct"}
+          {/* Title */}
+          <div style={{ color: "#fff", fontWeight: 900, fontSize: 32, textAlign: "center", lineHeight: 1.1, marginBottom: 4 }}>
+            Lancer
+          </div>
+          <div style={{ color: "#16C24A", fontWeight: 900, fontSize: 32, textAlign: "center", lineHeight: 1.1, marginBottom: 24 }}>
+            un direct
+          </div>
+          <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 14, textAlign: "center", marginBottom: 24 }}>
+            Partagez votre moment avec<br />la communauté <strong style={{ color: "#16C24A" }}>BrutePawa</strong>
           </div>
 
           {/* Camera loading */}
           {cameraLoading && (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
-              <div style={{
-                width: 36, height: 36, border: "4px solid rgba(255,255,255,0.2)",
-                borderTopColor: "#F44336", borderRadius: "50%",
-                animation: "spin 0.8s linear infinite",
-              }} />
-              <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 14 }}>Connexion à la caméra…</div>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, marginBottom: 16 }}>
+              <div style={{ width: 32, height: 32, border: "3px solid rgba(255,255,255,0.2)", borderTopColor: "#16C24A", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 13 }}>Connexion à la caméra…</div>
             </div>
           )}
-
-          {/* Connecting to CF Stream */}
           {isConnecting && (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
-              <div style={{
-                width: 36, height: 36, border: "4px solid rgba(255,255,255,0.2)",
-                borderTopColor: "#F44336", borderRadius: "50%",
-                animation: "spin 0.8s linear infinite",
-              }} />
-              <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 14 }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, marginBottom: 16 }}>
+              <div style={{ width: 32, height: 32, border: "3px solid rgba(255,255,255,0.2)", borderTopColor: "#16C24A", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+              <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 13 }}>
                 {cfStream.status === "creating" ? "Création du flux…" : "Connexion WebRTC…"}
               </div>
             </div>
           )}
 
-          {/* Camera error */}
-          {cameraError && (
+          {/* Follower gate card */}
+          {eligibility !== null && (
             <div style={{
-              background: "rgba(244,67,54,0.15)", border: "1px solid rgba(244,67,54,0.5)",
-              borderRadius: 14, padding: "16px 18px", maxWidth: 320, lineHeight: 1.6,
+              width: "100%", maxWidth: 360,
+              background: "rgba(255,255,255,0.1)", backdropFilter: "blur(12px)",
+              border: "1px solid rgba(255,255,255,0.15)", borderRadius: 20,
+              padding: "20px 22px", marginBottom: 20,
             }}>
+              {locked ? (
+                <>
+                  <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}>
+                    <div style={{ width: 52, height: 52, borderRadius: "50%", background: "linear-gradient(135deg,#16C24A,#0DA63E)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 20px rgba(22,194,74,0.4)" }}>
+                      <svg viewBox="0 0 24 24" width="26" height="26" fill="#fff"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                    </div>
+                  </div>
+                  <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 13, textAlign: "center", marginBottom: 12, lineHeight: 1.5 }}>
+                    Le direct est disponible à partir de <strong style={{ color: "#16C24A", fontSize: 15 }}>{GOAL_FOLLOWERS.toLocaleString("fr-FR")} abonnés</strong>
+                  </div>
+                  {/* Progress bar */}
+                  <div style={{ marginBottom: 8 }}>
+                    <div style={{ height: 6, background: "rgba(255,255,255,0.12)", borderRadius: 3, overflow: "hidden" }}>
+                      <div style={{ height: "100%", width: `${followPct}%`, background: "linear-gradient(90deg,#16C24A,#0DA63E)", borderRadius: 3, transition: "width 0.6s ease" }} />
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginTop: 5, fontSize: 11, color: "rgba(255,255,255,0.45)" }}>
+                      <span>{eligibility.followersCount.toLocaleString("fr-FR")} abonné{eligibility.followersCount !== 1 ? "s" : ""}</span>
+                      <span>{GOAL_FOLLOWERS.toLocaleString("fr-FR")} abonnés</span>
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "rgba(255,255,255,0.55)", marginTop: 4 }}>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="#16C24A"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+                    Continuez à publier du contenu pour débloquer cette fonctionnalité.
+                  </div>
+                </>
+              ) : (
+                <div style={{ textAlign: "center", color: "#4ade80", fontWeight: 700, fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="#4ade80"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                  Vous êtes éligible au direct !
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Feature icons */}
+          {!isConnecting && (
+            <div style={{ display: "flex", gap: 16, justifyContent: "center", width: "100%", maxWidth: 360, marginBottom: 24 }}>
+              {[
+                { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="#16C24A"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>, label: "Diffusion HD" },
+                { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="#16C24A"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>, label: "Chat temps réel" },
+                { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="#16C24A"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>, label: "Modération" },
+                { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="#16C24A"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>, label: "Partage instantané" },
+              ].map(f => (
+                <div key={f.label} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.07)", backdropFilter: "blur(6px)", borderRadius: 14, padding: "12px 6px" }}>
+                  {f.icon}
+                  <span style={{ fontSize: 10, color: "rgba(255,255,255,0.65)", textAlign: "center", lineHeight: 1.3 }}>{f.label}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Errors */}
+          {cameraError && (
+            <div style={{ background: "rgba(244,67,54,0.15)", border: "1px solid rgba(244,67,54,0.5)", borderRadius: 14, padding: "12px 16px", maxWidth: 320, marginBottom: 16, lineHeight: 1.5 }}>
               <div style={{ color: "#FF6B6B", fontSize: 13, textAlign: "center" }}>⚠️ {cameraError}</div>
             </div>
           )}
-
-          {/* CF Stream error */}
           {cfStream.error && (
-            <div style={{
-              background: "rgba(244,67,54,0.15)", border: "1px solid rgba(244,67,54,0.5)",
-              borderRadius: 14, padding: "14px 18px", maxWidth: 320,
-            }}>
-              <div style={{ color: "#FF6B6B", fontSize: 13, textAlign: "center" }}>
-                ⚠️ Erreur de streaming : {cfStream.error}
-              </div>
-            </div>
-          )}
-
-          {/* Follower gate notice */}
-          {eligibility !== null && !eligibility.canGoLive && (
-            <div style={{
-              background: "rgba(244,67,54,0.15)", border: "1px solid rgba(244,67,54,0.4)",
-              borderRadius: 14, padding: "16px 18px", maxWidth: 320, textAlign: "center",
-            }}>
-              <div style={{ fontSize: 32, marginBottom: 8 }}>🔒</div>
-              <div style={{ color: "#fff", fontWeight: 700, fontSize: 15, marginBottom: 4 }}>
-                Live accessible à partir de 7 000 abonnés
-              </div>
-              <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 13 }}>
-                Tu as {eligibility.followersCount.toLocaleString("fr-FR")} abonné{eligibility.followersCount !== 1 ? "s" : ""}.
-              </div>
+            <div style={{ background: "rgba(244,67,54,0.15)", border: "1px solid rgba(244,67,54,0.5)", borderRadius: 14, padding: "12px 16px", maxWidth: 320, marginBottom: 16 }}>
+              <div style={{ color: "#FF6B6B", fontSize: 13, textAlign: "center" }}>⚠️ {cfStream.error}</div>
             </div>
           )}
 
           {/* Buttons */}
           {!isConnecting && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%", maxWidth: 300 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%", maxWidth: 320 }}>
               {cameraReady && (
                 <button
                   onClick={goLive}
-                  disabled={eligibility !== null && !eligibility.canGoLive}
+                  disabled={locked}
                   style={{
-                    background: (eligibility !== null && !eligibility.canGoLive) ? "rgba(255,255,255,0.15)" : "#F44336",
-                    border: "none", borderRadius: 12,
-                    padding: "16px 0", color: "#fff", fontWeight: 900, fontSize: 16,
-                    cursor: (eligibility !== null && !eligibility.canGoLive) ? "not-allowed" : "pointer",
-                    width: "100%", opacity: (eligibility !== null && !eligibility.canGoLive) ? 0.5 : 1,
-                    display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                    boxShadow: (eligibility !== null && !eligibility.canGoLive) ? "none" : "0 4px 20px rgba(244,67,54,0.5)",
+                    background: locked ? "rgba(255,255,255,0.12)" : "linear-gradient(135deg,#16C24A,#0DA63E)",
+                    border: locked ? "1px solid rgba(255,255,255,0.15)" : "none",
+                    borderRadius: 50, padding: "16px 0", color: locked ? "rgba(255,255,255,0.4)" : "#fff",
+                    fontWeight: 900, fontSize: 16, cursor: locked ? "not-allowed" : "pointer", width: "100%",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+                    boxShadow: locked ? "none" : "0 6px 28px rgba(22,194,74,0.5)",
                   }}
                 >
-                  🔴 Démarrer le direct
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill={locked ? "rgba(255,255,255,0.4)" : "#fff"}><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+                  Démarrer le direct
+                  {locked && <svg viewBox="0 0 24 24" width="18" height="18" fill="rgba(255,255,255,0.35)"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>}
                 </button>
               )}
               {(cameraError || (!cameraReady && !cameraLoading)) && (
                 <button onClick={() => initCamera(cameraFront)} style={{
-                  background: "#1565C0", border: "none", borderRadius: 12,
+                  background: "#1565C0", border: "none", borderRadius: 50,
                   padding: "14px 0", color: "#fff", fontWeight: 800, fontSize: 15,
                   cursor: "pointer", width: "100%",
                 }}>
-                  🔄 Réessayer
+                  Réessayer
                 </button>
               )}
               <button onClick={() => { stopLocalStream(); navigate("/"); }} style={{
                 background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)",
-                borderRadius: 12, padding: "14px 0", color: "#fff", fontWeight: 700,
+                borderRadius: 50, padding: "14px 0", color: "#fff", fontWeight: 700,
                 fontSize: 15, cursor: "pointer", width: "100%",
               }}>
                 Annuler
@@ -441,6 +478,20 @@ export default function LiveStreamPage() {
             </div>
           )}
         </div>
+
+        {/* Tip at bottom */}
+        {!isConnecting && (
+          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "14px 20px 32px", background: "rgba(0,0,0,0.4)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(22,194,74,0.2)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="#16C24A"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>
+            </div>
+            <div>
+              <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>Astuce : publiez régulièrement du contenu </span>
+              <span style={{ color: "#16C24A", fontSize: 12, fontWeight: 700 }}>pour augmenter rapidement votre audience.</span>
+            </div>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="rgba(255,255,255,0.25)" style={{ flexShrink: 0, marginLeft: "auto" }}><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+          </div>
+        )}
 
         <style>{`
           @keyframes spin { to { transform: rotate(360deg); } }
@@ -696,11 +747,13 @@ export default function LiveStreamPage() {
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>💬</button>
           <button onClick={() => setShowGiftPicker(true)} style={{
-            background: "rgba(233,30,140,0.7)", border: "none", borderRadius: "50%",
-            width: 38, height: 38, fontSize: 18, cursor: "pointer",
-            backdropFilter: "blur(4px)", color: "#fff",
+            background: "linear-gradient(135deg,#16C24A,#0DA63E)", border: "none", borderRadius: "50%",
+            width: 38, height: 38, cursor: "pointer",
+            boxShadow: "0 0 14px rgba(22,194,74,0.5)",
             display: "flex", alignItems: "center", justifyContent: "center",
-          }}>🎁</button>
+          }}>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="#fff"><path d="M20 6h-2.18c.07-.31.18-.59.18-.9C18 3.4 16.6 2 14.9 2c-.92 0-1.73.42-2.3 1.08L12 3.7l-.6-.62C10.83 2.42 10.02 2 9.1 2 7.4 2 6 3.4 6 5.1c0 .31.11.59.18.9H4c-1.11 0-2 .89-2 2v13c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2z"/></svg>
+          </button>
           <button onClick={() => {
             navigator.share?.({
               title: `${user.name} est en direct sur Brute Pawa`,
