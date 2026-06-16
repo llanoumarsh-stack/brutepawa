@@ -155,45 +155,129 @@ export default function Profile() {
         <button onClick={() => setShowProfileMenu(true)} style={{ background: "none", border: "none", cursor: "pointer", color: "#050505", padding: "6px 8px", borderRadius: 8, fontSize: 20, letterSpacing: 2, lineHeight: 1 }}>···</button>
       </div>
 
-      {/* Profile options bottom sheet */}
+      {/* Profile options bottom sheet — premium design */}
       {showProfileMenu && (
-        <div
-          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 100 }}
-          onClick={() => setShowProfileMenu(false)}
-        >
-          <div
-            style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "#fff", borderRadius: "20px 20px 0 0", padding: "8px 0 32px" }}
-            onClick={e => e.stopPropagation()}
-          >
-            <div style={{ width: 40, height: 4, background: "#e0e0e0", borderRadius: 2, margin: "8px auto 16px" }} />
-            {[
-              { icon: "🟢", label: "Statut du profil",              action: () => { setShowProfileMenu(false); setShowProfileStatus(true); } },
-              { icon: "🗄️", label: "Archive",                        action: () => { setShowProfileMenu(false); setShowArchive(true); } },
-              { icon: "📊", label: "Historique d'activité",          action: () => { setShowProfileMenu(false); setShowActivityHistory(true); } },
-              { icon: "👁️", label: "Examiner les publications",      action: () => { setShowProfileMenu(false); setShowTagReviewSettings(true); } },
-              { icon: "⭐", label: "Ajouter des éléments à la une", action: () => { setShowProfileMenu(false); setShowFeaturedContent(true); } },
-              { icon: isProfileLocked ? "🔓" : "🔒", label: isProfileLocked ? "Déverrouiller le profil" : "Verrouiller le profil", action: () => { setShowProfileMenu(false); setShowLockProfile(true); } },
-              { icon: "👤", label: "Voir en tant que",               action: () => { setShowProfileMenu(false); setShowVoirEnTantQue(true); } },
-              { icon: "🔍", label: "Rechercher",                     action: () => { setShowProfileMenu(false); navigate("/search"); } },
-              ...(isPro ? [
-                { icon: "⚡", label: "Mode pro activé ✓",            action: () => setShowProfileMenu(false) },
-                { icon: "↩️", label: "Désactiver le mode professionnel", action: () => { setShowProfileMenu(false); setShowDeactivatePro(true); } },
-              ] : [
-                { icon: "⚡", label: "Activer le mode pro",          action: () => { setShowProfileMenu(false); setShowProMode(true); } },
-              ]),
-              { icon: "🔗", label: "Copier le lien du profil",       action: copyProfileLink },
-            ].map(item => (
-              <button
-                key={item.label}
-                onClick={item.action}
-                style={{ width: "100%", background: "none", border: "none", padding: "14px 20px", display: "flex", alignItems: "center", gap: 16, cursor: "pointer", textAlign: "left" }}
-              >
-                <span style={{ fontSize: 22, width: 28, textAlign: "center" }}>{item.icon}</span>
-                <span style={{ fontSize: 15, color: "#050505" }}>{item.label}</span>
+        <>
+          {/* scroll lock */}
+          {(() => { document.documentElement.style.overflow = "hidden"; document.body.style.overflow = "hidden"; return null; })()}
+          {/* Backdrop */}
+          <div onClick={() => { setShowProfileMenu(false); document.documentElement.style.overflow = ""; document.body.style.overflow = ""; }} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(5px)", WebkitBackdropFilter: "blur(5px)", zIndex: 100 }} />
+          {/* Sheet */}
+          <div onClick={e => e.stopPropagation()} style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 101, background: "#fff", borderRadius: "28px 28px 0 0", boxShadow: "0 -8px 48px rgba(0,0,0,0.18)", maxHeight: "92vh", overflowY: "auto" }}>
+
+            {/* Handle */}
+            <div style={{ display: "flex", justifyContent: "center", padding: "12px 0 0" }}>
+              <div style={{ width: 44, height: 5, background: "#E2E8F0", borderRadius: 99 }} />
+            </div>
+
+            {/* ─ Header ─ */}
+            <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "16px 18px 14px" }}>
+              <div style={{ position: "relative", flexShrink: 0 }}>
+                {avatarUrl
+                  ? <img src={avatarUrl} alt="avatar" style={{ width: 52, height: 52, borderRadius: "50%", objectFit: "cover" }} />
+                  : <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#16C24A", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 18 }}>{userInitials}</div>
+                }
+                <div style={{ position: "absolute", bottom: 1, right: 1, width: 13, height: 13, borderRadius: "50%", background: "#16C24A", border: "2.5px solid #fff" }} />
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontWeight: 800, fontSize: 16, color: "#0F172A" }}>{localUser.name} {localUser.flag ?? "🌍"}</div>
+                <button onClick={() => { setShowProfileMenu(false); document.documentElement.style.overflow = ""; document.body.style.overflow = ""; navigate(`/profile/${localUser.id}`); }} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                  <span style={{ fontSize: 13, color: "#16C24A", fontWeight: 600 }}>Voir votre profil</span>
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#16C24A" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+                {isPro && (
+                  <div style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "#DCFCE7", borderRadius: 99, padding: "3px 10px", marginTop: 5 }}>
+                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#16C24A" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span style={{ fontSize: 11.5, fontWeight: 700, color: "#16C24A" }}>Mode Pro activé</span>
+                  </div>
+                )}
+              </div>
+              <button onClick={() => { setShowProfileMenu(false); document.documentElement.style.overflow = ""; document.body.style.overflow = ""; }} style={{ width: 34, height: 34, borderRadius: "50%", background: "#F1F5F9", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#64748B" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
-            ))}
+            </div>
+
+            <div style={{ padding: "0 14px 36px", display: "flex", flexDirection: "column", gap: 10 }}>
+
+              {/* ─ Section Profil ─ */}
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#16C24A", textTransform: "uppercase", letterSpacing: 0.8, padding: "0 4px 8px" }}>Profil</div>
+                <div style={{ background: "#F8FAFC", borderRadius: 20, overflow: "hidden" }}>
+                  {([
+                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#16C24A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 8 0v2"/><circle cx="18" cy="18" r="3"/><line x1="18" y1="15" x2="18" y2="18"/><line x1="18" y1="18" x2="21" y2="18"/></svg>, bg: "#DCFCE7", label: "Statut du profil", desc: "Définissez votre statut actuel", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; setShowProfileStatus(true); } },
+                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#16C24A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>, bg: "#DCFCE7", label: "Voir en tant que visiteur", desc: "Découvrez votre profil comme les autres", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; setShowVoirEnTantQue(true); } },
+                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#16C24A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>, bg: "#DCFCE7", label: "Copier le lien du profil", desc: "Partagez votre profil facilement", action: () => { copyProfileLink(); document.documentElement.style.overflow=""; document.body.style.overflow=""; } },
+                  ] as {svg:React.ReactNode;bg:string;label:string;desc:string;action:()=>void}[]).map((item, i, arr) => (
+                    <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom: i < arr.length-1 ? "1px solid #F1F5F9" : "none", textAlign:"left" }}>
+                      <div style={{ width:40, height:40, borderRadius:12, background:item.bg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{item.svg}</div>
+                      <div style={{ flex:1 }}><div style={{ fontWeight:700, fontSize:14.5, color:"#0F172A" }}>{item.label}</div><div style={{ fontSize:12, color:"#94A3B8", marginTop:1 }}>{item.desc}</div></div>
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* ─ Section Gestion du contenu ─ */}
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#2563EB", textTransform: "uppercase", letterSpacing: 0.8, padding: "0 4px 8px" }}>Gestion du contenu</div>
+                <div style={{ background: "#F8FAFC", borderRadius: 20, overflow: "hidden" }}>
+                  {([
+                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>, bg: "#DBEAFE", label: "Archive", desc: "Gérez vos publications archivées", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; setShowArchive(true); } },
+                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.27"/></svg>, bg: "#EDE9FE", label: "Historique d'activité", desc: "Consultez vos actions récentes", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; setShowActivityHistory(true); } },
+                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>, bg: "#FEF3C7", label: "Examiner les publications", desc: "Gérez et contrôlez vos publications", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; setShowTagReviewSettings(true); } },
+                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="#F59E0B"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>, bg: "#FEF3C7", label: "Éléments à la une", desc: "Mettez en avant vos meilleurs contenus", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; setShowFeaturedContent(true); } },
+                  ] as {svg:React.ReactNode;bg:string;label:string;desc:string;action:()=>void}[]).map((item, i, arr) => (
+                    <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom: i < arr.length-1 ? "1px solid #F1F5F9" : "none", textAlign:"left" }}>
+                      <div style={{ width:40, height:40, borderRadius:12, background:item.bg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{item.svg}</div>
+                      <div style={{ flex:1 }}><div style={{ fontWeight:700, fontSize:14.5, color:"#0F172A" }}>{item.label}</div><div style={{ fontSize:12, color:"#94A3B8", marginTop:1 }}>{item.desc}</div></div>
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* ─ Section Outils professionnels ─ */}
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#F59E0B", textTransform: "uppercase", letterSpacing: 0.8, padding: "0 4px 8px" }}>Outils professionnels</div>
+                <div style={{ background: "#F8FAFC", borderRadius: 20, overflow: "hidden" }}>
+                  {([
+                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="#F59E0B"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>, bg: "#FEF3C7", label: isPro ? "Mode Pro activé" : "Activer le mode Pro", desc: "Profitez des outils professionnels", badge: isPro ? "Actif" : null, action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; isPro ? setShowDeactivatePro(true) : setShowProMode(true); } },
+                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>, bg: "#EDE9FE", label: "Statistiques du profil", desc: "Analysez vos performances", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; } },
+                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, bg: "#DBEAFE", label: "Audience", desc: "Découvrez votre communauté", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; } },
+                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#16C24A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>, bg: "#DCFCE7", label: "Performances", desc: "Suivez l'évolution de votre profil", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; } },
+                  ] as {svg:React.ReactNode;bg:string;label:string;desc:string;badge?:string|null;action:()=>void}[]).map((item, i, arr) => (
+                    <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom: i < arr.length-1 ? "1px solid #F1F5F9" : "none", textAlign:"left" }}>
+                      <div style={{ width:40, height:40, borderRadius:12, background:item.bg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{item.svg}</div>
+                      <div style={{ flex:1 }}><div style={{ fontWeight:700, fontSize:14.5, color:"#0F172A" }}>{item.label}</div><div style={{ fontSize:12, color:"#94A3B8", marginTop:1 }}>{item.desc}</div></div>
+                      {item.badge && <div style={{ background:"#DCFCE7", color:"#16C24A", fontSize:11, fontWeight:800, borderRadius:99, padding:"3px 9px", flexShrink:0 }}>{item.badge}</div>}
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* ─ Section Confidentialité ─ */}
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#F59E0B", textTransform: "uppercase", letterSpacing: 0.8, padding: "0 4px 8px" }}>Confidentialité</div>
+                <div style={{ background: "#F8FAFC", borderRadius: 20, overflow: "hidden" }}>
+                  {([
+                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke={isProfileLocked?"#F59E0B":"#475569"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{isProfileLocked ? <><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></> : <><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></>}</svg>, bg: isProfileLocked ? "#FEF3C7" : "#F1F5F9", label: isProfileLocked ? "Déverrouiller le profil" : "Verrouiller le profil", desc: "Contrôlez qui peut voir votre contenu", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; setShowLockProfile(true); } },
+                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>, bg: "#DBEAFE", label: "Paramètres de visibilité", desc: "Gérez la visibilité de votre profil", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; navigate("/menu"); } },
+                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/></svg>, bg: "#EDE9FE", label: "Gestion des abonnés", desc: "Gérez votre liste d'abonnés", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; navigate("/community"); } },
+                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>, bg: "#FEE2E2", label: "Blocages", desc: "Gérez les utilisateurs bloqués", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; navigate("/menu"); } },
+                  ] as {svg:React.ReactNode;bg:string;label:string;desc:string;action:()=>void}[]).map((item, i, arr) => (
+                    <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom: i < arr.length-1 ? "1px solid #F1F5F9" : "none", textAlign:"left" }}>
+                      <div style={{ width:40, height:40, borderRadius:12, background:item.bg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{item.svg}</div>
+                      <div style={{ flex:1 }}><div style={{ fontWeight:700, fontSize:14.5, color:"#0F172A" }}>{item.label}</div><div style={{ fontSize:12, color:"#94A3B8", marginTop:1 }}>{item.desc}</div></div>
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+            </div>
           </div>
-        </div>
+        </>
       )}
 
       {displayError && (
