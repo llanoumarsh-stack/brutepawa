@@ -571,24 +571,45 @@ export default function Feed() {
                 </div>
               </div>
 
-              {/* Content */}
-              {post.content && (
-                <div style={{ padding: "0 14px 10px", fontSize: 15, color: "#050505", lineHeight: 1.5 }}>
-                  {post.content}
-                </div>
-              )}
+              {/* Content + Music card (unified) */}
+              {(() => {
+                // Detect "♪ TrackName — Artist" or "♫ ..." in content
+                const parsed = !post.musicTrackName && post.content
+                  ? post.content.match(/^[♪♫]\s*(.+?)\s*[—–-]\s*(.+)$/)
+                  : null;
 
-              {/* Music card */}
-              {post.musicTrackName && (
-                <FeedMusicCard
-                  trackName={post.musicTrackName}
-                  artist={post.musicArtist ?? "Artiste inconnu"}
-                  artworkUrl={post.musicArtworkUrl}
-                  url={post.musicUrl}
-                  duration={post.musicDuration}
-                  onClick={() => navigate(`/post/${post.id}`)}
-                />
-              )}
+                const musicTrack = post.musicTrackName ?? (parsed ? parsed[1].trim() : null);
+                const musicArtist = post.musicArtist ?? (parsed ? parsed[2].trim() : null);
+                const isMusicContent = !!parsed; // content was the music info, don't show as text
+
+                return (
+                  <>
+                    {/* Show content text only if it's not purely a music tag */}
+                    {post.content && !isMusicContent && !post.musicTrackName && (
+                      <div style={{ padding: "0 14px 10px", fontSize: 15, color: "#050505", lineHeight: 1.5 }}>
+                        {post.content}
+                      </div>
+                    )}
+                    {/* Show content text for posts that have both caption AND music */}
+                    {post.content && post.musicTrackName && (
+                      <div style={{ padding: "0 14px 10px", fontSize: 15, color: "#050505", lineHeight: 1.5 }}>
+                        {post.content}
+                      </div>
+                    )}
+                    {/* Music card — from music_* fields OR parsed from content */}
+                    {musicTrack && (
+                      <FeedMusicCard
+                        trackName={musicTrack}
+                        artist={musicArtist ?? "Artiste inconnu"}
+                        artworkUrl={post.musicArtworkUrl ?? null}
+                        url={post.musicUrl ?? null}
+                        duration={post.musicDuration ?? null}
+                        onClick={() => navigate(`/post/${post.id}`)}
+                      />
+                    )}
+                  </>
+                );
+              })()}
 
               {/* Media */}
               {post.imageUrl && (
