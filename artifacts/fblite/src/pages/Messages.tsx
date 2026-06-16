@@ -90,6 +90,21 @@ const CONV_COLORS = ["#1877F2","#E91E8C","#7B1FA2","#F57C00","#388E3C","#00838F"
 const mkInitials = (name: string) =>
   name.split(" ").filter(Boolean).map(w => w[0]).join("").slice(0, 2).toUpperCase() || "?";
 
+function fmtConvPreview(raw: string): { text: string; isAudio: boolean } {
+  if (!raw) return { text: "Démarrer une conversation", isAudio: false };
+  if (raw.startsWith("__audio__:")) {
+    const parts = raw.slice("__audio__:".length).split(":");
+    const secs = parseInt(parts[0], 10);
+    if (!isNaN(secs)) {
+      const m = Math.floor(secs / 60);
+      const s = secs % 60;
+      return { text: `Message vocal • ${m}:${s.toString().padStart(2, "0")}`, isAudio: true };
+    }
+    return { text: "Message vocal", isAudio: true };
+  }
+  return { text: raw.length > 55 ? raw.slice(0, 55) + "…" : raw, isAudio: false };
+}
+
 function voiceWaveform(seed: number, bars = 30): number[] {
   return Array.from({ length: bars }, (_, i) => {
     const v = Math.abs(Math.sin(seed * 0.061 + i * 0.73)) * 0.55
