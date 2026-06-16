@@ -71,6 +71,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [activeConv, setActiveConv]   = useState<number | null>(initialUserId ?? null);
   const [messages, setMessages]       = useState<Record<number, Message[]>>({});
   const [convList, setConvList]       = useState<NormConv[]>([]);
+  const [convLoading, setConvLoading] = useState(true);
   const [allUsers, setAllUsers]       = useState<PublicUser[]>([]);
   const [newMsg, setNewMsg]           = useState("");
   const [search, setSearch]           = useState("");
@@ -359,7 +360,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           }
         }
         setConvList(normalized);
-      }).catch(() => {});
+      }).catch(() => {}).finally(() => setConvLoading(false));
   }, []);
 
   useEffect(() => {
@@ -1425,6 +1426,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           @keyframes fbl-sheet-up { from{transform:translateY(100%)} to{transform:translateY(0)} }
           @keyframes fbl-fade-in  { from{opacity:0} to{opacity:1} }
           @keyframes fbl-rec-pulse { 0%,100%{opacity:1} 50%{opacity:0.2} }
+          @keyframes fbl-pulse { 0%,100%{opacity:1} 50%{opacity:0.45} }
           @keyframes wa-typing-dot { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
           .wa-typing-dot { width:7px; height:7px; border-radius:50%; background:#999; display:inline-block; animation:wa-typing-dot 1.2s infinite; }
           .wa-typing-dot:nth-child(2) { animation-delay:0.2s; }
@@ -1920,8 +1922,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               </button>
               <div style={{ height:1, background:"#F0F2F5" }} />
               <button className="fbl-menu-btn" onClick={() => {
-                setMessages(prev => ({ ...prev, [activeConv!]: [] }));
-                setConvList(prev => prev.map(c => c.id === activeConv ? { ...c, lastMessage: "", unread: 0 } : c));
+                const id = activeConv!;
+                setMessages(prev => { const n = { ...prev }; delete n[id]; return n; });
+                setConvList(prev => prev.map(c => c.id === id ? { ...c, lastMessage: "", unread: 0 } : c));
+                setActiveConv(null);
                 setShowConvMenu(false);
               }}>
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="#555"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
@@ -2439,8 +2443,23 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           </div>
         ))}
 
+        {/* ── Loading skeleton ── */}
+        {convLoading && convList.length === 0 && (
+          <div style={{ padding:"0 16px" }}>
+            {[1,2,3,4].map(i => (
+              <div key={i} style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 0", borderBottom:"1px solid #F1F5F9" }}>
+                <div style={{ width:52, height:52, borderRadius:"50%", background:"#E2E8F0", flexShrink:0, animation:"fbl-pulse 1.4s ease-in-out infinite" }} />
+                <div style={{ flex:1 }}>
+                  <div style={{ height:14, width:"55%", background:"#E2E8F0", borderRadius:7, marginBottom:8, animation:"fbl-pulse 1.4s ease-in-out infinite" }} />
+                  <div style={{ height:12, width:"80%", background:"#F1F5F9", borderRadius:6, animation:"fbl-pulse 1.4s ease-in-out infinite" }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* ── Premium Empty State ── */}
-        {!search && convList.length === 0 && chatGroups.length === 0 && (
+        {!convLoading && !search && convList.length === 0 && chatGroups.length === 0 && (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "16px 0 24px" }}>
 
             {/* Illustration SVG */}
