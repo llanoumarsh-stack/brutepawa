@@ -1,0 +1,189 @@
+Voici un prompt ultra-précis à envoyer à Replit :
+
+
+---
+
+PROMPT REPLIT
+
+Refais entièrement l'écran "Publication" en respectant exactement l'identité visuelle premium BrutePawa 2026.
+
+La référence à suivre est la maquette premium, pas l'implémentation actuelle.
+
+Corrections obligatoires
+
+1. Carte musique premium
+
+Supprimer complètement la ligne texte actuelle :
+
+🎵 Lonely At The Top — Asake
+
+La remplacer par une vraie carte audio moderne contenant :
+
+Pochette d'album à gauche
+
+Titre en gras
+
+Nom de l'artiste en dessous
+
+Barre de progression audio
+
+Temps actuel et durée totale
+
+Bouton lecture/pause
+
+Visualiseur audio animé
+
+Fond blanc premium
+
+Coins arrondis 24px
+
+Ombre douce BrutePawa
+
+
+Cette carte doit ressembler aux applications Spotify, Apple Music et TikTok.
+
+
+---
+
+2. Réactions
+
+Remplacer :
+
+2 réactions
+
+par :
+
+Icônes de réactions superposées
+
+👍 ❤️ 🔥
+
+Compteur à droite
+
+Mini avatars des personnes ayant réagi
+
+
+Style Facebook 2025 / LinkedIn Premium.
+
+
+---
+
+3. Boutons d'action
+
+Refaire complètement :
+
+J'aime
+
+Commenter
+
+Partager
+
+Enregistrer
+
+
+Règles :
+
+Largeur identique
+
+Même hauteur
+
+Même espacement
+
+Icônes SVG premium
+
+État actif vert BrutePawa
+
+Hover et animations fluides
+
+
+Ne jamais couper le texte.
+
+Le bouton Enregistrer doit toujours être entièrement visible.
+
+
+---
+
+4. Photo de publication
+
+Améliorer :
+
+Coins arrondis 24px
+
+Ratio cohérent
+
+Ombre douce
+
+Marges identiques de tous les côtés
+
+Affichage responsive parfait
+
+
+
+---
+
+5. Avatar utilisateur
+
+Remplacer les simples initiales par :
+
+Photo utilisateur
+
+Bordure verte BrutePawa
+
+Indicateur de présence en ligne
+
+Badge vérifié premium si applicable
+
+
+
+---
+
+6. Zone commentaire
+
+Créer une barre moderne avec :
+
+Avatar utilisateur
+
+Placeholder "Écrire un commentaire..."
+
+Emoji
+
+GIF
+
+Micro
+
+Galerie photo
+
+
+Disposition identique aux réseaux sociaux premium internationaux.
+
+
+---
+
+7. Identité BrutePawa
+
+Respecter strictement :
+
+Vert BrutePawa
+
+Blanc premium
+
+Ombres douces
+
+Glassmorphism léger
+
+Coins arrondis 20-24px
+
+Design international
+
+Niveau Apple, LinkedIn, Airbnb, Revolut
+
+
+Aucun emoji système. Aucune icône emoji. Utiliser uniquement des SVG premium professionnels.
+
+L'objectif est que l'écran donne immédiatement l'impression d'une application mondiale moderne valorisée à plusieurs millions d'utilisateurs.
+
+La maquette premium est la vérité absolue. Reproduire pixel par pixel son niveau de qualité visuelle.
+
+
+---
+
+Ce prompt est suffisamment précis pour que Replit cesse de faire des approximations et se rapproche réellement de la maquette que tu as montrée.
