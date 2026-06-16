@@ -170,6 +170,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
   const [isRecording, setIsRecording]   = useState(false);
   const [recSeconds, setRecSeconds]     = useState(0);
+  const [recDragX, setRecDragX]         = useState(0);
+  const [recDragY, setRecDragY]         = useState(0);
+  const [recLocked, setRecLocked]       = useState(false);
   const [playingAudioId, setPlayingAudioId] = useState<number|null>(null);
   const [audioProgress, setAudioProgress]   = useState(0);
   const [voiceSpeed, setVoiceSpeed]         = useState<1|1.5|2>(1);
@@ -199,6 +202,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const bottomRef         = useRef<HTMLDivElement>(null);
   const remoteAudioRef    = useRef<HTMLAudioElement>(null);
   const voicePlayerRef    = useRef<HTMLAudioElement>(null);
+  const recCancelledRef   = useRef(false);
+  const recDragStartRef   = useRef<{x:number;y:number}|null>(null);
+  const recIsDraggingRef  = useRef(false);
   const localVideoRef     = useRef<HTMLVideoElement>(null);
   const remoteVideoRef    = useRef<HTMLVideoElement>(null);
   const activeConvRef     = useRef<number | null>(null);
@@ -289,9 +295,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       audioChunksRef.current = [];
       mr.ondataavailable = (e) => { if (e.data.size > 0) audioChunksRef.current.push(e.data); };
       mr.onstop = async () => {
+        stream.getTracks().forEach(t => t.stop());
+        if (recCancelledRef.current) { recCancelledRef.current = false; return; }
         const blob  = new Blob(audioChunksRef.current, { type: "audio/webm" });
         const secs  = recSecondsRef.current;
-        stream.getTracks().forEach(t => t.stop());
         if (secs < 1) return;
         const convId = activeConvRef.current;
         if (!convId) return;
@@ -342,6 +349,34 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     mediaRecorderRef.current?.stop();
     mediaRecorderRef.current = null;
     setIsRecording(false);
+    setRecLocked(false);
+    setRecDragX(0); setRecDragY(0);
+    recSecondsRef.current = 0; setRecSeconds(0);
+  };
+
+  const cancelVoice = () => {
+    recCancelledRef.current = true;
+    stopVoice();
+  };
+
+  const recGestureDown = (e: React.PointerEvent) => {
+    recDragStartRef.current = { x: e.clientX, y: e.clientY };
+    recIsDraggingRef.current = true;
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  };
+  const recGestureMove = (e: React.PointerEvent) => {
+    if (!recIsDraggingRef.current || !recDragStartRef.current) return;
+    setRecDragX(Math.min(0, e.clientX - recDragStartRef.current.x));
+    setRecDragY(Math.min(0, e.clientY - recDragStartRef.current.y));
+  };
+  const recGestureUp = () => {
+    if (!recIsDraggingRef.current) return;
+    recIsDraggingRef.current = false;
+    const dx = recDragX; const dy = recDragY;
+    setRecDragX(0); setRecDragY(0);
+    recDragStartRef.current = null;
+    if (dx < -80) { cancelVoice(); }
+    else if (dy < -80) { setRecLocked(true); }
   };
 
   const onNewMessage = useCallback((data: NewMessagePayload) => {
@@ -2067,39 +2102,113 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           /* NORMAL INPUT BAR — Premium white design */
           <div style={{ background:"#fff", borderTop:"1px solid #F1F5F9", flexShrink:0 }}>
 
-            {/* ── Floating recording capsule (shown above input when recording) ── */}
+            {/* ── Premium recording bar — WhatsApp 2026 style ── */}
             {isRecording && (
-              <div style={{ margin:"10px 12px 6px", background:"#fff", borderRadius:18, padding:"12px 16px", boxShadow:"0 4px 24px rgba(0,0,0,0.12)", display:"flex", alignItems:"center", gap:12, animation:"fbl-fade-in 0.2s ease" }}>
-                {/* Mic icon + pulse */}
-                <div style={{ position:"relative", flexShrink:0 }}>
-                  <div style={{ width:36, height:36, borderRadius:"50%", background:"linear-gradient(135deg,#16C24A,#0ea541)", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 10px rgba(22,194,74,0.4)" }}>
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+              <div style={{ position:"relative", margin:"6px 10px 2px" }}>
+
+                {/* Floating lock icon — shows when dragging up */}
+                {recDragY < -35 && !recLocked && (
+                  <div style={{
+                    position:"absolute", top:-52, left:"50%", transform:"translateX(-50%)",
+                    width:44, height:44, borderRadius:"50%",
+                    background: recDragY < -75 ? "#1877F2" : "#fff",
+                    boxShadow:"0 6px 24px rgba(0,0,0,0.18)",
+                    display:"flex", alignItems:"center", justifyContent:"center",
+                    animation:"fbl-fade-in 0.18s ease",
+                    transition:"background 0.2s",
+                  }}>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill={recDragY < -75 ? "#fff" : "#1877F2"}>
+                      <rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4" strokeWidth="2" stroke={recDragY < -75 ? "#fff" : "#1877F2"} fill="none" strokeLinecap="round"/>
+                    </svg>
                   </div>
-                  <div style={{ position:"absolute", inset:-4, borderRadius:"50%", border:"2px solid rgba(22,194,74,0.3)", animation:"fbl-rec-pulse 1.4s ease-in-out infinite" }} />
+                )}
+
+                {/* Lock badge when locked */}
+                {recLocked && (
+                  <div style={{ display:"flex", alignItems:"center", gap:6, paddingBottom:6, paddingLeft:4 }}>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="#1877F2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4" strokeWidth="2" stroke="#1877F2" fill="none" strokeLinecap="round"/></svg>
+                    <span style={{ fontSize:12, fontWeight:700, color:"#1877F2" }}>Verrouillé — appuyez sur Envoyer</span>
+                  </div>
+                )}
+
+                {/* Main capsule */}
+                <div
+                  onPointerDown={!recLocked ? recGestureDown : undefined}
+                  onPointerMove={!recLocked ? recGestureMove : undefined}
+                  onPointerUp={!recLocked ? recGestureUp : undefined}
+                  style={{
+                    display:"flex", alignItems:"center", gap:10,
+                    background:"rgba(255,255,255,0.97)",
+                    backdropFilter:"blur(24px)", WebkitBackdropFilter:"blur(24px)",
+                    borderRadius:28,
+                    padding:"9px 10px 9px 12px",
+                    boxShadow:"0 8px 32px rgba(0,0,0,0.13), 0 2px 8px rgba(0,0,0,0.07)",
+                    border:"1px solid rgba(226,232,240,0.8)",
+                    transform:`translateX(${recDragX * 0.38}px)`,
+                    transition: recIsDraggingRef.current ? "none" : "transform 0.28s cubic-bezier(0.34,1.56,0.64,1)",
+                    cursor: recLocked ? "default" : "grab",
+                    userSelect:"none", touchAction:"none",
+                  }}>
+
+                  {/* Trash button */}
+                  <button onClick={cancelVoice}
+                    style={{
+                      width:40, height:40, borderRadius:"50%", border:"none", flexShrink:0,
+                      background:"#fff", cursor:"pointer",
+                      display:"flex", alignItems:"center", justifyContent:"center",
+                      boxShadow:"0 2px 10px rgba(0,0,0,0.10)",
+                    }}>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+                    </svg>
+                  </button>
+
+                  {/* Center: dot + timer + waveform + ANNULER */}
+                  <div style={{ flex:1, display:"flex", alignItems:"center", gap:8, overflow:"hidden" }}>
+                    {/* Red pulsing dot */}
+                    <div style={{ width:9, height:9, borderRadius:"50%", background:"#EF4444", flexShrink:0, animation:"fbl-rec-pulse 1s ease-in-out infinite" }} />
+
+                    {/* Timer */}
+                    <span style={{ fontSize:15, fontWeight:800, color:"#EF4444", fontVariantNumeric:"tabular-nums", flexShrink:0, minWidth:42 }}>
+                      {`${Math.floor(recSeconds/60).toString().padStart(2,"0")}:${(recSeconds%60).toString().padStart(2,"0")}`}
+                    </span>
+
+                    {/* Waveform OR swipe-cancel hint */}
+                    {recDragX < -55 ? (
+                      <span style={{ flex:1, fontSize:12, fontWeight:700, color: recDragX < -80 ? "#EF4444" : "#94A3B8", textAlign:"center" }}>
+                        {recDragX < -80 ? "Relâchez pour annuler" : "← Glisser pour annuler"}
+                      </span>
+                    ) : (
+                      <div style={{ flex:1, display:"flex", alignItems:"center", gap:1.5, height:34 }}>
+                        {[0.38,0.62,0.90,0.55,0.80,0.45,0.72,0.95,0.60,0.40,0.85,0.50,0.75,0.35,0.68,0.92,0.48,0.70,0.38,0.80].map((h,i) => (
+                          <div key={i} style={{
+                            flex:1, borderRadius:2, background:"#16C24A",
+                            height:`${Math.round(h*100)}%`,
+                            animation:`wa-typing-dot ${0.55+i*0.07}s ease-in-out ${i*0.045}s infinite alternate`,
+                            opacity:0.7+h*0.3,
+                          }} />
+                        ))}
+                      </div>
+                    )}
+
+                    {/* ANNULER text */}
+                    <span style={{ fontSize:12, fontWeight:700, color:"#94A3B8", flexShrink:0, letterSpacing:"0.03em" }}>ANNULER</span>
+                  </div>
+
+                  {/* Send button */}
+                  <button onClick={stopVoice}
+                    style={{
+                      width:48, height:48, borderRadius:"50%", border:"none", flexShrink:0,
+                      background:"linear-gradient(135deg,#16C24A 0%,#0ea541 100%)",
+                      display:"flex", alignItems:"center", justifyContent:"center",
+                      cursor:"pointer",
+                      boxShadow:"0 4px 20px rgba(22,194,74,0.5)",
+                    }}>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2" fill="#fff" stroke="none"/>
+                    </svg>
+                  </button>
                 </div>
-                {/* Label + timer */}
-                <div style={{ flex:1 }}>
-                  <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:3 }}>
-                    <div style={{ width:7, height:7, borderRadius:"50%", background:"#EF4444", animation:"fbl-rec-pulse 1s infinite", flexShrink:0 }} />
-                    <span style={{ fontSize:13, fontWeight:700, color:"#0F172A" }}>Enregistrement...</span>
-                  </div>
-                  {/* Waveform animation */}
-                  <div style={{ display:"flex", alignItems:"center", gap:2, height:18 }}>
-                    {[0.4,0.7,1,0.6,0.9,0.5,0.8,1,0.4,0.7,0.6,0.9,0.5,0.3,0.8].map((h,i) => (
-                      <div key={i} style={{ width:3, borderRadius:2, background:"#16C24A", opacity:0.75, height:`${h*100}%`, animation:`wa-typing-dot ${0.6+i*0.08}s ease-in-out ${i*0.04}s infinite alternate`, transformOrigin:"bottom" }} />
-                    ))}
-                  </div>
-                </div>
-                {/* Timer */}
-                <span style={{ fontSize:15, fontWeight:800, color:"#16C24A", fontVariantNumeric:"tabular-nums", flexShrink:0 }}>
-                  {`${Math.floor(recSeconds/60).toString().padStart(2,"0")}:${(recSeconds%60).toString().padStart(2,"0")}`}
-                </span>
-                {/* Stop button */}
-                <button onPointerUp={stopVoice}
-                  style={{ background:"#F1F5F9", border:"none", borderRadius:12, padding:"8px 14px", cursor:"pointer", display:"flex", alignItems:"center", gap:6, flexShrink:0 }}>
-                  <svg viewBox="0 0 24 24" width="14" height="14" fill="#EF4444"><rect x="4" y="4" width="16" height="16" rx="3"/></svg>
-                  <span style={{ fontSize:13, fontWeight:700, color:"#EF4444" }}>Arrêter</span>
-                </button>
               </div>
             )}
 
@@ -2141,12 +2250,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       </button>
                     </>
                   )}
-                  {/* Mic button — always visible, pulses green when recording */}
+                  {/* Mic button — hidden during recording */}
+                  {!isRecording && (
                   <button
-                    onPointerDown={e => { if (!isRecording) { e.preventDefault(); startVoice(); } }}
-                    style={{ background:"#16C24A", border:"none", borderRadius:"50%", width:44, height:44, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", boxShadow: isRecording ? "0 0 0 6px rgba(22,194,74,0.2), 0 3px 12px rgba(22,194,74,0.5)" : "0 3px 12px rgba(22,194,74,0.45)", transform: isRecording ? "scale(1.1)" : "scale(1)", transition:"all 0.2s" }}>
+                    onPointerDown={e => { e.preventDefault(); startVoice(); }}
+                    style={{ background:"#16C24A", border:"none", borderRadius:"50%", width:44, height:44, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", boxShadow:"0 3px 12px rgba(22,194,74,0.45)" }}>
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
                   </button>
+                  )}
                 </>
               )}
             </div>
