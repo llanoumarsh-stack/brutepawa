@@ -152,6 +152,30 @@ export default function Feed() {
   const [postMenuId, setPostMenuId] = useState<number | null>(null);
   const [savedSet, setSavedSet] = useState<Set<number>>(new Set());
 
+  // Lock body scroll when bottom sheet is open to prevent layout shift
+  useEffect(() => {
+    if (postMenuId !== null) {
+      const scrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = "100%";
+      document.body.style.overflow = "hidden";
+    } else {
+      const scrollY = document.body.style.top;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      document.body.style.overflow = "";
+      if (scrollY) window.scrollTo(0, -parseInt(scrollY));
+    }
+    return () => {
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      document.body.style.overflow = "";
+    };
+  }, [postMenuId]);
+
   const handleStoryFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;

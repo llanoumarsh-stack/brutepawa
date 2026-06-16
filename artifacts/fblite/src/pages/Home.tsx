@@ -161,6 +161,30 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
   const [hiddenPosts, setHiddenPosts] = useState<Set<number>>(new Set());
   const [toast, setToast] = useState<string | null>(null);
 
+  // Lock body scroll when bottom sheet is open to prevent layout shift
+  useEffect(() => {
+    if (openMenu) {
+      const scrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = "100%";
+      document.body.style.overflow = "hidden";
+    } else {
+      const scrollY = document.body.style.top;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      document.body.style.overflow = "";
+      if (scrollY) window.scrollTo(0, -parseInt(scrollY));
+    }
+    return () => {
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      document.body.style.overflow = "";
+    };
+  }, [openMenu]);
+
   const showToast = (msg: string) => {
     setToast(msg);
     setTimeout(() => setToast(null), 2500);
