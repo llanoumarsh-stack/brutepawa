@@ -49,8 +49,8 @@ channel = "stable-25_05"
 [userenv]
 
 [userenv.shared]
-VAPID_PUBLIC_KEY = "BLNzuhVDbvaH5LZr0Ewd4JFSeL9he6C0Qu4fgtcubcTyQw21Ni-9buV6vtPzCtvHnv4uswinXjQGWF53k_qXqrk"
+VAPID_PUBLIC_KEY = "BPxZPxSeN1gfVwAO14Y0M8vd48FkLal9o5_dQXtff9F6a_cEnxxGTARm4k9t-d0x_QB29JzcdWg71MJODHOZvlQ"
 CF_ACCOUNT_ID = "09e1ef3aa248da4402f2dd80e146d674"
 APP_DATABASE_URL = "postgresql://postgres.siffrjlejdhycchozitd:hoV77BiQcpc3boAe@aws-0-eu-west-1.pooler.supabase.com:6543/postgres"
-VAPID_PRIVATE_KEY = "FeT3mSu8Tm6UT9JMQbUQUyK8MzrvoYvYdQDBDCY6xfo"
+VAPID_PRIVATE_KEY = "1lPWziwtkR9V-zGIzEO835i_0x2b0vB0pDgw-Bc7_i4"
 R2_BUCKET_NAME = "brutepawa"

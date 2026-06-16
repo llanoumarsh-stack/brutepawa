@@ -218,22 +218,17 @@ export default function Register() {
 
         {/* Logo */}
         <div style={{ marginTop: 44, marginBottom: 4, display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <div style={{
-            width: 72, height: 72, borderRadius: 20,
-            background: "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            boxShadow: "0 8px 28px rgba(34,197,94,0.32)",
-            marginBottom: 12, position: "relative", overflow: "hidden",
-          }}>
-            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "45%", background: "linear-gradient(180deg,rgba(255,255,255,0.17) 0%,transparent 100%)", borderRadius: "20px 20px 0 0" }} />
-            <svg width="42" height="42" viewBox="0 0 42 42" fill="none">
-              <text x="10" y="29" fontSize="26" fontWeight="800" fontFamily="Inter,sans-serif" fill="white">b</text>
-              <circle cx="31" cy="27" r="6.5" fill="white" fillOpacity="0.9" />
-              <circle cx="28.8" cy="27" r="1.3" fill="#16a34a" />
-              <circle cx="31" cy="27" r="1.3" fill="#16a34a" />
-              <circle cx="33.2" cy="27" r="1.3" fill="#16a34a" />
-            </svg>
-          </div>
+          <img
+            src="/logo.png"
+            alt="Brute Pawa"
+            style={{
+              width: 72, height: 72,
+              borderRadius: 20,
+              objectFit: "cover",
+              boxShadow: "0 8px 28px rgba(34,197,94,0.32)",
+              marginBottom: 12,
+            }}
+          />
           <span style={{ fontSize: 24, fontWeight: 800, color: "#16a34a", letterSpacing: "-0.5px" }}>brutepawa</span>
         </div>
 

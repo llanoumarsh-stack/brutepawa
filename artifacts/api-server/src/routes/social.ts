@@ -285,9 +285,13 @@ router.post("/messages", requireAuth, async (req, res): Promise<void> => {
   const [sender] = await db.select({ firstName: usersTable.firstName, lastName: usersTable.lastName })
     .from(usersTable).where(eq(usersTable.id, me));
   const senderName = sender ? `${sender.firstName} ${sender.lastName}`.trim() : "Quelqu'un";
+  const rawContent = parsed.data.content;
+  const notifBody = rawContent.startsWith("__audio__")
+    ? "🎤 Message vocal"
+    : rawContent.length > 80 ? rawContent.slice(0, 80) + "…" : rawContent;
   pushToUserDevice(toId, {
     title: senderName,
-    body: parsed.data.content.length > 80 ? parsed.data.content.slice(0, 80) + "…" : parsed.data.content,
+    body: notifBody,
     tag: `msg-${me}`,
     data: { url: `/messages?userId=${me}` },
   }).catch(() => {});

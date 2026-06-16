@@ -72,26 +72,17 @@ export default function Login() {
 
         {/* ── Logo ── */}
         <div style={{ marginTop: 52, marginBottom: 4, display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <div style={{
-            width: 80, height: 80,
-            borderRadius: 22,
-            background: "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            boxShadow: "0 8px 32px rgba(34,197,94,0.35), 0 2px 8px rgba(34,197,94,0.2)",
-            marginBottom: 14,
-            position: "relative",
-            overflow: "hidden",
-          }}>
-            {/* Reflet */}
-            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "45%", background: "linear-gradient(180deg, rgba(255,255,255,0.18) 0%, transparent 100%)", borderRadius: "22px 22px 0 0" }} />
-            <svg width="46" height="46" viewBox="0 0 46 46" fill="none">
-              <text x="12" y="32" fontSize="28" fontWeight="800" fontFamily="Inter, sans-serif" fill="white">b</text>
-              <circle cx="34" cy="30" r="7" fill="white" fillOpacity="0.9" />
-              <circle cx="31.5" cy="30" r="1.4" fill="#16a34a" />
-              <circle cx="34" cy="30" r="1.4" fill="#16a34a" />
-              <circle cx="36.5" cy="30" r="1.4" fill="#16a34a" />
-            </svg>
-          </div>
+          <img
+            src="/logo.png"
+            alt="Brute Pawa"
+            style={{
+              width: 80, height: 80,
+              borderRadius: 22,
+              objectFit: "cover",
+              boxShadow: "0 8px 32px rgba(34,197,94,0.35), 0 2px 8px rgba(34,197,94,0.2)",
+              marginBottom: 14,
+            }}
+          />
           <span style={{ fontSize: 26, fontWeight: 800, color: "#16a34a", letterSpacing: "-0.5px", lineHeight: 1 }}>brutepawa</span>
         </div>
 

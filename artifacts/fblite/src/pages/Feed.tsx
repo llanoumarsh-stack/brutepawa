@@ -278,14 +278,8 @@ export default function Feed() {
           display: "flex", alignItems: "center", justifyContent: "space-between",
           padding: "8px 14px",
         }}>
-          {/* Brand logo text */}
-          <span style={{
-            color: "#1877F2", fontWeight: 900, fontSize: 28,
-            fontFamily: "'Georgia', serif", fontStyle: "italic", letterSpacing: -1,
-            lineHeight: 1,
-          }}>
-            brutepawa
-          </span>
+          {/* Brand logo */}
+          <img src="/logo.png" alt="Brute Pawa" style={{ height: 38, width: 38, borderRadius: 10, objectFit: "cover" }} />
 
           {/* Icon buttons */}
           <div style={{ display: "flex", gap: 8 }}>

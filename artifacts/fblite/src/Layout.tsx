@@ -184,7 +184,7 @@ export default function Layout({ children, onNewPost }: Props) {
         {/* Row 2 — Brand logo + icon buttons */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 14px" }}>
           <button onClick={() => navigate("/")} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1 }}>
-            <span style={{ color: "#42B72A", fontWeight: 900, fontSize: 28, fontFamily: "'Georgia', serif", fontStyle: "italic", letterSpacing: -1 }}>brutepawa</span>
+            <img src="/logo.png" alt="Brute Pawa" style={{ height: 36, width: 36, borderRadius: 10, objectFit: "cover" }} />
           </button>
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             {/* Search */}
