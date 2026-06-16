@@ -837,128 +837,95 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
       {openMenu && (
         <>
           {/* Backdrop */}
-          <div
-            onClick={closeMenu}
-            style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 90 }}
-          />
+          <div onClick={closeMenu} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)", zIndex: 90 }} />
           {/* Sheet */}
-          <div style={{
-            position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 100,
-            background: "var(--fb-white)", borderRadius: "20px 20px 0 0",
-            boxShadow: "0 -4px 32px rgba(0,0,0,0.18)",
-            maxHeight: "85vh", overflowY: "auto",
-            animation: "slideUpSheet 0.25s cubic-bezier(0.32,0.72,0,1)",
-          }}>
+          <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 100, background: "#fff", borderRadius: "28px 28px 0 0", boxShadow: "0 -8px 40px rgba(0,0,0,0.18)", maxHeight: "88vh", overflowY: "auto", animation: "slideUpSheet 0.28s cubic-bezier(0.32,0.72,0,1)" }}>
             {/* Handle */}
-            <div style={{ display: "flex", justifyContent: "center", padding: "10px 0 4px" }}>
-              <div style={{ width: 40, height: 5, background: "var(--fb-divider)", borderRadius: 4 }} />
+            <div style={{ display: "flex", justifyContent: "center", paddingTop: 12, paddingBottom: 6 }}>
+              <div style={{ width: 44, height: 5, background: "#E2E8F0", borderRadius: 99 }} />
             </div>
 
-            {/* Interest section */}
-            <div style={{ margin: "8px 12px", background: "var(--fb-bg)", borderRadius: 14, overflow: "hidden" }}>
-              {[
-                {
-                  icon: "➕", iconBg: "#000",
-                  label: "Ça m'intéresse",
-                  desc: "Vous verrez plus de publications de ce type.",
-                  action: () => handleInterest(true),
-                },
-                {
-                  icon: "➖", iconBg: "#000",
-                  label: "Ça ne m'intéresse pas",
-                  desc: "Vous verrez moins de publications de ce type.",
-                  action: () => handleInterest(false),
-                },
-              ].map((item, i) => (
-                <div
-                  key={i}
-                  onClick={item.action}
-                  style={{
-                    display: "flex", gap: 14, padding: "14px 16px", cursor: "pointer", alignItems: "flex-start",
-                    borderBottom: i === 0 ? "1px solid var(--fb-divider)" : "none",
-                  }}
-                >
-                  <div style={{ width: 36, height: 36, borderRadius: "50%", background: item.iconBg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, color: "#fff", flexShrink: 0 }}>
-                    {item.icon}
-                  </div>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: 15 }}>{item.label}</div>
-                    <div style={{ fontSize: 13, color: "var(--fb-text-secondary)", marginTop: 2 }}>{item.desc}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <div style={{ padding: "4px 14px 32px", display: "flex", flexDirection: "column", gap: 10 }}>
 
-            {/* Actions section */}
-            <div style={{ margin: "8px 12px 20px", background: "var(--fb-bg)", borderRadius: 14, overflow: "hidden" }}>
-              {[
-                {
-                  icon: "🔖",
-                  label: savedPosts.has(openMenu.postId) ? "Retirer des enregistrements" : "Enregistrer la publication",
-                  desc: savedPosts.has(openMenu.postId) ? "Retirer de vos éléments enregistrés." : "Ajoutez ceci à vos éléments enregistrés.",
-                  action: () => handleSave(openMenu.postId),
-                  arrow: false,
-                },
-                {
-                  icon: "↗️",
-                  label: "Partager",
-                  desc: null,
-                  action: () => handleShare(openMenu.postId),
-                  arrow: true,
-                },
-                {
-                  icon: "🚫",
-                  label: "Je ne veux pas voir ça",
-                  desc: null,
-                  action: () => handleHide(openMenu.postId),
-                  arrow: true,
-                },
-                {
-                  icon: "🚩",
-                  label: "Signaler la publication",
-                  desc: `${openMenu.authorName} ne saura pas qui l'a signalé(e).`,
-                  action: () => handleReport(openMenu.authorName, openMenu.postId),
-                  arrow: true,
-                },
-                {
-                  icon: notifPosts.has(openMenu.postId) ? "🔕" : "🔔",
-                  label: notifPosts.has(openMenu.postId)
-                    ? "Désactiver les notifications"
-                    : "Activer les notifications pour cette publication",
-                  desc: null,
-                  action: () => handleNotif(openMenu.postId),
-                  arrow: false,
-                },
-                {
-                  icon: "🔗",
-                  label: "Copier le lien",
-                  desc: null,
-                  action: () => handleCopyLink(openMenu.postId),
-                  arrow: false,
-                },
-              ].map((item, i, arr) => (
-                <div
-                  key={i}
-                  onClick={item.action}
-                  style={{
-                    display: "flex", gap: 14, padding: "13px 16px", cursor: "pointer", alignItems: "center",
-                    borderBottom: i < arr.length - 1 ? "1px solid var(--fb-divider)" : "none",
-                  }}
-                >
-                  <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>
-                    {item.icon}
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 600, fontSize: 15 }}>{item.label}</div>
-                    {item.desc && <div style={{ fontSize: 13, color: "var(--fb-text-secondary)", marginTop: 2 }}>{item.desc}</div>}
-                  </div>
-                  {item.arrow && <span style={{ color: "var(--fb-text-secondary)", fontSize: 18 }}>›</span>}
-                </div>
-              ))}
+              {/* ── Group 1: positive (green) ── */}
+              <div style={{ background: "#F8FAFC", borderRadius: 20, overflow: "hidden" }}>
+                {[
+                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>, iconBg: "#DCFCE7", label: "Ça m'intéresse", desc: "Vous verrez plus de publications de ce type.", action: () => handleInterest(true) },
+                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>, iconBg: "#DCFCE7", label: savedPosts.has(openMenu.postId) ? "Retirer des enregistrements" : "Enregistrer la publication", desc: savedPosts.has(openMenu.postId) ? "Retirer de vos éléments enregistrés." : "Ajoutez ceci à vos éléments enregistrés.", action: () => handleSave(openMenu.postId) },
+                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke={notifPosts.has(openMenu.postId) ? "#64748B" : "#16C24A"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>{notifPosts.has(openMenu.postId) && <line x1="4" y1="4" x2="20" y2="20"/>}</svg>, iconBg: notifPosts.has(openMenu.postId) ? "#F1F5F9" : "#DCFCE7", label: notifPosts.has(openMenu.postId) ? "Désactiver les notifications" : "Activer les notifications", desc: "Recevez des notifications pour cette publication.", action: () => handleNotif(openMenu.postId) },
+                ].map((item, i, arr) => (
+                  <button key={i} onClick={item.action} style={{ width: "100%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 14, padding: "13px 16px", borderBottom: i < arr.length - 1 ? "1px solid #F1F5F9" : "none", textAlign: "left" }}>
+                    <div style={{ width: 42, height: 42, borderRadius: "50%", background: item.iconBg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.svg}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 700, fontSize: 15, color: "#0F172A" }}>{item.label}</div>
+                      <div style={{ fontSize: 12.5, color: "#94A3B8", marginTop: 2 }}>{item.desc}</div>
+                    </div>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  </button>
+                ))}
+              </div>
+
+              {/* ── Group 2: neutral (blue) ── */}
+              <div style={{ background: "#F8FAFC", borderRadius: 20, overflow: "hidden" }}>
+                {[
+                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3B82F6" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>, iconBg: "#DBEAFE", label: "Partager", desc: "Envoyez cette publication à vos amis.", action: () => handleShare(openMenu.postId) },
+                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3B82F6" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>, iconBg: "#DBEAFE", label: "Copier le lien", desc: "Copiez le lien de cette publication.", action: () => handleCopyLink(openMenu.postId) },
+                ].map((item, i, arr) => (
+                  <button key={i} onClick={item.action} style={{ width: "100%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 14, padding: "13px 16px", borderBottom: i < arr.length - 1 ? "1px solid #F1F5F9" : "none", textAlign: "left" }}>
+                    <div style={{ width: 42, height: 42, borderRadius: "50%", background: item.iconBg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.svg}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 700, fontSize: 15, color: "#0F172A" }}>{item.label}</div>
+                      <div style={{ fontSize: 12.5, color: "#94A3B8", marginTop: 2 }}>{item.desc}</div>
+                    </div>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  </button>
+                ))}
+              </div>
+
+              {/* ── Group 3: control (dark) ── */}
+              <div style={{ background: "#F8FAFC", borderRadius: 20, overflow: "hidden" }}>
+                {[
+                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#475569" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>, iconBg: "#F1F5F9", label: "Masquer cette publication", desc: "Moins de publications comme celle-ci.", action: () => handleHide(openMenu.postId) },
+                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#475569" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>, iconBg: "#F1F5F9", label: "Ne plus voir ce type de contenu", desc: "Vous verrez moins de publications de ce type.", action: () => handleInterest(false) },
+                ].map((item, i, arr) => (
+                  <button key={i} onClick={item.action} style={{ width: "100%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 14, padding: "13px 16px", borderBottom: i < arr.length - 1 ? "1px solid #F1F5F9" : "none", textAlign: "left" }}>
+                    <div style={{ width: 42, height: 42, borderRadius: "50%", background: item.iconBg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.svg}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 700, fontSize: 15, color: "#0F172A" }}>{item.label}</div>
+                      <div style={{ fontSize: 12.5, color: "#94A3B8", marginTop: 2 }}>{item.desc}</div>
+                    </div>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  </button>
+                ))}
+              </div>
+
+              {/* ── Group 4: danger (red) ── */}
+              <div style={{ background: "#FFF5F5", borderRadius: 20, overflow: "hidden" }}>
+                {[
+                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="#EF4444"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15" stroke="#EF4444" strokeWidth="2"/></svg>, iconBg: "#FEE2E2", label: "Signaler la publication", desc: `${openMenu.authorName} ne saura pas qui l'a signalé(e).`, action: () => handleReport(openMenu.authorName, openMenu.postId) },
+                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#EF4444" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>, iconBg: "#FEE2E2", label: `Bloquer ${openMenu.authorName}`, desc: "Vous ne verrez plus ses publications.", action: closeMenu },
+                ].map((item, i, arr) => (
+                  <button key={i} onClick={item.action} style={{ width: "100%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 14, padding: "13px 16px", borderBottom: i < arr.length - 1 ? "1px solid #FEE2E2" : "none", textAlign: "left" }}>
+                    <div style={{ width: 42, height: 42, borderRadius: "50%", background: item.iconBg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.svg}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 700, fontSize: 15, color: "#EF4444" }}>{item.label}</div>
+                      <div style={{ fontSize: 12.5, color: "#94A3B8", marginTop: 2 }}>{item.desc}</div>
+                    </div>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#FCA5A5" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  </button>
+                ))}
+              </div>
+
+              {/* ── Annuler ── */}
+              <button onClick={closeMenu} style={{ width: "100%", background: "#F8FAFC", border: "none", borderRadius: 20, padding: "16px", fontWeight: 700, fontSize: 16, color: "#475569", cursor: "pointer" }}>
+                Annuler
+              </button>
+
             </div>
           </div>
         </>
       )}
+
 
       {/* ── TOAST ──────────────────────────────────────────── */}
       {toast && (

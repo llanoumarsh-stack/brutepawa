@@ -721,34 +721,77 @@ export default function Feed() {
 
       {/* ── Post options bottom sheet ── */}
       {postMenuId !== null && (
-        <div
-          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 200 }}
-          onClick={() => setPostMenuId(null)}
-        >
-          <div
-            style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "#fff", borderRadius: "20px 20px 0 0", padding: "8px 0 32px" }}
-            onClick={e => e.stopPropagation()}
-          >
-            <div style={{ width: 40, height: 4, background: "#e0e0e0", borderRadius: 2, margin: "8px auto 16px" }} />
-            {[
-              { svg: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#050505" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>, label: "Enregistrer la publication", danger: false, action: () => { if (postMenuId !== null) toggleSave(postMenuId); setPostMenuId(null); } },
-              { svg: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#050505" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/><line x1="4" y1="4" x2="20" y2="20"/></svg>, label: "Désactiver les notifications", danger: false, action: () => setPostMenuId(null) },
-              { svg: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#050505" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>, label: "Partager sur votre journal", danger: false, action: () => setPostMenuId(null) },
-              { svg: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#050505" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>, label: "Copier le lien", danger: false, action: () => setPostMenuId(null) },
-              { svg: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#050505" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>, label: "Masquer la publication", danger: false, action: () => setPostMenuId(null) },
-              { svg: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#E53935" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>, label: "Signaler la publication", danger: true, action: () => setPostMenuId(null) },
-            ].map(item => (
-              <button
-                key={item.label}
-                onClick={item.action}
-                style={{ width: "100%", background: "none", border: "none", padding: "14px 20px", display: "flex", alignItems: "center", gap: 16, cursor: "pointer", textAlign: "left" }}
-              >
-                <span style={{ width: 28, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.svg}</span>
-                <span style={{ fontSize: 15, color: item.danger ? "#E53935" : "#050505" }}>{item.label}</span>
+        <>
+          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)", zIndex: 200 }} onClick={() => setPostMenuId(null)} />
+          <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 201, background: "#fff", borderRadius: "28px 28px 0 0", boxShadow: "0 -8px 40px rgba(0,0,0,0.18)", maxHeight: "88vh", overflowY: "auto", animation: "slideUpSheet 0.28s cubic-bezier(0.32,0.72,0,1)" }}>
+            <div style={{ display: "flex", justifyContent: "center", paddingTop: 12, paddingBottom: 6 }}>
+              <div style={{ width: 44, height: 5, background: "#E2E8F0", borderRadius: 99 }} />
+            </div>
+            <div style={{ padding: "4px 14px 32px", display: "flex", flexDirection: "column", gap: 10 }}>
+
+              {/* Green group */}
+              <div style={{ background: "#F8FAFC", borderRadius: 20, overflow: "hidden" }}>
+                {([
+                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>, bg: "#DCFCE7", label: "Ça m'intéresse", desc: "Vous verrez plus de publications de ce type.", action: () => setPostMenuId(null) },
+                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>, bg: "#DCFCE7", label: "Enregistrer la publication", desc: "Ajoutez ceci à vos éléments enregistrés.", action: () => { if (postMenuId !== null) toggleSave(postMenuId); setPostMenuId(null); } },
+                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>, bg: "#DCFCE7", label: "Activer les notifications", desc: "Recevez des notifications pour cette publication.", action: () => setPostMenuId(null) },
+                ] as {svg:React.ReactNode;bg:string;label:string;desc:string;action:()=>void}[]).map((item, i, arr) => (
+                  <button key={i} onClick={item.action} style={{ width: "100%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 14, padding: "13px 16px", borderBottom: i < arr.length - 1 ? "1px solid #F1F5F9" : "none", textAlign: "left" }}>
+                    <div style={{ width: 42, height: 42, borderRadius: "50%", background: item.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.svg}</div>
+                    <div style={{ flex: 1 }}><div style={{ fontWeight: 700, fontSize: 15, color: "#0F172A" }}>{item.label}</div><div style={{ fontSize: 12.5, color: "#94A3B8", marginTop: 2 }}>{item.desc}</div></div>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  </button>
+                ))}
+              </div>
+
+              {/* Blue group */}
+              <div style={{ background: "#F8FAFC", borderRadius: 20, overflow: "hidden" }}>
+                {([
+                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3B82F6" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>, bg: "#DBEAFE", label: "Partager", desc: "Envoyez cette publication à vos amis.", action: () => setPostMenuId(null) },
+                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3B82F6" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>, bg: "#DBEAFE", label: "Copier le lien", desc: "Copiez le lien de cette publication.", action: () => setPostMenuId(null) },
+                ] as {svg:React.ReactNode;bg:string;label:string;desc:string;action:()=>void}[]).map((item, i, arr) => (
+                  <button key={i} onClick={item.action} style={{ width: "100%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 14, padding: "13px 16px", borderBottom: i < arr.length - 1 ? "1px solid #F1F5F9" : "none", textAlign: "left" }}>
+                    <div style={{ width: 42, height: 42, borderRadius: "50%", background: item.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.svg}</div>
+                    <div style={{ flex: 1 }}><div style={{ fontWeight: 700, fontSize: 15, color: "#0F172A" }}>{item.label}</div><div style={{ fontSize: 12.5, color: "#94A3B8", marginTop: 2 }}>{item.desc}</div></div>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  </button>
+                ))}
+              </div>
+
+              {/* Gray group */}
+              <div style={{ background: "#F8FAFC", borderRadius: 20, overflow: "hidden" }}>
+                {([
+                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#475569" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>, bg: "#F1F5F9", label: "Masquer cette publication", desc: "Moins de publications comme celle-ci.", action: () => setPostMenuId(null) },
+                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#475569" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>, bg: "#F1F5F9", label: "Ne plus voir ce type de contenu", desc: "Vous verrez moins de publications de ce type.", action: () => setPostMenuId(null) },
+                ] as {svg:React.ReactNode;bg:string;label:string;desc:string;action:()=>void}[]).map((item, i, arr) => (
+                  <button key={i} onClick={item.action} style={{ width: "100%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 14, padding: "13px 16px", borderBottom: i < arr.length - 1 ? "1px solid #F1F5F9" : "none", textAlign: "left" }}>
+                    <div style={{ width: 42, height: 42, borderRadius: "50%", background: item.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.svg}</div>
+                    <div style={{ flex: 1 }}><div style={{ fontWeight: 700, fontSize: 15, color: "#0F172A" }}>{item.label}</div><div style={{ fontSize: 12.5, color: "#94A3B8", marginTop: 2 }}>{item.desc}</div></div>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  </button>
+                ))}
+              </div>
+
+              {/* Red group */}
+              <div style={{ background: "#FFF5F5", borderRadius: 20, overflow: "hidden" }}>
+                {([
+                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="#EF4444"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15" stroke="#EF4444" strokeWidth="2"/></svg>, bg: "#FEE2E2", label: "Signaler la publication", desc: "L'auteur ne saura pas qui a signalé.", action: () => setPostMenuId(null) },
+                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#EF4444" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>, bg: "#FEE2E2", label: "Bloquer cet utilisateur", desc: "Vous ne verrez plus ses publications.", action: () => setPostMenuId(null) },
+                ] as {svg:React.ReactNode;bg:string;label:string;desc:string;action:()=>void}[]).map((item, i, arr) => (
+                  <button key={i} onClick={item.action} style={{ width: "100%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 14, padding: "13px 16px", borderBottom: i < arr.length - 1 ? "1px solid #FEE2E2" : "none", textAlign: "left" }}>
+                    <div style={{ width: 42, height: 42, borderRadius: "50%", background: item.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.svg}</div>
+                    <div style={{ flex: 1 }}><div style={{ fontWeight: 700, fontSize: 15, color: "#EF4444" }}>{item.label}</div><div style={{ fontSize: 12.5, color: "#94A3B8", marginTop: 2 }}>{item.desc}</div></div>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#FCA5A5" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  </button>
+                ))}
+              </div>
+
+              <button onClick={() => setPostMenuId(null)} style={{ width: "100%", background: "#F8FAFC", border: "none", borderRadius: 20, padding: "16px", fontWeight: 700, fontSize: 16, color: "#475569", cursor: "pointer" }}>
+                Annuler
               </button>
-            ))}
+            </div>
           </div>
-        </div>
+        </>
       )}
 
       {/* ── Quick post modal ── */}
