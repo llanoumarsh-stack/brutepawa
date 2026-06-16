@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -17,200 +17,164 @@ function isInStandaloneMode() {
   );
 }
 
-const DISMISSED_KEY = "bp_install_banner_dismissed";
+const AUTO_DISMISS_SEC = 30;
 
 export default function InstallBanner() {
-  const [deferredPrompt, setDeferredPrompt] =
-    useState<BeforeInstallPromptEvent | null>(null);
-  const [visible, setVisible] = useState(false);
-  const [ios, setIos]         = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [visible, setVisible]   = useState(false);
+  const [ios, setIos]           = useState(false);
+  const [countdown, setCountdown] = useState(AUTO_DISMISS_SEC);
+  const timerRef  = useRef<ReturnType<typeof setInterval> | null>(null);
+  const dismissRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (isInStandaloneMode()) return;
 
-    const dismissedAt = localStorage.getItem(DISMISSED_KEY);
-    if (dismissedAt && Date.now() - Number(dismissedAt) < 3 * 24 * 60 * 60 * 1000)
-      return;
+    setIos(isIos());
 
-    const onIos = isIos();
-    setIos(onIos);
-
-    // Chrome/Android : attendre beforeinstallprompt
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      setVisible(true);
     };
     window.addEventListener("beforeinstallprompt", handler);
 
-    // iOS Safari ou desktop sans prompt : afficher la bannière quand même
-    // (sur iOS : guide manuel ; sur desktop dev : aperçu visuel)
-    const fallback = setTimeout(() => {
-      setVisible(true);
-    }, 1500);
+    const show = setTimeout(() => setVisible(true), 800);
 
     return () => {
       window.removeEventListener("beforeinstallprompt", handler);
-      clearTimeout(fallback);
+      clearTimeout(show);
     };
   }, []);
 
+  useEffect(() => {
+    if (!visible) return;
+
+    setCountdown(AUTO_DISMISS_SEC);
+
+    timerRef.current = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          dismiss();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (dismissRef.current) clearTimeout(dismissRef.current);
+    };
+  }, [visible]);
+
   const dismiss = () => {
-    localStorage.setItem(DISMISSED_KEY, String(Date.now()));
+    if (timerRef.current)  clearInterval(timerRef.current);
+    if (dismissRef.current) clearTimeout(dismissRef.current);
     setVisible(false);
   };
 
   const install = async () => {
-    if (!deferredPrompt) return;
-    await deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === "accepted") setVisible(false);
-    setDeferredPrompt(null);
+    if (deferredPrompt) {
+      await deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      setDeferredPrompt(null);
+      if (outcome === "accepted") { dismiss(); return; }
+    }
+    dismiss();
   };
 
   if (!visible) return null;
 
-  const showInstallBtn = !!deferredPrompt;
-  const showIosGuide   = ios && !deferredPrompt;
+  const pct = (countdown / AUTO_DISMISS_SEC) * 100;
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        bottom: 60,
-        left: 0,
-        right: 0,
-        zIndex: 9999,
-        background: "#fff",
-        borderTop: "1px solid #e4e6eb",
-        boxShadow: "0 -2px 12px rgba(0,0,0,0.10)",
-        display: "flex",
-        alignItems: "center",
-        gap: 10,
-        padding: "10px 14px",
-        fontFamily: "Inter, sans-serif",
-      }}
-    >
-      {/* Icône BP */}
-      <div
-        style={{
-          width: 42,
-          height: 42,
-          borderRadius: 10,
-          background: "#1877F2",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexShrink: 0,
-          boxShadow: "0 2px 6px rgba(24,119,242,0.35)",
-        }}
-      >
-        <span
-          style={{
-            color: "#fff",
-            fontWeight: 900,
-            fontSize: 15,
-            letterSpacing: -0.5,
-          }}
-        >
-          BP
-        </span>
+    <div style={{
+      position: "fixed", bottom: 60, left: 0, right: 0, zIndex: 9999,
+      background: "#fff",
+      borderTop: "1px solid #e4e6eb",
+      boxShadow: "0 -3px 16px rgba(0,0,0,0.13)",
+      fontFamily: "Inter, sans-serif",
+    }}>
+      {/* Countdown progress bar */}
+      <div style={{ height: 3, background: "#e4e6eb", position: "relative" }}>
+        <div style={{
+          position: "absolute", left: 0, top: 0, bottom: 0,
+          width: `${pct}%`,
+          background: "linear-gradient(90deg,#16C24A,#0aa83a)",
+          transition: "width 1s linear",
+          borderRadius: "0 2px 2px 0",
+        }} />
       </div>
 
-      {/* Texte */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        {showIosGuide ? (
-          <span
-            style={{ fontSize: 12.5, color: "#1c1e21", lineHeight: 1.4 }}
-          >
-            Appuyez sur <span style={{ fontSize: 15 }}>⬆️</span> puis{" "}
-            <strong>« Ajouter à l'écran d'accueil »</strong>
-          </span>
-        ) : (
-          <span
-            style={{ fontSize: 12.5, color: "#1c1e21", lineHeight: 1.4 }}
-          >
-            Profitez de la meilleure expérience dans l'application
-          </span>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px" }}>
+        {/* BP icon */}
+        <div style={{
+          width: 44, height: 44, borderRadius: 11, flexShrink: 0,
+          background: "linear-gradient(135deg,#16C24A,#0aa83a)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          boxShadow: "0 2px 8px rgba(22,194,74,0.4)",
+        }}>
+          <span style={{ color: "#fff", fontWeight: 900, fontSize: 13, letterSpacing: -0.5, fontStyle: "italic" }}>BP</span>
+        </div>
+
+        {/* Text */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontWeight: 700, fontSize: 13, color: "#1c1e21", lineHeight: 1.3 }}>
+            Brute Pawa — Application
+          </div>
+          {ios && !deferredPrompt ? (
+            <div style={{ fontSize: 11.5, color: "#606770", marginTop: 2, lineHeight: 1.4 }}>
+              Appuyez sur <strong style={{ fontSize: 13 }}>⬆</strong> → <strong>Ajouter à l'écran d'accueil</strong>
+            </div>
+          ) : (
+            <div style={{ fontSize: 11.5, color: "#606770", marginTop: 2, lineHeight: 1.4 }}>
+              Profitez de la meilleure expérience dans l'application
+            </div>
+          )}
+        </div>
+
+        {/* Install button */}
+        {deferredPrompt ? (
+          <button onClick={install} style={{
+            background: "#16C24A", color: "#fff", border: "none",
+            borderRadius: 7, padding: "8px 14px",
+            fontWeight: 700, fontSize: 13.5, cursor: "pointer",
+            flexShrink: 0, whiteSpace: "nowrap",
+            boxShadow: "0 2px 8px rgba(22,194,74,0.4)",
+          }}>
+            Installer
+          </button>
+        ) : !ios && (
+          <button onClick={dismiss} style={{
+            background: "#16C24A", color: "#fff", border: "none",
+            borderRadius: 7, padding: "8px 14px",
+            fontWeight: 700, fontSize: 13.5, cursor: "pointer",
+            flexShrink: 0, whiteSpace: "nowrap",
+          }}>
+            Ouvrir
+          </button>
         )}
+
+        {/* Close × + countdown */}
+        <button onClick={dismiss} aria-label="Fermer" style={{
+          background: "rgba(0,0,0,0.07)", border: "none",
+          borderRadius: "50%", width: 28, height: 28,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          cursor: "pointer", flexShrink: 0, position: "relative",
+        }}>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#606770" strokeWidth="2.5" strokeLinecap="round">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+          {/* Tiny countdown number */}
+          <span style={{
+            position: "absolute", top: -8, right: -6,
+            background: "#16C24A", color: "#fff",
+            borderRadius: "50%", width: 16, height: 16, fontSize: 9, fontWeight: 800,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            lineHeight: 1,
+          }}>{countdown}</span>
+        </button>
       </div>
-
-      {/* Bouton d'action */}
-      {showInstallBtn && (
-        <button
-          onClick={install}
-          style={{
-            background: "#1877F2",
-            color: "#fff",
-            border: "none",
-            borderRadius: 6,
-            padding: "8px 16px",
-            fontWeight: 700,
-            fontSize: 14,
-            cursor: "pointer",
-            flexShrink: 0,
-            whiteSpace: "nowrap",
-          }}
-        >
-          Installer
-        </button>
-      )}
-      {showIosGuide && (
-        <button
-          onClick={dismiss}
-          style={{
-            background: "#e4e6eb",
-            color: "#1c1e21",
-            border: "none",
-            borderRadius: 6,
-            padding: "8px 14px",
-            fontWeight: 700,
-            fontSize: 14,
-            cursor: "pointer",
-            flexShrink: 0,
-          }}
-        >
-          OK
-        </button>
-      )}
-      {!showInstallBtn && !showIosGuide && (
-        /* Desktop / autre navigateur sans prompt natif */
-        <button
-          onClick={dismiss}
-          style={{
-            background: "#1877F2",
-            color: "#fff",
-            border: "none",
-            borderRadius: 6,
-            padding: "8px 16px",
-            fontWeight: 700,
-            fontSize: 14,
-            cursor: "pointer",
-            flexShrink: 0,
-            whiteSpace: "nowrap",
-          }}
-        >
-          Installer
-        </button>
-      )}
-
-      {/* Fermer */}
-      <button
-        onClick={dismiss}
-        aria-label="Fermer"
-        style={{
-          background: "none",
-          border: "none",
-          color: "#606770",
-          fontSize: 18,
-          cursor: "pointer",
-          padding: "4px 2px",
-          flexShrink: 0,
-          lineHeight: 1,
-        }}
-      >
-        ✕
-      </button>
     </div>
   );
 }

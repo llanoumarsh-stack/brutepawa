@@ -8,8 +8,10 @@ document.addEventListener("selectstart", e => e.preventDefault());
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
+    const base = import.meta.env.BASE_URL ?? "/";
+    const swUrl = base.endsWith("/") ? `${base}sw.js` : `${base}/sw.js`;
     navigator.serviceWorker
-      .register("/sw.js")
+      .register(swUrl, { scope: base })
       .then((reg) => {
         console.log("[SW] Enregistré — scope:", reg.scope);
       })
