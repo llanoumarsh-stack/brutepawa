@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
-import { apiGetConversations, apiGetMessages, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo } from "../lib/api";
+import { apiGetConversations, apiGetMessages, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiDeleteConversation, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo } from "../lib/api";
 import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignaling";
 
 void ({} as ApiChatGroup);
@@ -383,16 +383,20 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     Promise.all([apiGetConversations(), apiGetUsers()])
       .then(([convs, users]) => {
         setAllUsers(users);
-        const normalized: NormConv[] = convs.map(c => {
-          const u    = users.find(u => u.id === c.userId);
-          const name = u ? `${u.firstName} ${u.lastName}` : `Utilisateur #${c.userId}`;
-          return {
-            id: c.userId,
-            user: { name, initials: mkInitials(name), color: CONV_COLORS[c.userId % CONV_COLORS.length] },
-            lastMessage: c.lastMessage, unread: c.unreadCount,
-            time: new Date(c.updatedAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }),
-          };
-        });
+        const hiddenKey = "bp_hidden_convs";
+        const hidden: number[] = JSON.parse(localStorage.getItem(hiddenKey) ?? "[]");
+        const normalized: NormConv[] = convs
+          .filter(c => !hidden.includes(c.userId))
+          .map(c => {
+            const u    = users.find(u => u.id === c.userId);
+            const name = u ? `${u.firstName} ${u.lastName}` : `Utilisateur #${c.userId}`;
+            return {
+              id: c.userId,
+              user: { name, initials: mkInitials(name), color: CONV_COLORS[c.userId % CONV_COLORS.length] },
+              lastMessage: c.lastMessage, unread: c.unreadCount,
+              time: new Date(c.updatedAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }),
+            };
+          });
         if (initialUserId && !normalized.find(c => c.id === initialUserId)) {
           const u = users.find(u => u.id === initialUserId);
           if (u) {
@@ -2202,8 +2206,15 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   style={{ flex:1, background:"#fff", border:"1.5px solid #E2E8F0", borderRadius:50, padding:"13px", fontSize:15, fontWeight:700, color:"#16C24A", cursor:"pointer" }}>
                   Annuler
                 </button>
-                <button onClick={() => {
+                <button onClick={async () => {
                   const id = activeConv!;
+                  if (deleteForAll) {
+                    await apiDeleteConversation(id).catch(() => {});
+                  } else {
+                    const hiddenKey = "bp_hidden_convs";
+                    const hidden: number[] = JSON.parse(localStorage.getItem(hiddenKey) ?? "[]");
+                    if (!hidden.includes(id)) localStorage.setItem(hiddenKey, JSON.stringify([...hidden, id]));
+                  }
                   setMessages(prev => { const n = { ...prev }; delete n[id]; return n; });
                   setConvList(prev => prev.filter(c => c.id !== id));
                   setActiveConv(null);

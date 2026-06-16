@@ -326,6 +326,20 @@ router.get("/messages/:userId", requireAuth, async (req, res): Promise<void> => 
   res.json(msgs);
 });
 
+router.delete("/messages/:userId", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const otherId = Number(req.params.userId);
+  if (isNaN(otherId)) { res.status(400).json({ error: "userId invalide" }); return; }
+
+  await db.delete(messagesTable).where(
+    or(
+      and(eq(messagesTable.fromUserId, me), eq(messagesTable.toUserId, otherId)),
+      and(eq(messagesTable.fromUserId, otherId), eq(messagesTable.toUserId, me)),
+    )
+  );
+  res.status(204).end();
+});
+
 // ─── Stories ────────────────────────────────────────────────────────────────
 
 router.get("/stories", requireAuth, async (req, res): Promise<void> => {

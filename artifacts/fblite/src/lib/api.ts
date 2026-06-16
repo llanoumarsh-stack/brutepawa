@@ -692,6 +692,10 @@ export async function apiGetMessages(userId: number): Promise<ApiChatMessage[]> 
   return res.json() as Promise<ApiChatMessage[]>;
 }
 
+export async function apiDeleteConversation(userId: number): Promise<void> {
+  await apiFetch(`/messages/${userId}`, { method: "DELETE" });
+}
+
 export async function apiSendMessage(toUserId: number, content: string): Promise<ApiChatMessage> {
   const res = await apiFetch("/messages", {
     method: "POST",
