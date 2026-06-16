@@ -20,14 +20,19 @@ const CONV_THEMES = {
 type ThemeKey = keyof typeof CONV_THEMES;
 
 const CONV_WALLPAPERS = [
-  { key:"none",    gradient:"#F0FDF4",                                              label:"Aucun" },
-  { key:"sunset",  gradient:"linear-gradient(135deg,#FF6B6B 0%,#FFE66D 100%)",     label:"Coucher" },
-  { key:"night",   gradient:"linear-gradient(135deg,#0F0C29 0%,#302B63 50%,#24243E 100%)", label:"Nuit" },
-  { key:"nature",  gradient:"linear-gradient(135deg,#134E5E 0%,#71B280 100%)",     label:"Nature" },
-  { key:"ocean",   gradient:"linear-gradient(135deg,#2193b0 0%,#6dd5ed 100%)",     label:"Océan" },
-  { key:"dark",    gradient:"linear-gradient(135deg,#1a1a2e 0%,#0f3460 100%)",     label:"Sombre" },
+  { key:"none", filename:null,      label:"Aucun"             },
+  { key:"wp1",  filename:"wp1.jpg", label:"Coucher de soleil" },
+  { key:"wp2",  filename:"wp2.jpg", label:"Plage tropicale"   },
+  { key:"wp3",  filename:"wp3.jpg", label:"Voie lactée"       },
+  { key:"wp4",  filename:"wp4.jpg", label:"Aube rose"         },
+  { key:"wp5",  filename:"wp5.jpg", label:"Lac nocturne"      },
 ] as const;
 type WallpaperKey = typeof CONV_WALLPAPERS[number]["key"];
+const wpUrl = (key: WallpaperKey): string | null => {
+  const wp = CONV_WALLPAPERS.find(w => w.key === key);
+  if (!wp || !wp.filename) return null;
+  return `${import.meta.env.BASE_URL}wallpapers/${wp.filename}`;
+};
 
 function presenceLabel(online: boolean, lastSeenAt: string | null): string {
   if (online) return "En ligne";
@@ -1547,7 +1552,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         )}
 
         {/* ── MESSAGES AREA ── */}
-        <div style={{ flex:1, overflowY:"auto", padding:"8px 10px 4px", display:"flex", flexDirection:"column", gap:2, background: convWpKey !== "none" ? (CONV_WALLPAPERS.find(w=>w.key===convWpKey)?.gradient ?? CONV_THEMES[convThemeKey].bg) : (convWallpaper ?? CONV_THEMES[convThemeKey].bg) }}>
+        <div style={{ flex:1, overflowY:"auto", padding:"8px 10px 4px", display:"flex", flexDirection:"column", gap:2,
+          ...(convWpKey !== "none" && wpUrl(convWpKey) ? {
+            backgroundImage:`url(${wpUrl(convWpKey)})`, backgroundSize:"cover", backgroundPosition:"center", backgroundAttachment:"local"
+          } : { background: convWallpaper ?? CONV_THEMES[convThemeKey].bg }) }}>
           <div style={{ textAlign:"center", fontSize:11.5, color:"#888", background:"rgba(0,0,0,0.05)", borderRadius:20, padding:"3px 14px", margin:"4px auto 10px", display:"inline-block", alignSelf:"center" }}>Aujourd'hui</div>
           {currentMessages.map((msg, i) => {
             const isLast     = i === currentMessages.length - 1 || currentMessages[i + 1]?.mine !== msg.mine;
@@ -1990,7 +1998,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               </div>
 
               {/* ── Live preview strip ── */}
-              <div style={{ margin:"8px 16px 0", borderRadius:16, overflow:"hidden", border:"1px solid #E2E8F0", background: CONV_THEMES[pendingThemeKey].bg }}>
+              <div style={{ margin:"8px 16px 0", borderRadius:16, overflow:"hidden", border:"1px solid #E2E8F0",
+                ...(pendingWpKey !== "none" && wpUrl(pendingWpKey) ? { backgroundImage:`url(${wpUrl(pendingWpKey)})`, backgroundSize:"cover", backgroundPosition:"center" } : { background: CONV_THEMES[pendingThemeKey].bg }) }}>
                 <div style={{ padding:"10px 14px", display:"flex", flexDirection:"column", gap:6 }}>
                   {/* Received */}
                   <div style={{ display:"flex", justifyContent:"flex-start" }}>
@@ -2055,14 +2064,21 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 <div style={{ display:"flex", gap:8, overflowX:"auto", scrollbarWidth:"none", paddingBottom:4 }}>
                   {CONV_WALLPAPERS.map(w => {
                     const sel = pendingWpKey === w.key;
+                    const url = wpUrl(w.key as WallpaperKey);
                     return (
-                      <div key={w.key} onClick={() => setPendingWpKey(w.key)}
-                        style={{ flexShrink:0, width:64, cursor:"pointer", borderRadius:12, overflow:"hidden", border: sel ? "2.5px solid #16C24A" : "2px solid #E2E8F0", position:"relative", boxShadow: sel ? "0 0 0 3px rgba(22,194,74,0.18)" : "none", transition:"all 0.15s" }}>
-                        <div style={{ width:"100%", height:64, background:w.gradient }} />
-                        <div style={{ background:"#fff", padding:"3px 2px 4px", textAlign:"center", fontSize:9.5, fontWeight: sel ? 700 : 500, color: sel ? "#16C24A" : "#475569" }}>{w.label}</div>
+                      <div key={w.key} onClick={() => setPendingWpKey(w.key as WallpaperKey)}
+                        style={{ flexShrink:0, width:72, cursor:"pointer", borderRadius:14, overflow:"hidden", border: sel ? "2.5px solid #16C24A" : "2px solid #E2E8F0", position:"relative", boxShadow: sel ? "0 0 0 3px rgba(22,194,74,0.18)" : "0 2px 8px rgba(0,0,0,0.10)", transition:"all 0.15s" }}>
+                        {url ? (
+                          <img src={url} alt={w.label} style={{ width:"100%", height:72, objectFit:"cover", display:"block" }} />
+                        ) : (
+                          <div style={{ width:"100%", height:72, background:"#F0FDF4", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#16C24A" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                          </div>
+                        )}
+                        <div style={{ background:"#fff", padding:"3px 2px 5px", textAlign:"center", fontSize:9.5, fontWeight: sel ? 700 : 500, color: sel ? "#16C24A" : "#475569", lineHeight:1.2 }}>{w.label}</div>
                         {sel && (
-                          <div style={{ position:"absolute", top:4, right:4, width:16, height:16, borderRadius:"50%", background:"#16C24A", display:"flex", alignItems:"center", justifyContent:"center" }}>
-                            <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <div style={{ position:"absolute", top:4, right:4, width:18, height:18, borderRadius:"50%", background:"#16C24A", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 1px 4px rgba(0,0,0,0.3)" }}>
+                            <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                               <polyline points="20 6 9 17 4 12"/>
                             </svg>
                           </div>
