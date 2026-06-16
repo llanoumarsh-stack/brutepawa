@@ -90,6 +90,14 @@ const CONV_COLORS = ["#1877F2","#E91E8C","#7B1FA2","#F57C00","#388E3C","#00838F"
 const mkInitials = (name: string) =>
   name.split(" ").filter(Boolean).map(w => w[0]).join("").slice(0, 2).toUpperCase() || "?";
 
+function voiceWaveform(seed: number, bars = 30): number[] {
+  return Array.from({ length: bars }, (_, i) => {
+    const v = Math.abs(Math.sin(seed * 0.061 + i * 0.73)) * 0.55
+            + Math.abs(Math.sin(i * 1.27 + seed * 0.13)) * 0.45;
+    return Math.max(0.18, Math.min(1, v));
+  });
+}
+
 type Overlay = "none" | "info" | "attach";
 
 export default function Messages({ initialUserId, initialGroupId }: { initialUserId?: number; initialGroupId?: number }) {
@@ -162,6 +170,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
   const [isRecording, setIsRecording]   = useState(false);
   const [recSeconds, setRecSeconds]     = useState(0);
+  const [playingAudioId, setPlayingAudioId] = useState<number|null>(null);
+  const [audioProgress, setAudioProgress]   = useState(0);
+  const [voiceSpeed, setVoiceSpeed]         = useState<1|1.5|2>(1);
   const [vpHeight, setVpHeight]         = useState<number | null>(null);
   const [vpOffset, setVpOffset]         = useState(0);
   const [peerTyping, setPeerTyping]     = useState(false);
@@ -187,6 +198,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const groupBottomRef    = useRef<HTMLDivElement>(null);
   const bottomRef         = useRef<HTMLDivElement>(null);
   const remoteAudioRef    = useRef<HTMLAudioElement>(null);
+  const voicePlayerRef    = useRef<HTMLAudioElement>(null);
   const localVideoRef     = useRef<HTMLVideoElement>(null);
   const remoteVideoRef    = useRef<HTMLVideoElement>(null);
   const activeConvRef     = useRef<number | null>(null);
@@ -591,6 +603,29 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     } catch { /* silent */ } finally { setWizardCreating(false); }
   };
 
+  const toggleVoice = (msgId: number, src: string) => {
+    const el = voicePlayerRef.current;
+    if (!el) return;
+    if (playingAudioId === msgId) {
+      el.pause();
+      setPlayingAudioId(null);
+    } else {
+      el.pause();
+      el.src = src;
+      el.playbackRate = voiceSpeed;
+      el.currentTime = 0;
+      setAudioProgress(0);
+      el.play().catch(() => {});
+      setPlayingAudioId(msgId);
+    }
+  };
+
+  const cycleVoiceSpeed = () => {
+    const next: 1|1.5|2 = voiceSpeed === 1 ? 1.5 : voiceSpeed === 1.5 ? 2 : 1;
+    setVoiceSpeed(next);
+    if (voicePlayerRef.current) voicePlayerRef.current.playbackRate = next;
+  };
+
   const startLongPress = (msgId: number) => {
     if (selectionMode) { toggleSelect(msgId); return; }
     longPressTimer.current = setTimeout(() => {
@@ -894,6 +929,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           .tg3-btn-on{background:rgba(255,255,255,.9)!important}
         `}</style>
         <audio ref={remoteAudioRef} autoPlay playsInline style={{ display: "none" }} />
+        <audio ref={voicePlayerRef} style={{ display:"none" }}
+          onTimeUpdate={e => { const el = e.currentTarget; if (el.duration) setAudioProgress(el.currentTime / el.duration); }}
+          onEnded={() => { setPlayingAudioId(null); setAudioProgress(0); }} />
 
         {isVideo ? (
           /* ── VIDEO CALL — BrutePawa 2026 Premium ── */
@@ -1632,6 +1670,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             const isHL       = showChatSearch && chatSearchQ.trim() && msg.text.toLowerCase().includes(chatSearchQ.toLowerCase());
             const isAct      = msg.id === highlightId;
             const isSelected = selectionMode && selectedMsgs.has(msg.id);
+            const isAudio    = msg.attachment?.type === "audio";
+            const isVoicePlaying = isAudio && playingAudioId === msg.id;
+            const wfBars     = isAudio ? voiceWaveform(msg.id) : [];
+            const playedBars = isAudio ? Math.floor(wfBars.length * audioProgress) : 0;
             return (
               <div key={msg.id}
                 style={{ display:"flex", justifyContent: msg.mine ? "flex-end" : "flex-start", alignItems:"flex-end", gap:6, marginTop:2,
@@ -1664,11 +1706,86 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 <div style={{ maxWidth:"72%" }}>
                   {msg.attachment && (
                     msg.attachment.type === "audio" ? (
-                      <div style={{ background: msg.mine ? "#0073e6" : "#E4E6EB", borderRadius:18, padding:"8px 12px", marginBottom:2, display:"flex", alignItems:"center", gap:8, minWidth:180 }}>
-                        <span style={{ fontSize:20 }}>🎙️</span>
-                        <div style={{ flex:1, display:"flex", flexDirection:"column", gap:4 }}>
-                          <audio controls src={msg.attachment.label} style={{ width:"100%", height:28, outline:"none" }} />
-                          {msg.attachment.extra && <span style={{ fontSize:10, color: msg.mine ? "rgba(255,255,255,0.7)" : "#888" }}>{msg.attachment.extra}</span>}
+                      /* ── PREMIUM VOICE MESSAGE BUBBLE ── */
+                      <div style={{
+                        background: msg.mine ? "#16C24A" : "#fff",
+                        borderRadius: msg.mine ? "18px 4px 18px 18px" : "4px 18px 18px 18px",
+                        padding:"12px 13px 10px",
+                        minWidth:210, maxWidth:270,
+                        boxShadow: msg.mine
+                          ? "0 4px 18px rgba(22,194,74,0.38)"
+                          : "0 2px 14px rgba(0,0,0,0.10)",
+                        marginBottom:2,
+                      }}>
+                        {/* Row: play btn + waveform + speed+avatar(mine) */}
+                        <div style={{ display:"flex", alignItems:"center", gap:9 }}>
+                          {/* Play / Pause */}
+                          <button
+                            onClick={() => toggleVoice(msg.id, msg.attachment!.label)}
+                            style={{
+                              width:42, height:42, borderRadius:"50%", flexShrink:0, border:"none", cursor:"pointer",
+                              background: msg.mine ? "rgba(255,255,255,0.28)" : "#16C24A",
+                              display:"flex", alignItems:"center", justifyContent:"center",
+                              boxShadow: msg.mine ? "none" : "0 3px 12px rgba(22,194,74,0.42)",
+                              transition:"transform 0.12s",
+                            }}>
+                            {isVoicePlaying
+                              ? <svg viewBox="0 0 24 24" width="17" height="17" fill="#fff"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+                              : <svg viewBox="0 0 24 24" width="17" height="17" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+                            }
+                          </button>
+
+                          {/* Waveform bars */}
+                          <div style={{ flex:1, display:"flex", alignItems:"center", gap:2, height:38 }}>
+                            {wfBars.map((h, bi) => (
+                              <div key={bi} style={{
+                                flex:1, borderRadius:2,
+                                height:`${Math.round(h * 100)}%`,
+                                background: msg.mine
+                                  ? (bi < playedBars ? "rgba(255,255,255,0.97)" : "rgba(255,255,255,0.38)")
+                                  : (bi < playedBars ? "#16C24A" : "#CBD5E1"),
+                                transition:"background 0.08s",
+                              }}/>
+                            ))}
+                          </div>
+
+                          {/* Speed badge + mini avatar (sent only) */}
+                          {msg.mine && (
+                            <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:5, flexShrink:0 }}>
+                              <button onClick={cycleVoiceSpeed}
+                                style={{ background:"rgba(255,255,255,0.22)", border:"none", borderRadius:7, padding:"2px 6px", cursor:"pointer", color:"#fff", fontSize:11, fontWeight:800 }}>
+                                {voiceSpeed}x
+                              </button>
+                              <div style={{ width:26, height:26, borderRadius:"50%", background:"rgba(255,255,255,0.32)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, fontWeight:800, color:"#fff" }}>
+                                {activeConvRef.current ? "ME" : "ME"}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Footer: duration | timestamp + ticks */}
+                        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:7 }}>
+                          <span style={{ fontSize:11, fontWeight:700, color: msg.mine ? "rgba(255,255,255,0.75)" : "#94A3B8", fontVariantNumeric:"tabular-nums" }}>
+                            {isVoicePlaying
+                              ? (() => {
+                                  const el = voicePlayerRef.current;
+                                  if (!el || !el.duration) return msg.attachment!.extra || "0:00";
+                                  const s = Math.floor(el.currentTime);
+                                  return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,"0")}`;
+                                })()
+                              : (msg.attachment!.extra || "0:00")
+                            }
+                          </span>
+                          <div style={{ display:"flex", alignItems:"center", gap:4 }}>
+                            <span style={{ fontSize:11, color: msg.mine ? "rgba(255,255,255,0.7)" : "#94A3B8" }}>{msg.time}</span>
+                            {msg.mine && (
+                              <svg viewBox="0 0 20 12" width="18" height="10"
+                                fill={msg.status==="read" ? "#A5F3C0" : "rgba(255,255,255,0.6)"}>
+                                <path d="M1 6l4 4 8-8" stroke={msg.status==="read" ? "#A5F3C0" : "rgba(255,255,255,0.6)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                                <path d="M7 6l4 4 8-8" stroke={msg.status==="read" ? "#A5F3C0" : "rgba(255,255,255,0.6)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                              </svg>
+                            )}
+                          </div>
                         </div>
                       </div>
                     ) : (
@@ -1700,6 +1817,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       <div style={{ fontWeight:600, fontSize:13, wordBreak:"break-all" }}>{msg.attachment.extra ?? "Document"}</div>
                     </a>
                   )}
+                  {!isAudio && (
                   <div className={msg.mine ? "fbl-msg-mine" : "fbl-msg-theirs"}
                     style={{ padding:"8px 12px 5px", fontSize:14.5, lineHeight:1.45, wordBreak:"break-word",
                       background: msg.mine ? CONV_THEMES[convThemeKey].mine : CONV_THEMES[convThemeKey].theirs,
@@ -1711,6 +1829,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       {msg.mine && <span style={{ fontSize:11, color: msg.status === "read" ? "#4FC3F7" : "rgba(255,255,255,0.72)" }}>{msg.status === "read" ? "✓✓" : "✓"}</span>}
                     </div>
                   </div>
+                  )}
                 </div>
               </div>
             );
