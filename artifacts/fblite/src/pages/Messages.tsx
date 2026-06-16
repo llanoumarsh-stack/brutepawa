@@ -92,6 +92,28 @@ const CONV_COLORS = ["#1877F2","#E91E8C","#7B1FA2","#F57C00","#388E3C","#00838F"
 const mkInitials = (name: string) =>
   name.split(" ").filter(Boolean).map(w => w[0]).join("").slice(0, 2).toUpperCase() || "?";
 
+const URL_RE = /https?:\/\/[^\s<>"]+[^\s<>".,;:!?)/]/g;
+function renderText(text: string, textColor: string) {
+  const parts: React.ReactNode[] = [];
+  let last = 0;
+  let m: RegExpExecArray | null;
+  URL_RE.lastIndex = 0;
+  while ((m = URL_RE.exec(text)) !== null) {
+    if (m.index > last) parts.push(text.slice(last, m.index));
+    const url = m[0];
+    parts.push(
+      <a key={m.index} href={url} target="_blank" rel="noreferrer noopener"
+        style={{ color: textColor === "#fff" || textColor.startsWith("rgba(255") ? "#A5F3C0" : "#1877F2", textDecoration:"underline", wordBreak:"break-all" }}
+        onClick={e => e.stopPropagation()}>
+        {url}
+      </a>
+    );
+    last = m.index + url.length;
+  }
+  if (last < text.length) parts.push(text.slice(last));
+  return parts.length === 1 && typeof parts[0] === "string" ? text : <>{parts}</>;
+}
+
 function fmtConvPreview(raw: string): { text: string; isAudio: boolean } {
   if (!raw) return { text: "Démarrer une conversation", isAudio: false };
   if (raw.startsWith("__audio__:")) {
@@ -1881,7 +1903,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     style={{ padding:"8px 12px 5px", fontSize:14.5, lineHeight:1.45, wordBreak:"break-word",
                       background: msg.mine ? CONV_THEMES[convThemeKey].mine : CONV_THEMES[convThemeKey].theirs,
                       color: msg.mine ? CONV_THEMES[convThemeKey].mineText : CONV_THEMES[convThemeKey].theirsText }}>
-                    {msg.text}
+                    {renderText(msg.text, msg.mine ? CONV_THEMES[convThemeKey].mineText : CONV_THEMES[convThemeKey].theirsText)}
                     <div style={{ fontSize:10, marginTop:2, textAlign:"right", display:"flex", justifyContent:"flex-end", alignItems:"center", gap:3,
                       color: msg.mine ? "rgba(255,255,255,0.72)" : "#888" }}>
                       {msg.time}
@@ -2900,6 +2922,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
   return (
     <>
+    {/* Hidden voice player — lives here so it renders always, not only during calls */}
+    <audio ref={voicePlayerRef} style={{ display:"none" }}
+      onTimeUpdate={e => { const el = e.currentTarget; if (el.duration) setAudioProgress(el.currentTime / el.duration); }}
+      onEnded={() => { setPlayingAudioId(null); setAudioProgress(0); }} />
     <style>{`
       .fbl-row{transition:background .1s}.fbl-row:active{background:#f2f3f5!important}
       @keyframes fbl-fab-in{from{opacity:0;transform:scale(.7) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
