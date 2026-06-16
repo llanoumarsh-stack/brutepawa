@@ -326,6 +326,21 @@ router.get("/messages/:userId", requireAuth, async (req, res): Promise<void> => 
   res.json(msgs);
 });
 
+router.delete("/messages/msg/:messageId", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const msgId = Number(req.params.messageId);
+  if (isNaN(msgId)) { res.status(400).json({ error: "messageId invalide" }); return; }
+
+  const [msg] = await db.select().from(messagesTable).where(eq(messagesTable.id, msgId));
+  if (!msg) { res.status(404).json({ error: "Message non trouvé" }); return; }
+  if (msg.fromUserId !== me && msg.toUserId !== me) {
+    res.status(403).json({ error: "Non autorisé" }); return;
+  }
+
+  await db.delete(messagesTable).where(eq(messagesTable.id, msgId));
+  res.status(204).end();
+});
+
 router.delete("/messages/:userId", requireAuth, async (req, res): Promise<void> => {
   const me = req.userId!;
   const otherId = Number(req.params.userId);

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
-import { apiGetConversations, apiGetMessages, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadVoice, apiDeleteConversation, apiGetLinkPreview, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview } from "../lib/api";
+import { apiGetConversations, apiGetMessages, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadVoice, apiDeleteConversation, apiDeleteMessage, apiGetLinkPreview, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview } from "../lib/api";
 import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignaling";
 
 void ({} as ApiChatGroup);
@@ -92,7 +92,12 @@ const CONV_COLORS = ["#1877F2","#E91E8C","#7B1FA2","#F57C00","#388E3C","#00838F"
 const mkInitials = (name: string) =>
   name.split(" ").filter(Boolean).map(w => w[0]).join("").slice(0, 2).toUpperCase() || "?";
 
-const URL_RE = /https?:\/\/[^\s<>"]+[^\s<>".,;:!?)/]/g;
+// Matches https?://... OR bare domains like brutepawa.com, www.google.com
+const URL_RE = /(?:https?:\/\/[^\s<>"]+[^\s<>".,;:!?)/])|(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+(?:com|org|net|io|app|ai|co|fr|de|uk|it|es|biz|info|gg|tv|me|ly|africa|ci|sn|ng|cm|bf|ml|gh|rw|ke|za|et|tn|ma|dz|eg|br|ca|au|jp|ru|in)(?:\/[^\s<>".,;:!?)]*)?)(?=\s|$|[.,;:!?)])/g;
+
+function normalizeUrl(raw: string): string {
+  return /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+}
 
 function MsgStatus({ status, dark }: { status?: string; dark: boolean }) {
   const color = dark ? "rgba(255,255,255,0.65)" : "#9CA3AF";
@@ -128,15 +133,16 @@ function renderText(text: string, textColor: string) {
   URL_RE.lastIndex = 0;
   while ((m = URL_RE.exec(text)) !== null) {
     if (m.index > last) parts.push(text.slice(last, m.index));
-    const url = m[0];
+    const raw = m[0];
+    const href = normalizeUrl(raw);
     parts.push(
-      <a key={m.index} href={url} target="_blank" rel="noreferrer noopener"
+      <a key={m.index} href={href} target="_blank" rel="noreferrer noopener"
         style={{ color: textColor === "#fff" || textColor.startsWith("rgba(255") ? "#A5F3C0" : "#1877F2", textDecoration:"underline", wordBreak:"break-all" }}
         onClick={e => e.stopPropagation()}>
-        {url}
+        {raw}
       </a>
     );
-    last = m.index + url.length;
+    last = m.index + raw.length;
   }
   if (last < text.length) parts.push(text.slice(last));
   return parts.length === 1 && typeof parts[0] === "string" ? text : <>{parts}</>;
@@ -283,6 +289,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const audioChunksRef    = useRef<Blob[]>([]);
   const recTimerRef       = useRef<ReturnType<typeof setInterval> | null>(null);
   const recSecondsRef     = useRef(0);
+  const recSecsAtStopRef  = useRef(0);
+  const voiceAudiosRef    = useRef<Map<number, HTMLAudioElement>>(new Map());
   const linkPreviewCacheRef = useRef<Map<string, LinkPreview | "loading" | null>>(new Map());
   const [linkPreviews, setLinkPreviews] = useState<Record<string, LinkPreview | null>>({});
 
@@ -328,7 +336,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       URL_RE.lastIndex = 0;
       const match = URL_RE.exec(m.text);
       if (!match) continue;
-      const url = match[0];
+      const raw = match[0];
+      const url = normalizeUrl(raw);
       if (seen.has(url)) continue;
       seen.add(url);
       if (linkPreviewCacheRef.current.has(url)) continue;
@@ -421,8 +430,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         stream.getTracks().forEach(t => t.stop());
         if (recCancelledRef.current) { recCancelledRef.current = false; return; }
         const blob  = new Blob(audioChunksRef.current, { type: "audio/webm" });
-        const secs  = recSecondsRef.current;
-        if (secs < 1) return;
+        const secs  = recSecsAtStopRef.current || recSecondsRef.current || 1;
+        if (blob.size < 1000) return;
         const convId = activeConvRef.current;
         if (!convId) return;
         const mins = Math.floor(secs / 60);
@@ -468,6 +477,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   };
 
   const stopVoice = () => {
+    recSecsAtStopRef.current = recSecondsRef.current;  // capture BEFORE clearing
     if (recTimerRef.current) { clearInterval(recTimerRef.current); recTimerRef.current = null; }
     mediaRecorderRef.current?.stop();
     mediaRecorderRef.current = null;
@@ -794,26 +804,53 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   };
 
   const toggleVoice = (msgId: number, src: string) => {
-    const el = voicePlayerRef.current;
-    if (!el) return;
+    // Pause all other playing audio instances
+    voiceAudiosRef.current.forEach((a, id) => {
+      if (id !== msgId) { a.pause(); }
+    });
+
     if (playingAudioId === msgId) {
-      el.pause();
+      voiceAudiosRef.current.get(msgId)?.pause();
       setPlayingAudioId(null);
-    } else {
-      el.pause();
-      el.src = src;
-      el.playbackRate = voiceSpeed;
-      el.currentTime = 0;
       setAudioProgress(0);
-      el.play().catch(() => {});
-      setPlayingAudioId(msgId);
+      return;
     }
+
+    let a = voiceAudiosRef.current.get(msgId);
+    if (!a) {
+      a = new Audio(src);
+      a.preload = "metadata";
+      a.crossOrigin = "anonymous";
+      a.ontimeupdate = () => {
+        if (a!.duration) setAudioProgress(a!.currentTime / a!.duration);
+      };
+      a.onended = () => { setPlayingAudioId(null); setAudioProgress(0); };
+      a.onerror = () => {
+        // Retry without crossOrigin (some CDN configs don't support CORS headers)
+        const b = new Audio(src);
+        b.preload = "metadata";
+        b.ontimeupdate = () => { if (b.duration) setAudioProgress(b.currentTime / b.duration); };
+        b.onended = () => { setPlayingAudioId(null); setAudioProgress(0); };
+        voiceAudiosRef.current.set(msgId, b);
+        b.playbackRate = voiceSpeed;
+        b.play().catch(() => {});
+      };
+      voiceAudiosRef.current.set(msgId, a);
+    }
+    a.playbackRate = voiceSpeed;
+    a.currentTime = 0;
+    setAudioProgress(0);
+    a.play().catch(() => {});
+    setPlayingAudioId(msgId);
   };
 
   const cycleVoiceSpeed = () => {
     const next: 1|1.5|2 = voiceSpeed === 1 ? 1.5 : voiceSpeed === 1.5 ? 2 : 1;
     setVoiceSpeed(next);
-    if (voicePlayerRef.current) voicePlayerRef.current.playbackRate = next;
+    if (playingAudioId !== null) {
+      const a = voiceAudiosRef.current.get(playingAudioId);
+      if (a) a.playbackRate = next;
+    }
   };
 
   const startLongPress = (msgId: number) => {
@@ -839,8 +876,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   };
   const confirmDelete = () => {
     if (!activeConv) return;
+    const toDelete = [...selectedMsgs];
     setMessages(prev => ({ ...prev, [activeConv]: (prev[activeConv] ?? []).filter(m => !selectedMsgs.has(m.id)) }));
     exitSelection();
+    // Delete on server so the other user also loses these messages via polling
+    toDelete.forEach(msgId => {
+      apiDeleteMessage(msgId).catch(() => {});
+    });
   };
 
   navigate;
@@ -1119,9 +1161,6 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           .tg3-btn-on{background:rgba(255,255,255,.9)!important}
         `}</style>
         <audio ref={remoteAudioRef} autoPlay playsInline style={{ display: "none" }} />
-        <audio ref={voicePlayerRef} style={{ display:"none" }}
-          onTimeUpdate={e => { const el = e.currentTarget; if (el.duration) setAudioProgress(el.currentTime / el.duration); }}
-          onEnded={() => { setPlayingAudioId(null); setAudioProgress(0); }} />
 
         {isVideo ? (
           /* ── VIDEO CALL — BrutePawa 2026 Premium ── */
@@ -2005,7 +2044,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     /* Detect first URL for link preview */
                     URL_RE.lastIndex = 0;
                     const urlMatch = URL_RE.exec(msg.text || "");
-                    const firstUrl = urlMatch?.[0] ?? null;
+                    const firstUrl = urlMatch ? normalizeUrl(urlMatch[0]) : null;
                     const preview = firstUrl ? linkPreviews[firstUrl] : null;
                     const isMine = msg.mine;
                     const theme = CONV_THEMES[convThemeKey];
