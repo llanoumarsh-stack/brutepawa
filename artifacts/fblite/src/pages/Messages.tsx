@@ -145,6 +145,15 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [pendingThemeKey, setPendingThemeKey] = useState<ThemeKey>("bp-green");
   const [convWpKey, setConvWpKey]             = useState<WallpaperKey>("none");
   const [pendingWpKey, setPendingWpKey]       = useState<WallpaperKey>("none");
+
+  // Persist & restore theme/wallpaper per conversation
+  useEffect(() => {
+    if (!activeConv) return;
+    const savedTheme = localStorage.getItem(`bp_theme_${activeConv}`) as ThemeKey | null;
+    const savedWp    = localStorage.getItem(`bp_wp_${activeConv}`) as WallpaperKey | null;
+    setConvThemeKey(savedTheme && CONV_THEMES[savedTheme] ? savedTheme : "bp-green");
+    setConvWpKey(savedWp && CONV_WALLPAPERS.find(w => w.key === savedWp) ? savedWp : "none");
+  }, [activeConv]);
   const [showChatSearch, setShowChatSearch]   = useState(false);
   const [chatSearchQ, setChatSearchQ]         = useState("");
   const [chatSearchIdx, setChatSearchIdx]     = useState(0);
@@ -2096,6 +2105,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   setConvWpKey(pendingWpKey);
                   setConvWallpaper(null);
                   setShowWallpaper(false);
+                  if (activeConv) {
+                    localStorage.setItem(`bp_theme_${activeConv}`, pendingThemeKey);
+                    localStorage.setItem(`bp_wp_${activeConv}`, pendingWpKey);
+                  }
                 }}
                   style={{ width:"100%", background:"linear-gradient(135deg,#16C24A,#0ea541)", border:"none", borderRadius:99, padding:"15px", fontSize:16, fontWeight:800, color:"#fff", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8, boxShadow:"0 4px 18px rgba(22,194,74,0.45)", letterSpacing:0.2 }}>
                   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
