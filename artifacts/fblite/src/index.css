@@ -1,5 +1,21 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* ── Désactiver la sélection de texte partout sauf dans les champs de saisie ── */
+* {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+input, textarea, [contenteditable="true"], [contenteditable] {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+
 :root {
   --fb-blue: #1877F2;
   --fb-blue-dark: #166FE5;
