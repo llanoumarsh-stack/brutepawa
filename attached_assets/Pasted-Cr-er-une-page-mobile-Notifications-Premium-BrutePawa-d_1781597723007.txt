@@ -1,0 +1,77 @@
+Créer une page mobile Notifications Premium BrutePawa de niveau international, inspirée de LinkedIn, Facebook, Airbnb, Revolut et Wise. Design moderne 2025, fond blanc cassé, accents vert BrutePawa, coins arrondis 24px, ombres douces, glassmorphism léger, interface élégante, professionnelle et haut de gamme.
+
+Header avec bouton retour, titre « Notifications », bouton recherche et bouton « Tout marquer comme lu ».
+
+Sous le header, afficher des catégories modernes avec badges de compteur discrets :
+
+Toutes
+
+Sociales
+
+Marketplace
+
+Emplois
+
+Formations
+
+Portefeuille
+
+
+Ajouter des filtres :
+
+Récentes
+
+Aujourd'hui
+
+Cette semaine
+
+Non lues
+
+
+Liste de notifications premium avec cartes élégantes :
+
+Photo de profil ronde, nom utilisateur en gras, texte descriptif, heure, badge non lu, aperçu du contenu à droite.
+
+Exemples :
+
+Awa Diarra a aimé votre annonce « iPhone 14 Pro Max 256 Go » – il y a 2 minutes.
+
+Moussa Traoré vous a envoyé un message – il y a 15 minutes.
+
+BrutePawa ✓ Votre annonce a été publiée avec succès – il y a 1 heure.
+
+Fatoumata Diallo a commenté votre publication – il y a 2 heures.
+
+Portefeuille : Dépôt de 25 000 FCFA effectué avec succès – il y a 3 heures.
+
+BrutePawa Emplois : Nouvelle offre d'emploi disponible près de vous – il y a 5 heures.
+
+Ajouter une section « Suggestions BrutePawa » avec cartes modernes :
+
+Rejoindre des groupes
+
+Explorer le Marketplace
+
+Suivre une formation
+
+Inviter des amis
+
+
+Ajouter une section « Activités importantes » affichant :
+
+Compte vérifié
+
+Annonce populaire
+
+Dépôt reçu
+
+Nouvelle formation disponible
+
+
+Utiliser uniquement des icônes SVG professionnelles, photos réalistes d'utilisateurs africains, cartes premium, hiérarchie visuelle claire, badges verts subtils, espacement généreux et animations fluides.
+
+Navigation inférieure BrutePawa :
+
+Accueil – Amis – Créer – Messages – Profil
+
+Style général : UI/UX fintech et réseau social premium, qualité Figma haute fidélité, qualité App Store et Google Play, photoréaliste 4K, design international moderne, extrêmement propre et professionnel.
