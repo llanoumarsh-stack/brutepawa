@@ -1,0 +1,195 @@
+🎁 BRUTEPAWA – REFONTE FINALE ULTRA PREMIUM DU SYSTÈME DE CADEAUX LIVE
+
+La nouvelle version est déjà très bonne, mais elle doit être poussée encore plus loin pour atteindre un niveau professionnel comparable aux meilleures plateformes de streaming et de monétisation.
+
+═══════════════════════
+1. CARTES CADEAUX PREMIUM
+═══════════════════════
+
+Améliorer toutes les cartes cadeaux :
+
+- Augmenter légèrement leur taille (+10 à +15%)
+- Coins plus arrondis
+- Ombres plus profondes
+- Effet verre premium (glassmorphism)
+- Reflets lumineux subtils
+- Effet hover/touch avec élévation
+
+Chaque carte doit ressembler à un objet de collection premium.
+
+═══════════════════════
+2. CADEAUX PREMIUM ANIMÉS
+═══════════════════════
+
+Ajouter des effets visuels :
+
+🌹 Rose
+- pétales flottants
+- petites particules rouges
+
+❤️ Cœur
+- pulsation douce
+- mini cœurs flottants
+
+🧸 Ours
+- léger effet rebond
+
+🎂 Gâteau
+- bougies scintillantes
+
+👑 Couronne
+- reflets dorés animés
+
+🏎️ Voiture
+- léger glow rouge
+
+💎 Diamant
+- scintillement permanent
+- rotation lumineuse très lente
+
+✈️ Jet Privé
+- reflets métalliques
+
+🦁 Lion Royal
+- halo doré
+
+🏰 Château Royal
+- lumières des fenêtres animées
+
+═══════════════════════
+3. PRIX DES CADEAUX
+═══════════════════════
+
+Ne plus afficher les prix comme du simple texte.
+
+Créer un badge premium :
+
+🪙 2000 Jetons
+
+avec :
+
+- fond doré
+- contour lumineux
+- ombre légère
+
+Le prix doit être immédiatement visible.
+
+═══════════════════════
+4. CADEAU SÉLECTIONNÉ
+═══════════════════════
+
+Quand un cadeau est sélectionné :
+
+- bordure verte animée
+- glow lumineux
+- légère élévation
+- animation fluide
+
+Le cadeau sélectionné doit ressortir immédiatement.
+
+═══════════════════════
+5. FICHE DU CADEAU
+═══════════════════════
+
+Réduire légèrement la hauteur actuelle.
+
+Afficher :
+
+Image HD du cadeau
+Nom
+Badge Premium si nécessaire
+Prix
+Description
+
+Exemple :
+
+💎 Diamant
+
+Premium
+
+🪙 2000 Jetons
+
+"Cadeau prestigieux permettant de soutenir fortement ce créateur."
+
+═══════════════════════
+6. BOUTON ENVOYER LE CADEAU
+═══════════════════════
+
+Créer un bouton exceptionnel :
+
+- Dégradé vert BrutePawa
+- Effet lumineux
+- Animation de brillance qui traverse le bouton
+- Effet rebond au clic
+- Retour haptique mobile
+
+Texte :
+
+🎁 Envoyer le cadeau
+
+Sous-titre :
+
+🪙 2000 Jetons
+
+═══════════════════════
+7. SOLDE DE JETONS
+═══════════════════════
+
+Améliorer le bloc actuel.
+
+Afficher :
+
+🪙 Solde actuel
+
+0 Jeton
+
+Bouton :
+
+➕ Recharger
+
+Style :
+
+- verre premium
+- bordure verte lumineuse
+- effet glow subtil
+
+═══════════════════════
+8. BARRE DE CATÉGORIES
+═══════════════════════
+
+Améliorer :
+
+🔥 Populaires
+❤️ Amour
+👑 Prestige
+🎉 Fun
+🚀 Premium
+
+Ajouter :
+
+- animation fluide
+- indicateur lumineux
+- défilement horizontal ultra fluide
+
+═══════════════════════
+9. IDENTITÉ BRUTEPAWA
+═══════════════════════
+
+Conserver absolument :
+
+- Vert BrutePawa
+- Noir premium
+- Blanc
+- Doré pour les jetons
+
+Ne pas copier TikTok ou Bigo.
+
+Le design doit être immédiatement identifiable comme BrutePawa.
+
+═══════════════════════
+10. OBJECTIF FINAL
+═══════════════════════
+
+Créer une interface de cadeaux virtuels haut de gamme, moderne, élégante et fluide qui donne envie aux utilisateurs d’acheter des jetons et d’envoyer des cadeaux pendant les vidéos et les lives.
+
+Le résultat final doit être plus propre, plus lumineux et plus premium que la version actuelle tout en conservant l’identité visuelle unique de BrutePawa.
