@@ -261,7 +261,7 @@ export default function Community() {
         {SUB_TABS.map(tab => {
           const active = activeTab === tab.id;
           return (
-            <button key={tab.id} onClick={()=>setActiveTab(tab.id)} style={{
+            <button key={tab.id} onClick={()=>{ setActiveTab(tab.id); if(tab.id!=="personnes"){ setSearch(""); setCountry("Tous"); } }} style={{
               flex:"0 0 auto", display:"flex", alignItems:"center", gap:6,
               padding:"8px 14px", borderRadius:999, border:"none", cursor:"pointer",
               background: active ? BP_GREEN : "#F1F5F9",
@@ -279,47 +279,49 @@ export default function Community() {
         })}
       </div>
 
-      {/* ══ 2. SEARCH BAR ═══════════════════════════════════ */}
-      <div style={{ background:"#fff", padding:"12px 14px 0" }}>
-        <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-          <div style={{ flex:1, display:"flex", alignItems:"center", gap:10, background:"#F8FAFC", border:"1.5px solid #E2E8F0", borderRadius:14, padding:"11px 14px" }}>
-            {Ico.search}
-            <input
-              value={search}
-              onChange={e=>setSearch(e.target.value)}
-              placeholder="Rechercher des personnes, métiers, centres d'intérêt..."
-              style={{ flex:1, border:"none", outline:"none", background:"transparent", fontSize:14, color:"#0F172A", fontFamily:"inherit" }}
-            />
-          </div>
-          <button style={{ width:42, height:42, borderRadius:12, background:"#F1F5F9", border:"1.5px solid #E2E8F0", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", flexShrink:0 }}>
-            {Ico.filter}
-          </button>
-        </div>
-
-        {/* Country chips */}
-        <div style={{ display:"flex", gap:8, overflowX:"auto", scrollbarWidth:"none", padding:"10px 0 14px" }}>
-          {COUNTRY_FILTERS.map(c => {
-            const active = country===c;
-            return (
-              <button key={c} onClick={()=>setCountry(c)} style={{
-                flex:"0 0 auto", padding:"7px 14px", borderRadius:999,
-                border:`1.5px solid ${active?BP_GREEN:"#E2E8F0"}`,
-                background: active?BP_GREEN:"#fff",
-                color: active?"#fff":"#475569",
-                fontSize:13, fontWeight: active?700:500, cursor:"pointer", transition:"all .15s",
-                display:"flex", alignItems:"center", gap:5,
-              }}>
-                {c!=="Tous" && <span>{countryFlag(c)}</span>}
-                {c}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
       {/* ══ 3. PERSONNES TAB ════════════════════════════════ */}
       {activeTab==="personnes" && (
         <div>
+          {/* Search bar + country chips */}
+          <div style={{ background:"#fff", padding:"12px 14px 0" }}>
+            <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+              <div style={{ flex:1, display:"flex", alignItems:"center", gap:10, background:"#F8FAFC", border:"1.5px solid #E2E8F0", borderRadius:14, padding:"11px 14px" }}>
+                {Ico.search}
+                <input
+                  autoFocus
+                  value={search}
+                  onChange={e=>setSearch(e.target.value)}
+                  placeholder="Rechercher des personnes, métiers, centres d'intérêt..."
+                  style={{ flex:1, border:"none", outline:"none", background:"transparent", fontSize:14, color:"#0F172A", fontFamily:"inherit" }}
+                />
+                {search && (
+                  <button onClick={()=>setSearch("")} style={{ background:"none", border:"none", cursor:"pointer", padding:0, display:"flex", alignItems:"center", color:"#94A3B8" }}>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                )}
+              </div>
+            </div>
+            {/* Country chips */}
+            <div style={{ display:"flex", gap:8, overflowX:"auto", scrollbarWidth:"none", padding:"10px 0 14px" }}>
+              {COUNTRY_FILTERS.map(c => {
+                const active = country===c;
+                return (
+                  <button key={c} onClick={()=>setCountry(c)} style={{
+                    flex:"0 0 auto", padding:"7px 14px", borderRadius:999,
+                    border:`1.5px solid ${active?BP_GREEN:"#E2E8F0"}`,
+                    background: active?BP_GREEN:"#fff",
+                    color: active?"#fff":"#475569",
+                    fontSize:13, fontWeight: active?700:500, cursor:"pointer", transition:"all .15s",
+                    display:"flex", alignItems:"center", gap:5,
+                  }}>
+                    {c!=="Tous" && <span>{countryFlag(c)}</span>}
+                    {c}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           {loading ? (
             <div style={{ textAlign:"center", padding:"48px 20px" }}>
               <div style={{ width:32, height:32, border:`3px solid #E2E8F0`, borderTopColor:BP_GREEN, borderRadius:"50%", animation:"bp-spin .7s linear infinite", margin:"0 auto 12px" }} />
