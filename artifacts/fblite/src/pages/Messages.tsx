@@ -724,6 +724,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               time: new Date(c.updatedAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }),
             };
           });
+          // Preserve the active conversation even if it has no messages yet
+          // (e.g. a new chat with a non-friend opened from their profile)
+          const active = activeConvRef.current;
+          if (active && !updated.find(c => c.id === active)) {
+            const prevActive = prev.find(c => c.id === active);
+            if (prevActive) updated.unshift(prevActive);
+          }
           return updated;
         });
       }).catch(() => {});
