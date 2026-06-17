@@ -16,6 +16,7 @@ function formatUser(user: typeof usersTable.$inferSelect) {
     email: user.email, phone: user.phone, country: user.country,
     avatarUrl: user.avatarUrl, coverUrl: user.coverUrl, bio: user.bio,
     role: user.role, status: user.status, createdAt: user.createdAt,
+    profileLocked: user.profileLocked ?? false,
   };
 }
 
@@ -340,6 +341,13 @@ router.post("/users/follows/check", requireAuth, async (req, res): Promise<void>
     .from(followsTable)
     .where(and(eq(followsTable.followerId, me), inArray(followsTable.followingId, ids)));
   res.json({ following: rows.map(r => r.followingId) });
+});
+
+// Toggle profile lock
+router.patch("/users/me/profile-lock", requireAuth, async (req, res): Promise<void> => {
+  const locked = Boolean(req.body.locked);
+  await db.update(usersTable).set({ profileLocked: locked }).where(eq(usersTable.id, req.userId!));
+  res.json({ ok: true, profileLocked: locked });
 });
 
 // Report a user

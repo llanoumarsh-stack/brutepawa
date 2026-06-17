@@ -26,6 +26,7 @@ export interface BpUser {
   role: string;
   status: string;
   createdAt: string;
+  profileLocked?: boolean;
 }
 
 export async function apiFetch(path: string, options?: RequestInit): Promise<Response> {
@@ -90,6 +91,15 @@ export async function apiUpdateMe(data: Partial<{
   return res.json() as Promise<BpUser>;
 }
 
+export async function apiToggleProfileLock(locked: boolean): Promise<{ ok: boolean; profileLocked: boolean }> {
+  const res = await apiFetch("/users/me/profile-lock", {
+    method: "PATCH",
+    body: JSON.stringify({ locked }),
+  });
+  if (!res.ok) throw new Error("Échec du verrouillage");
+  return res.json() as Promise<{ ok: boolean; profileLocked: boolean }>;
+}
+
 export interface FeedPost {
   id: number;
   authorId: number;
@@ -117,6 +127,7 @@ export interface PublicUser {
   country: string | null;
   avatarUrl: string | null;
   bio: string | null;
+  profileLocked?: boolean;
 }
 
 export type FriendshipStatus = "none" | "pending_sent" | "pending_received" | "friends";

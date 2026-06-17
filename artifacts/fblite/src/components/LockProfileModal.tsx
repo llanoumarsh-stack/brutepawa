@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
+import { apiToggleProfileLock } from "../lib/api";
 
 interface Props {
   onClose: () => void;
@@ -11,95 +12,174 @@ export default function LockProfileModal({ onClose, currentlyLocked, onToggle }:
   const [locked, setLocked] = useState(currentlyLocked);
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const save = async () => {
     setSaving(true);
-    await new Promise(r => setTimeout(r, 800));
-    localStorage.setItem("bp_profile_locked", locked ? "1" : "0");
-    onToggle(locked);
-    setSaving(false);
-    setDone(true);
-    setTimeout(onClose, 1500);
+    setError(null);
+    try {
+      await apiToggleProfileLock(locked);
+      localStorage.setItem("bp_profile_locked", locked ? "1" : "0");
+      onToggle(locked);
+      setDone(true);
+      setTimeout(onClose, 1800);
+    } catch {
+      setError("Une erreur est survenue. Réessayez.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return createPortal(
-    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 200, display: "flex", alignItems: "flex-end", justifyContent: "center" }}
-      onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
-      <div style={{ background: "#fff", borderRadius: "20px 20px 0 0", width: "100%", maxWidth: 600, padding: "20px 20px 40px" }}>
-        <div style={{ width: 40, height: 4, background: "#e0e0e0", borderRadius: 2, margin: "0 auto 20px" }} />
-
-        {done ? (
-          <div style={{ textAlign: "center", padding: "20px 0" }}>
-            <div style={{ fontSize: 52, marginBottom: 12 }}>{locked ? "🔒" : "🔓"}</div>
-            <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 6 }}>
-              {locked ? "Profil verrouillé !" : "Profil déverrouillé !"}
-            </div>
-            <div style={{ fontSize: 14, color: "#65676b" }}>
-              {locked ? "Seuls vos amis peuvent voir vos photos et publications complètes." : "Votre profil est maintenant accessible à tous."}
-            </div>
+    <>
+      <style>{`@keyframes slideUpLock{from{transform:translateY(100%)}to{transform:translateY(0)}}`}</style>
+      <div
+        style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", zIndex: 9100, display: "flex", alignItems: "flex-end", justifyContent: "center" }}
+        onClick={e => { if (e.target === e.currentTarget) onClose(); }}
+      >
+        <div
+          style={{ background: "#fff", borderRadius: "28px 28px 0 0", width: "100%", maxWidth: 600, padding: "0 0 40px", animation: "slideUpLock 0.3s cubic-bezier(0.32,0.72,0,1)", boxShadow: "0 -8px 48px rgba(0,0,0,0.2)" }}
+          onClick={e => e.stopPropagation()}
+        >
+          {/* Handle */}
+          <div style={{ display: "flex", justifyContent: "center", padding: "14px 0 0" }}>
+            <div style={{ width: 44, height: 5, background: "#E2E8F0", borderRadius: 99 }} />
           </div>
-        ) : (
-          <>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-              <div style={{ width: 52, height: 52, borderRadius: "50%", background: locked ? "#e7f3ff" : "#f0f2f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26 }}>
-                {locked ? "🔒" : "🔓"}
-              </div>
-              <div>
-                <div style={{ fontWeight: 800, fontSize: 17 }}>Verrouiller le profil</div>
-                <div style={{ fontSize: 13, color: "#65676b" }}>Contrôlez qui peut voir votre profil</div>
-              </div>
-            </div>
 
-            <div style={{ background: "#f0f2f5", borderRadius: 12, padding: 16, marginBottom: 20 }}>
-              <div style={{ fontWeight: 700, marginBottom: 10, fontSize: 14 }}>Qu'est-ce que le verrouillage du profil ?</div>
-              {[
-                "📷 Votre photo de profil et couverture ne peuvent pas être téléchargées",
-                "📝 Vos publications ne sont visibles que par vos amis",
-                "👥 Les non-amis voient une version limitée de votre profil",
-                "🔍 Les détails de votre À propos sont masqués aux inconnus",
-              ].map((item, i) => (
-                <div key={i} style={{ fontSize: 13, color: "#050505", padding: "6px 0", borderBottom: i < 3 ? "1px solid #e4e6eb" : "none", display: "flex", gap: 8 }}>
-                  {item}
+          {/* Header */}
+          <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "18px 22px 14px" }}>
+            <div style={{ width: 54, height: 54, borderRadius: "50%", background: locked ? "linear-gradient(135deg,#DCFCE7,#BBF7D0)" : "#F1F5F9", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "background 0.3s", boxShadow: locked ? "0 4px 16px rgba(34,197,94,0.2)" : "none" }}>
+              {locked ? (
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="11" width="18" height="11" rx="3" fill="#22C55E" opacity="0.15"/>
+                  <rect x="3" y="11" width="18" height="11" rx="3" stroke="#22C55E" strokeWidth="2"/>
+                  <path d="M7 11V7a5 5 0 0110 0v4" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"/>
+                  <circle cx="12" cy="16.5" r="1.5" fill="#22C55E"/>
+                </svg>
+              ) : (
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="11" width="18" height="11" rx="3" stroke="#94A3B8" strokeWidth="2"/>
+                  <path d="M7 11V7a5 5 0 019.9-1" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"/>
+                  <circle cx="12" cy="16.5" r="1.5" fill="#94A3B8"/>
+                </svg>
+              )}
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 800, fontSize: 18, color: "#0F172A" }}>Verrouiller le profil</div>
+              <div style={{ fontSize: 13, color: "#64748B", marginTop: 2 }}>Contrôlez qui peut voir votre contenu</div>
+            </div>
+            <button onClick={onClose} style={{ width: 36, height: 36, borderRadius: "50%", background: "#F1F5F9", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#64748B" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+
+          <div style={{ padding: "0 18px" }}>
+            {done ? (
+              <div style={{ textAlign: "center", padding: "28px 0 8px" }}>
+                <div style={{ width: 72, height: 72, borderRadius: "50%", background: locked ? "linear-gradient(135deg,#DCFCE7,#BBF7D0)" : "#F1F5F9", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", boxShadow: locked ? "0 8px 32px rgba(34,197,94,0.25)" : "none" }}>
+                  {locked
+                    ? <svg width="34" height="34" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="3" fill="#22C55E" opacity="0.2"/><rect x="3" y="11" width="18" height="11" rx="3" stroke="#22C55E" strokeWidth="2"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"/><circle cx="12" cy="16.5" r="1.5" fill="#22C55E"/></svg>
+                    : <svg width="34" height="34" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="3" stroke="#64748B" strokeWidth="2"/><path d="M7 11V7a5 5 0 019.9-1" stroke="#64748B" strokeWidth="2" strokeLinecap="round"/><circle cx="12" cy="16.5" r="1.5" fill="#64748B"/></svg>
+                  }
                 </div>
-              ))}
-            </div>
-
-            {/* Toggle */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0", marginBottom: 20, borderTop: "1px solid #e4e6eb", borderBottom: "1px solid #e4e6eb" }}>
-              <div>
-                <div style={{ fontWeight: 700 }}>{locked ? "Profil verrouillé" : "Profil non verrouillé"}</div>
-                <div style={{ fontSize: 13, color: "#65676b" }}>{locked ? "Restriction active" : "Cliquer pour activer"}</div>
+                <div style={{ fontWeight: 800, fontSize: 18, color: "#0F172A", marginBottom: 8 }}>
+                  {locked ? "Profil verrouillé !" : "Profil déverrouillé !"}
+                </div>
+                <div style={{ fontSize: 14, color: "#64748B", lineHeight: 1.6 }}>
+                  {locked ? "Seuls vos amis peuvent voir vos photos et publications." : "Votre profil est maintenant accessible à tous."}
+                </div>
               </div>
-              <button
-                onClick={() => setLocked(l => !l)}
-                style={{
-                  width: 52, height: 28, borderRadius: 14, border: "none", cursor: "pointer",
-                  background: locked ? "#1877F2" : "#ccc",
-                  position: "relative", transition: "background 0.2s",
-                }}>
-                <div style={{
-                  width: 22, height: 22, borderRadius: "50%", background: "#fff",
-                  position: "absolute", top: 3, transition: "left 0.2s",
-                  left: locked ? 27 : 3,
-                  boxShadow: "0 1px 4px rgba(0,0,0,0.25)",
-                }} />
-              </button>
-            </div>
+            ) : (
+              <>
+                {/* Benefits cards */}
+                <div style={{ background: "#F8FAFC", borderRadius: 18, overflow: "hidden", marginBottom: 16 }}>
+                  {[
+                    { icon: "📷", text: "Photo de profil et couverture non téléchargeables" },
+                    { icon: "📝", text: "Publications visibles uniquement par vos amis" },
+                    { icon: "👥", text: "Les non-amis voient un profil limité" },
+                    { icon: "🔍", text: "Vos infos personnelles sont masquées aux inconnus" },
+                  ].map((item, i, arr) => (
+                    <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "12px 16px", borderBottom: i < arr.length - 1 ? "1px solid #F1F5F9" : "none" }}>
+                      <span style={{ fontSize: 18, flexShrink: 0, marginTop: 1 }}>{item.icon}</span>
+                      <span style={{ fontSize: 13.5, color: "#374151", lineHeight: 1.5 }}>{item.text}</span>
+                    </div>
+                  ))}
+                </div>
 
-            <div style={{ display: "flex", gap: 10 }}>
-              <button onClick={onClose}
-                style={{ flex: 1, background: "#f0f2f5", border: "none", borderRadius: 8, padding: 13, fontWeight: 700, fontSize: 15, cursor: "pointer" }}>
-                Annuler
-              </button>
-              <button onClick={save} disabled={saving || locked === currentlyLocked}
-                style={{ flex: 1, background: locked === currentlyLocked ? "#ccc" : "#1877F2", color: "#fff", border: "none", borderRadius: 8, padding: 13, fontWeight: 700, fontSize: 15, cursor: locked === currentlyLocked ? "not-allowed" : "pointer" }}>
-                {saving ? "Enregistrement…" : "Confirmer"}
-              </button>
-            </div>
-          </>
-        )}
+                {/* Toggle row */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 16px", background: locked ? "#F0FDF4" : "#F8FAFC", borderRadius: 16, marginBottom: 20, border: locked ? "1.5px solid #DCFCE7" : "1.5px solid #F1F5F9", transition: "all 0.25s" }}>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: 15, color: locked ? "#16A34A" : "#374151" }}>
+                      {locked ? "Profil verrouillé" : "Profil non verrouillé"}
+                    </div>
+                    <div style={{ fontSize: 12.5, color: locked ? "#22C55E" : "#94A3B8", marginTop: 2 }}>
+                      {locked ? "Restriction active" : "Cliquer pour activer"}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setLocked(l => !l)}
+                    style={{
+                      width: 54, height: 30, borderRadius: 15, border: "none", cursor: "pointer",
+                      background: locked ? "#22C55E" : "#CBD5E1",
+                      position: "relative", transition: "background 0.25s",
+                      boxShadow: locked ? "0 2px 8px rgba(34,197,94,0.35)" : "none",
+                      flexShrink: 0,
+                    }}
+                    aria-label="Toggle lock"
+                  >
+                    <div style={{
+                      width: 24, height: 24, borderRadius: "50%", background: "#fff",
+                      position: "absolute", top: 3, transition: "left 0.25s cubic-bezier(0.4,0,0.2,1)",
+                      left: locked ? 27 : 3,
+                      boxShadow: "0 2px 6px rgba(0,0,0,0.22)",
+                    }} />
+                  </button>
+                </div>
+
+                {error && (
+                  <div style={{ marginBottom: 14, padding: "10px 14px", background: "#FFF5F5", border: "1px solid #FCA5A5", borderRadius: 12, fontSize: 13, color: "#EF4444", fontWeight: 600 }}>
+                    {error}
+                  </div>
+                )}
+
+                {/* Buttons */}
+                <div style={{ display: "flex", gap: 10 }}>
+                  <button onClick={onClose}
+                    style={{ flex: 1, background: "#F1F5F9", border: "none", borderRadius: 14, padding: 14, fontWeight: 700, fontSize: 15, cursor: "pointer", color: "#374151", transition: "background 0.15s" }}
+                    onPointerDown={e => (e.currentTarget.style.background = "#E2E8F0")}
+                    onPointerUp={e => (e.currentTarget.style.background = "#F1F5F9")}
+                    onPointerLeave={e => (e.currentTarget.style.background = "#F1F5F9")}
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    onClick={save}
+                    disabled={saving || locked === currentlyLocked}
+                    style={{
+                      flex: 1.8,
+                      background: locked === currentlyLocked ? "#E2E8F0" : "linear-gradient(135deg, #22C55E, #16A34A)",
+                      color: locked === currentlyLocked ? "#94A3B8" : "#fff",
+                      border: "none", borderRadius: 14, padding: 14,
+                      fontWeight: 700, fontSize: 15,
+                      cursor: locked === currentlyLocked ? "not-allowed" : "pointer",
+                      boxShadow: locked === currentlyLocked ? "none" : "0 4px 16px rgba(34,197,94,0.35)",
+                      transition: "all 0.2s",
+                    }}
+                  >
+                    {saving ? (
+                      <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                        <span style={{ width: 16, height: 16, border: "2.5px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.7s linear infinite" }} />
+                        Enregistrement…
+                      </span>
+                    ) : "Confirmer"}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
       </div>
-    </div>,
+    </>,
     document.body
   );
 }

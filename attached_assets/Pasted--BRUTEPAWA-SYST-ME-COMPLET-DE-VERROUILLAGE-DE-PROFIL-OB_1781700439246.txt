@@ -1,0 +1,182 @@
+# BRUTEPAWA – SYSTÈME COMPLET DE VERROUILLAGE DE PROFIL
+
+OBJECTIF :
+Créer un système de verrouillage de profil premium inspiré de Facebook, mais adapté à l'identité visuelle de BrutePawa. Le système doit fonctionner réellement côté frontend ET backend.
+
+═══════════════════════
+ÉTAPE 1 : ACTIVATION DU VERROUILLAGE
+═══════════════════════
+
+Depuis le profil utilisateur :
+
+Menu (...) → Paramètres du profil → Verrouiller le profil
+
+Afficher une Bottom Sheet moderne BrutePawa contenant :
+
+🔒 Verrouiller le profil
+
+Texte :
+"Contrôlez qui peut consulter votre profil et protégez votre vie privée."
+
+Liste des avantages :
+
+📷 Photos protégées
+Vos photos de profil et de couverture ne peuvent plus être téléchargées.
+
+📝 Publications privées
+Vos publications deviennent visibles uniquement par vos amis.
+
+👥 Profil limité
+Les visiteurs non amis voient uniquement les informations publiques.
+
+🔐 Informations masquées
+Les détails personnels sont cachés aux inconnus.
+
+🛡️ Protection renforcée
+Réduit les risques de copie de profil et d'usurpation d'identité.
+
+Section finale :
+
+🛡️ Profil verrouillé
+Activez cette option pour protéger votre compte.
+
+Éléments d'action :
+
+- Switch Activer/Désactiver
+- Bouton Annuler
+- Bouton Confirmer
+
+Lorsque l'utilisateur confirme :
+
+profile_locked = true
+
+Sauvegarder dans Supabase.
+
+═══════════════════════
+ÉTAPE 2 : AFFICHAGE POUR LE PROPRIÉTAIRE
+═══════════════════════
+
+Lorsque profile_locked = true :
+
+Afficher sous les boutons du profil :
+
+🛡️ Vous avez verrouillé votre profil
+
+Les personnes qui ne sont pas vos amis voient uniquement une version limitée de votre profil.
+
+En savoir plus →
+
+Le propriétaire continue à voir normalement :
+
+✅ Publications
+✅ Photos
+✅ Reels
+✅ Vidéos
+✅ Liste d'amis
+✅ Informations personnelles
+✅ Statistiques
+
+Aucune restriction pour lui.
+
+═══════════════════════
+ÉTAPE 3 : CONSULTATION PAR UN VISITEUR
+═══════════════════════
+
+Condition :
+
+SI profile_locked = true
+ET visiteur ≠ ami
+
+Afficher uniquement :
+
+✅ Nom
+✅ Prénom
+✅ Photo de profil
+✅ Badge vérifié
+✅ Pays
+✅ Bouton Ajouter comme ami
+
+Masquer totalement :
+
+❌ Publications
+❌ Photos
+❌ Vidéos
+❌ Reels
+❌ Stories archivées
+❌ Amis
+❌ À propos
+❌ Informations personnelles
+❌ Activités
+❌ Likes
+❌ Commentaires
+❌ Historique
+
+Afficher à la place une grande carte premium :
+
+🛡️ Profil verrouillé
+
+Ce profil est protégé par son propriétaire.
+
+Seuls les amis peuvent consulter les publications, photos, vidéos et informations personnelles.
+
+[Bouton Ajouter comme ami]
+
+Puis :
+
+Pourquoi ce profil est verrouillé ?
+
+Le propriétaire a choisi de protéger sa vie privée sur BrutePawa.
+
+═══════════════════════
+RÈGLES BACKEND OBLIGATOIRES
+═══════════════════════
+
+Le verrouillage doit être vérifié côté serveur.
+
+Interdire l'accès API aux :
+
+- publications
+- photos
+- vidéos
+- reels
+- stories
+- amis
+- informations privées
+
+si :
+
+profile_locked = true
+ET visiteur ≠ ami
+
+Ne jamais se baser uniquement sur le frontend.
+
+═══════════════════════
+DESIGN BRUTEPAWA
+═══════════════════════
+
+Couleur principale :
+#22C55E
+
+Style :
+- Moderne
+- Premium
+- Mobile First
+- Coins arrondis 20px
+- Ombres douces
+- Cartes blanches élégantes
+- Icônes vertes
+- Animations fluides
+- Apparence Facebook Premium + LinkedIn Premium
+- Interface 2026
+
+═══════════════════════
+EXPÉRIENCE UTILISATEUR
+═══════════════════════
+
+Le visiteur doit immédiatement comprendre que :
+
+1. Le profil est protégé.
+2. Les informations sont privées.
+3. La seule action possible est d'envoyer une demande d'ami.
+
+Le système doit être fonctionnel à 100% et non une simple maquette visuelle.

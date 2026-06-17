@@ -282,6 +282,130 @@ export default function UserProfilePage({ userId }: { userId: number }) {
   const color = avatarColor(user.id);
   const photoCount = posts.filter(p => p.imageUrl).length + (user.avatarUrl ? 1 : 0);
 
+  // Check if viewer is the profile owner
+  const rawMe = localStorage.getItem("fb_user");
+  const meId = rawMe ? (JSON.parse(rawMe) as { id?: number }).id : undefined;
+  const isOwner = meId === user.id;
+
+  // Locked profile view for non-friend visitors
+  if (user.profileLocked && user.friendshipStatus !== "friends" && !isOwner) {
+    return (
+      <div style={{ minHeight: "100vh", background: "#F8FAFC", maxWidth: 600, margin: "0 auto" }}>
+        {/* Header */}
+        <div style={{ position: "sticky", top: 0, zIndex: 50, background: "rgba(255,255,255,0.96)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: "0 14px", height: 58, display: "flex", alignItems: "center", gap: 12 }}>
+          <button onClick={() => window.history.back()} style={{ background: "#F1F5F9", border: "none", width: 40, height: 40, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0D1B2A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          </button>
+          <span style={{ fontWeight: 900, fontSize: 17, color: "#0D1B2A", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{name}</span>
+        </div>
+
+        {/* Cover */}
+        <div style={{ height: 160, background: `linear-gradient(135deg, ${color}ee 0%, ${color}88 60%, ${color}33 100%)`, position: "relative", overflow: "hidden" }}>
+          <div style={{ position: "absolute", top: -40, right: -40, width: 180, height: 180, borderRadius: "50%", background: "rgba(255,255,255,0.1)" }} />
+          {/* Avatar with lock badge */}
+          <div style={{ position: "absolute", bottom: -44, left: 20, zIndex: 5 }}>
+            <div style={{ position: "relative", display: "inline-block" }}>
+              {user.avatarUrl
+                ? <img src={user.avatarUrl} alt={name} style={{ width: 88, height: 88, borderRadius: "50%", border: "4px solid #fff", objectFit: "cover", boxShadow: "0 4px 20px rgba(0,0,0,0.2)", filter: "blur(6px)" }} />
+                : <div style={{ width: 88, height: 88, borderRadius: "50%", background: color, border: "4px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 900, fontSize: 28, boxShadow: "0 4px 20px rgba(0,0,0,0.2)", filter: "blur(4px)" }}>{initials(user)}</div>
+              }
+              {/* Lock overlay */}
+              <div style={{ position: "absolute", inset: 0, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(34,197,94,0.15)" }}>
+                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg,#22C55E,#16A34A)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 10px rgba(34,197,94,0.5)" }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <rect x="3" y="11" width="18" height="11" rx="3" fill="#fff" opacity="0.25"/>
+                    <path d="M7 11V7a5 5 0 0110 0v4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"/>
+                    <circle cx="12" cy="16.5" r="2" fill="#fff"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Info + actions */}
+        <div style={{ background: "#fff", paddingTop: 58, padding: "58px 20px 22px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
+            <span style={{ fontWeight: 900, fontSize: 22, color: "#0D1B2A" }}>{name}</span>
+            <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 22, height: 22, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />
+            {flag && <span style={{ fontSize: 20 }}>{flag}</span>}
+          </div>
+          {user.bio && <div style={{ fontSize: 13.5, color: "#8896A6", marginBottom: 14 }}>••• contenu masqué</div>}
+
+          {/* Action button */}
+          {user.friendshipStatus === "none" && !pendingRequest && (
+            <button
+              disabled={actionLoading}
+              onClick={handleSendRequest}
+              style={{ width: "100%", padding: "13px 8px", background: "linear-gradient(135deg,#22C55E,#16A34A)", color: "#fff", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 15, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, boxShadow: "0 4px 16px rgba(34,197,94,0.35)", marginBottom: 12 }}
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+              {actionLoading ? "…" : "Ajouter comme ami"}
+            </button>
+          )}
+          {user.friendshipStatus === "pending_sent" && (
+            <button disabled={actionLoading} onClick={handleCancel} style={{ width: "100%", padding: "13px 8px", background: "#F1F5F9", color: "#374151", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 15, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 12 }}>
+              <IconClock />
+              {actionLoading ? "…" : "Demande envoyée · Annuler"}
+            </button>
+          )}
+          {(user.friendshipStatus === "pending_received" || pendingRequest) && (
+            <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+              <button disabled={actionLoading} onClick={handleAccept} style={{ flex: 1, padding: "13px 8px", background: "linear-gradient(135deg,#22C55E,#16A34A)", color: "#fff", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, boxShadow: "0 4px 14px rgba(34,197,94,0.3)" }}>
+                <IconCheck /> {actionLoading ? "…" : "Confirmer"}
+              </button>
+              <button disabled={actionLoading} onClick={handleReject} style={{ flex: 1, padding: "13px 8px", background: "#F1F5F9", color: "#374151", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>Supprimer</button>
+            </div>
+          )}
+        </div>
+
+        {/* Locked card */}
+        <div style={{ margin: "0 12px 16px", background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", overflow: "hidden" }}>
+          {/* Green gradient top */}
+          <div style={{ background: "linear-gradient(135deg,#22C55E,#16A34A)", padding: "22px 20px 20px", textAlign: "center" }}>
+            <div style={{ width: 64, height: 64, borderRadius: "50%", background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="rgba(255,255,255,0.3)" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M7 11V7a5 5 0 0110 0v4" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
+                <rect x="5" y="11" width="14" height="9" rx="2" fill="#fff" opacity="0.25"/>
+                <circle cx="12" cy="15.5" r="1.5" fill="#fff"/>
+              </svg>
+            </div>
+            <div style={{ fontWeight: 900, fontSize: 18, color: "#fff", marginBottom: 8 }}>Profil verrouillé</div>
+            <div style={{ fontSize: 13.5, color: "rgba(255,255,255,0.88)", lineHeight: 1.6 }}>
+              {name} a verrouillé son profil.<br/>Seuls ses amis peuvent voir ses publications, photos et informations.
+            </div>
+          </div>
+
+          {/* Restrictions list */}
+          <div style={{ padding: "4px 0 8px" }}>
+            {[
+              { icon: "📷", text: "Photos et vidéos masquées" },
+              { icon: "📝", text: "Publications non accessibles" },
+              { icon: "ℹ️", text: "Informations personnelles cachées" },
+            ].map((item, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 20px", borderBottom: i < 2 ? "1px solid #F8FAFC" : "none" }}>
+                <span style={{ fontSize: 18 }}>{item.icon}</span>
+                <span style={{ fontSize: 13.5, color: "#64748B" }}>{item.text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Why locked accordion */}
+        <div style={{ margin: "0 12px 40px", background: "#fff", borderRadius: 20, overflow: "hidden", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+          <div style={{ padding: "16px 20px", display: "flex", alignItems: "center", gap: 10 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span style={{ fontSize: 14, fontWeight: 700, color: "#374151", flex: 1 }}>Pourquoi ce profil est-il verrouillé ?</span>
+          </div>
+          <div style={{ padding: "0 20px 16px", fontSize: 13.5, color: "#64748B", lineHeight: 1.7, borderTop: "1px solid #F8FAFC" }}>
+            Le propriétaire de ce profil a choisi de restreindre l'accès à son contenu. Ajoutez-le comme ami pour voir ses publications et interagir avec lui sur BrutePawa.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ minHeight: "100vh", background: "#F8FAFC", maxWidth: 600, margin: "0 auto", position: "relative" }}>
 

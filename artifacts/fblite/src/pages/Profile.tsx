@@ -44,6 +44,10 @@ export default function Profile() {
   const [showReviewTags, setShowReviewTags] = useState(false);
   const [showTagReviewSettings, setShowTagReviewSettings] = useState(false);
   const [isProfileLocked, setIsProfileLocked] = useState(() => localStorage.getItem("bp_profile_locked") === "1");
+  const handleLockToggle = (locked: boolean) => {
+    setIsProfileLocked(locked);
+    localStorage.setItem("bp_profile_locked", locked ? "1" : "0");
+  };
 
   const copyProfileLink = useCallback(() => {
     const url = `${window.location.origin}${import.meta.env.BASE_URL ?? ""}profile/${localUser.id ?? ""}`;
@@ -64,6 +68,10 @@ export default function Profile() {
       setAvatarUrl(user.avatarUrl ?? "");
       setCoverUrl(user.coverUrl ?? "");
       if (user.bio) setBio(user.bio);
+      if (typeof user.profileLocked === "boolean") {
+        setIsProfileLocked(user.profileLocked);
+        localStorage.setItem("bp_profile_locked", user.profileLocked ? "1" : "0");
+      }
     }).catch(() => {});
   }, []);
 
@@ -353,6 +361,16 @@ export default function Profile() {
                   : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                 }
               </div>
+              {/* Lock badge */}
+              {isProfileLocked && (
+                <div style={{ position: "absolute", top: 2, left: 2, width: 24, height: 24, borderRadius: "50%", background: "linear-gradient(135deg,#22C55E,#16A34A)", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 6px rgba(34,197,94,0.4)" }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                    <rect x="3" y="11" width="18" height="11" rx="3" fill="#fff" opacity="0.3"/>
+                    <path d="M7 11V7a5 5 0 0110 0v4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"/>
+                    <circle cx="12" cy="16.5" r="1.8" fill="#fff"/>
+                  </svg>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -420,6 +438,27 @@ export default function Profile() {
                 Modifier
               </button>
             </div>
+
+            {/* Lock banner — visible when profile is locked */}
+            {isProfileLocked && (
+              <div
+                onClick={() => setShowLockProfile(true)}
+                style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12, padding: "10px 14px", background: "linear-gradient(135deg,#F0FDF4,#DCFCE7)", border: "1.5px solid #86EFAC", borderRadius: 14, cursor: "pointer" }}
+              >
+                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg,#22C55E,#16A34A)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 2px 8px rgba(34,197,94,0.3)" }}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                    <rect x="3" y="11" width="18" height="11" rx="3" fill="#fff" opacity="0.2"/>
+                    <path d="M7 11V7a5 5 0 0110 0v4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"/>
+                    <circle cx="12" cy="16.5" r="1.8" fill="#fff"/>
+                  </svg>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 700, fontSize: 13.5, color: "#16A34A" }}>Profil verrouillé</div>
+                  <div style={{ fontSize: 12, color: "#22C55E", marginTop: 1 }}>Seuls vos amis voient votre contenu · Gérer</div>
+                </div>
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            )}
 
             {/* Stats */}
             <div style={{ display: "flex", gap: 24, marginTop: 14, marginBottom: 4 }}>
@@ -779,7 +818,7 @@ export default function Profile() {
         <LockProfileModal
           onClose={() => setShowLockProfile(false)}
           currentlyLocked={isProfileLocked}
-          onToggle={(locked) => setIsProfileLocked(locked)}
+          onToggle={handleLockToggle}
         />
       )}
 

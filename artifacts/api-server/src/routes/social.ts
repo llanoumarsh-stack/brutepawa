@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { db, postsTable, postLikesTable, messagesTable, usersTable, storiesTable, userBlocksTable, notificationsTable, commentsTable, commentLikesTable, savedPostsTable, postReportsTable } from "@workspace/db";
+import { db, postsTable, postLikesTable, messagesTable, usersTable, storiesTable, userBlocksTable, notificationsTable, commentsTable, commentLikesTable, savedPostsTable, postReportsTable, friendRequestsTable } from "@workspace/db";
 import { eq, and, or, desc, sql, gt } from "drizzle-orm";
 import { CreatePostBody, GetPostParams, DeletePostParams, LikePostParams, LikePostBody, SendMessageBody, GetConversationParams, ListPostsQueryParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
@@ -41,12 +41,29 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
       authorLastName: usersTable.lastName,
       authorAvatarUrl: usersTable.avatarUrl,
       authorCountry: usersTable.country,
+      authorProfileLocked: usersTable.profileLocked,
     })
     .from(postsTable)
     .leftJoin(usersTable, eq(postsTable.authorId, usersTable.id))
     .where(conditions.length > 0 ? and(...conditions) : undefined)
     .orderBy(desc(postsTable.createdAt))
     .limit(limit).offset(offset);
+
+  // If viewing a specific locked profile, check friendship before returning any posts
+  if (authorId && rows.length > 0 && rows[0].authorProfileLocked) {
+    const me = req.userId!;
+    if (authorId !== me) {
+      const [friendship] = await db.select({ id: friendRequestsTable.id }).from(friendRequestsTable)
+        .where(and(
+          eq(friendRequestsTable.status, "accepted"),
+          or(
+            and(eq(friendRequestsTable.fromUserId, me), eq(friendRequestsTable.toUserId, authorId)),
+            and(eq(friendRequestsTable.fromUserId, authorId), eq(friendRequestsTable.toUserId, me)),
+          ),
+        )).limit(1);
+      if (!friendship) { res.json([]); return; }
+    }
+  }
 
   const myLikes = rows.length > 0
     ? await db.select({ postId: postLikesTable.postId }).from(postLikesTable)
