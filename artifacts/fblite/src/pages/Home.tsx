@@ -480,12 +480,12 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 <img
                   src={post.authorAvatarUrl} alt={displayName} className="avatar"
                   style={{ width: 40, height: 40, objectFit: "cover", flexShrink: 0, borderRadius: "50%", cursor: "pointer" }}
-                  onClick={() => navigate(post.authorId === user.id ? "/profile" : `/user/${post.authorId}`)}
+                  onClick={() => navigate(post.userId === user.id ? "/profile" : `/user/${post.userId}`)}
                 />
               ) : (
                 <div
                   className="avatar" style={{ background: displayColor, cursor: "pointer" }}
-                  onClick={() => navigate(post.authorId === user.id ? "/profile" : `/user/${post.authorId}`)}
+                  onClick={() => navigate(post.userId === user.id ? "/profile" : `/user/${post.userId}`)}
                 >{displayInitials}</div>
               )}
               <div className="post-meta">
@@ -493,7 +493,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                   <div
                     className="post-author"
                     style={{ cursor: "pointer" }}
-                    onClick={() => navigate(post.authorId === user.id ? "/profile" : `/user/${post.authorId}`)}
+                    onClick={() => navigate(post.userId === user.id ? "/profile" : `/user/${post.userId}`)}
                   >{displayName}</div>
                   {!post.sponsored && (
                     <span style={{ color: "#42B72A", fontSize: 12, fontWeight: 700, cursor: "pointer", marginLeft: 2 }}>
