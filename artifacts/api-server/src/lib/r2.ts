@@ -22,17 +22,19 @@ export const r2 = new S3Client({
   },
 });
 
-export type MediaKind = "image" | "video" | "audio";
+export type MediaKind = "image" | "video" | "audio" | "doc";
 
 const EXT_MAP: Record<string, MediaKind> = {
   jpg: "image", jpeg: "image", png: "image", gif: "image", webp: "image", heic: "image",
   mp4: "video", mov: "video", avi: "video", mkv: "video", webm: "video",
   mp3: "audio", ogg: "audio", wav: "audio", m4a: "audio", aac: "audio",
+  pdf: "doc", doc: "doc", docx: "doc", xls: "doc", xlsx: "doc",
+  ppt: "doc", pptx: "doc", txt: "doc", csv: "doc", zip: "doc",
 };
 
 export function detectKind(filename: string): MediaKind {
   const ext = path.extname(filename).replace(".", "").toLowerCase();
-  return EXT_MAP[ext] ?? "image";
+  return EXT_MAP[ext] ?? "doc";
 }
 
 /**

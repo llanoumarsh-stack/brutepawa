@@ -5,7 +5,7 @@ import {
 } from "../lib/r2";
 import {
   processImage, generateVideoThumbnail, compressAudioToOpus,
-  MAX_IMAGE_BYTES, MAX_VIDEO_BYTES, MAX_AUDIO_BYTES,
+  MAX_IMAGE_BYTES, MAX_VIDEO_BYTES, MAX_AUDIO_BYTES, MAX_DOC_BYTES,
 } from "../lib/media";
 import { trackUploads, getUserQuota, releaseStorage } from "../lib/storage";
 import { requireAuth } from "../middlewares/requireAuth";
@@ -43,6 +43,7 @@ router.post(
     const sizeLimit =
       kind === "video" ? MAX_VIDEO_BYTES :
       kind === "audio" ? MAX_AUDIO_BYTES :
+      kind === "doc"   ? MAX_DOC_BYTES   :
       MAX_IMAGE_BYTES;
 
     if (body.length > sizeLimit) {
@@ -117,13 +118,21 @@ router.post(
         }
 
       // ── Audio: compress to Opus ───────────────────────────────────────────
-      } else {
+      } else if (kind === "audio") {
         const compressed = await compressAudioToOpus(body, ext || ".mp3");
         mainKey         = buildKey(`voice${compressed.ext}`, "audio", userId);
         mainBuffer      = compressed.data;
         mainContentType = compressed.contentType;
         await putObject(mainKey, mainBuffer, mainContentType);
         trackedFiles.push({ key: mainKey, sizeBytes: mainBuffer.length, kind: "audio" });
+
+      // ── Document: store as-is ────────────────────────────────────────────
+      } else {
+        mainKey         = buildKey(filename, "doc", userId);
+        mainBuffer      = body;
+        mainContentType = (req.headers["content-type"] as string) || "application/octet-stream";
+        await putObject(mainKey, mainBuffer, mainContentType);
+        trackedFiles.push({ key: mainKey, sizeBytes: mainBuffer.length, kind: "doc" });
       }
 
       // ── Track all uploaded objects + update quota counter (best-effort) ────
