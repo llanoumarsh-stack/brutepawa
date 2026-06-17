@@ -34,6 +34,8 @@ export const messagesTable = pgTable("messages", {
   toUserId: integer("to_user_id").notNull(),
   content: text("content").notNull(),
   isRead: boolean("is_read").notNull().default(false),
+  isDelivered: boolean("is_delivered").notNull().default(false),
+  deliveredAt: timestamp("delivered_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

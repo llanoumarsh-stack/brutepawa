@@ -805,7 +805,35 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     });
   }, []);
 
-  const sig = useCallSignaling(meId, onNewMessage);
+  const onMessageDelivered = useCallback((messageIds: number[]) => {
+    const idSet = new Set(messageIds);
+    setMessages(prev => {
+      const next: typeof prev = {};
+      for (const key of Object.keys(prev)) {
+        const k = Number(key);
+        next[k] = prev[k].map(m =>
+          idSet.has(m.id) && m.status === "sent" ? { ...m, status: "delivered" as const } : m
+        );
+      }
+      return next;
+    });
+  }, []);
+
+  const onMessageRead = useCallback((messageIds: number[]) => {
+    const idSet = new Set(messageIds);
+    setMessages(prev => {
+      const next: typeof prev = {};
+      for (const key of Object.keys(prev)) {
+        const k = Number(key);
+        next[k] = prev[k].map(m =>
+          idSet.has(m.id) && (m.status === "sent" || m.status === "delivered") ? { ...m, status: "read" as const } : m
+        );
+      }
+      return next;
+    });
+  }, []);
+
+  const sig = useCallSignaling(meId, onNewMessage, onMessageDelivered, onMessageRead);
 
   useEffect(() => {
     const el = remoteAudioRef.current;
@@ -898,9 +926,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     apiGetMessageRequests(invitTab).then(setMsgRequests).catch(() => {});
   }, [settingsPage === "invitations", invitTab]);
 
-  const parseApiMsg = useCallback((m: { id: number; content: string; fromUserId: number; createdAt: string; isRead: boolean }) => {
+  const parseApiMsg = useCallback((m: { id: number; content: string; fromUserId: number; createdAt: string; isRead: boolean; isDelivered?: boolean }) => {
     const time   = new Date(m.createdAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
-    const status = m.isRead ? "read" as const : "sent" as const;
+    const status = m.isRead ? "read" as const : m.isDelivered ? "delivered" as const : "sent" as const;
     const base   = { id: m.id, mine: m.fromUserId === meId, time, status };
     if (m.content.startsWith("__audio__:")) {
       const rest  = m.content.slice("__audio__:".length);

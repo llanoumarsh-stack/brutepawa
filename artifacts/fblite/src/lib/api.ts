@@ -688,6 +688,7 @@ export interface ApiChatMessage {
   toUserId: number;
   content: string;
   isRead: boolean;
+  isDelivered: boolean;
   createdAt: string;
 }
 

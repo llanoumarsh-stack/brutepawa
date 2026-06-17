@@ -134,6 +134,10 @@ export interface NewMessagePayload {
   createdAt: string;
 }
 
+export interface MessageStatusPayload {
+  messageIds: number[];
+}
+
 async function postSignal(to: number, type: string, payload: unknown = {}) {
   const token = getBpToken();
   try {
@@ -152,6 +156,8 @@ async function postSignal(to: number, type: string, payload: unknown = {}) {
 export function useCallSignaling(
   meId: number,
   onNewMessage?: (msg: NewMessagePayload) => void,
+  onMessageDelivered?: (messageIds: number[]) => void,
+  onMessageRead?: (messageIds: number[]) => void,
 ) {
   const [callState, setCallState]       = useState<CallState>("idle");
   const [callType, setCallType]         = useState<"audio" | "video" | null>(null);
@@ -177,10 +183,14 @@ export function useCallSignaling(
   const callPeerIdRef     = useRef<number | null>(null);
   const handleSignalRef   = useRef<((msg: SignalMsg) => Promise<void>) | null>(null);
   const isMutedRef        = useRef(false);
-  const onNewMessageRef   = useRef(onNewMessage);
-  const iceServersRef     = useRef<RTCIceServer[]>(DEFAULT_ICE);
+  const onNewMessageRef        = useRef(onNewMessage);
+  const onMessageDeliveredRef  = useRef(onMessageDelivered);
+  const onMessageReadRef       = useRef(onMessageRead);
+  const iceServersRef          = useRef<RTCIceServer[]>(DEFAULT_ICE);
 
   useEffect(() => { onNewMessageRef.current = onNewMessage; }, [onNewMessage]);
+  useEffect(() => { onMessageDeliveredRef.current = onMessageDelivered; }, [onMessageDelivered]);
+  useEffect(() => { onMessageReadRef.current = onMessageRead; }, [onMessageRead]);
 
   // Prefetch ICE servers (may include Cloudflare TURN)
   useEffect(() => {
@@ -394,6 +404,22 @@ export function useCallSignaling(
       es.addEventListener("message:new", (e: MessageEvent) => {
         retryDelay = 1000;
         try { onNewMessageRef.current?.(JSON.parse(e.data) as NewMessagePayload); } catch { /* ignore */ }
+      });
+
+      es.addEventListener("message:delivered", (e: MessageEvent) => {
+        retryDelay = 1000;
+        try {
+          const { messageIds } = JSON.parse(e.data) as MessageStatusPayload;
+          onMessageDeliveredRef.current?.(messageIds);
+        } catch { /* ignore */ }
+      });
+
+      es.addEventListener("message:read", (e: MessageEvent) => {
+        retryDelay = 1000;
+        try {
+          const { messageIds } = JSON.parse(e.data) as MessageStatusPayload;
+          onMessageReadRef.current?.(messageIds);
+        } catch { /* ignore */ }
       });
 
       es.addEventListener("connected", () => { retryDelay = 1000; });

@@ -313,13 +313,22 @@ router.post("/messages", requireAuth, async (req, res): Promise<void> => {
   }).returning();
 
   // SSE: notify recipient in real-time (if app is open)
-  pushToUser(toId, "message:new", {
+  const recipientOnline = pushToUser(toId, "message:new", {
     id:         msg.id,
     fromUserId: me,
     toUserId:   toId,
     content:    msg.content,
     createdAt:  msg.createdAt,
   });
+
+  // Recipient is connected via SSE → immediately mark as delivered and notify sender
+  if (recipientOnline) {
+    db.update(messagesTable)
+      .set({ isDelivered: true, deliveredAt: new Date() })
+      .where(eq(messagesTable.id, msg.id))
+      .catch(() => {});
+    pushToUser(me, "message:delivered", { messageIds: [msg.id] });
+  }
 
   // Push notification to recipient (if app is closed / offline)
   const [sender] = await db.select({ firstName: usersTable.firstName, lastName: usersTable.lastName })
@@ -383,9 +392,20 @@ router.get("/messages/:userId", requireAuth, async (req, res): Promise<void> => 
   const hasMore = raw.length > PAGE;
   const msgs    = (hasMore ? raw.slice(0, PAGE) : raw).reverse();
 
-  /* Mark as read in background — do not await */
-  db.update(messagesTable).set({ isRead: true })
-    .where(and(eq(messagesTable.fromUserId, otherId), eq(messagesTable.toUserId, me)))
+  /* Mark as read + delivered in background, then push read receipt to sender */
+  db.update(messagesTable)
+    .set({ isRead: true, isDelivered: true })
+    .where(and(
+      eq(messagesTable.fromUserId, otherId),
+      eq(messagesTable.toUserId, me),
+      eq(messagesTable.isRead, false),
+    ))
+    .returning({ id: messagesTable.id })
+    .then(readMsgs => {
+      if (readMsgs.length > 0) {
+        pushToUser(otherId, "message:read", { messageIds: readMsgs.map(m => m.id) });
+      }
+    })
     .catch(() => {});
 
   res.setHeader("Cache-Control", "private, no-cache");

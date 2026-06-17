@@ -1,8 +1,8 @@
 import { Router, type Request, type Response, type NextFunction } from "express";
 import { verifyToken } from "../lib/auth";
 import { pushToUserDevice } from "./push";
-import { db } from "@workspace/db";
-import { sql } from "drizzle-orm";
+import { db, messagesTable } from "@workspace/db";
+import { sql, eq, and } from "drizzle-orm";
 
 const router = Router();
 
@@ -47,6 +47,25 @@ router.get("/signaling/listen", sseAuth, (req, res) => {
   listeners.set(userId, res);
 
   res.write(`event: connected\ndata: ${JSON.stringify({ userId })}\n\n`);
+
+  // Mark all undelivered messages to this user as delivered, then notify each sender
+  db.update(messagesTable)
+    .set({ isDelivered: true, deliveredAt: new Date() })
+    .where(and(eq(messagesTable.toUserId, userId), eq(messagesTable.isDelivered, false)))
+    .returning({ id: messagesTable.id, fromUserId: messagesTable.fromUserId })
+    .then(delivered => {
+      if (!delivered.length) return;
+      const senderMap = new Map<number, number[]>();
+      for (const m of delivered) {
+        const arr = senderMap.get(m.fromUserId) ?? [];
+        arr.push(m.id);
+        senderMap.set(m.fromUserId, arr);
+      }
+      for (const [senderId, msgIds] of senderMap) {
+        pushToUser(senderId, "message:delivered", { messageIds: msgIds });
+      }
+    })
+    .catch(() => {});
 
   const keepalive = setInterval(() => {
     try { res.write(": ping\n\n"); } catch { clearInterval(keepalive); }
