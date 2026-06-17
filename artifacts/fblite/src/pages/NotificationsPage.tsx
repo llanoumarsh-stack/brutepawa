@@ -113,6 +113,8 @@ export default function NotificationsPage() {
   const [loading, setLoading]   = useState(true);
   const [cat, setCat]           = useState<Cat>("toutes");
   const [filter, setFilter]     = useState<Filter>("recentes");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [search, setSearch]         = useState("");
 
   useEffect(() => {
     apiGetNotifications()
@@ -132,9 +134,14 @@ export default function NotificationsPage() {
   /* ── filtering ── */
   const filtered = notifs.filter(n => {
     if (cat !== "toutes" && CAT_TYPES[cat].length > 0 && !CAT_TYPES[cat].includes(n.type)) return false;
-    if (filter === "aujourd") return isToday(n.createdAt);
-    if (filter === "semaine")  return isThisWeek(n.createdAt);
-    if (filter === "nonlues")  return !n.isRead;
+    if (filter === "aujourd") { if (!isToday(n.createdAt)) return false; }
+    else if (filter === "semaine") { if (!isThisWeek(n.createdAt)) return false; }
+    else if (filter === "nonlues") { if (n.isRead) return false; }
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      const hay = `${n.actorName ?? ""} ${n.action} ${n.detail ?? ""}`.toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
     return true;
   });
 
@@ -231,9 +238,12 @@ export default function NotificationsPage() {
 
         <div style={{ flex:1, fontWeight:800, fontSize:19, color:"#0F172A" }}>Notifications</div>
 
-        {/* Search */}
-        <button style={{ width:36, height:36, borderRadius:"50%", background:"#F1F5F9", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", color:"#475569" }}>
-          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        {/* Search toggle */}
+        <button onClick={()=>{ setSearchOpen(o=>!o); setSearch(""); }} style={{ width:36, height:36, borderRadius:"50%", background: searchOpen ? BP_GREEN : "#F1F5F9", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", color: searchOpen ? "#fff" : "#475569", transition:"all .2s" }}>
+          {searchOpen
+            ? <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            : <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          }
         </button>
 
         {/* Mark all read pill */}
@@ -242,6 +252,32 @@ export default function NotificationsPage() {
           Tout marquer comme lu
         </button>
       </div>
+
+      {/* ══ 1b. SEARCH BAR (visible only when open) ═══════ */}
+      {searchOpen && (
+        <div style={{ background:"#fff", padding:"8px 14px 10px", borderBottom:"1px solid #F1F5F9" }}>
+          <div style={{ display:"flex", alignItems:"center", gap:10, background:"#F8FAFC", border:`1.5px solid ${BP_GREEN}`, borderRadius:14, padding:"10px 14px" }}>
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#94A3B8" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input
+              autoFocus
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Rechercher dans les notifications…"
+              style={{ flex:1, border:"none", outline:"none", background:"transparent", fontSize:14, color:"#0F172A", fontFamily:"inherit" }}
+            />
+            {search && (
+              <button onClick={()=>setSearch("")} style={{ background:"none", border:"none", cursor:"pointer", padding:0, display:"flex", alignItems:"center", color:"#94A3B8" }}>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            )}
+          </div>
+          {search && (
+            <div style={{ marginTop:6, fontSize:12, color:"#94A3B8", paddingLeft:4 }}>
+              {filtered.length} résultat{filtered.length !== 1 ? "s" : ""} pour « {search} »
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ══ 2. CATEGORY TABS ═══════════════════════════════ */}
       <div style={{ background:"#fff", borderBottom:"1px solid #F1F5F9", overflow:"auto", scrollbarWidth:"none" }}>
