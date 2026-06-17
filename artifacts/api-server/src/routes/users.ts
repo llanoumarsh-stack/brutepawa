@@ -96,6 +96,7 @@ router.get("/users", requireAuth, async (req, res): Promise<void> => {
     db.select({
       id: usersTable.id, firstName: usersTable.firstName, lastName: usersTable.lastName,
       country: usersTable.country, avatarUrl: usersTable.avatarUrl, bio: usersTable.bio,
+      role: usersTable.role,
     }).from(usersTable).where(whereClause),
 
     db.select().from(friendRequestsTable).where(

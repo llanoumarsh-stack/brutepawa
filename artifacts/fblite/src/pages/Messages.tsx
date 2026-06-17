@@ -74,7 +74,7 @@ function fmtBytes(b: number): string {
 
 interface NormConv {
   id: number;
-  user: { name: string; initials: string; color: string; avatarUrl?: string | null };
+  user: { name: string; initials: string; color: string; avatarUrl?: string | null; role?: string };
   lastMessage: string;
   unread: number;
   time: string;
@@ -873,7 +873,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       const u = allUsers.find(x => x.id === sig.callPeerId);
       if (!u) return null;
       const name = `${u.firstName} ${u.lastName}`;
-      return { name, initials: mkInitials(name), color: CONV_COLORS[sig.callPeerId % CONV_COLORS.length] };
+      return { name, initials: mkInitials(name), color: CONV_COLORS[sig.callPeerId % CONV_COLORS.length], avatarUrl: u.avatarUrl ?? null, role: u.role };
     })()) : null;
 
   const currentMessages = activeConv ? (messages[activeConv] ?? []) : [];
@@ -894,7 +894,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             const name = u ? `${u.firstName} ${u.lastName}` : `Utilisateur #${c.userId}`;
             return {
               id: c.userId,
-              user: { name, initials: mkInitials(name), color: CONV_COLORS[c.userId % CONV_COLORS.length], avatarUrl: u?.avatarUrl ?? null },
+              user: { name, initials: mkInitials(name), color: CONV_COLORS[c.userId % CONV_COLORS.length], avatarUrl: u?.avatarUrl ?? null, role: u?.role },
               lastMessage: c.lastMessage, unread: c.unreadCount,
               time: new Date(c.updatedAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }),
             };
@@ -903,7 +903,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           const u = users.find(u => u.id === initialUserId);
           if (u) {
             const name = `${u.firstName} ${u.lastName}`;
-            normalized.unshift({ id: initialUserId, user: { name, initials: mkInitials(name), color: CONV_COLORS[initialUserId % CONV_COLORS.length], avatarUrl: u.avatarUrl }, lastMessage: "", unread: 0, time: "" });
+            normalized.unshift({ id: initialUserId, user: { name, initials: mkInitials(name), color: CONV_COLORS[initialUserId % CONV_COLORS.length], avatarUrl: u.avatarUrl, role: u.role }, lastMessage: "", unread: 0, time: "" });
           }
         }
         setConvList(normalized);
@@ -1511,9 +1511,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
      INCOMING CALL OVERLAY
   ══════════════════════════════════════════════════════════════ */
   if (sig.callState === "incoming" && sig.incomingCall) {
-    const caller     = allUsers.find(u => u.id === sig.incomingCall!.fromUserId);
-    const callerName = caller ? `${caller.firstName} ${caller.lastName}` : `Utilisateur #${sig.incomingCall.fromUserId}`;
+    const caller      = allUsers.find(u => u.id === sig.incomingCall!.fromUserId);
+    const callerName  = caller ? `${caller.firstName} ${caller.lastName}` : `Utilisateur #${sig.incomingCall.fromUserId}`;
     const callerColor = CONV_COLORS[sig.incomingCall.fromUserId % CONV_COLORS.length];
+    const callerAvatar = caller?.avatarUrl ?? null;
+    const callerVerified = caller?.role === "creator";
     const isVideo     = sig.incomingCall.callType === "video";
 
     return createPortal(
@@ -1550,14 +1552,25 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             <div style={{ position:"absolute", width:220, height:220, borderRadius:"50%", border:"1.5px solid rgba(34,197,94,0.2)", animation:"bp-ring-pulse2 2.4s ease-out infinite" }} />
             <div style={{ position:"absolute", width:180, height:180, borderRadius:"50%", border:"1.5px solid rgba(34,197,94,0.32)", animation:"bp-ring-pulse 2s ease-out infinite" }} />
             <div style={{ position:"absolute", width:148, height:148, borderRadius:"50%", border:"2px solid rgba(34,197,94,0.45)" }} />
-            {/* Avatar */}
-            <div style={{ width:124, height:124, borderRadius:"50%", background:`radial-gradient(circle at 35% 35%, ${callerColor}dd, ${callerColor}99)`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:46, color:"#fff", fontWeight:900, boxShadow:`0 0 0 4px rgba(34,197,94,0.4), 0 16px 48px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.25)`, backdropFilter:"blur(2px)", border:"3px solid rgba(255,255,255,0.15)" }}>
-              {mkInitials(callerName)}
+            {/* Avatar — real photo or initials */}
+            <div style={{ width:124, height:124, borderRadius:"50%", overflow:"hidden", background:`radial-gradient(circle at 35% 35%, ${callerColor}dd, ${callerColor}99)`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:46, color:"#fff", fontWeight:900, boxShadow:`0 0 0 4px rgba(34,197,94,0.4), 0 16px 48px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.25)`, backdropFilter:"blur(2px)", border:"3px solid rgba(255,255,255,0.15)" }}>
+              {callerAvatar
+                ? <img src={callerAvatar} alt={callerName} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                : mkInitials(callerName)
+              }
             </div>
             <div style={{ position:"absolute", bottom:8, right:8, width:22, height:22, borderRadius:"50%", background:"#22C55E", border:"3px solid #040f07", boxShadow:"0 0 10px #22C55E" }} />
           </div>
 
-          <div style={{ fontWeight:900, fontSize:26, color:"#fff", letterSpacing:0.5, marginBottom:8, textAlign:"center", padding:"0 28px", textShadow:"0 2px 16px rgba(0,0,0,0.5)" }}>{callerName}</div>
+          <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8, justifyContent:"center", padding:"0 28px" }}>
+            <span style={{ fontWeight:900, fontSize:26, color:"#fff", letterSpacing:0.5, textShadow:"0 2px 16px rgba(0,0,0,0.5)" }}>{callerName}</span>
+            {callerVerified && (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2L14.09 8.26L21 9.27L16.5 13.97L17.64 21L12 17.77L6.36 21L7.5 13.97L3 9.27L9.91 8.26L12 2Z" fill="#22C55E"/>
+                <polyline points="9,12 11,14 15,10" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+              </svg>
+            )}
+          </div>
           <div style={{ display:"flex", alignItems:"center", gap:2, marginBottom:24 }}>
             <span style={{ color:"rgba(255,255,255,.65)", fontSize:15 }}>Appel entrant</span>
             <span className="bp-dot" /><span className="bp-dot" /><span className="bp-dot" />
@@ -1637,10 +1650,12 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   <div>
                     <div style={{ display:"flex", alignItems:"center", gap:7 }}>
                       <span style={{ color:"#fff", fontWeight:900, fontSize:20, letterSpacing:0.2, textShadow:"0 1px 8px rgba(0,0,0,0.6)" }}>{peer?.name ?? "Appel vidéo"}</span>
-                      <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 2L14.09 8.26L21 9.27L16.5 13.97L17.64 21L12 17.77L6.36 21L7.5 13.97L3 9.27L9.91 8.26L12 2Z" fill="#22C55E"/>
-                        <polyline points="9,12 11,14 15,10" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                      </svg>
+                      {peer?.role === "creator" && (
+                        <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
+                          <path d="M12 2L14.09 8.26L21 9.27L16.5 13.97L17.64 21L12 17.77L6.36 21L7.5 13.97L3 9.27L9.91 8.26L12 2Z" fill="#22C55E"/>
+                          <polyline points="9,12 11,14 15,10" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                        </svg>
+                      )}
                     </div>
                     <div style={{ display:"flex", alignItems:"center", gap:4, marginTop:3 }}>
                       {sig.callState === "active"
@@ -1793,9 +1808,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   ))}
                 </div>
 
-                {/* Glassmorphism avatar */}
+                {/* Glassmorphism avatar — real photo or initials */}
                 <div style={{
-                  width:134, height:134, borderRadius:"50%",
+                  width:134, height:134, borderRadius:"50%", overflow:"hidden",
                   background:`radial-gradient(circle at 33% 30%, rgba(255,255,255,0.22), rgba(255,255,255,0.04) 60%), radial-gradient(circle at 70% 75%, ${peer?.color ?? "#166534"}cc, ${peer?.color ?? "#166534"}88)`,
                   display:"flex", alignItems:"center", justifyContent:"center",
                   fontSize:50, color:"#fff", fontWeight:900,
@@ -1804,19 +1819,24 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   backdropFilter:"blur(4px)",
                   textShadow:"0 2px 12px rgba(0,0,0,0.4)",
                 }}>
-                  {peer?.initials ?? "?"}
+                  {peer?.avatarUrl
+                    ? <img src={peer.avatarUrl} alt={peer.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                    : (peer?.initials ?? "?")
+                  }
                 </div>
                 {/* Online dot */}
                 <div style={{ position:"absolute", bottom:10, right:10, width:22, height:22, borderRadius:"50%", background:"radial-gradient(circle, #4ade80, #22c55e)", border:"3px solid #071d0c", boxShadow:"0 0 14px rgba(74,222,128,0.8)" }} />
               </div>
 
-              {/* Name + verified */}
+              {/* Name + verified (only for creators) */}
               <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }}>
                 <span style={{ fontWeight:900, fontSize:26, color:"#fff", letterSpacing:0.3, textShadow:"0 2px 16px rgba(0,0,0,0.5)" }}>{peer?.name ?? "Appel vocal"}</span>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 2L14.09 8.26L21 9.27L16.5 13.97L17.64 21L12 17.77L6.36 21L7.5 13.97L3 9.27L9.91 8.26L12 2Z" fill="#22C55E"/>
-                  <polyline points="9,12 11,14 15,10" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                </svg>
+                {peer?.role === "creator" && (
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2L14.09 8.26L21 9.27L16.5 13.97L17.64 21L12 17.77L6.36 21L7.5 13.97L3 9.27L9.91 8.26L12 2Z" fill="#22C55E"/>
+                    <polyline points="9,12 11,14 15,10" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                  </svg>
+                )}
               </div>
 
               {/* Status */}

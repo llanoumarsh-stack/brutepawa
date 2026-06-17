@@ -127,6 +127,7 @@ export interface PublicUser {
   country: string | null;
   avatarUrl: string | null;
   bio: string | null;
+  role?: string;
   profileLocked?: boolean;
 }
 
