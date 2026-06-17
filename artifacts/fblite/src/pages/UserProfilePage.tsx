@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "../router";
 import {
-  apiGetUsersWithStatus, apiGetFriendRequests, apiGetUserPosts,
+  apiGetUserById, apiGetUsersWithStatus, apiGetFriendRequests, apiGetUserPosts,
   apiSendFriendRequest, apiAcceptFriendRequest, apiRejectFriendRequest,
   apiBlockUser, apiUnblockUser, apiCheckBlock, apiReportUser, apiGetUserStats,
   type PublicUserWithStatus, type FriendRequest, type FeedPost,
@@ -161,19 +161,31 @@ export default function UserProfilePage({ userId }: { userId: number }) {
   useEffect(() => {
     setLoading(true);
     Promise.all([
-      apiGetUsersWithStatus(),
+      apiGetUserById(userId),
       apiGetUserPosts(userId),
       apiGetFriendRequests(),
       apiCheckBlock(userId),
       apiGetUserStats(userId),
-    ]).then(([users, userPosts, requests, blocked, userStats]) => {
-      const found = users.find(u => u.id === userId) ?? null;
-      setUser(found);
-      setPosts(userPosts);
-      const req = requests.find(r => r.fromUser.id === userId);
+      apiGetUsersWithStatus(),
+    ]).then(([directUser, userPosts, requests, blocked, userStats, allUsers]) => {
+      // Use direct lookup first; fall back to filtered list for friendship status
+      const fromList = (allUsers as PublicUserWithStatus[]).find(u => u.id === userId);
+      const base = directUser ?? fromList ?? null;
+      if (base) {
+        const withStatus: PublicUserWithStatus = {
+          ...base,
+          friendshipStatus: fromList?.friendshipStatus ?? "none",
+          requestId: fromList?.requestId,
+        };
+        setUser(withStatus);
+      } else {
+        setUser(null);
+      }
+      setPosts(userPosts as FeedPost[]);
+      const req = (requests as FriendRequest[]).find(r => r.fromUser.id === userId);
       setPendingRequest(req ?? null);
-      setIsBlocked(blocked);
-      setStats(userStats);
+      setIsBlocked(blocked as boolean);
+      setStats(userStats as { postsCount: number; followersCount: number; followingCount: number });
     }).catch(() => {}).finally(() => setLoading(false));
   }, [userId]);
 

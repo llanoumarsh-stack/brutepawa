@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
-import { apiGetPosts, apiCreatePost, apiLikePost, apiGetStories, apiToggleSaved, type FeedPost, type StoryGroup } from "../lib/api";
+import { apiGetPosts, apiCreatePost, apiLikePost, apiGetStories, apiToggleSaved, apiFollow, apiCheckFollowing, type FeedPost, type StoryGroup } from "../lib/api";
 import StoryViewer from "../components/StoryViewer";
 import { storyDraftStore } from "../lib/storyDraft";
 
@@ -152,6 +152,7 @@ export default function Feed() {
   const storyFileRef = useRef<HTMLInputElement>(null);
   const [postMenuId, setPostMenuId] = useState<number | null>(null);
   const [savedSet, setSavedSet] = useState<Set<number>>(new Set());
+  const [followedIds, setFollowedIds] = useState<Set<number>>(new Set());
 
   // Lock body scroll when bottom sheet is open to prevent layout shift
   useEffect(() => {
@@ -194,6 +195,35 @@ export default function Feed() {
   }, []);
 
   useEffect(() => { loadPosts(); loadStories(); }, [loadPosts, loadStories]);
+
+  // Charge la liste des utilisateurs déjà suivis dès que les posts sont chargés
+  useEffect(() => {
+    if (posts.length === 0) return;
+    const ids = [...new Set(posts.map(p => p.authorId).filter(Boolean))];
+    apiCheckFollowing(ids).then(followed => {
+      setFollowedIds(new Set(followed));
+    }).catch(() => {});
+  }, [posts.length]);
+
+  const handleFollow = async (authorId: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const isFollowing = followedIds.has(authorId);
+    setFollowedIds(prev => {
+      const next = new Set(prev);
+      if (isFollowing) next.delete(authorId); else next.add(authorId);
+      return next;
+    });
+    try {
+      await apiFollow(authorId, isFollowing ? "unfollow" : "follow");
+    } catch {
+      // Annuler l'optimistic update en cas d'erreur
+      setFollowedIds(prev => {
+        const next = new Set(prev);
+        if (isFollowing) next.add(authorId); else next.delete(authorId);
+        return next;
+      });
+    }
+  };
 
   const toggleLike = async (id: number) => {
     const post = posts.find(p => p.id === id);
@@ -560,7 +590,14 @@ export default function Feed() {
                       {post.authorName}
                     </span>
                     {flag && <span style={{ fontSize: 14 }}>{flag}</span>}
-                    <span style={{ fontSize: 13, fontWeight: 600, color: "#1877F2", cursor: "pointer" }}>· Suivre</span>
+                    {followedIds.has(post.authorId)
+                      ? <span
+                          onClick={(e) => handleFollow(post.authorId, e)}
+                          style={{ fontSize: 13, fontWeight: 600, color: "#65676b", cursor: "pointer" }}>· Suivi</span>
+                      : <span
+                          onClick={(e) => handleFollow(post.authorId, e)}
+                          style={{ fontSize: 13, fontWeight: 600, color: "#1877F2", cursor: "pointer" }}>· Suivre</span>
+                    }
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#65676b", marginTop: 1 }}>
                     <span>{timeAgo(post.createdAt)}</span>

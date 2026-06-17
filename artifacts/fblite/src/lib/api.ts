@@ -144,6 +144,12 @@ export async function apiGetUsersWithStatus(): Promise<PublicUserWithStatus[]> {
   return res.json() as Promise<PublicUserWithStatus[]>;
 }
 
+export async function apiGetUserById(userId: number): Promise<PublicUser | null> {
+  const res = await apiFetch(`/users/${userId}`);
+  if (!res.ok) return null;
+  return res.json() as Promise<PublicUser>;
+}
+
 export async function apiSearchUsers(q: string, options?: { country?: string }): Promise<PublicUserWithStatus[]> {
   if (!q.trim()) return [];
   const params = new URLSearchParams({ q: q.trim() });
