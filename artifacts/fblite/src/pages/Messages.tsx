@@ -2185,7 +2185,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                           </div>
                         </div>
                       </div>
-                    ) : null}
+                    ) : null
                   )}
                   {msg.attachment?.type === "image" && (() => {
                     const rawUrl = msg.attachment.label;
