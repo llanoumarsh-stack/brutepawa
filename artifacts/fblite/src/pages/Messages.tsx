@@ -474,6 +474,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       };
       mr.start(100);
       mediaRecorderRef.current = mr;
+      (document.activeElement as HTMLElement)?.blur();
       setIsRecording(true);
       recSecondsRef.current = 0;
       setRecSeconds(0);
@@ -2566,7 +2567,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMsg(); } }}
                   placeholder="Écrire un message..."
                   disabled={isRecording}
-                  style={{ width:"100%", background: isRecording ? "#F8FAFC" : "#F8FAFC", border:"1.5px solid #E2E8F0", borderRadius:24, padding:"10px 16px", fontSize:15, outline:"none", boxSizing:"border-box", color: isRecording ? "#94A3B8" : "#0F172A", opacity: isRecording ? 0.5 : 1 }} />
+                  style={{ width:"100%", background:"#F8FAFC", border:"1.5px solid #E2E8F0", borderRadius:24, padding:"10px 16px", fontSize:15, outline:"none", boxSizing:"border-box", color: isRecording ? "#94A3B8" : "#0F172A", opacity: isRecording ? 0.5 : 1, caretColor: isRecording ? "transparent" : undefined, pointerEvents: isRecording ? "none" : undefined }} />
               </div>
               {newMsg.trim() && !isRecording ? (
                 <button onClick={() => sendMsg()}
