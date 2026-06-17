@@ -2451,7 +2451,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
             {/* ── UNLOCKED RECORDING: mini info bar (gesture on mic button) ── */}
             {isRecording && !recLocked && (
-              <div style={{ display:"flex", alignItems:"center", gap:10, padding:"6px 14px 2px" }}>
+              <div style={{ display:"flex", alignItems:"center", gap:10, padding:"6px 14px 2px", userSelect:"none", WebkitUserSelect:"none" }}>
                 {/* Red pulsing dot */}
                 <div style={{ width:9, height:9, borderRadius:"50%", background:"#EF4444", flexShrink:0,
                   animation: recPaused ? "none" : "fbl-rec-pulse 1s ease-in-out infinite",
@@ -2546,7 +2546,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             )}
 
             {/* ── Main input row — hidden entirely when locked ── */}
-            <div style={{ padding:"8px 12px", display: recLocked ? "none" : "flex", gap:8, alignItems:"center" }}>
+            <div style={{ padding:"8px 12px", display: recLocked ? "none" : "flex", gap:8, alignItems:"center", userSelect:"none", WebkitUserSelect:"none" }}>
               {/* Emoji button — hidden during recording */}
               {!isRecording && (
                 <button style={{ background:"none", border:"none", cursor:"pointer", padding:0, flexShrink:0, display:"flex", alignItems:"center" }}>
@@ -2604,7 +2604,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
                     return (
                     <div style={{ position:"relative", flexShrink:0, width:SIZE, height:SIZE,
-                      overflow:"visible" }}>
+                      overflow:"visible", marginLeft:"auto" }}>
 
                       {/* ── LOCK ICON — fixed 110px above mic (never moves) ── */}
                       {isRecording && (
@@ -2686,6 +2686,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                           recIsDraggingRef.current = false;
                           if (isRecording) stopVoice();
                         }}
+                        onContextMenu={e => e.preventDefault()}
                         style={{
                           position:"absolute", top:0, left:0,
                           background:"linear-gradient(135deg,#16C24A 0%,#0ea541 100%)",
@@ -2693,6 +2694,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                           width: SIZE, height: SIZE,
                           display:"flex", alignItems:"center", justifyContent:"center",
                           cursor:"pointer", touchAction:"none",
+                          userSelect:"none", WebkitUserSelect:"none",
                           boxShadow: isRecording
                             ? "0 0 0 10px rgba(22,194,74,0.18), 0 4px 20px rgba(22,194,74,0.55)"
                             : "0 3px 12px rgba(22,194,74,0.45)",
