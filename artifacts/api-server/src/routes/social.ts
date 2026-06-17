@@ -437,21 +437,24 @@ router.get("/messages/:userId", requireAuth, async (req, res): Promise<void> => 
   const hasMore = raw.length > PAGE;
   const msgs    = (hasMore ? raw.slice(0, PAGE) : raw).reverse();
 
-  /* Mark as read + delivered in background, then push read receipt to sender */
-  db.update(messagesTable)
-    .set({ isRead: true, isDelivered: true })
-    .where(and(
-      eq(messagesTable.fromUserId, otherId),
-      eq(messagesTable.toUserId, me),
-      eq(messagesTable.isRead, false),
-    ))
-    .returning({ id: messagesTable.id })
-    .then(readMsgs => {
-      if (readMsgs.length > 0) {
-        pushToUser(otherId, "message:read", { messageIds: readMsgs.map(m => m.id) });
-      }
-    })
-    .catch(() => {});
+  /* Mark as read only when the user explicitly opens the conversation (mark_read=1),
+     NOT on background polls — prevents premature ✓✓ blue receipts. */
+  if (req.query.mark_read === "1") {
+    db.update(messagesTable)
+      .set({ isRead: true, isDelivered: true })
+      .where(and(
+        eq(messagesTable.fromUserId, otherId),
+        eq(messagesTable.toUserId, me),
+        eq(messagesTable.isRead, false),
+      ))
+      .returning({ id: messagesTable.id })
+      .then(readMsgs => {
+        if (readMsgs.length > 0) {
+          pushToUser(otherId, "message:read", { messageIds: readMsgs.map(m => m.id) });
+        }
+      })
+      .catch(() => {});
+  }
 
   res.setHeader("Cache-Control", "private, no-cache");
   res.json({ messages: msgs, hasMore });

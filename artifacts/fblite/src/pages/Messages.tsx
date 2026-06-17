@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
-import { apiGetConversations, apiGetMessages, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadFileXHR, apiUploadVoice, apiDeleteConversation, apiDeleteMessage, apiGetLinkPreview, apiGetMessagingSettings, apiUpdateMessagingSettings, apiGetMessageRequests, apiUpdateMessageRequest, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview, type MessageRequest } from "../lib/api";
+import { apiGetConversations, apiGetMessages, apiMarkMessagesRead, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadFileXHR, apiUploadVoice, apiDeleteConversation, apiDeleteMessage, apiGetLinkPreview, apiGetMessagingSettings, apiUpdateMessagingSettings, apiGetMessageRequests, apiUpdateMessageRequest, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview, type MessageRequest } from "../lib/api";
 import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignaling";
 
 void ({} as ApiChatGroup);
@@ -843,6 +843,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     const time   = new Date(data.createdAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
     const msg: Message = { id: data.id, text: data.content, mine: false, time, status: "sent" };
     setMessages(prev => ({ ...prev, [fromId]: [...(prev[fromId] ?? []), msg] }));
+    /* If the recipient has this conversation open right now, mark as read immediately */
+    if (activeConvRef.current === fromId) {
+      apiMarkMessagesRead(fromId);
+    }
     setConvList(prev => {
       const exists = prev.find(c => c.id === fromId);
       if (exists) {
@@ -983,7 +987,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
   useEffect(() => {
     if (!activeConv || messages[activeConv]) return;
-    apiGetMessages(activeConv).then(({ messages: msgs, hasMore }) => {
+    /* markRead=true on initial open — this is when the user actually sees messages */
+    apiGetMessages(activeConv, undefined, true).then(({ messages: msgs, hasMore }) => {
       setMessages(prev => ({
         ...prev,
         [activeConv]: msgs.map(m => parseApiMsg(m)),

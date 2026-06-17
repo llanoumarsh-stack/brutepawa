@@ -705,11 +705,19 @@ export async function apiGetUserStats(userId: number): Promise<{ postsCount: num
   return res.json() as Promise<{ postsCount: number; followersCount: number; followingCount: number }>;
 }
 
-export async function apiGetMessages(userId: number, before?: number): Promise<{ messages: ApiChatMessage[]; hasMore: boolean }> {
-  const url = before ? `/messages/${userId}?before=${before}` : `/messages/${userId}`;
+export async function apiGetMessages(userId: number, before?: number, markRead = false): Promise<{ messages: ApiChatMessage[]; hasMore: boolean }> {
+  const params = new URLSearchParams();
+  if (before) params.set("before", String(before));
+  if (markRead) params.set("mark_read", "1");
+  const qs  = params.toString();
+  const url = `/messages/${userId}${qs ? `?${qs}` : ""}`;
   const res = await apiFetch(url);
   if (!res.ok) return { messages: [], hasMore: false };
   return res.json() as Promise<{ messages: ApiChatMessage[]; hasMore: boolean }>;
+}
+
+export async function apiMarkMessagesRead(userId: number): Promise<void> {
+  await apiFetch(`/messages/${userId}?mark_read=1`).catch(() => {});
 }
 
 export async function apiDeleteConversation(userId: number): Promise<void> {
