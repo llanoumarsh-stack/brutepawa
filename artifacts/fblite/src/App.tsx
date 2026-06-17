@@ -383,9 +383,11 @@ function AppContent() {
     const uid = new URLSearchParams(qs2).get("userId");
     const initUid = uid ? parseInt(uid, 10) : undefined;
     return (
-      <MessagesBoundary>
-        <Messages initialUserId={!initUid || isNaN(initUid) ? undefined : initUid} />
-      </MessagesBoundary>
+      <Layout onNewPost={handleNewPost}>
+        <MessagesBoundary>
+          <Messages initialUserId={!initUid || isNaN(initUid) ? undefined : initUid} />
+        </MessagesBoundary>
+      </Layout>
     );
   }
 
