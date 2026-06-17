@@ -74,7 +74,7 @@ function fmtBytes(b: number): string {
 
 interface NormConv {
   id: number;
-  user: { name: string; initials: string; color: string };
+  user: { name: string; initials: string; color: string; avatarUrl?: string | null };
   lastMessage: string;
   unread: number;
   time: string;
@@ -178,6 +178,9 @@ function fmtConvPreview(raw: string): { text: string; isAudio: boolean } {
     }
     return { text: "Message vocal", isAudio: true };
   }
+  if (raw.startsWith("__image__:"))    return { text: "📷 Photo", isAudio: false };
+  if (raw.startsWith("__doc__:"))      return { text: "📎 Document", isAudio: false };
+  if (raw.startsWith("__location__:")) return { text: "📍 Localisation", isAudio: false };
   return { text: raw.length > 55 ? raw.slice(0, 55) + "…" : raw, isAudio: false };
 }
 
@@ -840,7 +843,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             const name = u ? `${u.firstName} ${u.lastName}` : `Utilisateur #${c.userId}`;
             return {
               id: c.userId,
-              user: { name, initials: mkInitials(name), color: CONV_COLORS[c.userId % CONV_COLORS.length] },
+              user: { name, initials: mkInitials(name), color: CONV_COLORS[c.userId % CONV_COLORS.length], avatarUrl: u?.avatarUrl ?? null },
               lastMessage: c.lastMessage, unread: c.unreadCount,
               time: new Date(c.updatedAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }),
             };
@@ -849,7 +852,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           const u = users.find(u => u.id === initialUserId);
           if (u) {
             const name = `${u.firstName} ${u.lastName}`;
-            normalized.unshift({ id: initialUserId, user: { name, initials: mkInitials(name), color: CONV_COLORS[initialUserId % CONV_COLORS.length] }, lastMessage: "", unread: 0, time: "" });
+            normalized.unshift({ id: initialUserId, user: { name, initials: mkInitials(name), color: CONV_COLORS[initialUserId % CONV_COLORS.length], avatarUrl: u.avatarUrl }, lastMessage: "", unread: 0, time: "" });
           }
         }
         setConvList(normalized);
@@ -978,7 +981,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             const name = u ? `${u.firstName} ${u.lastName}` : `Utilisateur #${c.userId}`;
             return {
               id: c.userId,
-              user: existing?.user ?? { name, initials: mkInitials(name), color: CONV_COLORS[c.userId % CONV_COLORS.length] },
+              user: existing?.user
+                ? { ...existing.user, avatarUrl: u?.avatarUrl ?? existing.user.avatarUrl ?? null }
+                : { name, initials: mkInitials(name), color: CONV_COLORS[c.userId % CONV_COLORS.length], avatarUrl: u?.avatarUrl ?? null },
               lastMessage: c.lastMessage,
               unread: activeConvRef.current === c.userId ? 0 : c.unreadCount,
               time: new Date(c.updatedAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }),
@@ -3978,7 +3983,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 return (
                 <div key={conv.id} onClick={() => setActiveConv(conv.id)} style={{ flexShrink: 0, textAlign: "center", width: 72, padding: "0 4px", cursor: "pointer" }}>
                   <div style={{ position: "relative", marginBottom: 5 }}>
-                    <div className="avatar" style={{ width: 56, height: 56, fontSize: 19, margin: "0 auto", background: conv.user.color, border: "3px solid #fff" }}>{conv.user.initials}</div>
+                    {conv.user.avatarUrl
+                      ? <img src={conv.user.avatarUrl} alt={conv.user.name} style={{ width: 56, height: 56, borderRadius: "50%", objectFit: "cover", display: "block", margin: "0 auto", border: "3px solid #fff" }} />
+                      : <div className="avatar" style={{ width: 56, height: 56, fontSize: 19, margin: "0 auto", background: conv.user.color, border: "3px solid #fff" }}>{conv.user.initials}</div>
+                    }
                     <div style={{ position: "absolute", bottom: 0, right: 6, width: 14, height: 14, background: isOnline ? "#22C55E" : "#CBD5E1", borderRadius: "50%", border: "2.5px solid #fff" }} />
                   </div>
                   <div style={{ fontSize: 11, color: "#444", fontWeight: 400, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
@@ -3996,7 +4004,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           ...visibleConvs.map(c => {
             const pres = convPresence[c.id];
             const { text: previewText, isAudio } = fmtConvPreview(c.lastMessage);
-            return { type: "conv" as const, id: c.id, key: `c${c.id}`, name: c.user.name, previewText, isAudio, time: c.time, unread: c.unread, color: c.user.color, initials: c.user.initials, online: pres?.online ?? false, lastSeenAt: pres?.lastSeenAt ?? null, grp: null };
+            return { type: "conv" as const, id: c.id, key: `c${c.id}`, name: c.user.name, previewText, isAudio, time: c.time, unread: c.unread, color: c.user.color, initials: c.user.initials, avatarUrl: c.user.avatarUrl ?? null, online: pres?.online ?? false, lastSeenAt: pres?.lastSeenAt ?? null, grp: null };
           }),
           ...visibleGroups.map(g => {
             const isChan = g.type === "channel";
@@ -4011,9 +4019,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
             {/* Avatar + online dot */}
             <div style={{ position:"relative", flexShrink:0 }}>
-              <div className="avatar" style={{ width:56, height:56, fontSize: item.type==="group" ? 24 : 20, background:item.color, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:700, color:"#fff" }}>
-                {item.initials}
-              </div>
+              {"avatarUrl" in item && item.avatarUrl
+                ? <img src={item.avatarUrl} alt={item.name} style={{ width:56, height:56, borderRadius:"50%", objectFit:"cover", display:"block" }} />
+                : <div className="avatar" style={{ width:56, height:56, fontSize: item.type==="group" ? 24 : 20, background:item.color, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:700, color:"#fff" }}>{item.initials}</div>
+              }
               {item.online ? (
                 <div style={{ position:"absolute", bottom:1, right:1, width:14, height:14, background:"#22C55E", borderRadius:"50%", border:"2.5px solid #fff" }} />
               ) : item.type === "conv" ? (
