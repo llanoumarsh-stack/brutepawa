@@ -56,7 +56,23 @@ self.addEventListener("push", (e) => {
     silent:             false,
   };
 
-  e.waitUntil(self.registration.showNotification(title, options));
+  /* ── Delivery receipt: call server as soon as push is received (app can be closed) ── */
+  const deliveryPromise = (data.data?.deliveryToken && data.data?.msgId)
+    ? fetch(self.location.origin + "/api/messages/sw-delivered", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token:    data.data.deliveryToken,
+          msgId:    data.data.msgId,
+          toUserId: data.data.toUserId,
+        }),
+      }).catch(() => {})
+    : Promise.resolve();
+
+  e.waitUntil(Promise.all([
+    self.registration.showNotification(title, options),
+    deliveryPromise,
+  ]));
 
   /* ── For calls: keep re-notifying every 4s while the notification persists ── */
   if (isCall) {

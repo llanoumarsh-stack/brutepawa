@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { createHmac } from "node:crypto";
 import { db, postsTable, postLikesTable, messagesTable, usersTable, storiesTable, userBlocksTable, notificationsTable, commentsTable, commentLikesTable, savedPostsTable, postReportsTable, friendRequestsTable } from "@workspace/db";
 import { eq, and, or, desc, sql, gt, lt } from "drizzle-orm";
 import { CreatePostBody, GetPostParams, DeletePostParams, LikePostParams, LikePostBody, SendMessageBody, GetConversationParams, ListPostsQueryParams } from "@workspace/api-zod";
@@ -7,6 +8,14 @@ import { pushToUserDevice } from "./push";
 import { pushToUser } from "./signaling";
 import { extractKeyFromUrl, ownerIdFromKey } from "../lib/r2";
 import { releaseStorage } from "../lib/storage";
+
+const DELIVERY_SECRET = process.env.SESSION_SECRET ?? "bp-delivery-dev";
+function makeDeliveryToken(msgId: number, toUserId: number): string {
+  return createHmac("sha256", DELIVERY_SECRET).update(`${msgId}:${toUserId}`).digest("hex");
+}
+function verifyDeliveryToken(token: string, msgId: number, toUserId: number): boolean {
+  return token === makeDeliveryToken(msgId, toUserId);
+}
 
 const router = Router();
 
@@ -348,10 +357,35 @@ router.post("/messages", requireAuth, async (req, res): Promise<void> => {
     tag:                `msg-${me}`,
     renotify:           true,
     vibrate:            [200, 100, 200],
-    data:               { url: `/messages?userId=${me}` },
+    data:               {
+      url:           `/messages?userId=${me}`,
+      msgId:         msg.id,
+      toUserId:      toId,
+      deliveryToken: makeDeliveryToken(msg.id, toId),
+    },
   }).catch(() => {});
 
   res.status(201).json(msg);
+});
+
+/* ── SW delivery receipt (unauthenticated, token-verified) ──────────────────
+   Called by the service worker the moment a push notification is received,
+   even when the app is closed. Proves Bob's device got the message → ✓✓. */
+router.post("/messages/sw-delivered", async (req, res): Promise<void> => {
+  const { token, msgId, toUserId } = req.body as { token?: string; msgId?: number; toUserId?: number };
+  if (!token || !msgId || !toUserId || !verifyDeliveryToken(token, Number(msgId), Number(toUserId))) {
+    res.status(403).json({ ok: false });
+    return;
+  }
+  const updated = await db.update(messagesTable)
+    .set({ isDelivered: true, deliveredAt: new Date() })
+    .where(and(eq(messagesTable.id, Number(msgId)), eq(messagesTable.isDelivered, false)))
+    .returning({ id: messagesTable.id, fromUserId: messagesTable.fromUserId })
+    .catch(() => []);
+  if (updated.length > 0) {
+    pushToUser(updated[0].fromUserId, "message:delivered", { messageIds: [updated[0].id] });
+  }
+  res.json({ ok: true });
 });
 
 router.get("/messages/:userId", requireAuth, async (req, res): Promise<void> => {
