@@ -1,0 +1,109 @@
+REFONTE ULTRA PREMIUM DE LA PAGE "CRÉER UNE PUBLICATION" DE BRUTEPAWA
+
+IMPORTANT :
+Conserver toutes les fonctionnalités existantes mais transformer entièrement le design pour atteindre un niveau Facebook 2026 / Threads / TikTok Premium.
+
+IDENTITÉ VISUELLE BRUTEPAWA
+
+- Couleur principale : #22C55E
+- Fond blanc ultra propre
+- Design moderne et minimaliste
+- Coins arrondis 20 à 24px
+- Ombres très douces
+- Hiérarchie visuelle parfaite
+- Espacements professionnels
+- Animations fluides
+- Aucun élément pixelisé
+
+EN-TÊTE
+
+- Bouton retour dans un cercle léger
+- Titre "Créer une publication"
+- Bouton PUBLIER premium
+- Bouton désactivé gris clair
+- Bouton actif vert BrutePawa avec glow subtil
+
+ZONE PROFIL
+
+- Avatar circulaire premium
+- Nom utilisateur en gras
+- Drapeau pays
+- Sélecteur confidentialité moderne
+- Public / Amis / Privé
+
+ZONE DE SAISIE
+
+- Grande carte blanche flottante
+- Placeholder :
+
+"Partagez un moment fort de votre journée..."
+
+- Curseur vert BrutePawa
+- Support texte long
+- Support emojis
+- Support hashtags
+
+BARRE DE STYLE
+
+Ajouter :
+
+- Texte
+- Emoji
+- GIF
+- Sondage
+
+Palette couleurs premium :
+
+- Violet
+- Rouge
+- Noir
+- Violet foncé
+- Lavande
+- Orange
+- Bleu nuit
+
+Options affichées sous forme de pastilles modernes.
+
+LISTE DES ACTIONS
+
+Chaque ligne doit être une carte premium :
+
+📷 Photos/Vidéos
+🎵 Musique
+👥 Identifier des personnes
+📍 Ajouter un lieu
+😊 Humeur / Activité
+📅 Créer un événement
+🔴 Lancer un direct
+
+Style :
+
+- Icône dans cercle coloré
+- Texte parfaitement aligné
+- Chevron à droite
+- Effet tactile moderne
+
+BOUTON PUBLIER BAS
+
+- Largeur complète
+- Vert BrutePawa
+- Hauteur 60px
+- Coins 18px
+- Ombre verte élégante
+
+Texte :
+
+➤ PUBLIER
+
+EFFETS PREMIUM
+
+- Glassmorphism léger
+- Ombres réalistes
+- Transitions fluides
+- Respect parfait Android
+- Respect parfait iPhone
+- Design digne d'une application à plusieurs millions d'utilisateurs
+
+OBJECTIF
+
+Créer la plus belle page de création de publication d'Afrique francophone tout en restant fidèle à l'identité visuelle BrutePawa.
