@@ -1,0 +1,82 @@
+REFONTE COMPLÈTE DE LA PAGE D'INSCRIPTION BRUTEPAWA
+
+Objectif : créer une page d'inscription inspirée des meilleures pratiques de Facebook, WhatsApp et TikTok, tout en conservant l'identité visuelle BrutePawa.
+
+STYLE GÉNÉRAL
+- Design mobile-first ultra moderne
+- Couleur principale : #22C55E (vert BrutePawa)
+- Fond blanc avec légers motifs verts très subtils
+- Aspect premium, professionnel et rassurant
+- Coins arrondis 20px à 24px
+- Ombres douces et élégantes
+- Interface simple, rapide à comprendre
+- Aucun élément inutile
+
+EN-TÊTE
+- Sélecteur de langue en haut à droite
+- Logo BrutePawa centré
+- Nom "brutepawa" sous le logo
+- Animation légère ou effet glow discret sur le logo
+
+TITRE
+Créer un compte
+
+SOUS-TITRE
+Rejoignez BrutePawa et développez votre activité partout en Afrique francophone.
+
+FORMULAIRE
+Champ 1 :
+Icône téléphone
+Placeholder :
+"Numéro de téléphone ou adresse e-mail"
+
+Champ 2 :
+Icône cadenas
+Placeholder :
+"Mot de passe"
+Bouton afficher/masquer mot de passe à droite
+
+Tous les champs :
+- Fond blanc
+- Bordure grise très légère
+- Coins arrondis 18px
+- Hauteur confortable
+- Focus vert BrutePawa
+
+BOUTON PRINCIPAL
+Texte :
+"Créer mon compte"
+
+Style :
+- Vert BrutePawa
+- Pleine largeur
+- Hauteur 58px
+- Coins 18px
+- Ombre verte légère
+- Icône flèche à droite
+
+SECTION CONNEXION
+Texte :
+"Vous avez déjà un compte ?"
+
+Lien vert :
+"Se connecter"
+
+BAS DE PAGE
+Texte discret :
+
+"En vous inscrivant, vous acceptez nos Conditions d'utilisation et notre Politique de confidentialité."
+
+STYLE VISUEL
+- Ultra premium
+- Minimaliste
+- Inspiré de Facebook 2026
+- Très fluide
+- Très moderne
+- Parfaitement adapté Android et iPhone
+- Respect strict de l'identité BrutePawa
+- Aucun élément surchargé
+- Priorité à la simplicité et au taux de conversion
+
+Résultat attendu :
+Une page d'inscription qui paraît plus professionnelle, plus moderne et plus premium que Facebook, tout en restant simple et rapide à utiliser.
