@@ -1,0 +1,176 @@
+══════════════════════════════
+RÈGLE FONDAMENTALE
+ÉTATS DES MÉDIAS = ÉTAT DE LA CONNEXION DE L'ENVOYEUR
+══════════════════════════════
+
+IMPORTANT :
+
+Les états visuels des médias ne doivent PAS être simulés.
+
+Ils doivent dépendre directement de l'état réel de la connexion réseau de l'utilisateur qui envoie le média.
+
+Le système doit surveiller en temps réel :
+
+- Vitesse d'upload
+- Latence réseau
+- Qualité de connexion
+- Perte de connexion
+- Reprise de connexion
+- Réponse du serveur
+
+══════════════════════════════
+CAS 1 : CONNEXION NORMALE
+══════════════════════════════
+
+Si l'upload progresse normalement :
+
+Afficher :
+
+◯ 15%
+◯ 42%
+◯ 68%
+◯ 93%
+◯ 100%
+
+L'animation doit être fluide.
+
+Le pourcentage doit être calculé à partir du nombre réel d'octets envoyés.
+
+Aucune valeur simulée.
+
+══════════════════════════════
+CAS 2 : CONNEXION LENTE
+══════════════════════════════
+
+Si la vitesse d'upload chute fortement
+OU
+si aucun progrès n'est détecté pendant plusieurs secondes :
+
+Afficher :
+
+🕒 Connexion lente...
+
+Conserver :
+
+- média visible
+- pourcentage actuel
+- cercle de progression
+
+Exemple :
+
+42%
+
+🕒 Connexion lente...
+
+Le système doit détecter cela automatiquement.
+
+══════════════════════════════
+CAS 3 : PERTE DE CONNEXION
+══════════════════════════════
+
+Si Internet disparaît :
+
+navigator.onLine = false
+
+ou timeout réseau
+
+Afficher :
+
+🕒 En attente du réseau
+
+Le média reste visible.
+
+Le pourcentage reste figé.
+
+Le cercle reste affiché.
+
+L'utilisateur comprend immédiatement que le problème vient de sa connexion.
+
+══════════════════════════════
+CAS 4 : RETOUR DE CONNEXION
+══════════════════════════════
+
+Dès que la connexion revient :
+
+Reprendre automatiquement l'upload.
+
+Ne jamais recommencer depuis 0%.
+
+Reprendre depuis le dernier pourcentage connu.
+
+Exemple :
+
+42%
+↓
+Perte réseau
+↓
+Connexion rétablie
+↓
+43%
+44%
+45%
+
+══════════════════════════════
+CAS 5 : ERREUR SERVEUR
+══════════════════════════════
+
+Si la connexion est bonne mais que le serveur refuse le média :
+
+Afficher :
+
+⚠ Échec de l'envoi
+
+↻ Réessayer
+
+Ce cas est différent d'une perte réseau.
+
+══════════════════════════════
+CAS 6 : MÉDIA ENVOYÉ
+══════════════════════════════
+
+Lorsque le serveur confirme la réception complète :
+
+Supprimer :
+
+- loader
+- cercle
+- pourcentage
+
+Afficher :
+
+✓
+
+══════════════════════════════
+CAS 7 : MÉDIA LIVRÉ
+══════════════════════════════
+
+Lorsque le destinataire reçoit réellement le média :
+
+Afficher :
+
+✓✓
+
+══════════════════════════════
+IMPORTANT POUR LE DÉVELOPPEUR
+══════════════════════════════
+
+Le statut affiché doit toujours refléter l'état réel du réseau de l'expéditeur.
+
+Le système ne doit jamais afficher :
+
+"Connexion lente"
+si la connexion est rapide.
+
+Le système ne doit jamais afficher :
+
+"En attente du réseau"
+si Internet fonctionne.
+
+Le système ne doit jamais afficher :
+
+"Échec de l'envoi"
+si le média est encore en cours d'upload.
+
+Tous les états doivent être pilotés par les événements réseau réels et les réponses réelles du serveur.
+
+L'objectif est d'obtenir le même niveau de fiabilité et de réalisme que WhatsApp, Telegram et Messenger.

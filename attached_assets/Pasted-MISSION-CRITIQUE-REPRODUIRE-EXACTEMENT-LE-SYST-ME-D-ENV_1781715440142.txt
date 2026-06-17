@@ -1,0 +1,324 @@
+MISSION CRITIQUE — REPRODUIRE EXACTEMENT LE SYSTÈME D’ENVOI DE MÉDIAS BRUTEPAWA
+
+Tu dois implémenter un système d’envoi de médias identique à la maquette de référence, avec un niveau de fidélité visuelle et fonctionnelle de 99%.
+
+INTERDICTION DE SIMPLIFIER, REMPLACER OU INTERPRÉTER LE DESIGN.
+
+══════════════════════════════
+OBJECTIF
+══════════════════════════════
+
+Créer un système moderne de gestion des médias dans la messagerie BrutePawa :
+
+- Photos
+- Vidéos
+- Documents
+- Audio
+- Localisation
+
+Le comportement doit être similaire à WhatsApp, Telegram et Messenger 2026.
+
+══════════════════════════════
+ÉTAT 1 : ENVOI EN COURS
+══════════════════════════════
+
+Lorsqu'un utilisateur envoie un média :
+
+✓ Afficher immédiatement la prévisualisation réelle du média
+
+✓ Ne jamais afficher uniquement le nom du fichier
+
+✓ Afficher l'image directement
+
+✓ Afficher la miniature vidéo directement
+
+✓ Afficher la carte de localisation directement
+
+✓ Afficher le document dans une carte moderne
+
+Ajouter en superposition :
+
+- Cercle de progression
+- Pourcentage réel
+- Bouton Annuler (X)
+
+Exemple :
+
+68%
+◯
+ X
+
+Le cercle doit se remplir progressivement.
+
+Le pourcentage doit être calculé avec :
+
+uploadedBytes / totalBytes
+
+et non simulé.
+
+══════════════════════════════
+ÉTAT 2 : CONNEXION LENTE
+══════════════════════════════
+
+Si aucun progrès détecté pendant 3 secondes :
+
+Afficher :
+
+🕒 Connexion lente...
+
+Le cercle reste visible.
+
+Le pourcentage reste visible.
+
+Le média reste visible.
+
+Ne jamais remplacer le média.
+
+══════════════════════════════
+ÉTAT 3 : EN ATTENTE DU RÉSEAU
+══════════════════════════════
+
+Si internet est perdu :
+
+Afficher :
+
+🕒 En attente du réseau
+
+Envoyé dès le retour de la connexion
+
+Le média reste affiché.
+
+Le cercle reste affiché.
+
+Le téléchargement est suspendu.
+
+Reprise automatique dès le retour du réseau.
+
+══════════════════════════════
+ÉTAT 4 : ÉCHEC D'ENVOI
+══════════════════════════════
+
+Si le serveur renvoie une erreur :
+
+Afficher :
+
+⚠ Échec de l'envoi
+
+↻ Réessayer
+
+Le média reste affiché.
+
+Aucune suppression automatique.
+
+Le bouton Réessayer relance l'envoi.
+
+══════════════════════════════
+ÉTAT 5 : ENVOYÉ
+══════════════════════════════
+
+Lorsque l'upload est terminé :
+
+Supprimer :
+
+- Cercle
+- Pourcentage
+- Loader
+
+Afficher :
+
+✓
+
+Le média est présent sur le serveur.
+
+Le destinataire ne l'a pas encore reçu.
+
+══════════════════════════════
+ÉTAT 6 : LIVRÉ
+══════════════════════════════
+
+Lorsque le destinataire reçoit le média :
+
+Afficher :
+
+✓✓
+
+comme WhatsApp.
+
+══════════════════════════════
+CAS SPÉCIAL : PHOTO
+══════════════════════════════
+
+AFFICHER :
+
+❌ Nom du fichier uniquement
+
+❌ URL du fichier
+
+❌ Texte "Photo"
+
+✔ Image réelle
+
+✔ Miniature optimisée
+
+✔ Aperçu instantané
+
+✔ Zoom au clic
+
+══════════════════════════════
+CAS SPÉCIAL : VIDÉO
+══════════════════════════════
+
+Afficher :
+
+✔ Miniature vidéo
+
+✔ Bouton Play
+
+✔ Durée
+
+✔ Taille
+
+✔ Progression d'envoi
+
+Ne jamais afficher uniquement l'URL.
+
+══════════════════════════════
+CAS SPÉCIAL : DOCUMENT
+══════════════════════════════
+
+Carte moderne :
+
+PDF rouge
+DOC bleu
+XLS vert
+ZIP orange
+
+Afficher :
+
+- Icône
+- Nom
+- Taille
+
+Pendant l'envoi :
+
+Cercle + pourcentage
+
+══════════════════════════════
+CAS SPÉCIAL : LOCALISATION
+══════════════════════════════
+
+Utiliser une carte réelle.
+
+Afficher :
+
+📍 Position partagée
+
+Quartier Fidjrossè, Cotonou
+
+Bouton :
+
+Voir sur la carte
+
+Pendant l'envoi :
+
+- Cercle de progression
+- Pourcentage
+- Bouton Annuler
+
+Comme les photos.
+
+══════════════════════════════
+RESPONSIVE OBLIGATOIRE
+══════════════════════════════
+
+Le système doit fonctionner parfaitement sur :
+
+320px
+360px
+375px
+390px
+412px
+414px
+430px
+480px
+600px
+768px
+1024px
+
+INTERDICTION :
+
+❌ Overflow horizontal
+
+❌ Texte coupé
+
+❌ Boutons hors écran
+
+❌ Images déformées
+
+❌ Cercles tronqués
+
+❌ Loader mal positionné
+
+Utiliser :
+
+- Flexbox
+- Grid
+- SafeArea
+- Responsive Units
+- Clamp()
+- Media Queries
+
+══════════════════════════════
+STYLE VISUEL OBLIGATOIRE
+══════════════════════════════
+
+Couleur principale :
+
+#22C55E
+
+Coins :
+
+18px à 24px
+
+Ombres :
+
+Douces et modernes
+
+Animations :
+
+60 FPS
+
+Transitions :
+
+300ms
+
+Design :
+
+WhatsApp + Telegram + iMessage 2026
+
+Ultra Premium
+
+Ultra Fluide
+
+Ultra Moderne
+
+══════════════════════════════
+VALIDATION FINALE
+══════════════════════════════
+
+Avant de terminer :
+
+1. Tester photo
+2. Tester vidéo
+3. Tester audio
+4. Tester document
+5. Tester localisation
+6. Tester connexion lente
+7. Tester hors ligne
+8. Tester reprise réseau
+9. Tester réessayer
+10. Tester envoyé
+11. Tester livré
+12. Tester tous les écrans mobiles
+
+Le résultat final doit reproduire fidèlement la maquette et offrir une expérience premium digne d’une application sociale moderne à grande échelle.

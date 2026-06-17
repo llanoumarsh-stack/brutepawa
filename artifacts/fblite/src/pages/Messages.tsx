@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
-import { apiGetConversations, apiGetMessages, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadVoice, apiDeleteConversation, apiDeleteMessage, apiGetLinkPreview, apiGetMessagingSettings, apiUpdateMessagingSettings, apiGetMessageRequests, apiUpdateMessageRequest, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview, type MessageRequest } from "../lib/api";
+import { apiGetConversations, apiGetMessages, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadFileXHR, apiUploadVoice, apiDeleteConversation, apiDeleteMessage, apiGetLinkPreview, apiGetMessagingSettings, apiUpdateMessagingSettings, apiGetMessageRequests, apiUpdateMessageRequest, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview, type MessageRequest } from "../lib/api";
 import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignaling";
 
 void ({} as ApiChatGroup);
@@ -54,7 +54,22 @@ interface Message {
   mine: boolean;
   time: string;
   status?: "pending" | "sent" | "delivered" | "read";
-  attachment?: { type: "image" | "doc" | "location" | "audio"; label: string; extra?: string };
+  attachment?: { type: "image" | "doc" | "location" | "audio"; label: string; extra?: string; size?: number };
+}
+
+interface MediaUploadState {
+  progress: number;
+  network: "uploading" | "slow" | "offline" | "error";
+  fileSize: number;
+  file: File;
+  localUrl: string;
+  cancelFn?: () => void;
+}
+
+function fmtBytes(b: number): string {
+  if (b < 1024) return `${b} o`;
+  if (b < 1024 * 1024) return `${(b / 1024).toFixed(1)} Ko`;
+  return `${(b / 1024 / 1024).toFixed(1)} Mo`;
 }
 
 interface NormConv {
@@ -263,7 +278,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [peerTyping, setPeerTyping]     = useState<{ typing: boolean; activity: string }>({ typing: false, activity: "typing" });
   const [attachSheet, setAttachSheet]   = useState(false);
   const [attachPage, setAttachPage]     = useState<"none"|"poll"|"event"|"contacts"|"ai">("none");
-  const [uploadingAttach, setUploadingAttach] = useState(false);
+  const mediaUploadsRef = useRef<Map<number, MediaUploadState>>(new Map());
+  const [mediaUploads, setMediaUploads] = useState<Map<number, MediaUploadState>>(new Map());
   const [aiPrompt, setAiPrompt]         = useState("");
   const [aiLoading, setAiLoading]       = useState(false);
   const galleryInputRef = useRef<HTMLInputElement>(null);
@@ -408,16 +424,132 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       });
   }, [activeConv]);
 
-  const handleFileInput = useCallback(async (file: File, kind: "image"|"doc") => {
-    setAttachSheet(false); setAttachPage("none"); setUploadingAttach(true);
+  const retryUpload = useCallback(async (tmpId: number, convId: number) => {
+    const s = mediaUploadsRef.current.get(tmpId);
+    if (!s) return;
+    const { file } = s;
+    const localUrl = s.localUrl;
+    const kind: "image" | "doc" = file.type.startsWith("image/") ? "image" : "doc";
+    const newState: MediaUploadState = { ...s, progress: 0, network: "uploading", cancelFn: undefined };
+    mediaUploadsRef.current.set(tmpId, newState);
+    setMediaUploads(new Map(mediaUploadsRef.current));
+    const { promise, cancel } = apiUploadFileXHR(file, (loaded, total) => {
+      const pct = total > 0 ? Math.round((loaded / total) * 100) : 0;
+      const cur = mediaUploadsRef.current.get(tmpId);
+      if (cur) { mediaUploadsRef.current.set(tmpId, { ...cur, progress: pct }); setMediaUploads(new Map(mediaUploadsRef.current)); }
+    });
+    const withCancel = mediaUploadsRef.current.get(tmpId);
+    if (withCancel) { mediaUploadsRef.current.set(tmpId, { ...withCancel, cancelFn: cancel }); }
     try {
-      const { url } = await apiUploadFile(file);
+      const { url } = await promise;
       const prefix = kind === "image" ? "__image__" : "__doc__";
-      const encoded = `${prefix}:${url}:${file.name}`;
-      sendAttachMsg({ type: kind, label: url, extra: file.name }, "", encoded);
-    } catch (e) { alert(e instanceof Error ? e.message : "Upload échoué"); }
-    finally { setUploadingAttach(false); }
-  }, [sendAttachMsg]);
+      const encoded = `${prefix}:${url}:${file.name}:${file.size}`;
+      setMessages(prev => ({
+        ...prev,
+        [convId]: (prev[convId] ?? []).map(m =>
+          m.id === tmpId ? { ...m, attachment: { ...m.attachment!, label: url, size: file.size } } : m
+        )
+      }));
+      URL.revokeObjectURL(localUrl);
+      apiSendMessage(convId, encoded)
+        .then(() => setMessages(prev => ({ ...prev, [convId]: (prev[convId] ?? []).map(m => m.id === tmpId ? { ...m, status: "sent" as const } : m) })))
+        .catch(() => {});
+      mediaUploadsRef.current.delete(tmpId);
+      setMediaUploads(new Map(mediaUploadsRef.current));
+    } catch {
+      const cur = mediaUploadsRef.current.get(tmpId);
+      if (cur) { mediaUploadsRef.current.set(tmpId, { ...cur, network: "error" }); setMediaUploads(new Map(mediaUploadsRef.current)); }
+    }
+  }, []);
+
+  const handleFileInput = useCallback(async (file: File, kind: "image" | "doc") => {
+    setAttachSheet(false); setAttachPage("none");
+    const convId = activeConv;
+    if (!convId) return;
+    const tmpId = Date.now();
+    const now = new Date().toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
+    const localUrl = URL.createObjectURL(file);
+    setMessages(prev => ({
+      ...prev,
+      [convId]: [...(prev[convId] ?? []), {
+        id: tmpId, text: "", mine: true, time: now, status: "pending" as const,
+        attachment: { type: kind, label: localUrl, extra: file.name, size: file.size }
+      }],
+    }));
+    const initState: MediaUploadState = { progress: 0, network: "uploading", fileSize: file.size, file, localUrl };
+    mediaUploadsRef.current.set(tmpId, initState);
+    setMediaUploads(new Map(mediaUploadsRef.current));
+    let lastProgress = 0;
+    let slowTicks = 0;
+    const speedTimer = setInterval(() => {
+      const cur = mediaUploadsRef.current.get(tmpId);
+      if (!cur || cur.network === "error") { clearInterval(speedTimer); return; }
+      if (!navigator.onLine) {
+        mediaUploadsRef.current.set(tmpId, { ...cur, network: "offline" });
+        setMediaUploads(new Map(mediaUploadsRef.current));
+        return;
+      }
+      if (cur.network === "offline") {
+        mediaUploadsRef.current.set(tmpId, { ...cur, network: "uploading" });
+        setMediaUploads(new Map(mediaUploadsRef.current));
+        return;
+      }
+      if (cur.progress === lastProgress && cur.network === "uploading") {
+        slowTicks++;
+        if (slowTicks >= 2) {
+          mediaUploadsRef.current.set(tmpId, { ...cur, network: "slow" });
+          setMediaUploads(new Map(mediaUploadsRef.current));
+        }
+      } else {
+        slowTicks = 0;
+        if (cur.network === "slow") {
+          mediaUploadsRef.current.set(tmpId, { ...cur, network: "uploading" });
+          setMediaUploads(new Map(mediaUploadsRef.current));
+        }
+      }
+      lastProgress = cur.progress;
+    }, 2500);
+    const { promise, cancel } = apiUploadFileXHR(file, (loaded, total) => {
+      const pct = total > 0 ? Math.round((loaded / total) * 100) : 0;
+      const cur = mediaUploadsRef.current.get(tmpId);
+      if (cur) {
+        mediaUploadsRef.current.set(tmpId, { ...cur, progress: pct, network: cur.network === "slow" ? "slow" : "uploading" });
+        setMediaUploads(new Map(mediaUploadsRef.current));
+      }
+    });
+    const withCancel = mediaUploadsRef.current.get(tmpId);
+    if (withCancel) mediaUploadsRef.current.set(tmpId, { ...withCancel, cancelFn: cancel });
+    try {
+      const { url } = await promise;
+      clearInterval(speedTimer);
+      const prefix = kind === "image" ? "__image__" : "__doc__";
+      const encoded = `${prefix}:${url}:${file.name}:${file.size}`;
+      setMessages(prev => ({
+        ...prev,
+        [convId]: (prev[convId] ?? []).map(m =>
+          m.id === tmpId ? { ...m, attachment: { ...m.attachment!, label: url, size: file.size } } : m
+        )
+      }));
+      URL.revokeObjectURL(localUrl);
+      apiSendMessage(convId, encoded)
+        .then(() => setMessages(prev => ({ ...prev, [convId]: (prev[convId] ?? []).map(m => m.id === tmpId ? { ...m, status: "sent" as const } : m) })))
+        .catch(() => {});
+      const done = mediaUploadsRef.current.get(tmpId);
+      if (done) { mediaUploadsRef.current.set(tmpId, { ...done, progress: 100, network: "uploading" }); setMediaUploads(new Map(mediaUploadsRef.current)); }
+      setTimeout(() => { mediaUploadsRef.current.delete(tmpId); setMediaUploads(new Map(mediaUploadsRef.current)); }, 1200);
+    } catch (e) {
+      clearInterval(speedTimer);
+      if (e instanceof Error && e.message === "cancelled") {
+        setMessages(prev => ({ ...prev, [convId]: (prev[convId] ?? []).filter(m => m.id !== tmpId) }));
+        URL.revokeObjectURL(localUrl);
+        mediaUploadsRef.current.delete(tmpId);
+        setMediaUploads(new Map(mediaUploadsRef.current));
+      } else {
+        const cur = mediaUploadsRef.current.get(tmpId);
+        if (cur) { mediaUploadsRef.current.set(tmpId, { ...cur, network: "error" }); setMediaUploads(new Map(mediaUploadsRef.current)); }
+      }
+    }
+  }, [activeConv]);
 
   const handleLocation = useCallback(() => {
     setAttachSheet(false); setAttachPage("none");
@@ -733,15 +865,23 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       const rest  = m.content.slice("__image__:".length);
       const sep   = rest.indexOf(":");
       const url   = sep === -1 ? rest : rest.slice(0, sep);
-      const extra = sep === -1 ? "photo" : rest.slice(sep + 1);
-      return { ...base, text: "", attachment: { type: "image" as const, label: url, extra } };
+      const rem   = sep === -1 ? "" : rest.slice(sep + 1);
+      const sep2  = rem.lastIndexOf(":");
+      const extra = sep2 === -1 ? (rem || "photo") : rem.slice(0, sep2);
+      const sizeN = sep2 === -1 ? NaN : Number(rem.slice(sep2 + 1));
+      const size  = isNaN(sizeN) ? undefined : sizeN;
+      return { ...base, text: "", attachment: { type: "image" as const, label: url, extra, size } };
     }
     if (m.content.startsWith("__doc__:")) {
       const rest  = m.content.slice("__doc__:".length);
       const sep   = rest.indexOf(":");
       const url   = sep === -1 ? rest : rest.slice(0, sep);
-      const extra = sep === -1 ? "Document" : rest.slice(sep + 1);
-      return { ...base, text: "", attachment: { type: "doc" as const, label: url, extra } };
+      const rem   = sep === -1 ? "" : rest.slice(sep + 1);
+      const sep2  = rem.lastIndexOf(":");
+      const extra = sep2 === -1 ? (rem || "Document") : rem.slice(0, sep2);
+      const sizeN = sep2 === -1 ? NaN : Number(rem.slice(sep2 + 1));
+      const size  = isNaN(sizeN) ? undefined : sizeN;
+      return { ...base, text: "", attachment: { type: "doc" as const, label: url, extra, size } };
     }
     return { ...base, text: m.content };
   }, [meId]);
@@ -2191,43 +2331,119 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     const rawUrl = msg.attachment.label;
                     const imgUrl = rawUrl.startsWith("//") ? `https:${rawUrl}` : rawUrl;
                     const fname  = msg.attachment.extra || "photo";
+                    const ups    = mediaUploads.get(msg.id);
+                    const pct    = ups?.progress ?? 0;
+                    const R      = 22;
+                    const CIRC   = 2 * Math.PI * R;
+                    const dash   = CIRC * (1 - pct / 100);
+                    const sizeLabel = ups
+                      ? fmtBytes(ups.fileSize)
+                      : msg.attachment.size ? fmtBytes(msg.attachment.size) : fname;
                     return (
-                      <a href={imgUrl} target="_blank" rel="noreferrer"
-                        style={{ display:"block", borderRadius:14, overflow:"hidden", marginBottom:2,
-                          maxWidth:260, textDecoration:"none",
-                          boxShadow:"0 2px 12px rgba(0,0,0,0.15)",
-                          border: msg.mine ? "1.5px solid rgba(255,255,255,0.2)" : "1.5px solid #e2e8f0",
-                          animation:"fbl-fade-in 0.3s cubic-bezier(.22,1,.36,1)" }}>
+                      <div style={{ position:"relative", borderRadius:14, overflow:"hidden",
+                        width:252, marginBottom:2,
+                        boxShadow:"0 2px 18px rgba(0,0,0,0.18)",
+                        animation:"fbl-fade-in 0.28s cubic-bezier(.22,1,.36,1)" }}>
+                        {/* Image */}
                         <img src={imgUrl} alt={fname}
-                          onError={e => {
-                            const el = e.currentTarget as HTMLImageElement;
-                            el.style.display = "none";
-                            const ph = el.nextElementSibling as HTMLElement | null;
-                            if (ph) ph.style.display = "flex";
-                          }}
-                          style={{ width:"100%", display:"block", maxHeight:320, objectFit:"cover" }} />
-                        {/* Fallback placeholder if img fails to load */}
-                        <div style={{ display:"none", alignItems:"center", justifyContent:"center",
-                          height:80, background: msg.mine ? "rgba(255,255,255,0.12)" : "#f1f5f9",
-                          gap:8, color: msg.mine ? "rgba(255,255,255,0.7)" : "#64748b", fontSize:13 }}>
-                          <span style={{ fontSize:24 }}>🖼️</span>
-                          <span>{fname}</span>
-                        </div>
-                        {/* Caption bar */}
-                        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between",
-                          padding:"6px 10px",
-                          background: msg.mine ? "rgba(22,163,74,0.9)" : "#fff" }}>
-                          <span style={{ fontSize:12, fontWeight:600,
-                            color: msg.mine ? "#fff" : "#374151",
-                            maxWidth:160, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
-                            📷 {fname}
-                          </span>
-                          <div style={{ display:"flex", alignItems:"center", gap:4, flexShrink:0 }}>
-                            <span style={{ fontSize:11, color: msg.mine ? "rgba(255,255,255,0.7)" : "#94a3b8" }}>{msg.time}</span>
-                            {msg.mine && <MsgStatus status={msg.status} dark={msg.mine} />}
+                          onError={e => { (e.currentTarget as HTMLImageElement).style.opacity = "0"; }}
+                          style={{ width:"100%", display:"block", height:195, objectFit:"cover" }} />
+
+                        {/* Offline overlay */}
+                        {ups?.network === "offline" && (
+                          <div style={{ position:"absolute", inset:0,
+                            background:"rgba(0,0,0,0.62)",
+                            display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:6 }}>
+                            <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round">
+                              <circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 3"/>
+                            </svg>
+                            <span style={{ color:"#fff", fontWeight:700, fontSize:12.5, textAlign:"center" }}>En attente du réseau</span>
+                            <span style={{ color:"rgba(255,255,255,0.65)", fontSize:11, textAlign:"center", padding:"0 24px" }}>
+                              Envoi dès le retour de la connexion
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Error overlay */}
+                        {ups?.network === "error" && (
+                          <div style={{ position:"absolute", inset:0,
+                            background:"rgba(0,0,0,0.60)",
+                            display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:8 }}>
+                            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#EF4444" strokeWidth="2.2" strokeLinecap="round">
+                              <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
+                            </svg>
+                            <span style={{ color:"#fff", fontWeight:700, fontSize:12 }}>Échec de l'envoi</span>
+                            <button onClick={() => retryUpload(msg.id, activeConv!)}
+                              style={{ background:"#22C55E", border:"none", borderRadius:20, color:"#fff",
+                                padding:"6px 18px", fontSize:12.5, fontWeight:700, cursor:"pointer",
+                                display:"flex", alignItems:"center", gap:5 }}>
+                              <svg viewBox="0 0 24 24" width="13" height="13" fill="#fff"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 .49-7.6" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"/></svg>
+                              Réessayer
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Progress ring — top-right (uploading / slow) */}
+                        {ups && ups.network !== "offline" && ups.network !== "error" && (
+                          <div style={{ position:"absolute", top:8, right:8,
+                            display:"flex", flexDirection:"column", alignItems:"center", gap:4 }}>
+                            <div style={{ position:"relative", width:56, height:56,
+                              background:"rgba(0,0,0,0.52)", borderRadius:"50%",
+                              display:"flex", alignItems:"center", justifyContent:"center" }}>
+                              <svg width="56" height="56" viewBox="0 0 56 56"
+                                style={{ position:"absolute", inset:0, transform:"rotate(-90deg)" }}>
+                                <circle cx="28" cy="28" r={R} fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="3.5"/>
+                                <circle cx="28" cy="28" r={R} fill="none" stroke="#22C55E" strokeWidth="3.5"
+                                  strokeDasharray={CIRC} strokeDashoffset={dash}
+                                  strokeLinecap="round" style={{ transition:"stroke-dashoffset 0.35s ease" }}/>
+                              </svg>
+                              <div style={{ display:"flex", flexDirection:"column", alignItems:"center", lineHeight:1.1 }}>
+                                <span style={{ color:"#fff", fontSize:12, fontWeight:800 }}>{pct}%</span>
+                                <button
+                                  onClick={e => { e.stopPropagation(); ups.cancelFn?.(); }}
+                                  style={{ background:"none", border:"none", color:"rgba(255,255,255,0.85)",
+                                    fontSize:15, lineHeight:1, cursor:"pointer", padding:"1px 0", fontWeight:400 }}>
+                                  ×
+                                </button>
+                              </div>
+                            </div>
+                            {ups.network === "slow" && (
+                              <div style={{ background:"rgba(0,0,0,0.58)", borderRadius:10,
+                                padding:"3px 8px", display:"flex", alignItems:"center", gap:4 }}>
+                                <svg viewBox="0 0 24 24" width="11" height="11" fill="none"
+                                  stroke="#F59E0B" strokeWidth="2.5" strokeLinecap="round">
+                                  <circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 3"/>
+                                </svg>
+                                <span style={{ color:"#F59E0B", fontSize:10.5, fontWeight:700, whiteSpace:"nowrap" }}>
+                                  Connexion lente...
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Caption overlay (bottom gradient) */}
+                        <div style={{ position:"absolute", bottom:0, left:0, right:0,
+                          background:"linear-gradient(transparent, rgba(0,0,0,0.58))",
+                          padding:"22px 10px 7px",
+                          display:"flex", alignItems:"flex-end", justifyContent:"space-between" }}>
+                          <div style={{ display:"flex", alignItems:"center", gap:5 }}>
+                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none"
+                              stroke="rgba(255,255,255,0.88)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                              <circle cx="12" cy="13" r="4"/>
+                            </svg>
+                            <span style={{ color:"rgba(255,255,255,0.88)", fontSize:11.5, fontWeight:500,
+                              maxWidth:120, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+                              {sizeLabel}
+                            </span>
+                          </div>
+                          <div style={{ display:"flex", alignItems:"center", gap:4 }}>
+                            <span style={{ color:"rgba(255,255,255,0.85)", fontSize:11 }}>{msg.time}</span>
+                            {msg.mine && <MsgStatus status={msg.status} dark={true} />}
                           </div>
                         </div>
-                      </a>
+                      </div>
                     );
                   })()}
                   {msg.attachment?.type === "location" && (() => {
@@ -2288,13 +2504,95 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       </a>
                     );
                   })()}
-                  {msg.attachment?.type === "doc" && (
-                    <a href={msg.attachment.label} target="_blank" rel="noreferrer"
-                      style={{ display:"flex", alignItems:"center", gap:8, background: msg.mine?"#c5f0a4":"#f1f1f1", borderRadius:10, padding:"10px 12px", marginBottom:2, textDecoration:"none", color:"#111", maxWidth:240 }}>
-                      <span style={{ fontSize:26 }}>📄</span>
-                      <div style={{ fontWeight:600, fontSize:13, wordBreak:"break-all" }}>{msg.attachment.extra ?? "Document"}</div>
-                    </a>
-                  )}
+                  {msg.attachment?.type === "doc" && (() => {
+                    const ups     = mediaUploads.get(msg.id);
+                    const fname   = msg.attachment.extra ?? "Document";
+                    const sizeStr = ups ? fmtBytes(ups.fileSize) : msg.attachment.size ? fmtBytes(msg.attachment.size) : "";
+                    const rawUrl  = msg.attachment.label;
+                    const docUrl  = rawUrl.startsWith("//") ? `https:${rawUrl}` : rawUrl;
+                    const isPdf   = fname.toLowerCase().endsWith(".pdf");
+                    const iconColor = isPdf ? "#EF4444" : "#3B82F6";
+                    const iconLabel = isPdf ? "PDF" : fname.split(".").pop()?.toUpperCase()?.slice(0,4) ?? "DOC";
+                    const pct     = ups?.progress ?? 0;
+                    return (
+                      <div style={{ display:"flex", alignItems:"stretch",
+                        background: msg.mine ? "#fff" : "#fff",
+                        borderRadius:14, overflow:"hidden", marginBottom:2,
+                        maxWidth:252, minWidth:200,
+                        boxShadow:"0 1px 8px rgba(0,0,0,0.10)",
+                        border:`1px solid ${msg.mine ? "rgba(22,163,74,0.2)" : "#E5E7EB"}` }}>
+                        {/* Icon block */}
+                        <div style={{ width:48, background:iconColor,
+                          display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
+                          flexShrink:0, padding:"8px 4px" }}>
+                          <span style={{ color:"#fff", fontSize:9.5, fontWeight:800, letterSpacing:0.5 }}>{iconLabel}</span>
+                        </div>
+                        {/* Info block */}
+                        <div style={{ flex:1, padding:"8px 10px 8px 10px", minWidth:0,
+                          display:"flex", flexDirection:"column", justifyContent:"center", gap:2 }}>
+                          <span style={{ fontSize:12.5, fontWeight:700, color:"#111",
+                            overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+                            {fname}
+                          </span>
+                          {sizeStr && (
+                            <span style={{ fontSize:11, color:"#6B7280" }}>{sizeStr}</span>
+                          )}
+                          {ups && ups.network !== "error" && (
+                            <div style={{ height:3, background:"#E5E7EB", borderRadius:2, marginTop:3 }}>
+                              <div style={{ height:"100%", width:`${pct}%`, borderRadius:2,
+                                background: ups.network === "slow" ? "#F59E0B" : "#22C55E",
+                                transition:"width 0.3s ease" }} />
+                            </div>
+                          )}
+                          {ups?.network === "error" && (
+                            <div style={{ height:3, background:"#EF4444", borderRadius:2, marginTop:3, width:"35%" }} />
+                          )}
+                        </div>
+                        {/* Right: status or error+retry */}
+                        {ups?.network === "error" ? (
+                          <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end",
+                            justifyContent:"center", padding:"8px 10px", gap:4, flexShrink:0 }}>
+                            <span style={{ fontSize:10.5, color:"#F59E0B", fontWeight:600, whiteSpace:"nowrap",
+                              display:"flex", alignItems:"center", gap:3 }}>
+                              <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#F59E0B" strokeWidth="2.2" strokeLinecap="round">
+                                <circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 3"/>
+                              </svg>
+                              Échec
+                            </span>
+                            <button onClick={() => retryUpload(msg.id, activeConv!)}
+                              style={{ background:"none", border:"none", color:"#EF4444",
+                                fontSize:11, fontWeight:700, cursor:"pointer", padding:0,
+                                display:"flex", alignItems:"center", gap:3 }}>
+                              <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#EF4444" strokeWidth="2.5" strokeLinecap="round">
+                                <path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 .49-7.6" fill="none"/>
+                              </svg>
+                              Réessayer
+                            </button>
+                          </div>
+                        ) : !ups ? (
+                          <a href={docUrl} target="_blank" rel="noreferrer"
+                            style={{ display:"flex", flexDirection:"column", alignItems:"flex-end",
+                              justifyContent:"flex-end", padding:"8px 10px", textDecoration:"none",
+                              flexShrink:0, gap:4 }}>
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none"
+                              stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                              <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            <div style={{ display:"flex", alignItems:"center", gap:3 }}>
+                              <span style={{ fontSize:11, color:"#9CA3AF" }}>{msg.time}</span>
+                              {msg.mine && <MsgStatus status={msg.status} dark={false} />}
+                            </div>
+                          </a>
+                        ) : (
+                          <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end",
+                            justifyContent:"center", padding:"8px 10px", flexShrink:0 }}>
+                            <span style={{ fontSize:11, color:"#9CA3AF" }}>{pct}%</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                   {!isAudio && !!msg.text && (() => {
                     /* Detect first URL for link preview */
                     URL_RE.lastIndex = 0;
@@ -3483,60 +3781,6 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           document.body
         )}
 
-        {/* Upload overlay — 2026 premium */}
-        {uploadingAttach && (
-          <div style={{ position:"fixed", inset:0, zIndex:10003,
-            background:"rgba(0,0,0,0.45)",
-            backdropFilter:"blur(8px)", WebkitBackdropFilter:"blur(8px)",
-            display:"flex", alignItems:"center", justifyContent:"center",
-            animation:"fbl-fade-in 0.2s ease" }}>
-            <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:20,
-              background:"rgba(255,255,255,0.10)",
-              border:"1px solid rgba(255,255,255,0.18)",
-              borderRadius:28, padding:"36px 44px",
-              backdropFilter:"blur(20px)", WebkitBackdropFilter:"blur(20px)",
-              boxShadow:"0 8px 40px rgba(0,0,0,0.30)",
-              animation:"fbl-upload-card 0.35s cubic-bezier(.22,1,.36,1)" }}>
-
-              {/* Conic-gradient spinner ring */}
-              <div style={{ position:"relative", width:72, height:72 }}>
-                {/* Outer glow ring */}
-                <div style={{ position:"absolute", inset:-4, borderRadius:"50%",
-                  background:"conic-gradient(from 0deg, transparent 60%, #22C55E)",
-                  animation:"fbl-spin 1s linear infinite",
-                  filter:"blur(4px)", opacity:0.6 }} />
-                {/* Main spinner */}
-                <div style={{ position:"absolute", inset:0, borderRadius:"50%",
-                  background:"conic-gradient(from 0deg, transparent 30%, #22C55E 100%)",
-                  animation:"fbl-spin 0.9s linear infinite" }} />
-                {/* Inner mask to create ring */}
-                <div style={{ position:"absolute", inset:10, borderRadius:"50%",
-                  background:"rgba(20,20,28,0.85)" }} />
-                {/* Center send icon */}
-                <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none">
-                    <path d="M22 2L11 13" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M22 2L15 22 11 13 2 9l20-7z" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-              </div>
-
-              {/* Text + animated dots */}
-              <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:8 }}>
-                <div style={{ color:"#fff", fontWeight:700, fontSize:15.5, letterSpacing:0.2 }}>
-                  Envoi en cours
-                </div>
-                <div style={{ display:"flex", gap:5, alignItems:"center" }}>
-                  {[0,1,2].map(i => (
-                    <div key={i} style={{ width:6, height:6, borderRadius:"50%",
-                      background:"#22C55E",
-                      animation:`fbl-upload-dot 1.2s ease-in-out ${i*0.2}s infinite` }} />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     , document.body);
   }

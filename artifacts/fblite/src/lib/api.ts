@@ -1326,6 +1326,38 @@ export async function apiUploadFile(file: File): Promise<{ url: string }> {
   return res.json() as Promise<{ url: string }>;
 }
 
+export function apiUploadFileXHR(
+  file: File,
+  onProgress: (loaded: number, total: number) => void
+): { promise: Promise<{ url: string }>; cancel: () => void } {
+  let xhrRef: XMLHttpRequest | null = null;
+  const promise = new Promise<{ url: string }>((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhrRef = xhr;
+    const token = getBpToken();
+    xhr.open("POST", `${BASE}/upload`);
+    if (token) xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+    xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
+    xhr.setRequestHeader("x-filename", file.name);
+    xhr.upload.onprogress = e => { if (e.lengthComputable) onProgress(e.loaded, e.total); };
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try { resolve(JSON.parse(xhr.responseText)); }
+        catch { reject(new Error("Upload échoué")); }
+      } else {
+        try {
+          const e = JSON.parse(xhr.responseText);
+          reject(new Error((e as { error?: string }).error ?? "Upload échoué"));
+        } catch { reject(new Error("Upload échoué")); }
+      }
+    };
+    xhr.onerror = () => reject(new Error("network"));
+    xhr.onabort = () => reject(new Error("cancelled"));
+    xhr.send(file);
+  });
+  return { promise, cancel: () => xhrRef?.abort() };
+}
+
 export async function apiUploadVoice(blob: Blob, durationSec: number): Promise<{ url: string }> {
   const token = getBpToken();
   const ext = blob.type.includes("ogg") ? ".ogg" : blob.type.includes("mp4") ? ".m4a" : ".webm";
