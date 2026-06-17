@@ -540,13 +540,18 @@ export default function UserProfilePage({ userId }: { userId: number }) {
         </div>
       </div>
 
-      {/* ── COVER ── */}
-      <div style={{ height: 190, background: `linear-gradient(135deg, ${color}ee 0%, ${color}88 60%, ${color}33 100%)`, position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", top: -60, right: -60, width: 220, height: 220, borderRadius: "50%", background: "rgba(255,255,255,0.12)" }} />
-        <div style={{ position: "absolute", bottom: -40, right: 60, width: 140, height: 140, borderRadius: "50%", background: "rgba(255,255,255,0.07)" }} />
-        <div style={{ position: "absolute", top: 30, left: "50%", transform: "translateX(-50%)", width: 80, height: 80, borderRadius: "50%", background: "rgba(255,255,255,0.06)" }} />
-        {/* Flag circle removed from cover */}
-        {/* avatar overlap */}
+      {/* ── COVER + AVATAR wrapper — avatar OUTSIDE overflow:hidden ── */}
+      <div style={{ position: "relative" }}>
+        {/* Cover */}
+        <div style={{ height: 190, background: `linear-gradient(135deg, ${color}ee 0%, ${color}88 60%, ${color}33 100%)`, position: "relative", overflow: "hidden" }}>
+          <div style={{ position: "absolute", top: -60, right: -60, width: 220, height: 220, borderRadius: "50%", background: "rgba(255,255,255,0.12)" }} />
+          <div style={{ position: "absolute", bottom: -40, right: 60, width: 140, height: 140, borderRadius: "50%", background: "rgba(255,255,255,0.07)" }} />
+          <div style={{ position: "absolute", top: 30, left: "50%", transform: "translateX(-50%)", width: 80, height: 80, borderRadius: "50%", background: "rgba(255,255,255,0.06)" }} />
+          {user.coverUrl && (
+            <img src={user.coverUrl} alt="cover" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+          )}
+        </div>
+        {/* Avatar — outside overflow:hidden so it's never clipped */}
         <div style={{ position: "absolute", bottom: -48, left: 20, zIndex: 5 }}>
           {user.avatarUrl
             ? <img src={user.avatarUrl} alt={name} style={{ width: 96, height: 96, borderRadius: "50%", border: "4px solid #fff", objectFit: "cover", boxShadow: "0 4px 20px rgba(0,0,0,0.2)" }} />
@@ -563,7 +568,12 @@ export default function UserProfilePage({ userId }: { userId: number }) {
           {/* Name + verified */}
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
             <span style={{ fontWeight: 900, fontSize: 23, color: "#0D1B2A", lineHeight: 1.2 }}>{name}</span>
-            <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 24, height: 24, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />
+            {(user as any).role === "creator" && (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2L14.09 8.26L21 9.27L16.5 13.97L17.64 21L12 17.77L6.36 21L7.5 13.97L3 9.27L9.91 8.26L12 2Z" fill="#22C55E"/>
+                <polyline points="9,12 11,14 15,10" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+              </svg>
+            )}
           </div>
 
           <div style={{ fontSize: 13, color: "#8896A6", marginTop: 3 }}>@{name.toLowerCase().replace(/\s+/g, "_")}</div>
@@ -577,21 +587,17 @@ export default function UserProfilePage({ userId }: { userId: number }) {
             </div>
           )}
 
-          {/* Badges */}
-          <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "#F0FDF4", border: "1.5px solid #22C55E", borderRadius: 20, padding: "5px 13px" }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>
-              </svg>
-              <span style={{ fontSize: 11.5, fontWeight: 800, color: "#16A34A" }}>Vérifié</span>
+          {/* Badges — only for verified creators */}
+          {(user as any).role === "creator" && (
+            <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "#F0FDF4", border: "1.5px solid #22C55E", borderRadius: 20, padding: "5px 13px" }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>
+                </svg>
+                <span style={{ fontSize: 11.5, fontWeight: 800, color: "#16A34A" }}>Créateur</span>
+              </div>
             </div>
-            <div style={{ background: "linear-gradient(135deg, #22C55E, #16A34A)", borderRadius: 20, padding: "5px 13px", display: "inline-flex", alignItems: "center", gap: 5, boxShadow: "0 2px 8px rgba(34,197,94,0.3)" }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="#FFD700">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-              </svg>
-              <span style={{ fontSize: 11.5, fontWeight: 800, color: "#fff" }}>Niveau 4</span>
-            </div>
-          </div>
+          )}
 
           {/* Stats — real data */}
           <div style={{ display: "flex", marginTop: 18, paddingTop: 16, borderTop: "1px solid #F1F5F9" }}>
