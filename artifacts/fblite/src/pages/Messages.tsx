@@ -885,14 +885,16 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     }
     if (m.content.startsWith("__location__:")) {
       const rest  = m.content.slice("__location__:".length);
-      const sep   = rest.indexOf(":");
+      const proto = rest.indexOf("://");
+      const sep   = rest.indexOf(":", proto !== -1 ? proto + 3 : 0);
       const url   = sep === -1 ? rest : rest.slice(0, sep);
       const extra = sep === -1 ? "" : rest.slice(sep + 1);
       return { ...base, text: "", attachment: { type: "location" as const, label: url, extra } };
     }
     if (m.content.startsWith("__image__:")) {
       const rest  = m.content.slice("__image__:".length);
-      const sep   = rest.indexOf(":");
+      const proto = rest.indexOf("://");
+      const sep   = rest.indexOf(":", proto !== -1 ? proto + 3 : 0);
       const url   = sep === -1 ? rest : rest.slice(0, sep);
       const rem   = sep === -1 ? "" : rest.slice(sep + 1);
       const sep2  = rem.lastIndexOf(":");
@@ -903,7 +905,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     }
     if (m.content.startsWith("__doc__:")) {
       const rest  = m.content.slice("__doc__:".length);
-      const sep   = rest.indexOf(":");
+      const proto = rest.indexOf("://");
+      const sep   = rest.indexOf(":", proto !== -1 ? proto + 3 : 0);
       const url   = sep === -1 ? rest : rest.slice(0, sep);
       const rem   = sep === -1 ? "" : rest.slice(sep + 1);
       const sep2  = rem.lastIndexOf(":");
