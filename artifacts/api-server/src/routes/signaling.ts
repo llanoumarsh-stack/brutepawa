@@ -69,8 +69,9 @@ router.post("/signaling/send", sseAuth, async (req, res) => {
 
   const delivered = pushToUser(Number(to), "signal", { type, from, payload: payload ?? {} });
 
-  // If user is offline and this is a call invite → send push notification
-  if (!delivered && type === "call:invite") {
+  // Always send high-urgency push for call invites so the device wakes up
+  // immediately — regardless of whether SSE delivered it (belt + suspenders).
+  if (type === "call:invite") {
     try {
       const rows = await db.execute(sql`
         SELECT first_name, last_name FROM users WHERE id = ${from} LIMIT 1
@@ -84,19 +85,20 @@ router.post("/signaling/send", sseAuth, async (req, res) => {
         body:  `${callerName} vous appelle`,
         tag:   "incoming-call",
         requireInteraction: true,
-        vibrate: [300, 100, 300, 100, 300],
+        vibrate: [500, 200, 500, 200, 500, 200, 500],
+        silent: false,
         actions: [
           { action: "accept", title: "✅ Accepter" },
           { action: "reject", title: "❌ Refuser" },
         ],
         data: {
-          url:         "/messages",
-          fromUserId:  from,
+          url:        `/messages?userId=${from}`,
+          fromUserId: from,
           callType,
           callerName,
-          rejectUrl:   "/api/signaling/send",
+          rejectUrl:  "/api/signaling/send",
         },
-      });
+      }, { urgency: "high" });
     } catch { /* non-fatal */ }
   }
 

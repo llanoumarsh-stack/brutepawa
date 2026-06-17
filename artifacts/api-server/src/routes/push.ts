@@ -109,7 +109,11 @@ router.delete("/push/unsubscribe", requireAuth, async (req, res): Promise<void> 
 });
 
 // ── Utility: send push to all devices of a user ──────────────────────────────
-export async function pushToUserDevice(userId: number, payload: object): Promise<void> {
+export async function pushToUserDevice(
+  userId: number,
+  payload: object,
+  options?: { urgency?: "very-low" | "low" | "normal" | "high" },
+): Promise<void> {
   if (!webPushReady) return;
 
   let subs: { endpoint: string; p256dh: string; auth: string }[] = [];
@@ -127,6 +131,7 @@ export async function pushToUserDevice(userId: number, payload: object): Promise
         await webpush.sendNotification(
           { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
           body,
+          options?.urgency ? { urgency: options.urgency } : undefined,
         );
       } catch (err: unknown) {
         const status = (err as { statusCode?: number }).statusCode;

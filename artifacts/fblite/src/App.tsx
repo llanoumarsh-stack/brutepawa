@@ -165,6 +165,27 @@ function AppContent() {
     return () => window.removeEventListener("bp:session-expired", handler);
   }, []);
 
+  /* ── Bridge service-worker → window events (push notification actions) ── */
+  useEffect(() => {
+    if (!("serviceWorker" in navigator)) return;
+    const onSwMsg = (e: MessageEvent) => {
+      const { type, data } = (e.data ?? {}) as { type?: string; data?: Record<string, unknown> };
+      if (!type) return;
+      if (type === "bp:incoming-call") {
+        /* Dispatch to useCallSignaling hook listener */
+        window.dispatchEvent(new CustomEvent("bp:sw-call", { detail: data }));
+        /* Navigate to messages so the call modal renders */
+        if (!window.location.pathname.endsWith("/messages")) navigate("/messages");
+      } else if (type === "bp:call-rejected") {
+        window.dispatchEvent(new CustomEvent("bp:sw-call-rejected", { detail: data }));
+      } else if (type === "bp:navigate" && data?.url) {
+        navigate(data.url as string);
+      }
+    };
+    navigator.serviceWorker.addEventListener("message", onSwMsg);
+    return () => navigator.serviceWorker.removeEventListener("message", onSwMsg);
+  }, []);
+
   useEffect(() => {
     if (!isAuth && !isPublic) {
       // Mémorise la destination pour y revenir après login
