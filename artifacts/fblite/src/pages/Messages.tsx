@@ -191,12 +191,16 @@ function voiceWaveform(seed: number, bars = 30): number[] {
 
 type Overlay = "none" | "info" | "attach";
 
+/* ── Module-level caches: survive component unmount/remount (navigation) ── */
+const _msgCache: Record<number, Message[]> = {};
+const _uploadsCache = new Map<number, MediaUploadState>();
+
 export default function Messages({ initialUserId, initialGroupId }: { initialUserId?: number; initialGroupId?: number }) {
   const navigate = useNavigate();
   const meId = (() => { try { return (JSON.parse(localStorage.getItem("fb_user") ?? "{}") as { id?: number }).id ?? 0; } catch { return 0; } })();
 
   const [activeConv, setActiveConv]   = useState<number | null>(initialUserId ?? null);
-  const [messages, setMessages]       = useState<Record<number, Message[]>>({});
+  const [messages, setMessages]       = useState<Record<number, Message[]>>(() => ({..._msgCache}));
   const [convList, setConvList]       = useState<NormConv[]>([]);
   const [convLoading, setConvLoading] = useState(true);
   const [allUsers, setAllUsers]       = useState<PublicUser[]>([]);
@@ -278,8 +282,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [peerTyping, setPeerTyping]     = useState<{ typing: boolean; activity: string }>({ typing: false, activity: "typing" });
   const [attachSheet, setAttachSheet]   = useState(false);
   const [attachPage, setAttachPage]     = useState<"none"|"poll"|"event"|"contacts"|"ai">("none");
-  const mediaUploadsRef = useRef<Map<number, MediaUploadState>>(new Map());
-  const [mediaUploads, setMediaUploads] = useState<Map<number, MediaUploadState>>(new Map());
+  const mediaUploadsRef = useRef<Map<number, MediaUploadState>>(new Map(_uploadsCache));
+  const [mediaUploads, setMediaUploads] = useState<Map<number, MediaUploadState>>(() => new Map(_uploadsCache));
   const [locationGeo, setLocationGeo] = useState<Record<string, { city: string; district: string }>>({});
   const [aiPrompt, setAiPrompt]         = useState("");
   const [aiLoading, setAiLoading]       = useState(false);
@@ -322,6 +326,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
   useEffect(() => { activeConvRef.current = activeConv; }, [activeConv]);
   useEffect(() => { allUsersRef.current = allUsers; }, [allUsers]);
+  useEffect(() => { Object.assign(_msgCache, messages); }, [messages]);
+  useEffect(() => { _uploadsCache.clear(); mediaUploads.forEach((v, k) => _uploadsCache.set(k, v)); }, [mediaUploads]);
 
   /* ── Suivi réseau + retry des messages en attente ── */
   useEffect(() => {
