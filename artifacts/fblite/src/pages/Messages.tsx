@@ -453,7 +453,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       }));
       setTimeout(() => URL.revokeObjectURL(localUrl), 3000);
       apiSendMessage(convId, encoded)
-        .then(() => setMessages(prev => ({ ...prev, [convId]: (prev[convId] ?? []).map(m => m.id === tmpId ? { ...m, status: "sent" as const } : m) })))
+        .then(sent => setMessages(prev => ({ ...prev, [convId]: (prev[convId] ?? []).map(m => m.id === tmpId ? { ...m, id: sent.id, status: "sent" as const } : m) })))
         .catch(() => {});
       mediaUploadsRef.current.delete(tmpId);
       setMediaUploads(new Map(mediaUploadsRef.current));
@@ -533,7 +533,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       }));
       setTimeout(() => URL.revokeObjectURL(localUrl), 3000);
       apiSendMessage(convId, encoded)
-        .then(() => setMessages(prev => ({ ...prev, [convId]: (prev[convId] ?? []).map(m => m.id === tmpId ? { ...m, status: "sent" as const } : m) })))
+        .then(sent => setMessages(prev => ({ ...prev, [convId]: (prev[convId] ?? []).map(m => m.id === tmpId ? { ...m, id: sent.id, status: "sent" as const } : m) })))
         .catch(() => {});
       const done = mediaUploadsRef.current.get(tmpId);
       if (done) { mediaUploadsRef.current.set(tmpId, { ...done, progress: 100, network: "uploading" }); setMediaUploads(new Map(mediaUploadsRef.current)); }
@@ -629,29 +629,32 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         const mins = Math.floor(secs / 60);
         const s    = secs % 60;
         const dur  = `${mins}:${s.toString().padStart(2, "0")}`;
+        const tmpId = Date.now();
+        const tmpNow = new Date().toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
+        const blobUrl = URL.createObjectURL(blob);
+        setMessages(prev => ({
+          ...prev,
+          [convId]: [...(prev[convId] ?? []), {
+            id: tmpId, text: "", mine: true, time: tmpNow, status: "pending" as const,
+            attachment: { type: "audio" as const, label: blobUrl, extra: dur },
+          }],
+        }));
         try {
           const { url } = await apiUploadVoice(blob, secs);
           const content = `__audio__:${secs}:${url}`;
           const sent = await apiSendMessage(convId, content);
           const now = new Date(sent.createdAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
+          setTimeout(() => URL.revokeObjectURL(blobUrl), 3000);
           setMessages(prev => ({
             ...prev,
-            [convId]: [...(prev[convId] ?? []).filter(m => m.id !== sent.id), {
-              id: sent.id, text: "", mine: true, time: now, status: "sent",
+            [convId]: (prev[convId] ?? []).map(m => m.id === tmpId ? {
+              id: sent.id, text: "", mine: true, time: now, status: "sent" as const,
               attachment: { type: "audio" as const, label: url, extra: dur },
-            }],
+            } : m),
           }));
         } catch {
-          // Fallback: show locally with blob URL (won't survive refresh)
-          const url = URL.createObjectURL(blob);
-          const now = new Date().toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
-          setMessages(prev => ({
-            ...prev,
-            [convId]: [...(prev[convId] ?? []), {
-              id: Date.now(), text: "", mine: true, time: now, status: "sent",
-              attachment: { type: "audio" as const, label: url, extra: dur },
-            }],
-          }));
+          URL.revokeObjectURL(blobUrl);
+          setMessages(prev => ({ ...prev, [convId]: (prev[convId] ?? []).filter(m => m.id !== tmpId) }));
         }
       };
       mr.start(100);
@@ -947,8 +950,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       apiGetMessages(activeConv).then(msgs => {
         setMessages(prev => {
           const next = msgs.map(m => parseApiMsg(m));
-          if (JSON.stringify(next.map(x => x.id)) === JSON.stringify((prev[activeConv] ?? []).map(x => x.id))) return prev;
-          return { ...prev, [activeConv]: next };
+          const serverIds = new Set(next.map(x => x.id));
+          const pending = (prev[activeConv] ?? []).filter(m => m.status === "pending" && !serverIds.has(m.id));
+          const merged = [...next, ...pending];
+          if (JSON.stringify(merged.map(x => x.id)) === JSON.stringify((prev[activeConv] ?? []).map(x => x.id))) return prev;
+          return { ...prev, [activeConv]: merged };
         });
       }).catch(() => {});
     }, 3000);
