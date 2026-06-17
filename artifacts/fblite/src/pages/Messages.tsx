@@ -475,6 +475,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       mr.start(100);
       mediaRecorderRef.current = mr;
       (document.activeElement as HTMLElement)?.blur();
+      // Prevent Android long-press text selection cursor on the whole page
+      document.body.style.userSelect = "none";
+      (document.body.style as any).webkitUserSelect = "none";
       setIsRecording(true);
       recSecondsRef.current = 0;
       setRecSeconds(0);
@@ -492,6 +495,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     if (recTimerRef.current) { clearInterval(recTimerRef.current); recTimerRef.current = null; }
     mediaRecorderRef.current?.stop();
     mediaRecorderRef.current = null;
+    // Restore text selection on the page
+    document.body.style.userSelect = "";
+    (document.body.style as any).webkitUserSelect = "";
     setIsRecording(false);
     setRecLocked(false);
     setRecDragX(0); setRecDragY(0);
