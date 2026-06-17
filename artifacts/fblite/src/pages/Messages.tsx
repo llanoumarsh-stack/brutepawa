@@ -2545,26 +2545,29 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               </div>
             )}
 
-            {/* ── Main input row ── */}
-            <div style={{ padding:"8px 12px", display:"flex", gap:8, alignItems:"center" }}>
-              {/* Emoji button */}
-              <button style={{ background:"none", border:"none", cursor:"pointer", padding:0, flexShrink:0, display:"flex", alignItems:"center" }}>
-                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="#94A3B8"/><circle cx="15" cy="9" r="1" fill="#94A3B8"/></svg>
-              </button>
-              {/* Text input */}
-              <div style={{ flex:1, display: isRecording ? "none" : "block" }}>
-                <input value={newMsg}
-                  onChange={e => {
-                    setNewMsg(e.target.value);
-                    if (typingDebounceRef.current) clearTimeout(typingDebounceRef.current);
-                    apiSendTyping(activeConv!, "typing").catch(() => {});
-                    typingDebounceRef.current = setTimeout(() => { typingDebounceRef.current = null; }, 2500);
-                  }}
-                  onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMsg(); } }}
-                  placeholder="Écrire un message..."
-                  disabled={isRecording}
-                  style={{ width:"100%", background:"#F8FAFC", border:"1.5px solid #E2E8F0", borderRadius:24, padding:"10px 16px", fontSize:15, outline:"none", boxSizing:"border-box", color: isRecording ? "#94A3B8" : "#0F172A", opacity: isRecording ? 0.5 : 1, caretColor: isRecording ? "transparent" : undefined, pointerEvents: isRecording ? "none" : undefined }} />
-              </div>
+            {/* ── Main input row — hidden entirely when locked ── */}
+            <div style={{ padding:"8px 12px", display: recLocked ? "none" : "flex", gap:8, alignItems:"center" }}>
+              {/* Emoji button — hidden during recording */}
+              {!isRecording && (
+                <button style={{ background:"none", border:"none", cursor:"pointer", padding:0, flexShrink:0, display:"flex", alignItems:"center" }}>
+                  <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="#94A3B8"/><circle cx="15" cy="9" r="1" fill="#94A3B8"/></svg>
+                </button>
+              )}
+              {/* Text input — removed from DOM during recording to prevent Android cursor ghost */}
+              {!isRecording && (
+                <div style={{ flex:1 }}>
+                  <input value={newMsg}
+                    onChange={e => {
+                      setNewMsg(e.target.value);
+                      if (typingDebounceRef.current) clearTimeout(typingDebounceRef.current);
+                      apiSendTyping(activeConv!, "typing").catch(() => {});
+                      typingDebounceRef.current = setTimeout(() => { typingDebounceRef.current = null; }, 2500);
+                    }}
+                    onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMsg(); } }}
+                    placeholder="Écrire un message..."
+                    style={{ width:"100%", background:"#F8FAFC", border:"1.5px solid #E2E8F0", borderRadius:24, padding:"10px 16px", fontSize:15, outline:"none", boxSizing:"border-box", color:"#0F172A" }} />
+                </div>
+              )}
               {newMsg.trim() && !isRecording ? (
                 <button onClick={() => sendMsg()}
                   style={{ background:"#16C24A", border:"none", borderRadius:"50%", width:44, height:44, color:"#fff", cursor:"pointer", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 3px 12px rgba(22,194,74,0.45)" }}>
