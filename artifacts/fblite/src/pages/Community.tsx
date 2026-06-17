@@ -224,7 +224,7 @@ export default function Community() {
         <div style={{ flex:1, minWidth:0, cursor:"pointer" }} onClick={()=>navigate(`/profile/${user.id}`)}>
           <div style={{ display:"flex", alignItems:"center", gap:5, marginBottom:2 }}>
             <span style={{ fontWeight:800, fontSize:15, color:"#0F172A" }}>{fullName(user)}</span>
-            {Ico.checkBlue}
+            {user.role === "creator" && Ico.checkBlue}
           </div>
           <div style={{ fontSize:12.5, color:"#64748B", marginBottom:4, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{prof}</div>
           <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
