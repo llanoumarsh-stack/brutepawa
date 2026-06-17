@@ -158,6 +158,7 @@ export function useCallSignaling(
   onNewMessage?: (msg: NewMessagePayload) => void,
   onMessageDelivered?: (messageIds: number[]) => void,
   onMessageRead?: (messageIds: number[]) => void,
+  onReconnect?: () => void,
 ) {
   const [callState, setCallState]       = useState<CallState>("idle");
   const [callType, setCallType]         = useState<"audio" | "video" | null>(null);
@@ -382,12 +383,16 @@ export function useCallSignaling(
   useEffect(() => { handleSignalRef.current = handleSignal; }, [handleSignal]);
 
   // ─── SSE listener with auto-reconnect ─────────────────────────────────────
+  const onReconnectRef = useRef(onReconnect);
+  useEffect(() => { onReconnectRef.current = onReconnect; }, [onReconnect]);
+
   useEffect(() => {
     if (!meId) return;
     let es: EventSource | null = null;
     let retryTimeout: ReturnType<typeof setTimeout> | null = null;
     let destroyed = false;
     let retryDelay = 1000;
+    let connectionCount = 0;
 
     function connect() {
       if (destroyed) return;
@@ -422,13 +427,20 @@ export function useCallSignaling(
         } catch { /* ignore */ }
       });
 
-      es.addEventListener("connected", () => { retryDelay = 1000; });
+      es.addEventListener("connected", () => {
+        retryDelay = 1000;
+        connectionCount++;
+        /* On reconnect (not first connect), sync missed read/delivered events */
+        if (connectionCount > 1) {
+          onReconnectRef.current?.();
+        }
+      });
 
       es.onerror = () => {
         es?.close();
         es = null;
         if (destroyed) return;
-        retryDelay = Math.min(retryDelay * 2, 30_000);
+        retryDelay = Math.min(retryDelay * 2, 3_000);
         retryTimeout = setTimeout(connect, retryDelay);
       };
     }

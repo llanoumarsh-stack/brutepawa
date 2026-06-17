@@ -892,7 +892,28 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     });
   }, []);
 
-  const sig = useCallSignaling(meId, onNewMessage, onMessageDelivered, onMessageRead);
+  /* On SSE reconnect: re-fetch active conversation to sync any missed read/delivered events */
+  const onSseReconnect = useCallback(() => {
+    const convId = activeConvRef.current;
+    if (!convId) return;
+    apiGetMessages(convId).then(({ messages: freshMsgs }) => {
+      setMessages(prev => {
+        const existing = prev[convId] ?? [];
+        const freshById = new Map(freshMsgs.map(m => [m.id, m]));
+        const rank: Record<string, number> = { pending: 0, sent: 1, delivered: 2, read: 3 };
+        const updated = existing.map(m => {
+          const f = freshById.get(m.id);
+          if (!f) return m;
+          const freshStatus = f.isRead ? "read" as const : f.isDelivered ? "delivered" as const : "sent" as const;
+          if ((rank[freshStatus] ?? 0) > (rank[m.status] ?? 0)) return { ...m, status: freshStatus };
+          return m;
+        });
+        return { ...prev, [convId]: updated };
+      });
+    }).catch(() => {});
+  }, []);
+
+  const sig = useCallSignaling(meId, onNewMessage, onMessageDelivered, onMessageRead, onSseReconnect);
 
   useEffect(() => {
     const el = remoteAudioRef.current;

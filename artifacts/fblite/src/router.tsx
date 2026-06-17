@@ -10,7 +10,7 @@ const RouterContext = createContext<RouterCtx>({ path: "/", navigate: () => {} }
 export function Router({ children }: { children: ReactNode }) {
   const base = import.meta.env.BASE_URL?.replace(/\/$/, "") ?? "";
   const getPath = () => {
-    const full = window.location.pathname;
+    const full = window.location.pathname + window.location.search;
     return full.startsWith(base) ? full.slice(base.length) || "/" : full;
   };
 
