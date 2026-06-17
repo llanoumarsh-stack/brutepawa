@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { db, usersTable, friendRequestsTable, userBlocksTable, userReportsTable, followsTable, postsTable } from "@workspace/db";
+import { db, usersTable, friendRequestsTable, userBlocksTable, userReportsTable, followsTable, postsTable, notificationsTable } from "@workspace/db";
 import { eq, or, and, ne, ilike, sql, inArray } from "drizzle-orm";
 import { UpdateMeBody, GetUserParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
@@ -191,7 +191,7 @@ router.post("/users/:id/friend-request", requireAuth, async (req, res): Promise<
     .values({ fromUserId: me, toUserId: targetId, status: "pending" })
     .returning();
 
-  // Push notification to target
+  // Push + DB notification to target
   const [requester] = await db.select({ firstName: usersTable.firstName, lastName: usersTable.lastName })
     .from(usersTable).where(eq(usersTable.id, me));
   const requesterName = requester ? `${requester.firstName} ${requester.lastName}`.trim() : "Quelqu'un";
@@ -200,6 +200,14 @@ router.post("/users/:id/friend-request", requireAuth, async (req, res): Promise<
     body: `${requesterName} vous a envoyé une demande d'amitié`,
     tag: `friend-req-${row.id}`,
     data: { url: "/community" },
+  }).catch(() => {});
+  db.insert(notificationsTable).values({
+    userId: targetId,
+    type: "friend",
+    actorId: me,
+    actorName: requesterName,
+    action: "vous a envoyé une demande d'amitié",
+    link: `/profile/${me}`,
   }).catch(() => {});
 
   res.status(201).json({ id: row.id, status: row.status });
@@ -218,7 +226,7 @@ router.post("/friends/:id/accept", requireAuth, async (req, res): Promise<void> 
 
   await db.update(friendRequestsTable).set({ status: "accepted" }).where(eq(friendRequestsTable.id, requestId));
 
-  // Push notification to the original requester
+  // Push + DB notification to the original requester
   const [acceptor] = await db.select({ firstName: usersTable.firstName, lastName: usersTable.lastName })
     .from(usersTable).where(eq(usersTable.id, me));
   const acceptorName = acceptor ? `${acceptor.firstName} ${acceptor.lastName}`.trim() : "Quelqu'un";
@@ -227,6 +235,14 @@ router.post("/friends/:id/accept", requireAuth, async (req, res): Promise<void> 
     body: `${acceptorName} a accepté votre demande d'amitié 🎉`,
     tag: `friend-accept-${requestId}`,
     data: { url: `/profile/${me}` },
+  }).catch(() => {});
+  db.insert(notificationsTable).values({
+    userId: row.fromUserId,
+    type: "friend",
+    actorId: me,
+    actorName: acceptorName,
+    action: "a accepté votre demande d'amitié",
+    link: `/profile/${me}`,
   }).catch(() => {});
 
   res.json({ ok: true });

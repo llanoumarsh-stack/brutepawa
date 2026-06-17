@@ -225,7 +225,7 @@ export default function NotificationsPage() {
 
       {/* ══ 1. HEADER ══════════════════════════════════════ */}
       <div style={{ background:"#fff", borderBottom:"1px solid #F1F5F9", padding:"12px 16px", display:"flex", alignItems:"center", gap:12, position:"sticky", top:0, zIndex:30, boxShadow:"0 1px 8px rgba(0,0,0,0.04)" }}>
-        <button onClick={() => navigate(-1 as unknown as string)} style={{ width:36, height:36, borderRadius:"50%", background:"#F1F5F9", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", color:"#475569", flexShrink:0 }}>
+        <button onClick={() => window.history.back()} style={{ width:36, height:36, borderRadius:"50%", background:"#F1F5F9", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", color:"#475569", flexShrink:0 }}>
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
         </button>
 

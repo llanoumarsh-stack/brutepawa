@@ -232,7 +232,7 @@ router.post("/posts/:id/like", requireAuth, async (req, res): Promise<void> => {
 
   const [post] = await db.select().from(postsTable).where(eq(postsTable.id, params.data.id));
 
-  // Push notification to post author on new like
+  // Push + DB notification to post author on new like
   if (body.data.action === "like" && !existing && post && post.authorId !== req.userId!) {
     const [liker] = await db.select({ firstName: usersTable.firstName, lastName: usersTable.lastName })
       .from(usersTable).where(eq(usersTable.id, req.userId!));
@@ -242,6 +242,14 @@ router.post("/posts/:id/like", requireAuth, async (req, res): Promise<void> => {
       body: `${likerName} a aimé votre publication`,
       tag: `like-${params.data.id}`,
       data: { url: "/" },
+    }).catch(() => {});
+    db.insert(notificationsTable).values({
+      userId: post.authorId,
+      type: "like",
+      actorId: req.userId!,
+      actorName: likerName,
+      action: "a aimé votre publication",
+      link: `/profile/${req.userId!}`,
     }).catch(() => {});
   }
 
@@ -777,6 +785,15 @@ router.post("/posts/:id/comments", requireAuth, async (req, res): Promise<void> 
       body: preview,
       url: "/",
     }).catch(() => {});
+    db.insert(notificationsTable).values({
+      userId: parentComment.authorId,
+      type: "comment",
+      actorId: authorId,
+      actorName: commenterName,
+      action: "a répondu à votre commentaire",
+      detail: preview,
+      link: `/profile/${authorId}`,
+    }).catch(() => {});
   }
 
   // Notify post author if not self and not already notified above
@@ -786,6 +803,15 @@ router.post("/posts/:id/comments", requireAuth, async (req, res): Promise<void> 
       title: `💬 ${commenterName} a commenté votre publication`,
       body: preview,
       url: "/",
+    }).catch(() => {});
+    db.insert(notificationsTable).values({
+      userId: post.authorId,
+      type: "comment",
+      actorId: authorId,
+      actorName: commenterName,
+      action: "a commenté votre publication",
+      detail: preview,
+      link: `/profile/${authorId}`,
     }).catch(() => {});
   }
 
