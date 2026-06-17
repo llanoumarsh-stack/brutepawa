@@ -280,6 +280,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [attachPage, setAttachPage]     = useState<"none"|"poll"|"event"|"contacts"|"ai">("none");
   const mediaUploadsRef = useRef<Map<number, MediaUploadState>>(new Map());
   const [mediaUploads, setMediaUploads] = useState<Map<number, MediaUploadState>>(new Map());
+  const [locationGeo, setLocationGeo] = useState<Record<string, { city: string; district: string }>>({});
   const [aiPrompt, setAiPrompt]         = useState("");
   const [aiLoading, setAiLoading]       = useState(false);
   const galleryInputRef = useRef<HTMLInputElement>(null);
@@ -450,7 +451,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           m.id === tmpId ? { ...m, attachment: { ...m.attachment!, label: url, size: file.size } } : m
         )
       }));
-      URL.revokeObjectURL(localUrl);
+      setTimeout(() => URL.revokeObjectURL(localUrl), 3000);
       apiSendMessage(convId, encoded)
         .then(() => setMessages(prev => ({ ...prev, [convId]: (prev[convId] ?? []).map(m => m.id === tmpId ? { ...m, status: "sent" as const } : m) })))
         .catch(() => {});
@@ -530,7 +531,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           m.id === tmpId ? { ...m, attachment: { ...m.attachment!, label: url, size: file.size } } : m
         )
       }));
-      URL.revokeObjectURL(localUrl);
+      setTimeout(() => URL.revokeObjectURL(localUrl), 3000);
       apiSendMessage(convId, encoded)
         .then(() => setMessages(prev => ({ ...prev, [convId]: (prev[convId] ?? []).map(m => m.id === tmpId ? { ...m, status: "sent" as const } : m) })))
         .catch(() => {});
@@ -559,11 +560,39 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         const url = `https://maps.google.com/?q=${lat},${lng}`;
         const extra = `${lat.toFixed(5)},${lng.toFixed(5)}`;
         const encoded = `__location__:${url}:${extra}`;
-        sendAttachMsg({ type: "location", label: url, extra }, "📍 Ma position", encoded);
+        sendAttachMsg({ type: "location", label: url, extra }, "", encoded);
       },
       () => alert("Impossible d'accéder à la localisation. Autorisez la géolocalisation dans les paramètres du navigateur.")
     );
   }, [sendAttachMsg]);
+
+  /* ── Reverse-geocoding for location messages ── */
+  useEffect(() => {
+    if (!activeConv) return;
+    const msgs = messages[activeConv] ?? [];
+    for (const m of msgs) {
+      if (m.attachment?.type !== "location") continue;
+      const coords = m.attachment.extra ?? "";
+      if (!coords || locationGeo[coords] !== undefined) continue;
+      const [lat, lng] = coords.split(",").map(Number);
+      if (isNaN(lat) || isNaN(lng)) continue;
+      fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=fr`)
+        .then(r => r.json())
+        .then((data: { address?: Record<string,string> }) => {
+          const addr = data.address ?? {};
+          const city = addr.city || addr.town || addr.village || addr.county || "";
+          const country = addr.country || "";
+          const district = addr.suburb || addr.neighbourhood || addr.borough || addr.quarter || "";
+          setLocationGeo(prev => ({
+            ...prev,
+            [coords]: { city: [city, country].filter(Boolean).join(", "), district },
+          }));
+        })
+        .catch(() => {
+          setLocationGeo(prev => ({ ...prev, [coords]: { city: "", district: "" } }));
+        });
+    }
+  }, [activeConv, messages, locationGeo]);
 
   /* ── Peer typing / activity indicator ── */
   useEffect(() => {
@@ -859,7 +888,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       const sep   = rest.indexOf(":");
       const url   = sep === -1 ? rest : rest.slice(0, sep);
       const extra = sep === -1 ? "" : rest.slice(sep + 1);
-      return { ...base, text: "📍 Ma position", attachment: { type: "location" as const, label: url, extra } };
+      return { ...base, text: "", attachment: { type: "location" as const, label: url, extra } };
     }
     if (m.content.startsWith("__image__:")) {
       const rest  = m.content.slice("__image__:".length);
@@ -2338,109 +2367,109 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     const dash   = CIRC * (1 - pct / 100);
                     const sizeLabel = ups
                       ? fmtBytes(ups.fileSize)
-                      : msg.attachment.size ? fmtBytes(msg.attachment.size) : fname;
+                      : msg.attachment.size ? fmtBytes(msg.attachment.size) : "";
+                    const ext = fname.includes(".") ? fname.split(".").pop()?.toUpperCase() ?? "" : "";
+                    const captionSub = [sizeLabel, ext].filter(Boolean).join(" • ");
                     return (
-                      <div style={{ position:"relative", borderRadius:14, overflow:"hidden",
-                        width:252, marginBottom:2,
-                        boxShadow:"0 2px 18px rgba(0,0,0,0.18)",
+                      <div style={{ borderRadius:18, overflow:"hidden", marginBottom:2, width:252,
+                        background: msg.mine ? "#16C24A" : "#fff",
+                        boxShadow: msg.mine ? "0 4px 18px rgba(22,194,74,0.28)" : "0 2px 12px rgba(0,0,0,0.10)",
                         animation:"fbl-fade-in 0.28s cubic-bezier(.22,1,.36,1)" }}>
-                        {/* Image */}
-                        <img src={imgUrl} alt={fname}
-                          onError={e => { (e.currentTarget as HTMLImageElement).style.opacity = "0"; }}
-                          style={{ width:"100%", display:"block", height:195, objectFit:"cover" }} />
+                        {/* Image area */}
+                        <div style={{ position:"relative", height:168, background:"#d1d5db" }}>
+                          <img key={imgUrl} src={imgUrl} alt={fname}
+                            style={{ width:"100%", height:"100%", display:"block", objectFit:"cover" }} />
 
-                        {/* Offline overlay */}
-                        {ups?.network === "offline" && (
-                          <div style={{ position:"absolute", inset:0,
-                            background:"rgba(0,0,0,0.62)",
-                            display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:6 }}>
-                            <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round">
-                              <circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 3"/>
-                            </svg>
-                            <span style={{ color:"#fff", fontWeight:700, fontSize:12.5, textAlign:"center" }}>En attente du réseau</span>
-                            <span style={{ color:"rgba(255,255,255,0.65)", fontSize:11, textAlign:"center", padding:"0 24px" }}>
-                              Envoi dès le retour de la connexion
-                            </span>
-                          </div>
-                        )}
-
-                        {/* Error overlay */}
-                        {ups?.network === "error" && (
-                          <div style={{ position:"absolute", inset:0,
-                            background:"rgba(0,0,0,0.60)",
-                            display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:8 }}>
-                            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#EF4444" strokeWidth="2.2" strokeLinecap="round">
-                              <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
-                            </svg>
-                            <span style={{ color:"#fff", fontWeight:700, fontSize:12 }}>Échec de l'envoi</span>
-                            <button onClick={() => retryUpload(msg.id, activeConv!)}
-                              style={{ background:"#22C55E", border:"none", borderRadius:20, color:"#fff",
-                                padding:"6px 18px", fontSize:12.5, fontWeight:700, cursor:"pointer",
-                                display:"flex", alignItems:"center", gap:5 }}>
-                              <svg viewBox="0 0 24 24" width="13" height="13" fill="#fff"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 .49-7.6" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"/></svg>
-                              Réessayer
-                            </button>
-                          </div>
-                        )}
-
-                        {/* Progress ring — top-right (uploading / slow) */}
-                        {ups && ups.network !== "offline" && ups.network !== "error" && (
-                          <div style={{ position:"absolute", top:8, right:8,
-                            display:"flex", flexDirection:"column", alignItems:"center", gap:4 }}>
-                            <div style={{ position:"relative", width:56, height:56,
-                              background:"rgba(0,0,0,0.52)", borderRadius:"50%",
-                              display:"flex", alignItems:"center", justifyContent:"center" }}>
-                              <svg width="56" height="56" viewBox="0 0 56 56"
-                                style={{ position:"absolute", inset:0, transform:"rotate(-90deg)" }}>
-                                <circle cx="28" cy="28" r={R} fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="3.5"/>
-                                <circle cx="28" cy="28" r={R} fill="none" stroke="#22C55E" strokeWidth="3.5"
-                                  strokeDasharray={CIRC} strokeDashoffset={dash}
-                                  strokeLinecap="round" style={{ transition:"stroke-dashoffset 0.35s ease" }}/>
+                          {/* Offline overlay */}
+                          {ups?.network === "offline" && (
+                            <div style={{ position:"absolute", inset:0,
+                              background:"rgba(0,0,0,0.62)",
+                              display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:6 }}>
+                              <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round">
+                                <circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 3"/>
                               </svg>
-                              <div style={{ display:"flex", flexDirection:"column", alignItems:"center", lineHeight:1.1 }}>
-                                <span style={{ color:"#fff", fontSize:12, fontWeight:800 }}>{pct}%</span>
-                                <button
-                                  onClick={e => { e.stopPropagation(); ups.cancelFn?.(); }}
-                                  style={{ background:"none", border:"none", color:"rgba(255,255,255,0.85)",
-                                    fontSize:15, lineHeight:1, cursor:"pointer", padding:"1px 0", fontWeight:400 }}>
-                                  ×
-                                </button>
-                              </div>
+                              <span style={{ color:"#fff", fontWeight:700, fontSize:12.5, textAlign:"center" }}>En attente du réseau</span>
+                              <span style={{ color:"rgba(255,255,255,0.65)", fontSize:11, textAlign:"center", padding:"0 24px" }}>
+                                Envoi dès le retour de la connexion
+                              </span>
                             </div>
-                            {ups.network === "slow" && (
-                              <div style={{ background:"rgba(0,0,0,0.58)", borderRadius:10,
-                                padding:"3px 8px", display:"flex", alignItems:"center", gap:4 }}>
-                                <svg viewBox="0 0 24 24" width="11" height="11" fill="none"
-                                  stroke="#F59E0B" strokeWidth="2.5" strokeLinecap="round">
-                                  <circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 3"/>
-                                </svg>
-                                <span style={{ color:"#F59E0B", fontSize:10.5, fontWeight:700, whiteSpace:"nowrap" }}>
-                                  Connexion lente...
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        )}
+                          )}
 
-                        {/* Caption overlay (bottom gradient) */}
-                        <div style={{ position:"absolute", bottom:0, left:0, right:0,
-                          background:"linear-gradient(transparent, rgba(0,0,0,0.58))",
-                          padding:"22px 10px 7px",
-                          display:"flex", alignItems:"flex-end", justifyContent:"space-between" }}>
-                          <div style={{ display:"flex", alignItems:"center", gap:5 }}>
-                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none"
-                              stroke="rgba(255,255,255,0.88)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                              <circle cx="12" cy="13" r="4"/>
-                            </svg>
-                            <span style={{ color:"rgba(255,255,255,0.88)", fontSize:11.5, fontWeight:500,
-                              maxWidth:120, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
-                              {sizeLabel}
-                            </span>
+                          {/* Error overlay */}
+                          {ups?.network === "error" && (
+                            <div style={{ position:"absolute", inset:0,
+                              background:"rgba(0,0,0,0.60)",
+                              display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:8 }}>
+                              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#EF4444" strokeWidth="2.2" strokeLinecap="round">
+                                <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
+                              </svg>
+                              <span style={{ color:"#fff", fontWeight:700, fontSize:12 }}>Échec de l'envoi</span>
+                              <button onClick={() => retryUpload(msg.id, activeConv!)}
+                                style={{ background:"#22C55E", border:"none", borderRadius:20, color:"#fff",
+                                  padding:"6px 18px", fontSize:12.5, fontWeight:700, cursor:"pointer",
+                                  display:"flex", alignItems:"center", gap:5 }}>
+                                <svg viewBox="0 0 24 24" width="13" height="13" fill="#fff"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 .49-7.6" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"/></svg>
+                                Réessayer
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Progress ring */}
+                          {ups && ups.network !== "offline" && ups.network !== "error" && (
+                            <div style={{ position:"absolute", top:8, right:8,
+                              display:"flex", flexDirection:"column", alignItems:"center", gap:4 }}>
+                              <div style={{ position:"relative", width:56, height:56,
+                                background:"rgba(0,0,0,0.52)", borderRadius:"50%",
+                                display:"flex", alignItems:"center", justifyContent:"center" }}>
+                                <svg width="56" height="56" viewBox="0 0 56 56"
+                                  style={{ position:"absolute", inset:0, transform:"rotate(-90deg)" }}>
+                                  <circle cx="28" cy="28" r={R} fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="3.5"/>
+                                  <circle cx="28" cy="28" r={R} fill="none" stroke="#22C55E" strokeWidth="3.5"
+                                    strokeDasharray={CIRC} strokeDashoffset={dash}
+                                    strokeLinecap="round" style={{ transition:"stroke-dashoffset 0.35s ease" }}/>
+                                </svg>
+                                <div style={{ display:"flex", flexDirection:"column", alignItems:"center", lineHeight:1.1 }}>
+                                  <span style={{ color:"#fff", fontSize:12, fontWeight:800 }}>{pct}%</span>
+                                  <button onClick={e => { e.stopPropagation(); ups.cancelFn?.(); }}
+                                    style={{ background:"none", border:"none", color:"rgba(255,255,255,0.85)",
+                                      fontSize:15, lineHeight:1, cursor:"pointer", padding:"1px 0", fontWeight:400 }}>
+                                    ×
+                                  </button>
+                                </div>
+                              </div>
+                              {ups.network === "slow" && (
+                                <div style={{ background:"rgba(0,0,0,0.58)", borderRadius:10,
+                                  padding:"3px 8px", display:"flex", alignItems:"center", gap:4 }}>
+                                  <svg viewBox="0 0 24 24" width="11" height="11" fill="none"
+                                    stroke="#F59E0B" strokeWidth="2.5" strokeLinecap="round">
+                                    <circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 3"/>
+                                  </svg>
+                                  <span style={{ color:"#F59E0B", fontSize:10.5, fontWeight:700, whiteSpace:"nowrap" }}>
+                                    Connexion lente...
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Caption section */}
+                        <div style={{ padding:"7px 11px 8px" }}>
+                          <div style={{ fontWeight:700, fontSize:13,
+                            color: msg.mine ? "#fff" : "#111", marginBottom:1 }}>
+                            Photo
                           </div>
-                          <div style={{ display:"flex", alignItems:"center", gap:4 }}>
-                            <span style={{ color:"rgba(255,255,255,0.85)", fontSize:11 }}>{msg.time}</span>
-                            {msg.mine && <MsgStatus status={msg.status} dark={true} />}
+                          <div style={{ display:"flex", alignItems:"center",
+                            justifyContent:"space-between", gap:4 }}>
+                            <span style={{ color: msg.mine ? "rgba(255,255,255,0.78)" : "#6B7280", fontSize:11.5 }}>
+                              {captionSub}
+                            </span>
+                            <div style={{ display:"flex", alignItems:"center", gap:3, flexShrink:0 }}>
+                              <span style={{ color: msg.mine ? "rgba(255,255,255,0.75)" : "#9CA3AF", fontSize:11 }}>
+                                {msg.time}
+                              </span>
+                              {msg.mine && <MsgStatus status={msg.status} dark={true} />}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -2453,55 +2482,68 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     const lng = parseFloat(lngStr);
                     const hasCoords = !isNaN(lat) && !isNaN(lng);
                     const mapUrl = msg.attachment.label;
+                    const geo = locationGeo[coords];
                     const tileUrl = hasCoords
-                      ? `https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${lng}&zoom=15&size=220x90&markers=${lat},${lng},red-pushpin`
+                      ? `https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${lng}&zoom=15&size=80x80&markers=${lat},${lng},red-pushpin`
                       : null;
                     return (
-                      <a href={mapUrl} target="_blank" rel="noreferrer"
-                        style={{ display:"block", borderRadius:14, overflow:"hidden", marginBottom:4, textDecoration:"none",
-                          maxWidth:240, boxShadow:"0 2px 12px rgba(0,0,0,0.13)",
-                          animation:"fbl-fade-in 0.35s cubic-bezier(.22,1,.36,1)",
-                          border: msg.mine ? "1.5px solid rgba(255,255,255,0.25)" : "1.5px solid #e2e8f0" }}>
-                        {/* Map preview */}
-                        <div style={{ position:"relative", height:90, background: msg.mine ? "linear-gradient(135deg,#16a34a,#22c55e)" : "linear-gradient(135deg,#dbeafe,#bfdbfe)", overflow:"hidden" }}>
-                          {tileUrl && (
-                            <img src={tileUrl} alt="map"
-                              onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
-                              style={{ width:"100%", height:"100%", objectFit:"cover", display:"block" }} />
-                          )}
-                          {/* Pulsing pin overlay */}
-                          <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", pointerEvents:"none" }}>
-                            <div style={{ position:"relative", display:"flex", alignItems:"center", justifyContent:"center" }}>
-                              <div style={{ position:"absolute", width:36, height:36, borderRadius:"50%",
-                                background:"rgba(239,68,68,0.25)",
-                                animation:"fbl-loc-ripple 1.6s ease-out infinite" }} />
-                              <div style={{ position:"absolute", width:20, height:20, borderRadius:"50%",
-                                background:"rgba(239,68,68,0.18)",
-                                animation:"fbl-loc-ripple 1.6s ease-out 0.4s infinite" }} />
-                              <div style={{ width:14, height:14, borderRadius:"50%", background:"#EF4444",
-                                border:"2.5px solid #fff", boxShadow:"0 2px 8px rgba(239,68,68,0.6)",
-                                zIndex:1 }} />
-                            </div>
-                          </div>
-                        </div>
-                        {/* Info row */}
-                        <div style={{ display:"flex", alignItems:"center", gap:8, padding:"8px 12px",
-                          background: msg.mine ? "rgba(22,163,74,0.92)" : "#fff" }}>
-                          <span style={{ fontSize:18, flexShrink:0 }}>📍</span>
-                          <div style={{ flex:1, minWidth:0 }}>
-                            <div style={{ fontWeight:700, fontSize:12.5, color: msg.mine ? "#fff" : "#111", lineHeight:1.3 }}>Position partagée</div>
-                            {hasCoords && (
-                              <div style={{ fontSize:10.5, color: msg.mine ? "rgba(255,255,255,0.7)" : "#64748b", fontVariantNumeric:"tabular-nums" }}>
-                                {lat.toFixed(4)}, {lng.toFixed(4)}
-                              </div>
+                      <div style={{ borderRadius:14, overflow:"hidden", marginBottom:2,
+                        maxWidth:262, background:"#fff",
+                        boxShadow:"0 2px 12px rgba(0,0,0,0.10)",
+                        border:"1px solid #E5E7EB",
+                        animation:"fbl-fade-in 0.35s cubic-bezier(.22,1,.36,1)" }}>
+                        {/* Top row: thumbnail + text */}
+                        <div style={{ display:"flex", alignItems:"stretch" }}>
+                          {/* Map thumbnail */}
+                          <div style={{ width:80, height:82, flexShrink:0, overflow:"hidden",
+                            background:"linear-gradient(135deg,#bbf7d0,#86efac)",
+                            display:"flex", alignItems:"center", justifyContent:"center" }}>
+                            {tileUrl ? (
+                              <img src={tileUrl} alt="map"
+                                onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                                style={{ width:"100%", height:"100%", objectFit:"cover", display:"block" }} />
+                            ) : (
+                              <span style={{ fontSize:26 }}>📍</span>
                             )}
                           </div>
-                          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke={msg.mine ? "rgba(255,255,255,0.7)" : "#94a3b8"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}>
-                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                            <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-                          </svg>
+                          {/* Text column */}
+                          <div style={{ flex:1, padding:"10px 12px",
+                            display:"flex", flexDirection:"column", justifyContent:"center", gap:2 }}>
+                            <span style={{ fontWeight:700, fontSize:13.5, color:"#111", lineHeight:1.3 }}>
+                              Position partagée
+                            </span>
+                            {geo?.city ? (
+                              <span style={{ fontSize:12, color:"#374151", lineHeight:1.3 }}>{geo.city}</span>
+                            ) : hasCoords ? (
+                              <span style={{ fontSize:11, color:"#9CA3AF" }}>{lat.toFixed(4)}, {lng.toFixed(4)}</span>
+                            ) : null}
+                            {geo?.district ? (
+                              <span style={{ fontSize:11.5, color:"#6B7280", lineHeight:1.3 }}>{geo.district}</span>
+                            ) : null}
+                          </div>
                         </div>
-                      </a>
+                        {/* Divider */}
+                        <div style={{ height:1, background:"#F1F5F9" }} />
+                        {/* Link + time */}
+                        <div style={{ padding:"8px 12px 9px",
+                          display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                          <a href={mapUrl} target="_blank" rel="noreferrer"
+                            style={{ textDecoration:"none", display:"flex", alignItems:"center",
+                              gap:5, color:"#16C24A", fontWeight:600, fontSize:13 }}>
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none"
+                              stroke="#16C24A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+                              <line x1="9" y1="3" x2="9" y2="18"/>
+                              <line x1="15" y1="6" x2="15" y2="21"/>
+                            </svg>
+                            Voir sur la carte
+                          </a>
+                          <div style={{ display:"flex", alignItems:"center", gap:3 }}>
+                            <span style={{ fontSize:11, color:"#9CA3AF" }}>{msg.time}</span>
+                            {msg.mine && <MsgStatus status={msg.status} dark={false} />}
+                          </div>
+                        </div>
+                      </div>
                     );
                   })()}
                   {msg.attachment?.type === "doc" && (() => {
@@ -2514,82 +2556,109 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     const iconColor = isPdf ? "#EF4444" : "#3B82F6";
                     const iconLabel = isPdf ? "PDF" : fname.split(".").pop()?.toUpperCase()?.slice(0,4) ?? "DOC";
                     const pct     = ups?.progress ?? 0;
+                    const typeSize = [iconLabel, sizeStr].filter(Boolean).join(" • ");
                     return (
-                      <div style={{ display:"flex", alignItems:"stretch",
-                        background: msg.mine ? "#fff" : "#fff",
-                        borderRadius:14, overflow:"hidden", marginBottom:2,
-                        maxWidth:252, minWidth:200,
-                        boxShadow:"0 1px 8px rgba(0,0,0,0.10)",
-                        border:`1px solid ${msg.mine ? "rgba(22,163,74,0.2)" : "#E5E7EB"}` }}>
-                        {/* Icon block */}
-                        <div style={{ width:48, background:iconColor,
-                          display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
-                          flexShrink:0, padding:"8px 4px" }}>
-                          <span style={{ color:"#fff", fontSize:9.5, fontWeight:800, letterSpacing:0.5 }}>{iconLabel}</span>
+                      <div style={{ borderRadius:14, overflow:"hidden", marginBottom:2,
+                        maxWidth:262, background:"#fff",
+                        boxShadow:"0 2px 12px rgba(0,0,0,0.10)",
+                        border:"1px solid #E5E7EB" }}>
+                        {/* Header: icon + filename */}
+                        <div style={{ display:"flex", alignItems:"center", gap:12, padding:"14px 14px 10px" }}>
+                          <div style={{ width:42, height:50, background:iconColor,
+                            borderRadius:8, flexShrink:0, position:"relative",
+                            display:"flex", flexDirection:"column", alignItems:"center",
+                            justifyContent:"center",
+                            boxShadow:`0 2px 8px ${iconColor}55` }}>
+                            <div style={{ position:"absolute", top:0, right:0, width:0, height:0,
+                              borderStyle:"solid", borderWidth:"0 10px 10px 0",
+                              borderColor:`transparent #fff transparent transparent` }} />
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none"
+                              stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                              style={{ marginTop:4 }}>
+                              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                              <polyline points="14 2 14 8 20 8"/>
+                            </svg>
+                            <span style={{ color:"#fff", fontSize:8.5, fontWeight:900,
+                              letterSpacing:0.3, marginTop:2 }}>{iconLabel}</span>
+                          </div>
+                          <div style={{ flex:1, minWidth:0 }}>
+                            <div style={{ fontSize:13, fontWeight:700, color:"#111",
+                              overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
+                              lineHeight:1.35 }}>
+                              {fname}
+                            </div>
+                            <div style={{ fontSize:12, color:"#6B7280", marginTop:2 }}>{typeSize}</div>
+                          </div>
                         </div>
-                        {/* Info block */}
-                        <div style={{ flex:1, padding:"8px 10px 8px 10px", minWidth:0,
-                          display:"flex", flexDirection:"column", justifyContent:"center", gap:2 }}>
-                          <span style={{ fontSize:12.5, fontWeight:700, color:"#111",
-                            overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
-                            {fname}
-                          </span>
-                          {sizeStr && (
-                            <span style={{ fontSize:11, color:"#6B7280" }}>{sizeStr}</span>
-                          )}
-                          {ups && ups.network !== "error" && (
-                            <div style={{ height:3, background:"#E5E7EB", borderRadius:2, marginTop:3 }}>
-                              <div style={{ height:"100%", width:`${pct}%`, borderRadius:2,
-                                background: ups.network === "slow" ? "#F59E0B" : "#22C55E",
+
+                        {/* Upload progress */}
+                        {ups && (
+                          <div style={{ padding:"0 14px 10px" }}>
+                            <div style={{ height:3, background:"#E5E7EB", borderRadius:2 }}>
+                              <div style={{ height:"100%", borderRadius:2,
+                                width: ups.network === "error" ? "35%" : `${pct}%`,
+                                background: ups.network === "error" ? "#EF4444"
+                                  : ups.network === "slow" ? "#F59E0B" : "#22C55E",
                                 transition:"width 0.3s ease" }} />
                             </div>
-                          )}
-                          {ups?.network === "error" && (
-                            <div style={{ height:3, background:"#EF4444", borderRadius:2, marginTop:3, width:"35%" }} />
-                          )}
-                        </div>
-                        {/* Right: status or error+retry */}
-                        {ups?.network === "error" ? (
-                          <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end",
-                            justifyContent:"center", padding:"8px 10px", gap:4, flexShrink:0 }}>
-                            <span style={{ fontSize:10.5, color:"#F59E0B", fontWeight:600, whiteSpace:"nowrap",
-                              display:"flex", alignItems:"center", gap:3 }}>
-                              <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#F59E0B" strokeWidth="2.2" strokeLinecap="round">
-                                <circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 3"/>
-                              </svg>
-                              Échec
-                            </span>
-                            <button onClick={() => retryUpload(msg.id, activeConv!)}
-                              style={{ background:"none", border:"none", color:"#EF4444",
-                                fontSize:11, fontWeight:700, cursor:"pointer", padding:0,
-                                display:"flex", alignItems:"center", gap:3 }}>
-                              <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#EF4444" strokeWidth="2.5" strokeLinecap="round">
-                                <path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 .49-7.6" fill="none"/>
-                              </svg>
-                              Réessayer
-                            </button>
-                          </div>
-                        ) : !ups ? (
-                          <a href={docUrl} target="_blank" rel="noreferrer"
-                            style={{ display:"flex", flexDirection:"column", alignItems:"flex-end",
-                              justifyContent:"flex-end", padding:"8px 10px", textDecoration:"none",
-                              flexShrink:0, gap:4 }}>
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none"
-                              stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                              <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-                            </svg>
-                            <div style={{ display:"flex", alignItems:"center", gap:3 }}>
-                              <span style={{ fontSize:11, color:"#9CA3AF" }}>{msg.time}</span>
-                              {msg.mine && <MsgStatus status={msg.status} dark={false} />}
-                            </div>
-                          </a>
-                        ) : (
-                          <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end",
-                            justifyContent:"center", padding:"8px 10px", flexShrink:0 }}>
-                            <span style={{ fontSize:11, color:"#9CA3AF" }}>{pct}%</span>
+                            {ups.network === "error" && (
+                              <div style={{ display:"flex", alignItems:"center",
+                                justifyContent:"space-between", marginTop:6 }}>
+                                <span style={{ fontSize:11.5, color:"#EF4444", fontWeight:600 }}>Échec de l'envoi</span>
+                                <button onClick={() => retryUpload(msg.id, activeConv!)}
+                                  style={{ background:"none", border:"none", color:"#16C24A",
+                                    fontSize:12, fontWeight:700, cursor:"pointer",
+                                    display:"flex", alignItems:"center", gap:3, padding:0 }}>
+                                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none"
+                                    stroke="#16C24A" strokeWidth="2.5" strokeLinecap="round">
+                                    <path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 .49-7.6" fill="none"/>
+                                  </svg>
+                                  Réessayer
+                                </button>
+                              </div>
+                            )}
                           </div>
                         )}
+
+                        {/* Action buttons */}
+                        {!ups && (
+                          <div style={{ display:"flex", gap:8, padding:"2px 14px 12px" }}>
+                            <a href={docUrl} target="_blank" rel="noreferrer"
+                              style={{ flex:1, display:"flex", alignItems:"center",
+                                justifyContent:"center", gap:5,
+                                border:"1.5px solid #16C24A", borderRadius:20,
+                                padding:"7px 0", color:"#16C24A",
+                                textDecoration:"none", fontSize:13, fontWeight:600 }}>
+                              <svg viewBox="0 0 24 24" width="14" height="14" fill="none"
+                                stroke="#16C24A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                              </svg>
+                              Ouvrir
+                            </a>
+                            <a href={docUrl} download={fname} target="_blank" rel="noreferrer"
+                              style={{ flex:1, display:"flex", alignItems:"center",
+                                justifyContent:"center", gap:5,
+                                border:"1.5px solid #16C24A", borderRadius:20,
+                                padding:"7px 0", color:"#16C24A",
+                                textDecoration:"none", fontSize:13, fontWeight:600 }}>
+                              <svg viewBox="0 0 24 24" width="14" height="14" fill="none"
+                                stroke="#16C24A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                              </svg>
+                              Télécharger
+                            </a>
+                          </div>
+                        )}
+
+                        {/* Time row */}
+                        <div style={{ display:"flex", justifyContent:"flex-end",
+                          alignItems:"center", gap:3, padding:"0 14px 9px" }}>
+                          <span style={{ fontSize:11, color:"#9CA3AF" }}>{msg.time}</span>
+                          {msg.mine && <MsgStatus status={msg.status} dark={false} />}
+                        </div>
                       </div>
                     );
                   })()}
