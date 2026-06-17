@@ -1,0 +1,158 @@
+SYSTÈME DE STATUT DES MESSAGES ET MÉDIAS BRUTEPAWA
+
+Je veux un système de statuts plus intelligent que WhatsApp.
+
+RÈGLE FONDAMENTALE :
+
+Les états des messages et médias doivent dépendre de l'état réel de la connexion du destinataire et non uniquement de l'ouverture de l'application.
+
+━━━━━━━━━━━━━━━━━━━━━━
+STATUT ✓ (Envoyé)
+━━━━━━━━━━━━━━━━━━━━━━
+
+Afficher un seul ✓ lorsque :
+
+- Le message ou média est correctement enregistré sur le serveur BrutePawa.
+- Le destinataire n'a pas actuellement une connexion Internet active.
+- OU le serveur ne détecte aucune activité réseau récente du destinataire.
+
+Exemples :
+
+✓ Téléphone éteint
+✓ Mode avion
+✓ Pas de données mobiles
+✓ Wi-Fi coupé
+✓ Réseau perdu
+
+Dans ces cas, le message reste avec un seul ✓.
+
+━━━━━━━━━━━━━━━━━━━━━━
+STATUT ✓✓ (Livré)
+━━━━━━━━━━━━━━━━━━━━━━
+
+Afficher ✓✓ dès que :
+
+- Le destinataire possède une connexion Internet active.
+- Le serveur détecte une activité réseau récente.
+- Même si l'application est fermée.
+- Même si l'application est en arrière-plan.
+
+Condition :
+
+Si le téléphone du destinataire échange encore des données avec BrutePawa (heartbeat, push token, présence réseau, synchronisation), alors le message doit immédiatement passer à ✓✓.
+
+L'utilisateur ne doit pas être obligé d'ouvrir l'application pour recevoir le statut livré.
+
+━━━━━━━━━━━━━━━━━━━━━━
+STATUT ✓✓ BLEU (Lu)
+━━━━━━━━━━━━━━━━━━━━━━
+
+Afficher ✓✓ bleu ciel uniquement lorsque :
+
+- Le destinataire ouvre réellement la conversation.
+- Le message devient visible à l'écran.
+- Le média est consulté.
+
+Conditions :
+
+- Photo ouverte
+- Vidéo ouverte
+- Document ouvert
+- Localisation ouverte
+- Message affiché dans la fenêtre active
+
+À ce moment seulement :
+
+✓✓ → ✓✓ bleu
+
+━━━━━━━━━━━━━━━━━━━━━━
+RAFRAÎCHISSEMENT AUTOMATIQUE
+━━━━━━━━━━━━━━━━━━━━━━
+
+Ne PAS attendre 5 minutes.
+
+Utiliser :
+
+- WebSocket
+- Supabase Realtime
+- Push Events
+- Présence temps réel
+
+Toutes les nouvelles données doivent apparaître instantanément.
+
+Cependant prévoir une synchronisation de sécurité automatique toutes les 5 minutes pour :
+
+- nouveaux messages
+- nouveaux médias
+- notifications
+- états de livraison
+- états de lecture
+- groupes
+- appels
+
+━━━━━━━━━━━━━━━━━━━━━━
+MÉDIAS (PHOTO, VIDÉO, PDF, AUDIO, LOCALISATION)
+━━━━━━━━━━━━━━━━━━━━━━
+
+Pendant l'envoi :
+
+Afficher un cercle de progression avec pourcentage.
+
+Exemples :
+
+12%
+35%
+68%
+91%
+
+Connexion lente :
+
+Afficher :
+
+🕒 Connexion lente...
+
+avec pourcentage toujours visible.
+
+Pas de connexion :
+
+Afficher :
+
+🕒 En attente du réseau
+
+Le média doit reprendre automatiquement dès le retour de la connexion.
+
+Échec :
+
+Afficher :
+
+⚠ Échec de l'envoi
+Réessayer
+
+Succès :
+
+✓ Média envoyé au serveur
+
+Livraison :
+
+✓✓ Média livré
+
+Lecture :
+
+✓✓ bleu Média consulté
+
+Les états des médias doivent suivre exactement les mêmes règles que les messages texte.
+
+━━━━━━━━━━━━━━━━━━━━━━
+OBJECTIF FINAL
+━━━━━━━━━━━━━━━━━━━━━━
+
+BrutePawa doit offrir :
+
+- livraison temps réel
+- lecture temps réel
+- synchronisation instantanée
+- reprise automatique des uploads
+- détection intelligente de la connexion
+- expérience plus fluide que WhatsApp
+- expérience plus moderne que Facebook Messenger
+- fonctionnement fiable même sur les réseaux 2G, 3G et 4G africains.Petite remarque technique : pour être aussi réactif que WhatsApp, il vaut mieux utiliser des événements temps réel (WebSocket/Supabase Realtime) plutôt qu'un simple rafraîchissement toutes les 5 minutes. Les 5 minutes doivent servir uniquement de synchronisation de secours.

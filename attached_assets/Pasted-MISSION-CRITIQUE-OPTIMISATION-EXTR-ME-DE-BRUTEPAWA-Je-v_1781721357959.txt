@@ -1,0 +1,180 @@
+MISSION CRITIQUE — OPTIMISATION EXTRÊME DE BRUTEPAWA
+
+Je veux que BrutePawa soit plus fluide, plus rapide et plus réactif que WhatsApp, Facebook Messenger et Telegram sur les téléphones Android d'entrée de gamme jusqu'aux téléphones haut de gamme.
+
+Tu dois analyser l'ensemble de l'application et mettre en œuvre toutes les optimisations possibles sans casser les fonctionnalités existantes.
+
+══════════════════════════════
+PERFORMANCES GÉNÉRALES
+══════════════════════════════
+
+Objectif :
+
+- Ouverture instantanée des écrans
+- Défilement ultra fluide
+- Temps de réponse inférieur à 100 ms
+- Animations 60 FPS
+- Consommation mémoire minimale
+- Consommation batterie minimale
+
+══════════════════════════════
+OPTIMISATION DES IMAGES
+══════════════════════════════
+
+- Générer automatiquement des miniatures.
+- Ne jamais charger l'image originale dans les listes.
+- Charger la version HD uniquement lors de l'ouverture.
+- Lazy Loading obligatoire.
+- Préchargement intelligent des contenus visibles.
+- Cache local agressif.
+
+══════════════════════════════
+OPTIMISATION DES VIDÉOS
+══════════════════════════════
+
+- Génération automatique de miniature.
+- Streaming progressif.
+- Lecture instantanée.
+- Compression automatique avant upload.
+- Adaptation automatique selon la qualité réseau.
+
+══════════════════════════════
+OPTIMISATION DE LA MESSAGERIE
+══════════════════════════════
+
+- Messages temps réel via WebSocket/Supabase Realtime.
+- Aucun rafraîchissement manuel.
+- Chargement progressif des conversations.
+- Pagination intelligente.
+- Préchargement des conversations récentes.
+- Conservation locale des derniers messages.
+
+══════════════════════════════
+UPLOAD ULTRA INTELLIGENT
+══════════════════════════════
+
+Les uploads doivent être plus avancés que WhatsApp.
+
+Fonctionnalités obligatoires :
+
+✔ Reprise automatique après coupure réseau
+
+✔ Reprise depuis le pourcentage atteint
+
+✔ Pas de redémarrage à 0 %
+
+✔ Upload en arrière-plan
+
+✔ Gestion des réseaux faibles
+
+✔ Détection automatique connexion lente
+
+✔ Gestion des erreurs serveur
+
+✔ Réessayer automatiquement plusieurs fois
+
+══════════════════════════════
+CACHE HORS LIGNE
+══════════════════════════════
+
+Conserver localement :
+
+- Profils visités
+- Photos consultées
+- Conversations récentes
+- Groupes récents
+- Publications récentes
+
+L'utilisateur doit pouvoir continuer à consulter une partie de l'application même sans connexion.
+
+══════════════════════════════
+OPTIMISATION SUPABASE
+══════════════════════════════
+
+Vérifier :
+
+- Index SQL
+- Requêtes lentes
+- Jointures inutiles
+- Colonnes inutiles
+
+Créer des index sur :
+
+- messages
+- conversations
+- utilisateurs
+- notifications
+- amis
+- groupes
+- publications
+
+Aucune requête ne doit récupérer inutilement des milliers d'enregistrements.
+
+══════════════════════════════
+RESPONSIVE PREMIUM
+══════════════════════════════
+
+Tester :
+
+320px
+360px
+375px
+390px
+412px
+414px
+430px
+480px
+600px
+768px
+1024px
+
+Interdictions :
+
+❌ Overflow horizontal
+
+❌ Boutons coupés
+
+❌ Texte tronqué
+
+❌ Images déformées
+
+❌ Éléments qui débordent
+
+❌ Scroll parasite
+
+══════════════════════════════
+OPTIMISATION MÉMOIRE
+══════════════════════════════
+
+Réduire :
+
+- Re-render inutiles
+- Appels API inutiles
+- Images inutiles en mémoire
+- Composants inutiles montés
+
+Utiliser :
+
+- Memoization
+- Virtualisation des listes
+- Lazy Components
+- Suspense
+- Cache intelligent
+
+══════════════════════════════
+OBJECTIF FINAL
+══════════════════════════════
+
+BrutePawa doit :
+
+- démarrer rapidement
+- être fluide sur 2 Go RAM
+- fonctionner correctement en 3G
+- consommer peu de batterie
+- consommer peu de données mobiles
+- afficher les médias instantanément
+- offrir une expérience plus légère que Facebook
+- offrir une messagerie aussi rapide que WhatsApp
+- offrir une gestion des médias plus avancée que Telegram
+
+Avant de terminer, effectuer un audit complet des performances et corriger tous les goulots d'étranglement identifiés.

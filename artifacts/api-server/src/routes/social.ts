@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db, postsTable, postLikesTable, messagesTable, usersTable, storiesTable, userBlocksTable, notificationsTable, commentsTable, commentLikesTable, savedPostsTable, postReportsTable, friendRequestsTable } from "@workspace/db";
-import { eq, and, or, desc, sql, gt } from "drizzle-orm";
+import { eq, and, or, desc, sql, gt, lt } from "drizzle-orm";
 import { CreatePostBody, GetPostParams, DeletePostParams, LikePostParams, LikePostBody, SendMessageBody, GetConversationParams, ListPostsQueryParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
 import { pushToUserDevice } from "./push";
@@ -74,6 +74,7 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
     : [];
   const likedSet = new Set(myLikes.map(l => l.postId));
 
+  res.setHeader("Cache-Control", "private, max-age=30, stale-while-revalidate=60");
   res.json(rows.map(r => ({
     id: r.id,
     authorId: r.authorId,
@@ -241,21 +242,28 @@ router.post("/posts/:id/like", requireAuth, async (req, res): Promise<void> => {
 router.get("/messages", requireAuth, async (req, res): Promise<void> => {
   const me = req.userId!;
 
-  const blocks = await db.select().from(userBlocksTable).where(
+  const blocks = await db.select({
+    blockerId: userBlocksTable.blockerId,
+    blockedId: userBlocksTable.blockedId,
+  }).from(userBlocksTable).where(
     or(eq(userBlocksTable.blockerId, me), eq(userBlocksTable.blockedId, me))
   );
   const blockedUserIds = new Set(blocks.map(b => b.blockerId === me ? b.blockedId : b.blockerId));
 
-  const msgs = await db.select().from(messagesTable)
-    .where(or(eq(messagesTable.fromUserId, me), eq(messagesTable.toUserId, me)))
-    .orderBy(desc(messagesTable.createdAt));
-
-  const convoMap = new Map<number, typeof msgs[0]>();
-  for (const m of msgs) {
-    const otherId = m.fromUserId === me ? m.toUserId : m.fromUserId;
-    if (blockedUserIds.has(otherId)) continue;
-    if (!convoMap.has(otherId)) convoMap.set(otherId, m);
-  }
+  /* DISTINCT ON: one SQL pass → latest message per conversation partner.
+     Replaces the previous full-table-scan + JS grouping. */
+  type RawMsg = { id: number; from_user_id: number; to_user_id: number; content: string; is_read: boolean; created_at: Date };
+  const latestPerConvo = await db.execute(sql`
+    SELECT DISTINCT ON (
+      CASE WHEN from_user_id = ${me} THEN to_user_id ELSE from_user_id END
+    )
+    id, from_user_id, to_user_id, content, is_read, created_at
+    FROM messages
+    WHERE from_user_id = ${me} OR to_user_id = ${me}
+    ORDER BY
+      CASE WHEN from_user_id = ${me} THEN to_user_id ELSE from_user_id END,
+      created_at DESC
+  `) as unknown as RawMsg[];
 
   const unreadCounts = await db.select({
     fromUserId: messagesTable.fromUserId,
@@ -263,14 +271,19 @@ router.get("/messages", requireAuth, async (req, res): Promise<void> => {
   }).from(messagesTable)
     .where(and(eq(messagesTable.toUserId, me), eq(messagesTable.isRead, false)))
     .groupBy(messagesTable.fromUserId);
+  const unreadMap = new Map(unreadCounts.map(u => [u.fromUserId, u.count]));
 
-  const convos = Array.from(convoMap.entries()).map(([userId, msg]) => ({
-    userId,
-    lastMessage: msg.content,
-    unreadCount: unreadCounts.find(u => u.fromUserId === userId)?.count ?? 0,
-    updatedAt: msg.createdAt,
-  }));
+  const convos = latestPerConvo
+    .map(m => ({
+      userId:       m.from_user_id === me ? m.to_user_id : m.from_user_id,
+      lastMessage:  m.content,
+      unreadCount:  0,
+      updatedAt:    m.created_at,
+    }))
+    .filter(c => !blockedUserIds.has(c.userId))
+    .map(c => ({ ...c, unreadCount: unreadMap.get(c.userId) ?? 0 }));
 
+  res.setHeader("Cache-Control", "private, no-cache");
   res.json(convos);
 });
 
@@ -336,10 +349,12 @@ router.get("/messages/:userId", requireAuth, async (req, res): Promise<void> => 
   const params = GetConversationParams.safeParse({ userId: Number(req.params.userId) });
   if (!params.success) { res.status(400).json({ error: params.error.message }); return; }
 
-  const me = req.userId!;
+  const me      = req.userId!;
   const otherId = params.data.userId;
+  const before  = req.query.before ? Number(req.query.before) : null;
+  const PAGE    = 100;
 
-  const [block] = await db.select().from(userBlocksTable).where(
+  const [block] = await db.select({ id: userBlocksTable.id }).from(userBlocksTable).where(
     or(
       and(eq(userBlocksTable.blockerId, me), eq(userBlocksTable.blockedId, otherId)),
       and(eq(userBlocksTable.blockerId, otherId), eq(userBlocksTable.blockedId, me)),
@@ -350,17 +365,31 @@ router.get("/messages/:userId", requireAuth, async (req, res): Promise<void> => 
     return;
   }
 
-  const msgs = await db.select().from(messagesTable)
-    .where(or(
-      and(eq(messagesTable.fromUserId, me), eq(messagesTable.toUserId, otherId)),
-      and(eq(messagesTable.fromUserId, otherId), eq(messagesTable.toUserId, me)),
-    ))
-    .orderBy(messagesTable.createdAt);
+  const pairCond = or(
+    and(eq(messagesTable.fromUserId, me),      eq(messagesTable.toUserId, otherId)),
+    and(eq(messagesTable.fromUserId, otherId), eq(messagesTable.toUserId, me)),
+  )!;
 
-  await db.update(messagesTable).set({ isRead: true })
-    .where(and(eq(messagesTable.fromUserId, otherId), eq(messagesTable.toUserId, me)));
+  const whereCond = (before !== null && !isNaN(before))
+    ? and(pairCond, lt(messagesTable.id, before))
+    : pairCond;
 
-  res.json(msgs);
+  /* Fetch PAGE+1 in DESC order so we know if more exist, then reverse to ASC */
+  const raw = await db.select().from(messagesTable)
+    .where(whereCond)
+    .orderBy(desc(messagesTable.id))
+    .limit(PAGE + 1);
+
+  const hasMore = raw.length > PAGE;
+  const msgs    = (hasMore ? raw.slice(0, PAGE) : raw).reverse();
+
+  /* Mark as read in background — do not await */
+  db.update(messagesTable).set({ isRead: true })
+    .where(and(eq(messagesTable.fromUserId, otherId), eq(messagesTable.toUserId, me)))
+    .catch(() => {});
+
+  res.setHeader("Cache-Control", "private, no-cache");
+  res.json({ messages: msgs, hasMore });
 });
 
 router.delete("/messages/msg/:messageId", requireAuth, async (req, res): Promise<void> => {
@@ -440,6 +469,7 @@ router.get("/stories", requireAuth, async (req, res): Promise<void> => {
     authorMap.get(r.authorId)!.stories.push(r);
   }
 
+  res.setHeader("Cache-Control", "private, max-age=60, stale-while-revalidate=120");
   res.json(Array.from(authorMap.values()).map(a => ({
     authorId: a.authorId,
     authorName: a.authorName,

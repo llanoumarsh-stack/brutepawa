@@ -580,7 +580,7 @@ export default function Feed() {
               {/* Post header */}
               <div style={{ display: "flex", alignItems: "flex-start", padding: "12px 14px 8px", gap: 10 }}>
                 {post.authorAvatarUrl
-                  ? <img src={post.authorAvatarUrl} alt={post.authorName} onClick={() => navigate(`/user/${post.authorId}`)}
+                  ? <img src={post.authorAvatarUrl} alt={post.authorName} loading="lazy" decoding="async" onClick={() => navigate(`/user/${post.authorId}`)}
                       style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer" }} />
                   : <div onClick={() => navigate(`/user/${post.authorId}`)}
                       style={{ width: 40, height: 40, borderRadius: "50%", background: avatarColor, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15, flexShrink: 0, cursor: "pointer" }}>
@@ -665,7 +665,7 @@ export default function Feed() {
               {/* Media */}
               {post.imageUrl && (
                 <div style={{ margin: "0 0 0 0", overflow: "hidden" }}>
-                  <img src={post.imageUrl} alt="" style={{ width: "100%", maxHeight: 420, objectFit: "cover", display: "block" }} />
+                  <img src={post.imageUrl} alt="" loading="lazy" decoding="async" style={{ width: "100%", maxHeight: 420, objectFit: "cover", display: "block" }} />
                 </div>
               )}
 

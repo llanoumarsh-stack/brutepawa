@@ -206,6 +206,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [messages, setMessages]       = useState<Record<number, Message[]>>(() => ({..._msgCache}));
   const [convList, setConvList]       = useState<NormConv[]>([]);
   const [convLoading, setConvLoading] = useState(true);
+  const [hasMoreMessages, setHasMoreMessages] = useState<Record<number, boolean>>({});
   const [allUsers, setAllUsers]       = useState<PublicUser[]>([]);
   const [convPresence, setConvPresence] = useState<Record<number, {online:boolean;lastSeenAt:string|null}>>({});
   const [newMsg, setNewMsg]           = useState("");
@@ -416,6 +417,22 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   }, []);
 
   /* ── Attachment upload helper ── */
+  const loadOlderMessages = useCallback(() => {
+    if (!activeConv) return;
+    const oldest = messages[activeConv]?.[0];
+    if (!oldest) return;
+    apiGetMessages(activeConv, oldest.id).then(({ messages: msgs, hasMore }) => {
+      setMessages(prev => {
+        const older      = msgs.map(m => parseApiMsg(m));
+        const existing   = prev[activeConv] ?? [];
+        const existingIds = new Set(existing.map(m => m.id));
+        const newOlder   = older.filter(m => !existingIds.has(m.id));
+        return { ...prev, [activeConv]: [...newOlder, ...existing] };
+      });
+      setHasMoreMessages(prev => ({ ...prev, [activeConv]: hasMore }));
+    }).catch(() => {});
+  }, [activeConv, messages, parseApiMsg]);
+
   const sendAttachMsg = useCallback((attachment: { type: "image"|"doc"|"location"|"audio"; label: string; extra?: string }, text: string, encodedContent: string) => {
     if (!activeConv) return;
     const convId = activeConv;
@@ -932,11 +949,12 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
   useEffect(() => {
     if (!activeConv || messages[activeConv]) return;
-    apiGetMessages(activeConv).then(msgs => {
+    apiGetMessages(activeConv).then(({ messages: msgs, hasMore }) => {
       setMessages(prev => ({
         ...prev,
         [activeConv]: msgs.map(m => parseApiMsg(m)),
       }));
+      setHasMoreMessages(prev => ({ ...prev, [activeConv]: hasMore }));
     }).catch(() => {});
   }, [activeConv]);
 
@@ -956,17 +974,19 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   useEffect(() => {
     if (!activeConv) return;
     const poll = setInterval(() => {
-      apiGetMessages(activeConv).then(msgs => {
+      apiGetMessages(activeConv).then(({ messages: msgs }) => {
         setMessages(prev => {
-          const next = msgs.map(m => parseApiMsg(m));
+          const next      = msgs.map(m => parseApiMsg(m));
           const serverIds = new Set(next.map(x => x.id));
+          /* Preserve pending (optimistic) msgs + any older msgs loaded by load-more */
           const pending = (prev[activeConv] ?? []).filter(m => m.status === "pending" && !serverIds.has(m.id));
-          const merged = [...next, ...pending];
+          const older   = (prev[activeConv] ?? []).filter(m => next.length > 0 && m.id < next[0].id && !serverIds.has(m.id));
+          const merged  = [...older, ...next, ...pending];
           if (JSON.stringify(merged.map(x => x.id)) === JSON.stringify((prev[activeConv] ?? []).map(x => x.id))) return prev;
           return { ...prev, [activeConv]: merged };
         });
       }).catch(() => {});
-    }, 3000);
+    }, 15000); /* SSE handles real-time delivery — polling is a low-frequency fallback */
     return () => clearInterval(poll);
   }, [activeConv, parseApiMsg]);
 
@@ -1042,7 +1062,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     };
     loadMsgs();
     apiGetChatGroupInfo(activeGroupId).then(setGroupInfo).catch(() => {});
-    const poll = setInterval(loadMsgs, 3000);
+    const poll = setInterval(loadMsgs, 15000); /* SSE handles real-time; polling is a fallback */
     return () => clearInterval(poll);
   }, [activeGroupId, meId]);
 
@@ -2241,6 +2261,15 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             backgroundImage:`url(${wpUrl(convWpKey)})`, backgroundSize:"cover", backgroundPosition:"center", backgroundAttachment:"local"
           } : { background: convWallpaper ?? CONV_THEMES[convThemeKey].bg }) }}>
 
+          {/* Load older messages button */}
+          {activeConv && hasMoreMessages[activeConv] && (
+            <button onClick={loadOlderMessages}
+              style={{ alignSelf:"center", margin:"4px auto 8px", background:"rgba(0,0,0,0.06)", border:"none", borderRadius:20, padding:"5px 16px", fontSize:12, fontWeight:600, color:"#444", cursor:"pointer", display:"flex", alignItems:"center", gap:6 }}>
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#444" strokeWidth="2.2" strokeLinecap="round"><path d="M12 5v14M5 12l7-7 7 7"/></svg>
+              Messages précédents
+            </button>
+          )}
+
           {currentMessages.length === 0 ? (
             <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:10, padding:"60px 32px", textAlign:"center" }}>
               <div style={{ width:58, height:58, borderRadius:"50%", background:"rgba(0,0,0,0.08)", display:"flex", alignItems:"center", justifyContent:"center" }}>
@@ -2397,7 +2426,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                         animation:"fbl-fade-in 0.28s cubic-bezier(.22,1,.36,1)" }}>
                         {/* Image area */}
                         <div style={{ position:"relative", height:168, background:"#d1d5db" }}>
-                          <img key={imgUrl} src={imgUrl} alt={fname}
+                          <img key={imgUrl} src={imgUrl} alt={fname} loading="lazy" decoding="async"
                             style={{ width:"100%", height:"100%", display:"block", objectFit:"cover" }} />
 
                           {/* Offline overlay */}
@@ -2702,7 +2731,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                           onClick={e => e.stopPropagation()}
                           style={{ display:"block", textDecoration:"none", borderBottom:`1px solid ${isMine ? "rgba(255,255,255,0.15)" : "#E4E6EB"}` }}>
                           {preview.image && (
-                            <img src={preview.image} alt="" onError={e => { (e.currentTarget as HTMLImageElement).style.display="none"; }}
+                            <img src={preview.image} alt="" loading="lazy" decoding="async"
+                              onError={e => { (e.currentTarget as HTMLImageElement).style.display="none"; }}
                               style={{ width:"100%", height:140, objectFit:"cover", display:"block" }} />
                           )}
                           <div style={{ padding:"8px 10px", background: isMine ? "rgba(0,0,0,0.12)" : "#F8FAFC" }}>
@@ -3984,7 +4014,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 <div key={conv.id} onClick={() => setActiveConv(conv.id)} style={{ flexShrink: 0, textAlign: "center", width: 72, padding: "0 4px", cursor: "pointer" }}>
                   <div style={{ position: "relative", marginBottom: 5 }}>
                     {conv.user.avatarUrl
-                      ? <img src={conv.user.avatarUrl} alt={conv.user.name} style={{ width: 56, height: 56, borderRadius: "50%", objectFit: "cover", display: "block", margin: "0 auto", border: "3px solid #fff" }} />
+                      ? <img src={conv.user.avatarUrl} alt={conv.user.name} loading="lazy" decoding="async" style={{ width: 56, height: 56, borderRadius: "50%", objectFit: "cover", display: "block", margin: "0 auto", border: "3px solid #fff" }} />
                       : <div className="avatar" style={{ width: 56, height: 56, fontSize: 19, margin: "0 auto", background: conv.user.color, border: "3px solid #fff" }}>{conv.user.initials}</div>
                     }
                     <div style={{ position: "absolute", bottom: 0, right: 6, width: 14, height: 14, background: isOnline ? "#22C55E" : "#CBD5E1", borderRadius: "50%", border: "2.5px solid #fff" }} />
@@ -4020,7 +4050,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             {/* Avatar + online dot */}
             <div style={{ position:"relative", flexShrink:0 }}>
               {"avatarUrl" in item && item.avatarUrl
-                ? <img src={item.avatarUrl} alt={item.name} style={{ width:56, height:56, borderRadius:"50%", objectFit:"cover", display:"block" }} />
+                ? <img src={item.avatarUrl} alt={item.name} loading="lazy" decoding="async" style={{ width:56, height:56, borderRadius:"50%", objectFit:"cover", display:"block" }} />
                 : <div className="avatar" style={{ width:56, height:56, fontSize: item.type==="group" ? 24 : 20, background:item.color, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:700, color:"#fff" }}>{item.initials}</div>
               }
               {item.online ? (
