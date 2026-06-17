@@ -1494,6 +1494,44 @@ export async function apiReportPost(postId: number, reason: string = "spam"): Pr
   await apiFetch(`/posts/${postId}/report`, { method: "POST", body: JSON.stringify({ reason }) });
 }
 
+export interface MessagingSettings {
+  onlineStatus: boolean;
+  notificationsEnabled: boolean;
+  readReceiptsEnabled: boolean;
+  whoCanMessage: string;
+}
+
+export async function apiGetMessagingSettings(): Promise<MessagingSettings> {
+  const res = await apiFetch("/messaging/settings");
+  if (!res.ok) return { onlineStatus: true, notificationsEnabled: true, readReceiptsEnabled: true, whoCanMessage: "everyone" };
+  return res.json() as Promise<MessagingSettings>;
+}
+
+export async function apiUpdateMessagingSettings(data: Partial<MessagingSettings>): Promise<void> {
+  await apiFetch("/messaging/settings", { method: "PATCH", body: JSON.stringify(data) });
+}
+
+export interface MessageRequest {
+  id: number;
+  senderId: number;
+  senderName: string;
+  senderAvatarUrl: string | null;
+  messagePreview: string;
+  status: string;
+  createdAt: string;
+}
+
+export async function apiGetMessageRequests(tab: "known" | "spam"): Promise<MessageRequest[]> {
+  const status = tab === "spam" ? "spam" : "pending";
+  const res = await apiFetch(`/messaging/requests?status=${status}`);
+  if (!res.ok) return [];
+  return res.json() as Promise<MessageRequest[]>;
+}
+
+export async function apiUpdateMessageRequest(id: number, status: "accepted" | "rejected" | "spam"): Promise<void> {
+  await apiFetch(`/messaging/requests/${id}`, { method: "PATCH", body: JSON.stringify({ status }) });
+}
+
 export interface LinkPreview {
   title: string | null;
   description: string | null;

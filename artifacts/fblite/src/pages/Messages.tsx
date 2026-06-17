@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
-import { apiGetConversations, apiGetMessages, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadVoice, apiDeleteConversation, apiDeleteMessage, apiGetLinkPreview, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview } from "../lib/api";
+import { apiGetConversations, apiGetMessages, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadVoice, apiDeleteConversation, apiDeleteMessage, apiGetLinkPreview, apiGetMessagingSettings, apiUpdateMessagingSettings, apiGetMessageRequests, apiUpdateMessageRequest, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview, type MessageRequest } from "../lib/api";
 import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignaling";
 
 void ({} as ApiChatGroup);
@@ -216,7 +216,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [notifReminders, setNotifReminders] = useState(true);
   const [notifPreview, setNotifPreview] = useState(false);
   const [notifOffline, setNotifOffline] = useState(false);
+  const [readReceiptsEnabled, setReadReceiptsEnabled] = useState(true);
   const [invitTab, setInvitTab] = useState<"known"|"spam">("known");
+  const [msgRequests, setMsgRequests] = useState<MessageRequest[]>([]);
 
   const [showConvMenu, setShowConvMenu]       = useState(false);
   const [showNotifSub, setShowNotifSub]       = useState(false);
@@ -634,6 +636,22 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         });
       }).catch(() => {}).finally(() => setConvLoading(false));
   }, []);
+
+  // Load messaging settings when settings panel opens
+  useEffect(() => {
+    if (settingsPage === "none") return;
+    apiGetMessagingSettings().then(s => {
+      setOnlineStatus(s.onlineStatus);
+      setNotifMsgs(s.notificationsEnabled);
+      setReadReceiptsEnabled(s.readReceiptsEnabled);
+    }).catch(() => {});
+  }, [settingsPage === "none"]);
+
+  // Load message requests when invitations panel opens or tab changes
+  useEffect(() => {
+    if (settingsPage !== "invitations") return;
+    apiGetMessageRequests(invitTab).then(setMsgRequests).catch(() => {});
+  }, [settingsPage === "invitations", invitTab]);
 
   const parseApiMsg = useCallback((m: { id: number; content: string; fromUserId: number; createdAt: string; isRead: boolean }) => {
     const time   = new Date(m.createdAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
@@ -3238,7 +3256,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       @keyframes fbl-fab-in{from{opacity:0;transform:scale(.7) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
       .fbl-toggle{width:51px;height:31px;border-radius:16px;border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
       .fbl-toggle::after{content:'';position:absolute;top:3px;width:25px;height:25px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.3);transition:left .2s}
-      .fbl-toggle-on{background:#1877F2}.fbl-toggle-on::after{left:23px}
+      .fbl-toggle-on{background:#22C55E}.fbl-toggle-on::after{left:23px}
       .fbl-toggle-off{background:#ccc}.fbl-toggle-off::after{left:3px}
       .fbl-settings-row{display:flex;align-items:center;padding:14px 16px;gap:14px;border-bottom:1px solid #f0f0f0;cursor:pointer;background:#fff}
       .fbl-settings-row:active{background:#f5f5f5}
@@ -3598,184 +3616,257 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
     {/* ── SETTINGS OVERLAY (portaled) ── */}
     {settingsPage !== "none" && createPortal(
-      <div style={{ position: "fixed", inset: 0, zIndex: 10000, background: "#fff", display: "flex", flexDirection: "column" }}>
-        {/* Settings: main list */}
+      <div style={{ position: "fixed", inset: 0, zIndex: 10000, display: "flex", flexDirection: "column", background: "#F7F8FA" }}>
+
+        {/* ── SCREEN 1 — Paramètres de messagerie ── */}
         {settingsPage === "main" && <>
-          <div style={{ display: "flex", alignItems: "center", padding: "10px 8px", borderBottom: "1px solid #e5e5e5", gap: 4 }}>
-            <button onClick={() => setSettingsPage("none")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 10px" }}>
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="#050505"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          <div style={{ background: "#fff", display: "flex", alignItems: "center", padding: "10px 4px", borderBottom: "1px solid #E5E7EB", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,.06)" }}>
+            <button onClick={() => setSettingsPage("none")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 12px" }}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="#0F172A"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
             </button>
-            <span style={{ flex: 1, fontWeight: 600, fontSize: 18, color: "#050505" }}>Paramètres de messagerie</span>
+            <span style={{ flex: 1, fontWeight: 700, fontSize: 18, color: "#0F172A" }}>Paramètres de messagerie</span>
           </div>
-          <div style={{ flex: 1, overflowY: "auto" }}>
+          <div style={{ flex: 1, overflowY: "auto", paddingTop: 10 }}>
             {[
-              { icon: <svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="12" r="10" fill="none" stroke="#050505" strokeWidth="2"/><circle cx="12" cy="8" r="3" fill="#050505"/><path d="M6 20c0-3.31 2.69-6 6-6s6 2.69 6 6" fill="#050505"/></svg>, label: "Statut En ligne", right: onlineStatus ? "Oui" : "Non", page: "status" },
-              { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="#050505"><path d="M18 8a6 6 0 0 0-12 0c0 4-2 5-2 5h16s-2-1-2-5"/><path d="M13.73 21a2 2 0 0 1-3.46 0" fill="none" stroke="#050505" strokeWidth="2"/></svg>, label: "Notifications de messages", right: null, page: "notifs" },
-              { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="#050505"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>, label: "Invitations", right: null, page: "invitations" },
-              { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="#050505"><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27z"/></svg>, label: "Archive", right: null, page: "archive" },
-              { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="#050505"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>, label: "Confidentialité et sécurité", right: null, page: "privacy" },
+              { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="#22C55E"><circle cx="12" cy="8" r="4"/><path d="M6 20c0-3.31 2.69-6 6-6s6 2.69 6 6H6z"/></svg>, label: "Statut En ligne", right: <span style={{ fontSize: 14, color: "#22C55E", fontWeight: 700 }}>{onlineStatus ? "Oui" : "Non"}</span>, page: "status" as const },
+              { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="#22C55E"><path d="M18 8a6 6 0 0 0-12 0c0 4-2 5-2 5h16s-2-1-2-5"/><path d="M13.73 21a2 2 0 0 1-3.46 0" fill="none" stroke="#22C55E" strokeWidth="2"/></svg>, label: "Notifications de messages", right: null, page: "notifs" as const },
+              { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="#22C55E"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>, label: "Invitations", right: null, page: "invitations" as const },
+              { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="#22C55E"><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM12 17.5L6.5 12H10v-2h4v2h3.5L12 17.5zM5.12 5h13.76l.81.97H4.31l.81-.97z"/></svg>, label: "Archive", right: null, page: "archive" as const },
+              { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="#22C55E"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>, label: "Confidentialité et sécurité", right: null, page: "privacy" as const },
             ].map(item => (
-              <div key={item.label} className="fbl-settings-row" onClick={() => setSettingsPage(item.page as typeof settingsPage)}>
-                <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#f0f2f5", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.icon}</div>
-                <span style={{ flex: 1, fontSize: 15, color: "#050505" }}>{item.label}</span>
-                {item.right ? <span style={{ fontSize: 14, color: "#888" }}>{item.right}</span> : <svg viewBox="0 0 24 24" width="18" height="18" fill="#888"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>}
+              <div key={item.label} onClick={() => setSettingsPage(item.page)}
+                style={{ background: "#fff", borderRadius: 14, margin: "0 14px 10px", padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, boxShadow: "0 1px 5px rgba(0,0,0,.07)", cursor: "pointer", transition: "background .15s" }}
+                onMouseDown={e => (e.currentTarget.style.background = "#F0FDF4")}
+                onMouseUp={e => (e.currentTarget.style.background = "#fff")}
+                onMouseLeave={e => (e.currentTarget.style.background = "#fff")}>
+                <div style={{ width: 42, height: 42, borderRadius: "50%", background: "#DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.icon}</div>
+                <span style={{ flex: 1, fontSize: 15, fontWeight: 500, color: "#0F172A" }}>{item.label}</span>
+                {item.right ?? <svg viewBox="0 0 24 24" width="18" height="18" fill="#CBD5E1"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>}
               </div>
             ))}
+            <div style={{ textAlign: "center", padding: "28px 20px 44px", marginTop: 4 }}>
+              <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
+                <span style={{ fontSize: 30 }}>🤛</span>
+                <span style={{ fontWeight: 800, fontSize: 16, color: "#0F172A" }}>BrutePawa</span>
+                <span style={{ fontSize: 12.5, color: "#94A3B8" }}>Réseau social 100% africain ❤️</span>
+              </div>
+            </div>
           </div>
         </>}
 
-        {/* Settings: Statut En ligne */}
+        {/* ── SCREEN 2 — Statut En ligne ── */}
         {settingsPage === "status" && <>
-          <div style={{ display: "flex", alignItems: "center", padding: "10px 8px", borderBottom: "1px solid #e5e5e5", gap: 4 }}>
-            <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 10px" }}>
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="#050505"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          <div style={{ background: "#fff", display: "flex", alignItems: "center", padding: "10px 4px", borderBottom: "1px solid #E5E7EB", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,.06)" }}>
+            <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 12px" }}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="#0F172A"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
             </button>
-            <span style={{ flex: 1, fontWeight: 600, fontSize: 18, color: "#050505" }}>Statut En ligne</span>
+            <span style={{ flex: 1, fontWeight: 700, fontSize: 18, color: "#0F172A" }}>Statut En ligne</span>
           </div>
-          <div style={{ padding: "16px 0" }}>
-            <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", borderBottom: "1px solid #f0f0f0" }}>
-              <span style={{ flex: 1, fontSize: 15, color: "#050505" }}>Indiquer si vous êtes en ligne</span>
-              <button onClick={() => setOnlineStatus(p => !p)} className={`fbl-toggle ${onlineStatus ? "fbl-toggle-on" : "fbl-toggle-off"}`} />
+          <div style={{ flex: 1, overflowY: "auto", paddingTop: 16 }}>
+            <div style={{ background: "#fff", borderRadius: 14, margin: "0 14px 12px", padding: "16px 18px", display: "flex", alignItems: "center", gap: 14, boxShadow: "0 1px 5px rgba(0,0,0,.07)" }}>
+              <span style={{ flex: 1, fontSize: 15, fontWeight: 500, color: "#0F172A" }}>Indiquer si vous êtes en ligne</span>
+              <button onClick={() => { const v = !onlineStatus; setOnlineStatus(v); apiUpdateMessagingSettings({ onlineStatus: v }).catch(() => {}); }} className={`fbl-toggle ${onlineStatus ? "fbl-toggle-on" : "fbl-toggle-off"}`} />
             </div>
-            <div style={{ padding: "16px 16px 0", fontSize: 13, color: "#65676B", lineHeight: 1.6 }}>
-              Lorsque ce paramètre est activé, votre statut En ligne est visible par les personnes avec qui vous êtes en contact sur Facebook et Messenger, et par celles auxquelles vous avez envoyé une invitation. Vous ne pouvez voir le statut En ligne des autres que si le vôtre est activé.
-              <br/><br/>
-              Pour ne plus afficher votre statut En ligne, désactivez-le partout où vous utilisez Facebook et Messenger. <span style={{ color: "#1877F2", fontWeight: 600 }}>En savoir plus</span>
+            <div style={{ background: "#fff", borderRadius: 14, margin: "0 14px 12px", padding: "16px 18px", display: "flex", gap: 13, boxShadow: "0 1px 5px rgba(0,0,0,.07)" }}>
+              <div style={{ width: 38, height: 38, borderRadius: "50%", border: "2.5px solid #22C55E", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 17 }}>ℹ️</div>
+              <span style={{ fontSize: 13.5, color: "#475569", lineHeight: 1.7 }}>
+                Lorsque ce paramètre est activé, votre statut En ligne est visible par les personnes avec qui vous êtes en contact sur <strong style={{ color: "#22C55E" }}>BrutePawa</strong>, et par celles auxquelles vous avez envoyé une invitation. Vous ne pouvez voir le statut En ligne des autres que si le vôtre est activé.
+              </span>
+            </div>
+            <div style={{ background: "#fff", borderRadius: 14, margin: "0 14px 12px", padding: "16px 18px", display: "flex", gap: 13, boxShadow: "0 1px 5px rgba(0,0,0,.07)" }}>
+              <div style={{ width: 38, height: 38, borderRadius: "50%", border: "2.5px solid #22C55E", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 17 }}>🔒</div>
+              <div style={{ fontSize: 13.5, color: "#475569", lineHeight: 1.7 }}>
+                Pour ne plus afficher votre statut En ligne, désactivez-le partout où vous utilisez <strong style={{ color: "#22C55E" }}>BrutePawa</strong>.{" "}
+                <span style={{ color: "#22C55E", fontWeight: 700, cursor: "pointer" }}>En savoir plus</span>
+              </div>
+            </div>
+            <div style={{ textAlign: "center", padding: "28px 20px 44px", marginTop: 4 }}>
+              <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
+                <span style={{ fontSize: 30 }}>🤛</span>
+                <span style={{ fontWeight: 800, fontSize: 16, color: "#0F172A" }}>BrutePawa</span>
+                <span style={{ fontSize: 12.5, color: "#94A3B8" }}>Réseau social 100% africain ❤️</span>
+              </div>
             </div>
           </div>
         </>}
 
-        {/* Settings: Notifications */}
+        {/* ── Notifications de messages ── */}
         {settingsPage === "notifs" && <>
-          <div style={{ display: "flex", alignItems: "center", padding: "10px 8px", borderBottom: "1px solid #e5e5e5", gap: 4 }}>
-            <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 10px" }}>
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="#050505"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          <div style={{ background: "#fff", display: "flex", alignItems: "center", padding: "10px 4px", borderBottom: "1px solid #E5E7EB", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,.06)" }}>
+            <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 12px" }}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="#0F172A"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
             </button>
-            <span style={{ flex: 1, fontWeight: 600, fontSize: 18, color: "#050505" }}>Notifications de messages</span>
+            <span style={{ flex: 1, fontWeight: 700, fontSize: 18, color: "#0F172A" }}>Notifications de messages</span>
           </div>
-          <div style={{ flex: 1, overflowY: "auto" }}>
-            <div style={{ padding: "16px 16px 8px", fontWeight: 700, fontSize: 16, color: "#050505" }}>Messages</div>
-            <div style={{ padding: "0 16px 12px", fontSize: 13, color: "#65676B" }}>Recevez des notifications push en temps réel lorsque vous recevez de nouveaux messages.</div>
-            <div style={{ display: "flex", alignItems: "center", padding: "14px 16px", borderBottom: "1px solid #f0f0f0", borderTop: "1px solid #f0f0f0" }}>
-              <span style={{ flex: 1, fontSize: 15, color: "#050505" }}>Messages des discussions</span>
-              <button onClick={() => setNotifMsgs(p => !p)} className={`fbl-toggle ${notifMsgs ? "fbl-toggle-on" : "fbl-toggle-off"}`} />
-            </div>
-            <div style={{ padding: "16px 16px 8px", fontWeight: 700, fontSize: 16, color: "#050505" }}>Rappels de messages</div>
-            <div style={{ padding: "0 16px 12px", fontSize: 13, color: "#65676B" }}>Recevez des rappels occasionnels concernant des messages non lus dans des discussions récentes.</div>
-            <div style={{ display: "flex", alignItems: "center", padding: "14px 16px", borderBottom: "1px solid #f0f0f0", borderTop: "1px solid #f0f0f0" }}>
-              <span style={{ flex: 1, fontSize: 15, color: "#050505" }}>Rappels de messages</span>
-              <button onClick={() => setNotifReminders(p => !p)} className={`fbl-toggle ${notifReminders ? "fbl-toggle-on" : "fbl-toggle-off"}`} />
-            </div>
-            <div style={{ padding: "16px 16px 8px", fontWeight: 700, fontSize: 16, color: "#050505" }}>Aperçu des messages</div>
-            <div style={{ padding: "0 16px 12px", fontSize: 13, color: "#65676B" }}>Afficher les messages sur les notifications.</div>
-            <div style={{ display: "flex", alignItems: "center", padding: "14px 16px", borderBottom: "1px solid #f0f0f0", borderTop: "1px solid #f0f0f0" }}>
-              <span style={{ flex: 1, fontSize: 15, color: "#050505" }}>Aperçu des messages</span>
-              <button onClick={() => setNotifPreview(p => !p)} className={`fbl-toggle ${notifPreview ? "fbl-toggle-on" : "fbl-toggle-off"}`} />
-            </div>
-            <div style={{ padding: "16px 16px 8px", fontWeight: 700, fontSize: 16, color: "#050505" }}>Notifications en mode déconnecté</div>
-            <div style={{ padding: "0 16px 12px", fontSize: 13, color: "#65676B" }}>Continuez de recevoir les rappels de messages lorsqu'un autre compte est connecté.</div>
-            <div style={{ display: "flex", alignItems: "center", padding: "14px 16px", borderBottom: "1px solid #f0f0f0", borderTop: "1px solid #f0f0f0" }}>
-              <span style={{ flex: 1, fontSize: 15, color: "#050505" }}>Notifications en mode déconnecté</span>
-              <button onClick={() => setNotifOffline(p => !p)} className={`fbl-toggle ${notifOffline ? "fbl-toggle-on" : "fbl-toggle-off"}`} />
+          <div style={{ flex: 1, overflowY: "auto", paddingTop: 12 }}>
+            {[
+              { section: "Messages", desc: "Recevez des notifications push en temps réel lorsque vous recevez de nouveaux messages.", label: "Messages des discussions", val: notifMsgs, set: (v: boolean) => { setNotifMsgs(v); apiUpdateMessagingSettings({ notificationsEnabled: v }).catch(() => {}); } },
+              { section: "Rappels de messages", desc: "Recevez des rappels occasionnels concernant des messages non lus dans des discussions récentes.", label: "Rappels de messages", val: notifReminders, set: (v: boolean) => setNotifReminders(v) },
+              { section: "Aperçu des messages", desc: "Afficher les messages sur les notifications.", label: "Aperçu des messages", val: notifPreview, set: (v: boolean) => setNotifPreview(v) },
+              { section: "Notifications en mode déconnecté", desc: "Continuez de recevoir les rappels de messages lorsqu'un autre compte est connecté.", label: "Notifications en mode déconnecté", val: notifOffline, set: (v: boolean) => setNotifOffline(v) },
+            ].map(g => (
+              <div key={g.section} style={{ margin: "0 14px 12px" }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#22C55E", textTransform: "uppercase", letterSpacing: .5, marginBottom: 6, paddingLeft: 2 }}>{g.section}</div>
+                <div style={{ background: "#fff", borderRadius: 14, padding: "6px 0", boxShadow: "0 1px 5px rgba(0,0,0,.07)" }}>
+                  <div style={{ padding: "6px 18px 10px", fontSize: 13, color: "#64748B", lineHeight: 1.5 }}>{g.desc}</div>
+                  <div style={{ display: "flex", alignItems: "center", padding: "12px 18px", borderTop: "1px solid #F1F5F9" }}>
+                    <span style={{ flex: 1, fontSize: 15, fontWeight: 500, color: "#0F172A" }}>{g.label}</span>
+                    <button onClick={() => g.set(!g.val)} className={`fbl-toggle ${g.val ? "fbl-toggle-on" : "fbl-toggle-off"}`} />
+                  </div>
+                </div>
+              </div>
+            ))}
+            <div style={{ textAlign: "center", padding: "28px 20px 44px", marginTop: 4 }}>
+              <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
+                <span style={{ fontSize: 30 }}>🤛</span>
+                <span style={{ fontWeight: 800, fontSize: 16, color: "#0F172A" }}>BrutePawa</span>
+                <span style={{ fontSize: 12.5, color: "#94A3B8" }}>Réseau social 100% africain ❤️</span>
+              </div>
             </div>
           </div>
         </>}
 
-        {/* Settings: Invitations */}
+        {/* ── SCREEN 3 — Invitations par message ── */}
         {settingsPage === "invitations" && <>
-          <div style={{ display: "flex", alignItems: "center", padding: "10px 8px", borderBottom: "1px solid #e5e5e5", gap: 4 }}>
-            <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 10px" }}>
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="#050505"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          <div style={{ background: "#fff", display: "flex", alignItems: "center", padding: "10px 4px", borderBottom: "1px solid #E5E7EB", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,.06)" }}>
+            <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 12px" }}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="#0F172A"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
             </button>
-            <span style={{ flex: 1, fontWeight: 600, fontSize: 18, color: "#050505" }}>Invitations par message</span>
+            <span style={{ flex: 1, fontWeight: 700, fontSize: 18, color: "#0F172A" }}>Invitations par message</span>
           </div>
-          <div style={{ display: "flex", borderBottom: "1px solid #e5e5e5", padding: "0 16px" }}>
-            {(["known","spam"] as const).map(t => (
-              <button key={t} onClick={() => setInvitTab(t)}
-                style={{ flex: 1, background: "none", border: "none", cursor: "pointer", padding: "14px 4px", fontSize: 14, fontWeight: invitTab === t ? 700 : 400, color: invitTab === t ? "#1877F2" : "#65676B", borderBottom: `2px solid ${invitTab === t ? "#1877F2" : "transparent"}` }}>
+          <div style={{ background: "#fff", display: "flex", flexShrink: 0 }}>
+            {(["known", "spam"] as const).map(t => (
+              <button key={t} onClick={() => setInvitTab(t)} style={{ flex: 1, background: "none", border: "none", cursor: "pointer", padding: "14px 4px", fontSize: 14, fontWeight: invitTab === t ? 700 : 500, color: invitTab === t ? "#22C55E" : "#64748B", borderBottom: `3px solid ${invitTab === t ? "#22C55E" : "transparent"}`, transition: "all .2s" }}>
                 {t === "known" ? "Vous connaissez peut-être" : "Spam"}
               </button>
             ))}
           </div>
-          <div style={{ padding: "12px 16px", fontSize: 13, color: "#65676B", lineHeight: 1.5 }}>
-            Ouvrez une invitation pour en savoir plus sur la personne qui vous envoie le message. Elle n'en saura rien tant que vous ne l'aurez pas acceptée. <span style={{ color: "#1877F2", fontWeight: 600 }}>Décidez qui peut vous envoyer un message</span>
-          </div>
-          <div style={{ flex: 1, overflowY: "auto" }}>
-            {convList.slice(0, 5).map(c => (
-              <div key={c.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", borderBottom: "1px solid #f0f0f0" }}>
-                <div className="avatar" style={{ width: 46, height: 46, fontSize: 17, background: c.user.color, flexShrink: 0 }}>{c.user.initials}</div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 600, fontSize: 15, color: "#050505" }}>{c.user.name}</div>
-                  <div style={{ fontSize: 13, color: "#888", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.lastMessage || "Aucun message"}</div>
-                </div>
+          <div style={{ flex: 1, overflowY: "auto", background: "#fff" }}>
+            <div style={{ margin: "12px 14px", padding: "12px 14px", background: "#F0FDF4", borderRadius: 12, display: "flex", gap: 10, border: "1px solid #BBF7D0" }}>
+              <span style={{ fontSize: 16, flexShrink: 0, marginTop: 2 }}>ℹ️</span>
+              <div style={{ fontSize: 13, color: "#374151", lineHeight: 1.65 }}>
+                Ouvrez une invitation pour en savoir plus sur la personne qui vous envoie le message. Elle n'en saura rien tant que vous ne l'aurez pas acceptée.{" "}
+                <span style={{ color: "#22C55E", fontWeight: 700, cursor: "pointer" }}>Décidez qui peut vous envoyer un message</span>
               </div>
-            ))}
-            {convList.length === 0 && <div style={{ padding: "40px", textAlign: "center", color: "#888", fontSize: 14 }}>Aucune invitation</div>}
+            </div>
+            {msgRequests.length === 0 ? (
+              <div style={{ padding: "52px 24px", textAlign: "center", color: "#94A3B8", fontSize: 14 }}>Aucune invitation en attente</div>
+            ) : (
+              msgRequests.map((req, i) => {
+                const reqColors = ["#22C55E","#3B82F6","#F97316","#8B5CF6","#EF4444","#06B6D4","#D97706"];
+                const c = reqColors[req.senderId % reqColors.length];
+                const ini = req.senderName.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
+                const t = req.createdAt ? new Date(req.createdAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }) : "";
+                return (
+                  <div key={req.id} style={{ display: "flex", alignItems: "center", gap: 13, padding: "12px 16px", borderBottom: i < msgRequests.length - 1 ? "1px solid #F1F5F9" : "none" }}>
+                    <div style={{ width: 50, height: 50, borderRadius: "50%", background: c, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 17, flexShrink: 0 }}>{ini}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 600, fontSize: 15, color: "#0F172A" }}>{req.senderName}</div>
+                      <div style={{ fontSize: 13, color: "#94A3B8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{req.messagePreview || "Invitation reçue"}</div>
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 5, flexShrink: 0 }}>
+                      <span style={{ fontSize: 11.5, color: "#94A3B8" }}>{t}</span>
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="#CBD5E1"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+            <div style={{ margin: "16px 14px", padding: "14px 16px", background: "#fff", borderRadius: 14, border: "1px solid #E5E7EB", display: "flex", alignItems: "center", gap: 13, boxShadow: "0 1px 5px rgba(0,0,0,.07)", cursor: "pointer" }}
+              onClick={() => setSettingsPage("privacy")}>
+              <div style={{ width: 42, height: 42, borderRadius: "50%", background: "#DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="#22C55E"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 700, fontSize: 14, color: "#0F172A" }}>Contrôlez vos invitations</div>
+                <div style={{ fontSize: 12.5, color: "#94A3B8", marginTop: 2 }}>Paramètres de messagerie</div>
+              </div>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="#CBD5E1"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+            </div>
+            <div style={{ textAlign: "center", padding: "28px 20px 44px", marginTop: 4 }}>
+              <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
+                <span style={{ fontSize: 30 }}>🤛</span>
+                <span style={{ fontWeight: 800, fontSize: 16, color: "#0F172A" }}>BrutePawa</span>
+                <span style={{ fontSize: 12.5, color: "#94A3B8" }}>Réseau social 100% africain ❤️</span>
+              </div>
+            </div>
           </div>
         </>}
 
-        {/* Settings: Archive */}
+        {/* ── Archive ── */}
         {settingsPage === "archive" && <>
-          <div style={{ display: "flex", alignItems: "center", padding: "10px 8px", borderBottom: "1px solid #e5e5e5", gap: 4 }}>
-            <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 10px" }}>
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="#050505"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          <div style={{ background: "#fff", display: "flex", alignItems: "center", padding: "10px 4px", borderBottom: "1px solid #E5E7EB", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,.06)" }}>
+            <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 12px" }}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="#0F172A"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
             </button>
-            <span style={{ flex: 1, fontWeight: 600, fontSize: 18, color: "#050505" }}>Archiver</span>
+            <span style={{ flex: 1, fontWeight: 700, fontSize: 18, color: "#0F172A" }}>Archive</span>
           </div>
-          <div style={{ flex: 1, overflowY: "auto" }}>
-            {convList.slice(0, 5).map(c => (
-              <div key={c.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 16px", borderBottom: "1px solid #f0f0f0" }}>
-                <div className="avatar" style={{ width: 50, height: 50, fontSize: 18, background: c.user.color, flexShrink: 0 }}>{c.user.initials}</div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 500, fontSize: 15, color: "#050505" }}>{c.user.name}</div>
-                  <div style={{ fontSize: 13, color: "#888" }}>Les messages et les appels sont sécurisés...</div>
-                </div>
+          <div style={{ flex: 1, overflowY: "auto", background: "#fff" }}>
+            <div style={{ padding: "52px 24px", textAlign: "center", color: "#94A3B8", fontSize: 14 }}>Aucune discussion archivée</div>
+            <div style={{ textAlign: "center", padding: "8px 20px 44px" }}>
+              <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
+                <span style={{ fontSize: 30 }}>🤛</span>
+                <span style={{ fontWeight: 800, fontSize: 16, color: "#0F172A" }}>BrutePawa</span>
+                <span style={{ fontSize: 12.5, color: "#94A3B8" }}>Réseau social 100% africain ❤️</span>
               </div>
-            ))}
-            {convList.length === 0 && <div style={{ padding: "40px", textAlign: "center", color: "#888", fontSize: 14 }}>Aucune discussion archivée</div>}
+            </div>
           </div>
         </>}
 
-        {/* Settings: Confidentialité */}
+        {/* ── SCREEN 4 — Confidentialité et sécurité ── */}
         {settingsPage === "privacy" && <>
-          <div style={{ display: "flex", alignItems: "center", padding: "10px 8px", borderBottom: "1px solid #e5e5e5", gap: 4 }}>
-            <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 10px" }}>
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="#050505"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          <div style={{ background: "#fff", display: "flex", alignItems: "center", padding: "10px 4px", borderBottom: "1px solid #E5E7EB", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,.06)" }}>
+            <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 12px" }}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="#0F172A"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
             </button>
-            <span style={{ flex: 1, fontWeight: 600, fontSize: 18, color: "#050505" }}>Confidentialité et sécurité</span>
+            <span style={{ flex: 1, fontWeight: 700, fontSize: 18, color: "#0F172A" }}>Confidentialité et sécurité</span>
           </div>
-          <div style={{ flex: 1, overflowY: "auto" }}>
+          <div style={{ flex: 1, overflowY: "auto", paddingTop: 8 }}>
             {[
               { section: "Qui peut vous contacter", items: [
-                { label: "Diffusion des messages", sub: "Choisissez qui peut vous envoyer un message" },
-                { label: "Comptes bloqués", sub: "Empêchez quelqu'un de vous contacter" },
-                { label: "Contacts masqués", sub: "Masquez des personnes dans vos suggestions de contacts" },
+                { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="#22C55E"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>, label: "Diffusion des messages", sub: "Choisissez qui peut vous envoyer un message" },
+                { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="#22C55E"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/><line x1="17" y1="7" x2="23" y2="13" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round"/><line x1="23" y1="7" x2="17" y2="13" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round"/></svg>, label: "Comptes bloqués", sub: "Empêchez quelqu'un de vous contacter" },
+                { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>, label: "Contacts masqués", sub: "Masquez des personnes dans vos suggestions" },
               ]},
               { section: "Ce que voient les personnes", items: [
-                { label: "Confirmations de lecture", sub: "Indiquez aux personnes que vous avez lu leurs messages" },
+                { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>, label: "Confirmations de lecture", sub: "Indiquez aux personnes que vous avez lu leurs messages", hasToggle: true },
               ]},
               { section: "Discussions chiffrées de bout en bout", items: [
-                { label: "Alertes de sécurité", sub: "Consultez et gérez les alertes pour les connexions et les modifications de clé" },
-                { label: "Stockage des messages", sub: "Gérez l'accès à votre historique des discussions et son stockage" },
-                { label: "Aperçus", sub: "Affichez les aperçus du contenu partagé depuis les applications Meta" },
-                { label: "Vérifier les clés dans la discussion", sub: "Appuyez longuement pour voir les clés" },
+                { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="#22C55E"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>, label: "Alertes de sécurité", sub: "Consultez et gérez les alertes de connexion" },
+                { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="#22C55E"><path d="M20 6h-2.18c.07-.44.18-.88.18-1a6 6 0 0 0-12 0c0 .12.11.56.18 1H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-8-5a4 4 0 0 1 4 4c0 .12-.12.55-.18.88L7.34 6H7.18C7.12 5.55 7 5.12 7 5a4 4 0 0 1 4-4h1z"/></svg>, label: "Stockage des messages", sub: "Gérez l'accès à votre historique des discussions" },
+                { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3" fill="#22C55E" stroke="none"/></svg>, label: "Aperçus", sub: "Affichez les aperçus du contenu partagé" },
+                { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="#22C55E"><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>, label: "Vérifier les clés dans la discussion", sub: "Appuyez longuement pour voir les clés" },
               ]},
             ].map(group => (
-              <div key={group.section}>
-                <div style={{ padding: "12px 16px 6px", fontWeight: 700, fontSize: 14, color: "#050505" }}>{group.section}</div>
-                {group.items.map(item => (
-                  <div key={item.label} style={{ display: "flex", alignItems: "center", padding: "12px 16px", borderBottom: "1px solid #f0f0f0", gap: 12, cursor: "pointer" }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 15, color: "#050505", marginBottom: 2 }}>{item.label}</div>
-                      <div style={{ fontSize: 13, color: "#888" }}>{item.sub}</div>
+              <div key={group.section} style={{ margin: "0 14px 16px" }}>
+                <div style={{ fontSize: 12, fontWeight: 800, color: "#22C55E", textTransform: "uppercase", letterSpacing: .7, padding: "0 2px 8px" }}>{group.section}</div>
+                <div style={{ background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 5px rgba(0,0,0,.07)" }}>
+                  {group.items.map((item, idx) => (
+                    <div key={item.label} style={{ display: "flex", alignItems: "center", padding: "14px 16px", borderTop: idx > 0 ? "1px solid #F1F5F9" : "none", gap: 14, cursor: "pointer" }}>
+                      <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.icon}</div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 15, fontWeight: 500, color: "#0F172A", marginBottom: 2 }}>{item.label}</div>
+                        <div style={{ fontSize: 12.5, color: "#94A3B8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.sub}</div>
+                      </div>
+                      {(item as { hasToggle?: boolean }).hasToggle
+                        ? <button onClick={() => { const v = !readReceiptsEnabled; setReadReceiptsEnabled(v); apiUpdateMessagingSettings({ readReceiptsEnabled: v }).catch(() => {}); }} className={`fbl-toggle ${readReceiptsEnabled ? "fbl-toggle-on" : "fbl-toggle-off"}`} />
+                        : <svg viewBox="0 0 24 24" width="18" height="18" fill="#CBD5E1"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                      }
                     </div>
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="#bbb"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             ))}
+            <div style={{ textAlign: "center", padding: "12px 20px 44px", marginTop: 4 }}>
+              <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
+                <span style={{ fontSize: 30 }}>🤛</span>
+                <span style={{ fontWeight: 800, fontSize: 16, color: "#0F172A" }}>BrutePawa</span>
+                <span style={{ fontSize: 12.5, color: "#94A3B8" }}>Réseau social 100% africain ❤️</span>
+              </div>
+            </div>
           </div>
         </>}
+
       </div>
     , document.body)}
     </>

@@ -1,0 +1,363 @@
+ATTENTION : CETTE TÂCHE N'EST PAS UNE INSPIRATION.
+
+LES 4 CAPTURES D'ÉCRAN FOURNIES SONT LES MAQUETTES OFFICIELLES.
+
+TU DOIS REPRODUIRE EXACTEMENT LES ÉCRANS EN VERSION BRUTEPAWA.
+
+JE N'AUTORISE AUCUNE RÉINTERPRÉTATION.
+
+JE N'AUTORISE AUCUN CHANGEMENT DE STRUCTURE.
+
+JE N'AUTORISE AUCUN DÉPLACEMENT D'ÉLÉMENT.
+
+JE N'AUTORISE AUCUNE RÉORGANISATION.
+
+LES CAPTURES D'ÉCRAN SONT LA RÉFÉRENCE ABSOLUE.
+
+═══════════════════════════════
+RÈGLE N°1
+═══════════════════════════════
+
+Chaque élément visible sur les maquettes doit exister.
+
+Même position.
+
+Même hiérarchie.
+
+Même espacement.
+
+Même logique de navigation.
+
+Même ordre.
+
+Même comportement.
+
+Seule différence autorisée :
+
+- Couleur BrutePawa
+- Icônes BrutePawa
+- Style premium BrutePawa
+
+═══════════════════════════════
+ÉCRAN 1
+PARAMÈTRES DE MESSAGERIE
+═══════════════════════════════
+
+Fonctionnalités à coder :
+
+1. Statut En Ligne
+2. Notifications de messages
+3. Invitations
+4. Archive
+5. Confidentialité et sécurité
+
+Backend :
+
+messaging_settings
+
+- user_id
+- online_status
+- notifications_enabled
+- archive_enabled
+- privacy_enabled
+- updated_at
+
+Fonctionnement :
+
+Chaque clic ouvre sa page dédiée.
+
+Les paramètres doivent être sauvegardés dans Supabase.
+
+Synchronisation instantanée.
+
+═══════════════════════════════
+ÉCRAN 2
+STATUT EN LIGNE
+═══════════════════════════════
+
+REPRODUIRE EXACTEMENT LA MAQUETTE.
+
+Fonction :
+
+Switch ON/OFF
+
+Lorsque activé :
+
+- Afficher point vert
+- Afficher "En ligne"
+- Mettre à jour présence en temps réel
+
+Lorsque désactivé :
+
+- Masquer statut
+- Masquer présence
+
+Backend :
+
+user_presence
+
+- user_id
+- is_online
+- last_seen
+- last_activity
+- updated_at
+
+Temps réel :
+
+Supabase Realtime obligatoire.
+
+Mise à jour toutes les 30 secondes.
+
+Déconnexion :
+
+Stocker dernière activité.
+
+Afficher :
+
+Vu il y a X minutes.
+
+═══════════════════════════════
+ÉCRAN 3
+INVITATIONS PAR MESSAGE
+═══════════════════════════════
+
+REPRODUIRE EXACTEMENT LA MAQUETTE.
+
+Créer deux onglets :
+
+1. Vous connaissez peut-être
+2. Spam
+
+Logique :
+
+Utilisateur non ami
+↓
+Envoie message
+↓
+Création invitation
+↓
+Ne pas ouvrir conversation
+↓
+Afficher invitation
+
+Actions :
+
+ACCEPTER
+
+→ Créer conversation
+→ Déplacer vers Inbox
+
+REFUSER
+
+→ Supprimer invitation
+
+SPAM
+
+→ Déplacer vers Spam
+
+Backend :
+
+message_requests
+
+- id
+- sender_id
+- receiver_id
+- message_preview
+- status
+- created_at
+
+Status :
+
+pending
+accepted
+rejected
+spam
+
+═══════════════════════════════
+ÉCRAN 4
+CONFIDENTIALITÉ ET SÉCURITÉ
+═══════════════════════════════
+
+REPRODUIRE EXACTEMENT LA MAQUETTE.
+
+SECTION 1
+
+QUI PEUT VOUS CONTACTER
+
+Diffusion des messages
+
+Options :
+
+- Tout le monde
+- Amis uniquement
+- Amis des amis
+- Personne
+
+Backend :
+
+message_privacy
+
+- user_id
+- who_can_message
+
+═══════════════════════════════
+
+Comptes bloqués
+
+Backend :
+
+blocked_users
+
+- blocker_id
+- blocked_id
+- created_at
+
+Effets :
+
+- Impossible d'envoyer message
+- Impossible de voir statut
+- Impossible de voir profil
+
+═══════════════════════════════
+
+Contacts masqués
+
+Backend :
+
+hidden_contacts
+
+- user_id
+- hidden_user_id
+
+Effets :
+
+- Retirer des suggestions
+- Retirer de la recherche
+
+═══════════════════════════════
+
+SECTION 2
+
+CONFIRMATIONS DE LECTURE
+
+Backend :
+
+read_receipts
+
+- user_id
+- enabled
+
+Si activé :
+
+✓✓ Lu
+
+Si désactivé :
+
+Pas de confirmation.
+
+═══════════════════════════════
+
+SECTION 3
+
+DISCUSSIONS CHIFFRÉES
+
+Créer chiffrement de bout en bout.
+
+Backend :
+
+conversation_keys
+
+- conversation_id
+- public_key
+- encrypted_key
+- created_at
+
+═══════════════════════════════
+
+ALERTES DE SÉCURITÉ
+
+Détecter :
+
+- Nouvelle connexion
+- Nouvel appareil
+- Changement mot de passe
+- Connexion inhabituelle
+
+Backend :
+
+security_alerts
+
+- user_id
+- type
+- device
+- ip
+- created_at
+
+═══════════════════════════════
+
+STOCKAGE DES MESSAGES
+
+Backend :
+
+message_storage
+
+- user_id
+- archived_count
+- deleted_count
+- storage_used
+
+Fonctions :
+
+- Archiver
+- Restaurer
+- Exporter
+- Supprimer
+
+═══════════════════════════════
+
+APERÇUS
+
+Backend :
+
+link_previews
+
+- url
+- title
+- description
+- image
+
+Fonction :
+
+Générer automatiquement aperçu des liens.
+
+═══════════════════════════════
+
+VÉRIFICATION DES CLÉS
+
+Backend :
+
+key_verification
+
+- conversation_id
+- fingerprint
+- verified
+
+Fonction :
+
+Permettre aux utilisateurs de vérifier qu'ils discutent avec la bonne personne.
+
+═══════════════════════════════
+
+EXIGENCE FINALE
+
+Avant de terminer :
+
+Comparer chaque écran généré avec les maquettes.
+
+Si un élément est déplacé, différent ou manquant :
+
+REFUSER LE BUILD.
+
+La version BrutePawa doit respecter les maquettes à plus de 99 % de fidélité visuelle et fonctionnelle.
+
+Les captures fournies sont la source de vérité officielle du projet.
