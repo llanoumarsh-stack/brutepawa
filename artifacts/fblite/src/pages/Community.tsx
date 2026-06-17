@@ -211,7 +211,7 @@ export default function Community() {
   function UserCard({ user }: { user: PublicUserWithStatus }) {
     const score   = bpScore(user.id);
     const mutual  = mutualCount(user.id, friends.length);
-    const isOnline = user.id % 3 !== 0;
+    const isOnline = false;
     const flag = countryFlag(user.country);
     const prof = user.bio ?? "Membre BrutePawa";
     return (
@@ -377,7 +377,6 @@ export default function Community() {
                       <div key={u.id} onClick={()=>navigate(`/profile/${u.id}`)} style={{ display:"flex", alignItems:"center", gap:8, cursor:"pointer" }}>
                         <div style={{ position:"relative", flexShrink:0 }}>
                           <Avatar user={u} size={36} />
-                          <div style={{ position:"absolute", bottom:-1, right:-1, width:10, height:10, borderRadius:"50%", background:BP_GREEN, border:"2px solid #fff" }} />
                         </div>
                         <div style={{ minWidth:0 }}>
                           <div style={{ fontWeight:700, fontSize:11.5, color:"#0F172A", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{u.firstName} {u.lastName.charAt(0)}.</div>

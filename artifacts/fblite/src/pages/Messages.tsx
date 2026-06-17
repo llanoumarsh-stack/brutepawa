@@ -1063,10 +1063,6 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       <div style={{ width: 50, height: 50, borderRadius: "50%", background: wizColor(u.id), display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 17 }}>
                         {mkInitials(name)}
                       </div>
-                      {/* Online dot — show randomly for demo feel */}
-                      {u.id % 3 !== 0 && (
-                        <div style={{ position: "absolute", bottom: 1, right: 1, width: 13, height: 13, borderRadius: "50%", background: "#22C55E", border: "2.5px solid #fff" }} />
-                      )}
                     </div>
                     {/* Info */}
                     <div style={{ flex: 1 }}>

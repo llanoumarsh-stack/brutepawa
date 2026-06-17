@@ -716,7 +716,6 @@ export default function JobInboxPage({ initialUserId, initialJobTitle }: Props) 
               {/* Avatar */}
               <div style={{ position:"relative", flexShrink:0, alignSelf:"center" }}>
                 <div style={{ width:52, height:52, borderRadius:"50%", background:conv.color, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, color:"#fff", fontWeight:700 }}>{conv.initials}</div>
-                <div style={{ position:"absolute", bottom:1, right:1, width:13, height:13, background:"#42B72A", borderRadius:"50%", border:"2px solid #fff" }} />
               </div>
 
               {/* Info */}

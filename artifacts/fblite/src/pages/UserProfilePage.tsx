@@ -347,7 +347,6 @@ export default function UserProfilePage({ userId }: { userId: number }) {
           <div style={{ display: "flex", alignItems: "center", gap: 7, flexWrap: "wrap", marginBottom: 5 }}>
             <span style={{ fontWeight: 900, fontSize: 22, color: "#0D1B2A", letterSpacing: -0.3 }}>{name}</span>
             <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 20, height: 20, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />
-            {flag && <span style={{ fontSize: 19 }}>{flag}</span>}
           </div>
           {/* Join date */}
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 18 }}>
