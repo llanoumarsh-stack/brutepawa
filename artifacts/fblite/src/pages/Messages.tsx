@@ -414,7 +414,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       const { url } = await apiUploadFile(file);
       const prefix = kind === "image" ? "__image__" : "__doc__";
       const encoded = `${prefix}:${url}:${file.name}`;
-      sendAttachMsg({ type: kind, label: url, extra: file.name }, kind === "image" ? "📷 Photo" : `📄 ${file.name}`, encoded);
+      sendAttachMsg({ type: kind, label: url, extra: file.name }, "", encoded);
     } catch (e) { alert(e instanceof Error ? e.message : "Upload échoué"); }
     finally { setUploadingAttach(false); }
   }, [sendAttachMsg]);
@@ -734,14 +734,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       const sep   = rest.indexOf(":");
       const url   = sep === -1 ? rest : rest.slice(0, sep);
       const extra = sep === -1 ? "photo" : rest.slice(sep + 1);
-      return { ...base, text: "📷 Photo", attachment: { type: "image" as const, label: url, extra } };
+      return { ...base, text: "", attachment: { type: "image" as const, label: url, extra } };
     }
     if (m.content.startsWith("__doc__:")) {
       const rest  = m.content.slice("__doc__:".length);
       const sep   = rest.indexOf(":");
       const url   = sep === -1 ? rest : rest.slice(0, sep);
       const extra = sep === -1 ? "Document" : rest.slice(sep + 1);
-      return { ...base, text: `📄 ${extra}`, attachment: { type: "doc" as const, label: url, extra } };
+      return { ...base, text: "", attachment: { type: "doc" as const, label: url, extra } };
     }
     return { ...base, text: m.content };
   }, [meId]);
@@ -2185,18 +2185,51 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                           </div>
                         </div>
                       </div>
-                    ) : (
-                      <div style={{ background: msg.mine ? "#1564c0" : "#f1f1f1", color: msg.mine ? "#fff" : "#111", borderRadius:14, padding:"8px 12px", marginBottom:2, fontSize:13, display:"flex", alignItems:"center", gap:8 }}>
-                        <span style={{ fontSize:18 }}>{msg.attachment.type==="image"?"🖼️":msg.attachment.type==="doc"?"📄":msg.attachment.type==="location"?"📍":"🎵"}</span>
-                        <span>{msg.attachment.label}</span>
-                      </div>
-                    )
+                    ) : null}
                   )}
-                  {msg.attachment?.type === "image" && (
-                    <div style={{ borderRadius:"8px 8px 0 0", overflow:"hidden", maxWidth:240, marginBottom:2 }}>
-                      <img src={msg.attachment.label} alt={msg.attachment.extra || "photo"} style={{ width:"100%", display:"block", maxHeight:320, objectFit:"cover" }} />
-                    </div>
-                  )}
+                  {msg.attachment?.type === "image" && (() => {
+                    const rawUrl = msg.attachment.label;
+                    const imgUrl = rawUrl.startsWith("//") ? `https:${rawUrl}` : rawUrl;
+                    const fname  = msg.attachment.extra || "photo";
+                    return (
+                      <a href={imgUrl} target="_blank" rel="noreferrer"
+                        style={{ display:"block", borderRadius:14, overflow:"hidden", marginBottom:2,
+                          maxWidth:260, textDecoration:"none",
+                          boxShadow:"0 2px 12px rgba(0,0,0,0.15)",
+                          border: msg.mine ? "1.5px solid rgba(255,255,255,0.2)" : "1.5px solid #e2e8f0",
+                          animation:"fbl-fade-in 0.3s cubic-bezier(.22,1,.36,1)" }}>
+                        <img src={imgUrl} alt={fname}
+                          onError={e => {
+                            const el = e.currentTarget as HTMLImageElement;
+                            el.style.display = "none";
+                            const ph = el.nextElementSibling as HTMLElement | null;
+                            if (ph) ph.style.display = "flex";
+                          }}
+                          style={{ width:"100%", display:"block", maxHeight:320, objectFit:"cover" }} />
+                        {/* Fallback placeholder if img fails to load */}
+                        <div style={{ display:"none", alignItems:"center", justifyContent:"center",
+                          height:80, background: msg.mine ? "rgba(255,255,255,0.12)" : "#f1f5f9",
+                          gap:8, color: msg.mine ? "rgba(255,255,255,0.7)" : "#64748b", fontSize:13 }}>
+                          <span style={{ fontSize:24 }}>🖼️</span>
+                          <span>{fname}</span>
+                        </div>
+                        {/* Caption bar */}
+                        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between",
+                          padding:"6px 10px",
+                          background: msg.mine ? "rgba(22,163,74,0.9)" : "#fff" }}>
+                          <span style={{ fontSize:12, fontWeight:600,
+                            color: msg.mine ? "#fff" : "#374151",
+                            maxWidth:160, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+                            📷 {fname}
+                          </span>
+                          <div style={{ display:"flex", alignItems:"center", gap:4, flexShrink:0 }}>
+                            <span style={{ fontSize:11, color: msg.mine ? "rgba(255,255,255,0.7)" : "#94a3b8" }}>{msg.time}</span>
+                            {msg.mine && <MsgStatus status={msg.status} dark={msg.mine} />}
+                          </div>
+                        </div>
+                      </a>
+                    );
+                  })()}
                   {msg.attachment?.type === "location" && (() => {
                     const coords = msg.attachment.extra ?? "";
                     const [latStr, lngStr] = coords.split(",");
@@ -2262,7 +2295,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       <div style={{ fontWeight:600, fontSize:13, wordBreak:"break-all" }}>{msg.attachment.extra ?? "Document"}</div>
                     </a>
                   )}
-                  {!isAudio && (() => {
+                  {!isAudio && !!msg.text && (() => {
                     /* Detect first URL for link preview */
                     URL_RE.lastIndex = 0;
                     const urlMatch = URL_RE.exec(msg.text || "");
