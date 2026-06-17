@@ -281,32 +281,40 @@ export default function CreatePostPage({ onPublish }: Props) {
   return (
     <div style={{ position: "fixed", inset: 0, background: "#F2F4F7", zIndex: 50, display: "flex", flexDirection: "column", overflowY: "auto", fontFamily: "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" }}>
       <style>{`
-        @keyframes cp-in { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
-        .cp-opt:hover { background: #F0FDF4 !important; transform: translateX(2px); }
-        .cp-opt { transition: all 0.15s ease; }
-        .cp-pub:hover:not(:disabled) { transform: translateY(-1px) !important; box-shadow: 0 8px 28px rgba(34,197,94,0.5) !important; }
+        @keyframes cp-in { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes cp-pulse { 0%,100%{box-shadow:0 4px 20px rgba(34,197,94,0.4)} 50%{box-shadow:0 4px 28px rgba(34,197,94,0.65)} }
+        .cp-opt { transition: transform 0.12s ease, box-shadow 0.12s ease; }
+        .cp-opt:hover { transform: translateY(-1px) !important; box-shadow: 0 4px 16px rgba(34,197,94,0.18) !important; }
+        .cp-opt:active { transform: scale(0.96) !important; box-shadow: 0 1px 4px rgba(0,0,0,0.08) !important; }
+        .cp-pub { transition: all 0.2s ease; }
+        .cp-pub:hover:not(:disabled) { transform: translateY(-2px) !important; box-shadow: 0 10px 32px rgba(34,197,94,0.55) !important; }
+        .cp-pub:active:not(:disabled) { transform: scale(0.97) !important; }
+        .cp-pill:active { transform: scale(0.94) !important; }
+        .cp-pill { transition: transform 0.1s ease; }
       `}</style>
       <input ref={fileInputRef} type="file" accept="image/*,video/*" multiple style={{ display: "none" }} onChange={handleFileSelect} />
       <input ref={coverInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleCoverSelect} />
 
-      {/* ── HEADER ── */}
-      <div style={{ display: "flex", alignItems: "center", padding: "12px 14px 14px", background: "#fff", position: "sticky", top: 0, zIndex: 10, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", flexShrink: 0, gap: 10 }}>
-        <button onClick={() => navigate("/")} style={{ width: 38, height: 38, borderRadius: "50%", border: "none", background: "#F3F4F6", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 18, color: "#374151" }}>←</button>
-        <div style={{ flex: 1, fontWeight: 800, fontSize: 17, color: "#111827" }}>Créer une publication</div>
+      {/* ── HEADER avec dégradé vert ── */}
+      <div style={{ display: "flex", alignItems: "center", padding: "13px 14px 15px", background: "linear-gradient(135deg,#22C55E 0%,#16A34A 100%)", position: "sticky", top: 0, zIndex: 10, boxShadow: "0 3px 16px rgba(34,197,94,0.35)", flexShrink: 0, gap: 10 }}>
+        <button onClick={() => navigate("/")} style={{ width: 36, height: 36, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.22)", backdropFilter: "blur(8px)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color: "#fff" }}>
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        </button>
+        <div style={{ flex: 1, fontWeight: 800, fontSize: 17, color: "#fff", letterSpacing: "0.1px" }}>Créer une publication</div>
         <button onClick={handlePublish} disabled={!canPublish} className="cp-pub"
-          style={{ background: canPublish ? "#22C55E" : "#E5E7EB", color: canPublish ? "#fff" : "#9CA3AF", border: "none", borderRadius: 22, padding: "9px 18px", fontWeight: 800, fontSize: 14, cursor: canPublish ? "pointer" : "not-allowed", boxShadow: canPublish ? "0 4px 16px rgba(34,197,94,0.4)" : "none", display: "flex", alignItems: "center", gap: 6, transition: "all 0.2s", flexShrink: 0 }}>
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          style={{ background: canPublish ? "#fff" : "rgba(255,255,255,0.3)", color: canPublish ? "#16A34A" : "rgba(255,255,255,0.6)", border: "none", borderRadius: 22, padding: "8px 16px", fontWeight: 800, fontSize: 13, cursor: canPublish ? "pointer" : "not-allowed", boxShadow: canPublish ? "0 2px 10px rgba(0,0,0,0.15)" : "none", display: "flex", alignItems: "center", gap: 5, flexShrink: 0 }}>
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
           PUBLIER
         </button>
       </div>
 
-      {/* ── AUTHOR CARD ── */}
-      <div style={{ margin: "12px 14px 0", background: "#fff", borderRadius: 20, padding: "14px 14px 10px", boxShadow: "0 2px 10px rgba(0,0,0,0.06)", animation: "cp-in 0.2s ease", flexShrink: 0 }}>
-        <div style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: 12 }}>
-          {/* Avatar */}
-          <div style={{ width: 50, height: 50, borderRadius: "50%", background: "linear-gradient(135deg,#22C55E,#16A34A)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 18, flexShrink: 0, boxShadow: "0 3px 10px rgba(34,197,94,0.35)" }}>{userInitials}</div>
+      {/* ── AUTHOR + SAISIE CARD ── */}
+      <div style={{ margin: "12px 14px 0", background: "#fff", borderRadius: 22, padding: "14px 14px 0", boxShadow: "0 2px 14px rgba(0,0,0,0.07)", animation: "cp-in 0.22s ease", flexShrink: 0, overflow: "hidden" }}>
+        {/* Author row */}
+        <div style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: 10 }}>
+          <div style={{ width: 48, height: 48, borderRadius: "50%", background: "linear-gradient(135deg,#22C55E,#16A34A)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 17, flexShrink: 0, boxShadow: "0 3px 10px rgba(34,197,94,0.32)" }}>{userInitials}</div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 800, fontSize: 15, color: "#111827", lineHeight: 1.3, marginBottom: 6 }}>
+            <div style={{ fontWeight: 800, fontSize: 15, color: "#111827", lineHeight: 1.3, marginBottom: 5 }}>
               {user.name} {userFlag}
               {moodEmoji && <span style={{ fontWeight: 400, color: "#6B7280" }}> est {moodEmoji} <em>{moodWord}</em></span>}
               {taggedNames.length > 0 && (
@@ -319,25 +327,24 @@ export default function CreatePostPage({ onPublish }: Props) {
               )}
             </div>
             {selectedTrack && (
-              <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 6, background: "#FDF4FF", borderRadius: 8, padding: "4px 8px", width: "fit-content" }}>
-                <span style={{ fontSize: 13 }}>🎵</span>
+              <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 5, background: "#F5F3FF", borderRadius: 8, padding: "3px 8px", width: "fit-content" }}>
+                <span style={{ fontSize: 12 }}>🎵</span>
                 <span style={{ fontSize: 12, fontWeight: 600, color: "#7C3AED" }}>{selectedTrack.title} · {selectedTrack.artist}</span>
-                <button onClick={() => setSelectedTrack(null)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 12, color: "#9CA3AF", padding: "0 2px" }}>✕</button>
+                <button onClick={() => setSelectedTrack(null)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 11, color: "#9CA3AF", padding: "0 2px" }}>✕</button>
               </div>
             )}
-            {/* Audience pill */}
             <div style={{ position: "relative" }}>
-              <button onClick={() => setShowAudience(v => !v)} style={{ display: "flex", alignItems: "center", gap: 5, background: "#F0FDF4", border: "1.5px solid #BBF7D0", borderRadius: 20, padding: "5px 12px", cursor: "pointer", transition: "all 0.15s" }}>
-                <span style={{ fontSize: 13 }}>{AUDIENCE_MAP[audience].icon}</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: "#15803D" }}>{AUDIENCE_MAP[audience].label}</span>
-                <span style={{ fontSize: 10, color: "#16A34A" }}>▼</span>
+              <button onClick={() => setShowAudience(v => !v)} style={{ display: "flex", alignItems: "center", gap: 5, background: "#F0FDF4", border: "1.5px solid #86EFAC", borderRadius: 20, padding: "4px 11px", cursor: "pointer" }}>
+                <span style={{ fontSize: 12 }}>{AUDIENCE_MAP[audience].icon}</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: "#15803D" }}>{AUDIENCE_MAP[audience].label}</span>
+                <svg viewBox="0 0 24 24" width="10" height="10" fill="#16A34A"><path d="M7 10l5 5 5-5z"/></svg>
               </button>
               {showAudience && (
-                <div style={{ position: "absolute", top: 38, left: 0, background: "#fff", border: "1px solid #E5E7EB", borderRadius: 14, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", zIndex: 20, minWidth: 150, overflow: "hidden" }}>
+                <div style={{ position: "absolute", top: 36, left: 0, background: "#fff", border: "1px solid #E5E7EB", borderRadius: 16, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", zIndex: 20, minWidth: 155, overflow: "hidden" }}>
                   {(["public","friends","private"] as const).map(a => (
                     <div key={a} onClick={() => { setAudience(a); setShowAudience(false); }} style={{ padding: "11px 16px", cursor: "pointer", display: "flex", gap: 10, alignItems: "center", fontWeight: a === audience ? 700 : 500, background: a === audience ? "#F0FDF4" : "#fff", color: a === audience ? "#15803D" : "#374151" }}>
                       <span>{AUDIENCE_MAP[a].icon}</span><span>{AUDIENCE_MAP[a].label}</span>
-                      {a === audience && <span style={{ color: "#22C55E", marginLeft: "auto", fontSize: 14 }}>✓</span>}
+                      {a === audience && <svg viewBox="0 0 24 24" width="16" height="16" fill="#22C55E" style={{ marginLeft: "auto" }}><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>}
                     </div>
                   ))}
                 </div>
@@ -346,46 +353,54 @@ export default function CreatePostPage({ onPublish }: Props) {
           </div>
         </div>
 
-        {/* Text area */}
-        <div style={{ background: hasBg ? activeBg?.value : "#FAFAFA", borderRadius: 16, padding: hasBg ? "28px 16px" : "12px 14px", minHeight: hasBg ? 100 : 80, display: "flex", flexDirection: "column", alignItems: hasBg ? "center" : "stretch", justifyContent: hasBg ? "center" : "flex-start", transition: "background 0.3s", marginBottom: 8 }}>
+        {/* Zone de saisie */}
+        <div style={{ background: hasBg ? activeBg?.value : "transparent", borderRadius: hasBg ? 14 : 0, padding: hasBg ? "22px 14px 16px" : "0 4px", minHeight: hasBg ? 80 : 60, display: "flex", flexDirection: "column", alignItems: hasBg ? "center" : "stretch", justifyContent: hasBg ? "center" : "flex-start", transition: "background 0.3s", marginBottom: 0 }}>
           <textarea ref={textareaRef} value={content} onChange={e => setContent(e.target.value)}
             placeholder="Partagez un moment fort de votre journée..."
             autoFocus
-            style={{ width: "100%", border: "none", outline: "none", resize: "none", fontSize: hasBg ? 22 : 16, fontWeight: hasBg ? 700 : 400, color: hasBg ? "#fff" : "#111827", background: "transparent", textAlign: hasBg ? "center" : "left", minHeight: hasBg ? 80 : 80, lineHeight: 1.6, caretColor: "#22C55E", fontFamily: "inherit", boxSizing: "border-box" }} />
+            style={{ width: "100%", border: "none", outline: "none", resize: "none", fontSize: hasBg ? 21 : 16, fontWeight: hasBg ? 700 : 400, color: hasBg ? "#fff" : "#111827", background: "transparent", textAlign: hasBg ? "center" : "left", minHeight: hasBg ? 70 : 60, lineHeight: 1.55, caretColor: "#22C55E", fontFamily: "inherit", boxSizing: "border-box" }} />
           {selectedLocation && (
-            <div style={{ fontSize: 12, color: hasBg ? "rgba(255,255,255,0.85)" : "#6B7280", marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
+            <div style={{ fontSize: 12, color: hasBg ? "rgba(255,255,255,0.85)" : "#6B7280", marginTop: 2, display: "flex", alignItems: "center", gap: 4 }}>
               📍 <span>{selectedLocation.city}, {selectedLocation.country}</span>
             </div>
           )}
         </div>
 
-        {/* Style bar */}
-        <div style={{ display: "flex", gap: 6, alignItems: "center", overflowX: "auto", scrollbarWidth: "none", paddingBottom: 2 }}>
-          {/* Text/Style buttons */}
-          {[
-            { label: "Aa", title: "Texte" },
-            { label: "😊", title: "Emoji" },
-            { label: "GIF", title: "GIF" },
-            { label: "📊", title: "Sondage" },
-          ].map(b => (
-            <button key={b.label} title={b.title} style={{ flexShrink: 0, height: 34, padding: "0 12px", background: "#F3F4F6", border: "1px solid #E5E7EB", borderRadius: 20, fontSize: 13, fontWeight: 700, color: "#374151", cursor: "pointer" }}>{b.label}</button>
-          ))}
-          <div style={{ width: 1, height: 24, background: "#E5E7EB", flexShrink: 0, margin: "0 2px" }} />
-          {/* Background reset */}
-          <button onClick={() => setSelectedBg("none")} style={{ width: 34, height: 34, borderRadius: "50%", border: selectedBg === "none" ? "2.5px solid #22C55E" : "2px solid #D1D5DB", background: "#fff", cursor: "pointer", fontSize: 14, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", color: "#9CA3AF" }}>✕</button>
-          {/* Color circles */}
-          {BG_OPTIONS.filter(b => b.id !== "none").map(bg => (
-            <button key={bg.id} onClick={() => setSelectedBg(bg.id === selectedBg ? "none" : bg.id)}
-              style={{ width: 34, height: 34, borderRadius: "50%", flexShrink: 0, cursor: "pointer", background: bg.preview, border: selectedBg === bg.id ? "2.5px solid #22C55E" : "2px solid rgba(0,0,0,0.08)", boxShadow: selectedBg === bg.id ? "0 0 0 2px #fff, 0 0 0 4px #22C55E" : "0 2px 4px rgba(0,0,0,0.12)", transition: "all 0.15s" }} />
-          ))}
+        {/* Barre Aa/Emoji/GIF/Sondage — intégrée dans la carte, séparée par une ligne */}
+        <div style={{ borderTop: "1px solid #F3F4F6", marginTop: 6, padding: "8px 4px 10px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", gap: 2 }}>
+            {[
+              { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="#22C55E"><path d="M5 17v2h14v-2H5zm4.5-4.2h5l.9 2.2h2.1L12.75 4h-1.5L6.5 15h2.1l.9-2.2zm2.5-6.82L13.87 11h-2.74L12 6.98z"/></svg>, label: "Aa", title: "Texte" },
+              { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="#F59E0B"><circle cx="12" cy="12" r="10"/><path d="M8.5 14.5s1.5 2 3.5 2 3.5-2 3.5-2" stroke="#fff" strokeWidth="1.5" fill="none" strokeLinecap="round"/><circle cx="9" cy="10" r="1.2" fill="#fff"/><circle cx="15" cy="10" r="1.2" fill="#fff"/></svg>, label: "😊", title: "Emoji" },
+              { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="#7C3AED"><rect x="2" y="6" width="20" height="12" rx="3"/><text x="12" y="15" textAnchor="middle" fill="#fff" fontSize="7" fontWeight="900">GIF</text></svg>, label: "GIF", title: "GIF" },
+              { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="#3B82F6"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>, label: "📊", title: "Sondage" },
+            ].map(b => (
+              <button key={b.label} title={b.title} className="cp-pill"
+                style={{ width: 40, height: 36, background: "none", border: "none", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>{b.icon}</button>
+            ))}
+          </div>
+          <div style={{ display: "flex", gap: 5, alignItems: "center" }}>
+            {/* Character counter — discret */}
+            {content.length > 0 && (
+              <span style={{ fontSize: 11, color: content.length > 250 ? "#EF4444" : "#9CA3AF", fontWeight: 600, minWidth: 28, textAlign: "right" }}>{content.length}</span>
+            )}
+            {/* Color circles */}
+            <div style={{ display: "flex", gap: 5, alignItems: "center", overflowX: "auto", scrollbarWidth: "none" }}>
+              <button onClick={() => setSelectedBg("none")} style={{ width: 26, height: 26, borderRadius: "50%", border: selectedBg === "none" ? "2.5px solid #22C55E" : "1.5px solid #D1D5DB", background: "#F9FAFB", cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", justifyContent: "center", color: "#6B7280", flexShrink: 0 }}>✕</button>
+              {BG_OPTIONS.filter(b => b.id !== "none").map(bg => (
+                <button key={bg.id} onClick={() => setSelectedBg(bg.id === selectedBg ? "none" : bg.id)}
+                  style={{ width: 26, height: 26, borderRadius: "50%", flexShrink: 0, cursor: "pointer", background: bg.preview, border: selectedBg === bg.id ? "2.5px solid #22C55E" : "1.5px solid rgba(0,0,0,0.08)", boxShadow: selectedBg === bg.id ? "0 0 0 2px #fff,0 0 0 4px #22C55E" : "0 1px 3px rgba(0,0,0,0.14)", transition: "all 0.15s" }} />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Upload progress bar */}
+      {/* Upload progress */}
       {uploadStatus === "uploading" && (
         <div style={{ padding: "6px 14px", flexShrink: 0 }}>
-          <div style={{ height: 4, background: "#E5E7EB", borderRadius: 4, overflow: "hidden" }}>
-            <div style={{ height: "100%", width: uploadPhase === "uploading" ? `${progress}%` : "100%", background: "#22C55E", borderRadius: 4, transition: "width 0.2s" }} />
+          <div style={{ height: 3, background: "#E5E7EB", borderRadius: 4, overflow: "hidden" }}>
+            <div style={{ height: "100%", width: uploadPhase === "uploading" ? `${progress}%` : "100%", background: "linear-gradient(90deg,#22C55E,#16A34A)", borderRadius: 4, transition: "width 0.2s" }} />
           </div>
           <div style={{ fontSize: 11, color: "#6B7280", marginTop: 3 }}>{phaseLabel(uploadPhase, progress)}</div>
         </div>
@@ -406,60 +421,58 @@ export default function CreatePostPage({ onPublish }: Props) {
             return (
               <div key={i} style={{ position: "relative", flexShrink: 0 }}>
                 {isVideo ? (
-                  <video src={src} style={{ width: 90, height: 90, objectFit: "cover", borderRadius: 12 }} muted playsInline />
+                  <video src={src} style={{ width: 88, height: 88, objectFit: "cover", borderRadius: 14 }} muted playsInline />
                 ) : (
-                  <img src={src} alt="" style={{ width: 90, height: 90, objectFit: "cover", borderRadius: 12, opacity: isUploading ? 0.5 : 1 }} />
+                  <img src={src} alt="" style={{ width: 88, height: 88, objectFit: "cover", borderRadius: 14, opacity: isUploading ? 0.5 : 1 }} />
                 )}
                 {isUploading && (
-                  <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.3)", borderRadius: 12 }}>
+                  <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.3)", borderRadius: 14 }}>
                     <span style={{ fontSize: 10, color: "#fff", fontWeight: 700 }}>{progress}%</span>
                   </div>
                 )}
                 {uploaded && (
                   <div style={{ position: "absolute", bottom: 4, left: 4, background: "#22C55E", borderRadius: "50%", width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <span style={{ fontSize: 10, color: "#fff" }}>✓</span>
+                    <svg viewBox="0 0 24 24" width="10" height="10" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
                   </div>
                 )}
                 <button onClick={() => {
                   setMediaPreviews(p => p.filter((_, j) => j !== i));
                   setMediaIsVideo(v => v.filter((_, j) => j !== i));
                   setMedias(m => m.filter((_, j) => j !== i));
-                }} style={{ position: "absolute", top: 4, right: 4, background: "rgba(0,0,0,0.6)", border: "none", borderRadius: "50%", width: 22, height: 22, color: "#fff", fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
+                }} style={{ position: "absolute", top: 4, right: 4, background: "rgba(0,0,0,0.55)", border: "none", borderRadius: "50%", width: 22, height: 22, color: "#fff", fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
               </div>
             );
           })}
-          <button onClick={() => fileInputRef.current?.click()} style={{ width: 90, height: 90, border: "2px dashed #D1D5DB", borderRadius: 12, background: "#fff", cursor: "pointer", fontSize: 24, color: "#9CA3AF", flexShrink: 0 }}>+</button>
+          <button onClick={() => fileInputRef.current?.click()} style={{ width: 88, height: 88, border: "2px dashed #BBF7D0", borderRadius: 14, background: "#F0FDF4", cursor: "pointer", fontSize: 24, color: "#22C55E", flexShrink: 0 }}>+</button>
         </div>
       )}
 
-      {/* ── OPTIONS LIST ── */}
-      <div style={{ margin: "10px 14px 0", display: "flex", flexDirection: "column", gap: 8 }}>
+      {/* ── OPTIONS ── */}
+      <div style={{ margin: "10px 14px 0", display: "flex", flexDirection: "column", gap: 7 }}>
         {OPTIONS.map((opt, i) => (
           <div key={i} className="cp-opt" onClick={opt.action}
-            style={{ display: "flex", gap: 14, padding: "14px 16px", alignItems: "center", cursor: "pointer", background: "#fff", borderRadius: 18, boxShadow: "0 1px 6px rgba(0,0,0,0.06)", animation: `cp-in ${0.15 + i * 0.04}s ease` }}>
-            {/* Icon circle */}
-            <div style={{ width: 46, height: 46, borderRadius: "50%", background: opt.color + "18", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0, border: `1.5px solid ${opt.color}28` }}>{opt.icon}</div>
-            {/* Label */}
+            style={{ display: "flex", gap: 13, padding: "11px 14px", alignItems: "center", cursor: "pointer", background: "#fff", borderRadius: 18, boxShadow: "0 1px 5px rgba(0,0,0,0.05)", animation: `cp-in ${0.18 + i * 0.04}s ease both` }}>
+            {/* Icon — cercle coloré */}
+            <div style={{ width: 42, height: 42, borderRadius: "50%", background: `linear-gradient(135deg,${opt.color}22,${opt.color}10)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0, border: `1.5px solid ${opt.color}30` }}>{opt.icon}</div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontWeight: 600, fontSize: 15, color: "#111827" }}>{opt.label}</div>
-              {opt.sub && <div style={{ fontSize: 12, color: "#22C55E", marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: 500 }}>{opt.sub}</div>}
+              <div style={{ fontWeight: 600, fontSize: 14.5, color: "#0F172A" }}>{opt.label}</div>
+              {opt.sub && <div style={{ fontSize: 11.5, color: "#22C55E", marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: 500 }}>{opt.sub}</div>}
             </div>
-            {/* Chevron or check */}
             {opt.sub ? (
-              <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <span style={{ color: "#22C55E", fontSize: 13, fontWeight: 900 }}>✓</span>
+              <div style={{ width: 22, height: 22, borderRadius: "50%", background: "#DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="#22C55E"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
               </div>
             ) : (
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="#9CA3AF" style={{ flexShrink: 0 }}><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="#CBD5E1" style={{ flexShrink: 0 }}><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
             )}
           </div>
         ))}
       </div>
 
       {/* ── BOUTON PUBLIER BAS ── */}
-      <div style={{ padding: "16px 14px 28px", flexShrink: 0 }}>
+      <div style={{ padding: "14px 14px 28px", flexShrink: 0 }}>
         <button onClick={handlePublish} disabled={!canPublish} className="cp-pub"
-          style={{ width: "100%", height: 60, borderRadius: 18, border: "none", background: canPublish ? "#22C55E" : "#E5E7EB", color: canPublish ? "#fff" : "#9CA3AF", fontWeight: 900, fontSize: 17, cursor: canPublish ? "pointer" : "not-allowed", display: "flex", alignItems: "center", justifyContent: "center", gap: 10, boxShadow: canPublish ? "0 4px 20px rgba(34,197,94,0.4)" : "none", transition: "all 0.2s", letterSpacing: "0.5px" }}>
+          style={{ width: "100%", height: 60, borderRadius: 18, border: "none", background: canPublish ? "linear-gradient(135deg,#22C55E 0%,#16A34A 100%)" : "#E5E7EB", color: canPublish ? "#fff" : "#9CA3AF", fontWeight: 900, fontSize: 17, cursor: canPublish ? "pointer" : "not-allowed", display: "flex", alignItems: "center", justifyContent: "center", gap: 10, boxShadow: canPublish ? "0 6px 22px rgba(34,197,94,0.45)" : "none", letterSpacing: "0.8px" }}>
           <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
           PUBLIER
         </button>
