@@ -383,19 +383,31 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   }, []);
 
   /* ── Attachment upload helper ── */
-  const sendAttachMsg = useCallback((attachment: { type: "image"|"doc"|"location"|"audio"; label: string; extra?: string }, text: string) => {
-    setMessages(prev => {
-      const list = [...(prev[activeConv!] ?? [])];
-      list.push({ id: Date.now(), text, mine: true, time: new Date().toLocaleTimeString("fr",{hour:"2-digit",minute:"2-digit"}), status: "sent", attachment });
-      return { ...prev, [activeConv!]: list };
-    });
+  const sendAttachMsg = useCallback((attachment: { type: "image"|"doc"|"location"|"audio"; label: string; extra?: string }, text: string, encodedContent: string) => {
+    if (!activeConv) return;
+    const convId = activeConv;
+    const tmpId = Date.now();
+    const now = new Date().toLocaleTimeString("fr", { hour:"2-digit", minute:"2-digit" });
+    setMessages(prev => ({
+      ...prev,
+      [convId]: [...(prev[convId] ?? []), { id: tmpId, text, mine: true, time: now, status: "pending" as const, attachment }],
+    }));
+    apiSendMessage(convId, encodedContent)
+      .then(() => {
+        setMessages(prev => ({ ...prev, [convId]: (prev[convId] ?? []).map(m => m.id === tmpId ? { ...m, status: "sent" as const } : m) }));
+      })
+      .catch(() => {
+        setMessages(prev => ({ ...prev, [convId]: (prev[convId] ?? []).map(m => m.id === tmpId ? { ...m, status: "pending" as const } : m) }));
+      });
   }, [activeConv]);
 
   const handleFileInput = useCallback(async (file: File, kind: "image"|"doc") => {
     setAttachSheet(false); setAttachPage("none"); setUploadingAttach(true);
     try {
       const { url } = await apiUploadFile(file);
-      sendAttachMsg({ type: kind, label: url, extra: file.name }, kind === "image" ? "📷 Photo" : `📄 ${file.name}`);
+      const prefix = kind === "image" ? "__image__" : "__doc__";
+      const encoded = `${prefix}:${url}:${file.name}`;
+      sendAttachMsg({ type: kind, label: url, extra: file.name }, kind === "image" ? "📷 Photo" : `📄 ${file.name}`, encoded);
     } catch (e) { alert(e instanceof Error ? e.message : "Upload échoué"); }
     finally { setUploadingAttach(false); }
   }, [sendAttachMsg]);
@@ -406,7 +418,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       pos => {
         const { latitude: lat, longitude: lng } = pos.coords;
         const url = `https://maps.google.com/?q=${lat},${lng}`;
-        sendAttachMsg({ type: "location", label: url, extra: `${lat.toFixed(5)},${lng.toFixed(5)}` }, "📍 Ma position");
+        const extra = `${lat.toFixed(5)},${lng.toFixed(5)}`;
+        const encoded = `__location__:${url}:${extra}`;
+        sendAttachMsg({ type: "location", label: url, extra }, "📍 Ma position", encoded);
       },
       () => alert("Impossible d'accéder à la localisation. Autorisez la géolocalisation dans les paramètres du navigateur.")
     );
@@ -673,6 +687,27 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       const s     = totalSecs % 60;
       const dur   = `${mins}:${s.toString().padStart(2, "0")}`;
       return { ...base, text: "", attachment: { type: "audio" as const, label: url, extra: dur } };
+    }
+    if (m.content.startsWith("__location__:")) {
+      const rest  = m.content.slice("__location__:".length);
+      const sep   = rest.indexOf(":");
+      const url   = sep === -1 ? rest : rest.slice(0, sep);
+      const extra = sep === -1 ? "" : rest.slice(sep + 1);
+      return { ...base, text: "📍 Ma position", attachment: { type: "location" as const, label: url, extra } };
+    }
+    if (m.content.startsWith("__image__:")) {
+      const rest  = m.content.slice("__image__:".length);
+      const sep   = rest.indexOf(":");
+      const url   = sep === -1 ? rest : rest.slice(0, sep);
+      const extra = sep === -1 ? "photo" : rest.slice(sep + 1);
+      return { ...base, text: "📷 Photo", attachment: { type: "image" as const, label: url, extra } };
+    }
+    if (m.content.startsWith("__doc__:")) {
+      const rest  = m.content.slice("__doc__:".length);
+      const sep   = rest.indexOf(":");
+      const url   = sep === -1 ? rest : rest.slice(0, sep);
+      const extra = sep === -1 ? "Document" : rest.slice(sep + 1);
+      return { ...base, text: `📄 ${extra}`, attachment: { type: "doc" as const, label: url, extra } };
     }
     return { ...base, text: m.content };
   }, [meId]);
