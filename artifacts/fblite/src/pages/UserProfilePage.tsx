@@ -301,28 +301,31 @@ export default function UserProfilePage({ userId }: { userId: number }) {
         </div>
 
         {/* ── Cover ── */}
-        <div style={{ height: 190, position: "relative", overflow: "hidden", background: "#1A2E1A" }}>
-          {user.coverUrl
-            ? <img src={user.coverUrl} alt="cover" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-            : <div style={{ width: "100%", height: "100%", background: "linear-gradient(135deg,#0D2318 0%,#1A4D2E 40%,#22C55E44 80%,#0D2318 100%)" }}>
-                <svg viewBox="0 0 480 190" width="100%" height="100%" style={{ position: "absolute", inset: 0 }}>
-                  <defs>
-                    <radialGradient id="glw" cx="60%" cy="40%" r="60%"><stop offset="0%" stopColor="#22C55E" stopOpacity="0.35"/><stop offset="100%" stopColor="#22C55E" stopOpacity="0"/></radialGradient>
-                  </defs>
-                  <rect width="480" height="190" fill="#0D2318"/>
-                  <ellipse cx="290" cy="80" rx="200" ry="130" fill="url(#glw)"/>
-                  <rect x="200" y="120" width="8" height="50" fill="#22C55E" opacity="0.3"/>
-                  <rect x="220" y="100" width="8" height="70" fill="#22C55E" opacity="0.2"/>
-                  <rect x="240" y="110" width="10" height="60" fill="#22C55E" opacity="0.25"/>
-                  <rect x="260" y="90" width="8" height="80" fill="#22C55E" opacity="0.3"/>
-                  <rect x="280" y="105" width="12" height="65" fill="#22C55E" opacity="0.2"/>
-                  <rect x="300" y="115" width="8" height="55" fill="#22C55E" opacity="0.25"/>
-                  <rect x="320" y="95" width="10" height="75" fill="#22C55E" opacity="0.2"/>
-                  <circle cx="290" cy="60" r="22" fill="#22C55E" opacity="0.12"/>
-                </svg>
-              </div>
-          }
-          {/* Avatar anchored bottom-left */}
+        <div style={{ height: 190, position: "relative", background: "#1A2E1A" }}>
+          {/* Cover image — clipped to 190px, avatar stays outside this div */}
+          <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
+            {user.coverUrl
+              ? <img src={user.coverUrl} alt="cover" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+              : <div style={{ width: "100%", height: "100%", background: "linear-gradient(135deg,#0D2318 0%,#1A4D2E 40%,#22C55E44 80%,#0D2318 100%)" }}>
+                  <svg viewBox="0 0 480 190" width="100%" height="100%" style={{ position: "absolute", inset: 0 }}>
+                    <defs>
+                      <radialGradient id="glw" cx="60%" cy="40%" r="60%"><stop offset="0%" stopColor="#22C55E" stopOpacity="0.35"/><stop offset="100%" stopColor="#22C55E" stopOpacity="0"/></radialGradient>
+                    </defs>
+                    <rect width="480" height="190" fill="#0D2318"/>
+                    <ellipse cx="290" cy="80" rx="200" ry="130" fill="url(#glw)"/>
+                    <rect x="200" y="120" width="8" height="50" fill="#22C55E" opacity="0.3"/>
+                    <rect x="220" y="100" width="8" height="70" fill="#22C55E" opacity="0.2"/>
+                    <rect x="240" y="110" width="10" height="60" fill="#22C55E" opacity="0.25"/>
+                    <rect x="260" y="90" width="8" height="80" fill="#22C55E" opacity="0.3"/>
+                    <rect x="280" y="105" width="12" height="65" fill="#22C55E" opacity="0.2"/>
+                    <rect x="300" y="115" width="8" height="55" fill="#22C55E" opacity="0.25"/>
+                    <rect x="320" y="95" width="10" height="75" fill="#22C55E" opacity="0.2"/>
+                    <circle cx="290" cy="60" r="22" fill="#22C55E" opacity="0.12"/>
+                  </svg>
+                </div>
+            }
+          </div>
+          {/* Avatar anchored bottom-left — outside the clip div so it shows fully */}
           <div style={{ position: "absolute", bottom: -46, left: 16, zIndex: 5 }}>
             <div style={{ position: "relative", display: "inline-block" }}>
               {user.avatarUrl

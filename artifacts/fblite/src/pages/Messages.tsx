@@ -2552,7 +2552,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="#94A3B8"/><circle cx="15" cy="9" r="1" fill="#94A3B8"/></svg>
               </button>
               {/* Text input */}
-              <div style={{ flex:1 }}>
+              <div style={{ flex:1, display: isRecording ? "none" : "block" }}>
                 <input value={newMsg}
                   onChange={e => {
                     setNewMsg(e.target.value);
