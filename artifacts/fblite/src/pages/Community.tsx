@@ -465,7 +465,7 @@ export default function Community() {
               friends.map(friend => (
                 <div key={friend.id} style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 16px", borderTop:"1px solid #F8FAFC" }}>
                   <div onClick={()=>navigate(`/profile/${friend.id}`)} style={{ cursor:"pointer", flexShrink:0 }}>
-                    <Avatar user={friend} size={50} online={friend.id%3!==0} />
+                    <Avatar user={friend} size={50} online={false} />
                   </div>
                   <div style={{ flex:1, cursor:"pointer", minWidth:0 }} onClick={()=>navigate(`/profile/${friend.id}`)}>
                     <div style={{ fontWeight:700, fontSize:14.5, color:"#0F172A" }}>{fullName(friend)}</div>

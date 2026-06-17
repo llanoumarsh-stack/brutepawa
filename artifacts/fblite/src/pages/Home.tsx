@@ -428,8 +428,6 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                           : <span style={{ color: "#fff", fontWeight: 800, fontSize: 22 }}>{initials}</span>)
                     }
                   </div>
-                  {/* Online dot */}
-                  <div style={{ position: "absolute", bottom: 3, right: 3, width: 14, height: 14, borderRadius: "50%", background: "#42B72A", border: "2px solid #fff" }} />
                 </div>
                 <div style={{ marginTop: 6, fontSize: 11, fontWeight: 600, color: "#050505", textAlign: "center" as const, maxWidth: 76, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>
                   {group.authorName.split(" ")[0]}
