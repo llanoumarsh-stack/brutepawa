@@ -355,34 +355,37 @@ export default function UserProfilePage({ userId }: { userId: number }) {
             <span style={{ fontSize: 13, color: "#6B7280", fontWeight: 500 }}>Membre BrutePawa depuis {joinYear}</span>
           </div>
           {/* Action buttons row */}
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            {/* Primary action */}
+          <div style={{ display: "flex", gap: 8, alignItems: "stretch" }}>
+            {/* Primary friend action */}
             {(user.friendshipStatus === "none" && !pendingRequest) ? (
               <button disabled={actionLoading} onClick={handleSendRequest}
-                style={{ flex: 1, padding: "11px 10px", background: "#22C55E", color: "#fff", border: "none", borderRadius: 10, fontWeight: 700, fontSize: 14.5, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, boxShadow: "0 3px 12px rgba(34,197,94,0.4)" }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                style={{ flex: "1 1 0", minWidth: 0, padding: "12px 8px", background: "#22C55E", color: "#fff", border: "none", borderRadius: 12, fontWeight: 700, fontSize: 13.5, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, boxShadow: "0 3px 12px rgba(34,197,94,0.4)", whiteSpace: "nowrap", overflow: "hidden" }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
                 {actionLoading ? "…" : "Ajouter comme ami"}
               </button>
             ) : (user.friendshipStatus === "pending_sent") ? (
               <button disabled={actionLoading} onClick={handleCancel}
-                style={{ flex: 1, padding: "11px 10px", background: "#F1F5F9", color: "#374151", border: "none", borderRadius: 10, fontWeight: 700, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 7 }}>
+                style={{ flex: "1 1 0", minWidth: 0, padding: "12px 8px", background: "#F1F5F9", color: "#374151", border: "none", borderRadius: 12, fontWeight: 700, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, whiteSpace: "nowrap", overflow: "hidden" }}>
                 <IconClock />{actionLoading ? "…" : "Demande envoyée"}
               </button>
             ) : (user.friendshipStatus === "pending_received" || pendingRequest) ? (
               <button disabled={actionLoading} onClick={handleAccept}
-                style={{ flex: 1, padding: "11px 10px", background: "#22C55E", color: "#fff", border: "none", borderRadius: 10, fontWeight: 700, fontSize: 14.5, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, boxShadow: "0 3px 12px rgba(34,197,94,0.4)" }}>
+                style={{ flex: "1 1 0", minWidth: 0, padding: "12px 8px", background: "#22C55E", color: "#fff", border: "none", borderRadius: 12, fontWeight: 700, fontSize: 13.5, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, boxShadow: "0 3px 12px rgba(34,197,94,0.4)", whiteSpace: "nowrap", overflow: "hidden" }}>
                 <IconCheck />{actionLoading ? "…" : "Confirmer"}
               </button>
             ) : null}
             {/* Message button */}
             <button onClick={() => navigate(`/messages?userId=${user.id}`)}
-              style={{ flex: 1, padding: "11px 10px", background: "#fff", color: "#374151", border: "1.5px solid #E5E7EB", borderRadius: 10, fontWeight: 700, fontSize: 14.5, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 7 }}>
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+              style={{ flex: "1 1 0", minWidth: 0, padding: "12px 8px", background: "#F5F6F7", color: "#374151", border: "1.5px solid #E5E7EB", borderRadius: 12, fontWeight: 600, fontSize: 13.5, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, whiteSpace: "nowrap", overflow: "hidden" }}>
+              <svg width="16" height="16" viewBox="0 0 28 28" fill="none" style={{ flexShrink: 0 }}>
+                <circle cx="14" cy="14" r="13" fill="#E5E7EB"/>
+                <path d="M8 17.5l1.5-4.5a7 7 0 1 1 2.5 2.5L8 17.5z" fill="#374151"/>
+              </svg>
               Envoyer un message
             </button>
             {/* More dots */}
-            <button style={{ width: 44, height: 44, background: "#F1F5F9", border: "none", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="#374151"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
+            <button style={{ width: 44, height: 44, background: "#F5F6F7", border: "1.5px solid #E5E7EB", borderRadius: 12, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#374151"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
             </button>
           </div>
         </div>
@@ -431,10 +434,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
               <span style={{ fontWeight: 800, fontSize: 16, color: "#0D1B2A" }}>Profil verrouillé</span>
             </div>
             <div style={{ fontSize: 13, color: "#64748B", lineHeight: 1.65 }}>
-              Ce profil est protégé par son propriétaire.<br/>
-              Seuls ses amis peuvent voir<br/>
-              les publications, photos et<br/>
-              informations personnelles.
+              Ce profil est protégé par son propriétaire. Seuls ses amis peuvent voir ses publications, photos et informations.
             </div>
           </div>
         </div>
@@ -452,7 +452,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
           <div style={{ flex: 1 }}>
             <div style={{ fontWeight: 700, fontSize: 14.5, color: "#0D1B2A", marginBottom: 7 }}>Pourquoi ce profil est-il verrouillé ?</div>
             <div style={{ fontSize: 13, color: "#64748B", lineHeight: 1.7 }}>
-              Le propriétaire a choisi de protéger sa vie privée sur BrutePawa. Ajoutez-le comme ami pour accéder à son contenu.
+              Le propriétaire de ce profil a choisi de restreindre l'accès à son contenu. Ajoutez-le comme ami pour voir ses publications et interagir avec lui sur BrutePawa.
             </div>
           </div>
         </div>
