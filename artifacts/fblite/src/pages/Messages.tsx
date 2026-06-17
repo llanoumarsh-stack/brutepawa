@@ -184,11 +184,17 @@ function fmtConvPreview(raw: string): { text: string; isAudio: boolean } {
   return { text: raw.length > 55 ? raw.slice(0, 55) + "…" : raw, isAudio: false };
 }
 
-function voiceWaveform(seed: number, bars = 30): number[] {
+function voiceWaveform(seed: number, bars = 36): number[] {
   return Array.from({ length: bars }, (_, i) => {
-    const v = Math.abs(Math.sin(seed * 0.061 + i * 0.73)) * 0.55
-            + Math.abs(Math.sin(i * 1.27 + seed * 0.13)) * 0.45;
-    return Math.max(0.18, Math.min(1, v));
+    const t = i / bars;
+    // Envelope: voice energy is bell-shaped, higher in the middle, lower at edges
+    const envelope = 0.35 + 0.65 * Math.pow(Math.sin(t * Math.PI), 0.65);
+    // Multiple harmonics for natural, realistic voice pattern
+    const v = Math.abs(Math.sin(seed * 0.071 + i * 1.31)) * 0.38
+            + Math.abs(Math.sin(i * 0.87 + seed * 0.193)) * 0.32
+            + Math.abs(Math.sin(i * 2.13 + seed * 0.051)) * 0.18
+            + Math.abs(Math.sin(i * 3.77 + seed * 0.11)) * 0.12;
+    return Math.max(0.07, Math.min(1, v * envelope + 0.06));
   });
 }
 
@@ -1198,6 +1204,39 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       if (a) a.playbackRate = next;
     }
   };
+
+  const seekVoice = useCallback((msgId: number, src: string, progress: number) => {
+    // Pause all others
+    voiceAudiosRef.current.forEach((a, id) => { if (id !== msgId) a.pause(); });
+
+    let a = voiceAudiosRef.current.get(msgId);
+    if (!a) {
+      a = new Audio(src);
+      a.preload = "metadata";
+      a.crossOrigin = "anonymous";
+      a.ontimeupdate = () => { if (a!.duration) setAudioProgress(a!.currentTime / a!.duration); };
+      a.onended = () => { setPlayingAudioId(null); setAudioProgress(0); };
+      a.onerror = () => {
+        const b = new Audio(src);
+        b.preload = "metadata";
+        b.ontimeupdate = () => { if (b.duration) setAudioProgress(b.currentTime / b.duration); };
+        b.onended = () => { setPlayingAudioId(null); setAudioProgress(0); };
+        voiceAudiosRef.current.set(msgId, b);
+        b.playbackRate = voiceSpeed;
+        if (b.duration && isFinite(b.duration)) b.currentTime = progress * b.duration;
+        b.play().catch(() => {});
+      };
+      voiceAudiosRef.current.set(msgId, a);
+    }
+    a.playbackRate = voiceSpeed;
+    setAudioProgress(progress);
+    const doSeek = () => {
+      if (a!.duration && isFinite(a!.duration)) a!.currentTime = progress * a!.duration;
+    };
+    if (a.readyState >= 1) { doSeek(); } else { a.addEventListener("loadedmetadata", doSeek, { once: true }); }
+    a.play().catch(() => {});
+    setPlayingAudioId(msgId);
+  }, [voiceSpeed]);
 
   const startLongPress = (msgId: number) => {
     if (selectionMode) { toggleSelect(msgId); return; }
@@ -2353,85 +2392,135 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 )}
                 <div style={{ maxWidth:"72%" }}>
                   {msg.attachment && (
-                    msg.attachment.type === "audio" ? (
-                      /* ── PREMIUM VOICE MESSAGE BUBBLE ── */
+                    msg.attachment.type === "audio" ? (() => {
+                      const durStr   = msg.attachment!.extra || "0:00";
+                      const [dmm, dss] = durStr.split(":").map(Number);
+                      const totalSecs  = (dmm || 0) * 60 + (dss || 0);
+                      const curSec     = isVoicePlaying ? Math.floor(totalSecs * audioProgress) : totalSecs;
+                      const dispTime   = `${Math.floor(curSec / 60)}:${(curSec % 60).toString().padStart(2, "0")}`;
+                      const mine = msg.mine;
+                      return (
+                      /* ── VOICE MESSAGE BUBBLE — seekable, animated ── */
                       <div style={{
-                        background: msg.mine ? "#16C24A" : "#fff",
-                        borderRadius: msg.mine ? "18px 4px 18px 18px" : "4px 18px 18px 18px",
-                        padding:"12px 13px 10px",
-                        minWidth:210, maxWidth:270,
-                        boxShadow: msg.mine
-                          ? "0 4px 18px rgba(22,194,74,0.38)"
+                        background: mine ? "#16C24A" : "#fff",
+                        borderRadius: mine ? "18px 4px 18px 18px" : "4px 18px 18px 18px",
+                        padding:"10px 12px 8px",
+                        minWidth:224, maxWidth:282,
+                        boxShadow: mine
+                          ? "0 4px 22px rgba(22,194,74,0.40)"
                           : "0 2px 14px rgba(0,0,0,0.10)",
                         marginBottom:2,
+                        userSelect:"none",
+                        WebkitUserSelect:"none",
                       }}>
-                        {/* Row: play btn + waveform + speed+avatar(mine) */}
+                        {/* Main row: play button | waveform | speed+avatar */}
                         <div style={{ display:"flex", alignItems:"center", gap:9 }}>
+
                           {/* Play / Pause */}
                           <button
                             onClick={() => toggleVoice(msg.id, msg.attachment!.label)}
                             style={{
-                              width:42, height:42, borderRadius:"50%", flexShrink:0, border:"none", cursor:"pointer",
-                              background: msg.mine ? "rgba(255,255,255,0.28)" : "#16C24A",
+                              width:44, height:44, borderRadius:"50%", flexShrink:0, border:"none", cursor:"pointer",
+                              background: mine ? "rgba(255,255,255,0.26)" : "#16C24A",
                               display:"flex", alignItems:"center", justifyContent:"center",
-                              boxShadow: msg.mine ? "none" : "0 3px 12px rgba(22,194,74,0.42)",
-                              transition:"transform 0.12s",
-                            }}>
+                              boxShadow: mine ? "none" : "0 3px 14px rgba(22,194,74,0.44)",
+                              transition:"transform 0.11s, opacity 0.11s",
+                              WebkitTapHighlightColor:"transparent",
+                              touchAction:"manipulation",
+                            }}
+                            onPointerDown={e => { e.currentTarget.style.transform="scale(0.88)"; e.currentTarget.style.opacity="0.82"; }}
+                            onPointerUp={e => { e.currentTarget.style.transform="scale(1)"; e.currentTarget.style.opacity="1"; }}
+                            onPointerLeave={e => { e.currentTarget.style.transform="scale(1)"; e.currentTarget.style.opacity="1"; }}
+                          >
                             {isVoicePlaying
-                              ? <svg viewBox="0 0 24 24" width="17" height="17" fill="#fff"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
-                              : <svg viewBox="0 0 24 24" width="17" height="17" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+                              ? <svg viewBox="0 0 24 24" width="17" height="17" fill="#fff"><rect x="5" y="4" width="4.5" height="16" rx="1.8"/><rect x="14.5" y="4" width="4.5" height="16" rx="1.8"/></svg>
+                              : <svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M7.5 5.2v13.6l11-6.8z"/></svg>
                             }
                           </button>
 
-                          {/* Waveform bars */}
-                          <div style={{ flex:1, display:"flex", alignItems:"center", gap:2, height:38 }}>
-                            {wfBars.map((h, bi) => (
-                              <div key={bi} style={{
-                                flex:1, borderRadius:2,
-                                height:`${Math.round(h * 100)}%`,
-                                background: msg.mine
-                                  ? (bi < playedBars ? "rgba(255,255,255,0.97)" : "rgba(255,255,255,0.38)")
-                                  : (bi < playedBars ? "#16C24A" : "#CBD5E1"),
-                                transition:"background 0.08s",
-                              }}/>
-                            ))}
+                          {/* Waveform — tap or drag to seek */}
+                          <div
+                            style={{ flex:1, display:"flex", alignItems:"center", height:42, gap:1.5, cursor:"pointer", touchAction:"none", position:"relative" }}
+                            onPointerDown={e => {
+                              e.stopPropagation();
+                              e.currentTarget.setPointerCapture(e.pointerId);
+                              const rect = e.currentTarget.getBoundingClientRect();
+                              const p = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                              seekVoice(msg.id, msg.attachment!.label, p);
+                            }}
+                            onPointerMove={e => {
+                              if (e.buttons !== 1) return;
+                              const rect = e.currentTarget.getBoundingClientRect();
+                              const p = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                              seekVoice(msg.id, msg.attachment!.label, p);
+                            }}
+                          >
+                            {wfBars.map((h, bi) => {
+                              const fraction  = bi / wfBars.length;
+                              const played    = isVoicePlaying ? fraction < audioProgress : false;
+                              const isHead    = isVoicePlaying && Math.abs(fraction - audioProgress) < (1.5 / wfBars.length);
+                              return (
+                                <div key={bi} style={{
+                                  flex:1, borderRadius:3,
+                                  height:`${Math.round(h * 100)}%`,
+                                  minHeight:3,
+                                  background: mine
+                                    ? (played ? "rgba(255,255,255,1)" : "rgba(255,255,255,0.33)")
+                                    : (played ? "#16C24A" : "#BFD4E5"),
+                                  transition:"background 0.06s",
+                                  transformOrigin:"center",
+                                  animation: isHead ? "wf-playhead 0.52s ease-in-out infinite" : undefined,
+                                }}/>
+                              );
+                            })}
                           </div>
 
-                          {/* Speed badge + mini avatar (sent only) */}
-                          {msg.mine && (
-                            <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:5, flexShrink:0 }}>
-                              <button onClick={cycleVoiceSpeed}
-                                style={{ background:"rgba(255,255,255,0.22)", border:"none", borderRadius:7, padding:"2px 6px", cursor:"pointer", color:"#fff", fontSize:11, fontWeight:800 }}>
-                                {voiceSpeed}x
-                              </button>
-                              <div style={{ width:26, height:26, borderRadius:"50%", background:"rgba(255,255,255,0.32)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, fontWeight:800, color:"#fff" }}>
-                                {activeConvRef.current ? "ME" : "ME"}
-                              </div>
+                          {/* Speed badge + avatar column */}
+                          <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:5, flexShrink:0 }}>
+                            <button
+                              onClick={e => { e.stopPropagation(); cycleVoiceSpeed(); }}
+                              style={{
+                                background: mine ? "rgba(255,255,255,0.22)" : "rgba(22,194,74,0.13)",
+                                border:"none", borderRadius:7, padding:"2px 7px", cursor:"pointer",
+                                color: mine ? "#fff" : "#16C24A",
+                                fontSize:11, fontWeight:800, letterSpacing:0.3,
+                                transition:"background 0.15s",
+                                WebkitTapHighlightColor:"transparent",
+                              }}>
+                              {voiceSpeed}x
+                            </button>
+                            <div style={{
+                              width:26, height:26, borderRadius:"50%", flexShrink:0, overflow:"hidden",
+                              background: mine ? "rgba(255,255,255,0.28)" : "#D1FAE5",
+                              display:"flex", alignItems:"center", justifyContent:"center",
+                              fontSize:9, fontWeight:800,
+                              color: mine ? "#fff" : "#059669",
+                            }}>
+                              {mine
+                                ? (() => { try { const u=JSON.parse(localStorage.getItem("fb_user")||"{}"); return ((u.firstName||"")[0]||(u.lastName||"")[0]||"M").toUpperCase()+(((u.lastName||"")[0])||"E").toUpperCase(); } catch { return "ME"; } })()
+                                : (activeUser?.initials || "?")
+                              }
                             </div>
-                          )}
+                          </div>
                         </div>
 
-                        {/* Footer: duration | timestamp + ticks */}
-                        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:7 }}>
-                          <span style={{ fontSize:11, fontWeight:700, color: msg.mine ? "rgba(255,255,255,0.75)" : "#94A3B8", fontVariantNumeric:"tabular-nums" }}>
-                            {isVoicePlaying
-                              ? (() => {
-                                  const durStr = msg.attachment!.extra || "0:00";
-                                  const [mm, ss] = durStr.split(":").map(Number);
-                                  const totalSecs = (mm || 0) * 60 + (ss || 0);
-                                  const cur = Math.floor(totalSecs * audioProgress);
-                                  return `${Math.floor(cur / 60)}:${(cur % 60).toString().padStart(2, "0")}`;
-                                })()
-                              : (msg.attachment!.extra || "0:00")
-                            }
+                        {/* Footer row: elapsed/total | time + ticks */}
+                        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:6 }}>
+                          <span style={{
+                            fontSize:11, fontWeight:700, letterSpacing:0.15,
+                            color: mine ? "rgba(255,255,255,0.78)" : "#94A3B8",
+                            fontVariantNumeric:"tabular-nums",
+                          }}>
+                            {dispTime}
                           </span>
                           <div style={{ display:"flex", alignItems:"center", gap:4 }}>
-                            <span style={{ fontSize:11, color: msg.mine ? "rgba(255,255,255,0.7)" : "#94A3B8" }}>{msg.time}</span>
-                            {msg.mine && <MsgStatus status={msg.status} dark={true} />}
+                            <span style={{ fontSize:11, color: mine ? "rgba(255,255,255,0.72)" : "#94A3B8" }}>{msg.time}</span>
+                            {mine && <MsgStatus status={msg.status} dark={true} />}
                           </div>
                         </div>
                       </div>
-                    ) : null
+                      );
+                    })() : null
                   )}
                   {msg.attachment?.type === "image" && (() => {
                     const rawUrl = msg.attachment.label;

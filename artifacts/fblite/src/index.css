@@ -251,6 +251,15 @@ select:focus { border-color: var(--fb-blue); }
   0%, 100% { opacity: 1; transform: scale(1); }
   50%       { opacity: 0.4; transform: scale(0.75); }
 }
+@keyframes wf-playhead {
+  0%, 100% { transform: scaleY(1.22); opacity: 1; }
+  50%       { transform: scaleY(0.78); opacity: 0.65; }
+}
+@keyframes wf-pop {
+  0%   { transform: scaleY(1); }
+  40%  { transform: scaleY(1.18); }
+  100% { transform: scaleY(1); }
+}
 @keyframes voiceGlow {
   0%, 100% { box-shadow: 0 2px 10px rgba(229,57,53,0.45); }
   50%       { box-shadow: 0 2px 20px rgba(229,57,53,0.8), 0 0 0 5px rgba(229,57,53,0.2); }
