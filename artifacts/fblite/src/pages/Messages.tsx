@@ -2088,9 +2088,12 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         <div style={{ margin: "20px 16px 0", background: "#fff", borderRadius: 24, padding: "28px 20px 24px", textAlign: "center", boxShadow: "0 4px 24px rgba(34,197,94,0.10), 0 1px 4px rgba(0,0,0,0.06)", border: "1px solid rgba(34,197,94,0.08)" }}>
           {/* avatar */}
           <div style={{ position: "relative", display: "inline-block", marginBottom: 18 }}>
-            <div style={{ width: 104, height: 104, borderRadius: "50%", background: activeUser.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, fontWeight: 900, color: "#fff", border: "3.5px solid #22C55E", boxShadow: "0 0 0 4px rgba(34,197,94,0.15), 0 6px 20px rgba(0,0,0,0.12)" }}>
-              {activeUser.initials}
-            </div>
+            {activeUser.avatarUrl
+              ? <img src={activeUser.avatarUrl} alt={activeUser.name} style={{ width: 104, height: 104, borderRadius: "50%", objectFit: "cover", display: "block", border: "3.5px solid #22C55E", boxShadow: "0 0 0 4px rgba(34,197,94,0.15), 0 6px 20px rgba(0,0,0,0.12)" }} />
+              : <div style={{ width: 104, height: 104, borderRadius: "50%", background: activeUser.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, fontWeight: 900, color: "#fff", border: "3.5px solid #22C55E", boxShadow: "0 0 0 4px rgba(34,197,94,0.15), 0 6px 20px rgba(0,0,0,0.12)" }}>
+                  {activeUser.initials}
+                </div>
+            }
             {/* presence dot */}
             <div style={{ position: "absolute", bottom: 6, right: 6, width: 20, height: 20, borderRadius: "50%", background: presence.online ? "#22C55E" : "#9CA3AF", border: "3px solid #fff", boxShadow: "0 1px 4px rgba(0,0,0,0.15)" }} />
           </div>
@@ -2304,7 +2307,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16C24A" strokeWidth="2.5" strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
             </button>
             <div style={{ position:"relative", cursor:"pointer", flexShrink:0 }} onClick={() => setOverlay("info")}>
-              <div style={{ width:44, height:44, borderRadius:"50%", background:"linear-gradient(135deg,#16C24A,#0ea541)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, fontWeight:800, color:"#fff", boxShadow:"0 2px 8px rgba(22,194,74,0.35)" }}>{activeUser.initials}</div>
+              {activeUser.avatarUrl
+                ? <img src={activeUser.avatarUrl} alt={activeUser.name} style={{ width:44, height:44, borderRadius:"50%", objectFit:"cover", display:"block" }} />
+                : <div style={{ width:44, height:44, borderRadius:"50%", background:"linear-gradient(135deg,#16C24A,#0ea541)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, fontWeight:800, color:"#fff", boxShadow:"0 2px 8px rgba(22,194,74,0.35)" }}>{activeUser.initials}</div>
+              }
               {presence.online && <div style={{ position:"absolute", bottom:1, right:1, width:12, height:12, background:"#16C24A", borderRadius:"50%", border:"2.5px solid #fff" }} />}
             </div>
             <div style={{ flex:1, minWidth:0, cursor:"pointer" }} onClick={() => setOverlay("info")}>
@@ -4078,7 +4084,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       .fbl-settings-row:active{background:#f5f5f5}
     `}</style>
 
-    <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, display: "flex", flexDirection: "column", background: "#fff", zIndex: 9999, overflow: "hidden" }}>
+    <div style={{ position: "fixed", top: 0, bottom: "58px", left: 0, right: 0, display: "flex", flexDirection: "column", background: "#fff", zIndex: 9999, overflow: "hidden" }}>
 
       {/* ── PREMIUM HEADER ── */}
       <div style={{ background: "#fff", flexShrink: 0, paddingTop: "env(safe-area-inset-top, 0px)" }}>
