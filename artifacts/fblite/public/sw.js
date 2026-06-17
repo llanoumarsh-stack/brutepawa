@@ -1,4 +1,4 @@
-const CACHE = "brutepawa-v20260616b";
+const CACHE = "brutepawa-v20260617";
 const PRECACHE = ["/", "/manifest.webmanifest"];
 
 self.addEventListener("install", (e) => {
