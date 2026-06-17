@@ -360,6 +360,13 @@ function AppContent() {
     }
   }
 
+  if (path.startsWith("/messages")) {
+    const qs2 = path.includes("?") ? path.slice(path.indexOf("?") + 1) : "";
+    const uid = new URLSearchParams(qs2).get("userId");
+    const initUid = uid ? parseInt(uid, 10) : undefined;
+    return <Messages initialUserId={!initUid || isNaN(initUid) ? undefined : initUid} />;
+  }
+
   return (
     <Layout onNewPost={handleNewPost}>
       {path === "/" && <Home posts={posts} postsLoading={postsLoading} onLike={handleLike} onNewPost={handleNewPost} />}
@@ -367,12 +374,6 @@ function AppContent() {
       {path === "/marketplace" && <MarketplacePage />}
       {path === "/notifications" && <NotificationsPage />}
       {path === "/menu" && <Menu />}
-      {path.startsWith("/messages") && (() => {
-        const qs2 = path.includes("?") ? path.slice(path.indexOf("?") + 1) : "";
-        const uid = new URLSearchParams(qs2).get("userId");
-        const initUid = uid ? parseInt(uid, 10) : undefined;
-        return <Messages initialUserId={!initUid || isNaN(initUid) ? undefined : initUid} />;
-      })()}
       {path === "/jobs" && <JobsPage />}
       {path === "/formations" && <FormationsPage />}
       {path === "/tontines" && <TontinesPage />}

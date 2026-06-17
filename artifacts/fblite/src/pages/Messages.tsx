@@ -4056,7 +4056,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     (!search || g.name.toLowerCase().includes(search.toLowerCase()))
   );
 
-  return createPortal(<>
+  return (
+    <>
     {/* Hidden voice player — lives here so it renders always, not only during calls */}
     <audio ref={voicePlayerRef} style={{ display:"none" }}
       onTimeUpdate={e => { const el = e.currentTarget; if (el.duration) setAudioProgress(el.currentTime / el.duration); }}
@@ -4683,5 +4684,6 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
       </div>
     , document.body)}
-  </>, document.body);
+    </>
+  );
 }
