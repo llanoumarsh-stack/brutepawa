@@ -251,6 +251,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [recDragY, setRecDragY]         = useState(0);
   const [recLocked, setRecLocked]       = useState(false);
   const [recPaused, setRecPaused]       = useState(false);
+  const [recLiveBars, setRecLiveBars]   = useState<number[]>(Array(28).fill(5));
   const [playingAudioId, setPlayingAudioId] = useState<number|null>(null);
   const [audioProgress, setAudioProgress]   = useState(0);
   const [voiceSpeed, setVoiceSpeed]         = useState<1|1.5|2>(1);
@@ -292,6 +293,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const recTimerRef       = useRef<ReturnType<typeof setInterval> | null>(null);
   const recSecondsRef     = useRef(0);
   const recSecsAtStopRef  = useRef(0);
+  const recAudioCtxRef    = useRef<AudioContext | null>(null);
+  const recAnalyserRef    = useRef<AnalyserNode | null>(null);
+  const recAnimFrameRef   = useRef<number>(0);
   const voiceAudiosRef    = useRef<Map<number, HTMLAudioElement>>(new Map());
   const linkPreviewCacheRef = useRef<Map<string, LinkPreview | "loading" | null>>(new Map());
   const [linkPreviews, setLinkPreviews] = useState<Record<string, LinkPreview | null>>({});
@@ -488,6 +492,28 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       };
       mr.start(100);
       mediaRecorderRef.current = mr;
+
+      // Live waveform via Web Audio API
+      try {
+        const ctx = new AudioContext();
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 64;
+        ctx.createMediaStreamSource(stream).connect(analyser);
+        recAudioCtxRef.current  = ctx;
+        recAnalyserRef.current  = analyser;
+        const data = new Uint8Array(analyser.frequencyBinCount);
+        const drawBars = () => {
+          analyser.getByteFrequencyData(data);
+          const step = Math.max(1, Math.floor(data.length / 28));
+          const bars = Array.from({ length: 28 }, (_, i) =>
+            Math.max(4, Math.round(((data[i * step] ?? 0) / 255) * 96))
+          );
+          setRecLiveBars(bars);
+          recAnimFrameRef.current = requestAnimationFrame(drawBars);
+        };
+        recAnimFrameRef.current = requestAnimationFrame(drawBars);
+      } catch { /* AudioContext unavailable — bars will stay minimal */ }
+
       (document.activeElement as HTMLElement)?.blur();
       // Prevent Android long-press text selection cursor on the whole page
       document.body.style.userSelect = "none";
@@ -507,6 +533,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const stopVoice = () => {
     recSecsAtStopRef.current = recSecondsRef.current;  // capture BEFORE clearing
     if (recTimerRef.current) { clearInterval(recTimerRef.current); recTimerRef.current = null; }
+    if (recAnimFrameRef.current) { cancelAnimationFrame(recAnimFrameRef.current); recAnimFrameRef.current = 0; }
+    recAudioCtxRef.current?.close();
+    recAudioCtxRef.current  = null;
+    recAnalyserRef.current  = null;
     mediaRecorderRef.current?.stop();
     mediaRecorderRef.current = null;
     // Restore text selection on the page
@@ -516,6 +546,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     setRecLocked(false);
     setRecDragX(0); setRecDragY(0);
     recSecondsRef.current = 0; setRecSeconds(0);
+    setRecLiveBars(Array(28).fill(5));
   };
 
   const cancelVoice = () => {
@@ -1899,6 +1930,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           @keyframes fbl-rec-pulse { 0%,100%{opacity:1} 50%{opacity:0.2} }
           @keyframes fbl-pulse { 0%,100%{opacity:1} 50%{opacity:0.45} }
           @keyframes wa-typing-dot { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
+          @keyframes fbl-loc-ripple { 0%{transform:scale(0.6);opacity:0.8} 100%{transform:scale(2.2);opacity:0} }
           .wa-typing-dot { width:7px; height:7px; border-radius:50%; background:#999; display:inline-block; animation:wa-typing-dot 1.2s infinite; }
           .wa-typing-dot:nth-child(2) { animation-delay:0.2s; }
           .wa-typing-dot:nth-child(3) { animation-delay:0.4s; }
@@ -2158,16 +2190,64 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       <img src={msg.attachment.label} alt={msg.attachment.extra || "photo"} style={{ width:"100%", display:"block", maxHeight:320, objectFit:"cover" }} />
                     </div>
                   )}
-                  {msg.attachment?.type === "location" && (
-                    <a href={msg.attachment.label} target="_blank" rel="noreferrer"
-                      style={{ display:"flex", alignItems:"center", gap:8, background: msg.mine?"#c5f0a4":"#f1f1f1", borderRadius:10, padding:"10px 12px", marginBottom:2, textDecoration:"none", color:"#111", maxWidth:220 }}>
-                      <span style={{ fontSize:26 }}>📍</span>
-                      <div>
-                        <div style={{ fontWeight:700, fontSize:13 }}>Position partagée</div>
-                        <div style={{ fontSize:11, color:"#555" }}>{msg.attachment.extra ?? "Ouvrir la carte"}</div>
-                      </div>
-                    </a>
-                  )}
+                  {msg.attachment?.type === "location" && (() => {
+                    const coords = msg.attachment.extra ?? "";
+                    const [latStr, lngStr] = coords.split(",");
+                    const lat = parseFloat(latStr);
+                    const lng = parseFloat(lngStr);
+                    const hasCoords = !isNaN(lat) && !isNaN(lng);
+                    const mapUrl = msg.attachment.label;
+                    const tileUrl = hasCoords
+                      ? `https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${lng}&zoom=15&size=220x90&markers=${lat},${lng},red-pushpin`
+                      : null;
+                    return (
+                      <a href={mapUrl} target="_blank" rel="noreferrer"
+                        style={{ display:"block", borderRadius:14, overflow:"hidden", marginBottom:4, textDecoration:"none",
+                          maxWidth:240, boxShadow:"0 2px 12px rgba(0,0,0,0.13)",
+                          animation:"fbl-fade-in 0.35s cubic-bezier(.22,1,.36,1)",
+                          border: msg.mine ? "1.5px solid rgba(255,255,255,0.25)" : "1.5px solid #e2e8f0" }}>
+                        {/* Map preview */}
+                        <div style={{ position:"relative", height:90, background: msg.mine ? "linear-gradient(135deg,#16a34a,#22c55e)" : "linear-gradient(135deg,#dbeafe,#bfdbfe)", overflow:"hidden" }}>
+                          {tileUrl && (
+                            <img src={tileUrl} alt="map"
+                              onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                              style={{ width:"100%", height:"100%", objectFit:"cover", display:"block" }} />
+                          )}
+                          {/* Pulsing pin overlay */}
+                          <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", pointerEvents:"none" }}>
+                            <div style={{ position:"relative", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                              <div style={{ position:"absolute", width:36, height:36, borderRadius:"50%",
+                                background:"rgba(239,68,68,0.25)",
+                                animation:"fbl-loc-ripple 1.6s ease-out infinite" }} />
+                              <div style={{ position:"absolute", width:20, height:20, borderRadius:"50%",
+                                background:"rgba(239,68,68,0.18)",
+                                animation:"fbl-loc-ripple 1.6s ease-out 0.4s infinite" }} />
+                              <div style={{ width:14, height:14, borderRadius:"50%", background:"#EF4444",
+                                border:"2.5px solid #fff", boxShadow:"0 2px 8px rgba(239,68,68,0.6)",
+                                zIndex:1 }} />
+                            </div>
+                          </div>
+                        </div>
+                        {/* Info row */}
+                        <div style={{ display:"flex", alignItems:"center", gap:8, padding:"8px 12px",
+                          background: msg.mine ? "rgba(22,163,74,0.92)" : "#fff" }}>
+                          <span style={{ fontSize:18, flexShrink:0 }}>📍</span>
+                          <div style={{ flex:1, minWidth:0 }}>
+                            <div style={{ fontWeight:700, fontSize:12.5, color: msg.mine ? "#fff" : "#111", lineHeight:1.3 }}>Position partagée</div>
+                            {hasCoords && (
+                              <div style={{ fontSize:10.5, color: msg.mine ? "rgba(255,255,255,0.7)" : "#64748b", fontVariantNumeric:"tabular-nums" }}>
+                                {lat.toFixed(4)}, {lng.toFixed(4)}
+                              </div>
+                            )}
+                          </div>
+                          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke={msg.mine ? "rgba(255,255,255,0.7)" : "#94a3b8"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}>
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                            <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                          </svg>
+                        </div>
+                      </a>
+                    );
+                  })()}
                   {msg.attachment?.type === "doc" && (
                     <a href={msg.attachment.label} target="_blank" rel="noreferrer"
                       style={{ display:"flex", alignItems:"center", gap:8, background: msg.mine?"#c5f0a4":"#f1f1f1", borderRadius:10, padding:"10px 12px", marginBottom:2, textDecoration:"none", color:"#111", maxWidth:240 }}>
@@ -2501,14 +2581,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 <span style={{ fontSize:15, fontWeight:800, color:"#EF4444", fontVariantNumeric:"tabular-nums", flexShrink:0, minWidth:44 }}>
                   {`${Math.floor(recSeconds/60).toString().padStart(2,"0")}:${(recSeconds%60).toString().padStart(2,"0")}`}
                 </span>
-                {/* Waveform */}
+                {/* Waveform — live audio levels */}
                 <div style={{ flex:1, display:"flex", alignItems:"center", gap:2, height:30, overflow:"hidden" }}>
-                  {[0.38,0.62,0.90,0.55,0.80,0.45,0.72,0.95,0.60,0.40,0.85,0.50,0.75,0.35,0.68,0.92,0.48,0.70,0.38,0.80,0.60,0.44,0.88].map((h,i) => (
+                  {recLiveBars.map((h, i) => (
                     <div key={i} style={{ flex:1, borderRadius:2,
                       background: recPaused ? "#CBD5E1" : "#16C24A",
-                      height:`${Math.round(h*100)}%`,
-                      animation: recPaused ? "none" : `wa-typing-dot ${0.55+i*0.07}s ease-in-out ${i*0.045}s infinite alternate`,
-                      opacity: recPaused ? 0.5 : 0.7+h*0.3 }} />
+                      height: recPaused ? "30%" : `${h}%`,
+                      transition: "height 0.07s ease",
+                      opacity: recPaused ? 0.5 : 0.6 + Math.min(0.4, (h / 96) * 0.4) }} />
                   ))}
                 </div>
                 {/* Slide-left cancel hint */}
@@ -2550,12 +2630,12 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     {`${Math.floor(recSeconds/60).toString().padStart(2,"0")}:${(recSeconds%60).toString().padStart(2,"0")}`}
                   </span>
                   <div style={{ flex:1, display:"flex", alignItems:"center", gap:1.5, height:34 }}>
-                    {[0.38,0.62,0.90,0.55,0.80,0.45,0.72,0.95,0.60,0.40,0.85,0.50,0.75,0.35,0.68,0.92,0.48,0.70,0.38,0.80].map((h,i) => (
+                    {recLiveBars.map((h, i) => (
                       <div key={i} style={{ flex:1, borderRadius:2,
                         background: recPaused ? "#CBD5E1" : "#16C24A",
-                        height:`${Math.round(h*100)}%`,
-                        animation: recPaused ? "none" : `wa-typing-dot ${0.55+i*0.07}s ease-in-out ${i*0.045}s infinite alternate`,
-                        opacity: recPaused ? 0.5 : 0.7+h*0.3 }} />
+                        height: recPaused ? "30%" : `${h}%`,
+                        transition: "height 0.07s ease",
+                        opacity: recPaused ? 0.5 : 0.6 + Math.min(0.4, (h / 96) * 0.4) }} />
                     ))}
                   </div>
                 </div>
