@@ -905,92 +905,156 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     ));
     const isChannel = groupWizardType === "channel";
 
-    return createPortal(
-      <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, display: "flex", flexDirection: "column", background: "#fff", zIndex: 10000 }}>
-        <style>{`@keyframes wiz-in { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }`}</style>
+    const COUNTRY_MAP: Record<string, { name: string; flag: string }> = {
+      CI: { name: "Côte d'Ivoire", flag: "🇨🇮" }, BJ: { name: "Bénin", flag: "🇧🇯" },
+      ML: { name: "Mali", flag: "🇲🇱" }, SN: { name: "Sénégal", flag: "🇸🇳" },
+      TG: { name: "Togo", flag: "🇹🇬" }, GN: { name: "Guinée", flag: "🇬🇳" },
+      NE: { name: "Niger", flag: "🇳🇪" }, BF: { name: "Burkina Faso", flag: "🇧🇫" },
+      CM: { name: "Cameroun", flag: "🇨🇲" }, NG: { name: "Nigeria", flag: "🇳🇬" },
+      GH: { name: "Ghana", flag: "🇬🇭" }, MA: { name: "Maroc", flag: "🇲🇦" },
+      FR: { name: "France", flag: "🇫🇷" }, US: { name: "États-Unis", flag: "🇺🇸" },
+    };
+    const getCountry = (code: string | null) => {
+      if (!code) return null;
+      const c = code.trim().toUpperCase().split(",")[0].trim();
+      return COUNTRY_MAP[c] ?? { name: code, flag: "🌍" };
+    };
 
-        {/* Header */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px 12px", borderBottom: "1px solid #E4E6EB", flexShrink: 0, background: "#fff" }}>
+    const WIZ_AVATAR_COLORS = ["#EC4899","#8B5CF6","#F97316","#22C55E","#14B8A6","#EF4444","#3B82F6","#F59E0B","#6366F1","#D946EF"];
+    const wizColor = (id: number) => WIZ_AVATAR_COLORS[id % WIZ_AVATAR_COLORS.length];
+
+    const VISIBLE = 4;
+    const selectedArr = [...wizardMembers];
+    const visibleSelected = selectedArr.slice(0, VISIBLE);
+    const extraCount = Math.max(0, selectedArr.length - VISIBLE);
+
+    return createPortal(
+      <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, display: "flex", flexDirection: "column", background: "#F2F4F7", zIndex: 10000 }}>
+        <style>{`
+          @keyframes wiz-in { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+          @keyframes wiz-check { from{transform:scale(0.4)} to{transform:scale(1)} }
+          .wiz-row:hover { background: #F0FDF4 !important; }
+          .wiz-desel:hover { color: #16A34A !important; }
+          .wiz-bubble:hover { transform: scale(1.05); }
+        `}</style>
+
+        {/* ── HEADER GREEN ── */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 14px 16px", background: "#22C55E", flexShrink: 0, boxShadow: "0 3px 12px rgba(34,197,94,0.3)" }}>
           <button
             onClick={() => { if (groupWizard === "name") setGroupWizard("members"); else { setGroupWizard("none"); setWizardMembers(new Set()); setWizardSearch(""); } }}
-            style={{ background: "#F0F2F5", border: "none", borderRadius: "50%", width: 40, height: 40, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, color: "#111", flexShrink: 0 }}>
+            style={{ background: "#fff", border: "none", borderRadius: "50%", width: 38, height: 38, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 1px 4px rgba(0,0,0,0.12)", fontSize: 18, color: "#22C55E" }}>
             ←
           </button>
           <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 800, fontSize: 18, color: "#111" }}>
+            <div style={{ fontWeight: 800, fontSize: 17, color: "#fff", lineHeight: 1.2 }}>
               {groupWizard === "members" ? `Nouveau ${isChannel ? "canal" : "groupe"}` : `Nommer le ${isChannel ? "canal" : "groupe"}`}
             </div>
             {groupWizard === "members" && (
-              <div style={{ fontSize: 12, color: "#65676B", marginTop: 1 }}>
-                {wizardMembers.size === 0 ? "Sélectionnez des membres" : `${wizardMembers.size} sélectionné${wizardMembers.size > 1 ? "s" : ""}`}
+              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.85)", marginTop: 2 }}>
+                Sélectionnez des membres
               </div>
             )}
           </div>
-          {/* Step dots */}
-          <div style={{ display: "flex", gap: 5, flexShrink: 0 }}>
-            {[0, 1].map(i => (
-              <div key={i} style={{ width: 8, height: 8, borderRadius: "50%", background: (groupWizard === "members" ? 0 : 1) >= i ? "#1877F2" : "#E4E6EB", transition: "background 0.2s" }} />
-            ))}
+          {/* Step badge */}
+          <div style={{ border: "1.5px solid rgba(255,255,255,0.7)", borderRadius: 20, padding: "4px 10px", flexShrink: 0 }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: "#fff" }}>{groupWizard === "members" ? "1/2" : "2/2"}</span>
           </div>
           {groupWizard === "members" && (
             <button onClick={() => { if (wizardMembers.size > 0) setGroupWizard("name"); }}
-              style={{ background: wizardMembers.size > 0 ? "#1877F2" : "#E4E6EB", border: "none", borderRadius: 22, padding: "8px 18px", color: wizardMembers.size > 0 ? "#fff" : "#aaa", fontSize: 14, fontWeight: 700, cursor: wizardMembers.size > 0 ? "pointer" : "default", transition: "all 0.2s", flexShrink: 0 }}>
-              Suivant →
+              style={{ background: "#fff", border: "none", borderRadius: 20, padding: "7px 14px", color: wizardMembers.size > 0 ? "#22C55E" : "#9CA3AF", fontSize: 13, fontWeight: 700, cursor: wizardMembers.size > 0 ? "pointer" : "default", transition: "all 0.2s", flexShrink: 0, boxShadow: "0 1px 4px rgba(0,0,0,0.1)", display: "flex", alignItems: "center", gap: 4 }}>
+              Suivant <span style={{ fontSize: 14 }}>→</span>
             </button>
           )}
         </div>
 
         {groupWizard === "members" ? (
-          <>
-            {/* Search */}
-            <div style={{ padding: "10px 14px", background: "#fff", borderBottom: "1px solid #F0F2F5", flexShrink: 0 }}>
-              <div style={{ position: "relative" }}>
-                <span style={{ position: "absolute", left: 13, top: "50%", transform: "translateY(-50%)", fontSize: 14, color: "#999", pointerEvents: "none" }}>🔍</span>
-                <input value={wizardSearch} onChange={e => setWizardSearch(e.target.value)}
-                  placeholder="Rechercher des contacts…"
-                  style={{ width: "100%", background: "#F0F2F5", border: "none", borderRadius: 24, padding: "9px 14px 9px 34px", fontSize: 14, outline: "none", boxSizing: "border-box" }} />
-              </div>
-            </div>
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "hidden" }}>
 
-            {/* Selected chips */}
+            {/* ── SELECTED MEMBERS CARD ── */}
             {wizardMembers.size > 0 && (
-              <div style={{ display: "flex", gap: 10, padding: "10px 14px", overflowX: "auto", scrollbarWidth: "none", borderBottom: "1px solid #F0F2F5", background: "#fff", flexShrink: 0 }}>
-                {[...wizardMembers].map(uid => {
-                  const u = allUsers.find(x => x.id === uid);
-                  const name = u ? `${u.firstName} ${u.lastName}` : `#${uid}`;
-                  return (
-                    <div key={uid} onClick={() => setWizardMembers(prev => { const s = new Set(prev); s.delete(uid); return s; })}
-                      style={{ flexShrink: 0, textAlign: "center", cursor: "pointer", animation: "wiz-in 0.2s ease" }}>
-                      <div style={{ position: "relative", marginBottom: 3 }}>
-                        <div style={{ width: 46, height: 46, borderRadius: "50%", background: CONV_COLORS[uid % CONV_COLORS.length], display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15, margin: "0 auto" }}>
-                          {mkInitials(name)}
+              <div style={{ margin: "12px 14px 0", background: "#fff", borderRadius: 20, padding: "12px 14px", flexShrink: 0, boxShadow: "0 2px 10px rgba(0,0,0,0.06)" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                  <span style={{ fontWeight: 700, fontSize: 14, color: "#111" }}>
+                    Membres sélectionnés <span style={{ color: "#22C55E" }}>({wizardMembers.size})</span>
+                  </span>
+                  <button onClick={() => setWizardMembers(new Set())} className="wiz-desel"
+                    style={{ background: "none", border: "none", color: "#22C55E", fontSize: 12, fontWeight: 600, cursor: "pointer", padding: 0 }}>
+                    Tout désélectionner
+                  </button>
+                </div>
+                <div style={{ display: "flex", gap: 10, overflowX: "auto", scrollbarWidth: "none", paddingBottom: 2 }}>
+                  {visibleSelected.map(uid => {
+                    const u = allUsers.find(x => x.id === uid);
+                    const name = u ? `${u.firstName} ${u.lastName}` : `#${uid}`;
+                    return (
+                      <div key={uid} className="wiz-bubble" onClick={() => setWizardMembers(prev => { const s = new Set(prev); s.delete(uid); return s; })}
+                        style={{ flexShrink: 0, textAlign: "center", cursor: "pointer", transition: "transform 0.15s", animation: "wiz-in 0.2s ease", width: 56 }}>
+                        <div style={{ position: "relative", marginBottom: 4 }}>
+                          <div style={{ width: 48, height: 48, borderRadius: "50%", background: wizColor(uid), display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15, margin: "0 auto" }}>
+                            {mkInitials(name)}
+                          </div>
+                          <div style={{ position: "absolute", top: -2, right: -2, width: 18, height: 18, background: "#EF4444", borderRadius: "50%", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 9, fontWeight: 900 }}>✕</div>
                         </div>
-                        <div style={{ position: "absolute", top: -3, right: -3, width: 18, height: 18, background: "#F44336", borderRadius: "50%", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 10, fontWeight: 900 }}>✕</div>
+                        <div style={{ fontSize: 10, fontWeight: 500, color: "#374151", maxWidth: 56, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{name.split(" ")[0]}</div>
                       </div>
-                      <div style={{ fontSize: 10, color: "#333", maxWidth: 50, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{name.split(" ")[0]}</div>
+                    );
+                  })}
+                  {extraCount > 0 && (
+                    <div style={{ flexShrink: 0, textAlign: "center", width: 56 }}>
+                      <div style={{ width: 48, height: 48, borderRadius: "50%", border: "2px dashed #22C55E", background: "#DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", color: "#22C55E", fontWeight: 700, fontSize: 14, margin: "0 auto 4px" }}>+{extraCount}</div>
+                      <div style={{ fontSize: 10, fontWeight: 500, color: "#6B7280" }}>Autres</div>
                     </div>
-                  );
-                })}
+                  )}
+                </div>
               </div>
             )}
 
-            {/* User list */}
-            <div style={{ flex: 1, overflowY: "auto" }}>
-              {filteredUsers.map((u, idx) => {
+            {/* ── SEARCH BAR ── */}
+            <div style={{ padding: "12px 14px 8px", flexShrink: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", background: "#fff", borderRadius: 22, padding: "12px 16px", boxShadow: "0 2px 8px rgba(0,0,0,0.07)", border: "1px solid #E5E7EB", gap: 8 }}>
+                <span style={{ fontSize: 16, flexShrink: 0 }}>🔍</span>
+                <input value={wizardSearch} onChange={e => setWizardSearch(e.target.value)}
+                  placeholder="Rechercher un ami..."
+                  style={{ flex: 1, background: "transparent", border: "none", fontSize: 15, outline: "none", color: "#111" }} />
+                {wizardSearch && (
+                  <button onClick={() => setWizardSearch("")} style={{ background: "none", border: "none", cursor: "pointer", color: "#9CA3AF", fontSize: 16, padding: 0, display: "flex", alignItems: "center" }}>✕</button>
+                )}
+              </div>
+            </div>
+
+            {/* ── CONTACTS LIST ── */}
+            <div style={{ flex: 1, overflowY: "auto", padding: "4px 14px 20px", display: "flex", flexDirection: "column", gap: 8 }}>
+              {filteredUsers.map(u => {
                 const name = `${u.firstName} ${u.lastName}`;
                 const selected = wizardMembers.has(u.id);
+                const country = getCountry(u.country);
                 return (
-                  <div key={u.id}
+                  <div key={u.id} className="wiz-row"
                     onClick={() => setWizardMembers(prev => { const s = new Set(prev); if (s.has(u.id)) s.delete(u.id); else s.add(u.id); return s; })}
-                    style={{ display: "flex", gap: 12, padding: "11px 16px", alignItems: "center", cursor: "pointer", background: selected ? "#F0F6FF" : "#fff", borderBottom: idx < filteredUsers.length - 1 ? "1px solid #F5F5F5" : "none", transition: "background 0.12s" }}>
-                    <div style={{ width: 50, height: 50, borderRadius: "50%", background: CONV_COLORS[u.id % CONV_COLORS.length], display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 17, flexShrink: 0 }}>
-                      {mkInitials(name)}
+                    style={{ display: "flex", gap: 12, padding: "11px 13px", alignItems: "center", cursor: "pointer", background: selected ? "#F0FDF4" : "#fff", borderRadius: 18, border: selected ? "1.5px solid #BBF7D0" : "1.5px solid transparent", boxShadow: "0 1px 6px rgba(0,0,0,0.06)", transition: "all 0.15s", animation: "wiz-in 0.18s ease" }}>
+                    {/* Avatar */}
+                    <div style={{ position: "relative", flexShrink: 0 }}>
+                      <div style={{ width: 50, height: 50, borderRadius: "50%", background: wizColor(u.id), display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 17 }}>
+                        {mkInitials(name)}
+                      </div>
+                      {/* Online dot — show randomly for demo feel */}
+                      {u.id % 3 !== 0 && (
+                        <div style={{ position: "absolute", bottom: 1, right: 1, width: 13, height: 13, borderRadius: "50%", background: "#22C55E", border: "2.5px solid #fff" }} />
+                      )}
                     </div>
+                    {/* Info */}
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 700, fontSize: 15, color: "#111" }}>{name}</div>
+                      <div style={{ fontWeight: 600, fontSize: 15, color: selected ? "#15803D" : "#111" }}>{name}</div>
+                      {country && (
+                        <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                          <span style={{ fontSize: 13 }}>{country.flag}</span>
+                          <span style={{ fontSize: 12, color: "#9CA3AF" }}>{country.name}</span>
+                        </div>
+                      )}
                     </div>
-                    <div style={{ width: 26, height: 26, borderRadius: "50%", border: selected ? "none" : "2px solid #CED0D4", background: selected ? "#1877F2" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.15s" }}>
-                      {selected && <span style={{ color: "#fff", fontSize: 14, fontWeight: 900 }}>✓</span>}
+                    {/* Selector */}
+                    <div style={{ width: 28, height: 28, borderRadius: "50%", border: selected ? "none" : "2px solid #D1D5DB", background: selected ? "#22C55E" : "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.18s", boxShadow: selected ? "0 1px 6px rgba(34,197,94,0.4)" : "none" }}>
+                      {selected && <span style={{ color: "#fff", fontSize: 14, fontWeight: 900, animation: "wiz-check 0.15s ease" }}>✓</span>}
                     </div>
                   </div>
                 );
@@ -998,20 +1062,30 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               {filteredUsers.length === 0 && (
                 <div style={{ padding: "52px 24px", textAlign: "center" }}>
                   <div style={{ fontSize: 44, marginBottom: 14 }}>👤</div>
-                  <div style={{ fontWeight: 700, fontSize: 16, color: "#333", marginBottom: 6 }}>Aucun contact trouvé</div>
-                  <div style={{ fontSize: 13, color: "#888" }}>Essayez un autre terme de recherche</div>
+                  <div style={{ fontWeight: 700, fontSize: 16, color: "#374151", marginBottom: 6 }}>Aucun contact trouvé</div>
+                  <div style={{ fontSize: 13, color: "#9CA3AF" }}>Essayez un autre terme de recherche</div>
                 </div>
               )}
             </div>
-          </>
+
+            {/* ── BOTTOM BUTTON ── */}
+            <div style={{ padding: "12px 16px 20px", background: "rgba(242,244,247,0.95)", borderTop: "1px solid #E5E7EB", flexShrink: 0 }}>
+              <button onClick={() => { if (wizardMembers.size > 0) setGroupWizard("name"); }}
+                disabled={wizardMembers.size === 0}
+                style={{ width: "100%", background: wizardMembers.size > 0 ? "#22C55E" : "#9CA3AF", border: "none", borderRadius: 22, padding: "15px", fontSize: 16, fontWeight: 800, color: "#fff", cursor: wizardMembers.size > 0 ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, boxShadow: wizardMembers.size > 0 ? "0 4px 16px rgba(34,197,94,0.4)" : "none", transition: "all 0.2s" }}>
+                <span style={{ fontSize: 18 }}>👥</span>
+                {wizardMembers.size === 0 ? "Sélectionnez des membres" : `Créer le ${isChannel ? "canal" : "groupe"} (${wizardMembers.size} sélectionné${wizardMembers.size > 1 ? "s" : ""})`}
+              </button>
+            </div>
+          </div>
         ) : (
           /* Step 2: Name + Settings */
-          <div style={{ flex: 1, overflowY: "auto", padding: "32px 20px 20px" }}>
+          <div style={{ flex: 1, overflowY: "auto", padding: "24px 16px 100px" }}>
 
             {/* Avatar picker */}
-            <div style={{ display: "flex", justifyContent: "center", marginBottom: 32 }}>
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: 28 }}>
               <div style={{ position: "relative", cursor: "pointer" }}>
-                <div style={{ width: 100, height: 100, borderRadius: "50%", background: isChannel ? "linear-gradient(135deg, #00838F 0%, #00ACC1 100%)" : "linear-gradient(135deg, #1877F2 0%, #42A5F5 100%)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 20px rgba(0,0,0,0.2)", fontSize: 42 }}>
+                <div style={{ width: 100, height: 100, borderRadius: "50%", background: isChannel ? "linear-gradient(135deg,#00838F,#00ACC1)" : "linear-gradient(135deg,#22C55E,#16A34A)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 20px rgba(34,197,94,0.35)", fontSize: 42 }}>
                   {isChannel ? "📢" : "👥"}
                 </div>
                 <div style={{ position: "absolute", bottom: 2, right: 2, width: 32, height: 32, borderRadius: "50%", background: "#fff", border: "2px solid #E4E6EB", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, boxShadow: "0 1px 4px rgba(0,0,0,0.15)" }}>📷</div>
@@ -1019,8 +1093,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             </div>
 
             {/* Name */}
-            <div style={{ marginBottom: 22 }}>
-              <label style={{ fontSize: 11, fontWeight: 700, color: "#65676B", letterSpacing: 1, display: "block", marginBottom: 6, textTransform: "uppercase" }}>
+            <div style={{ background: "#fff", borderRadius: 18, padding: "14px 16px", marginBottom: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+              <label style={{ fontSize: 11, fontWeight: 700, color: "#6B7280", letterSpacing: 1, display: "block", marginBottom: 8, textTransform: "uppercase" }}>
                 Nom du {isChannel ? "canal" : "groupe"}
               </label>
               <input
@@ -1028,44 +1102,30 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 onKeyDown={e => { if (e.key === "Enter") createGroup(); }}
                 placeholder={isChannel ? "Ex: Annonces officielles" : "Ex: Famille Konaté"}
                 autoFocus
-                style={{ width: "100%", border: "none", borderBottom: "2.5px solid #1877F2", padding: "10px 0", fontSize: 18, outline: "none", boxSizing: "border-box", color: "#111", background: "transparent", fontWeight: 700 }}
+                style={{ width: "100%", border: "none", borderBottom: "2.5px solid #22C55E", padding: "8px 0", fontSize: 18, outline: "none", boxSizing: "border-box", color: "#111", background: "transparent", fontWeight: 700 }}
               />
             </div>
 
             {/* Description */}
-            <div style={{ marginBottom: 28 }}>
-              <label style={{ fontSize: 11, fontWeight: 700, color: "#65676B", letterSpacing: 1, display: "block", marginBottom: 6, textTransform: "uppercase" }}>
+            <div style={{ background: "#fff", borderRadius: 18, padding: "14px 16px", marginBottom: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+              <label style={{ fontSize: 11, fontWeight: 700, color: "#6B7280", letterSpacing: 1, display: "block", marginBottom: 8, textTransform: "uppercase" }}>
                 Description <span style={{ color: "#aaa", fontWeight: 400, textTransform: "none" }}>(optionnel)</span>
               </label>
               <input
                 placeholder={isChannel ? "Ex: Actualités et annonces…" : "Ex: Groupe privé de la famille…"}
-                style={{ width: "100%", border: "none", borderBottom: "2px solid #E4E6EB", padding: "10px 0", fontSize: 15, outline: "none", boxSizing: "border-box", color: "#111", background: "transparent" }}
+                style={{ width: "100%", border: "none", borderBottom: "2px solid #E5E7EB", padding: "8px 0", fontSize: 15, outline: "none", boxSizing: "border-box", color: "#111", background: "transparent" }}
               />
             </div>
 
-            {/* Public/Private toggle */}
-            <div style={{ background: "#F7F8FA", borderRadius: 16, padding: "14px 16px", marginBottom: 28, display: "flex", alignItems: "center", gap: 12, border: "1px solid #E4E6EB" }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 700, fontSize: 15, color: "#111", marginBottom: 2 }}>
-                  {isChannel ? "Canal public" : "Groupe public"}
-                </div>
-                <div style={{ fontSize: 12, color: "#65676B", lineHeight: 1.4 }}>
-                  {isChannel ? "Visible et rejoignable par tous" : "Visible et rejoignable par tous"}
-                </div>
-              </div>
-              <div style={{ width: 48, height: 26, borderRadius: 13, background: "#E4E6EB", position: "relative", cursor: "pointer", flexShrink: 0 }}>
-                <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#fff", position: "absolute", top: 3, left: 3, boxShadow: "0 1px 3px rgba(0,0,0,0.25)", transition: "left 0.2s" }} />
-              </div>
-            </div>
-
             {/* Members info */}
-            <div style={{ fontSize: 13, color: "#888", marginBottom: 28, textAlign: "center" }}>
-              {wizardMembers.size + 1} participant{wizardMembers.size > 0 ? "s" : ""}
+            <div style={{ background: "#DCFCE7", borderRadius: 12, padding: "10px 16px", marginBottom: 20, display: "flex", alignItems: "center", gap: 8, border: "1px solid #BBF7D0" }}>
+              <span style={{ fontSize: 16 }}>👥</span>
+              <span style={{ fontSize: 13, color: "#15803D", fontWeight: 600 }}>{wizardMembers.size + 1} participant{wizardMembers.size > 0 ? "s" : ""}</span>
             </div>
 
             {/* Create button */}
             <button onClick={createGroup} disabled={!wizardGroupName.trim() || wizardCreating}
-              style={{ width: "100%", background: wizardGroupName.trim() ? (isChannel ? "#00838F" : "#1877F2") : "#E4E6EB", border: "none", borderRadius: 30, padding: "16px", fontSize: 16, fontWeight: 800, color: wizardGroupName.trim() ? "#fff" : "#aaa", cursor: wizardGroupName.trim() ? "pointer" : "default", transition: "all 0.2s", boxShadow: wizardGroupName.trim() ? "0 4px 16px rgba(24,119,242,0.4)" : "none" }}>
+              style={{ width: "100%", background: wizardGroupName.trim() ? "#22C55E" : "#E4E6EB", border: "none", borderRadius: 22, padding: "16px", fontSize: 16, fontWeight: 800, color: wizardGroupName.trim() ? "#fff" : "#aaa", cursor: wizardGroupName.trim() ? "pointer" : "default", transition: "all 0.2s", boxShadow: wizardGroupName.trim() ? "0 4px 16px rgba(34,197,94,0.4)" : "none" }}>
               {wizardCreating ? "⏳ Création en cours…" : `✓ Créer le ${isChannel ? "canal" : "groupe"}`}
             </button>
           </div>
