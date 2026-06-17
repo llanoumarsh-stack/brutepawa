@@ -272,6 +272,10 @@ export default function Feed() {
           groups={storyGroups}
           initialGroupIndex={viewerGroupIdx}
           onClose={() => { setViewerOpen(false); loadStories(); }}
+          onAuthorClick={authorId => {
+            setViewerOpen(false);
+            navigate(`/user/${authorId}`);
+          }}
         />
       )}
 
@@ -482,8 +486,8 @@ export default function Feed() {
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
             {/* Avatar */}
             {user.avatarUrl
-              ? <img src={user.avatarUrl} alt="moi" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
-              : <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#42B72A", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15, flexShrink: 0 }}>{userInitials}</div>
+              ? <img src={user.avatarUrl} alt="moi" onClick={() => navigate("/profile")} style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer" }} />
+              : <div onClick={() => navigate("/profile")} style={{ width: 40, height: 40, borderRadius: "50%", background: "#42B72A", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15, flexShrink: 0, cursor: "pointer" }}>{userInitials}</div>
             }
             {/* Fake input */}
             <div
