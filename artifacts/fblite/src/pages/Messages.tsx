@@ -2725,7 +2725,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         {showConvMenu && (
           <>
             <div style={{ position:"fixed", inset:0, zIndex:98 }} onClick={() => { setShowConvMenu(false); setShowNotifSub(false); }} />
-            <div style={{ position:"fixed", top:56, right:8, background:"#fff", borderRadius:12, boxShadow:"0 4px 24px rgba(0,0,0,0.22)", zIndex:10001, minWidth:234, overflow:"hidden", animation:"fbl-fade-in 0.15s ease" }}
+            <div style={{ position:"fixed", top:56, right:8, background:"#fff", borderRadius:12, boxShadow:"0 4px 24px rgba(0,0,0,0.22)", zIndex:10001, minWidth:"min(234px, calc(100vw - 16px))", maxWidth:"calc(100vw - 16px)", overflow:"hidden", animation:"fbl-fade-in 0.15s ease" }}
               onClick={e => e.stopPropagation()}>
               <button className="fbl-menu-btn" onClick={() => setShowNotifSub(n => !n)}>
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="#555"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>

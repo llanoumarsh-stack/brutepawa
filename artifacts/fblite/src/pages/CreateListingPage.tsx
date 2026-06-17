@@ -392,7 +392,7 @@ export default function CreateListingPage() {
         </div>
 
         {/* ══ RIGHT: live preview ═══════════════════════════ */}
-        <div style={{ width: 300, flexShrink: 0, display: "flex", flexDirection: "column", gap: 14, position: "sticky", top: 80 }}>
+        <div style={{ flex: "1 1 280px", width: "100%", maxWidth: 300, display: "flex", flexDirection: "column", gap: 14, position: "sticky", top: 80 }}>
 
           {/* Preview title */}
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>

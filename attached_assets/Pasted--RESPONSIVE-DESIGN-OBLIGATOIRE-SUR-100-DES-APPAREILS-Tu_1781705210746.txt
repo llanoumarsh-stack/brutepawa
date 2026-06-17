@@ -1,0 +1,118 @@
+🚨 RESPONSIVE DESIGN OBLIGATOIRE SUR 100% DES APPAREILS
+
+Tu dois auditer et corriger toute l'application BrutePawa afin qu'elle soit parfaitement responsive sur tous les écrans mobiles, tablettes et web.
+
+AUCUN débordement n'est autorisé.
+
+═══════════════════════════════
+APPAREILS À SUPPORTER
+═══════════════════════════════
+
+• Petits Android (320px)
+• Android standards (360px)
+• Android larges (393px)
+• iPhone SE
+• iPhone 11
+• iPhone 12
+• iPhone 13
+• iPhone 14
+• iPhone 15
+• iPhone Pro Max
+• Tablettes Android
+• iPad
+• Écrans web
+
+═══════════════════════════════
+RÈGLES OBLIGATOIRES
+═══════════════════════════════
+
+❌ Aucun overflow horizontal
+
+❌ Aucun texte coupé
+
+❌ Aucun bouton hors écran
+
+❌ Aucun avatar tronqué
+
+❌ Aucun composant qui dépasse
+
+❌ Aucun élément caché derrière la barre système
+
+❌ Aucun scroll horizontal
+
+❌ Aucun écran cassé en mode paysage
+
+═══════════════════════════════
+RÈGLES DE DÉVELOPPEMENT
+═══════════════════════════════
+
+Ne jamais utiliser :
+
+width: 400px
+width: 500px
+height: 700px
+
+ou toute taille fixe.
+
+Utiliser systématiquement :
+
+width: 100%
+maxWidth
+minWidth
+flex
+flexWrap
+SafeAreaView
+ScrollView
+Dimensions API
+useWindowDimensions
+
+═══════════════════════════════
+TEXTES
+═══════════════════════════════
+
+Les textes doivent :
+
+• revenir à la ligne automatiquement
+• s'adapter aux petits écrans
+• ne jamais sortir de leur conteneur
+
+═══════════════════════════════
+IMAGES
+═══════════════════════════════
+
+Toutes les images doivent :
+
+• conserver leurs proportions
+• être responsives
+• utiliser cover ou contain selon le contexte
+
+═══════════════════════════════
+TESTS OBLIGATOIRES
+═══════════════════════════════
+
+Tester chaque page sur :
+
+320px
+360px
+375px
+393px
+414px
+768px
+1024px
+
+Corriger tous les problèmes détectés.
+
+═══════════════════════════════
+VALIDATION FINALE
+═══════════════════════════════
+
+Avant de terminer :
+
+1. Scanner toute l'application.
+2. Identifier tous les problèmes responsive.
+3. Corriger automatiquement.
+4. Vérifier chaque écran.
+5. Garantir zéro débordement.
+6. Garantir une apparence identique sur tous les appareils.
+
+L'application BrutePawa doit être utilisable et visuellement parfaite sur 100% des tailles d'écran.
