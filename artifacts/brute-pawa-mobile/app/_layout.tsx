@@ -53,6 +53,10 @@ function RootLayoutNav() {
         name="groups/[id]"
         options={{ headerShown: false, presentation: "card" }}
       />
+      <Stack.Screen
+        name="groups/new"
+        options={{ headerShown: false, presentation: "card" }}
+      />
     </Stack>
   );
 }
