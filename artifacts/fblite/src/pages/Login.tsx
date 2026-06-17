@@ -16,7 +16,10 @@ export default function Login() {
     setLoading(true); setError("");
     try {
       const { token, user } = await apiLogin(email, password);
-      setBpToken(token); saveFbUser(user); navigate("/");
+      setBpToken(token); saveFbUser(user);
+      const redirect = sessionStorage.getItem("bp_redirect");
+      sessionStorage.removeItem("bp_redirect");
+      navigate(redirect && redirect !== "/login" && redirect !== "/register" ? redirect : "/");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Identifiants incorrects.");
     } finally { setLoading(false); }

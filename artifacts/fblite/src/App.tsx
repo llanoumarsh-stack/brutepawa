@@ -166,8 +166,15 @@ function AppContent() {
   }, []);
 
   useEffect(() => {
-    if (!isAuth && !isPublic) navigate("/login");
-    else if (isAuth && isPublic) navigate("/");
+    if (!isAuth && !isPublic) {
+      // Mémorise la destination pour y revenir après login
+      if (path !== "/login" && path !== "/register") {
+        sessionStorage.setItem("bp_redirect", path);
+      }
+      navigate("/login");
+    } else if (isAuth && isPublic) {
+      navigate("/");
+    }
   }, [path, isAuth, isPublic]);
 
   if (!isAuth && !isPublic) return null;
