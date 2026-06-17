@@ -422,6 +422,55 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     return () => { vv.removeEventListener("resize", handler); vv.removeEventListener("scroll", handler); };
   }, []);
 
+  const parseApiMsg = useCallback((m: { id: number; content: string; fromUserId: number; createdAt: string; isRead: boolean; isDelivered?: boolean }) => {
+    const time   = new Date(m.createdAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
+    const status = m.isRead ? "read" as const : m.isDelivered ? "delivered" as const : "sent" as const;
+    const base   = { id: m.id, mine: m.fromUserId === meId, time, status };
+    if (m.content.startsWith("__audio__:")) {
+      const rest  = m.content.slice("__audio__:".length);
+      const colon = rest.indexOf(":");
+      const totalSecs = parseInt(rest.slice(0, colon), 10) || 0;
+      const url   = rest.slice(colon + 1);
+      const mins  = Math.floor(totalSecs / 60);
+      const s     = totalSecs % 60;
+      const dur   = `${mins}:${s.toString().padStart(2, "0")}`;
+      return { ...base, text: "", attachment: { type: "audio" as const, label: url, extra: dur } };
+    }
+    if (m.content.startsWith("__location__:")) {
+      const rest  = m.content.slice("__location__:".length);
+      const proto = rest.indexOf("://");
+      const sep   = rest.indexOf(":", proto !== -1 ? proto + 3 : 0);
+      const url   = sep === -1 ? rest : rest.slice(0, sep);
+      const extra = sep === -1 ? "" : rest.slice(sep + 1);
+      return { ...base, text: "", attachment: { type: "location" as const, label: url, extra } };
+    }
+    if (m.content.startsWith("__image__:")) {
+      const rest  = m.content.slice("__image__:".length);
+      const proto = rest.indexOf("://");
+      const sep   = rest.indexOf(":", proto !== -1 ? proto + 3 : 0);
+      const url   = sep === -1 ? rest : rest.slice(0, sep);
+      const rem   = sep === -1 ? "" : rest.slice(sep + 1);
+      const sep2  = rem.lastIndexOf(":");
+      const extra = sep2 === -1 ? (rem || "photo") : rem.slice(0, sep2);
+      const sizeN = sep2 === -1 ? NaN : Number(rem.slice(sep2 + 1));
+      const size  = isNaN(sizeN) ? undefined : sizeN;
+      return { ...base, text: "", attachment: { type: "image" as const, label: url, extra, size } };
+    }
+    if (m.content.startsWith("__doc__:")) {
+      const rest  = m.content.slice("__doc__:".length);
+      const proto = rest.indexOf("://");
+      const sep   = rest.indexOf(":", proto !== -1 ? proto + 3 : 0);
+      const url   = sep === -1 ? rest : rest.slice(0, sep);
+      const rem   = sep === -1 ? "" : rest.slice(sep + 1);
+      const sep2  = rem.lastIndexOf(":");
+      const extra = sep2 === -1 ? (rem || "Document") : rem.slice(0, sep2);
+      const sizeN = sep2 === -1 ? NaN : Number(rem.slice(sep2 + 1));
+      const size  = isNaN(sizeN) ? undefined : sizeN;
+      return { ...base, text: "", attachment: { type: "doc" as const, label: url, extra, size } };
+    }
+    return { ...base, text: m.content };
+  }, [meId]);
+
   /* ── Attachment upload helper ── */
   const loadOlderMessages = useCallback(() => {
     if (!activeConv) return;
@@ -931,55 +980,6 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     if (settingsPage !== "invitations") return;
     apiGetMessageRequests(invitTab).then(setMsgRequests).catch(() => {});
   }, [settingsPage === "invitations", invitTab]);
-
-  const parseApiMsg = useCallback((m: { id: number; content: string; fromUserId: number; createdAt: string; isRead: boolean; isDelivered?: boolean }) => {
-    const time   = new Date(m.createdAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
-    const status = m.isRead ? "read" as const : m.isDelivered ? "delivered" as const : "sent" as const;
-    const base   = { id: m.id, mine: m.fromUserId === meId, time, status };
-    if (m.content.startsWith("__audio__:")) {
-      const rest  = m.content.slice("__audio__:".length);
-      const colon = rest.indexOf(":");
-      const totalSecs = parseInt(rest.slice(0, colon), 10) || 0;
-      const url   = rest.slice(colon + 1);
-      const mins  = Math.floor(totalSecs / 60);
-      const s     = totalSecs % 60;
-      const dur   = `${mins}:${s.toString().padStart(2, "0")}`;
-      return { ...base, text: "", attachment: { type: "audio" as const, label: url, extra: dur } };
-    }
-    if (m.content.startsWith("__location__:")) {
-      const rest  = m.content.slice("__location__:".length);
-      const proto = rest.indexOf("://");
-      const sep   = rest.indexOf(":", proto !== -1 ? proto + 3 : 0);
-      const url   = sep === -1 ? rest : rest.slice(0, sep);
-      const extra = sep === -1 ? "" : rest.slice(sep + 1);
-      return { ...base, text: "", attachment: { type: "location" as const, label: url, extra } };
-    }
-    if (m.content.startsWith("__image__:")) {
-      const rest  = m.content.slice("__image__:".length);
-      const proto = rest.indexOf("://");
-      const sep   = rest.indexOf(":", proto !== -1 ? proto + 3 : 0);
-      const url   = sep === -1 ? rest : rest.slice(0, sep);
-      const rem   = sep === -1 ? "" : rest.slice(sep + 1);
-      const sep2  = rem.lastIndexOf(":");
-      const extra = sep2 === -1 ? (rem || "photo") : rem.slice(0, sep2);
-      const sizeN = sep2 === -1 ? NaN : Number(rem.slice(sep2 + 1));
-      const size  = isNaN(sizeN) ? undefined : sizeN;
-      return { ...base, text: "", attachment: { type: "image" as const, label: url, extra, size } };
-    }
-    if (m.content.startsWith("__doc__:")) {
-      const rest  = m.content.slice("__doc__:".length);
-      const proto = rest.indexOf("://");
-      const sep   = rest.indexOf(":", proto !== -1 ? proto + 3 : 0);
-      const url   = sep === -1 ? rest : rest.slice(0, sep);
-      const rem   = sep === -1 ? "" : rest.slice(sep + 1);
-      const sep2  = rem.lastIndexOf(":");
-      const extra = sep2 === -1 ? (rem || "Document") : rem.slice(0, sep2);
-      const sizeN = sep2 === -1 ? NaN : Number(rem.slice(sep2 + 1));
-      const size  = isNaN(sizeN) ? undefined : sizeN;
-      return { ...base, text: "", attachment: { type: "doc" as const, label: url, extra, size } };
-    }
-    return { ...base, text: m.content };
-  }, [meId]);
 
   useEffect(() => {
     if (!activeConv || messages[activeConv]) return;
