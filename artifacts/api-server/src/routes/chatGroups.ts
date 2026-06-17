@@ -7,7 +7,7 @@ import { pushToUserDevice } from "./push";
 const router = Router();
 
 router.get("/chat-groups", requireAuth, async (req, res): Promise<void> => {
-  const me = (req as { user?: { id: number } }).user!.id;
+  const me = req.userId!;
 
   const memberships = await db.select({
     groupId: chatGroupMembersTable.groupId,
@@ -55,7 +55,7 @@ router.get("/chat-groups", requireAuth, async (req, res): Promise<void> => {
 });
 
 router.post("/chat-groups", requireAuth, async (req, res): Promise<void> => {
-  const me = (req as { user?: { id: number } }).user!.id;
+  const me = req.userId!;
   const { name, type = "group", memberIds = [] } = req.body as { name: string; type?: string; memberIds?: number[] };
 
   if (!name || name.trim().length < 1) { res.status(400).json({ error: "Nom requis" }); return; }
@@ -86,7 +86,7 @@ router.post("/chat-groups", requireAuth, async (req, res): Promise<void> => {
 });
 
 router.get("/chat-groups/:id", requireAuth, async (req, res): Promise<void> => {
-  const me = (req as { user?: { id: number } }).user!.id;
+  const me = req.userId!;
   const id = parseInt(req.params.id);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
@@ -117,7 +117,7 @@ router.get("/chat-groups/:id", requireAuth, async (req, res): Promise<void> => {
 });
 
 router.get("/chat-groups/:id/messages", requireAuth, async (req, res): Promise<void> => {
-  const me = (req as { user?: { id: number } }).user!.id;
+  const me = req.userId!;
   const id = parseInt(req.params.id);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
@@ -149,7 +149,7 @@ router.get("/chat-groups/:id/messages", requireAuth, async (req, res): Promise<v
 });
 
 router.post("/chat-groups/:id/messages", requireAuth, async (req, res): Promise<void> => {
-  const me = (req as { user?: { id: number } }).user!.id;
+  const me = req.userId!;
   const id = parseInt(req.params.id);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
@@ -192,7 +192,7 @@ router.post("/chat-groups/:id/messages", requireAuth, async (req, res): Promise<
 });
 
 router.patch("/chat-groups/:id", requireAuth, async (req, res): Promise<void> => {
-  const me = (req as { user?: { id: number } }).user!.id;
+  const me = req.userId!;
   const id = parseInt(req.params.id);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
@@ -213,7 +213,7 @@ router.patch("/chat-groups/:id", requireAuth, async (req, res): Promise<void> =>
 });
 
 router.delete("/chat-groups/:id/leave", requireAuth, async (req, res): Promise<void> => {
-  const me = (req as { user?: { id: number } }).user!.id;
+  const me = req.userId!;
   const id = parseInt(req.params.id);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
@@ -223,7 +223,7 @@ router.delete("/chat-groups/:id/leave", requireAuth, async (req, res): Promise<v
 });
 
 router.post("/chat-groups/:id/members", requireAuth, async (req, res): Promise<void> => {
-  const me = (req as { user?: { id: number } }).user!.id;
+  const me = req.userId!;
   const id = parseInt(req.params.id);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
