@@ -104,8 +104,11 @@ function MsgStatus({ status, dark }: { status?: string; dark: boolean }) {
   const blue  = dark ? "#93C5FD" : "#3B82F6";
   const green = dark ? "#86EFAC" : "#16C24A";
   if (status === "pending") return (
-    <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke={color} strokeWidth="1.5">
-      <circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/>
+    <svg viewBox="0 0 16 16" width="14" height="14" fill="none" strokeWidth="1.6" strokeLinecap="round">
+      <circle cx="8" cy="8" r="6" stroke={color} strokeOpacity="0.3"/>
+      <circle cx="8" cy="8" r="6" stroke="#22C55E"
+        strokeDasharray="38" strokeDashoffset="28"
+        style={{ animation:"fbl-spin 1s linear infinite", transformOrigin:"8px 8px" }}/>
     </svg>
   );
   if (status === "sent") return (
@@ -1931,6 +1934,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           @keyframes fbl-pulse { 0%,100%{opacity:1} 50%{opacity:0.45} }
           @keyframes wa-typing-dot { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
           @keyframes fbl-loc-ripple { 0%{transform:scale(0.6);opacity:0.8} 100%{transform:scale(2.2);opacity:0} }
+          @keyframes fbl-spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+          @keyframes fbl-upload-card { from{opacity:0;transform:scale(0.88)} to{opacity:1;transform:scale(1)} }
+          @keyframes fbl-upload-dot { 0%,100%{opacity:0.25;transform:scale(0.7)} 50%{opacity:1;transform:scale(1.2)} }
+          @keyframes fbl-pending-spin { from{stroke-dashoffset:32} to{stroke-dashoffset:0} }
           .wa-typing-dot { width:7px; height:7px; border-radius:50%; background:#999; display:inline-block; animation:wa-typing-dot 1.2s infinite; }
           .wa-typing-dot:nth-child(2) { animation-delay:0.2s; }
           .wa-typing-dot:nth-child(3) { animation-delay:0.4s; }
@@ -3443,11 +3450,58 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           document.body
         )}
 
-        {/* Upload overlay */}
+        {/* Upload overlay — 2026 premium */}
         {uploadingAttach && (
-          <div style={{ position:"fixed", inset:0, zIndex:10003, background:"rgba(0,0,0,0.55)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:14 }}>
-            <div style={{ width:52, height:52, border:"4px solid rgba(255,255,255,0.3)", borderTop:"4px solid #25D366", borderRadius:"50%", animation:"fbl-sheet-up 0.8s linear infinite" }} />
-            <div style={{ color:"#fff", fontWeight:700, fontSize:15 }}>Envoi en cours…</div>
+          <div style={{ position:"fixed", inset:0, zIndex:10003,
+            background:"rgba(0,0,0,0.45)",
+            backdropFilter:"blur(8px)", WebkitBackdropFilter:"blur(8px)",
+            display:"flex", alignItems:"center", justifyContent:"center",
+            animation:"fbl-fade-in 0.2s ease" }}>
+            <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:20,
+              background:"rgba(255,255,255,0.10)",
+              border:"1px solid rgba(255,255,255,0.18)",
+              borderRadius:28, padding:"36px 44px",
+              backdropFilter:"blur(20px)", WebkitBackdropFilter:"blur(20px)",
+              boxShadow:"0 8px 40px rgba(0,0,0,0.30)",
+              animation:"fbl-upload-card 0.35s cubic-bezier(.22,1,.36,1)" }}>
+
+              {/* Conic-gradient spinner ring */}
+              <div style={{ position:"relative", width:72, height:72 }}>
+                {/* Outer glow ring */}
+                <div style={{ position:"absolute", inset:-4, borderRadius:"50%",
+                  background:"conic-gradient(from 0deg, transparent 60%, #22C55E)",
+                  animation:"fbl-spin 1s linear infinite",
+                  filter:"blur(4px)", opacity:0.6 }} />
+                {/* Main spinner */}
+                <div style={{ position:"absolute", inset:0, borderRadius:"50%",
+                  background:"conic-gradient(from 0deg, transparent 30%, #22C55E 100%)",
+                  animation:"fbl-spin 0.9s linear infinite" }} />
+                {/* Inner mask to create ring */}
+                <div style={{ position:"absolute", inset:10, borderRadius:"50%",
+                  background:"rgba(20,20,28,0.85)" }} />
+                {/* Center send icon */}
+                <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none">
+                    <path d="M22 2L11 13" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M22 2L15 22 11 13 2 9l20-7z" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+
+              {/* Text + animated dots */}
+              <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:8 }}>
+                <div style={{ color:"#fff", fontWeight:700, fontSize:15.5, letterSpacing:0.2 }}>
+                  Envoi en cours
+                </div>
+                <div style={{ display:"flex", gap:5, alignItems:"center" }}>
+                  {[0,1,2].map(i => (
+                    <div key={i} style={{ width:6, height:6, borderRadius:"50%",
+                      background:"#22C55E",
+                      animation:`fbl-upload-dot 1.2s ease-in-out ${i*0.2}s infinite` }} />
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
