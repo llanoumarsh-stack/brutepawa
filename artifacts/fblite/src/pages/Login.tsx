@@ -138,8 +138,8 @@ export default function Login() {
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1.5" y="4" width="15" height="10" rx="2" stroke="#9ca3af" strokeWidth="1.4"/><path d="M1.5 6.5l7.5 4.5 7.5-4.5" stroke="#9ca3af" strokeWidth="1.4" strokeLinecap="round"/></svg>
               </div>
               <input
-                type="email"
-                placeholder="Adresse e-mail"
+                type="text"
+                placeholder="Numéro de téléphone ou adresse e-mail"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 autoComplete="email"
