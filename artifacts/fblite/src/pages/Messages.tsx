@@ -2645,27 +2645,16 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                         </div>
                       )}
 
-                      {/* ── GUIDE LINE — mic to lock ── */}
-                      {isRecording && recDragY < -20 && (
-                        <svg style={{ position:"absolute", top:-(LOCK_DIST - SIZE/2 + 22), left:"50%",
-                          transform:"translateX(-50%)", pointerEvents:"none", zIndex:5,
-                          overflow:"visible" }}
-                          width="2" height={LOCK_DIST - SIZE/2 - 22 + Math.abs(visualDy)}>
-                          <line
-                            x1="1" y1="0"
-                            x1_="1" y2={LOCK_DIST - SIZE/2 - 22 + Math.abs(visualDy)}
-                            stroke={isNearLock ? "#1877F2" : "#CBD5E1"}
-                            strokeWidth="2" strokeDasharray="4 4"
-                            strokeLinecap="round"
-                            style={{ transition:"stroke 0.15s" }}/>
-                        </svg>
-                      )}
+                      {/* Guide line removed — caused blue dashed line artifact on Android */}
 
                       {/* ── MIC BUTTON — follows finger fully ── */}
                       <button
                         onPointerDown={e => {
                           if (isRecording) return;
                           e.preventDefault();
+                          // Block Android text-selection immediately (before async getUserMedia)
+                          document.body.style.userSelect = "none";
+                          (document.body.style as any).webkitUserSelect = "none";
                           recDragStartRef.current = { x: e.clientX, y: e.clientY };
                           recIsDraggingRef.current = true;
                           (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
