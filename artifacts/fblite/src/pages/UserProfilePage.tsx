@@ -289,117 +289,171 @@ export default function UserProfilePage({ userId }: { userId: number }) {
 
   // Locked profile view for non-friend visitors
   if (user.profileLocked && user.friendshipStatus !== "friends" && !isOwner) {
+    const joinYear = user.createdAt ? new Date(user.createdAt).getFullYear() : new Date().getFullYear();
     return (
-      <div style={{ minHeight: "100vh", background: "#F8FAFC", maxWidth: 600, margin: "0 auto" }}>
-        {/* Header */}
-        <div style={{ position: "sticky", top: 0, zIndex: 50, background: "rgba(255,255,255,0.96)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: "0 14px", height: 58, display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={() => window.history.back()} style={{ background: "#F1F5F9", border: "none", width: 40, height: 40, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0D1B2A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      <div style={{ minHeight: "100vh", background: "#F5F6F7", maxWidth: 480, margin: "0 auto", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" }}>
+        {/* ── Header ── */}
+        <div style={{ position: "sticky", top: 0, zIndex: 50, background: "#fff", borderBottom: "1px solid #E5E7EB", padding: "0 14px", height: 54, display: "flex", alignItems: "center", gap: 10 }}>
+          <button onClick={() => window.history.back()} style={{ background: "none", border: "none", cursor: "pointer", padding: "6px 8px 6px 0", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0D1B2A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
           </button>
-          <span style={{ fontWeight: 900, fontSize: 17, color: "#0D1B2A", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{name}</span>
+          <span style={{ fontWeight: 700, fontSize: 17, color: "#0D1B2A", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{name}</span>
         </div>
 
-        {/* Cover */}
-        <div style={{ height: 160, background: `linear-gradient(135deg, ${color}ee 0%, ${color}88 60%, ${color}33 100%)`, position: "relative", overflow: "hidden" }}>
-          <div style={{ position: "absolute", top: -40, right: -40, width: 180, height: 180, borderRadius: "50%", background: "rgba(255,255,255,0.1)" }} />
-          {/* Avatar with lock badge */}
-          <div style={{ position: "absolute", bottom: -44, left: 20, zIndex: 5 }}>
+        {/* ── Cover ── */}
+        <div style={{ height: 190, position: "relative", overflow: "hidden", background: "#1A2E1A" }}>
+          {user.coverUrl
+            ? <img src={user.coverUrl} alt="cover" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+            : <div style={{ width: "100%", height: "100%", background: "linear-gradient(135deg,#0D2318 0%,#1A4D2E 40%,#22C55E44 80%,#0D2318 100%)" }}>
+                <svg viewBox="0 0 480 190" width="100%" height="100%" style={{ position: "absolute", inset: 0 }}>
+                  <defs>
+                    <radialGradient id="glw" cx="60%" cy="40%" r="60%"><stop offset="0%" stopColor="#22C55E" stopOpacity="0.35"/><stop offset="100%" stopColor="#22C55E" stopOpacity="0"/></radialGradient>
+                  </defs>
+                  <rect width="480" height="190" fill="#0D2318"/>
+                  <ellipse cx="290" cy="80" rx="200" ry="130" fill="url(#glw)"/>
+                  <rect x="200" y="120" width="8" height="50" fill="#22C55E" opacity="0.3"/>
+                  <rect x="220" y="100" width="8" height="70" fill="#22C55E" opacity="0.2"/>
+                  <rect x="240" y="110" width="10" height="60" fill="#22C55E" opacity="0.25"/>
+                  <rect x="260" y="90" width="8" height="80" fill="#22C55E" opacity="0.3"/>
+                  <rect x="280" y="105" width="12" height="65" fill="#22C55E" opacity="0.2"/>
+                  <rect x="300" y="115" width="8" height="55" fill="#22C55E" opacity="0.25"/>
+                  <rect x="320" y="95" width="10" height="75" fill="#22C55E" opacity="0.2"/>
+                  <circle cx="290" cy="60" r="22" fill="#22C55E" opacity="0.12"/>
+                </svg>
+              </div>
+          }
+          {/* Avatar anchored bottom-left */}
+          <div style={{ position: "absolute", bottom: -46, left: 16, zIndex: 5 }}>
             <div style={{ position: "relative", display: "inline-block" }}>
               {user.avatarUrl
-                ? <img src={user.avatarUrl} alt={name} style={{ width: 88, height: 88, borderRadius: "50%", border: "4px solid #fff", objectFit: "cover", boxShadow: "0 4px 20px rgba(0,0,0,0.2)", filter: "blur(6px)" }} />
-                : <div style={{ width: 88, height: 88, borderRadius: "50%", background: color, border: "4px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 900, fontSize: 28, boxShadow: "0 4px 20px rgba(0,0,0,0.2)", filter: "blur(4px)" }}>{initials(user)}</div>
+                ? <img src={user.avatarUrl} alt={name} style={{ width: 94, height: 94, borderRadius: "50%", border: "4px solid #fff", objectFit: "cover", boxShadow: "0 3px 16px rgba(0,0,0,0.25)", display: "block" }} />
+                : <div style={{ width: 94, height: 94, borderRadius: "50%", background: color, border: "4px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 900, fontSize: 30, boxShadow: "0 3px 16px rgba(0,0,0,0.25)" }}>{initials(user)}</div>
               }
-              {/* Lock overlay */}
-              <div style={{ position: "absolute", inset: 0, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(34,197,94,0.15)" }}>
-                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg,#22C55E,#16A34A)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 10px rgba(34,197,94,0.5)" }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <rect x="3" y="11" width="18" height="11" rx="3" fill="#fff" opacity="0.25"/>
-                    <path d="M7 11V7a5 5 0 0110 0v4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"/>
-                    <circle cx="12" cy="16.5" r="2" fill="#fff"/>
-                  </svg>
-                </div>
+              {/* Lock badge — bottom-right */}
+              <div style={{ position: "absolute", bottom: 2, right: 2, width: 26, height: 26, borderRadius: "50%", background: "linear-gradient(135deg,#22C55E,#16A34A)", border: "2.5px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(34,197,94,0.5)" }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                  <rect x="4" y="11" width="16" height="10" rx="2.5" fill="#fff" opacity="0.9"/>
+                  <path d="M8 11V7a4 4 0 018 0v4" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"/>
+                  <circle cx="12" cy="16" r="1.8" fill="#22C55E"/>
+                </svg>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Info + actions */}
-        <div style={{ background: "#fff", paddingTop: 58, padding: "58px 20px 22px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
-            <span style={{ fontWeight: 900, fontSize: 22, color: "#0D1B2A" }}>{name}</span>
-            <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 22, height: 22, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />
-            {flag && <span style={{ fontSize: 20 }}>{flag}</span>}
+        {/* ── Name + date + actions ── */}
+        <div style={{ background: "#fff", paddingTop: 58, paddingBottom: 18, paddingLeft: 16, paddingRight: 16, borderBottom: "1px solid #F1F5F9" }}>
+          {/* Name row */}
+          <div style={{ display: "flex", alignItems: "center", gap: 7, flexWrap: "wrap", marginBottom: 5 }}>
+            <span style={{ fontWeight: 900, fontSize: 22, color: "#0D1B2A", letterSpacing: -0.3 }}>{name}</span>
+            <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 20, height: 20, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />
+            {flag && <span style={{ fontSize: 19 }}>{flag}</span>}
           </div>
-          {user.bio && <div style={{ fontSize: 13.5, color: "#8896A6", marginBottom: 14 }}>••• contenu masqué</div>}
-
-          {/* Action button */}
-          {user.friendshipStatus === "none" && !pendingRequest && (
-            <button
-              disabled={actionLoading}
-              onClick={handleSendRequest}
-              style={{ width: "100%", padding: "13px 8px", background: "linear-gradient(135deg,#22C55E,#16A34A)", color: "#fff", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 15, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, boxShadow: "0 4px 16px rgba(34,197,94,0.35)", marginBottom: 12 }}
-            >
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
-              {actionLoading ? "…" : "Ajouter comme ami"}
-            </button>
-          )}
-          {user.friendshipStatus === "pending_sent" && (
-            <button disabled={actionLoading} onClick={handleCancel} style={{ width: "100%", padding: "13px 8px", background: "#F1F5F9", color: "#374151", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 15, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 12 }}>
-              <IconClock />
-              {actionLoading ? "…" : "Demande envoyée · Annuler"}
-            </button>
-          )}
-          {(user.friendshipStatus === "pending_received" || pendingRequest) && (
-            <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-              <button disabled={actionLoading} onClick={handleAccept} style={{ flex: 1, padding: "13px 8px", background: "linear-gradient(135deg,#22C55E,#16A34A)", color: "#fff", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, boxShadow: "0 4px 14px rgba(34,197,94,0.3)" }}>
-                <IconCheck /> {actionLoading ? "…" : "Confirmer"}
+          {/* Join date */}
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 18 }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span style={{ fontSize: 13, color: "#6B7280", fontWeight: 500 }}>Membre BrutePawa depuis {joinYear}</span>
+          </div>
+          {/* Action buttons row */}
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            {/* Primary action */}
+            {(user.friendshipStatus === "none" && !pendingRequest) ? (
+              <button disabled={actionLoading} onClick={handleSendRequest}
+                style={{ flex: 1, padding: "11px 10px", background: "#22C55E", color: "#fff", border: "none", borderRadius: 10, fontWeight: 700, fontSize: 14.5, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, boxShadow: "0 3px 12px rgba(34,197,94,0.4)" }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                {actionLoading ? "…" : "Ajouter comme ami"}
               </button>
-              <button disabled={actionLoading} onClick={handleReject} style={{ flex: 1, padding: "13px 8px", background: "#F1F5F9", color: "#374151", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>Supprimer</button>
-            </div>
-          )}
+            ) : (user.friendshipStatus === "pending_sent") ? (
+              <button disabled={actionLoading} onClick={handleCancel}
+                style={{ flex: 1, padding: "11px 10px", background: "#F1F5F9", color: "#374151", border: "none", borderRadius: 10, fontWeight: 700, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 7 }}>
+                <IconClock />{actionLoading ? "…" : "Demande envoyée"}
+              </button>
+            ) : (user.friendshipStatus === "pending_received" || pendingRequest) ? (
+              <button disabled={actionLoading} onClick={handleAccept}
+                style={{ flex: 1, padding: "11px 10px", background: "#22C55E", color: "#fff", border: "none", borderRadius: 10, fontWeight: 700, fontSize: 14.5, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, boxShadow: "0 3px 12px rgba(34,197,94,0.4)" }}>
+                <IconCheck />{actionLoading ? "…" : "Confirmer"}
+              </button>
+            ) : null}
+            {/* Message button */}
+            <button onClick={() => navigate(`/messages?userId=${user.id}`)}
+              style={{ flex: 1, padding: "11px 10px", background: "#fff", color: "#374151", border: "1.5px solid #E5E7EB", borderRadius: 10, fontWeight: 700, fontSize: 14.5, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 7 }}>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+              Envoyer un message
+            </button>
+            {/* More dots */}
+            <button style={{ width: 44, height: 44, background: "#F1F5F9", border: "none", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#374151"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
+            </button>
+          </div>
         </div>
 
-        {/* Locked card */}
-        <div style={{ margin: "0 12px 16px", background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.06)", overflow: "hidden" }}>
-          {/* Green gradient top */}
-          <div style={{ background: "linear-gradient(135deg,#22C55E,#16A34A)", padding: "22px 20px 20px", textAlign: "center" }}>
-            <div style={{ width: 64, height: 64, borderRadius: "50%", background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="rgba(255,255,255,0.3)" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M7 11V7a5 5 0 0110 0v4" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
-                <rect x="5" y="11" width="14" height="9" rx="2" fill="#fff" opacity="0.25"/>
-                <circle cx="12" cy="15.5" r="1.5" fill="#fff"/>
+        {/* ── Main locked card ── */}
+        <div style={{ margin: "12px 12px 10px", background: "#fff", borderRadius: 18, boxShadow: "0 2px 10px rgba(0,0,0,0.07)", overflow: "hidden", display: "flex", alignItems: "center", padding: "18px 18px 18px 0", gap: 0, minHeight: 120 }}>
+          {/* Shield illustration */}
+          <div style={{ width: 130, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <svg width="90" height="100" viewBox="0 0 90 100" fill="none">
+              {/* Shadow */}
+              <ellipse cx="45" cy="96" rx="28" ry="5" fill="rgba(0,0,0,0.10)"/>
+              {/* Shield back layer */}
+              <path d="M45 8L12 20v24c0 22 14.4 40.6 33 47 18.6-6.4 33-25 33-47V20L45 8z" fill="#16A34A" opacity="0.5"/>
+              {/* Shield main */}
+              <path d="M45 4L10 17v25c0 23 15.3 42.2 35 48.5C64.7 84.2 80 65 80 42V17L45 4z" fill="url(#shG)"/>
+              <defs>
+                <linearGradient id="shG" x1="10" y1="4" x2="80" y2="95" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stopColor="#4ADE80"/>
+                  <stop offset="50%" stopColor="#22C55E"/>
+                  <stop offset="100%" stopColor="#15803D"/>
+                </linearGradient>
+              </defs>
+              {/* Shield highlight */}
+              <path d="M45 10L16 21v23c0 5 1.2 10 3.2 14.5L45 10z" fill="rgba(255,255,255,0.18)"/>
+              {/* Lock body */}
+              <rect x="31" y="47" width="28" height="22" rx="5" fill="#fff" opacity="0.95"/>
+              {/* Lock shackle */}
+              <path d="M35.5 47V40a9.5 9.5 0 0119 0v7" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" fill="none"/>
+              {/* Lock keyhole */}
+              <circle cx="45" cy="56" r="4" fill="#22C55E"/>
+              <rect x="43.5" y="56" width="3" height="7" rx="1.5" fill="#22C55E"/>
+              {/* Sparkles */}
+              <circle cx="20" cy="30" r="2.5" fill="#A7F3D0" opacity="0.7"/>
+              <circle cx="70" cy="22" r="2" fill="#BBF7D0" opacity="0.6"/>
+              <path d="M72 50l2-4 2 4-4-2 4-2-2 4z" fill="#DCFCE7" opacity="0.8"/>
+              <path d="M17 58l1.5-3 1.5 3-3-1.5 3-1.5-1.5 3z" fill="#DCFCE7" opacity="0.6"/>
+            </svg>
+          </div>
+          {/* Text */}
+          <div style={{ flex: 1, paddingRight: 14 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 7 }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="11" width="18" height="11" rx="2.5" fill="#22C55E"/>
+                <path d="M7 11V7a5 5 0 0110 0v4" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round"/>
               </svg>
+              <span style={{ fontWeight: 800, fontSize: 16, color: "#0D1B2A" }}>Profil verrouillé</span>
             </div>
-            <div style={{ fontWeight: 900, fontSize: 18, color: "#fff", marginBottom: 8 }}>Profil verrouillé</div>
-            <div style={{ fontSize: 13.5, color: "rgba(255,255,255,0.88)", lineHeight: 1.6 }}>
-              {name} a verrouillé son profil.<br/>Seuls ses amis peuvent voir ses publications, photos et informations.
+            <div style={{ fontSize: 13, color: "#64748B", lineHeight: 1.65 }}>
+              Ce profil est protégé par son propriétaire.<br/>
+              Seuls ses amis peuvent voir<br/>
+              les publications, photos et<br/>
+              informations personnelles.
             </div>
-          </div>
-
-          {/* Restrictions list */}
-          <div style={{ padding: "4px 0 8px" }}>
-            {[
-              { icon: "📷", text: "Photos et vidéos masquées" },
-              { icon: "📝", text: "Publications non accessibles" },
-              { icon: "ℹ️", text: "Informations personnelles cachées" },
-            ].map((item, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 20px", borderBottom: i < 2 ? "1px solid #F8FAFC" : "none" }}>
-                <span style={{ fontSize: 18 }}>{item.icon}</span>
-                <span style={{ fontSize: 13.5, color: "#64748B" }}>{item.text}</span>
-              </div>
-            ))}
           </div>
         </div>
 
-        {/* Why locked accordion */}
-        <div style={{ margin: "0 12px 40px", background: "#fff", borderRadius: 20, overflow: "hidden", boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
-          <div style={{ padding: "16px 20px", display: "flex", alignItems: "center", gap: 10 }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            <span style={{ fontSize: 14, fontWeight: 700, color: "#374151", flex: 1 }}>Pourquoi ce profil est-il verrouillé ?</span>
+        {/* ── Why locked card ── */}
+        <div style={{ margin: "0 12px 32px", background: "#fff", borderRadius: 18, boxShadow: "0 2px 10px rgba(0,0,0,0.07)", padding: "16px 18px", display: "flex", gap: 14, alignItems: "flex-start" }}>
+          {/* Question icon */}
+          <div style={{ width: 46, height: 46, borderRadius: 14, background: "#F0FDF4", border: "1.5px solid #BBF7D0", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
           </div>
-          <div style={{ padding: "0 20px 16px", fontSize: 13.5, color: "#64748B", lineHeight: 1.7, borderTop: "1px solid #F8FAFC" }}>
-            Le propriétaire de ce profil a choisi de restreindre l'accès à son contenu. Ajoutez-le comme ami pour voir ses publications et interagir avec lui sur BrutePawa.
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 700, fontSize: 14.5, color: "#0D1B2A", marginBottom: 7 }}>Pourquoi ce profil est-il verrouillé ?</div>
+            <div style={{ fontSize: 13, color: "#64748B", lineHeight: 1.7 }}>
+              Le propriétaire a choisi de protéger sa vie privée sur BrutePawa. Ajoutez-le comme ami pour accéder à son contenu.
+            </div>
           </div>
         </div>
       </div>

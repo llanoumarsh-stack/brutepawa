@@ -1,0 +1,193 @@
+🚨 CONSIGNE CRITIQUE — AUCUNE INTERPRÉTATION AUTORISÉE
+
+Utilise la maquette fournie comme RÉFÉRENCE ABSOLUE. Tu dois reproduire le design, la hiérarchie visuelle, les espacements, les proportions, les alignements, les tailles et le comportement de l'interface avec une précision maximale.
+
+Cette page représente EXACTEMENT ce qu'un utilisateur NON AMI doit voir lorsqu'il consulte un PROFIL VERROUILLÉ sur BrutePawa.
+
+❌ N'ajoute aucun élément supplémentaire.
+❌ Ne crée aucune nouvelle section.
+❌ Ne modifie aucun espacement.
+❌ Ne change aucune couleur.
+❌ Ne remplace aucun composant.
+❌ Ne rajoute aucun bloc d'information.
+❌ Ne montre aucun contenu caché du profil.
+❌ Aucun débordement horizontal ou vertical.
+❌ Aucun texte tronqué.
+❌ Aucun composant coupé.
+❌ Aucun scroll inutile.
+❌ Aucun changement de structure.
+
+═══════════════════════════════
+OBJECTIF MÉTIER
+═══════════════════════════════
+
+Lorsqu'un utilisateur active le verrouillage de profil :
+
+• Les non-amis ne peuvent plus voir les publications.
+• Les non-amis ne peuvent plus voir les photos.
+• Les non-amis ne peuvent plus voir les vidéos.
+• Les non-amis ne peuvent plus voir les informations personnelles.
+• Les non-amis ne peuvent plus parcourir le profil.
+• Les non-amis voient uniquement une version limitée du profil.
+
+La page affichée doit être celle de la maquette fournie.
+
+═══════════════════════════════
+ÉLÉMENTS VISIBLES AUTORISÉS
+═══════════════════════════════
+
+1. Barre supérieure
+- Bouton retour
+- Nom du profil
+
+2. Couverture
+- Visible
+
+3. Photo de profil
+- Affichée avec badge cadenas
+
+4. Informations publiques
+- Nom complet
+- Badge vérifié
+- Drapeau pays
+- Date d'inscription BrutePawa
+
+5. Actions
+- Ajouter comme ami
+- Envoyer un message
+- Menu trois points
+
+6. Carte principale
+Titre :
+🔒 Profil verrouillé
+
+Description :
+Ce profil est protégé par son propriétaire.
+Seuls ses amis peuvent voir ses publications,
+photos et informations.
+
+7. Carte secondaire
+Titre :
+Pourquoi ce profil est-il verrouillé ?
+
+Description :
+Le propriétaire de ce profil a choisi de
+restreindre l'accès à son contenu.
+Ajoutez-le comme ami pour voir ses
+publications et interagir avec lui sur BrutePawa.
+
+═══════════════════════════════
+ÉLÉMENTS INTERDITS
+═══════════════════════════════
+
+Supprimer totalement :
+
+❌ Publications
+❌ Reels
+❌ Photos
+❌ Vidéos
+❌ Aperçu du profil
+❌ Protection active
+❌ Photos protégées
+❌ Publications privées
+❌ Informations masquées
+❌ Téléchargement désactivé
+❌ Nombre d'abonnés
+❌ Liste d'amis
+❌ À propos
+❌ Parcours utilisateur
+❌ Activité
+❌ Statistiques
+❌ Publications épinglées
+❌ Suggestions
+❌ Commentaires
+❌ Réactions
+
+═══════════════════════════════
+RÈGLES UI / UX PREMIUM
+═══════════════════════════════
+
+- Design mobile premium.
+- Respect exact de la maquette.
+- Cartes élégantes.
+- Coins arrondis cohérents.
+- Ombres légères.
+- Couleur officielle BrutePawa #22C55E.
+- Blanc dominant.
+- Alignements parfaits.
+- Responsive sur tous les écrans.
+- Aucun débordement.
+- Aucun chevauchement.
+- Aucun élément coupé.
+- Aucun composant hors écran.
+- Aucun bug visuel.
+- Aucune régression UI.
+
+═══════════════════════════════
+LOGIQUE BACKEND OBLIGATOIRE
+═══════════════════════════════
+
+Si profile_locked = true ET viewer n'est PAS ami :
+
+Afficher uniquement :
+
+- cover_photo
+- profile_photo
+- full_name
+- verification_badge
+- country_flag
+- join_date
+- add_friend_button
+- send_message_button
+- locked_profile_card
+- why_locked_card
+
+Masquer automatiquement :
+
+- publications
+- photos
+- vidéos
+- reels
+- amis
+- abonnés
+- informations personnelles
+- coordonnées
+- activités
+- médias
+
+Pseudo-code :
+
+IF profile_locked = true
+AND friendship_status != accepted
+
+THEN
+
+show_limited_profile = true
+
+show:
+cover_photo
+profile_photo
+name
+badge
+flag
+join_date
+add_friend_button
+message_button
+locked_card
+explanation_card
+
+hide:
+posts
+photos
+videos
+friends
+about
+followers
+personal_info
+activity
+media
+
+ENDIF
+
+⚠️ PRIORITÉ MAXIMALE :
+La page finale doit être VISUELLEMENT IDENTIQUE à la maquette validée. Toute différence de structure, d'espacement, de taille, de couleur ou de comportement est considérée comme un échec.
