@@ -267,20 +267,23 @@ router.get("/messages", requireAuth, async (req, res): Promise<void> => {
   );
   const blockedUserIds = new Set(blocks.map(b => b.blockerId === me ? b.blockedId : b.blockerId));
 
-  /* DISTINCT ON: one SQL pass → latest message per conversation partner.
-     Replaces the previous full-table-scan + JS grouping. */
   type RawMsg = { id: number; from_user_id: number; to_user_id: number; content: string; is_read: boolean; created_at: Date };
-  const latestPerConvo = await db.execute(sql`
-    SELECT DISTINCT ON (
-      CASE WHEN from_user_id = ${me} THEN to_user_id ELSE from_user_id END
-    )
-    id, from_user_id, to_user_id, content, is_read, created_at
-    FROM messages
-    WHERE from_user_id = ${me} OR to_user_id = ${me}
-    ORDER BY
-      CASE WHEN from_user_id = ${me} THEN to_user_id ELSE from_user_id END,
-      created_at DESC
-  `) as unknown as RawMsg[];
+  const _convoResult = await db.execute(sql`
+    SELECT id, from_user_id, to_user_id, content, is_read, created_at
+    FROM (
+      SELECT
+        id, from_user_id, to_user_id, content, is_read, created_at,
+        ROW_NUMBER() OVER (
+          PARTITION BY CASE WHEN from_user_id = ${me} THEN to_user_id ELSE from_user_id END
+          ORDER BY created_at DESC
+        ) AS rn
+      FROM messages
+      WHERE from_user_id = ${me} OR to_user_id = ${me}
+    ) sub
+    WHERE rn = 1
+    ORDER BY created_at DESC
+  `);
+  const latestPerConvo = ((_convoResult as any).rows ?? _convoResult) as RawMsg[];
 
   const unreadCounts = await db.select({
     fromUserId: messagesTable.fromUserId,

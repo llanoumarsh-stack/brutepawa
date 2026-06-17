@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Component, ReactNode } from "react";
 import { Router, useLocation, useNavigate } from "./router";
 import Layout from "./Layout";
 import Login from "./pages/Login";
@@ -44,6 +44,24 @@ import { apiGetPosts, apiLikePost, apiCreatePost, getBpToken } from "./lib/api";
 import InstallBanner from "./components/InstallBanner";
 import TopLoadingBar from "./components/TopLoadingBar";
 import { usePushNotifications } from "./hooks/usePushNotifications";
+
+class MessagesBoundary extends Component<{ children: ReactNode }, { err: string | null }> {
+  state = { err: null };
+  static getDerivedStateFromError(e: Error) { return { err: e?.message ?? "Erreur inconnue" }; }
+  render() {
+    if (this.state.err) {
+      return (
+        <div style={{ position: "fixed", inset: 0, background: "#fff", zIndex: 9999, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          <p style={{ fontWeight: 800, fontSize: 18, color: "#0F172A" }}>Messages</p>
+          <p style={{ fontSize: 13, color: "#666", textAlign: "center" }}>{this.state.err}</p>
+          <button onClick={() => { this.setState({ err: null }); window.location.reload(); }} style={{ background: "#22C55E", color: "#fff", border: "none", borderRadius: 12, padding: "12px 24px", fontWeight: 700, fontSize: 15, cursor: "pointer" }}>Réessayer</button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 function relativeTime(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
@@ -364,7 +382,11 @@ function AppContent() {
     const qs2 = path.includes("?") ? path.slice(path.indexOf("?") + 1) : "";
     const uid = new URLSearchParams(qs2).get("userId");
     const initUid = uid ? parseInt(uid, 10) : undefined;
-    return <Messages initialUserId={!initUid || isNaN(initUid) ? undefined : initUid} />;
+    return (
+      <MessagesBoundary>
+        <Messages initialUserId={!initUid || isNaN(initUid) ? undefined : initUid} />
+      </MessagesBoundary>
+    );
   }
 
   return (
