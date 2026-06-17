@@ -4073,7 +4073,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       .fbl-settings-row:active{background:#f5f5f5}
     `}</style>
 
-    <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, display: "flex", flexDirection: "column", background: "#fff", zIndex: 1, overflow: "hidden" }}>
+    <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, display: "flex", flexDirection: "column", background: "#fff", zIndex: 9999, overflow: "hidden" }}>
 
       {/* ── PREMIUM HEADER ── */}
       <div style={{ background: "#fff", flexShrink: 0, paddingTop: "env(safe-area-inset-top, 0px)" }}>
