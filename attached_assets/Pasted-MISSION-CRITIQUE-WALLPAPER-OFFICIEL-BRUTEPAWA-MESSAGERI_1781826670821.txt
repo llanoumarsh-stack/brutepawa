@@ -1,0 +1,206 @@
+MISSION CRITIQUE – WALLPAPER OFFICIEL BRUTEPAWA MESSAGERIE
+
+UTILISER L'IMAGE FOURNIE COMME RÉFÉRENCE OFFICIELLE.
+
+INTERDICTION DE S'EN INSPIRER.
+INTERDICTION DE L'INTERPRÉTER.
+INTERDICTION DE MODIFIER LE STYLE.
+INTERDICTION DE CRÉER UNE VERSION PERSONNALISÉE.
+
+REPRODUIRE CE WALLPAPER À 99% MINIMUM.
+
+90% = ÉCHEC
+95% = ÉCHEC
+98% = ÉCHEC
+
+SEUL 99% EST ACCEPTÉ.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+OBJECTIF
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Créer le fond officiel unique de la messagerie BrutePawa.
+
+Le même fond doit être utilisé pour :
+
+- Messages privés
+- Groupes
+- Canaux
+- Communautés
+- Discussions archivées
+- Messages enregistrés
+
+Aucune variante.
+
+Un seul wallpaper universel.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+COULEURS
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Respecter exactement :
+
+- Fond vert très clair
+- Dégradé doux
+- Ambiance légère
+- Contraste faible
+
+INTERDICTION :
+
+- vert foncé
+- vert saturé
+- vert agressif
+- dégradé flashy
+
+Le fond doit rester discret.
+
+Les messages doivent toujours être l'élément principal.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+ICÔNES
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Conserver exactement l'esprit de l'image :
+
+- discussion
+- groupe
+- caméra
+- vidéo
+- musique
+- localisation
+- sécurité
+- boutique
+- cadeau
+- notifications
+- documents
+- appels
+- jeux
+
+Style :
+
+outline fin
+
+épaisseur uniforme
+
+monochrome vert clair
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+OPACITÉ
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Les icônes doivent rester discrètes.
+
+Objectif :
+
+qu'elles soient visibles uniquement lorsqu'on les regarde.
+
+Les messages doivent toujours dominer visuellement.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+LOGO BRUTEPAWA
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Conserver le logo "b".
+
+Maximum :
+
+2 à 3 logos visibles sur l'écran.
+
+Opacité réduite.
+
+Le logo ne doit jamais attirer l'œil avant les messages.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+RÉPARTITION
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Répartition homogène.
+
+Pas de zones vides.
+
+Pas d'accumulation d'icônes.
+
+Pas de répétition évidente.
+
+Le fond doit sembler naturel.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+QUALITÉ
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Wallpaper :
+
+Ultra HD
+
+1440 × 3200 minimum
+
+PNG
+
+Sans compression visible
+
+Compatible :
+
+Android
+iPhone
+Tablette
+Web
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+INTÉGRATION APPLICATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Utiliser ce fichier unique comme wallpaper global.
+
+background-size: cover
+
+background-position: center
+
+background-repeat: no-repeat
+
+Le fond doit couvrir 100% de l'écran.
+
+Aucune mosaïque.
+
+Aucune répétition visible.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+INTERDICTIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+INTERDIT :
+
+- fond sombre
+- fond noir
+- fond blanc vide
+- gros logos
+- logos répétés partout
+- motifs trop visibles
+- couleurs multiples
+- effet cartoon
+- effet 3D
+- effet glassmorphism
+- surcharge graphique
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+VALIDATION FINALE
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Le résultat doit donner immédiatement la sensation :
+
+"Messagerie professionnelle BrutePawa"
+
+Le fond doit être :
+
+plus élégant que WhatsApp
+
+plus cohérent que Facebook Messenger
+
+au niveau des meilleurs wallpapers Telegram.
+
+Si le wallpaper paraît plus chargé ou moins élégant que l'image de référence :
+
+ÉCHEC.
+
+Redessiner jusqu'à obtenir une fidélité visuelle de 99% minimum.
+
+Ce fonds est à utiliser pour les canneaux les groupes les discussions Privé sans débordement sacs zoom

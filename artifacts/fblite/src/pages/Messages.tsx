@@ -2509,7 +2509,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
     return createPortal(
       <div style={{ position:"fixed", top:0, bottom:0, left:0, right:0, display:"flex", flexDirection:"column", zIndex:10000, overflow:"hidden",
-        background:"linear-gradient(180deg,#dcedc8 0%,#c5e1a5 18%,#a5d6a7 42%,#81c784 70%,#66bb6a 100%)" }}>
+        backgroundImage:`url(${import.meta.env.BASE_URL}wallpapers/bp-pattern.svg)`,
+        backgroundSize:"cover", backgroundRepeat:"no-repeat", backgroundPosition:"center" }}>
         <style>{`
           .bp-msg-mine   { background:#DCECCB; color:#111; border-radius:18px 18px 4px 18px; box-shadow:0 1px 3px rgba(0,0,0,0.14); }
           .bp-msg-theirs { background:#fff;    color:#111; border-radius:18px 18px 18px 4px; box-shadow:0 1px 3px rgba(0,0,0,0.12); }
@@ -2658,8 +2659,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
     return createPortal(
       <div style={{ position:"fixed", top: vpOffset ? `${vpOffset}px` : 0, left:0, right:0, height: vpHeight ? `${vpHeight}px` : "100dvh", display:"flex", flexDirection:"column", zIndex:10000, overflow:"hidden",
-        backgroundImage: convWallpaper ? `url(${convWallpaper})` : convWpKey !== "none" && wpUrl(convWpKey) ? `url(${wpUrl(convWpKey)})` : `url(${import.meta.env.BASE_URL}wallpapers/bp-default.jpg)`,
-        backgroundSize:"180px auto", backgroundRepeat:"repeat", backgroundAttachment:"fixed" }}>
+        backgroundImage: convWallpaper ? `url(${convWallpaper})` : convWpKey !== "none" && wpUrl(convWpKey) ? `url(${wpUrl(convWpKey)})` : `url(${import.meta.env.BASE_URL}wallpapers/bp-pattern.svg)`,
+        backgroundSize:"cover", backgroundRepeat:"no-repeat", backgroundPosition:"center" }}>
         <style>{`
           .fbl-msg-mine   { background:#DCECCB; color:#111; border-radius:18px 18px 4px 18px; box-shadow:0 1px 3px rgba(0,0,0,0.14); }
           textarea:focus  { outline:none !important; box-shadow:none !important; border:none !important; }
@@ -2797,8 +2798,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             ? `url(${convWallpaper})`
             : convWpKey !== "none" && wpUrl(convWpKey)
               ? `url(${wpUrl(convWpKey)})`
-              : `url(${import.meta.env.BASE_URL}wallpapers/bp-default.jpg)`,
-          backgroundSize:"180px auto", backgroundRepeat:"repeat", backgroundPosition:"center", backgroundAttachment:"fixed",
+              : `url(${import.meta.env.BASE_URL}wallpapers/bp-pattern.svg)`,
+          backgroundSize:"cover", backgroundRepeat:"no-repeat", backgroundPosition:"center",
         }}>
 
           {/* Load older messages button */}

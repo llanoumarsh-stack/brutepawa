@@ -1,0 +1,135 @@
+REFONTE GLOBALE DE TOUS LES CHAMPS DE RECHERCHE BRUTEPAWA
+
+PROBLÈME ACTUEL :
+
+- Bordure bleue au focus
+- Apparence trop basique
+- Coins insuffisamment travaillés
+- Design peu premium
+
+OBJECTIF :
+
+Créer un champ de recherche moderne, élégant et cohérent avec BrutePawa.
+
+━━━━━━━━━━━━━━━━━━━━━━
+SUPPRIMER DÉFINITIVEMENT
+━━━━━━━━━━━━━━━━━━━━━━
+
+- outline bleu
+- focus bleu
+- halo bleu
+- border bleu
+- ring bleu
+- effet navigateur par défaut
+
+Aucun bleu ne doit apparaître.
+
+━━━━━━━━━━━━━━━━━━━━━━
+STYLE OFFICIEL
+━━━━━━━━━━━━━━━━━━━━━━
+
+Hauteur :
+
+52px à 56px maximum
+
+Border radius :
+
+18px
+
+Pas 30px
+Pas 40px
+
+Le rendu doit être élégant et professionnel.
+
+Fond :
+
+#F8FAF8
+
+Bordure :
+
+1px solid rgba(34,197,94,0.10)
+
+━━━━━━━━━━━━━━━━━━━━━━
+FOCUS
+━━━━━━━━━━━━━━━━━━━━━━
+
+Quand l'utilisateur clique :
+
+border-color: #22C55E
+
+box-shadow:
+0 0 0 3px rgba(34,197,94,0.12)
+
+transition:
+150ms ease
+
+outline: none
+
+━━━━━━━━━━━━━━━━━━━━━━
+ICÔNE RECHERCHE
+━━━━━━━━━━━━━━━━━━━━━━
+
+Position :
+à gauche
+
+Couleur :
+#94A3B8
+
+Taille :
+20px
+
+Parfaitement centrée verticalement.
+
+━━━━━━━━━━━━━━━━━━━━━━
+PLACEHOLDER
+━━━━━━━━━━━━━━━━━━━━━━
+
+Couleur :
+
+#94A3B8
+
+Exemples :
+
+Rechercher un ami...
+Rechercher un groupe...
+Rechercher un message...
+
+━━━━━━━━━━━━━━━━━━━━━━
+ESPACEMENT
+━━━━━━━━━━━━━━━━━━━━━━
+
+Padding horizontal :
+
+16px à 18px
+
+Texte jamais collé au bord.
+
+━━━━━━━━━━━━━━━━━━━━━━
+APPLICATION GLOBALE
+━━━━━━━━━━━━━━━━━━━━━━
+
+Appliquer automatiquement à :
+
+- Recherche amis
+- Recherche groupes
+- Recherche messages
+- Recherche utilisateurs
+- Recherche pages
+- Recherche publications
+- Recherche entreprises
+- Recherche communautés
+
+Tous les champs doivent avoir exactement le même style.
+
+━━━━━━━━━━━━━━━━━━━━━━
+RÉSULTAT ATTENDU
+━━━━━━━━━━━━━━━━━━━━━━
+
+Le champ de recherche doit paraître :
+
+- moderne
+- premium
+- léger
+- cohérent avec BrutePawa
+
+Il doit être plus élégant que le design actuel et s'intégrer naturellement dans toute l'application.
