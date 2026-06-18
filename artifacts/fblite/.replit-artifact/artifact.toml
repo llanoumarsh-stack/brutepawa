@@ -42,5 +42,8 @@ run = "pnpm --filter @workspace/api-server run dev"
 build = ["pnpm", "--filter", "@workspace/api-server", "run", "build"]
 run = ["pnpm", "--filter", "@workspace/api-server", "run", "start"]
 
+[services.production.health.startup]
+path = "/api/healthz"
+
 [services.env]
 PORT = "8080"
