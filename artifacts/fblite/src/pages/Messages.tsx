@@ -468,6 +468,16 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const recAnimFrameRef   = useRef<number>(0);
   const voiceAudiosRef    = useRef<Map<number, HTMLAudioElement>>(new Map());
   const linkPreviewCacheRef = useRef<Map<string, LinkPreview | "loading" | null>>(new Map());
+  const dmInputRef    = useRef<HTMLTextAreaElement>(null);
+  const grpInputRef   = useRef<HTMLTextAreaElement>(null);
+
+  const autoResize = (el: HTMLTextAreaElement | null) => {
+    if (!el) return;
+    el.style.height = "auto";
+    const h = Math.min(el.scrollHeight, 130);
+    el.style.height = h + "px";
+    el.style.overflowY = el.scrollHeight > 130 ? "auto" : "hidden";
+  };
   /* Stable ref so early useEffects can call doUpload without temporal dead zone */
   const doUploadRef = useRef<(id: number) => void>(() => {});
   const [linkPreviews, setLinkPreviews] = useState<Record<string, LinkPreview | null>>({});
@@ -1339,7 +1349,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     const msg: Message = { id: tmpId, text: content, mine: true, time: now, date, status: "pending", attachment };
     setMessages(ms => ({ ...ms, [activeConv]: [...(ms[activeConv] ?? []), msg] }));
     setConvList(prev => prev.map(c => c.id === activeConv ? { ...c, lastMessage: content, time: now } : c));
-    if (!text) setNewMsg("");
+    if (!text) { setNewMsg(""); if (dmInputRef.current) { dmInputRef.current.style.height = "22px"; dmInputRef.current.style.overflowY = "hidden"; } }
     /* Si hors-ligne, le message reste "pending" — le retry se fera au retour du réseau */
     if (!navigator.onLine) return;
     const convId = activeConv;
@@ -1359,7 +1369,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     const optimistic: GroupMsg = { id: Date.now(), text: content, senderName: "Moi", mine: true, time: now, type: "text" };
     setGroupMsgs(prev => ({ ...prev, [activeGroupId]: [...(prev[activeGroupId] ?? []), optimistic] }));
     setChatGroups(prev => prev.map(g => g.id === activeGroupId ? { ...g, lastMessage: content, lastMessageAt: new Date().toISOString() } : g));
-    setGroupNewMsg("");
+    setGroupNewMsg(""); if (grpInputRef.current) { grpInputRef.current.style.height = "22px"; grpInputRef.current.style.overflowY = "hidden"; }
     apiSendChatGroupMessage(activeGroupId, content).catch(() => {});
   };
 
@@ -2379,6 +2389,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         backgroundSize:"180px auto", backgroundRepeat:"repeat", backgroundAttachment:"fixed" }}>
         <style>{`
           .bp-msg-mine   { background:#DCECCB; color:#111; border-radius:18px 18px 4px 18px; box-shadow:0 1px 3px rgba(0,0,0,0.14); }
+          textarea:focus  { outline:none !important; box-shadow:none !important; border:none !important; }
+          textarea        { -webkit-appearance:none; scrollbar-width:none; }
+          textarea::-webkit-scrollbar { display:none; }
           .bp-msg-theirs { background:#fff;    color:#111; border-radius:18px 18px 18px 4px; box-shadow:0 1px 3px rgba(0,0,0,0.12); }
         `}</style>
 
@@ -2446,10 +2459,12 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               <button style={{ background:"none", border:"none", cursor:"pointer", padding:0, flexShrink:0, display:"flex", alignItems:"center", marginRight:4 }}>
                 <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="#94A3B8"/><circle cx="15" cy="9" r="1" fill="#94A3B8"/></svg>
               </button>
-              <input value={groupNewMsg} onChange={e => setGroupNewMsg(e.target.value)}
+              <textarea ref={grpInputRef} value={groupNewMsg}
+                rows={1}
+                onChange={e => { setGroupNewMsg(e.target.value); autoResize(e.target); }}
                 onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendGroupMsg(); } }}
                 placeholder="Écrire un message..."
-                style={{ flex:1, background:"transparent", border:"none", outline:"none", padding:"10px 6px", fontSize:15, color:"#0F172A", minWidth:0 }} />
+                style={{ flex:1, background:"transparent", border:"none", outline:"none", resize:"none", padding:"0 6px", fontSize:15, color:"#0F172A", minWidth:0, lineHeight:"22px", height:"22px", maxHeight:"130px", overflowY:"hidden", transition:"height 0.15s ease", display:"block", alignSelf:"center", fontFamily:"inherit", WebkitAppearance:"none" as React.CSSProperties["WebkitAppearance"] }} />
               {groupNewMsg.trim() ? (
                 <button onClick={sendGroupMsg}
                   style={{ background:"#22C55E", border:"none", borderRadius:"50%", width:44, height:44, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 3px 12px rgba(34,197,94,0.40)", cursor:"pointer" }}>
@@ -2482,6 +2497,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         backgroundSize:"180px auto", backgroundRepeat:"repeat", backgroundAttachment:"fixed" }}>
         <style>{`
           .fbl-msg-mine   { background:#DCECCB; color:#111; border-radius:18px 18px 4px 18px; box-shadow:0 1px 3px rgba(0,0,0,0.14); }
+          textarea:focus  { outline:none !important; box-shadow:none !important; border:none !important; }
+          textarea        { -webkit-appearance:none; scrollbar-width:none; }
+          textarea::-webkit-scrollbar { display:none; }
           .fbl-msg-theirs { background:#fff; color:#111; border-radius:18px 18px 18px 4px; box-shadow:0 1px 3px rgba(0,0,0,0.12); }
           .fbl-menu-btn { display:flex; align-items:center; gap:14px; padding:13px 20px; background:none; border:none; width:100%; font-size:15px; color:#111; cursor:pointer; text-align:left; font-family:inherit; }
           .fbl-menu-btn:active { background:#F0F2F5; }
@@ -3739,16 +3757,18 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 )}
                 {/* Text input — transparent inside the pill, hidden during recording */}
                 {!isRecording && (
-                  <input value={newMsg}
+                  <textarea ref={dmInputRef} value={newMsg}
+                    rows={1}
                     onChange={e => {
                       setNewMsg(e.target.value);
+                      autoResize(e.target);
                       if (typingDebounceRef.current) clearTimeout(typingDebounceRef.current);
                       apiSendTyping(activeConv!, "typing").catch(() => {});
                       typingDebounceRef.current = setTimeout(() => { typingDebounceRef.current = null; }, 2500);
                     }}
                     onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMsg(); } }}
                     placeholder="Écrire un message..."
-                    style={{ flex:1, background:"transparent", border:"none", outline:"none", padding:"10px 6px", fontSize:15, color:"#0F172A", minWidth:0 }} />
+                    style={{ flex:1, background:"transparent", border:"none", outline:"none", resize:"none", padding:"0 6px", fontSize:15, color:"#0F172A", minWidth:0, lineHeight:"22px", height:"22px", maxHeight:"130px", overflowY:"hidden", transition:"height 0.15s ease", display:"block", alignSelf:"center", fontFamily:"inherit", WebkitAppearance:"none" as React.CSSProperties["WebkitAppearance"] }} />
                 )}
 
                 {newMsg.trim() && !isRecording ? (
