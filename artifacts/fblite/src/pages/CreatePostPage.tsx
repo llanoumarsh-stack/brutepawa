@@ -144,7 +144,7 @@ export default function CreatePostPage({ onPublish }: Props) {
 
   const activeBg  = BG_OPTIONS.find(b => b.id === selectedBg);
   const hasBg     = selectedBg !== "none";
-  const canPublish = (content.trim().length > 0 || medias.length > 0) && uploadStatus !== "uploading";
+  const canPublish = (content.trim().length > 0 || medias.length > 0 || selectedTrack !== null) && uploadStatus !== "uploading";
 
   // Build tagline for header
   const tagUsers = allUsers.map(u => ({
@@ -171,7 +171,6 @@ export default function CreatePostPage({ onPublish }: Props) {
   const handlePublish = async () => {
     if (!canPublish) return;
     let finalContent = content.trim();
-    if (selectedTrack) finalContent = (finalContent ? finalContent + "\n" : "") + `🎵 ${selectedTrack.title} — ${selectedTrack.artist}`;
     if (selectedLocation) finalContent += `\n📍 ${selectedLocation.city}, ${selectedLocation.country}`;
 
     // Persist post to backend — include first uploaded media + its thumbnail
@@ -181,6 +180,13 @@ export default function CreatePostPage({ onPublish }: Props) {
         finalContent,
         firstMedia?.url ?? undefined,
         firstMedia?.thumbnailUrl ?? undefined,
+        selectedTrack ? {
+          trackName:  selectedTrack.title,
+          artist:     selectedTrack.artist,
+          url:        selectedTrack.previewUrl,
+          artworkUrl: selectedTrack.artworkUrl,
+          duration:   selectedTrack.duration,
+        } : undefined,
       );
     } catch (err) {
       alert((err as Error).message ?? "Erreur lors de la publication.");

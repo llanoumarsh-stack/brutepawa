@@ -185,8 +185,9 @@ router.post("/posts", requireAuth, async (req, res): Promise<void> => {
   };
   // Validate using a relaxed schema: content optional when imageUrl present
   const hasMedia = typeof req.body.imageUrl === "string" && req.body.imageUrl.length > 0;
+  const hasMusic = typeof req.body.musicTrackName === "string" && req.body.musicTrackName.length > 0;
   const contentVal = typeof rawBody.content === "string" ? rawBody.content.trim() : "";
-  if (!hasMedia && contentVal.length === 0) {
+  if (!hasMedia && !hasMusic && contentVal.length === 0) {
     res.status(400).json({ error: "Le contenu est requis si aucun média n'est joint." });
     return;
   }

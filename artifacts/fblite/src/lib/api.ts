@@ -497,6 +497,7 @@ export async function apiCreatePost(
   content: string,
   imageUrl?: string,
   thumbnailUrl?: string,
+  music?: { trackName: string; artist: string; url: string | null; artworkUrl: string | null; duration: string | null },
 ): Promise<void> {
   const res = await apiFetch("/posts", {
     method: "POST",
@@ -504,6 +505,11 @@ export async function apiCreatePost(
       content,
       imageUrl: imageUrl ?? null,
       thumbnailUrl: thumbnailUrl ?? null,
+      musicTrackName:  music?.trackName  ?? null,
+      musicArtist:     music?.artist     ?? null,
+      musicUrl:        music?.url        ?? null,
+      musicArtworkUrl: music?.artworkUrl ?? null,
+      musicDuration:   music?.duration   ?? null,
     }),
   });
   if (!res.ok) {
