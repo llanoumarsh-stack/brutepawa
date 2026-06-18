@@ -1031,13 +1031,20 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   }, [settingsPage === "invitations", invitTab]);
 
   useEffect(() => {
-    if (!activeConv || messages[activeConv]) return;
-    /* markRead=true on initial open — this is when the user actually sees messages */
+    if (!activeConv) return;
+    /* Always re-fetch on conversation open so we catch messages that arrived
+       while the user was away (SSE may have missed them). Cached data stays
+       visible immediately — fresh data is merged in when it arrives. */
     apiGetMessages(activeConv, undefined, true).then(({ messages: msgs, hasMore }) => {
-      setMessages(prev => ({
-        ...prev,
-        [activeConv]: msgs.map(m => parseApiMsg(m)),
-      }));
+      setMessages(prev => {
+        const fresh    = msgs.map(m => parseApiMsg(m));
+        const existing = prev[activeConv] ?? [];
+        const freshIds = new Set(fresh.map(x => x.id));
+        /* Keep load-more older pages + pending optimistic messages */
+        const older   = existing.filter(m => fresh.length > 0 && m.id < fresh[0].id && !freshIds.has(m.id));
+        const pending = existing.filter(m => m.status === "pending" && !freshIds.has(m.id));
+        return { ...prev, [activeConv]: [...older, ...fresh, ...pending] };
+      });
       setHasMoreMessages(prev => ({ ...prev, [activeConv]: hasMore }));
     }).catch(() => {});
   }, [activeConv]);
