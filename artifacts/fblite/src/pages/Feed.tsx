@@ -914,7 +914,8 @@ export default function Feed() {
                 ))}
               </div>
 
-              {/* Gray group */}
+              {/* Gray group — hidden for own posts */}
+              {!posts.find(p => p.id === postMenuId)?.isOwner && (
               <div style={{ background: "#F8FAFC", borderRadius: 20, overflow: "hidden" }}>
                 {([
                   { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#475569" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>, bg: "#F1F5F9", label: "Masquer cette publication", desc: "Moins de publications comme celle-ci.", action: () => setPostMenuId(null) },
@@ -927,8 +928,10 @@ export default function Feed() {
                   </button>
                 ))}
               </div>
+              )}
 
-              {/* Red group */}
+              {/* Red group — hidden for own posts */}
+              {!posts.find(p => p.id === postMenuId)?.isOwner && (
               <div style={{ background: "#FFF5F5", borderRadius: 20, overflow: "hidden" }}>
                 {([
                   { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="#EF4444"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15" stroke="#EF4444" strokeWidth="2"/></svg>, bg: "#FEE2E2", label: "Signaler la publication", desc: "L'auteur ne saura pas qui a signalé.", action: () => setPostMenuId(null) },
@@ -941,6 +944,7 @@ export default function Feed() {
                   </button>
                 ))}
               </div>
+              )}
 
               <button onClick={() => setPostMenuId(null)} style={{ width: "100%", background: "#F8FAFC", border: "none", borderRadius: 20, padding: "16px", fontWeight: 700, fontSize: 16, color: "#475569", cursor: "pointer" }}>
                 Annuler
