@@ -92,7 +92,10 @@ const SUB_TABS: { id:SubTab; label:string; icon:JSX.Element }[] = [
 /* ═══════════════════════════════════════════════════════════════ */
 export default function Community() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<SubTab>("personnes");
+  const [activeTab, setActiveTab] = useState<SubTab>(() => {
+    const t = new URLSearchParams(window.location.search).get("tab") as SubTab | null;
+    return (t && ["personnes","amis","abonnes","groupes","pages","entreprises","messagerie"].includes(t)) ? t : "personnes";
+  });
   const [search, setSearch]       = useState("");
   const [country, setCountry]     = useState("Tous");
 

@@ -907,7 +907,7 @@ export default function Menu() {
     },
     {
       label: "Groupes", sub: "Rejoignez des communautés qui vous passionnent",
-      bg: "#E8F5E9", iconColor: "#43A047", badge: groupsCount, action: () => navigate("/groups"),
+      bg: "#E8F5E9", iconColor: "#43A047", badge: groupsCount, action: () => navigate("/community?tab=groupes"),
       icon: (_c) => (
         <svg width="30" height="30" viewBox="0 0 30 30">
           <circle cx="20" cy="10" r="5" fill="#81C784"/>

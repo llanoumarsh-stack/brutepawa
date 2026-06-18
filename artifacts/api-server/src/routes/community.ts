@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db, groupsTable, groupMembersTable, groupPostsTable, groupJoinRequestsTable, usersTable, notificationsTable } from "@workspace/db";
-import { desc, eq, and, sql, ilike, inArray } from "drizzle-orm";
+import { desc, eq, and, or, sql, ilike, inArray } from "drizzle-orm";
 import { requireAuth } from "../middlewares/requireAuth";
 import { runWelcomeBot, runContentBots } from "./groupBots";
 
@@ -18,10 +18,26 @@ router.get("/groups", requireAuth, async (req, res): Promise<void> => {
     ? req.query.category.trim()
     : null;
 
-  const conditions: ReturnType<typeof eq>[] = [eq(groupsTable.privacy, "public")];
-  if (search) conditions.push(sql`search_vector @@ websearch_to_tsquery('french', unaccent(${search}))` as unknown as ReturnType<typeof eq>);
-  if (country) conditions.push(ilike(groupsTable.country, `%${country}%`));
-  if (category) conditions.push(eq(groupsTable.category, category));
+  // Get group IDs the user is a member of (includes groups they created if auto-joined)
+  const myMemberships = await db
+    .select({ groupId: groupMembersTable.groupId })
+    .from(groupMembersTable)
+    .where(eq(groupMembersTable.userId, userId));
+  const myGroupIds = myMemberships.map(m => m.groupId);
+
+  // Visibility: public groups OR groups created by user OR groups user is member of
+  const visibilityCondition = myGroupIds.length > 0
+    ? or(eq(groupsTable.privacy, "public"), eq(groupsTable.createdById, userId), inArray(groupsTable.id, myGroupIds))!
+    : or(eq(groupsTable.privacy, "public"), eq(groupsTable.createdById, userId))!;
+
+  const extraConditions: ReturnType<typeof eq>[] = [];
+  if (search) extraConditions.push(sql`search_vector @@ websearch_to_tsquery('french', unaccent(${search}))` as unknown as ReturnType<typeof eq>);
+  if (country) extraConditions.push(ilike(groupsTable.country, `%${country}%`));
+  if (category) extraConditions.push(eq(groupsTable.category, category));
+
+  const whereClause = extraConditions.length > 0
+    ? and(visibilityCondition, ...extraConditions)
+    : visibilityCondition;
 
   const rows = await db
     .select({
@@ -34,10 +50,11 @@ router.get("/groups", requireAuth, async (req, res): Promise<void> => {
       country: groupsTable.country,
       privacy: groupsTable.privacy,
       membersCount: groupsTable.membersCount,
+      createdById: groupsTable.createdById,
       createdAt: groupsTable.createdAt,
     })
     .from(groupsTable)
-    .where(and(...conditions))
+    .where(whereClause)
     .orderBy(desc(groupsTable.membersCount), desc(groupsTable.createdAt))
     .limit(search ? 10 : 50);
 
