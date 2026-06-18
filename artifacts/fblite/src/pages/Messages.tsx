@@ -61,10 +61,13 @@ interface Message {
 
 interface MediaUploadState {
   progress: number;
-  network: "uploading" | "slow" | "offline" | "error";
+  network: "waiting" | "uploading" | "slow" | "offline" | "error";
   fileSize: number;
-  file: File;
+  file?: File;          /* absent for voice messages */
+  voiceBlob?: Blob;     /* voice upload */
+  voiceSecs?: number;   /* voice duration */
   localUrl: string;
+  convId: number;       /* needed for retry after navigation */
   cancelFn?: () => void;
 }
 
@@ -344,6 +347,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const recAnimFrameRef   = useRef<number>(0);
   const voiceAudiosRef    = useRef<Map<number, HTMLAudioElement>>(new Map());
   const linkPreviewCacheRef = useRef<Map<string, LinkPreview | "loading" | null>>(new Map());
+  /* Stable ref so early useEffects can call doUpload without temporal dead zone */
+  const doUploadRef = useRef<(id: number) => void>(() => {});
   const [linkPreviews, setLinkPreviews] = useState<Record<string, LinkPreview | null>>({});
 
   useEffect(() => { activeConvRef.current = activeConv; }, [activeConv]);
@@ -355,7 +360,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   useEffect(() => {
     const goOnline = () => {
       setIsOnline(true);
-      /* Retry tous les messages "pending" */
+      /* Retry tous les messages texte "pending" */
       setMessages(prev => {
         const updated = { ...prev };
         for (const convId in updated) {
@@ -373,6 +378,12 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         }
         return updated;
       });
+      /* Reprendre tous les médias en attente (waiting) */
+      const waiting: number[] = [];
+      mediaUploadsRef.current.forEach((st, id) => {
+        if (st.network === "waiting") waiting.push(id);
+      });
+      waiting.forEach(id => doUploadRef.current(id));
     };
     const goOffline = () => setIsOnline(false);
     window.addEventListener("online", goOnline);
@@ -520,43 +531,131 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       });
   }, [activeConv]);
 
-  const retryUpload = useCallback(async (tmpId: number, convId: number) => {
+  /* ── Unified upload engine ── */
+  const doUpload = useCallback(async (tmpId: number) => {
     const s = mediaUploadsRef.current.get(tmpId);
     if (!s) return;
-    const { file } = s;
-    const localUrl = s.localUrl;
-    const kind: "image" | "doc" = file.type.startsWith("image/") ? "image" : "doc";
-    const newState: MediaUploadState = { ...s, progress: 0, network: "uploading", cancelFn: undefined };
-    mediaUploadsRef.current.set(tmpId, newState);
-    setMediaUploads(new Map(mediaUploadsRef.current));
-    const { promise, cancel } = apiUploadFileXHR(file, (loaded, total) => {
-      const pct = total > 0 ? Math.round((loaded / total) * 100) : 0;
+    const { file, voiceBlob, voiceSecs, convId, localUrl } = s;
+
+    /* If offline: set "waiting" state, abort — auto-resume on reconnect */
+    if (!navigator.onLine) {
       const cur = mediaUploadsRef.current.get(tmpId);
-      if (cur) { mediaUploadsRef.current.set(tmpId, { ...cur, progress: pct }); setMediaUploads(new Map(mediaUploadsRef.current)); }
-    });
-    const withCancel = mediaUploadsRef.current.get(tmpId);
-    if (withCancel) { mediaUploadsRef.current.set(tmpId, { ...withCancel, cancelFn: cancel }); }
+      if (cur) {
+        mediaUploadsRef.current.set(tmpId, { ...cur, network: "waiting", progress: 0, cancelFn: undefined });
+        _uploadsCache.set(tmpId, mediaUploadsRef.current.get(tmpId)!);
+        setMediaUploads(new Map(mediaUploadsRef.current));
+      }
+      return;
+    }
+
+    /* Reset to uploading */
+    {
+      const cur = mediaUploadsRef.current.get(tmpId);
+      if (cur) {
+        mediaUploadsRef.current.set(tmpId, { ...cur, network: "uploading", progress: 0, cancelFn: undefined });
+        _uploadsCache.set(tmpId, mediaUploadsRef.current.get(tmpId)!);
+        setMediaUploads(new Map(mediaUploadsRef.current));
+      }
+    }
+
+    /* Speed / connectivity monitor */
+    let lastProgress = 0;
+    let slowTicks = 0;
+    const speedTimer = setInterval(() => {
+      const cur = mediaUploadsRef.current.get(tmpId);
+      if (!cur || cur.network === "error" || cur.network === "waiting") { clearInterval(speedTimer); return; }
+      if (!navigator.onLine) {
+        cur.cancelFn?.();
+        mediaUploadsRef.current.set(tmpId, { ...cur, network: "waiting", cancelFn: undefined });
+        _uploadsCache.set(tmpId, mediaUploadsRef.current.get(tmpId)!);
+        setMediaUploads(new Map(mediaUploadsRef.current));
+        clearInterval(speedTimer);
+        return;
+      }
+      if (cur.progress === lastProgress && cur.network === "uploading") {
+        slowTicks++;
+        if (slowTicks >= 2) { mediaUploadsRef.current.set(tmpId, { ...cur, network: "slow" }); setMediaUploads(new Map(mediaUploadsRef.current)); }
+      } else {
+        slowTicks = 0;
+        if (cur.network === "slow") { mediaUploadsRef.current.set(tmpId, { ...cur, network: "uploading" }); setMediaUploads(new Map(mediaUploadsRef.current)); }
+      }
+      lastProgress = cur.progress;
+    }, 2500);
+
+    const upDone = () => { mediaUploadsRef.current.delete(tmpId); _uploadsCache.delete(tmpId); setMediaUploads(new Map(mediaUploadsRef.current)); };
+    const upErr  = (n: "error" | "waiting" = "error") => {
+      const cur = mediaUploadsRef.current.get(tmpId);
+      if (cur) { mediaUploadsRef.current.set(tmpId, { ...cur, network: n, cancelFn: undefined }); _uploadsCache.set(tmpId, mediaUploadsRef.current.get(tmpId)!); setMediaUploads(new Map(mediaUploadsRef.current)); }
+    };
+
     try {
+      /* ── Voice upload ── */
+      if (voiceBlob && voiceSecs !== undefined) {
+        const { url } = await apiUploadVoice(voiceBlob, voiceSecs);
+        clearInterval(speedTimer);
+        const content = `__audio__:${voiceSecs}:${url}`;
+        const sent = await apiSendMessage(convId, content);
+        const now  = new Date(sent.createdAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
+        const date = sent.createdAt.slice(0, 10);
+        const mins = Math.floor(voiceSecs / 60), ss = voiceSecs % 60;
+        const dur  = `${mins}:${ss.toString().padStart(2, "0")}`;
+        setTimeout(() => URL.revokeObjectURL(localUrl), 3000);
+        setMessages(prev => ({
+          ...prev,
+          [convId]: (prev[convId] ?? []).map(m => m.id === tmpId ? {
+            id: sent.id, text: "", mine: true, time: now, date, status: "sent" as const,
+            attachment: { type: "audio" as const, label: url, extra: dur },
+          } : m),
+        }));
+        upDone();
+        return;
+      }
+
+      /* ── File upload (image / doc) ── */
+      if (!file) { clearInterval(speedTimer); upErr(); return; }
+      const kind: "image" | "doc" = file.type.startsWith("image/") ? "image" : "doc";
+      const { promise, cancel } = apiUploadFileXHR(file, (loaded, total) => {
+        const pct = total > 0 ? Math.round((loaded / total) * 100) : 0;
+        const cur = mediaUploadsRef.current.get(tmpId);
+        if (cur) { mediaUploadsRef.current.set(tmpId, { ...cur, progress: pct, network: cur.network === "slow" ? "slow" : "uploading" }); setMediaUploads(new Map(mediaUploadsRef.current)); }
+      });
+      const cur0 = mediaUploadsRef.current.get(tmpId);
+      if (cur0) { mediaUploadsRef.current.set(tmpId, { ...cur0, cancelFn: cancel }); _uploadsCache.set(tmpId, mediaUploadsRef.current.get(tmpId)!); }
+
       const { url } = await promise;
-      const prefix = kind === "image" ? "__image__" : "__doc__";
+      clearInterval(speedTimer);
+      const prefix  = kind === "image" ? "__image__" : "__doc__";
       const encoded = `${prefix}:${url}:${file.name}:${file.size}`;
       setMessages(prev => ({
         ...prev,
-        [convId]: (prev[convId] ?? []).map(m =>
-          m.id === tmpId ? { ...m, attachment: { ...m.attachment!, label: url, size: file.size } } : m
-        )
+        [convId]: (prev[convId] ?? []).map(m => m.id === tmpId ? { ...m, attachment: { ...m.attachment!, label: url, size: file.size } } : m),
       }));
       setTimeout(() => URL.revokeObjectURL(localUrl), 3000);
-      apiSendMessage(convId, encoded)
-        .then(sent => setMessages(prev => ({ ...prev, [convId]: (prev[convId] ?? []).map(m => m.id === tmpId ? { ...m, id: sent.id, status: "sent" as const } : m) })))
-        .catch(() => {});
-      mediaUploadsRef.current.delete(tmpId);
-      setMediaUploads(new Map(mediaUploadsRef.current));
-    } catch {
-      const cur = mediaUploadsRef.current.get(tmpId);
-      if (cur) { mediaUploadsRef.current.set(tmpId, { ...cur, network: "error" }); setMediaUploads(new Map(mediaUploadsRef.current)); }
+      const sent = await apiSendMessage(convId, encoded);
+      setMessages(prev => ({ ...prev, [convId]: (prev[convId] ?? []).map(m => m.id === tmpId ? { ...m, id: sent.id, status: "sent" as const } : m) }));
+      const doneSt = mediaUploadsRef.current.get(tmpId);
+      if (doneSt) { mediaUploadsRef.current.set(tmpId, { ...doneSt, progress: 100 }); setMediaUploads(new Map(mediaUploadsRef.current)); }
+      setTimeout(upDone, 1200);
+
+    } catch (e) {
+      clearInterval(speedTimer);
+      if (e instanceof Error && e.message === "cancelled") {
+        setMessages(prev => ({ ...prev, [convId]: (prev[convId] ?? []).filter(m => m.id !== tmpId) }));
+        URL.revokeObjectURL(localUrl);
+        upDone();
+      } else {
+        upErr("error");
+      }
     }
   }, []);
+
+  const retryUpload = useCallback((tmpId: number) => {
+    const s = mediaUploadsRef.current.get(tmpId);
+    if (!s) return;
+    doUpload(tmpId);
+  }, [doUpload]);
+  /* Keep ref in sync so the online-event handler always calls the latest version */
+  useEffect(() => { doUploadRef.current = doUpload; }, [doUpload]);
 
   const handleFileInput = useCallback(async (file: File, kind: "image" | "doc") => {
     setAttachSheet(false); setAttachPage("none");
@@ -572,80 +671,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         attachment: { type: kind, label: localUrl, extra: file.name, size: file.size }
       }],
     }));
-    const initState: MediaUploadState = { progress: 0, network: "uploading", fileSize: file.size, file, localUrl };
+    const initNet: MediaUploadState["network"] = navigator.onLine ? "uploading" : "waiting";
+    const initState: MediaUploadState = { progress: 0, network: initNet, fileSize: file.size, file, localUrl, convId };
     mediaUploadsRef.current.set(tmpId, initState);
+    _uploadsCache.set(tmpId, initState);
     setMediaUploads(new Map(mediaUploadsRef.current));
-    let lastProgress = 0;
-    let slowTicks = 0;
-    const speedTimer = setInterval(() => {
-      const cur = mediaUploadsRef.current.get(tmpId);
-      if (!cur || cur.network === "error") { clearInterval(speedTimer); return; }
-      if (!navigator.onLine) {
-        mediaUploadsRef.current.set(tmpId, { ...cur, network: "offline" });
-        setMediaUploads(new Map(mediaUploadsRef.current));
-        return;
-      }
-      if (cur.network === "offline") {
-        mediaUploadsRef.current.set(tmpId, { ...cur, network: "uploading" });
-        setMediaUploads(new Map(mediaUploadsRef.current));
-        return;
-      }
-      if (cur.progress === lastProgress && cur.network === "uploading") {
-        slowTicks++;
-        if (slowTicks >= 2) {
-          mediaUploadsRef.current.set(tmpId, { ...cur, network: "slow" });
-          setMediaUploads(new Map(mediaUploadsRef.current));
-        }
-      } else {
-        slowTicks = 0;
-        if (cur.network === "slow") {
-          mediaUploadsRef.current.set(tmpId, { ...cur, network: "uploading" });
-          setMediaUploads(new Map(mediaUploadsRef.current));
-        }
-      }
-      lastProgress = cur.progress;
-    }, 2500);
-    const { promise, cancel } = apiUploadFileXHR(file, (loaded, total) => {
-      const pct = total > 0 ? Math.round((loaded / total) * 100) : 0;
-      const cur = mediaUploadsRef.current.get(tmpId);
-      if (cur) {
-        mediaUploadsRef.current.set(tmpId, { ...cur, progress: pct, network: cur.network === "slow" ? "slow" : "uploading" });
-        setMediaUploads(new Map(mediaUploadsRef.current));
-      }
-    });
-    const withCancel = mediaUploadsRef.current.get(tmpId);
-    if (withCancel) mediaUploadsRef.current.set(tmpId, { ...withCancel, cancelFn: cancel });
-    try {
-      const { url } = await promise;
-      clearInterval(speedTimer);
-      const prefix = kind === "image" ? "__image__" : "__doc__";
-      const encoded = `${prefix}:${url}:${file.name}:${file.size}`;
-      setMessages(prev => ({
-        ...prev,
-        [convId]: (prev[convId] ?? []).map(m =>
-          m.id === tmpId ? { ...m, attachment: { ...m.attachment!, label: url, size: file.size } } : m
-        )
-      }));
-      setTimeout(() => URL.revokeObjectURL(localUrl), 3000);
-      apiSendMessage(convId, encoded)
-        .then(sent => setMessages(prev => ({ ...prev, [convId]: (prev[convId] ?? []).map(m => m.id === tmpId ? { ...m, id: sent.id, status: "sent" as const } : m) })))
-        .catch(() => {});
-      const done = mediaUploadsRef.current.get(tmpId);
-      if (done) { mediaUploadsRef.current.set(tmpId, { ...done, progress: 100, network: "uploading" }); setMediaUploads(new Map(mediaUploadsRef.current)); }
-      setTimeout(() => { mediaUploadsRef.current.delete(tmpId); setMediaUploads(new Map(mediaUploadsRef.current)); }, 1200);
-    } catch (e) {
-      clearInterval(speedTimer);
-      if (e instanceof Error && e.message === "cancelled") {
-        setMessages(prev => ({ ...prev, [convId]: (prev[convId] ?? []).filter(m => m.id !== tmpId) }));
-        URL.revokeObjectURL(localUrl);
-        mediaUploadsRef.current.delete(tmpId);
-        setMediaUploads(new Map(mediaUploadsRef.current));
-      } else {
-        const cur = mediaUploadsRef.current.get(tmpId);
-        if (cur) { mediaUploadsRef.current.set(tmpId, { ...cur, network: "error" }); setMediaUploads(new Map(mediaUploadsRef.current)); }
-      }
-    }
-  }, [activeConv]);
+    doUpload(tmpId);
+  }, [activeConv, doUpload]);
 
   const handleLocation = useCallback(() => {
     setAttachSheet(false); setAttachPage("none");
@@ -735,24 +767,16 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             attachment: { type: "audio" as const, label: blobUrl, extra: dur },
           }],
         }));
-        try {
-          const { url } = await apiUploadVoice(blob, secs);
-          const content = `__audio__:${secs}:${url}`;
-          const sent = await apiSendMessage(convId, content);
-          const now  = new Date(sent.createdAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
-          const date = sent.createdAt.slice(0, 10);
-          setTimeout(() => URL.revokeObjectURL(blobUrl), 3000);
-          setMessages(prev => ({
-            ...prev,
-            [convId]: (prev[convId] ?? []).map(m => m.id === tmpId ? {
-              id: sent.id, text: "", mine: true, time: now, date, status: "sent" as const,
-              attachment: { type: "audio" as const, label: url, extra: dur },
-            } : m),
-          }));
-        } catch {
-          URL.revokeObjectURL(blobUrl);
-          setMessages(prev => ({ ...prev, [convId]: (prev[convId] ?? []).filter(m => m.id !== tmpId) }));
-        }
+        /* Queue in upload engine — auto-retry on reconnect, retry button on error */
+        const initNet: MediaUploadState["network"] = navigator.onLine ? "uploading" : "waiting";
+        const voiceState: MediaUploadState = {
+          progress: 0, network: initNet, fileSize: blob.size,
+          voiceBlob: blob, voiceSecs: secs, localUrl: blobUrl, convId,
+        };
+        mediaUploadsRef.current.set(tmpId, voiceState);
+        _uploadsCache.set(tmpId, voiceState);
+        setMediaUploads(new Map(mediaUploadsRef.current));
+        doUpload(tmpId);
       };
       mr.start(100);
       mediaRecorderRef.current = mr;
@@ -2488,6 +2512,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       const curSec     = isVoicePlaying ? Math.floor(totalSecs * audioProgress) : totalSecs;
                       const dispTime   = `${Math.floor(curSec / 60)}:${(curSec % 60).toString().padStart(2, "0")}`;
                       const mine = msg.mine;
+                      const vUps = mediaUploads.get(msg.id);
                       return (
                       /* ── VOICE MESSAGE BUBBLE — seekable, animated ── */
                       <div style={{
@@ -2609,6 +2634,40 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                           </div>
                         </div>
 
+                        {/* Voice upload status strip */}
+                        {mine && vUps && (
+                          <div style={{ marginTop:4, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                            {(vUps.network === "waiting" || vUps.network === "offline") && (
+                              <div style={{ display:"flex", alignItems:"center", gap:4 }}>
+                                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="2" strokeLinecap="round">
+                                  <circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 3"/>
+                                </svg>
+                                <span style={{ fontSize:10.5, color:"rgba(255,255,255,0.82)", fontWeight:600 }}>En attente de connexion</span>
+                              </div>
+                            )}
+                            {(vUps.network === "uploading" || vUps.network === "slow") && (
+                              <div style={{ flex:1, display:"flex", alignItems:"center", gap:6 }}>
+                                <div style={{ flex:1, height:2, background:"rgba(255,255,255,0.22)", borderRadius:1 }}>
+                                  <div style={{ height:"100%", borderRadius:1, background: vUps.network === "slow" ? "#F59E0B" : "#fff", width:`${vUps.progress}%`, transition:"width 0.3s ease" }}/>
+                                </div>
+                                <span style={{ fontSize:10, color:"rgba(255,255,255,0.78)", fontWeight:700, minWidth:28 }}>{vUps.progress}%</span>
+                              </div>
+                            )}
+                            {vUps.network === "error" && (
+                              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", width:"100%" }}>
+                                <span style={{ fontSize:10.5, color:"#FCA5A5", fontWeight:600 }}>Échec de l'envoi</span>
+                                <button onClick={() => retryUpload(msg.id)}
+                                  style={{ background:"rgba(255,255,255,0.22)", border:"none", borderRadius:10, color:"#fff",
+                                    fontSize:10.5, fontWeight:700, cursor:"pointer", padding:"2px 8px",
+                                    display:"flex", alignItems:"center", gap:3 }}>
+                                  <svg viewBox="0 0 24 24" width="10" height="10" fill="#fff"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 .49-7.6" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"/></svg>
+                                  Réessayer
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
                         {/* Footer row: elapsed/total | time + ticks */}
                         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:6 }}>
                           <span style={{
@@ -2652,17 +2711,17 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                             onClick={() => { if (!ups) openImageViewer(imgUrl); }}
                             style={{ width:"100%", height:"100%", display:"block", objectFit:"cover", cursor: ups ? "default" : "zoom-in" }} />
 
-                          {/* Offline overlay */}
-                          {ups?.network === "offline" && (
+                          {/* Waiting / offline overlay */}
+                          {(ups?.network === "waiting" || ups?.network === "offline") && (
                             <div style={{ position:"absolute", inset:0,
                               background:"rgba(0,0,0,0.62)",
                               display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:6 }}>
                               <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round">
                                 <circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 3"/>
                               </svg>
-                              <span style={{ color:"#fff", fontWeight:700, fontSize:12.5, textAlign:"center" }}>En attente du réseau</span>
+                              <span style={{ color:"#fff", fontWeight:700, fontSize:12.5, textAlign:"center" }}>En attente de connexion</span>
                               <span style={{ color:"rgba(255,255,255,0.65)", fontSize:11, textAlign:"center", padding:"0 24px" }}>
-                                Envoi dès le retour de la connexion
+                                Envoi automatique dès le retour du réseau
                               </span>
                             </div>
                           )}
@@ -2676,7 +2735,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                                 <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
                               </svg>
                               <span style={{ color:"#fff", fontWeight:700, fontSize:12 }}>Échec de l'envoi</span>
-                              <button onClick={() => retryUpload(msg.id, activeConv!)}
+                              <button onClick={() => retryUpload(msg.id)}
                                 style={{ background:"#22C55E", border:"none", borderRadius:20, color:"#fff",
                                   padding:"6px 18px", fontSize:12.5, fontWeight:700, cursor:"pointer",
                                   display:"flex", alignItems:"center", gap:5 }}>
@@ -2687,7 +2746,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                           )}
 
                           {/* Progress ring */}
-                          {ups && ups.network !== "offline" && ups.network !== "error" && (
+                          {ups && ups.network !== "waiting" && ups.network !== "offline" && ups.network !== "error" && (
                             <div style={{ position:"absolute", top:8, right:8,
                               display:"flex", flexDirection:"column", alignItems:"center", gap:4 }}>
                               <div style={{ position:"relative", width:56, height:56,
@@ -2863,21 +2922,43 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                           </div>
                         </div>
 
-                        {/* Upload progress */}
+                        {/* Upload progress / status */}
                         {ups && (
                           <div style={{ padding:"0 14px 10px" }}>
-                            <div style={{ height:3, background:"#E5E7EB", borderRadius:2 }}>
-                              <div style={{ height:"100%", borderRadius:2,
-                                width: ups.network === "error" ? "35%" : `${pct}%`,
-                                background: ups.network === "error" ? "#EF4444"
-                                  : ups.network === "slow" ? "#F59E0B" : "#22C55E",
-                                transition:"width 0.3s ease" }} />
-                            </div>
+                            {/* Waiting state */}
+                            {(ups.network === "waiting" || ups.network === "offline") && (
+                              <div style={{ display:"flex", alignItems:"center", gap:5, marginBottom:6 }}>
+                                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round">
+                                  <circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 3"/>
+                                </svg>
+                                <span style={{ fontSize:11.5, color:"#F59E0B", fontWeight:600 }}>En attente de connexion</span>
+                              </div>
+                            )}
+                            {/* Progress bar */}
+                            {ups.network !== "waiting" && ups.network !== "offline" && (
+                              <div style={{ height:3, background:"#E5E7EB", borderRadius:2, marginBottom: ups.network === "error" || ups.network === "slow" ? 6 : 0 }}>
+                                <div style={{ height:"100%", borderRadius:2,
+                                  width: ups.network === "error" ? "35%" : `${pct}%`,
+                                  background: ups.network === "error" ? "#EF4444"
+                                    : ups.network === "slow" ? "#F59E0B" : "#22C55E",
+                                  transition:"width 0.3s ease" }} />
+                              </div>
+                            )}
+                            {/* Slow warning */}
+                            {ups.network === "slow" && (
+                              <div style={{ display:"flex", alignItems:"center", gap:4 }}>
+                                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#F59E0B" strokeWidth="2.5" strokeLinecap="round">
+                                  <circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 3"/>
+                                </svg>
+                                <span style={{ fontSize:11, color:"#F59E0B", fontWeight:600 }}>Connexion lente...</span>
+                              </div>
+                            )}
+                            {/* Error + retry */}
                             {ups.network === "error" && (
                               <div style={{ display:"flex", alignItems:"center",
-                                justifyContent:"space-between", marginTop:6 }}>
+                                justifyContent:"space-between" }}>
                                 <span style={{ fontSize:11.5, color:"#EF4444", fontWeight:600 }}>Échec de l'envoi</span>
-                                <button onClick={() => retryUpload(msg.id, activeConv!)}
+                                <button onClick={() => retryUpload(msg.id)}
                                   style={{ background:"none", border:"none", color:"#16C24A",
                                     fontSize:12, fontWeight:700, cursor:"pointer",
                                     display:"flex", alignItems:"center", gap:3, padding:0 }}>
@@ -4104,12 +4185,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                         if (!r.ok) throw new Error("Génération impossible");
                         const d = await r.json() as { url?: string };
                         if (d.url) {
-                          sendAttachMsg({ type:"image", label:d.url, extra:aiPrompt.trim() }, "🤖 Image générée par IA");
+                          sendAttachMsg({ type:"image", label:d.url, extra:aiPrompt.trim() }, "🤖 Image générée par IA", `__image__:${d.url}:${aiPrompt.trim()}:0`);
                           setAiPrompt(""); setAttachSheet(false); setAttachPage("none");
                         }
                       } catch {
                         const text = `🤖 Image IA : "${aiPrompt.trim()}"`;
-                        sendAttachMsg({ type:"image", label:`https://placehold.co/400x300/00BCD4/fff?text=${encodeURIComponent(aiPrompt.trim().slice(0,40))}`, extra:aiPrompt.trim() }, text);
+                        const fallbackUrl = `https://placehold.co/400x300/00BCD4/fff?text=${encodeURIComponent(aiPrompt.trim().slice(0,40))}`;
+                        sendAttachMsg({ type:"image", label:fallbackUrl, extra:aiPrompt.trim() }, text, `__image__:${fallbackUrl}:${aiPrompt.trim()}:0`);
                         setAiPrompt(""); setAttachSheet(false); setAttachPage("none");
                       }
                       setAiLoading(false);

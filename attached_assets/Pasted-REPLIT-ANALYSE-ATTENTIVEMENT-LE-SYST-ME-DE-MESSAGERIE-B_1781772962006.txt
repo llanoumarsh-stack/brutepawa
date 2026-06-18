@@ -1,0 +1,211 @@
+REPLIT, ANALYSE ATTENTIVEMENT LE SYSTÈME DE MESSAGERIE BRUTEPAWA ET CORRIGE TOUS LES PROBLÈMES LIÉS AUX MÉDIAS HORS LIGNE.
+
+ACTUELLEMENT LE COMPORTEMENT EST INCORRECT.
+
+PROBLÈMES OBSERVÉS :
+
+1. Si je coupe Internet (Wifi ou données mobiles) puis j'envoie un vocal, une photo, une vidéo, un document ou une localisation, le média n'apparaît pas correctement dans le chat.
+
+2. Lorsque la connexion revient, les médias en attente ne reprennent pas automatiquement leur chargement.
+
+3. Le bouton "Réessayer" affiché après un échec ne fonctionne pas.
+
+4. Certains médias restent bloqués même après le retour d'Internet.
+
+5. Les vocaux ne suivent pas la même logique que les photos, vidéos, documents et localisations.
+
+================================================
+
+COMPORTEMENT ATTENDU
+
+Dès que l'utilisateur clique sur "Envoyer", le média doit apparaître immédiatement dans le chat même si aucune connexion Internet n'est disponible.
+
+Le média doit être sauvegardé localement sur l'appareil puis placé dans une file d'attente d'envoi.
+
+Aucun média ne doit disparaître.
+
+================================================
+
+ÉTAT 1 : EN ATTENTE DE CONNEXION
+
+Si aucune connexion Internet n'est disponible :
+
+Afficher :
+
+🕒 En attente de connexion
+
+ou
+
+⏳ En attente du réseau
+
+Afficher une icône horloge.
+
+Aucun upload ne doit être tenté tant qu'Internet n'est pas disponible.
+
+================================================
+
+ÉTAT 2 : REPRISE AUTOMATIQUE
+
+L'application doit surveiller l'état du réseau en permanence.
+
+Dès qu'une connexion valide revient :
+
+- Wifi
+- 3G
+- 4G
+- 5G
+
+Le système doit automatiquement :
+
+- détecter le retour du réseau
+- récupérer tous les médias en attente
+- relancer leur upload
+- mettre à jour leur progression
+
+L'utilisateur ne doit rien faire.
+
+================================================
+
+ÉTAT 3 : ENVOI EN COURS
+
+Pendant l'upload :
+
+Afficher un cercle de progression moderne.
+
+Exemple :
+
+0%
+12%
+25%
+48%
+72%
+95%
+100%
+
+Le pourcentage doit refléter la progression réelle de l'upload.
+
+Le cercle doit être animé.
+
+Un bouton X doit permettre d'annuler l'envoi.
+
+================================================
+
+ÉTAT 4 : CONNEXION LENTE
+
+Si la vitesse réseau est faible :
+
+Afficher :
+
+⚠ Connexion lente
+
+Le chargement continue mais plus lentement.
+
+Ne jamais afficher une erreur tant que le serveur répond.
+
+================================================
+
+ÉTAT 5 : ÉCHEC DE L'ENVOI
+
+Si l'upload échoue réellement :
+
+Afficher :
+
+❌ Échec de l'envoi
+
+avec un bouton :
+
+🔄 Réessayer
+
+Le bouton Réessayer doit fonctionner.
+
+Lors du clic :
+
+- relancer l'upload
+- reprendre le média local
+- réutiliser les informations déjà enregistrées
+- mettre à jour la progression
+
+================================================
+
+ÉTAT 6 : ENVOYÉ
+
+Lorsque le serveur BrutePawa confirme la réception :
+
+Afficher :
+
+✓
+
+Cela signifie :
+
+"Média enregistré sur le serveur"
+
+================================================
+
+ÉTAT 7 : LIVRÉ
+
+Lorsque le destinataire possède une connexion active et que l'application reçoit les données du message :
+
+Afficher :
+
+✓✓
+
+Cela signifie :
+
+"Média livré"
+
+Même si le destinataire n'a pas ouvert la conversation.
+
+================================================
+
+ÉTAT 8 : LU
+
+Lorsque le destinataire ouvre la conversation et visualise le média :
+
+Afficher :
+
+✓✓ bleu ciel
+
+Cela signifie :
+
+"Média lu"
+
+================================================
+
+IMPORTANT
+
+Cette logique doit être identique pour :
+
+- Messages texte
+- Vocaux
+- Photos
+- Vidéos
+- Documents
+- Localisations
+
+================================================
+
+PERSISTANCE
+
+Même si :
+
+- l'application se ferme
+- le téléphone redémarre
+- l'utilisateur change de réseau
+
+Tous les médias en attente doivent être restaurés automatiquement et reprendre leur envoi.
+
+================================================
+
+OBJECTIF
+
+Obtenir un comportement similaire ou supérieur à WhatsApp, Telegram et Messenger :
+
+- affichage immédiat des médias
+- gestion hors ligne complète
+- synchronisation automatique
+- reprise automatique
+- bouton Réessayer fonctionnel
+- progression réelle
+- statuts ✓ ✓✓ ✓✓ bleu fiables
+
+Analyse le code actuel, identifie toutes les causes de ces dysfonctionnements et implémente une solution robuste côté frontend, backend et base de données.
