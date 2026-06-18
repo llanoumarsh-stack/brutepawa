@@ -1,0 +1,208 @@
+MISSION CRITIQUE
+
+UTILISER LA MAQUETTE TELEGRAM FOURNIE COMME SOURCE DE VÉRITÉ ABSOLUE.
+
+INTERDICTION TOTALE DE CRÉER UN DESIGN PERSONNALISÉ.
+INTERDICTION TOTALE DE S'INSPIRER DE TELEGRAM.
+INTERDICTION TOTALE DE MODERNISER LE DESIGN.
+INTERDICTION TOTALE DE RÉINTERPRÉTER LE DESIGN.
+
+LA MAQUETTE DOIT ÊTRE REDESSINÉE À 99% IDENTIQUE.
+
+90% EST CONSIDÉRÉ COMME UN ÉCHEC.
+95% EST CONSIDÉRÉ COMME UN ÉCHEC.
+98% EST CONSIDÉRÉ COMME UN ÉCHEC.
+
+OBJECTIF MINIMUM :
+99% DE FIDÉLITÉ VISUELLE.
+
+==================================================
+RÈGLE PRINCIPALE
+==================================================
+
+REPRODUIRE EXACTEMENT :
+
+- structure
+- hiérarchie
+- alignements
+- marges
+- espacements
+- tailles
+- comportement
+- ordre des éléments
+- densité visuelle
+
+de Telegram.
+
+La seule différence autorisée :
+
+Couleur principale BrutePawa :
+#22C55E
+
+Tout le reste doit suivre Telegram.
+
+==================================================
+HEADER
+==================================================
+
+Copier exactement Telegram :
+
+- hauteur identique
+- position du bouton retour identique
+- position du titre identique
+- position du sous-titre identique
+
+Ne pas inventer de boutons supplémentaires.
+
+==================================================
+ZONE MEMBRES SÉLECTIONNÉS
+==================================================
+
+Reproduire exactement Telegram :
+
+- avatars horizontaux
+- scroll horizontal
+- suppression sur avatar
+- même taille
+- même espacement
+
+INTERDICTION DE :
+
+- créer une grande carte
+- créer un panneau
+- créer une section premium
+
+==================================================
+BARRE DE RECHERCHE
+==================================================
+
+Copier Telegram pixel par pixel :
+
+- hauteur identique
+- rayon identique
+- padding identique
+- couleur identique
+
+Aucune ombre.
+
+==================================================
+LISTE UTILISATEURS
+==================================================
+
+COPIE EXACTE TELEGRAM.
+
+Chaque ligne :
+
+- même hauteur
+- même avatar
+- même alignement
+- même espacement texte
+- même position statut
+
+INTERDICTION DE :
+
+- cartes
+- contours
+- bordures vertes
+- effets glassmorphism
+- ombres
+
+Utiliser uniquement :
+
+border-bottom ultra discret
+
+==================================================
+SÉLECTION
+==================================================
+
+Reproduire le comportement Telegram.
+
+Quand sélectionné :
+
+- coche ronde à droite
+- animation Telegram
+- fond ultra léger
+
+PAS de grosse carte verte.
+PAS de contour vert.
+
+==================================================
+BOUTON FLOTTANT
+==================================================
+
+Copier Telegram :
+
+- position exacte
+- taille exacte
+- ombre exacte
+- rayon exact
+
+Remplacer uniquement la couleur bleue Telegram par :
+
+#22C55E
+
+==================================================
+COULEURS
+==================================================
+
+Fond principal :
+#FFFFFF
+
+Texte principal :
+#000000
+
+Texte secondaire :
+#6B7280
+
+Séparateurs :
+rgba(0,0,0,0.06)
+
+Couleur BrutePawa :
+#22C55E
+
+Aucune autre couleur verte.
+
+==================================================
+ANIMATIONS
+==================================================
+
+Copier Telegram :
+
+- vitesse
+- transitions
+- feedback tactile
+
+Animation 150ms maximum.
+
+==================================================
+INTERDICTION ABSOLUE
+==================================================
+
+NE PAS AJOUTER :
+
+- cartes premium
+- design moderne personnalisé
+- gros boutons
+- grosses ombres
+- glassmorphism
+- effets Apple
+- effets Material You
+- effets futuristes
+
+==================================================
+VALIDATION
+==================================================
+
+Avant de terminer :
+
+Comparer chaque composant à Telegram.
+
+Si un utilisateur reconnaît immédiatement Telegram après 1 seconde d'observation :
+
+VALIDÉ.
+
+Si l'interface ressemble à une création originale :
+
+ÉCHEC.
+
+REDESSINER JUSQU'À OBTENIR UNE CORRESPONDANCE VISUELLE MINIMUM DE 99%.

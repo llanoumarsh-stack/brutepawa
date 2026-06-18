@@ -1,0 +1,126 @@
+BUG CRITIQUE À CORRIGER IMMÉDIATEMENT
+
+PROBLÈME :
+
+Je crée un groupe avec succès.
+La création semble fonctionner.
+Aucune erreur visible.
+
+Mais lorsque je vais dans l'onglet "Groupes", l'écran affiche :
+
+"Aucun groupe disponible"
+
+Le groupe créé n'apparaît pas.
+
+===================================
+MISSION
+===================================
+
+Analyser complètement le système de groupes.
+
+Vérifier :
+
+1. Création du groupe
+2. Sauvegarde base de données
+3. Ajout automatique du créateur
+4. Récupération des groupes
+5. Affichage des groupes
+6. Cache React Query
+7. Supabase RLS
+8. Permissions utilisateur
+
+===================================
+VÉRIFICATIONS OBLIGATOIRES
+===================================
+
+Après création d'un groupe :
+
+- Le groupe doit exister dans la table groups
+
+- Le créateur doit être automatiquement ajouté dans group_members
+
+Exemple :
+
+creator_id
+group_id
+role = admin
+
+Si ce n'est pas fait :
+
+LE FAIRE AUTOMATIQUEMENT
+
+===================================
+REQUÊTE DE RÉCUPÉRATION
+===================================
+
+Vérifier que l'écran Groupes récupère :
+
+Tous les groupes dont l'utilisateur est membre.
+
+Exemple logique :
+
+SELECT g.*
+FROM groups g
+JOIN group_members gm
+ON gm.group_id = g.id
+WHERE gm.user_id = current_user_id
+
+===================================
+SUPABASE RLS
+===================================
+
+Vérifier toutes les policies.
+
+Le créateur doit pouvoir :
+
+- voir son groupe
+- récupérer son groupe
+- modifier son groupe
+
+Corriger toutes les policies bloquantes.
+
+===================================
+FRONTEND
+===================================
+
+Après création :
+
+- rafraîchir automatiquement la liste des groupes
+
+Utiliser :
+
+invalidateQueries
+
+ou
+
+refetch
+
+selon l'architecture existante.
+
+===================================
+DEBUG
+===================================
+
+Ajouter temporairement des logs :
+
+- groupe créé
+- id du groupe
+- ajout membre admin
+- récupération groupes
+- nombre de groupes trouvés
+
+Afficher clairement dans la console chaque étape.
+
+===================================
+OBJECTIF FINAL
+===================================
+
+Après avoir créé un groupe :
+
+1. Le groupe apparaît immédiatement dans l'onglet Groupes.
+2. Aucun rechargement manuel nécessaire.
+3. Le créateur est automatiquement administrateur.
+4. Les groupes persistent après fermeture de l'application.
+5. Corriger la cause racine et non masquer le problème.
+
+Analyser tout le code concerné et appliquer directement les corrections.

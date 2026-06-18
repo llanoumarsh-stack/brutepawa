@@ -1543,101 +1543,80 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     const extraCount = Math.max(0, selectedArr.length - VISIBLE);
 
     return createPortal(
-      <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, display: "flex", flexDirection: "column", background: "#F2F4F7", zIndex: 10000 }}>
+      <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, display: "flex", flexDirection: "column", background: "#FFFFFF", zIndex: 10000 }}>
         <style>{`
-          @keyframes wiz-in { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+          @keyframes wiz-in { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
           @keyframes wiz-check { from{transform:scale(0.4)} to{transform:scale(1)} }
-          .wiz-row:hover { background: #F0FDF4 !important; }
-          .wiz-desel:hover { color: #16A34A !important; }
-          .wiz-bubble:hover { transform: scale(1.05); }
+          .wiz-row:active { background: #f5f5f5 !important; }
         `}</style>
 
-        {/* ── HEADER GREEN ── */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 14px 16px", background: "#22C55E", flexShrink: 0, boxShadow: "0 3px 12px rgba(34,197,94,0.3)" }}>
+        {/* ── HEADER — white, Telegram style ── */}
+        <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 6px 10px 4px", background: "#FFFFFF", borderBottom: "1px solid rgba(0,0,0,0.08)", flexShrink: 0 }}>
           <button
             onClick={() => { if (groupWizard === "name") setGroupWizard("members"); else { setGroupWizard("none"); setWizardMembers(new Set()); setWizardSearch(""); } }}
-            style={{ background: "#fff", border: "none", borderRadius: "50%", width: 38, height: 38, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 1px 4px rgba(0,0,0,0.12)", fontSize: 18, color: "#22C55E" }}>
-            ←
+            style={{ background: "none", border: "none", cursor: "pointer", width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color: "#000", fontSize: 22, padding: 0 }}>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#000" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
           </button>
           <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 800, fontSize: 17, color: "#fff", lineHeight: 1.2 }}>
+            <div style={{ fontWeight: 700, fontSize: 17, color: "#000", lineHeight: 1.25 }}>
               {groupWizard === "members" ? `Nouveau ${isChannel ? "canal" : "groupe"}` : `Nommer le ${isChannel ? "canal" : "groupe"}`}
             </div>
             {groupWizard === "members" && (
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.85)", marginTop: 2 }}>
-                Sélectionnez des membres
+              <div style={{ fontSize: 13, color: "#6B7280", marginTop: 1 }}>
+                {wizardMembers.size} sur 200000 sélectionné{wizardMembers.size > 1 ? "s" : ""}
               </div>
             )}
           </div>
-          {/* Step badge */}
-          <div style={{ border: "1.5px solid rgba(255,255,255,0.7)", borderRadius: 20, padding: "4px 10px", flexShrink: 0 }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: "#fff" }}>{groupWizard === "members" ? "1/2" : "2/2"}</span>
-          </div>
-          {groupWizard === "members" && (
-            <button onClick={() => { if (wizardMembers.size > 0) setGroupWizard("name"); }}
-              style={{ background: "#fff", border: "none", borderRadius: 20, padding: "7px 14px", color: wizardMembers.size > 0 ? "#22C55E" : "#9CA3AF", fontSize: 13, fontWeight: 700, cursor: wizardMembers.size > 0 ? "pointer" : "default", transition: "all 0.2s", flexShrink: 0, boxShadow: "0 1px 4px rgba(0,0,0,0.1)", display: "flex", alignItems: "center", gap: 4 }}>
-              Suivant <span style={{ fontSize: 14 }}>→</span>
-            </button>
-          )}
         </div>
 
         {groupWizard === "members" ? (
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "hidden" }}>
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "hidden", position: "relative" }}>
 
-            {/* ── SELECTED MEMBERS CARD ── */}
+            {/* ── SELECTED MEMBERS — horizontal strip ── */}
             {wizardMembers.size > 0 && (
-              <div style={{ margin: "12px 14px 0", background: "#fff", borderRadius: 20, padding: "12px 14px", flexShrink: 0, boxShadow: "0 2px 10px rgba(0,0,0,0.06)" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-                  <span style={{ fontWeight: 700, fontSize: 14, color: "#111" }}>
-                    Membres sélectionnés <span style={{ color: "#22C55E" }}>({wizardMembers.size})</span>
-                  </span>
-                  <button onClick={() => setWizardMembers(new Set())} className="wiz-desel"
-                    style={{ background: "none", border: "none", color: "#22C55E", fontSize: 12, fontWeight: 600, cursor: "pointer", padding: 0 }}>
-                    Tout désélectionner
-                  </button>
-                </div>
-                <div style={{ display: "flex", gap: 10, overflowX: "auto", scrollbarWidth: "none", paddingBottom: 2 }}>
-                  {visibleSelected.map(uid => {
+              <div style={{ padding: "12px 16px 0", flexShrink: 0 }}>
+                <div style={{ display: "flex", gap: 18, overflowX: "auto", scrollbarWidth: "none", paddingBottom: 12, borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+                  {selectedArr.map(uid => {
                     const u = allUsers.find(x => x.id === uid);
                     const name = u ? `${u.firstName} ${u.lastName}` : `#${uid}`;
                     return (
-                      <div key={uid} className="wiz-bubble" onClick={() => setWizardMembers(prev => { const s = new Set(prev); s.delete(uid); return s; })}
-                        style={{ flexShrink: 0, textAlign: "center", cursor: "pointer", transition: "transform 0.15s", animation: "wiz-in 0.2s ease", width: 56 }}>
-                        <div style={{ position: "relative", marginBottom: 4 }}>
-                          <div style={{ width: 48, height: 48, borderRadius: "50%", background: wizColor(uid), display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15, margin: "0 auto" }}>
-                            {mkInitials(name)}
+                      <div key={uid} onClick={() => setWizardMembers(prev => { const s = new Set(prev); s.delete(uid); return s; })}
+                        style={{ flexShrink: 0, textAlign: "center", cursor: "pointer", width: 60, animation: "wiz-in 0.15s ease" }}>
+                        <div style={{ position: "relative", marginBottom: 5 }}>
+                          {u?.avatarUrl
+                            ? <img src={u.avatarUrl} style={{ width: 52, height: 52, borderRadius: "50%", objectFit: "cover", display: "block", margin: "0 auto" }} alt={name} />
+                            : <div style={{ width: 52, height: 52, borderRadius: "50%", background: wizColor(uid), display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 17, margin: "0 auto" }}>{mkInitials(name)}</div>
+                          }
+                          <div style={{ position: "absolute", top: -1, right: 2, width: 18, height: 18, background: "#8E8E93", borderRadius: "50%", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <svg viewBox="0 0 24 24" width="8" height="8" stroke="#fff" strokeWidth="3" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                           </div>
-                          <div style={{ position: "absolute", top: -2, right: -2, width: 18, height: 18, background: "#EF4444", borderRadius: "50%", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 9, fontWeight: 900 }}>✕</div>
                         </div>
-                        <div style={{ fontSize: 10, fontWeight: 500, color: "#374151", maxWidth: 56, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{name.split(" ")[0]}</div>
+                        <div style={{ fontSize: 11, color: "#000", maxWidth: 60, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", lineHeight: 1.3 }}>{name.split(" ")[0]}</div>
                       </div>
                     );
                   })}
-                  {extraCount > 0 && (
-                    <div style={{ flexShrink: 0, textAlign: "center", width: 56 }}>
-                      <div style={{ width: 48, height: 48, borderRadius: "50%", border: "2px dashed #22C55E", background: "#DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", color: "#22C55E", fontWeight: 700, fontSize: 14, margin: "0 auto 4px" }}>+{extraCount}</div>
-                      <div style={{ fontSize: 10, fontWeight: 500, color: "#6B7280" }}>Autres</div>
-                    </div>
-                  )}
                 </div>
               </div>
             )}
 
-            {/* ── SEARCH BAR ── */}
-            <div style={{ padding: "12px 14px 8px", flexShrink: 0 }}>
-              <div style={{ display: "flex", alignItems: "center", background: "#fff", borderRadius: 22, padding: "12px 16px", boxShadow: "0 2px 8px rgba(0,0,0,0.07)", border: "1px solid #E5E7EB", gap: 8 }}>
-                <span style={{ fontSize: 16, flexShrink: 0 }}>🔍</span>
+            {/* ── SEARCH BAR — flat Telegram style ── */}
+            <div style={{ padding: "10px 16px 6px", flexShrink: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", background: "#F2F2F7", borderRadius: 12, padding: "9px 12px", gap: 8 }}>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#8E8E93" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 <input value={wizardSearch} onChange={e => setWizardSearch(e.target.value)}
                   placeholder="Rechercher un ami..."
-                  style={{ flex: 1, background: "transparent", border: "none", fontSize: 15, outline: "none", color: "#111" }} />
+                  style={{ flex: 1, background: "transparent", border: "none", fontSize: 15, outline: "none", color: "#000" }} />
                 {wizardSearch && (
-                  <button onClick={() => setWizardSearch("")} style={{ background: "none", border: "none", cursor: "pointer", color: "#9CA3AF", fontSize: 16, padding: 0, display: "flex", alignItems: "center" }}>✕</button>
+                  <div onClick={() => setWizardSearch("")}
+                    style={{ width: 18, height: 18, borderRadius: "50%", background: "#8E8E93", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
+                    <svg viewBox="0 0 24 24" width="10" height="10" stroke="#fff" strokeWidth="3" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </div>
                 )}
               </div>
             </div>
 
-            {/* ── CONTACTS LIST ── */}
-            <div style={{ flex: 1, overflowY: "auto", padding: "4px 14px 20px", display: "flex", flexDirection: "column", gap: 8 }}>
+            {/* ── CONTACTS LIST — flat Telegram rows ── */}
+            <div style={{ flex: 1, overflowY: "auto" }}>
               {filteredUsers.map(u => {
                 const name = `${u.firstName} ${u.lastName}`;
                 const selected = wizardMembers.has(u.id);
@@ -1645,98 +1624,87 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 return (
                   <div key={u.id} className="wiz-row"
                     onClick={() => setWizardMembers(prev => { const s = new Set(prev); if (s.has(u.id)) s.delete(u.id); else s.add(u.id); return s; })}
-                    style={{ display: "flex", gap: 12, padding: "11px 13px", alignItems: "center", cursor: "pointer", background: selected ? "#F0FDF4" : "#fff", borderRadius: 18, border: selected ? "1.5px solid #BBF7D0" : "1.5px solid transparent", boxShadow: "0 1px 6px rgba(0,0,0,0.06)", transition: "all 0.15s", animation: "wiz-in 0.18s ease" }}>
+                    style={{ display: "flex", gap: 14, padding: "10px 16px", alignItems: "center", cursor: "pointer", borderBottom: "1px solid rgba(0,0,0,0.06)", background: "#fff", transition: "background 0.1s" }}>
                     {/* Avatar */}
-                    <div style={{ position: "relative", flexShrink: 0 }}>
-                      <div style={{ width: 50, height: 50, borderRadius: "50%", background: wizColor(u.id), display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 17 }}>
-                        {mkInitials(name)}
-                      </div>
+                    <div style={{ flexShrink: 0 }}>
+                      {u.avatarUrl
+                        ? <img src={u.avatarUrl} style={{ width: 50, height: 50, borderRadius: "50%", objectFit: "cover" }} alt={name} />
+                        : <div style={{ width: 50, height: 50, borderRadius: "50%", background: wizColor(u.id), display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 18 }}>{mkInitials(name)}</div>
+                      }
                     </div>
                     {/* Info */}
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600, fontSize: 15, color: selected ? "#15803D" : "#111" }}>{name}</div>
-                      {country && (
-                        <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
-                          <span style={{ fontSize: 13 }}>{country.flag}</span>
-                          <span style={{ fontSize: 12, color: "#9CA3AF" }}>{country.name}</span>
-                        </div>
-                      )}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 600, fontSize: 16, color: "#000", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{name}</div>
+                      {country
+                        ? <div style={{ fontSize: 13, color: "#6B7280", marginTop: 1 }}>{country.flag} {country.name}</div>
+                        : <div style={{ fontSize: 13, color: "#6B7280", marginTop: 1 }}>en ligne récemment</div>
+                      }
                     </div>
-                    {/* Selector */}
-                    <div style={{ width: 28, height: 28, borderRadius: "50%", border: selected ? "none" : "2px solid #D1D5DB", background: selected ? "#22C55E" : "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.18s", boxShadow: selected ? "0 1px 6px rgba(34,197,94,0.4)" : "none" }}>
-                      {selected && <span style={{ color: "#fff", fontSize: 14, fontWeight: 900, animation: "wiz-check 0.15s ease" }}>✓</span>}
+                    {/* Circle checkbox — Telegram style */}
+                    <div style={{ width: 24, height: 24, borderRadius: "50%", border: selected ? "none" : "2px solid #C7C7CC", background: selected ? "#22C55E" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.15s" }}>
+                      {selected && <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ animation: "wiz-check 0.15s ease" }}><polyline points="20 6 9 17 4 12"/></svg>}
                     </div>
                   </div>
                 );
               })}
               {filteredUsers.length === 0 && (
-                <div style={{ padding: "52px 24px", textAlign: "center" }}>
-                  <div style={{ fontSize: 44, marginBottom: 14 }}>👤</div>
-                  <div style={{ fontWeight: 700, fontSize: 16, color: "#374151", marginBottom: 6 }}>Aucun contact trouvé</div>
-                  <div style={{ fontSize: 13, color: "#9CA3AF" }}>Essayez un autre terme de recherche</div>
+                <div style={{ padding: "52px 24px", textAlign: "center", color: "#6B7280", fontSize: 15 }}>
+                  Aucun contact trouvé
                 </div>
               )}
+              <div style={{ height: 80 }} />
             </div>
 
-            {/* ── BOTTOM BUTTON ── */}
-            <div style={{ padding: "12px 16px 20px", background: "rgba(242,244,247,0.95)", borderTop: "1px solid #E5E7EB", flexShrink: 0 }}>
-              <button onClick={() => { if (wizardMembers.size > 0) setGroupWizard("name"); }}
-                disabled={wizardMembers.size === 0}
-                style={{ width: "100%", background: wizardMembers.size > 0 ? "#22C55E" : "#9CA3AF", border: "none", borderRadius: 22, padding: "15px", fontSize: 16, fontWeight: 800, color: "#fff", cursor: wizardMembers.size > 0 ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, boxShadow: wizardMembers.size > 0 ? "0 4px 16px rgba(34,197,94,0.4)" : "none", transition: "all 0.2s" }}>
-                <span style={{ fontSize: 18 }}>👥</span>
-                {wizardMembers.size === 0 ? "Sélectionnez des membres" : `Créer le ${isChannel ? "canal" : "groupe"} (${wizardMembers.size} sélectionné${wizardMembers.size > 1 ? "s" : ""})`}
+            {/* ── FAB — Telegram green circle ── */}
+            {wizardMembers.size > 0 && (
+              <button onClick={() => setGroupWizard("name")}
+                style={{ position: "absolute", bottom: 24, right: 20, width: 56, height: 56, borderRadius: "50%", background: "#22C55E", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 12px rgba(0,0,0,0.25)", zIndex: 10, transition: "transform 0.15s" }}
+                onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.06)")}
+                onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
               </button>
-            </div>
+            )}
           </div>
         ) : (
-          /* Step 2: Name + Settings */
-          <div style={{ flex: 1, overflowY: "auto", padding: "24px 16px 100px" }}>
-
+          /* Step 2: Name + Settings — Telegram style */
+          <div style={{ flex: 1, overflowY: "auto", background: "#FFFFFF" }}>
             {/* Avatar picker */}
-            <div style={{ display: "flex", justifyContent: "center", marginBottom: 28 }}>
-              <div style={{ position: "relative", cursor: "pointer" }}>
-                <div style={{ width: 100, height: 100, borderRadius: "50%", background: isChannel ? "linear-gradient(135deg,#00838F,#00ACC1)" : "linear-gradient(135deg,#22C55E,#16A34A)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 20px rgba(34,197,94,0.35)", fontSize: 42 }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 32, paddingBottom: 24 }}>
+              <div style={{ position: "relative", cursor: "pointer", marginBottom: 12 }}>
+                <div style={{ width: 96, height: 96, borderRadius: "50%", background: isChannel ? "#00ACC1" : "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40 }}>
                   {isChannel ? "📢" : "👥"}
                 </div>
-                <div style={{ position: "absolute", bottom: 2, right: 2, width: 32, height: 32, borderRadius: "50%", background: "#fff", border: "2px solid #E4E6EB", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, boxShadow: "0 1px 4px rgba(0,0,0,0.15)" }}>📷</div>
+                <div style={{ position: "absolute", bottom: 0, right: 0, width: 28, height: 28, borderRadius: "50%", background: "#fff", border: "1px solid rgba(0,0,0,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>📷</div>
               </div>
             </div>
 
-            {/* Name */}
-            <div style={{ background: "#fff", borderRadius: 18, padding: "14px 16px", marginBottom: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-              <label style={{ fontSize: 11, fontWeight: 700, color: "#6B7280", letterSpacing: 1, display: "block", marginBottom: 8, textTransform: "uppercase" }}>
+            {/* Name input — Telegram style */}
+            <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", borderBottom: "1px solid rgba(0,0,0,0.06)", background: "#fff", padding: "14px 16px" }}>
+              <div style={{ fontSize: 12, color: "#22C55E", fontWeight: 500, marginBottom: 4 }}>
                 Nom du {isChannel ? "canal" : "groupe"}
-              </label>
+              </div>
               <input
                 value={wizardGroupName} onChange={e => setWizardGroupName(e.target.value)}
                 onKeyDown={e => { if (e.key === "Enter") createGroup(); }}
-                placeholder={isChannel ? "Ex: Annonces officielles" : "Ex: Famille Konaté"}
+                placeholder={isChannel ? "Annonces officielles" : "Famille Konaté"}
                 autoFocus
-                style={{ width: "100%", border: "none", borderBottom: "2.5px solid #22C55E", padding: "8px 0", fontSize: 18, outline: "none", boxSizing: "border-box", color: "#111", background: "transparent", fontWeight: 700 }}
+                style={{ width: "100%", border: "none", padding: "4px 0", fontSize: 17, outline: "none", boxSizing: "border-box", color: "#000", background: "transparent" }}
               />
+              <div style={{ marginTop: 6, height: 1, background: "#22C55E" }} />
             </div>
 
-            {/* Description */}
-            <div style={{ background: "#fff", borderRadius: 18, padding: "14px 16px", marginBottom: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-              <label style={{ fontSize: 11, fontWeight: 700, color: "#6B7280", letterSpacing: 1, display: "block", marginBottom: 8, textTransform: "uppercase" }}>
-                Description <span style={{ color: "#aaa", fontWeight: 400, textTransform: "none" }}>(optionnel)</span>
-              </label>
-              <input
-                placeholder={isChannel ? "Ex: Actualités et annonces…" : "Ex: Groupe privé de la famille…"}
-                style={{ width: "100%", border: "none", borderBottom: "2px solid #E5E7EB", padding: "8px 0", fontSize: 15, outline: "none", boxSizing: "border-box", color: "#111", background: "transparent" }}
-              />
+            {/* Members count */}
+            <div style={{ padding: "12px 16px", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+              <span style={{ fontSize: 14, color: "#6B7280" }}>{wizardMembers.size + 1} participant{wizardMembers.size !== 0 ? "s" : ""}</span>
             </div>
 
-            {/* Members info */}
-            <div style={{ background: "#DCFCE7", borderRadius: 12, padding: "10px 16px", marginBottom: 20, display: "flex", alignItems: "center", gap: 8, border: "1px solid #BBF7D0" }}>
-              <span style={{ fontSize: 16 }}>👥</span>
-              <span style={{ fontSize: 13, color: "#15803D", fontWeight: 600 }}>{wizardMembers.size + 1} participant{wizardMembers.size > 0 ? "s" : ""}</span>
-            </div>
-
-            {/* Create button */}
+            {/* Create FAB */}
             <button onClick={createGroup} disabled={!wizardGroupName.trim() || wizardCreating}
-              style={{ width: "100%", background: wizardGroupName.trim() ? "#22C55E" : "#E4E6EB", border: "none", borderRadius: 22, padding: "16px", fontSize: 16, fontWeight: 800, color: wizardGroupName.trim() ? "#fff" : "#aaa", cursor: wizardGroupName.trim() ? "pointer" : "default", transition: "all 0.2s", boxShadow: wizardGroupName.trim() ? "0 4px 16px rgba(34,197,94,0.4)" : "none" }}>
-              {wizardCreating ? "⏳ Création en cours…" : `✓ Créer le ${isChannel ? "canal" : "groupe"}`}
+              style={{ position: "fixed", bottom: 24, right: 20, width: 56, height: 56, borderRadius: "50%", background: wizardGroupName.trim() ? "#22C55E" : "#C7C7CC", border: "none", cursor: wizardGroupName.trim() ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 12px rgba(0,0,0,0.25)", zIndex: 10, transition: "all 0.15s" }}>
+              {wizardCreating
+                ? <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                : <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              }
             </button>
           </div>
         )}
