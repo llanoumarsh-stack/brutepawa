@@ -2374,7 +2374,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     const grp = chatGroups.find(g => g.id === activeGroupId);
     const gmsgs = groupMsgs[activeGroupId] ?? [];
     return createPortal(
-      <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, display: "flex", flexDirection: "column", zIndex: 10000, overflow: "hidden" }}>
+      <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, display: "flex", flexDirection: "column", zIndex: 10000, overflow: "hidden",
+        backgroundImage:`url(${import.meta.env.BASE_URL}wallpapers/bp-default.jpg)`,
+        backgroundSize:"180px auto", backgroundRepeat:"repeat", backgroundAttachment:"fixed" }}>
         <style>{`
           .bp-msg-mine   { background:#DCECCB; color:#111; border-radius:18px 18px 4px 18px; box-shadow:0 1px 3px rgba(0,0,0,0.14); }
           .bp-msg-theirs { background:#fff;    color:#111; border-radius:18px 18px 18px 4px; box-shadow:0 1px 3px rgba(0,0,0,0.12); }
@@ -2438,7 +2440,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         </div>
 
         {/* ── Barre d'input — floating pill (même style que les DMs) ── */}
-        <div style={{ background:"#F0F2F5", flexShrink:0, padding:"8px 10px 10px" }}>
+        <div style={{ background:"transparent", flexShrink:0, padding:"8px 10px 10px" }}>
           <div style={{ display:"flex", alignItems:"center" }}>
             <div style={{ flex:1, display:"flex", alignItems:"center", background:"#fff", border:"1px solid #E5E7EB", borderRadius:9999, padding:"0 5px 0 14px", minHeight:52 }}>
               <button style={{ background:"none", border:"none", cursor:"pointer", padding:0, flexShrink:0, display:"flex", alignItems:"center", marginRight:4 }}>
@@ -2475,7 +2477,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     const highlightId = searchMatches[chatSearchIdx]?.id ?? null;
 
     return createPortal(
-      <div style={{ position:"fixed", top: vpOffset ? `${vpOffset}px` : 0, left:0, right:0, height: vpHeight ? `${vpHeight}px` : "100dvh", display:"flex", flexDirection:"column", zIndex:10000, overflow:"hidden" }}>
+      <div style={{ position:"fixed", top: vpOffset ? `${vpOffset}px` : 0, left:0, right:0, height: vpHeight ? `${vpHeight}px` : "100dvh", display:"flex", flexDirection:"column", zIndex:10000, overflow:"hidden",
+        backgroundImage: convWallpaper ? `url(${convWallpaper})` : convWpKey !== "none" && wpUrl(convWpKey) ? `url(${wpUrl(convWpKey)})` : `url(${import.meta.env.BASE_URL}wallpapers/bp-default.jpg)`,
+        backgroundSize:"180px auto", backgroundRepeat:"repeat", backgroundAttachment:"fixed" }}>
         <style>{`
           .fbl-msg-mine   { background:#DCECCB; color:#111; border-radius:18px 18px 4px 18px; box-shadow:0 1px 3px rgba(0,0,0,0.14); }
           .fbl-msg-theirs { background:#fff; color:#111; border-radius:18px 18px 18px 4px; box-shadow:0 1px 3px rgba(0,0,0,0.12); }
@@ -3531,7 +3535,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           </div>
         ) : (
           /* NORMAL INPUT BAR — Floating pill composer */
-          <div style={{ background:"#F0F2F5", flexShrink:0 }}>
+          <div style={{ background:"transparent", flexShrink:0 }}>
 
             {/* ── LOCKED RECORDING: full capsule with controls ── */}
             {isRecording && recLocked && (
