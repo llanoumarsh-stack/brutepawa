@@ -1,0 +1,91 @@
+> Fonctionnement du bouton × et de l'icône pendule dans BrutePawa
+
+Reproduire exactement le comportement moderne de Telegram pour les messages vocaux en cours d'envoi.
+
+1. Bouton × (Annuler l'envoi)
+
+Le bouton rond avec l'icône × apparaît uniquement lorsqu'un message vocal est en état uploading/sending.
+
+Son rôle est d'annuler immédiatement l'envoi du message vocal.
+
+Au clic :
+
+arrêter l'upload en cours ;
+
+supprimer le message vocal temporaire de l'interface ;
+
+supprimer le fichier temporaire du stockage local ;
+
+fermer l'état "envoi en cours".
+
+
+Le bouton doit être très visible avec une taille identique à Telegram.
+
+Forme : cercle parfait.
+
+Couleur BrutePawa : vert principal.
+
+Icône × blanche parfaitement centrée.
+
+Animation fluide au toucher.
+
+
+2. Icône pendule (horloge) en bas à droite
+
+Le petit symbole horloge/pendule indique que le message est :
+
+en attente d'envoi ;
+
+en cours d'upload ;
+
+ou en attente de confirmation du serveur.
+
+
+Tant que le serveur n'a pas confirmé la réception, afficher l'horloge.
+
+Dès confirmation :
+
+remplacer automatiquement l'horloge par ✓.
+
+
+Si le message est lu :
+
+remplacer par ✓✓.
+
+
+Transition animée fluide.
+
+
+3. États obligatoires
+
+Uploading → afficher × + horloge.
+
+Envoyé → afficher ✓.
+
+Reçu → afficher ✓✓.
+
+Lu → afficher ✓✓ colorés selon le thème BrutePawa.
+
+Échec → afficher icône erreur avec possibilité de renvoyer.
+
+
+4. Exigence UI
+
+Copier le comportement Telegram à 99 %.
+
+Même positionnement.
+
+Même logique d'affichage.
+
+Même taille visuelle.
+
+Même fluidité des animations.
+
+Adapter uniquement les couleurs à la charte BrutePawa (#22C55E).
+
+Aucun agrandissement ou déformation des bulles pendant l'upload.
+
+Le fond d'écran ne doit jamais zoomer ou se redimensionner lorsqu'un message est ajouté.
+
+
+Résultat attendu : L'utilisateur comprend immédiatement que × = annuler l'envoi et que l'horloge = message en attente de transmission, exactement comme dans Telegram, mais avec l'identité visuelle BrutePawa.

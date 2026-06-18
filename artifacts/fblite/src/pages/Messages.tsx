@@ -783,6 +783,20 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     if (!s) return;
     doUpload(tmpId);
   }, [doUpload]);
+
+  const cancelUploadMsg = useCallback((tmpId: number) => {
+    const s = mediaUploadsRef.current.get(tmpId);
+    if (!s) return;
+    s.cancelFn?.();
+    mediaUploadsRef.current.delete(tmpId);
+    _uploadsCache.delete(tmpId);
+    setMediaUploads(new Map(mediaUploadsRef.current));
+    setMessages(prev => {
+      const convMsgs = prev[s.convId] ?? [];
+      return { ...prev, [s.convId]: convMsgs.filter(m => m.id !== tmpId) };
+    });
+  }, []);
+
   /* Keep ref in sync so the online-event handler always calls the latest version */
   useEffect(() => { doUploadRef.current = doUpload; }, [doUpload]);
 
@@ -2620,6 +2634,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             const isVoicePlaying = isAudio && playingAudioId === msg.id;
             const wfBars     = isAudio ? voiceWaveform(msg.id) : [];
             const playedBars = isVoicePlaying ? Math.floor(wfBars.length * audioProgress) : 0;
+            const vUps       = isAudio ? mediaUploads.get(msg.id) : undefined;
             const prevMsg    = i > 0 ? currentMessages[i - 1] : null;
             const showDateSep = !prevMsg || (msg.date && prevMsg.date !== msg.date);
             const dateLabel  = showDateSep && msg.date ? fmtDateLabel(msg.date) : null;
@@ -2654,6 +2669,26 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     {isLast && <div className="avatar xs" style={{ background:activeUser.color, width:26, height:26, fontSize:10 }}>{activeUser.initials}</div>}
                   </div>
                 )}
+                {isAudio && msg.mine && vUps && vUps.network !== "error" && !selectionMode && (
+                  <button
+                    onClick={e => { e.stopPropagation(); cancelUploadMsg(msg.id); }}
+                    style={{
+                      width:34, height:34, borderRadius:"50%", border:"none", cursor:"pointer",
+                      background:"#22C55E", flexShrink:0, alignSelf:"center",
+                      display:"flex", alignItems:"center", justifyContent:"center",
+                      boxShadow:"0 2px 10px rgba(34,197,94,0.45)",
+                      transition:"transform 0.12s, opacity 0.12s",
+                      WebkitTapHighlightColor:"transparent", touchAction:"manipulation",
+                    }}
+                    onPointerDown={e => { e.currentTarget.style.transform="scale(0.86)"; e.currentTarget.style.opacity="0.80"; }}
+                    onPointerUp={e => { e.currentTarget.style.transform="scale(1)"; e.currentTarget.style.opacity="1"; }}
+                    onPointerLeave={e => { e.currentTarget.style.transform="scale(1)"; e.currentTarget.style.opacity="1"; }}
+                  >
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round">
+                      <path d="M18 6 6 18M6 6l12 12"/>
+                    </svg>
+                  </button>
+                )}
                 <div style={{ maxWidth:"72%" }}>
                   {msg.attachment && (
                     msg.attachment.type === "audio" ? (() => {
@@ -2663,7 +2698,6 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       const curSec     = isVoicePlaying ? Math.floor(totalSecs * audioProgress) : totalSecs;
                       const dispTime   = `${Math.floor(curSec / 60)}:${(curSec % 60).toString().padStart(2, "0")}`;
                       const mine = msg.mine;
-                      const vUps = mediaUploads.get(msg.id);
                       return (
                       /* ── VOICE MESSAGE BUBBLE — seekable, animated ── */
                       <div style={{
@@ -2773,37 +2807,17 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                           </div>
                         </div>
 
-                        {/* Voice upload status strip */}
-                        {mine && vUps && (
+                        {/* Error retry — only shown on upload failure */}
+                        {mine && vUps?.network === "error" && (
                           <div style={{ marginTop:4, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-                            {(vUps.network === "waiting" || vUps.network === "offline") && (
-                              <div style={{ display:"flex", alignItems:"center", gap:4 }}>
-                                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="2" strokeLinecap="round">
-                                  <circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 3"/>
-                                </svg>
-                                <span style={{ fontSize:10.5, color:"rgba(255,255,255,0.82)", fontWeight:600 }}>En attente de connexion</span>
-                              </div>
-                            )}
-                            {(vUps.network === "uploading" || vUps.network === "slow") && (
-                              <div style={{ flex:1, display:"flex", alignItems:"center", gap:6 }}>
-                                <div style={{ flex:1, height:2, background:"rgba(121,176,107,0.25)", borderRadius:1 }}>
-                                  <div style={{ height:"100%", borderRadius:1, background: vUps.network === "slow" ? "#F59E0B" : "#8BCB7A", width:`${vUps.progress}%`, transition:"width 0.3s ease" }}/>
-                                </div>
-                                <span style={{ fontSize:10, color:"#79B06B", fontWeight:700, minWidth:28 }}>{vUps.progress}%</span>
-                              </div>
-                            )}
-                            {vUps.network === "error" && (
-                              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", width:"100%" }}>
-                                <span style={{ fontSize:10.5, color:"#FCA5A5", fontWeight:600 }}>Échec de l'envoi</span>
-                                <button onClick={() => retryUpload(msg.id)}
-                                  style={{ background:"rgba(255,255,255,0.22)", border:"none", borderRadius:10, color:"#fff",
-                                    fontSize:10.5, fontWeight:700, cursor:"pointer", padding:"2px 8px",
-                                    display:"flex", alignItems:"center", gap:3 }}>
-                                  <svg viewBox="0 0 24 24" width="10" height="10" fill="#fff"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 .49-7.6" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"/></svg>
-                                  Réessayer
-                                </button>
-                              </div>
-                            )}
+                            <span style={{ fontSize:10.5, color:"#EF4444", fontWeight:600 }}>Échec de l'envoi</span>
+                            <button onClick={() => retryUpload(msg.id)}
+                              style={{ background:"rgba(239,68,68,0.10)", border:"none", borderRadius:10, color:"#EF4444",
+                                fontSize:10.5, fontWeight:700, cursor:"pointer", padding:"2px 8px",
+                                display:"flex", alignItems:"center", gap:3 }}>
+                              <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#EF4444" strokeWidth="2.5" strokeLinecap="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 .49-7.6"/></svg>
+                              Réessayer
+                            </button>
                           </div>
                         )}
 
@@ -2818,7 +2832,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                           </span>
                           <div style={{ display:"flex", alignItems:"center", gap:4 }}>
                             <span style={{ fontSize:11, color: mine ? "#79B06B" : "#94A3B8" }}>{msg.time}</span>
-                            {mine && <MsgStatus status={msg.status} dark={false} />}
+                            {mine && (vUps && vUps.network !== "error"
+                              ? <svg viewBox="0 0 16 16" width="14" height="14" fill="none">
+                                  <circle cx="8" cy="8" r="5.5" stroke="#79B06B" strokeWidth="1.5"/>
+                                  <path d="M8 5.2V8l1.8 1.8" stroke="#79B06B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                              : <MsgStatus status={msg.status} dark={false} />
+                            )}
                           </div>
                         </div>
                       </div>
