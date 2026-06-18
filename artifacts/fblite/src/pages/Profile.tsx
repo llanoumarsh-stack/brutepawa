@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { useR2Upload } from "../hooks/useR2Upload";
-import { apiGetMe, apiUpdateMe, saveFbUser, apiGetFriends, apiGetUserPosts, apiDeletePost, type PublicUser, type FeedPost } from "../lib/api";
+import { apiGetMe, apiUpdateMe, saveFbUser, apiGetFriends, apiGetUserPosts, apiDeletePost, apiArchivePost, apiPinPost, type PublicUser, type FeedPost } from "../lib/api";
 import { computeScore, type ScoreFactors } from "../lib/score";
 import ProModeModal from "../components/ProModeModal";
 import ProfileStatusModal from "../components/ProfileStatusModal";
@@ -62,9 +62,23 @@ export default function Profile() {
   const [myPosts, setMyPosts] = useState<FeedPost[]>([]);
   const [friends, setFriends] = useState<PublicUser[]>([]);
   const [postMenuId, setPostMenuId] = useState<number | null>(null);
+  const [menuPos, setMenuPos] = useState<{ top: number; right: number } | null>(null);
+  const closeMenu = () => { setPostMenuId(null); setMenuPos(null); };
 
   const archivePost = async (id: number) => {
-    setPostMenuId(null);
+    closeMenu();
+    setMyPosts(ps => ps.filter(p => p.id !== id));
+    try { await apiArchivePost(id); } catch { /* silently ignore */ }
+  };
+
+  const pinPost = async (id: number) => {
+    closeMenu();
+    setMyPosts(ps => ps.map(p => ({ ...p, isPinned: p.id === id })));
+    try { await apiPinPost(id); } catch { /* silently ignore */ }
+  };
+
+  const deletePost = async (id: number) => {
+    closeMenu();
     setMyPosts(ps => ps.filter(p => p.id !== id));
     try { await apiDeletePost(id); } catch { /* silently ignore */ }
   };
@@ -541,7 +555,7 @@ export default function Profile() {
                       <div className="post-time">🌐 {new Date(post.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}</div>
                     </div>
                   </div>
-                  <button onClick={() => setPostMenuId(post.id)}
+                  <button onClick={(e) => { e.stopPropagation(); const r = e.currentTarget.getBoundingClientRect(); setMenuPos({ top: r.bottom + 6, right: window.innerWidth - r.right }); setPostMenuId(post.id); }}
                     style={{ background: "none", border: "none", cursor: "pointer", padding: "4px 8px", borderRadius: 20, color: "#65676b", fontSize: 20, fontWeight: 700, lineHeight: 1, flexShrink: 0 }}>
                     ···
                   </button>
@@ -564,34 +578,43 @@ export default function Profile() {
           </div>
         )}
 
-        {/* Post menu portal — own posts */}
-        {postMenuId !== null && createPortal(
-          <div onClick={() => setPostMenuId(null)}
-            style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 9999, display: "flex", alignItems: "flex-end" }}>
-            <div onClick={e => e.stopPropagation()}
-              style={{ width: "100%", background: "#fff", borderRadius: "20px 20px 0 0", paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
-              <div style={{ display: "flex", justifyContent: "center", paddingTop: 12, paddingBottom: 6 }}>
-                <div style={{ width: 44, height: 5, background: "#E2E8F0", borderRadius: 99 }} />
-              </div>
-              <div style={{ padding: "4px 14px 24px", display: "flex", flexDirection: "column", gap: 10 }}>
-                <div style={{ background: "#FFF9F0", borderRadius: 20, overflow: "hidden" }}>
-                  <button onClick={() => archivePost(postMenuId)}
-                    style={{ width: "100%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 14, padding: "13px 16px", textAlign: "left" }}>
-                    <div style={{ width: 42, height: 42, borderRadius: "50%", background: "#FEF3C7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#F59E0B" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 700, fontSize: 15, color: "#0F172A" }}>Archiver le post</div>
-                      <div style={{ fontSize: 12.5, color: "#94A3B8", marginTop: 2 }}>Cette publication sera supprimée du fil.</div>
-                    </div>
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
-                  </button>
-                </div>
-                <button onClick={() => setPostMenuId(null)}
-                  style={{ width: "100%", background: "#F8FAFC", border: "none", borderRadius: 20, padding: "16px", fontWeight: 700, fontSize: 16, color: "#475569", cursor: "pointer" }}>
-                  Annuler
+        {/* ── Floating post menu — own posts ── */}
+        {postMenuId !== null && menuPos !== null && createPortal(
+          <div onClick={closeMenu} style={{ position: "fixed", inset: 0, zIndex: 9999 }}>
+            <style>{`@keyframes bpMenuIn { from { opacity: 0; transform: scale(0.88); } to { opacity: 1; transform: scale(1); } }`}</style>
+            <div onClick={e => e.stopPropagation()} style={{
+              position: "fixed",
+              top: menuPos.top,
+              right: menuPos.right,
+              width: 235,
+              background: "#FFFFFF",
+              borderRadius: 20,
+              boxShadow: "0 12px 40px rgba(0,0,0,0.12)",
+              border: "1px solid rgba(34,197,94,0.08)",
+              overflow: "hidden",
+              animation: "bpMenuIn 180ms ease",
+              transformOrigin: "top right",
+            }}>
+              {([
+                { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>, label: "Modifier le post", color: "#22C55E", action: closeMenu },
+                { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1v3.76z"/></svg>, label: "Épingler le post", color: "#22C55E", action: () => { if (postMenuId !== null) pinPost(postMenuId); } },
+                { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><line x1="10" y1="12" x2="14" y2="12"/></svg>, label: "Archiver le post", color: "#22C55E", action: () => { if (postMenuId !== null) archivePost(postMenuId); } },
+              ] as { icon: React.ReactNode; label: string; color: string; action: () => void }[]).map((item, i) => (
+                <button key={i} onClick={item.action}
+                  onMouseEnter={e => (e.currentTarget.style.background = "rgba(34,197,94,0.06)")}
+                  onMouseLeave={e => (e.currentTarget.style.background = "none")}
+                  style={{ width: "100%", background: "none", border: "none", borderBottom: "1px solid rgba(34,197,94,0.07)", cursor: "pointer", display: "flex", alignItems: "center", gap: 12, padding: "0 16px", height: 52, textAlign: "left", transition: "background 0.15s ease" }}>
+                  {item.icon}
+                  <span style={{ flex: 1, fontSize: 14.5, fontWeight: 600, color: item.color }}>{item.label}</span>
                 </button>
-              </div>
+              ))}
+              <button onClick={() => { if (postMenuId !== null) deletePost(postMenuId); }}
+                onMouseEnter={e => (e.currentTarget.style.background = "rgba(239,68,68,0.06)")}
+                onMouseLeave={e => (e.currentTarget.style.background = "none")}
+                style={{ width: "100%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 12, padding: "0 16px", height: 52, textAlign: "left", transition: "background 0.15s ease" }}>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                <span style={{ flex: 1, fontSize: 14.5, fontWeight: 600, color: "#EF4444" }}>Supprimer le post</span>
+              </button>
             </div>
           </div>,
           document.body

@@ -1,0 +1,192 @@
+MISSION CRITIQUE
+
+REFONDRE COMPLÈTEMENT LE MENU ⋯ DES PUBLICATIONS BRUTEPAWA POUR REPRODUIRE À 99% LE VISUEL FOURNI.
+
+INTERDICTION DE PROPOSER UNE ALTERNATIVE.
+INTERDICTION DE MODIFIER LE DESIGN.
+INTERDICTION D'AJOUTER DES ÉLÉMENTS NON DEMANDÉS.
+
+========================
+DESIGN EXACT À REPRODUIRE
+========================
+
+Lorsqu'un utilisateur clique sur les 3 points (...) d'une publication :
+
+1. AFFICHER UN PETIT MENU FLOTTANT
+   - Pas de Bottom Sheet
+   - Pas de Modal plein écran
+   - Pas de Drawer
+   - Pas de panneau venant du bas
+
+2. POSITION
+   - Le menu doit apparaître directement sous le bouton (...)
+   - Aligné à droite
+   - Comme Facebook et LinkedIn
+
+3. DIMENSIONS
+   - Largeur : 220px à 250px maximum
+   - Hauteur automatique
+   - Très compact
+
+4. STYLE BRUTEPAWA PREMIUM
+   - Fond blanc pur (#FFFFFF)
+   - Coins arrondis 20px
+   - Ombre premium :
+     0 12px 40px rgba(0,0,0,0.12)
+
+   - Bordure :
+     1px solid rgba(34,197,94,0.08)
+
+5. ANIMATION
+   - Fade In + Scale
+   - Durée 180ms
+   - Très fluide
+
+6. COULEUR OFFICIELLE BRUTEPAWA
+   - Vert principal : #22C55E
+
+========================
+ACTIONS À AFFICHER
+========================
+
+1. Modifier le post
+   Icône : Pencil
+   Couleur : #22C55E
+
+2. Épingler le post
+   Icône : Pin
+   Couleur : #22C55E
+
+3. Archiver le post
+   Icône : Archive
+   Couleur : #22C55E
+
+4. Supprimer le post
+   Icône : Trash
+   Couleur : #EF4444
+
+========================
+STYLE DES LIGNES
+========================
+
+Chaque ligne :
+
+- Hauteur 52px
+- Padding horizontal 16px
+- Icône à gauche
+- Texte au centre
+- Hover :
+    background: rgba(34,197,94,0.06)
+
+- Transition :
+    0.15s ease
+
+La ligne Supprimer :
+
+- Texte rouge
+- Icône rouge
+- Hover rouge léger
+
+========================
+BACKEND OBLIGATOIRE
+========================
+
+Ajouter les colonnes suivantes si absentes :
+
+ALTER TABLE posts
+ADD COLUMN is_pinned BOOLEAN DEFAULT FALSE;
+
+ALTER TABLE posts
+ADD COLUMN is_archived BOOLEAN DEFAULT FALSE;
+
+ALTER TABLE posts
+ADD COLUMN updated_at TIMESTAMP;
+
+========================
+API MODIFIER
+========================
+
+PUT /api/posts/:id
+
+Conditions :
+
+- utilisateur connecté
+- propriétaire du post
+
+Mettre à jour :
+- contenu
+- médias
+- updated_at
+
+========================
+API ÉPINGLER
+========================
+
+POST /api/posts/:id/pin
+
+Logique :
+
+1. Désépingler tous les autres posts du propriétaire
+
+UPDATE posts
+SET is_pinned = false
+WHERE user_id = currentUserId;
+
+2. Épingler le post sélectionné
+
+UPDATE posts
+SET is_pinned = true
+WHERE id = postId;
+
+Affichage du profil :
+
+ORDER BY
+is_pinned DESC,
+created_at DESC
+
+========================
+API ARCHIVER
+========================
+
+POST /api/posts/:id/archive
+
+UPDATE posts
+SET is_archived = true
+WHERE id = postId;
+
+Les posts archivés ne doivent plus apparaître dans le fil.
+
+Toutes les requêtes doivent filtrer :
+
+WHERE is_archived = false
+
+========================
+API SUPPRIMER
+========================
+
+DELETE /api/posts/:id
+
+Étapes :
+
+1. Vérifier propriétaire
+2. Supprimer fichiers Cloudflare R2
+3. Supprimer likes
+4. Supprimer commentaires
+5. Supprimer notifications liées
+6. Supprimer le post
+
+========================
+EXIGENCE FINALE
+========================
+
+Le résultat doit être visuellement identique à un menu contextuel Facebook premium moderne :
+
+- petit
+- flottant
+- élégant
+- ultra rapide
+- aucune bottom sheet
+- aucune fenêtre plein écran
+- aucune action supplémentaire
+
+Implémenter directement sans demander confirmation.

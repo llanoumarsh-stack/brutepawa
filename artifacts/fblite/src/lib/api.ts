@@ -119,6 +119,7 @@ export interface FeedPost {
   createdAt: string;
   liked: boolean;
   isOwner: boolean;
+  isPinned?: boolean;
 }
 
 export interface PublicUser {
@@ -528,6 +529,14 @@ export async function apiLikePost(id: number, action: "like" | "unlike"): Promis
 
 export async function apiDeletePost(id: number): Promise<void> {
   await apiFetch(`/posts/${id}`, { method: "DELETE" });
+}
+
+export async function apiArchivePost(id: number): Promise<void> {
+  await apiFetch(`/posts/${id}/archive`, { method: "POST" });
+}
+
+export async function apiPinPost(id: number): Promise<void> {
+  await apiFetch(`/posts/${id}/pin`, { method: "POST" });
 }
 
 export function saveFbUser(user: BpUser): void {

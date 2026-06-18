@@ -99,7 +99,7 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
   const limit = search ? 10 : 20;
   const offset = (page - 1) * limit;
 
-  const conditions = [];
+  const conditions = [eq(postsTable.isArchived, false)];
   if (authorId) conditions.push(eq(postsTable.authorId, authorId));
   if (search) conditions.push(sql`search_vector @@ websearch_to_tsquery('french', unaccent(${search}))`);
 
@@ -117,6 +117,7 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
       musicDuration: postsTable.musicDuration,
       likesCount: postsTable.likesCount,
       commentsCount: postsTable.commentsCount,
+      isPinned: postsTable.isPinned,
       createdAt: postsTable.createdAt,
       authorFirstName: usersTable.firstName,
       authorLastName: usersTable.lastName,
@@ -126,8 +127,8 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
     })
     .from(postsTable)
     .leftJoin(usersTable, eq(postsTable.authorId, usersTable.id))
-    .where(conditions.length > 0 ? and(...conditions) : undefined)
-    .orderBy(desc(postsTable.createdAt))
+    .where(and(...conditions))
+    .orderBy(desc(postsTable.isPinned), desc(postsTable.createdAt))
     .limit(limit).offset(offset);
 
   // If viewing a specific locked profile, check friendship before returning any posts
@@ -175,6 +176,7 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
     createdAt: r.createdAt,
     liked: likedSet.has(r.id),
     isOwner: r.authorId === req.userId,
+    isPinned: r.isPinned ?? false,
   })));
 });
 
@@ -1087,6 +1089,18 @@ router.post("/posts/:id/archive", requireAuth, async (req, res): Promise<void> =
   if (!post) { res.status(404).json({ error: "Publication introuvable" }); return; }
   if (post.authorId !== userId) { res.status(403).json({ error: "Accès refusé" }); return; }
   await db.update(postsTable).set({ isArchived: true, archivedAt: new Date() }).where(eq(postsTable.id, postId));
+  res.json({ ok: true });
+});
+
+router.post("/posts/:id/pin", requireAuth, async (req, res): Promise<void> => {
+  const postId = Number(req.params.id);
+  const userId = req.userId!;
+  if (isNaN(postId)) { res.status(400).json({ error: "ID invalide" }); return; }
+  const [post] = await db.select({ authorId: postsTable.authorId }).from(postsTable).where(eq(postsTable.id, postId));
+  if (!post) { res.status(404).json({ error: "Publication introuvable" }); return; }
+  if (post.authorId !== userId) { res.status(403).json({ error: "Accès refusé" }); return; }
+  await db.update(postsTable).set({ isPinned: false }).where(eq(postsTable.authorId, userId));
+  await db.update(postsTable).set({ isPinned: true }).where(eq(postsTable.id, postId));
   res.json({ ok: true });
 });
 

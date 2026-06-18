@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { openImageViewer } from "../components/ImageViewer";
-import { apiGetPosts, apiCreatePost, apiLikePost, apiGetStories, apiToggleSaved, apiFollow, apiCheckFollowing, apiDeletePost, type FeedPost, type StoryGroup } from "../lib/api";
+import { apiGetPosts, apiCreatePost, apiLikePost, apiGetStories, apiToggleSaved, apiFollow, apiCheckFollowing, apiDeletePost, apiArchivePost, apiPinPost, type FeedPost, type StoryGroup } from "../lib/api";
 import StoryViewer from "../components/StoryViewer";
 import { storyDraftStore } from "../lib/storyDraft";
 
@@ -215,19 +215,8 @@ export default function Feed() {
   const [followedIds, setFollowedIds] = useState<Set<number>>(new Set());
 
   // Lock body scroll when bottom sheet is open to prevent layout shift
-  useEffect(() => {
-    if (postMenuId !== null) {
-      document.documentElement.style.overflow = "hidden";
-      document.body.style.overflow = "hidden";
-    } else {
-      document.documentElement.style.overflow = "";
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.documentElement.style.overflow = "";
-      document.body.style.overflow = "";
-    };
-  }, [postMenuId]);
+  const [menuPos, setMenuPos] = useState<{ top: number; right: number } | null>(null);
+  const closeMenu = () => { setPostMenuId(null); setMenuPos(null); };
 
   const handleStoryFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -289,7 +278,19 @@ export default function Feed() {
   };
 
   const archivePost = async (id: number) => {
-    setPostMenuId(null);
+    closeMenu();
+    setPosts(ps => ps.filter(p => p.id !== id));
+    try { await apiArchivePost(id); } catch { loadPosts(); }
+  };
+
+  const pinPost = async (id: number) => {
+    closeMenu();
+    setPosts(ps => ps.map(p => ({ ...p, isPinned: p.id === id })));
+    try { await apiPinPost(id); } catch { loadPosts(); }
+  };
+
+  const deletePost = async (id: number) => {
+    closeMenu();
     setPosts(ps => ps.filter(p => p.id !== id));
     try { await apiDeletePost(id); } catch { loadPosts(); }
   };
@@ -678,18 +679,12 @@ export default function Feed() {
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="#65676b"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6l5 3-1 1.73-6-3.5V7z"/></svg>
                   </div>
                 </div>
-                {/* ... and × */}
-                <div style={{ display: "flex", gap: 2, flexShrink: 0 }}>
-                  <button onClick={() => setPostMenuId(post.id)}
-                    style={{ width: 32, height: 32, borderRadius: "50%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#65676b", fontSize: 20, fontWeight: 700, lineHeight: 1 }}>
-                    ···
-                  </button>
-                  <button
-                    onClick={() => post.isOwner ? archivePost(post.id) : undefined}
-                    style={{ width: 32, height: 32, borderRadius: "50%", background: "none", border: "none", cursor: post.isOwner ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", color: post.isOwner ? "#EF4444" : "#65676b", fontSize: 16, fontWeight: 700 }}>
-                    ✕
-                  </button>
-                </div>
+                {/* ··· */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); const r = e.currentTarget.getBoundingClientRect(); setMenuPos({ top: r.bottom + 6, right: window.innerWidth - r.right }); setPostMenuId(post.id); }}
+                  style={{ width: 32, height: 32, borderRadius: "50%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#65676b", fontSize: 20, fontWeight: 700, lineHeight: 1, flexShrink: 0 }}>
+                  ···
+                </button>
               </div>
 
               {/* Content + Music card (unified) */}
@@ -863,95 +858,75 @@ export default function Feed() {
       {/* ── Spin animation ── */}
       <style>{`@keyframes fb-spin { to { transform: rotate(360deg); } }`}</style>
 
-      {/* ── Post options bottom sheet ── */}
-      {postMenuId !== null && createPortal(
-        <>
-          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)", zIndex: 9000 }} onClick={() => setPostMenuId(null)} />
-          <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 9001, background: "#fff", borderRadius: "28px 28px 0 0", boxShadow: "0 -8px 40px rgba(0,0,0,0.18)", maxHeight: "88vh", overflowY: "auto", animation: "slideUpSheet 0.28s cubic-bezier(0.32,0.72,0,1)" }}>
-            <div style={{ display: "flex", justifyContent: "center", paddingTop: 12, paddingBottom: 6 }}>
-              <div style={{ width: 44, height: 5, background: "#E2E8F0", borderRadius: 99 }} />
-            </div>
-            <div style={{ padding: "4px 14px 32px", display: "flex", flexDirection: "column", gap: 10 }}>
-
-              {/* Green group */}
-              {(() => {
-                const menuPost = posts.find(p => p.id === postMenuId);
-                const isMyPost = menuPost?.isOwner === true || (user.id !== undefined && menuPost?.authorId === user.id);
-                const greenItems: {svg:React.ReactNode;bg:string;label:string;desc:string;action:()=>void}[] = isMyPost
-                  ? [
-                      { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#F59E0B" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><line x1="10" y1="12" x2="14" y2="12"/></svg>, bg: "#FEF3C7", label: "Archiver le post", desc: "Cette publication sera supprimée du fil pour tout le monde.", action: () => { if (postMenuId !== null) archivePost(postMenuId); } },
-                      { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>, bg: "#DCFCE7", label: "Activer les notifications", desc: "Recevez des notifications pour cette publication.", action: () => setPostMenuId(null) },
-                    ]
-                  : [
-                      { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>, bg: "#DCFCE7", label: "Ça m'intéresse", desc: "Vous verrez plus de publications de ce type.", action: () => setPostMenuId(null) },
-                      { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>, bg: "#DCFCE7", label: "Enregistrer la publication", desc: "Ajoutez ceci à vos éléments enregistrés.", action: () => { if (postMenuId !== null) toggleSave(postMenuId); setPostMenuId(null); } },
-                      { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>, bg: "#DCFCE7", label: "Activer les notifications", desc: "Recevez des notifications pour cette publication.", action: () => setPostMenuId(null) },
-                    ];
+      {/* ── Floating post menu ── */}
+      {postMenuId !== null && menuPos !== null && createPortal(
+        <div onClick={closeMenu} style={{ position: "fixed", inset: 0, zIndex: 9000 }}>
+          <style>{`@keyframes bpMenuIn { from { opacity: 0; transform: scale(0.88); } to { opacity: 1; transform: scale(1); } }`}</style>
+          <div onClick={e => e.stopPropagation()} style={{
+            position: "fixed",
+            top: menuPos.top,
+            right: menuPos.right,
+            width: 235,
+            background: "#FFFFFF",
+            borderRadius: 20,
+            boxShadow: "0 12px 40px rgba(0,0,0,0.12)",
+            border: "1px solid rgba(34,197,94,0.08)",
+            overflow: "hidden",
+            animation: "bpMenuIn 180ms ease",
+            transformOrigin: "top right",
+            zIndex: 9001,
+          }}>
+            {(() => {
+              const menuPost = posts.find(p => p.id === postMenuId);
+              const isMyPost = menuPost?.isOwner === true || (user.id !== undefined && menuPost?.authorId === user.id);
+              if (isMyPost) {
                 return (
-              <div style={{ background: "#F8FAFC", borderRadius: 20, overflow: "hidden" }}>
-                {(greenItems).map((item, i, arr) => (
-                  <button key={i} onClick={item.action} style={{ width: "100%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 14, padding: "13px 16px", borderBottom: i < arr.length - 1 ? "1px solid #F1F5F9" : "none", textAlign: "left" }}>
-                    <div style={{ width: 42, height: 42, borderRadius: "50%", background: item.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.svg}</div>
-                    <div style={{ flex: 1 }}><div style={{ fontWeight: 700, fontSize: 15, color: "#0F172A" }}>{item.label}</div><div style={{ fontSize: 12.5, color: "#94A3B8", marginTop: 2 }}>{item.desc}</div></div>
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
-                  </button>
-                ))}
-              </div>
+                  <>
+                    {([
+                      { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>, label: "Modifier le post", color: "#22C55E", action: closeMenu },
+                      { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1v3.76z"/></svg>, label: "Épingler le post", color: "#22C55E", action: () => { if (postMenuId !== null) pinPost(postMenuId); } },
+                      { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><line x1="10" y1="12" x2="14" y2="12"/></svg>, label: "Archiver le post", color: "#22C55E", action: () => { if (postMenuId !== null) archivePost(postMenuId); } },
+                    ] as { icon: React.ReactNode; label: string; color: string; action: () => void }[]).map((item, i) => (
+                      <button key={i} onClick={item.action}
+                        onMouseEnter={e => (e.currentTarget.style.background = "rgba(34,197,94,0.06)")}
+                        onMouseLeave={e => (e.currentTarget.style.background = "none")}
+                        style={{ width: "100%", background: "none", border: "none", borderBottom: "1px solid rgba(34,197,94,0.07)", cursor: "pointer", display: "flex", alignItems: "center", gap: 12, padding: "0 16px", height: 52, textAlign: "left", transition: "background 0.15s ease" }}>
+                        {item.icon}
+                        <span style={{ flex: 1, fontSize: 14.5, fontWeight: 600, color: item.color }}>{item.label}</span>
+                      </button>
+                    ))}
+                    <button onClick={() => { if (postMenuId !== null) deletePost(postMenuId); }}
+                      onMouseEnter={e => (e.currentTarget.style.background = "rgba(239,68,68,0.06)")}
+                      onMouseLeave={e => (e.currentTarget.style.background = "none")}
+                      style={{ width: "100%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 12, padding: "0 16px", height: 52, textAlign: "left", transition: "background 0.15s ease" }}>
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                      <span style={{ flex: 1, fontSize: 14.5, fontWeight: 600, color: "#EF4444" }}>Supprimer le post</span>
+                    </button>
+                  </>
                 );
-              })()}
-
-              {/* Blue group */}
-              <div style={{ background: "#F8FAFC", borderRadius: 20, overflow: "hidden" }}>
-                {([
-                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3B82F6" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>, bg: "#DBEAFE", label: "Partager", desc: "Envoyez cette publication à vos amis.", action: () => setPostMenuId(null) },
-                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3B82F6" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>, bg: "#DBEAFE", label: "Copier le lien", desc: "Copiez le lien de cette publication.", action: () => setPostMenuId(null) },
-                ] as {svg:React.ReactNode;bg:string;label:string;desc:string;action:()=>void}[]).map((item, i, arr) => (
-                  <button key={i} onClick={item.action} style={{ width: "100%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 14, padding: "13px 16px", borderBottom: i < arr.length - 1 ? "1px solid #F1F5F9" : "none", textAlign: "left" }}>
-                    <div style={{ width: 42, height: 42, borderRadius: "50%", background: item.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.svg}</div>
-                    <div style={{ flex: 1 }}><div style={{ fontWeight: 700, fontSize: 15, color: "#0F172A" }}>{item.label}</div><div style={{ fontSize: 12.5, color: "#94A3B8", marginTop: 2 }}>{item.desc}</div></div>
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
-                  </button>
-                ))}
-              </div>
-
-              {/* Gray group — hidden for own posts */}
-              {!(posts.find(p => p.id === postMenuId)?.isOwner === true || (user.id !== undefined && posts.find(p => p.id === postMenuId)?.authorId === user.id)) && (
-              <div style={{ background: "#F8FAFC", borderRadius: 20, overflow: "hidden" }}>
-                {([
-                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#475569" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>, bg: "#F1F5F9", label: "Masquer cette publication", desc: "Moins de publications comme celle-ci.", action: () => setPostMenuId(null) },
-                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#475569" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>, bg: "#F1F5F9", label: "Ne plus voir ce type de contenu", desc: "Vous verrez moins de publications de ce type.", action: () => setPostMenuId(null) },
-                ] as {svg:React.ReactNode;bg:string;label:string;desc:string;action:()=>void}[]).map((item, i, arr) => (
-                  <button key={i} onClick={item.action} style={{ width: "100%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 14, padding: "13px 16px", borderBottom: i < arr.length - 1 ? "1px solid #F1F5F9" : "none", textAlign: "left" }}>
-                    <div style={{ width: 42, height: 42, borderRadius: "50%", background: item.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.svg}</div>
-                    <div style={{ flex: 1 }}><div style={{ fontWeight: 700, fontSize: 15, color: "#0F172A" }}>{item.label}</div><div style={{ fontSize: 12.5, color: "#94A3B8", marginTop: 2 }}>{item.desc}</div></div>
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
-                  </button>
-                ))}
-              </div>
-              )}
-
-              {/* Red group — hidden for own posts */}
-              {!(posts.find(p => p.id === postMenuId)?.isOwner === true || (user.id !== undefined && posts.find(p => p.id === postMenuId)?.authorId === user.id)) && (
-              <div style={{ background: "#FFF5F5", borderRadius: 20, overflow: "hidden" }}>
-                {([
-                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="#EF4444"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15" stroke="#EF4444" strokeWidth="2"/></svg>, bg: "#FEE2E2", label: "Signaler la publication", desc: "L'auteur ne saura pas qui a signalé.", action: () => setPostMenuId(null) },
-                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#EF4444" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>, bg: "#FEE2E2", label: "Bloquer cet utilisateur", desc: "Vous ne verrez plus ses publications.", action: () => setPostMenuId(null) },
-                ] as {svg:React.ReactNode;bg:string;label:string;desc:string;action:()=>void}[]).map((item, i, arr) => (
-                  <button key={i} onClick={item.action} style={{ width: "100%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 14, padding: "13px 16px", borderBottom: i < arr.length - 1 ? "1px solid #FEE2E2" : "none", textAlign: "left" }}>
-                    <div style={{ width: 42, height: 42, borderRadius: "50%", background: item.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.svg}</div>
-                    <div style={{ flex: 1 }}><div style={{ fontWeight: 700, fontSize: 15, color: "#EF4444" }}>{item.label}</div><div style={{ fontSize: 12.5, color: "#94A3B8", marginTop: 2 }}>{item.desc}</div></div>
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#FCA5A5" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
-                  </button>
-                ))}
-              </div>
-              )}
-
-              <button onClick={() => setPostMenuId(null)} style={{ width: "100%", background: "#F8FAFC", border: "none", borderRadius: 20, padding: "16px", fontWeight: 700, fontSize: 16, color: "#475569", cursor: "pointer" }}>
-                Annuler
-              </button>
-            </div>
+              } else {
+                return (
+                  <>
+                    {([
+                      { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>, label: "Ça m'intéresse", color: "#22C55E", action: closeMenu },
+                      { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>, label: "Enregistrer", color: "#22C55E", action: () => { if (postMenuId !== null) { toggleSave(postMenuId); closeMenu(); } } },
+                      { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15" stroke="#EF4444" strokeWidth="2"/></svg>, label: "Signaler", color: "#EF4444", action: closeMenu },
+                      { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>, label: "Bloquer l'utilisateur", color: "#EF4444", action: closeMenu },
+                    ] as { icon: React.ReactNode; label: string; color: string; action: () => void }[]).map((item, i, arr) => (
+                      <button key={i} onClick={item.action}
+                        onMouseEnter={e => (e.currentTarget.style.background = item.color === "#EF4444" ? "rgba(239,68,68,0.06)" : "rgba(34,197,94,0.06)")}
+                        onMouseLeave={e => (e.currentTarget.style.background = "none")}
+                        style={{ width: "100%", background: "none", border: "none", borderBottom: i < arr.length - 1 ? "1px solid rgba(0,0,0,0.04)" : "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 12, padding: "0 16px", height: 52, textAlign: "left", transition: "background 0.15s ease" }}>
+                        {item.icon}
+                        <span style={{ flex: 1, fontSize: 14.5, fontWeight: 600, color: item.color }}>{item.label}</span>
+                      </button>
+                    ))}
+                  </>
+                );
+              }
+            })()}
           </div>
-        </>,
+        </div>,
         document.body
       )}
 
