@@ -155,7 +155,7 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
     : [];
   const likedSet = new Set(myLikes.map(l => l.postId));
 
-  res.setHeader("Cache-Control", "private, max-age=30, stale-while-revalidate=60");
+  res.setHeader("Cache-Control", "no-store");
   res.json(rows.map(r => ({
     id: r.id,
     authorId: r.authorId,

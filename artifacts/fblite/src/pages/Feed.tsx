@@ -876,7 +876,7 @@ export default function Feed() {
               {/* Green group */}
               {(() => {
                 const menuPost = posts.find(p => p.id === postMenuId);
-                const isMyPost = menuPost?.isOwner === true;
+                const isMyPost = menuPost?.isOwner === true || (user.id !== undefined && menuPost?.authorId === user.id);
                 const greenItems: {svg:React.ReactNode;bg:string;label:string;desc:string;action:()=>void}[] = isMyPost
                   ? [
                       { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#F59E0B" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><line x1="10" y1="12" x2="14" y2="12"/></svg>, bg: "#FEF3C7", label: "Archiver le post", desc: "Cette publication sera supprimée du fil pour tout le monde.", action: () => { if (postMenuId !== null) archivePost(postMenuId); } },
@@ -915,7 +915,7 @@ export default function Feed() {
               </div>
 
               {/* Gray group — hidden for own posts */}
-              {!posts.find(p => p.id === postMenuId)?.isOwner && (
+              {!(posts.find(p => p.id === postMenuId)?.isOwner === true || (user.id !== undefined && posts.find(p => p.id === postMenuId)?.authorId === user.id)) && (
               <div style={{ background: "#F8FAFC", borderRadius: 20, overflow: "hidden" }}>
                 {([
                   { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#475569" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>, bg: "#F1F5F9", label: "Masquer cette publication", desc: "Moins de publications comme celle-ci.", action: () => setPostMenuId(null) },
@@ -931,7 +931,7 @@ export default function Feed() {
               )}
 
               {/* Red group — hidden for own posts */}
-              {!posts.find(p => p.id === postMenuId)?.isOwner && (
+              {!(posts.find(p => p.id === postMenuId)?.isOwner === true || (user.id !== undefined && posts.find(p => p.id === postMenuId)?.authorId === user.id)) && (
               <div style={{ background: "#FFF5F5", borderRadius: 20, overflow: "hidden" }}>
                 {([
                   { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="#EF4444"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15" stroke="#EF4444" strokeWidth="2"/></svg>, bg: "#FEE2E2", label: "Signaler la publication", desc: "L'auteur ne saura pas qui a signalé.", action: () => setPostMenuId(null) },
