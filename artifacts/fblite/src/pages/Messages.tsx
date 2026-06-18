@@ -199,72 +199,121 @@ function fmtConvPreview(raw: string): { text: string; isAudio: boolean } {
   return { text: raw.length > 55 ? raw.slice(0, 55) + "…" : raw, isAudio: false };
 }
 
-/* ── MapThumbnail — static Wikimedia map with skeleton + auto-retry ── */
-function MapThumbnail({ lat, lng }: { lat: number; lng: number }) {
-  const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
-  const [retries, setRetries] = useState(0);
-  const zoom = 15;
-  /* Wikimedia static maps: free, no API key, proper OSM rendering */
-  const src = `https://maps.wikimedia.org/img/osm-intl,${zoom},${lat.toFixed(5)},${lng.toFixed(5)},300x150.png`;
+/* ── OSM tile math ── */
+function osmTileInfo(lat: number, lng: number, zoom: number) {
+  const n   = Math.pow(2, zoom);
+  const tx  = (lng + 180) / 360 * n;
+  const rad = lat * Math.PI / 180;
+  const ty  = (1 - Math.log(Math.tan(rad) + 1 / Math.cos(rad)) / Math.PI) / 2 * n;
+  return {
+    tileX: Math.floor(tx),
+    tileY: Math.floor(ty),
+    pxX  : (tx - Math.floor(tx)) * 256,   // pixel offset within center tile
+    pxY  : (ty - Math.floor(ty)) * 256,
+  };
+}
 
-  useEffect(() => {
-    if (status !== "error" || retries >= 2) return;
-    const t = setTimeout(() => { setStatus("loading"); setRetries(r => r + 1); }, 3000);
-    return () => clearTimeout(t);
-  }, [status, retries]);
+/* ── MapThumbnail — OpenStreetMap tiles, properly centred on the coordinate ── */
+function MapThumbnail({ lat, lng }: { lat: number; lng: number }) {
+  const zoom = 14;
+  const { tileX, tileY, pxX, pxY } = osmTileInfo(lat, lng, zoom);
+  const [loaded, setLoaded] = useState(0);
+  const [errors, setErrors] = useState(0);
+  const TOTAL = 9; // 3×3 tile grid
+
+  /* The 3×3 grid spans 768×768 px.
+     Our coordinate sits at (256 + pxX, 256 + pxY) within that grid.
+     We want it at the centre of the 300×150 viewport:  (150, 75).
+     So we shift the grid by (150 − (256+pxX), 75 − (256+pxY)).           */
+  const offsetX = Math.round(150 - (256 + pxX));
+  const offsetY = Math.round(75  - (256 + pxY));
+
+  const allLoaded = loaded >= TOTAL;
+  const allError  = errors >= TOTAL;
+
+  /* Subdomains a/b/c distribute load across OSM mirrors */
+  const sub = (x: number, y: number) => ["a","b","c"][(x + y) % 3];
 
   return (
-    <div style={{ position:"relative", width:"100%", height:140, overflow:"hidden",
-      background: status === "error" ? "linear-gradient(160deg,#1a3a2a 0%,#2d6a4f 50%,#1a3a2a 100%)" : "#e8f5e9" }}>
-      {/* Skeleton pulse while loading */}
-      {status === "loading" && (
+    <div style={{ position:"relative", width:"100%", height:140, overflow:"hidden", background:"#dde8d8" }}>
+
+      {/* ── Shimmer skeleton ── */}
+      {!allLoaded && !allError && (
         <div style={{ position:"absolute", inset:0,
-          background:"linear-gradient(90deg,#e2ede9 25%,#c8ddd4 50%,#e2ede9 75%)",
+          background:"linear-gradient(90deg,#d8e8d3 25%,#c4d9bf 50%,#d8e8d3 75%)",
           backgroundSize:"200% 100%",
           animation:"map-shimmer 1.6s ease-in-out infinite" }}/>
       )}
-      {/* Actual map tile */}
-      {status !== "error" && (
-        <img key={retries} src={src} alt="carte" decoding="async"
-          style={{ width:"100%", height:"100%", objectFit:"cover", display:"block",
-            opacity: status === "ok" ? 1 : 0, transition:"opacity 0.4s" }}
-          onLoad={() => setStatus("ok")}
-          onError={() => setStatus("error")} />
+
+      {/* ── 3×3 OSM tile grid ── */}
+      {!allError && (
+        <div style={{ position:"absolute", width:768, height:768,
+          transform:`translate(${offsetX}px,${offsetY}px)`,
+          opacity: allLoaded ? 1 : 0, transition:"opacity 0.35s" }}>
+          {([-1,0,1] as const).map(dy =>
+            ([-1,0,1] as const).map(dx => {
+              const tx = tileX + dx;
+              const ty = tileY + dy;
+              return (
+                <img
+                  key={`${tx}-${ty}`}
+                  src={`https://${sub(tx,ty)}.tile.openstreetmap.org/${zoom}/${tx}/${ty}.png`}
+                  width={256} height={256} decoding="async"
+                  style={{ position:"absolute", left:(dx+1)*256, top:(dy+1)*256,
+                    imageRendering:"crisp-edges", display:"block" }}
+                  onLoad ={() => setLoaded(n => n + 1)}
+                  onError={() => setErrors(n => n + 1)}
+                />
+              );
+            })
+          )}
+        </div>
       )}
-      {/* Error fallback — hand-drawn map-like appearance */}
-      {status === "error" && (
-        <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column",
-          alignItems:"center", justifyContent:"center", gap:6 }}>
+
+      {/* ── Error fallback ── */}
+      {allError && (
+        <div style={{ position:"absolute", inset:0,
+          background:"linear-gradient(160deg,#1a3a2a,#2d6a4f)",
+          display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:6 }}>
           <svg viewBox="0 0 64 64" width="56" height="56" opacity={0.55}>
-            {/* Simulated roads */}
             <line x1="0" y1="32" x2="64" y2="32" stroke="#4ade80" strokeWidth="3" opacity={0.6}/>
             <line x1="32" y1="0" x2="32" y2="64" stroke="#4ade80" strokeWidth="2" opacity={0.4}/>
             <line x1="0" y1="18" x2="64" y2="46" stroke="#4ade80" strokeWidth="1.5" opacity={0.3}/>
-            {/* Block shapes */}
-            <rect x="8" y="8" width="16" height="12" rx="2" fill="#86efac" opacity={0.4}/>
+            <rect x="8"  y="8"  width="16" height="12" rx="2" fill="#86efac" opacity={0.4}/>
             <rect x="40" y="14" width="14" height="10" rx="2" fill="#86efac" opacity={0.3}/>
             <rect x="10" y="40" width="18" height="14" rx="2" fill="#86efac" opacity={0.35}/>
             <rect x="38" y="42" width="12" height="12" rx="2" fill="#86efac" opacity={0.3}/>
           </svg>
-          <span style={{ color:"rgba(255,255,255,0.7)", fontSize:11, fontWeight:600 }}>
+          <span style={{ color:"rgba(255,255,255,0.72)", fontSize:11, fontWeight:600 }}>
             Carte non disponible
           </span>
         </div>
       )}
-      {/* Red pin overlay — always shown */}
+
+      {/* ── Red pin — always centred ── */}
       <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center",
         justifyContent:"center", pointerEvents:"none" }}>
         <svg viewBox="0 0 24 30" width="30" height="37"
-          style={{ filter:"drop-shadow(0 2px 5px rgba(0,0,0,0.45))" }}>
+          style={{ filter:"drop-shadow(0 2px 6px rgba(0,0,0,0.5))" }}>
           <path d="M12 0C7.16 0 3.25 3.91 3.25 8.75c0 6.56 8.75 16.25 8.75 16.25s8.75-9.69 8.75-16.25C20.75 3.91 16.84 0 12 0z"
             fill="#EF4444"/>
           <circle cx="12" cy="8.75" r="3.5" fill="#fff" opacity={0.9}/>
         </svg>
       </div>
-      {/* Dark gradient at bottom for readability */}
-      {status === "ok" && (
+
+      {/* ── Bottom gradient for readability ── */}
+      {allLoaded && !allError && (
         <div style={{ position:"absolute", bottom:0, left:0, right:0, height:32,
-          background:"linear-gradient(to top, rgba(0,0,0,0.28), transparent)" }}/>
+          background:"linear-gradient(to top,rgba(0,0,0,0.25),transparent)" }}/>
+      )}
+
+      {/* ── OSM attribution (required by tile usage policy) ── */}
+      {allLoaded && !allError && (
+        <div style={{ position:"absolute", bottom:2, right:4,
+          background:"rgba(255,255,255,0.75)", borderRadius:3,
+          fontSize:8, padding:"1px 4px", color:"#333", pointerEvents:"none" }}>
+          © OpenStreetMap
+        </div>
       )}
     </div>
   );
