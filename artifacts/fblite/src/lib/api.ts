@@ -129,6 +129,7 @@ export interface PublicUser {
   bio: string | null;
   role?: string;
   profileLocked?: boolean;
+  createdAt?: string;
 }
 
 export type FriendshipStatus = "none" | "pending_sent" | "pending_received" | "friends";
@@ -233,12 +234,29 @@ export async function apiCheckBlock(userId: number): Promise<boolean> {
   return data.blocked;
 }
 
-export async function apiReportUser(userId: number, reason: string): Promise<void> {
+export async function apiReportUser(userId: number, reason: string, description?: string): Promise<void> {
   const res = await apiFetch(`/users/${userId}/report`, {
     method: "POST",
-    body: JSON.stringify({ reason }),
+    body: JSON.stringify({ reason, description }),
   });
   if (!res.ok) throw new Error("Erreur lors du signalement");
+}
+
+export async function apiGetMutualFriends(userId: number): Promise<PublicUser[]> {
+  const res = await apiFetch(`/users/${userId}/mutual-friends`);
+  if (!res.ok) return [];
+  return res.json() as Promise<PublicUser[]>;
+}
+
+export async function apiGetMutualGroups(userId: number): Promise<{ id: number; name: string; avatarUrl: string | null; type: string }[]> {
+  const res = await apiFetch(`/users/${userId}/mutual-groups`);
+  if (!res.ok) return [];
+  return res.json() as Promise<{ id: number; name: string; avatarUrl: string | null; type: string }[]>;
+}
+
+export async function apiHideUser(userId: number): Promise<void> {
+  const res = await apiFetch(`/users/${userId}/hide`, { method: "POST" });
+  if (!res.ok) throw new Error("Erreur");
 }
 
 export async function apiGetPosts(page = 1): Promise<FeedPost[]> {

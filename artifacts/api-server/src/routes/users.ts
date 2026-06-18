@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { db, usersTable, friendRequestsTable, userBlocksTable, userReportsTable, followsTable, postsTable, notificationsTable } from "@workspace/db";
+import { db, usersTable, friendRequestsTable, userBlocksTable, userReportsTable, userHiddenProfilesTable, followsTable, postsTable, notificationsTable, chatGroupsTable, chatGroupMembersTable } from "@workspace/db";
 import { eq, or, and, ne, ilike, sql, inArray } from "drizzle-orm";
 import { UpdateMeBody, GetUserParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
@@ -376,8 +376,66 @@ router.post("/users/:id/report", requireAuth, async (req, res): Promise<void> =>
   const reason = typeof req.body.reason === "string" && req.body.reason.trim()
     ? req.body.reason.trim()
     : "Aucune raison précisée";
+  const description = typeof req.body.description === "string" && req.body.description.trim()
+    ? req.body.description.trim()
+    : null;
 
-  await db.insert(userReportsTable).values({ reporterId: me, reportedId: targetId, reason });
+  await db.insert(userReportsTable).values({ reporterId: me, reportedId: targetId, reason, description });
+  res.status(201).json({ ok: true });
+});
+
+// Mutual friends between caller and target
+router.get("/users/:id/mutual-friends", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const targetId = Number(req.params.id);
+  if (isNaN(targetId) || targetId === me) { res.status(400).json({ error: "Invalid target" }); return; }
+
+  const myRows = await db.select({ fromUserId: friendRequestsTable.fromUserId, toUserId: friendRequestsTable.toUserId })
+    .from(friendRequestsTable)
+    .where(and(eq(friendRequestsTable.status, "accepted"), or(eq(friendRequestsTable.fromUserId, me), eq(friendRequestsTable.toUserId, me))));
+  const myFriendIds = myRows.map(r => r.fromUserId === me ? r.toUserId : r.fromUserId);
+  if (myFriendIds.length === 0) { res.json([]); return; }
+
+  const theirRows = await db.select({ fromUserId: friendRequestsTable.fromUserId, toUserId: friendRequestsTable.toUserId })
+    .from(friendRequestsTable)
+    .where(and(eq(friendRequestsTable.status, "accepted"), or(eq(friendRequestsTable.fromUserId, targetId), eq(friendRequestsTable.toUserId, targetId))));
+  const theirFriendSet = new Set(theirRows.map(r => r.fromUserId === targetId ? r.toUserId : r.fromUserId));
+
+  const mutualIds = myFriendIds.filter(id => theirFriendSet.has(id) && id !== targetId);
+  if (mutualIds.length === 0) { res.json([]); return; }
+
+  const users = await db.select({ id: usersTable.id, firstName: usersTable.firstName, lastName: usersTable.lastName, avatarUrl: usersTable.avatarUrl, country: usersTable.country })
+    .from(usersTable).where(inArray(usersTable.id, mutualIds));
+  res.json(users);
+});
+
+// Mutual groups between caller and target
+router.get("/users/:id/mutual-groups", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const targetId = Number(req.params.id);
+  if (isNaN(targetId) || targetId === me) { res.status(400).json({ error: "Invalid target" }); return; }
+
+  const myGroups = await db.select({ groupId: chatGroupMembersTable.groupId })
+    .from(chatGroupMembersTable).where(eq(chatGroupMembersTable.userId, me));
+  const myGroupIds = myGroups.map(r => r.groupId);
+  if (myGroupIds.length === 0) { res.json([]); return; }
+
+  const theirGroups = await db.select({ groupId: chatGroupMembersTable.groupId })
+    .from(chatGroupMembersTable).where(and(eq(chatGroupMembersTable.userId, targetId), inArray(chatGroupMembersTable.groupId, myGroupIds)));
+  const mutualGroupIds = theirGroups.map(r => r.groupId);
+  if (mutualGroupIds.length === 0) { res.json([]); return; }
+
+  const groups = await db.select({ id: chatGroupsTable.id, name: chatGroupsTable.name, avatarUrl: chatGroupsTable.avatarUrl, type: chatGroupsTable.type })
+    .from(chatGroupsTable).where(inArray(chatGroupsTable.id, mutualGroupIds));
+  res.json(groups);
+});
+
+// Hide a user (from suggestions / feed)
+router.post("/users/:id/hide", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const targetId = Number(req.params.id);
+  if (isNaN(targetId) || targetId === me) { res.status(400).json({ error: "Invalid target" }); return; }
+  await db.insert(userHiddenProfilesTable).values({ hiderId: me, hiddenId: targetId }).onConflictDoNothing();
   res.status(201).json({ ok: true });
 });
 

@@ -1,0 +1,274 @@
+MISSION CRITIQUE
+
+Je veux que tu développes intégralement le backend du système de profil verrouillé BrutePawa exactement comme décrit ci-dessous.
+
+AUCUNE APPROXIMATION.
+AUCUNE SIMULATION.
+AUCUN PLACEHOLDER.
+TOUT DOIT ÊTRE FONCTIONNEL ET CONNECTÉ À SUPABASE.
+
+═══════════════════════
+OBJECTIF
+═══════════════════════
+
+Lorsqu'un utilisateur active "Profil verrouillé", seuls ses amis peuvent voir :
+
+- Publications
+- Photos
+- Vidéos
+- Informations personnelles
+- Activités
+
+Les non-amis doivent uniquement voir :
+
+✓ Photo de profil
+✓ Photo de couverture
+✓ Nom
+✓ Badge vérifié
+✓ Pays
+✓ Bouton Ajouter comme ami
+✓ Bouton Message
+✓ Carte Profil verrouillé
+✓ Carte Pourquoi ce profil est verrouillé
+
+Tout le reste doit être masqué.
+
+═══════════════════════
+BASE DE DONNÉES
+═══════════════════════
+
+Créer les tables suivantes :
+
+friendships
+
+- id
+- sender_id
+- receiver_id
+- status
+- created_at
+
+Status possibles :
+
+pending
+accepted
+rejected
+blocked
+
+Créer également :
+
+profile_privacy
+
+- user_id
+- is_locked
+- show_posts
+- show_photos
+- show_videos
+- show_personal_info
+
+Créer :
+
+user_blocks
+
+- blocker_id
+- blocked_id
+- created_at
+
+Créer :
+
+user_reports
+
+- reporter_id
+- reported_id
+- reason
+- description
+- created_at
+
+═══════════════════════
+LOGIQUE PROFIL VERROUILLÉ
+═══════════════════════
+
+Lorsque :
+
+profile.is_locked = true
+
+ET
+
+currentUser n'est pas ami
+
+ALORS :
+
+hidePosts()
+hidePhotos()
+hideVideos()
+hidePersonalInfo()
+
+Afficher uniquement :
+
+- Avatar
+- Couverture
+- Nom
+- Badge
+- Pays
+- Demande d'ami
+- Message
+- Carte verrouillée
+
+═══════════════════════
+GESTION DES DEMANDES D'AMIS
+═══════════════════════
+
+Si aucune relation :
+
+Afficher :
+
+Ajouter comme ami
+
+Si status = pending
+
+Afficher :
+
+Demande envoyée
+
+Si status = accepted
+
+Afficher :
+
+Amis
+
+Si status = blocked
+
+Empêcher toute interaction
+
+═══════════════════════
+MENU ⋮
+═══════════════════════
+
+Le menu doit afficher :
+
+- Partager le profil
+- Copier le lien du profil
+- Masquer ce profil
+- Ne plus suggérer ce profil
+- Bloquer cet utilisateur
+- Signaler le profil
+- Annuler la demande d'ami
+- Voir les informations publiques
+- Voir les amis en commun
+- Voir les groupes en commun
+
+═══════════════════════
+SOUS-PAGE SIGNALER
+═══════════════════════
+
+Motifs :
+
+- Faux compte
+- Spam
+- Harcèlement
+- Contenu inapproprié
+- Arnaque
+- Usurpation d'identité
+- Autre
+
+Enregistrement obligatoire dans user_reports.
+
+═══════════════════════
+SOUS-PAGE BLOQUER
+═══════════════════════
+
+Confirmation :
+
+"Vous ne pourrez plus lui envoyer de messages, voir ses publications ou interagir avec lui sur BrutePawa."
+
+Boutons :
+
+- Annuler
+- Bloquer
+
+Créer automatiquement une entrée dans user_blocks.
+
+═══════════════════════
+AMIS EN COMMUN
+═══════════════════════
+
+Créer un endpoint fonctionnel :
+
+/api/profile/mutual-friends/:id
+
+Calcul réel des amis communs.
+
+═══════════════════════
+GROUPES EN COMMUN
+═══════════════════════
+
+Créer un endpoint :
+
+/api/profile/mutual-groups/:id
+
+Retourner uniquement les groupes réellement partagés.
+
+═══════════════════════
+INFORMATIONS PUBLIQUES
+═══════════════════════
+
+Afficher :
+
+- Nom
+- Avatar
+- Couverture
+- Pays
+- Date d'inscription
+- Nombre d'amis
+- Amis en commun
+- Groupes en commun
+
+Le reste reste verrouillé.
+
+═══════════════════════
+SÉCURITÉ
+═══════════════════════
+
+Empêcher totalement :
+
+- Consultation directe des posts via URL
+- Consultation des photos via URL
+- Consultation des vidéos via URL
+- Consultation des informations privées via API
+
+Toutes les routes doivent vérifier :
+
+isFriend
+isOwner
+isLocked
+
+avant de retourner les données.
+
+═══════════════════════
+SUPABASE
+═══════════════════════
+
+Créer :
+
+- RLS Policies
+- Index SQL
+- Foreign Keys
+- Optimisation des requêtes
+
+═══════════════════════
+IMPORTANT
+═══════════════════════
+
+Je ne veux pas de pseudo-code.
+
+Je veux :
+
+✓ Backend réel
+✓ Endpoints réels
+✓ Requêtes Supabase réelles
+✓ Contrôleurs réels
+✓ Middleware réel
+✓ Validation réelle
+✓ Gestion des erreurs
+✓ Code production-ready
+
+L'implémentation doit être robuste, scalable, sécurisée et prête pour une application sociale de grande taille comme BrutePawa.

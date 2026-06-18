@@ -130,9 +130,17 @@ export const userReportsTable = pgTable("user_reports", {
   reporterId: integer("reporter_id").notNull(),
   reportedId: integer("reported_id").notNull(),
   reason: text("reason").notNull(),
+  description: text("description"),
   status: text("status").notNull().default("pending"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [index("user_reports_status_idx").on(t.status)]);
+
+export const userHiddenProfilesTable = pgTable("user_hidden_profiles", {
+  id: serial("id").primaryKey(),
+  hiderId: integer("hider_id").notNull(),
+  hiddenId: integer("hidden_id").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [uniqueIndex("user_hidden_profiles_pair_idx").on(t.hiderId, t.hiddenId)]);
 
 export const notificationsTable = pgTable("notifications", {
   id: serial("id").primaryKey(),
