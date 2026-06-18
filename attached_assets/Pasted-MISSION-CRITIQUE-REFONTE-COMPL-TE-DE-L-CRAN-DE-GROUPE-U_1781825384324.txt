@@ -1,0 +1,259 @@
+MISSION CRITIQUE – REFONTE COMPLÈTE DE L'ÉCRAN DE GROUPE
+
+UTILISER LA CAPTURE TELEGRAM FOURNIE COMME RÉFÉRENCE OFFICIELLE.
+
+INTERDICTION DE S'EN INSPIRER.
+INTERDICTION DE L'INTERPRÉTER.
+INTERDICTION DE MODERNISER.
+INTERDICTION DE CRÉER UNE VERSION PERSONNALISÉE.
+
+REPRODUIRE LE COMPORTEMENT ET LE DESIGN DE TELEGRAM À 99% MINIMUM.
+
+90% = ÉCHEC
+95% = ÉCHEC
+98% = ÉCHEC
+
+SEUL 99% EST ACCEPTÉ.
+
+━━━━━━━━━━━━━━━━━━━━━━
+PROBLÈME ACTUEL
+━━━━━━━━━━━━━━━━━━━━━━
+
+L'écran BrutePawa est vide après création du groupe.
+
+Telegram affiche immédiatement :
+
+- bannière Add Members
+- message système de création
+- panneau d'information
+- fond Telegram cohérent
+- expérience guidée
+
+BrutePawa doit faire exactement pareil.
+
+━━━━━━━━━━━━━━━━━━━━━━
+HEADER
+━━━━━━━━━━━━━━━━━━━━━━
+
+Copier Telegram exactement.
+
+- avatar du groupe
+- nom du groupe
+- nombre de membres
+- bouton retour
+- menu 3 points
+
+Même hauteur.
+Même alignement.
+Même espacement.
+
+Remplacer uniquement :
+
+Bleu Telegram → Vert BrutePawa #22C55E
+
+━━━━━━━━━━━━━━━━━━━━━━
+BANNIÈRE ADD MEMBERS
+━━━━━━━━━━━━━━━━━━━━━━
+
+OBLIGATOIRE.
+
+Actuellement absente ou mal placée.
+
+Doit apparaître directement sous le header.
+
+Structure exacte :
+
+[ Add Members ]                         [ X ]
+
+- largeur quasi complète
+- fond blanc
+- coins arrondis
+- ombre légère Telegram
+- bouton fermeture à droite
+
+Même hauteur.
+Même marge.
+Même comportement.
+
+Lorsque l'utilisateur ferme :
+
+- masquer la bannière
+- enregistrer l'état
+
+━━━━━━━━━━━━━━━━━━━━━━
+MESSAGE SYSTÈME
+━━━━━━━━━━━━━━━━━━━━━━
+
+Afficher automatiquement :
+
+Aujourd'hui
+
+Groupe "NomDuGroupe" créé
+
+Même style Telegram.
+
+Même position.
+
+Même couleur.
+
+Même taille.
+
+━━━━━━━━━━━━━━━━━━━━━━
+PANNEAU D'INFORMATION
+━━━━━━━━━━━━━━━━━━━━━━
+
+Afficher automatiquement.
+
+Fond semi-transparent.
+
+Coins arrondis.
+
+Même largeur que Telegram.
+
+Contenu :
+
+Vous avez créé un groupe
+
+Les groupes peuvent avoir :
+
+✓ Jusqu'à 200 000 membres
+
+✓ Historique permanent
+
+✓ Appels de groupe
+
+✓ Plusieurs administrateurs
+
+✓ Liens d'invitation
+
+Même espacement.
+
+Même alignement.
+
+Même hiérarchie.
+
+━━━━━━━━━━━━━━━━━━━━━━
+FOND
+━━━━━━━━━━━━━━━━━━━━━━
+
+Utiliser un wallpaper identique dans le comportement.
+
+Le fond doit être continu.
+
+Pas de carrés.
+Pas de répétition visible.
+Pas de mosaïque.
+
+Le wallpaper doit couvrir tout l'écran comme Telegram.
+
+━━━━━━━━━━━━━━━━━━━━━━
+ZONE DE SAISIE
+━━━━━━━━━━━━━━━━━━━━━━
+
+Copier Telegram.
+
+À gauche :
+
+🙂
+
+Centre :
+
+Écrire un message...
+
+À droite :
+
+📎
+
+🎤
+
+Même hauteur.
+Même rayon.
+Même padding.
+
+━━━━━━━━━━━━━━━━━━━━━━
+COULEURS
+━━━━━━━━━━━━━━━━━━━━━━
+
+Conserver :
+
+Fond blanc Telegram
+
+Texte noir Telegram
+
+Texte secondaire gris Telegram
+
+Remplacer uniquement :
+
+Bleu Telegram
+
+par
+
+#22C55E
+
+Aucune autre couleur verte.
+
+━━━━━━━━━━━━━━━━━━━━━━
+ANIMATIONS
+━━━━━━━━━━━━━━━━━━━━━━
+
+Copier Telegram.
+
+- apparition bannière
+- fermeture bannière
+- apparition panneau
+- ouverture clavier
+
+Durée :
+
+150ms
+
+━━━━━━━━━━━━━━━━━━━━━━
+INTERDICTIONS
+━━━━━━━━━━━━━━━━━━━━━━
+
+INTERDIT :
+
+- design personnalisé
+- glassmorphism
+- gros boutons modernes
+- Material You
+- cartes premium
+- bordures vertes partout
+- composants inventés
+- fond en mosaïque
+- espacements exagérés
+
+━━━━━━━━━━━━━━━━━━━━━━
+VALIDATION FINALE
+━━━━━━━━━━━━━━━━━━━━━━
+
+Comparer avec Telegram composant par composant.
+
+Header :
+100% identique
+
+Add Members :
+100% identique
+
+Message système :
+100% identique
+
+Panneau information :
+100% identique
+
+Fond :
+100% identique
+
+Zone de saisie :
+100% identique
+
+Animations :
+100% identiques
+
+Si un utilisateur reconnaît Telegram en moins d'une seconde :
+
+VALIDÉ.
+
+Sinon :
+
+ÉCHEC ET REDESSIN COMPLET.
