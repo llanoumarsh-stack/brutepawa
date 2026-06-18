@@ -2669,26 +2669,6 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     {isLast && <div className="avatar xs" style={{ background:activeUser.color, width:26, height:26, fontSize:10 }}>{activeUser.initials}</div>}
                   </div>
                 )}
-                {isAudio && msg.mine && vUps && vUps.network !== "error" && !selectionMode && (
-                  <button
-                    onClick={e => { e.stopPropagation(); cancelUploadMsg(msg.id); }}
-                    style={{
-                      width:34, height:34, borderRadius:"50%", border:"none", cursor:"pointer",
-                      background:"#22C55E", flexShrink:0, alignSelf:"center",
-                      display:"flex", alignItems:"center", justifyContent:"center",
-                      boxShadow:"0 2px 10px rgba(34,197,94,0.45)",
-                      transition:"transform 0.12s, opacity 0.12s",
-                      WebkitTapHighlightColor:"transparent", touchAction:"manipulation",
-                    }}
-                    onPointerDown={e => { e.currentTarget.style.transform="scale(0.86)"; e.currentTarget.style.opacity="0.80"; }}
-                    onPointerUp={e => { e.currentTarget.style.transform="scale(1)"; e.currentTarget.style.opacity="1"; }}
-                    onPointerLeave={e => { e.currentTarget.style.transform="scale(1)"; e.currentTarget.style.opacity="1"; }}
-                  >
-                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round">
-                      <path d="M18 6 6 18M6 6l12 12"/>
-                    </svg>
-                  </button>
-                )}
                 <div style={{ maxWidth:"72%" }}>
                   {msg.attachment && (
                     msg.attachment.type === "audio" ? (() => {
@@ -2715,27 +2695,70 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                         {/* Main row: play button | waveform | speed+avatar */}
                         <div style={{ display:"flex", alignItems:"center", gap:9 }}>
 
-                          {/* Play / Pause */}
-                          <button
-                            onClick={() => toggleVoice(msg.id, msg.attachment!.label)}
-                            style={{
-                              width:44, height:44, borderRadius:"50%", flexShrink:0, border:"none", cursor:"pointer",
-                              background: mine ? "#8BCB7A" : "#16C24A",
-                              display:"flex", alignItems:"center", justifyContent:"center",
-                              boxShadow: mine ? "0 3px 14px rgba(139,203,122,0.44)" : "0 3px 14px rgba(22,194,74,0.44)",
-                              transition:"transform 0.11s, opacity 0.11s",
-                              WebkitTapHighlightColor:"transparent",
-                              touchAction:"manipulation",
-                            }}
-                            onPointerDown={e => { e.currentTarget.style.transform="scale(0.88)"; e.currentTarget.style.opacity="0.82"; }}
-                            onPointerUp={e => { e.currentTarget.style.transform="scale(1)"; e.currentTarget.style.opacity="1"; }}
-                            onPointerLeave={e => { e.currentTarget.style.transform="scale(1)"; e.currentTarget.style.opacity="1"; }}
-                          >
-                            {isVoicePlaying
-                              ? <svg viewBox="0 0 24 24" width="17" height="17" fill="#fff"><rect x="5" y="4" width="4.5" height="16" rx="1.8"/><rect x="14.5" y="4" width="4.5" height="16" rx="1.8"/></svg>
-                              : <svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M7.5 5.2v13.6l11-6.8z"/></svg>
-                            }
-                          </button>
+                          {/* Play / Pause — or Cancel upload with circular progress */}
+                          {vUps && vUps.network !== "error" ? (
+                            <div style={{ position:"relative", width:44, height:44, flexShrink:0 }}>
+                              {/* Circular progress track + arc */}
+                              <svg
+                                style={{ position:"absolute", inset:0, transform:"rotate(-90deg)", pointerEvents:"none" }}
+                                viewBox="0 0 44 44" width="44" height="44">
+                                <circle cx="22" cy="22" r="17" fill="none"
+                                  stroke={mine ? "rgba(139,203,122,0.30)" : "rgba(22,194,74,0.22)"}
+                                  strokeWidth="2.5"/>
+                                {(vUps.network === "waiting" || vUps.network === "offline")
+                                  ? <circle cx="22" cy="22" r="17" fill="none"
+                                      stroke={mine ? "#8BCB7A" : "#22C55E"} strokeWidth="2.5"
+                                      strokeDasharray="20 87" strokeLinecap="round"
+                                      style={{ animation:"fbl-spin 1.1s linear infinite", transformOrigin:"22px 22px" }}/>
+                                  : <circle cx="22" cy="22" r="17" fill="none"
+                                      stroke={mine ? "#8BCB7A" : "#22C55E"} strokeWidth="2.5"
+                                      strokeDasharray={`${2 * Math.PI * 17}`}
+                                      strokeDashoffset={`${2 * Math.PI * 17 * (1 - vUps.progress / 100)}`}
+                                      strokeLinecap="round"
+                                      style={{ transition:"stroke-dashoffset 0.3s ease" }}/>
+                                }
+                              </svg>
+                              {/* Cancel × */}
+                              <button
+                                onClick={e => { e.stopPropagation(); cancelUploadMsg(msg.id); }}
+                                style={{
+                                  position:"absolute", inset:5, borderRadius:"50%", border:"none", cursor:"pointer",
+                                  background: mine ? "#8BCB7A" : "#22C55E",
+                                  display:"flex", alignItems:"center", justifyContent:"center",
+                                  WebkitTapHighlightColor:"transparent", touchAction:"manipulation",
+                                  transition:"transform 0.12s, opacity 0.12s",
+                                }}
+                                onPointerDown={e => { e.currentTarget.style.transform="scale(0.86)"; e.currentTarget.style.opacity="0.80"; }}
+                                onPointerUp={e => { e.currentTarget.style.transform="scale(1)"; e.currentTarget.style.opacity="1"; }}
+                                onPointerLeave={e => { e.currentTarget.style.transform="scale(1)"; e.currentTarget.style.opacity="1"; }}
+                              >
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round">
+                                  <path d="M18 6 6 18M6 6l12 12"/>
+                                </svg>
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => toggleVoice(msg.id, msg.attachment!.label)}
+                              style={{
+                                width:44, height:44, borderRadius:"50%", flexShrink:0, border:"none", cursor:"pointer",
+                                background: mine ? "#8BCB7A" : "#16C24A",
+                                display:"flex", alignItems:"center", justifyContent:"center",
+                                boxShadow: mine ? "0 3px 14px rgba(139,203,122,0.44)" : "0 3px 14px rgba(22,194,74,0.44)",
+                                transition:"transform 0.11s, opacity 0.11s",
+                                WebkitTapHighlightColor:"transparent",
+                                touchAction:"manipulation",
+                              }}
+                              onPointerDown={e => { e.currentTarget.style.transform="scale(0.88)"; e.currentTarget.style.opacity="0.82"; }}
+                              onPointerUp={e => { e.currentTarget.style.transform="scale(1)"; e.currentTarget.style.opacity="1"; }}
+                              onPointerLeave={e => { e.currentTarget.style.transform="scale(1)"; e.currentTarget.style.opacity="1"; }}
+                            >
+                              {isVoicePlaying
+                                ? <svg viewBox="0 0 24 24" width="17" height="17" fill="#fff"><rect x="5" y="4" width="4.5" height="16" rx="1.8"/><rect x="14.5" y="4" width="4.5" height="16" rx="1.8"/></svg>
+                                : <svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M7.5 5.2v13.6l11-6.8z"/></svg>
+                              }
+                            </button>
+                          )}
 
                           {/* Waveform — tap or drag to seek */}
                           <div
