@@ -684,27 +684,44 @@ export default function Feed() {
 
               {/* Content + Music card (unified) */}
               {(() => {
-                // Detect "♪ TrackName — Artist" or "♫ ..." in content
+                // Detect music in content: "🎵 Track — Artist" or "♪/♫ Track — Artist"
+                // CreatePostPage stores as: `🎵 Title — Artist`
+                const MUSIC_RE = /^[♪♫🎵🎶🎼]\s*(.+?)\s*[—–\-]\s*(.+)$/;
                 const parsed = !post.musicTrackName && post.content
-                  ? post.content.match(/^[♪♫]\s*(.+?)\s*[—–-]\s*(.+)$/)
+                  ? post.content.match(MUSIC_RE)
+                  : null;
+                // Also detect multi-line content where last line is the music tag
+                const parsedLine = !post.musicTrackName && !parsed && post.content
+                  ? (post.content.split("\n").pop() ?? "").match(MUSIC_RE)
                   : null;
 
-                const musicTrack = post.musicTrackName ?? (parsed ? parsed[1].trim() : null);
-                const musicArtist = post.musicArtist ?? (parsed ? parsed[2].trim() : null);
-                const isMusicContent = !!parsed; // content was the music info, don't show as text
+                const musicTrack  = post.musicTrackName ?? (parsed ? parsed[1].trim() : null) ?? (parsedLine ? parsedLine[1].trim() : null);
+                const musicArtist = post.musicArtist   ?? (parsed ? parsed[2].trim() : null) ?? (parsedLine ? parsedLine[2].trim() : null);
+                // isMusicContent: the ENTIRE content is just the music tag (no other text)
+                const isMusicContent = !!parsed;
+                // If music was appended as last line, get the caption (everything before)
+                const captionLines = parsedLine
+                  ? post.content!.split("\n").slice(0, -1).join("\n").trim()
+                  : null;
 
                 return (
                   <>
-                    {/* Show content text only if it's not purely a music tag */}
-                    {post.content && !isMusicContent && !post.musicTrackName && (
+                    {/* Pure music tag — don't show as text */}
+                    {post.content && !isMusicContent && !post.musicTrackName && !parsedLine && (
                       <div style={{ padding: "0 14px 10px", fontSize: 15, color: "#050505", lineHeight: 1.5 }}>
                         {post.content}
                       </div>
                     )}
-                    {/* Show content text for posts that have both caption AND music */}
+                    {/* Caption from DB musicTrackName posts */}
                     {post.content && post.musicTrackName && (
                       <div style={{ padding: "0 14px 10px", fontSize: 15, color: "#050505", lineHeight: 1.5 }}>
                         {post.content}
+                      </div>
+                    )}
+                    {/* Caption when music tag is the last line */}
+                    {captionLines && (
+                      <div style={{ padding: "0 14px 10px", fontSize: 15, color: "#050505", lineHeight: 1.5 }}>
+                        {captionLines}
                       </div>
                     )}
                     {/* Music card — from music_* fields OR parsed from content */}

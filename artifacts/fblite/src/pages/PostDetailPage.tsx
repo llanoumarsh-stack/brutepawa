@@ -385,21 +385,36 @@ export default function PostDetailPage({ postId }: Props) {
           </button>
         </div>
 
-        {/* Text content */}
-        {post.content && (
-          <div style={{ padding:"0 16px 14px", fontSize:15, color:"#1E293B", lineHeight:1.65 }}>{post.content}</div>
-        )}
-
-        {/* Music player (white card) */}
-        {post.musicTrackName && (
-          <MusicPlayer
-            trackName={post.musicTrackName}
-            artist={post.musicArtist ?? "Artiste inconnu"}
-            artworkUrl={post.musicArtworkUrl}
-            url={post.musicUrl}
-            duration={post.musicDuration}
-          />
-        )}
+        {/* Text content + Music player */}
+        {(() => {
+          const MUSIC_RE = /^[♪♫🎵🎶🎼]\s*(.+?)\s*[—–\-]\s*(.+)$/;
+          const parsed = !post.musicTrackName && post.content ? post.content.match(MUSIC_RE) : null;
+          const parsedLine = !post.musicTrackName && !parsed && post.content
+            ? (post.content.split("\n").pop() ?? "").match(MUSIC_RE) : null;
+          const trackName  = post.musicTrackName ?? (parsed?.[1]?.trim()) ?? (parsedLine?.[1]?.trim()) ?? null;
+          const trackArtist = post.musicArtist ?? (parsed?.[2]?.trim()) ?? (parsedLine?.[2]?.trim()) ?? "Artiste inconnu";
+          const caption = parsedLine ? post.content!.split("\n").slice(0,-1).join("\n").trim() : null;
+          const showContent = post.content && !parsed && !parsedLine;
+          return (
+            <>
+              {showContent && (
+                <div style={{ padding:"0 16px 14px", fontSize:15, color:"#1E293B", lineHeight:1.65 }}>{post.content}</div>
+              )}
+              {caption && (
+                <div style={{ padding:"0 16px 14px", fontSize:15, color:"#1E293B", lineHeight:1.65 }}>{caption}</div>
+              )}
+              {trackName && (
+                <MusicPlayer
+                  trackName={trackName}
+                  artist={trackArtist}
+                  artworkUrl={post.musicArtworkUrl}
+                  url={post.musicUrl}
+                  duration={post.musicDuration}
+                />
+              )}
+            </>
+          );
+        })()}
 
         {/* Media image/video */}
         {post.imageUrl && (
