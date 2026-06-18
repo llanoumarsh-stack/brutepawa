@@ -16,6 +16,12 @@ function makeDeliveryToken(msgId: number, toUserId: number): string {
 function verifyDeliveryToken(token: string, msgId: number, toUserId: number): boolean {
   return token === makeDeliveryToken(msgId, toUserId);
 }
+function makeMarkReadToken(fromUserId: number, toUserId: number): string {
+  return createHmac("sha256", DELIVERY_SECRET).update(`markread:${fromUserId}:${toUserId}`).digest("hex");
+}
+function verifyMarkReadToken(token: string, fromUserId: number, toUserId: number): boolean {
+  return token === makeMarkReadToken(fromUserId, toUserId);
+}
 
 const router = Router();
 
@@ -351,9 +357,13 @@ router.post("/messages", requireAuth, async (req, res): Promise<void> => {
   }
 
   // Push notification to recipient (if app is closed / offline)
-  const [sender] = await db.select({ firstName: usersTable.firstName, lastName: usersTable.lastName })
-    .from(usersTable).where(eq(usersTable.id, me));
+  const [sender] = await db.select({
+    firstName: usersTable.firstName,
+    lastName:  usersTable.lastName,
+    avatarUrl: usersTable.avatarUrl,
+  }).from(usersTable).where(eq(usersTable.id, me));
   const senderName = sender ? `${sender.firstName} ${sender.lastName}`.trim() : "Quelqu'un";
+  const senderAvatar = (sender?.avatarUrl && sender.avatarUrl.startsWith("http")) ? sender.avatarUrl : null;
   const rawContent = parsed.data.content;
   const notifBody = rawContent.startsWith("__audio__")    ? "🎤 Message vocal"
     : rawContent.startsWith("__video__")    ? "📹 Message vidéo"
@@ -362,18 +372,26 @@ router.post("/messages", requireAuth, async (req, res): Promise<void> => {
     : rawContent.startsWith("__location__") ? "📍 Localisation"
     : rawContent.length > 80 ? rawContent.slice(0, 80) + "…" : rawContent;
   pushToUserDevice(toId, {
-    title:              senderName,
-    body:               notifBody,
-    icon:               "/icons/icon-192.png",
-    badge:              "/icons/icon-192.png",
-    tag:                `msg-${me}`,
-    renotify:           true,
-    vibrate:            [200, 100, 200],
-    data:               {
+    title:    senderName,
+    body:     notifBody,
+    icon:     senderAvatar ?? "/icons/icon-192.png",
+    badge:    "/icons/icon-192.png",
+    tag:      `msg-${me}`,
+    renotify: true,
+    vibrate:  [200, 100, 200],
+    actions:  [
+      { action: "reply",     title: "↩ Répondre" },
+      { action: "mark_read", title: "✓ Marquer comme lu" },
+      { action: "open",      title: "💬 Ouvrir le chat" },
+    ],
+    data: {
       url:           `/messages?userId=${me}`,
       msgId:         msg.id,
       toUserId:      toId,
+      fromUserId:    me,
+      senderName,
       deliveryToken: makeDeliveryToken(msg.id, toId),
+      markReadToken: makeMarkReadToken(me, toId),
     },
   }).catch(() => {});
 
@@ -397,6 +415,30 @@ router.post("/messages/sw-delivered", async (req, res): Promise<void> => {
   if (updated.length > 0) {
     pushToUser(updated[0].fromUserId, "message:delivered", { messageIds: [updated[0].id] });
   }
+  res.json({ ok: true });
+});
+
+/* ── SW mark-read (unauthenticated, token-verified) ────────────────────────
+   Called by the service worker from the "Marquer comme lu" notification action.
+   Marks all messages from fromUserId to toUserId as read without opening app. */
+router.post("/messages/sw-mark-read", async (req, res): Promise<void> => {
+  const { token, fromUserId, toUserId } = req.body as {
+    token?: string; fromUserId?: number; toUserId?: number;
+  };
+  if (!token || !fromUserId || !toUserId ||
+      !verifyMarkReadToken(token, Number(fromUserId), Number(toUserId))) {
+    res.status(403).json({ ok: false });
+    return;
+  }
+  await db.update(messagesTable)
+    .set({ isRead: true, isDelivered: true })
+    .where(and(
+      eq(messagesTable.fromUserId, Number(fromUserId)),
+      eq(messagesTable.toUserId,   Number(toUserId)),
+      eq(messagesTable.isRead, false),
+    ))
+    .catch(() => {});
+  pushToUser(Number(fromUserId), "message:read", { byUserId: Number(toUserId) });
   res.json({ ok: true });
 });
 

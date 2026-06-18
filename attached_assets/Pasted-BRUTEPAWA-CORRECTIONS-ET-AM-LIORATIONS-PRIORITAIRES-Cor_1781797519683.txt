@@ -1,0 +1,106 @@
+BRUTEPAWA - CORRECTIONS ET AMÉLIORATIONS PRIORITAIRES
+
+Corrigez tous les points suivants sans modifier le design existant de l'application.
+
+=== NOTIFICATIONS ===
+
+1. Les notifications doivent afficher :
+
+- La vraie photo de profil (avatar) de l'expéditeur.
+- Le nom complet de l'utilisateur.
+- Le contenu du dernier message.
+- L'heure du message.
+- Un petit badge du logo BrutePawa superposé en bas à droite de l'avatar.
+
+2. Ajouter les actions Android :
+
+- Répondre
+- Marquer comme lu
+- Ouvrir le chat
+
+3. Cliquer sur une notification doit :
+
+- Ouvrir directement la conversation concernée.
+- Faire défiler automatiquement jusqu'au message concerné.
+- Fonctionner même si l'application est totalement fermée.
+
+4. Réponse rapide :
+
+- Permettre d'envoyer une réponse directement depuis la notification Android sans ouvrir l'application.
+
+5. Regrouper les notifications provenant de la même conversation.
+
+=== MESSAGERIE ===
+
+6. Corriger la navigation :
+
+- Après actualisation (F5 ou pull-to-refresh), rester dans la conversation ouverte.
+- Ne jamais rediriger vers une autre page ou vers la liste des discussions.
+
+7. Conserver l'ID de conversation dans l'URL.
+
+8. Restaurer automatiquement :
+
+- La conversation ouverte.
+- La position de défilement.
+- Les messages déjà chargés.
+
+=== PARTAGE DE POSITION ===
+
+9. Corriger les cartes de localisation.
+
+10. Remplacer "Carte non disponible" par :
+
+- Une vraie carte interactive.
+- Un aperçu miniature de la position.
+
+11. Le bouton "Voir sur la carte" doit :
+
+- Ouvrir la localisation exacte.
+- Centrer automatiquement la carte.
+
+=== PERFORMANCE ===
+
+12. Corriger toutes les erreurs JavaScript.
+
+13. Corriger notamment :
+    ReferenceError: Cannot access 'te' before initialization
+
+14. Vérifier tous les hooks React, imports, exports et dépendances afin qu'aucune erreur ne bloque le chargement de l'application.
+
+=== PWA ET APPLICATION MOBILE ===
+
+15. Lors de l'installation PWA :
+
+- Icône correcte.
+- Nom BrutePawa.
+- Splash screen professionnel.
+- Notifications push fonctionnelles.
+
+16. Les notifications doivent fonctionner :
+
+- Application ouverte.
+- Application fermée.
+- Application en arrière-plan.
+
+=== QUALITÉ GÉNÉRALE ===
+
+17. Vérifier l'ensemble de l'application pour :
+
+- Erreurs console.
+- Liens cassés.
+- Boucles infinies.
+- Problèmes de routage.
+- Problèmes de cache.
+- Problèmes de synchronisation temps réel.
+
+18. Optimiser le code afin d'obtenir une expérience similaire à WhatsApp, Telegram et Messenger.
+
+Résultat attendu :
+
+- Notifications professionnelles.
+- Navigation stable.
+- Cartes fonctionnelles.
+- Réponse rapide Android.
+- Ouverture directe du bon message.
+- Aucun bug visible pour l'utilisateur final.

@@ -1,4 +1,4 @@
-const CACHE = "brutepawa-v20260617";
+const CACHE = "brutepawa-v20260618";
 const PRECACHE = ["/", "/manifest.webmanifest"];
 
 self.addEventListener("install", (e) => {
@@ -89,7 +89,7 @@ self.addEventListener("push", (e) => {
 
 self.addEventListener("notificationclick", (e) => {
   e.notification.close();
-  const d    = e.notification.data || {};
+  const d      = e.notification.data || {};
   const action = e.action;
   const isCall = !!d.callType;
 
@@ -105,43 +105,46 @@ self.addEventListener("notificationclick", (e) => {
     e.waitUntil(
       clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
         const appClient = list.find((c) => c.url.startsWith(self.location.origin));
-        if (appClient) {
-          appClient.postMessage({ type: "bp:call-rejected", data: d });
-        }
+        if (appClient) appClient.postMessage({ type: "bp:call-rejected", data: d });
       })
     );
     return;
   }
 
-  /* ── Accept call: open/focus app → dispatch incoming call → show call UI ── */
+  /* ── Accept call ── */
   if (action === "accept" && isCall) {
-    const callData = {
-      fromUserId: d.fromUserId,
-      callType:   d.callType ?? "audio",
-      callerName: d.callerName,
-    };
+    const callData = { fromUserId: d.fromUserId, callType: d.callType ?? "audio", callerName: d.callerName };
     const targetUrl = new URL(d.url || "/messages", self.location.origin).href;
-
     e.waitUntil(
       clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
         const appClient = list.find((c) => c.url.startsWith(self.location.origin));
-        if (appClient) {
-          return appClient.focus().then((w) => {
-            w.postMessage({ type: "bp:incoming-call", data: callData });
-          });
-        }
+        if (appClient) return appClient.focus().then((w) => w.postMessage({ type: "bp:incoming-call", data: callData }));
         return clients.openWindow(targetUrl).then((w) => {
-          if (w) {
-            /* Wait for the app to boot before posting the call event */
-            setTimeout(() => w.postMessage({ type: "bp:incoming-call", data: callData }), 1800);
-          }
+          if (w) setTimeout(() => w.postMessage({ type: "bp:incoming-call", data: callData }), 1800);
         });
       })
     );
     return;
   }
 
-  /* ── Default tap (no action button): open / navigate app ── */
+  /* ── Marquer comme lu (sans ouvrir l'app) ── */
+  if (action === "mark_read" && d.markReadToken && d.fromUserId && d.toUserId) {
+    e.waitUntil(
+      fetch(self.location.origin + "/api/messages/sw-mark-read", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token:      d.markReadToken,
+          fromUserId: d.fromUserId,
+          toUserId:   d.toUserId,
+        }),
+      }).catch(() => {})
+    );
+    return;
+  }
+
+  /* ── Répondre : ouvre la conversation (la réponse inline Android requiert HTTPS + Chrome 79+) ── */
+  /* ── Ouvrir le chat / tap par défaut ── */
   const url = d.url || "/";
 
   e.waitUntil(
@@ -149,20 +152,18 @@ self.addEventListener("notificationclick", (e) => {
       const appClient = list.find((c) => c.url.startsWith(self.location.origin));
 
       if (appClient) {
-        appClient.focus();
-        if (isCall) {
-          appClient.postMessage({ type: "bp:incoming-call", data: d });
-        } else {
-          /* Always use postMessage so the SPA router handles navigation via pushState+popstate */
-          appClient.postMessage({ type: "bp:navigate", data: { url } });
-        }
-        return;
+        return appClient.focus().then((w) => {
+          if (isCall) {
+            w.postMessage({ type: "bp:incoming-call", data: d });
+          } else {
+            /* Naviguer vers la bonne conversation via le router SPA */
+            w.postMessage({ type: "bp:navigate", data: { url } });
+          }
+        });
       }
 
       return clients.openWindow(new URL(url, self.location.origin).href).then((w) => {
-        if (w && isCall) {
-          setTimeout(() => w.postMessage({ type: "bp:incoming-call", data: d }), 1500);
-        }
+        if (w && isCall) setTimeout(() => w.postMessage({ type: "bp:incoming-call", data: d }), 1500);
       });
     })
   );

@@ -549,6 +549,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     }
   }, [initialGroupId]);
 
+  /* ── Persistance URL : mettre à jour l'URL quand la conversation active change ──
+     Permet à F5 / pull-to-refresh de restaurer la bonne conversation.            */
+  useEffect(() => {
+    if (activeConv && !initialGroupId) {
+      navigate(`/messages?userId=${activeConv}`);
+    }
+  }, [activeConv]);
+
   /* ── VisualViewport: shrink container when keyboard opens ── */
   useEffect(() => {
     const vv = window.visualViewport;
