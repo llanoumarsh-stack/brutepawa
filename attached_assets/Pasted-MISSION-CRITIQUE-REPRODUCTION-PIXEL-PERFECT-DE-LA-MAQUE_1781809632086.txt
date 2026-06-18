@@ -1,0 +1,307 @@
+MISSION CRITIQUE — REPRODUCTION PIXEL PERFECT DE LA MAQUETTE FOURNIE
+
+Ne pas interpréter.
+Ne pas simplifier.
+Ne pas proposer d'alternative.
+
+Reproduire exactement le comportement et le design visibles sur la maquette.
+
+OBJECTIF :
+
+Transformer l'affichage actuel des publications musicales BrutePawa pour obtenir un résultat premium identique à la maquette.
+
+═══════════════════════════════
+1. CARTE MUSIQUE PREMIUM
+═══════════════════════════════
+
+Afficher une carte musique au-dessus de la photo.
+
+Structure :
+
+┌────────────────────────────┐
+│ Pochette │ Titre musique   │
+│ Album    │ Artiste         │
+│          │ Progression     │
+│          │ Temps           │
+│          │ ▶ Pause         │
+└────────────────────────────┘
+
+Spécifications :
+
+- hauteur : 110 à 130 px
+- largeur : 100 %
+- fond : #FFFFFF
+- border-radius : 18px
+- ombre douce premium
+- padding : 12px
+
+═══════════════════════════════
+2. POCHETTE DE L'ALBUM
+═══════════════════════════════
+
+Position :
+à gauche.
+
+Dimensions :
+
+80px × 80px
+
+Style :
+
+border-radius: 12px
+
+Toujours afficher la vraie pochette.
+
+Interdiction d'utiliser une icône générique.
+
+═══════════════════════════════
+3. INFORMATIONS MUSICALES
+═══════════════════════════════
+
+Afficher :
+
+Titre :
+
+Nanani Nanana (Gazo) 1950's remix
+
+Style :
+
+font-size: 16px
+font-weight: 700
+color: #111827
+
+Artiste :
+
+Lunøvane
+
+Style :
+
+font-size: 13px
+font-weight: 500
+color: #6B7280
+
+═══════════════════════════════
+4. LECTEUR AUDIO RÉEL
+═══════════════════════════════
+
+Le lecteur doit fonctionner réellement.
+
+Au clic sur ▶ :
+
+- lecture immédiate
+- affichage du temps réel
+- animation de progression
+- pause
+- reprise
+- seek
+- fin automatique
+
+Barre :
+
+hauteur : 4px
+
+Couleur :
+
+#22C55E
+
+Temps :
+
+0:45              3:18
+
+Style :
+
+font-size: 12px
+
+═══════════════════════════════
+5. VISUALISEUR AUDIO
+═══════════════════════════════
+
+À droite du lecteur.
+
+Animation permanente pendant lecture.
+
+Couleur :
+
+#22C55E
+
+Effet :
+
+barres verticales dynamiques type Spotify.
+
+═══════════════════════════════
+6. PHOTO DE PUBLICATION
+═══════════════════════════════
+
+Sous la carte musique.
+
+OBLIGATOIRE :
+
+Afficher la photo complète.
+
+Ne jamais rogner.
+
+Ne jamais zoomer.
+
+Ne jamais couper la tête.
+
+Ne jamais couper les pieds.
+
+Utiliser :
+
+object-fit: contain
+
+width: 100%
+
+height: auto
+
+Conserver les proportions originales.
+
+La photo doit être visible dans sa totalité.
+
+═══════════════════════════════
+7. RÉACTIONS
+═══════════════════════════════
+
+Sous la photo.
+
+À gauche :
+
+👍 ❤️ 😂
+
+Style :
+
+superposition identique Facebook.
+
+Afficher :
+
+2 réactions
+
+Animation fluide.
+
+═══════════════════════════════
+8. UTILISATEURS AYANT RÉAGI
+═══════════════════════════════
+
+À droite.
+
+Afficher :
+
+3 avatars maximum.
+
+Style :
+
+avatars légèrement superposés.
+
+Puis :
+
+>
+
+pour ouvrir la liste complète.
+
+═══════════════════════════════
+9. ACTIONS
+═══════════════════════════════
+
+Afficher exactement :
+
+👍 J'aime
+
+💬 Commenter
+
+↗ Partager
+
+🔖 Enregistrer
+
+Disposition :
+
+4 colonnes identiques.
+
+Hauteur :
+
+48px minimum.
+
+Animation au toucher.
+
+═══════════════════════════════
+10. COMMENTAIRE
+═══════════════════════════════
+
+Sous les actions.
+
+Afficher :
+
+Avatar utilisateur
+
+Champ :
+
+Écrire un commentaire...
+
+Icône Emoji
+
+GIF
+
+Image
+
+Même disposition que Facebook moderne.
+
+═══════════════════════════════
+11. DESIGN BRUTEPAWA
+═══════════════════════════════
+
+Couleur principale :
+
+#22C55E
+
+Texte principal :
+
+#111827
+
+Texte secondaire :
+
+#6B7280
+
+Fond :
+
+#FFFFFF
+
+Ombres :
+
+rgba(0,0,0,0.08)
+
+Coins :
+
+18px
+
+═══════════════════════════════
+12. INTERDICTIONS ABSOLUES
+═══════════════════════════════
+
+❌ Ne pas afficher uniquement le texte de la musique.
+
+❌ Ne pas afficher une simple ligne audio.
+
+❌ Ne pas rogner les photos.
+
+❌ Ne pas étirer les images.
+
+❌ Ne pas remplacer la pochette par une icône.
+
+❌ Ne pas modifier les proportions.
+
+❌ Ne pas utiliser de design simplifié.
+
+═══════════════════════════════
+RÉSULTAT ATTENDU
+═══════════════════════════════
+
+La publication doit donner l'impression d'une fusion entre :
+
+- Facebook Premium
+- Spotify
+- Telegram Premium
+
+avec l'identité visuelle BrutePawa.
+
+Objectif final :
+
+Une publication musicale ultra premium où la musique est réellement jouable, la pochette est visible, la photo est affichée entièrement, les réactions sont modernes et l'expérience utilisateur est digne d'une application professionnelle de niveau international.

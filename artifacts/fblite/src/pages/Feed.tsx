@@ -6,7 +6,9 @@ import { apiGetPosts, apiCreatePost, apiLikePost, apiGetStories, apiToggleSaved,
 import StoryViewer from "../components/StoryViewer";
 import { storyDraftStore } from "../lib/storyDraft";
 
-/* ── Mini music card for feed posts ─────────────────────────── */
+/* ── Premium Music Card ─────────────────────────────────────── */
+const WAVE_HEIGHTS = [5,10,7,14,9,12,6,15,8,11,5,13,9,7,12,6,14,10,8,5,11,9,13,7,10,6,14,8,12,5,8,11];
+
 function FeedMusicCard({ trackName, artist, artworkUrl, url, duration, onClick }: {
   trackName: string; artist: string; artworkUrl: string | null;
   url: string | null; duration: string | null; onClick: () => void;
@@ -14,7 +16,9 @@ function FeedMusicCard({ trackName, artist, artworkUrl, url, duration, onClick }
   const [playing, setPlaying]   = useState(false);
   const [progress, setProgress] = useState(0);
   const [current, setCurrent]   = useState("0:00");
+  const [tick, setTick]         = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const tickRef  = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     if (!url) return;
@@ -27,66 +31,121 @@ function FeedMusicCard({ trackName, artist, artworkUrl, url, duration, onClick }
       const s = Math.floor(a.currentTime % 60);
       setCurrent(`${m}:${s.toString().padStart(2, "0")}`);
     });
-    a.addEventListener("ended", () => { setPlaying(false); setProgress(0); setCurrent("0:00"); });
-    return () => { a.pause(); a.src = ""; };
+    a.addEventListener("ended", () => {
+      setPlaying(false); setProgress(0); setCurrent("0:00");
+      if (tickRef.current) clearInterval(tickRef.current);
+    });
+    return () => { a.pause(); a.src = ""; if (tickRef.current) clearInterval(tickRef.current); };
   }, [url]);
 
   const toggle = (e: React.MouseEvent) => {
     e.stopPropagation();
     const a = audioRef.current;
     if (!a) return;
-    if (playing) { a.pause(); setPlaying(false); }
-    else { a.play().catch(() => {}); setPlaying(true); }
+    if (playing) {
+      a.pause(); setPlaying(false);
+      if (tickRef.current) clearInterval(tickRef.current);
+    } else {
+      a.play().catch(() => {});
+      setPlaying(true);
+      tickRef.current = setInterval(() => setTick(t => t + 1), 120);
+    }
   };
+
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    const a = audioRef.current;
+    if (!a || !a.duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    a.currentTime = pct * a.duration;
+  };
+
+  const totalBars = WAVE_HEIGHTS.length;
 
   return (
     <div
       onClick={onClick}
-      style={{ margin: "0 14px 12px", background: "#fff", borderRadius: 16, padding: "10px 12px", display: "flex", alignItems: "center", gap: 10, border: "1px solid #E2E8F0", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", cursor: "pointer" }}
+      style={{
+        margin: "0 14px 12px", background: "#fff", borderRadius: 18,
+        padding: "12px 14px", display: "flex", alignItems: "center", gap: 12,
+        boxShadow: "0 2px 12px rgba(0,0,0,0.08)", cursor: "pointer",
+        border: "1px solid #F1F5F9", minHeight: 110,
+      }}
     >
-      {/* Album art */}
-      <div style={{ width: 52, height: 52, borderRadius: 10, overflow: "hidden", background: "#F1F5F9", flexShrink: 0 }}>
+      {/* Album art — 80×80 */}
+      <div style={{ width: 80, height: 80, borderRadius: 12, overflow: "hidden", background: "linear-gradient(135deg,#1e1e2e,#2d3748)", flexShrink: 0 }}>
         {artworkUrl
           ? <img src={artworkUrl} alt={trackName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-          : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "#E2E8F0" }}>
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="#94A3B8"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+          : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg viewBox="0 0 24 24" width="36" height="36" fill="#4B5563"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
             </div>
         }
       </div>
 
-      {/* Track info + progress */}
+      {/* Center: title + artist + waveform + seek */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 2 }}>
-          <div style={{ width: 15, height: 15, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <svg viewBox="0 0 24 24" width="9" height="9" fill="#fff"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
-          </div>
-          <span style={{ fontSize: 12.5, fontWeight: 800, color: "#0F172A", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{trackName}</span>
+        <div style={{ fontSize: 16, fontWeight: 700, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", lineHeight: 1.2, marginBottom: 3 }}>
+          {trackName}
         </div>
-        <div style={{ fontSize: 11, color: "#94A3B8", marginBottom: 6, paddingLeft: 20, fontWeight: 500 }}>{artist}</div>
+        <div style={{ fontSize: 13, fontWeight: 500, color: "#6B7280", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 8 }}>
+          {artist}
+        </div>
+
+        {/* Waveform — Spotify style, colored by progress */}
+        <div style={{ display: "flex", alignItems: "flex-end", gap: 1.5, height: 22, marginBottom: 6, overflow: "hidden" }}>
+          {WAVE_HEIGHTS.map((baseH, i) => {
+            const filled = (i / totalBars) * 100 < progress;
+            const animOffset = playing ? Math.sin((tick + i) * 0.6) * 0.4 + 0.8 : 0.45;
+            const h = Math.max(3, Math.round(baseH * animOffset));
+            return (
+              <div key={i} style={{
+                width: 2.5, borderRadius: 2, flexShrink: 0,
+                background: filled ? "#22C55E" : "#D1FAE5",
+                height: h,
+                transition: playing ? `height 0.12s ease` : "height 0.3s ease",
+              }} />
+            );
+          })}
+        </div>
+
+        {/* Seek bar + times */}
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ fontSize: 9.5, color: "#94A3B8", flexShrink: 0, minWidth: 24, fontWeight: 600 }}>{current}</span>
-          <div style={{ flex: 1, height: 3, background: "#E2E8F0", borderRadius: 3, position: "relative" }}>
-            <div style={{ width: `${progress}%`, height: "100%", background: "linear-gradient(90deg,#22C55E,#16A34A)", borderRadius: 3, position: "relative" }}>
-              <div style={{ position: "absolute", right: -4, top: "50%", transform: "translateY(-50%)", width: 9, height: 9, borderRadius: "50%", background: "#22C55E" }} />
+          <span style={{ fontSize: 12, color: "#6B7280", fontWeight: 600, flexShrink: 0, minWidth: 32 }}>{current}</span>
+          <div
+            onClick={handleSeek}
+            style={{ flex: 1, height: 4, background: "#E5E7EB", borderRadius: 4, position: "relative", cursor: "pointer" }}
+          >
+            <div style={{ width: `${progress}%`, height: "100%", background: "#22C55E", borderRadius: 4, position: "relative" }}>
+              {progress > 0 && (
+                <div style={{ position: "absolute", right: -5, top: "50%", transform: "translateY(-50%)", width: 10, height: 10, borderRadius: "50%", background: "#22C55E", boxShadow: "0 0 0 2px #fff" }} />
+              )}
             </div>
           </div>
-          <span style={{ fontSize: 9.5, color: "#94A3B8", flexShrink: 0, minWidth: 24, textAlign: "right", fontWeight: 600 }}>{duration ?? "0:00"}</span>
+          <span style={{ fontSize: 12, color: "#6B7280", fontWeight: 600, flexShrink: 0, minWidth: 32, textAlign: "right" }}>{duration ?? "0:00"}</span>
         </div>
       </div>
 
-      {/* Play/pause */}
-      <button onClick={toggle} style={{ width: 36, height: 36, borderRadius: "50%", background: "#0F172A", border: "none", cursor: url ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, opacity: url ? 1 : 0.35 }}>
-        {playing
-          ? <svg viewBox="0 0 24 24" width="16" height="16" fill="#fff"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-          : <svg viewBox="0 0 24 24" width="16" height="16" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
-        }
-      </button>
-
-      {/* Visualizer bars */}
-      <div style={{ display: "flex", alignItems: "flex-end", gap: 2, flexShrink: 0, height: 18 }}>
-        {[8, 14, 11, 16, 9].map((h, i) => (
-          <div key={i} style={{ width: 2.5, borderRadius: 2, background: "#22C55E", height: playing ? h : 4, transition: `height ${0.2 + i * 0.07}s ease` }} />
-        ))}
+      {/* Right: play/pause + equalizer */}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, flexShrink: 0 }}>
+        <button
+          onClick={toggle}
+          style={{ width: 44, height: 44, borderRadius: "50%", background: "#22C55E", border: "none", cursor: url ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", opacity: url ? 1 : 0.4, boxShadow: "0 2px 8px rgba(34,197,94,0.35)" }}
+        >
+          {playing
+            ? <svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            : <svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+          }
+        </button>
+        {/* Equalizer icon */}
+        <div style={{ display: "flex", alignItems: "flex-end", gap: 2, height: 14 }}>
+          {[5, 10, 7, 13, 9].map((h, i) => {
+            const animH = playing ? Math.max(3, Math.round(h * (Math.sin((tick + i * 2) * 0.8) * 0.4 + 0.8))) : 3;
+            return (
+              <div key={i} style={{ width: 3, borderRadius: 2, background: "#22C55E", height: animH, transition: "height 0.12s ease" }} />
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -665,41 +724,60 @@ export default function Feed() {
 
               {/* Media */}
               {post.imageUrl && (
-                <div style={{ margin: "0 0 0 0", overflow: "hidden" }}>
+                <div style={{ overflow: "hidden", background: "#000" }}>
                   <img src={post.imageUrl} alt="" loading="lazy" decoding="async"
                     onClick={() => openImageViewer(post.imageUrl!)}
-                    style={{ width: "100%", maxHeight: 420, objectFit: "cover", display: "block", cursor: "zoom-in" }} />
+                    style={{ width: "100%", height: "auto", objectFit: "contain", display: "block", cursor: "zoom-in" }} />
                 </div>
               )}
 
-              {/* Stats bar */}
+              {/* Stats bar — Facebook Premium */}
               {(post.likesCount > 0 || post.commentsCount > 0) && (
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 14px 6px", fontSize: 13, color: "#65676b" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 14px 5px", fontSize: 13, color: "#65676b" }}>
+                  {/* Left: reaction emoji circles + count */}
                   {post.likesCount > 0 ? (
                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      {/* Stacked reaction circles */}
                       <div style={{ display: "flex" }}>
-                        <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#22C55E", border: "1.5px solid #fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                          <svg viewBox="0 0 24 24" width="11" height="11" fill="#fff"><path d="M7 10v12M15 5.88L14 10h5.83A2 2 0 0 1 21.83 12.49L19.04 19.5A2 2 0 0 1 17.12 21H7a2 2 0 0 1-2-2v-8.5a2 2 0 0 1 .586-1.414L10 5H13a2 2 0 0 1 2 2v-.12z"/></svg>
-                        </div>
-                        {post.likesCount > 4 && (
-                          <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#F43F5E", border: "1.5px solid #fff", marginLeft: -5, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <svg viewBox="0 0 24 24" width="11" height="11" fill="#fff"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                          </div>
+                        {/* 👍 Like — always shown */}
+                        <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#1877F2", border: "1.5px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, zIndex: 3 }}>👍</div>
+                        {post.likesCount >= 3 && (
+                          <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#F43F5E", border: "1.5px solid #fff", marginLeft: -6, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, zIndex: 2 }}>❤️</div>
                         )}
-                        {post.likesCount > 10 && (
-                          <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#F97316", border: "1.5px solid #fff", marginLeft: -5, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <svg viewBox="0 0 24 24" width="11" height="11" fill="#fff"><path d="M12 2c0 0-6 6-6 11a6 6 0 0 0 12 0c0-5-6-11-6-11z"/></svg>
-                          </div>
+                        {post.likesCount >= 7 && (
+                          <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#F59E0B", border: "1.5px solid #fff", marginLeft: -6, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, zIndex: 1 }}>😂</div>
                         )}
                       </div>
-                      <span style={{ color: "#65676b" }}>{formatNumber(post.likesCount)}</span>
+                      <span style={{ color: "#65676b", fontSize: 13 }}>{formatNumber(post.likesCount)} réaction{post.likesCount > 1 ? "s" : ""}</span>
                     </div>
                   ) : <div />}
-                  {post.commentsCount > 0 && (
-                    <span style={{ cursor: "pointer", color: "#65676b" }} onClick={() => navigate(`/post/${post.id}`)}>
-                      {formatNumber(post.commentsCount)} commentaire{post.commentsCount > 1 ? "s" : ""}
-                    </span>
-                  )}
+
+                  {/* Right: avatar stack + comments count + ">" */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    {post.likesCount > 0 && (
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        {/* Mock avatar stack — colored circles */}
+                        {[
+                          { bg: "#22C55E", i: 0 },
+                          ...(post.likesCount > 1 ? [{ bg: "#3B82F6", i: 1 }] : []),
+                          ...(post.likesCount > 2 ? [{ bg: "#F43F5E", i: 2 }] : []),
+                        ].map(({ bg, i }) => (
+                          <div key={i} style={{
+                            width: 22, height: 22, borderRadius: "50%",
+                            background: bg, border: "2px solid #fff",
+                            marginLeft: i > 0 ? -8 : 0, zIndex: 3 - i,
+                            position: "relative",
+                          }} />
+                        ))}
+                        <span style={{ marginLeft: 4, color: "#65676b", fontSize: 14, fontWeight: 600 }}>›</span>
+                      </div>
+                    )}
+                    {post.commentsCount > 0 && (
+                      <span style={{ cursor: "pointer", color: "#65676b", fontSize: 13 }} onClick={() => navigate(`/post/${post.id}`)}>
+                        {formatNumber(post.commentsCount)} commentaire{post.commentsCount > 1 ? "s" : ""}
+                      </span>
+                    )}
+                  </div>
                 </div>
               )}
 
