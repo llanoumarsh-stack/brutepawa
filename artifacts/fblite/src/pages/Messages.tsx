@@ -2362,7 +2362,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     return createPortal(
       <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, display: "flex", flexDirection: "column", zIndex: 10000, overflow: "hidden" }}>
         <style>{`
-          .bp-msg-mine   { background:#DCF8C6; color:#111; border-radius:18px 18px 4px 18px; box-shadow:0 1px 3px rgba(0,0,0,0.14); }
+          .bp-msg-mine   { background:#DCECCB; color:#111; border-radius:18px 18px 4px 18px; box-shadow:0 1px 3px rgba(0,0,0,0.14); }
           .bp-msg-theirs { background:#fff;    color:#111; border-radius:18px 18px 18px 4px; box-shadow:0 1px 3px rgba(0,0,0,0.12); }
         `}</style>
 
@@ -2463,7 +2463,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     return createPortal(
       <div style={{ position:"fixed", top: vpOffset ? `${vpOffset}px` : 0, left:0, right:0, height: vpHeight ? `${vpHeight}px` : "100dvh", display:"flex", flexDirection:"column", zIndex:10000, overflow:"hidden" }}>
         <style>{`
-          .fbl-msg-mine   { background:#DCF8C6; color:#111; border-radius:18px 18px 4px 18px; box-shadow:0 1px 3px rgba(0,0,0,0.14); }
+          .fbl-msg-mine   { background:#DCECCB; color:#111; border-radius:18px 18px 4px 18px; box-shadow:0 1px 3px rgba(0,0,0,0.14); }
           .fbl-msg-theirs { background:#fff; color:#111; border-radius:18px 18px 18px 4px; box-shadow:0 1px 3px rgba(0,0,0,0.12); }
           .fbl-menu-btn { display:flex; align-items:center; gap:14px; padding:13px 20px; background:none; border:none; width:100%; font-size:15px; color:#111; cursor:pointer; text-align:left; font-family:inherit; }
           .fbl-menu-btn:active { background:#F0F2F5; }
@@ -2667,12 +2667,12 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       return (
                       /* ── VOICE MESSAGE BUBBLE — seekable, animated ── */
                       <div style={{
-                        background: mine ? "#16C24A" : "#fff",
+                        background: mine ? "#DCECCB" : "#fff",
                         borderRadius: mine ? "18px 4px 18px 18px" : "4px 18px 18px 18px",
                         padding:"10px 12px 8px",
                         minWidth:224, maxWidth:282,
                         boxShadow: mine
-                          ? "0 4px 22px rgba(22,194,74,0.40)"
+                          ? "0 2px 10px rgba(0,0,0,0.10)"
                           : "0 2px 14px rgba(0,0,0,0.10)",
                         marginBottom:2,
                         userSelect:"none",
@@ -2686,9 +2686,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                             onClick={() => toggleVoice(msg.id, msg.attachment!.label)}
                             style={{
                               width:44, height:44, borderRadius:"50%", flexShrink:0, border:"none", cursor:"pointer",
-                              background: mine ? "rgba(255,255,255,0.26)" : "#16C24A",
+                              background: mine ? "#8BCB7A" : "#16C24A",
                               display:"flex", alignItems:"center", justifyContent:"center",
-                              boxShadow: mine ? "none" : "0 3px 14px rgba(22,194,74,0.44)",
+                              boxShadow: mine ? "0 3px 14px rgba(139,203,122,0.44)" : "0 3px 14px rgba(22,194,74,0.44)",
                               transition:"transform 0.11s, opacity 0.11s",
                               WebkitTapHighlightColor:"transparent",
                               touchAction:"manipulation",
@@ -2746,7 +2746,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                                   height:`${Math.round(h * 100)}%`,
                                   minHeight:3,
                                   background: mine
-                                    ? (played ? "rgba(255,255,255,1)" : "rgba(255,255,255,0.33)")
+                                    ? (played ? "#8BCB7A" : "#A8D39A")
                                     : (played ? "#16C24A" : "#BFD4E5"),
                                   transition:"background 0.06s",
                                   transformOrigin:"center",
@@ -2761,9 +2761,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                             <button
                               onClick={e => { e.stopPropagation(); cycleVoiceSpeed(); }}
                               style={{
-                                background: mine ? "rgba(255,255,255,0.22)" : "rgba(22,194,74,0.13)",
+                                background: mine ? "rgba(121,176,107,0.18)" : "rgba(22,194,74,0.13)",
                                 border:"none", borderRadius:7, padding:"2px 7px", cursor:"pointer",
-                                color: mine ? "#fff" : "#16C24A",
+                                color: mine ? "#79B06B" : "#16C24A",
                                 fontSize:11, fontWeight:800, letterSpacing:0.3,
                                 transition:"background 0.15s",
                                 WebkitTapHighlightColor:"transparent",
@@ -2772,7 +2772,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                             </button>
                             <div style={{
                               width:26, height:26, borderRadius:"50%", flexShrink:0, overflow:"hidden",
-                              background: mine ? "rgba(255,255,255,0.28)" : "#D1FAE5",
+                              background: mine ? "#A8D39A" : "#D1FAE5",
                               display:"flex", alignItems:"center", justifyContent:"center",
                               fontSize:9, fontWeight:800,
                               color: mine ? "#fff" : "#059669",
@@ -2798,10 +2798,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                             )}
                             {(vUps.network === "uploading" || vUps.network === "slow") && (
                               <div style={{ flex:1, display:"flex", alignItems:"center", gap:6 }}>
-                                <div style={{ flex:1, height:2, background:"rgba(255,255,255,0.22)", borderRadius:1 }}>
-                                  <div style={{ height:"100%", borderRadius:1, background: vUps.network === "slow" ? "#F59E0B" : "#fff", width:`${vUps.progress}%`, transition:"width 0.3s ease" }}/>
+                                <div style={{ flex:1, height:2, background:"rgba(121,176,107,0.25)", borderRadius:1 }}>
+                                  <div style={{ height:"100%", borderRadius:1, background: vUps.network === "slow" ? "#F59E0B" : "#8BCB7A", width:`${vUps.progress}%`, transition:"width 0.3s ease" }}/>
                                 </div>
-                                <span style={{ fontSize:10, color:"rgba(255,255,255,0.78)", fontWeight:700, minWidth:28 }}>{vUps.progress}%</span>
+                                <span style={{ fontSize:10, color:"#79B06B", fontWeight:700, minWidth:28 }}>{vUps.progress}%</span>
                               </div>
                             )}
                             {vUps.network === "error" && (
@@ -2823,14 +2823,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:6 }}>
                           <span style={{
                             fontSize:11, fontWeight:700, letterSpacing:0.15,
-                            color: mine ? "rgba(255,255,255,0.78)" : "#94A3B8",
+                            color: mine ? "#79B06B" : "#94A3B8",
                             fontVariantNumeric:"tabular-nums",
                           }}>
                             {dispTime}
                           </span>
                           <div style={{ display:"flex", alignItems:"center", gap:4 }}>
-                            <span style={{ fontSize:11, color: mine ? "rgba(255,255,255,0.72)" : "#94A3B8" }}>{msg.time}</span>
-                            {mine && <MsgStatus status={msg.status} dark={true} />}
+                            <span style={{ fontSize:11, color: mine ? "#79B06B" : "#94A3B8" }}>{msg.time}</span>
+                            {mine && <MsgStatus status={msg.status} dark={false} />}
                           </div>
                         </div>
                       </div>
