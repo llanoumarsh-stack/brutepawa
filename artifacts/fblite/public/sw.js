@@ -1,4 +1,4 @@
-const CACHE = "brutepawa-v20260618";
+const CACHE = "brutepawa-v20260618b";
 const PRECACHE = ["/", "/manifest.webmanifest"];
 
 self.addEventListener("install", (e) => {
@@ -38,7 +38,7 @@ self.addEventListener("push", (e) => {
   let data;
   try { data = e.data.json(); } catch { data = { title: "Brute Pawa", body: e.data.text() }; }
 
-  const title = data.title || "Brute Pawa";
+  const title  = data.title || "Brute Pawa";
   const isCall = !!data.data?.callType;
 
   /* Augment the reply action with type:"text" + placeholder so Android Chrome
@@ -121,7 +121,7 @@ self.addEventListener("notificationclick", (e) => {
 
   /* ── Accept call ── */
   if (action === "accept" && isCall) {
-    const callData = { fromUserId: d.fromUserId, callType: d.callType ?? "audio", callerName: d.callerName };
+    const callData  = { fromUserId: d.fromUserId, callType: d.callType ?? "audio", callerName: d.callerName };
     const targetUrl = new URL(d.url || "/messages", self.location.origin).href;
     e.waitUntil(
       clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
@@ -135,28 +135,33 @@ self.addEventListener("notificationclick", (e) => {
     return;
   }
 
-  /* ── Marquer comme lu (sans ouvrir l'app) ── */
-  if (action === "mark_read" && d.markReadToken && d.fromUserId && d.toUserId) {
-    e.waitUntil(
-      fetch(self.location.origin + "/api/messages/sw-mark-read", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          token:      d.markReadToken,
-          fromUserId: d.fromUserId,
-          toUserId:   d.toUserId,
-        }),
-      }).catch(() => {})
-    );
+  /* ── "Marquer comme lu" — ALWAYS silent, NEVER opens the app ─────────────────
+     Even if the token is missing (race condition, restart, etc.), we return early
+     rather than accidentally opening the conversation.                           */
+  if (action === "mark_read") {
+    if (d.markReadToken && d.fromUserId && d.toUserId) {
+      e.waitUntil(
+        fetch(self.location.origin + "/api/messages/sw-mark-read", {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            token:      d.markReadToken,
+            fromUserId: d.fromUserId,
+            toUserId:   d.toUserId,
+          }),
+        }).catch(() => {})
+      );
+    }
+    /* Always return — never open the app for a "mark as read" action */
     return;
   }
 
   /* ── Répondre inline (Android Chrome 102+ / type:"text" action) ─────────────
-     e.replyText contient le texte tapé par l'utilisateur dans la notification.
-     Si disponible → envoi silencieux via API + notification de confirmation.
-     Si absent (bureau, navigateur non supporté) → ouvre l'application.        */
+     e.replyText contient le texte tapé directement dans la notification.
+     Si disponible → envoi silencieux via API + confirmation toast.
+     Si absent (bureau, navigateur non supporté) → ouvre l'application.          */
   if (action === "reply") {
-    const text = e.replyText;   /* propriété standard du ServiceWorker Notifications API */
+    const text = e.replyText;
 
     if (text && text.trim() && d.replyToken && d.fromUserId && d.toUserId) {
       e.waitUntil(
@@ -172,9 +177,8 @@ self.addEventListener("notificationclick", (e) => {
         })
           .then((r) => r.json())
           .then(() =>
-            /* Petite notification de confirmation — disparaît en 3 s */
             self.registration.showNotification("Message envoyé ✓", {
-              body:    text.trim().slice(0, 60),
+              body:    text.trim().slice(0, 80),
               icon:    d.senderAvatarUrl || "/icons/icon-192.png",
               badge:   "/icons/icon-192.png",
               tag:     `reply-sent-${d.fromUserId}`,
@@ -184,12 +188,12 @@ self.addEventListener("notificationclick", (e) => {
           )
           .catch(() => {})
       );
-      return;
+      return;   /* sent inline — don't open the app */
     }
-    /* Fallback si replyText non disponible (bureau) : ouvrir le chat */
+    /* Fallback: browser doesn't support inline reply → open the conversation */
   }
 
-  /* ── Ouvrir le chat / tap par défaut ── */
+  /* ── "Ouvrir le chat" action OR plain notification tap OR reply fallback ─── */
   const url = d.url || "/";
 
   e.waitUntil(

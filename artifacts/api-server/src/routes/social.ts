@@ -383,7 +383,11 @@ router.post("/messages", requireAuth, async (req, res): Promise<void> => {
     avatarUrl: usersTable.avatarUrl,
   }).from(usersTable).where(eq(usersTable.id, me));
   const senderName = sender ? `${sender.firstName} ${sender.lastName}`.trim() : "Quelqu'un";
-  const senderAvatar = (sender?.avatarUrl && sender.avatarUrl.startsWith("http")) ? sender.avatarUrl : null;
+  /* Build an absolute avatar URL for push notifications (relative paths won't load) */
+  const origin = `${req.protocol}://${req.get("host")}`;
+  const senderAvatarUrl = sender?.avatarUrl
+    ? (sender.avatarUrl.startsWith("http") ? sender.avatarUrl : `${origin}${sender.avatarUrl}`)
+    : null;
   const rawContent = parsed.data.content;
   const notifBody = rawContent.startsWith("__audio__")    ? "🎤 Message vocal"
     : rawContent.startsWith("__video__")    ? "📹 Message vidéo"
@@ -394,7 +398,7 @@ router.post("/messages", requireAuth, async (req, res): Promise<void> => {
   pushToUserDevice(toId, {
     title:    senderName,
     body:     notifBody,
-    icon:     senderAvatar ?? "/icons/icon-192.png",
+    icon:     senderAvatarUrl ?? "/icons/icon-192.png",
     badge:    "/icons/icon-192.png",
     tag:      `msg-${me}`,
     renotify: true,
@@ -405,14 +409,15 @@ router.post("/messages", requireAuth, async (req, res): Promise<void> => {
       { action: "open",      title: "💬 Ouvrir le chat" },
     ],
     data: {
-      url:           `/messages?userId=${me}`,
-      msgId:         msg.id,
-      toUserId:      toId,
-      fromUserId:    me,
+      url:            `/messages?userId=${me}`,
+      msgId:          msg.id,
+      toUserId:       toId,
+      fromUserId:     me,
       senderName,
-      deliveryToken: makeDeliveryToken(msg.id, toId),
-      markReadToken: makeMarkReadToken(me, toId),
-      replyToken:    makeReplyToken(me, toId),
+      senderAvatarUrl,
+      deliveryToken:  makeDeliveryToken(msg.id, toId),
+      markReadToken:  makeMarkReadToken(me, toId),
+      replyToken:     makeReplyToken(me, toId),
     },
   }).catch(() => {});
 
@@ -441,7 +446,8 @@ router.post("/messages/sw-delivered", async (req, res): Promise<void> => {
 
 /* ── SW mark-read (unauthenticated, token-verified) ────────────────────────
    Called by the service worker from the "Marquer comme lu" notification action.
-   Marks all messages from fromUserId to toUserId as read without opening app. */
+   Marks all messages from fromUserId to toUserId as read without opening app.
+   Sends { messageIds } in the SSE event so the sender's UI updates double-ticks. */
 router.post("/messages/sw-mark-read", async (req, res): Promise<void> => {
   const { token, fromUserId, toUserId } = req.body as {
     token?: string; fromUserId?: number; toUserId?: number;
@@ -451,16 +457,35 @@ router.post("/messages/sw-mark-read", async (req, res): Promise<void> => {
     res.status(403).json({ ok: false });
     return;
   }
-  await db.update(messagesTable)
-    .set({ isRead: true, isDelivered: true })
+
+  /* 1. Collect IDs of unread messages BEFORE the update (needed for SSE payload) */
+  const unreadRows = await db
+    .select({ id: messagesTable.id })
+    .from(messagesTable)
     .where(and(
       eq(messagesTable.fromUserId, Number(fromUserId)),
       eq(messagesTable.toUserId,   Number(toUserId)),
       eq(messagesTable.isRead, false),
     ))
-    .catch(() => {});
-  pushToUser(Number(fromUserId), "message:read", { byUserId: Number(toUserId) });
-  res.json({ ok: true });
+    .catch(() => [] as { id: number }[]);
+  const messageIds = unreadRows.map(r => r.id);
+
+  if (messageIds.length > 0) {
+    /* 2. Mark them read */
+    await db.update(messagesTable)
+      .set({ isRead: true, isDelivered: true })
+      .where(and(
+        eq(messagesTable.fromUserId, Number(fromUserId)),
+        eq(messagesTable.toUserId,   Number(toUserId)),
+        eq(messagesTable.isRead, false),
+      ))
+      .catch(() => {});
+
+    /* 3. Notify sender via SSE with the exact message IDs → triggers double-tick update */
+    pushToUser(Number(fromUserId), "message:read", { messageIds });
+  }
+
+  res.json({ ok: true, count: messageIds.length });
 });
 
 /* ── SW inline-reply (unauthenticated, token-verified, expires in 24 h) ────
