@@ -221,13 +221,12 @@ export default function MarketplacePage() {
 
         {/* ── Search bar ─────────────────────────────── */}
         <div style={{ display: "flex", gap: 10, marginBottom: 16, alignItems: "center" }}>
-          <div style={{ flex: 1, display: "flex", alignItems: "center", background: "#fff", borderRadius: 28, height: 52, padding: "0 18px", gap: 10, boxShadow: "0 2px 10px rgba(0,0,0,0.06)", border: "1.5px solid #F1F5F9" }}>
-            <IconSearch />
+          <div className="bp-search" style={{ flex: 1 }}>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="Rechercher un produit, service ou emploi..."
-              style={{ flex: 1, border: "none", outline: "none", fontSize: 13.5, color: "#0F172A", background: "transparent", fontFamily: "inherit" }}
+              placeholder="Rechercher un produit, service..."
             />
           </div>
           <button style={{ display: "flex", alignItems: "center", gap: 6, background: "#fff", border: "1.5px solid #E2E8F0", borderRadius: 24, padding: "0 16px", height: 52, color: "#334155", fontWeight: 700, fontSize: 13, cursor: "pointer", whiteSpace: "nowrap", boxShadow: "0 2px 6px rgba(0,0,0,0.04)" }}>

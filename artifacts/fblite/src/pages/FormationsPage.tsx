@@ -152,12 +152,14 @@ export default function FormationsPage() {
       {tab === "catalogue" && (
         <div>
           <div style={{ padding: "12px 16px", background: "var(--fb-white)", borderBottom: "1px solid var(--fb-divider)" }}>
-            <input
-              value={filter}
-              onChange={e => setFilter(e.target.value)}
-              placeholder="🔍 Rechercher une formation..."
-              style={{ width: "100%", background: "var(--fb-bg)", border: "none", borderRadius: 20, padding: "9px 16px", fontSize: 14, outline: "none", boxSizing: "border-box" }}
-            />
+            <div className="bp-search">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input
+                value={filter}
+                onChange={e => setFilter(e.target.value)}
+                placeholder="Rechercher une formation..."
+              />
+            </div>
           </div>
           <div style={{ padding: "8px 0" }}>
             {catalog.map(course => {

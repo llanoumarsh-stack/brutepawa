@@ -288,22 +288,19 @@ export default function Community() {
         <div>
           {/* Search bar + country chips */}
           <div style={{ background:"#fff", padding:"12px 14px 0" }}>
-            <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-              <div style={{ flex:1, display:"flex", alignItems:"center", gap:10, background:"#F8FAFC", border:"1.5px solid #E2E8F0", borderRadius:14, padding:"11px 14px" }}>
-                {Ico.search}
-                <input
-                  autoFocus
-                  value={search}
-                  onChange={e=>setSearch(e.target.value)}
-                  placeholder="Rechercher des personnes, métiers, centres d'intérêt..."
-                  style={{ flex:1, border:"none", outline:"none", background:"transparent", fontSize:14, color:"#0F172A", fontFamily:"inherit" }}
-                />
-                {search && (
-                  <button onClick={()=>setSearch("")} style={{ background:"none", border:"none", cursor:"pointer", padding:0, display:"flex", alignItems:"center", color:"#94A3B8" }}>
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                  </button>
-                )}
-              </div>
+            <div className="bp-search">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input
+                autoFocus
+                value={search}
+                onChange={e=>setSearch(e.target.value)}
+                placeholder="Rechercher des personnes, métiers..."
+              />
+              {search && (
+                <button onClick={()=>setSearch("")} style={{ background:"none", border:"none", cursor:"pointer", padding:0, display:"flex", alignItems:"center", color:"#94A3B8", flexShrink:0 }}>
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              )}
             </div>
             {/* Country chips */}
             <div style={{ display:"flex", gap:8, overflowX:"auto", scrollbarWidth:"none", padding:"10px 0 14px" }}>
@@ -496,13 +493,12 @@ export default function Community() {
       {/* ══ 6. GROUPES TAB ══════════════════════════════════ */}
       {activeTab==="groupes" && (
         <div style={{ padding:"12px" }}>
-          <div style={{ display:"flex", alignItems:"center", gap:10, background:"#fff", border:"1.5px solid #E2E8F0", borderRadius:14, padding:"11px 14px", marginBottom:12 }}>
-            {Ico.search}
+          <div className="bp-search" style={{ marginBottom:12 }}>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input
               value={groupSearch}
               onChange={e=>setGroupSearch(e.target.value)}
               placeholder="Rechercher des groupes..."
-              style={{ flex:1, border:"none", outline:"none", background:"transparent", fontSize:14, color:"#0F172A", fontFamily:"inherit" }}
             />
           </div>
           {loading ? (

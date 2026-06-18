@@ -1606,16 +1606,15 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               </div>
             )}
 
-            {/* ── SEARCH BAR — flat Telegram style ── */}
+            {/* ── SEARCH BAR — bp-search ── */}
             <div style={{ padding: "10px 16px 6px", flexShrink: 0 }}>
-              <div style={{ display: "flex", alignItems: "center", background: "#F2F2F7", borderRadius: 12, padding: "9px 12px", gap: 8 }}>
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#8E8E93" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <div className="bp-search">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 <input value={wizardSearch} onChange={e => setWizardSearch(e.target.value)}
-                  placeholder="Rechercher un ami..."
-                  style={{ flex: 1, background: "transparent", border: "none", fontSize: 15, outline: "none", color: "#000" }} />
+                  placeholder="Rechercher un ami..." />
                 {wizardSearch && (
                   <div onClick={() => setWizardSearch("")}
-                    style={{ width: 18, height: 18, borderRadius: "50%", background: "#8E8E93", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
+                    style={{ width: 20, height: 20, borderRadius: "50%", background: "#94A3B8", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
                     <svg viewBox="0 0 24 24" width="10" height="10" stroke="#fff" strokeWidth="3" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                   </div>
                 )}

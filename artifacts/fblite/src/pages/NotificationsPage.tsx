@@ -256,17 +256,16 @@ export default function NotificationsPage() {
       {/* ══ 1b. SEARCH BAR (visible only when open) ═══════ */}
       {searchOpen && (
         <div style={{ background:"#fff", padding:"8px 14px 10px", borderBottom:"1px solid #F1F5F9" }}>
-          <div style={{ display:"flex", alignItems:"center", gap:10, background:"#F8FAFC", border:`1.5px solid ${BP_GREEN}`, borderRadius:14, padding:"10px 14px" }}>
-            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#94A3B8" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <div className="bp-search">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input
               autoFocus
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Rechercher dans les notifications…"
-              style={{ flex:1, border:"none", outline:"none", background:"transparent", fontSize:14, color:"#0F172A", fontFamily:"inherit" }}
             />
             {search && (
-              <button onClick={()=>setSearch("")} style={{ background:"none", border:"none", cursor:"pointer", padding:0, display:"flex", alignItems:"center", color:"#94A3B8" }}>
+              <button onClick={()=>setSearch("")} style={{ background:"none", border:"none", cursor:"pointer", padding:0, display:"flex", alignItems:"center", color:"#94A3B8", flexShrink:0 }}>
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
             )}
