@@ -4,6 +4,7 @@ import helmet from "helmet";
 import pinoHttp from "pino-http";
 import router from "./routes";
 import { logger } from "./lib/logger";
+import { createProxyMiddleware } from "http-proxy-middleware";
 
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ?? "")
   .split(",")
@@ -46,5 +47,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);
+
+if (process.env.NODE_ENV !== "production") {
+  app.use(
+    "/",
+    createProxyMiddleware({
+      target: "http://localhost:3000",
+      changeOrigin: true,
+      ws: true,
+    }),
+  );
+}
 
 export default app;
