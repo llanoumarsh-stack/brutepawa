@@ -1,0 +1,134 @@
+CRITICAL MISSION – PIXEL-PERFECT TELEGRAM COMPOSER
+
+The attached screenshot is the ONLY design reference.
+
+DO NOT APPROXIMATE.
+DO NOT INTERPRET.
+DO NOT IMPROVISE.
+DO NOT CREATE YOUR OWN VERSION.
+
+Your task is to reproduce the highlighted composer area with 99% visual accuracy.
+
+═══════════════════════════════════════
+
+COMPOSER CONTAINER
+
+- Pure white background.
+- Floating pill shape.
+- Border radius: 9999px.
+- Height identical to reference.
+- Width identical to reference.
+- Same shadow intensity.
+- Same vertical position.
+- Same margins from screen edges.
+- Same internal padding.
+
+═══════════════════════════════════════
+
+EMOJI BUTTON
+
+- Same size as reference.
+- Same position.
+- Same color.
+- Perfect vertical alignment.
+
+═══════════════════════════════════════
+
+TEXT INPUT
+
+Placeholder:
+
+Écrire un message...
+
+- Same font size.
+- Same font weight.
+- Same opacity.
+- Same color.
+- Same left padding.
+- Same vertical alignment.
+
+═══════════════════════════════════════
+
+ATTACHMENT ICON
+
+- Same size.
+- Same stroke width.
+- Same position.
+- Same spacing.
+
+═══════════════════════════════════════
+
+CAMERA ICON
+
+- Same size.
+- Same stroke width.
+- Same spacing.
+- Same alignment.
+
+═══════════════════════════════════════
+
+MICROPHONE BUTTON
+
+MOST IMPORTANT ELEMENT
+
+- Perfect circle.
+- Never oval.
+- Never stretched.
+- BrutePawa green (#22C55E).
+- Same diameter as reference.
+- Same shadow.
+- Same distance from right edge.
+- White microphone icon.
+- Icon perfectly centered.
+
+═══════════════════════════════════════
+
+ALIGNMENT
+
+All elements must sit on exactly the same vertical center line.
+
+Emoji
+Text
+Attachment
+Camera
+Microphone
+
+must be perfectly aligned.
+
+═══════════════════════════════════════
+
+RESPONSIVE RULES
+
+Must render identically on:
+
+- Android Chrome
+- Android PWA
+- Mobile WebView
+
+No overflow.
+No clipping.
+No extra bottom spacing.
+
+═══════════════════════════════════════
+
+VALIDATION BEFORE COMPLETION
+
+Compare your result side-by-side with the attached screenshot.
+
+If any of these differ:
+- height
+- spacing
+- radius
+- shadow
+- icon size
+- icon position
+- padding
+- proportions
+
+then continue adjusting automatically.
+
+Do not stop until the result is visually indistinguishable from the reference image.
+
+SUCCESS CONDITION:
+
+A user should not be able to tell which image is Telegram and which image is BrutePawa when looking only at the composer area.

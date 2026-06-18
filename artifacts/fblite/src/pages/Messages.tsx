@@ -2423,27 +2423,29 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           <div ref={groupBottomRef} />
         </div>
 
-        {/* ── Barre d'input — même style que les DMs ── */}
-        <div style={{ background:"#fff", borderTop:"1px solid #F1F5F9", padding:"8px 12px", display:"flex", gap:8, alignItems:"center", flexShrink:0 }}>
-          <button style={{ background:"none", border:"none", cursor:"pointer", padding:0, flexShrink:0, display:"flex", alignItems:"center" }}>
-            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="#94A3B8"/><circle cx="15" cy="9" r="1" fill="#94A3B8"/></svg>
-          </button>
-          <div style={{ flex:1 }}>
-            <input value={groupNewMsg} onChange={e => setGroupNewMsg(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendGroupMsg(); } }}
-              placeholder="Écrire un message..."
-              style={{ width:"100%", background:"#F8FAFC", border:"1.5px solid #E2E8F0", borderRadius:24, padding:"10px 16px", fontSize:15, outline:"none", boxSizing:"border-box", color:"#0F172A" }} />
+        {/* ── Barre d'input — floating pill (même style que les DMs) ── */}
+        <div style={{ background:"#fff", flexShrink:0, padding:"8px 10px 10px" }}>
+          <div style={{ display:"flex", alignItems:"center" }}>
+            <div style={{ flex:1, display:"flex", alignItems:"center", background:"#F0F2F5", borderRadius:9999, padding:"0 5px 0 14px", minHeight:52 }}>
+              <button style={{ background:"none", border:"none", cursor:"pointer", padding:0, flexShrink:0, display:"flex", alignItems:"center", marginRight:4 }}>
+                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="#94A3B8"/><circle cx="15" cy="9" r="1" fill="#94A3B8"/></svg>
+              </button>
+              <input value={groupNewMsg} onChange={e => setGroupNewMsg(e.target.value)}
+                onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendGroupMsg(); } }}
+                placeholder="Écrire un message..."
+                style={{ flex:1, background:"transparent", border:"none", outline:"none", padding:"10px 6px", fontSize:15, color:"#0F172A", minWidth:0 }} />
+              {groupNewMsg.trim() ? (
+                <button onClick={sendGroupMsg}
+                  style={{ background:"#22C55E", border:"none", borderRadius:"50%", width:44, height:44, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 3px 12px rgba(34,197,94,0.40)", cursor:"pointer" }}>
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </button>
+              ) : (
+                <button style={{ background:"linear-gradient(135deg,#22C55E 0%,#16a34a 100%)", border:"none", borderRadius:"50%", width:44, height:44, cursor:"pointer", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 3px 12px rgba(34,197,94,0.40)" }}>
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                </button>
+              )}
+            </div>
           </div>
-          {groupNewMsg.trim() ? (
-            <button onClick={sendGroupMsg}
-              style={{ background:"#16C24A", border:"none", borderRadius:"50%", width:44, height:44, color:"#fff", cursor:"pointer", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 3px 12px rgba(22,194,74,0.45)" }}>
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            </button>
-          ) : (
-            <button style={{ background:"#16C24A", border:"none", borderRadius:"50%", width:44, height:44, cursor:"pointer", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 3px 12px rgba(22,194,74,0.45)" }}>
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-            </button>
-          )}
         </div>
       </div>
     , document.body);
@@ -3497,40 +3499,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             </div>
           </div>
         ) : (
-          /* NORMAL INPUT BAR — Premium white design */
-          <div style={{ background:"#fff", borderTop:"1px solid #F1F5F9", flexShrink:0 }}>
-
-            {/* ── UNLOCKED RECORDING: mini info bar (gesture on mic button) ── */}
-            {isRecording && !recLocked && (
-              <div style={{ display:"flex", alignItems:"center", gap:10, padding:"6px 14px 2px", userSelect:"none", WebkitUserSelect:"none" }}>
-                {/* Red pulsing dot */}
-                <div style={{ width:9, height:9, borderRadius:"50%", background:"#EF4444", flexShrink:0,
-                  animation: recPaused ? "none" : "fbl-rec-pulse 1s ease-in-out infinite",
-                  opacity: recPaused ? 0.4 : 1 }} />
-                {/* Timer */}
-                <span style={{ fontSize:15, fontWeight:800, color:"#EF4444", fontVariantNumeric:"tabular-nums", flexShrink:0, minWidth:44 }}>
-                  {`${Math.floor(recSeconds/60).toString().padStart(2,"0")}:${(recSeconds%60).toString().padStart(2,"0")}`}
-                </span>
-                {/* Waveform — live audio levels */}
-                <div style={{ flex:1, display:"flex", alignItems:"center", gap:2, height:30, overflow:"hidden" }}>
-                  {recLiveBars.map((h, i) => (
-                    <div key={i} style={{ flex:1, borderRadius:2,
-                      background: recPaused ? "#CBD5E1" : "#16C24A",
-                      height: recPaused ? "30%" : `${h}%`,
-                      transition: "height 0.07s ease",
-                      opacity: recPaused ? 0.5 : 0.6 + Math.min(0.4, (h / 96) * 0.4) }} />
-                  ))}
-                </div>
-                {/* Slide-left cancel hint */}
-                {recDragX < -50 && (
-                  <span style={{ fontSize:12, fontWeight:700,
-                    color: recDragX < -100 ? "#EF4444" : "#94A3B8",
-                    flexShrink:0, animation:"fbl-fade-in 0.15s ease" }}>
-                    {recDragX < -100 ? "Relâcher pour annuler" : "← Annuler"}
-                  </span>
-                )}
-              </div>
-            )}
+          /* NORMAL INPUT BAR — Floating pill composer */
+          <div style={{ background:"#fff", flexShrink:0 }}>
 
             {/* ── LOCKED RECORDING: full capsule with controls ── */}
             {isRecording && recLocked && (
@@ -3596,17 +3566,47 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               </div>
             )}
 
-            {/* ── Main input row — hidden entirely when locked ── */}
-            <div style={{ padding:"8px 12px", display: recLocked ? "none" : "flex", gap:8, alignItems:"center", userSelect:"none", WebkitUserSelect:"none" }}>
-              {/* Emoji button — hidden during recording */}
-              {!isRecording && (
-                <button style={{ background:"none", border:"none", cursor:"pointer", padding:0, flexShrink:0, display:"flex", alignItems:"center" }}>
-                  <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="#94A3B8"/><circle cx="15" cy="9" r="1" fill="#94A3B8"/></svg>
-                </button>
-              )}
-              {/* Text input — removed from DOM during recording to prevent Android cursor ghost */}
-              {!isRecording && (
-                <div style={{ flex:1 }}>
+            {/* ── Main input row — floating pill composer ── */}
+            <div style={{ padding:"8px 10px 10px", display: recLocked ? "none" : "flex", alignItems:"center", userSelect:"none", WebkitUserSelect:"none" }}>
+              {/* ═══ THE FLOATING PILL ═══ */}
+              <div style={{ flex:1, display:"flex", alignItems:"center", background:"#F0F2F5", borderRadius:9999, padding:"0 5px 0 14px", minHeight:52, overflow:"visible", position:"relative" }}>
+
+                {/* Unlocked recording: waveform lives inside the pill */}
+                {isRecording && !recLocked && (
+                  <div style={{ flex:1, display:"flex", alignItems:"center", gap:8, overflow:"hidden", padding:"0 4px" }}>
+                    <div style={{ width:9, height:9, borderRadius:"50%", background:"#EF4444", flexShrink:0,
+                      animation: recPaused ? "none" : "fbl-rec-pulse 1s ease-in-out infinite",
+                      opacity: recPaused ? 0.4 : 1 }} />
+                    <span style={{ fontSize:15, fontWeight:800, color:"#EF4444", fontVariantNumeric:"tabular-nums", flexShrink:0, minWidth:44 }}>
+                      {`${Math.floor(recSeconds/60).toString().padStart(2,"0")}:${(recSeconds%60).toString().padStart(2,"0")}`}
+                    </span>
+                    <div style={{ flex:1, display:"flex", alignItems:"center", gap:2, height:30, overflow:"hidden" }}>
+                      {recLiveBars.map((h, i) => (
+                        <div key={i} style={{ flex:1, borderRadius:2,
+                          background: recPaused ? "#CBD5E1" : "#16C24A",
+                          height: recPaused ? "30%" : `${h}%`,
+                          transition:"height 0.07s ease",
+                          opacity: recPaused ? 0.5 : 0.6 + Math.min(0.4, (h / 96) * 0.4) }} />
+                      ))}
+                    </div>
+                    {recDragX < -50 && (
+                      <span style={{ fontSize:12, fontWeight:700,
+                        color: recDragX < -100 ? "#EF4444" : "#94A3B8",
+                        flexShrink:0, animation:"fbl-fade-in 0.15s ease" }}>
+                        {recDragX < -100 ? "Relâcher pour annuler" : "← Annuler"}
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {/* Emoji — hidden during recording */}
+                {!isRecording && (
+                  <button style={{ background:"none", border:"none", cursor:"pointer", padding:0, flexShrink:0, display:"flex", alignItems:"center", marginRight:4 }}>
+                    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="#94A3B8"/><circle cx="15" cy="9" r="1" fill="#94A3B8"/></svg>
+                  </button>
+                )}
+                {/* Text input — transparent inside the pill, hidden during recording */}
+                {!isRecording && (
                   <input value={newMsg}
                     onChange={e => {
                       setNewMsg(e.target.value);
@@ -3616,27 +3616,28 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     }}
                     onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMsg(); } }}
                     placeholder="Écrire un message..."
-                    style={{ width:"100%", background:"#F8FAFC", border:"1.5px solid #E2E8F0", borderRadius:24, padding:"10px 16px", fontSize:15, outline:"none", boxSizing:"border-box", color:"#0F172A" }} />
-                </div>
-              )}
-              {newMsg.trim() && !isRecording ? (
-                <button onClick={() => sendMsg()}
-                  style={{ background:"#16C24A", border:"none", borderRadius:"50%", width:44, height:44, color:"#fff", cursor:"pointer", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 3px 12px rgba(22,194,74,0.45)" }}>
-                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                </button>
-              ) : (
-                <>
-                  {!isRecording && (
-                    <>
-                      <button onClick={() => { setAttachSheet(true); setAttachPage("none"); }}
-                        style={{ background:"none", border:"none", cursor:"pointer", padding:0, flexShrink:0, display:"flex", alignItems:"center" }}>
-                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-                      </button>
-                      <button onClick={() => cameraInputRef.current?.click()} style={{ background:"none", border:"none", cursor:"pointer", padding:0, flexShrink:0, display:"flex", alignItems:"center" }}>
-                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                      </button>
-                    </>
-                  )}
+                    style={{ flex:1, background:"transparent", border:"none", outline:"none", padding:"10px 6px", fontSize:15, color:"#0F172A", minWidth:0 }} />
+                )}
+
+                {newMsg.trim() && !isRecording ? (
+                  /* Send button — green circle inside the pill */
+                  <button onClick={() => sendMsg()}
+                    style={{ background:"#22C55E", border:"none", borderRadius:"50%", width:44, height:44, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 3px 12px rgba(34,197,94,0.40)", cursor:"pointer" }}>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                  </button>
+                ) : (
+                  <>
+                    {!isRecording && (
+                      <>
+                        <button onClick={() => { setAttachSheet(true); setAttachPage("none"); }}
+                          style={{ background:"none", border:"none", cursor:"pointer", padding:"0 4px", flexShrink:0, display:"flex", alignItems:"center" }}>
+                          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                        </button>
+                        <button onClick={() => cameraInputRef.current?.click()} style={{ background:"none", border:"none", cursor:"pointer", padding:"0 4px", flexShrink:0, display:"flex", alignItems:"center" }}>
+                          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                        </button>
+                      </>
+                    )}
                   {/* ── MIC BUTTON — gesture lock/cancel/send ── */}
                   {!recLocked && (() => {
                     // Lock icon is fixed 110px above mic center
@@ -3729,7 +3730,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                         onContextMenu={e => e.preventDefault()}
                         style={{
                           position:"absolute", top:0, left:0,
-                          background:"linear-gradient(135deg,#16C24A 0%,#0ea541 100%)",
+                          background:"linear-gradient(135deg,#22C55E 0%,#16a34a 100%)",
                           border:"none", borderRadius:"50%",
                           width: SIZE, height: SIZE,
                           display:"flex", alignItems:"center", justifyContent:"center",
@@ -3759,6 +3760,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   })()}
                 </>
               )}
+              </div>
             </div>
           </div>
         )}
