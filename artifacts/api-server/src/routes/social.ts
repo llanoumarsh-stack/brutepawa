@@ -174,6 +174,7 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
     commentsCount: r.commentsCount,
     createdAt: r.createdAt,
     liked: likedSet.has(r.id),
+    isOwner: r.authorId === req.userId,
   })));
 });
 

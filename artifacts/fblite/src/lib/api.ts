@@ -118,6 +118,7 @@ export interface FeedPost {
   commentsCount: number;
   createdAt: string;
   liked: boolean;
+  isOwner: boolean;
 }
 
 export interface PublicUser {
