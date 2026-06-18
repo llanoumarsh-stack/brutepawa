@@ -1,0 +1,204 @@
+MISSION CRITIQUE — CORRIGER INTÉGRALEMENT LA NAVIGATION ET LES NOTIFICATIONS BRUTEPAWA
+
+Je constate plusieurs bugs majeurs qui dégradent fortement l'expérience utilisateur.
+
+Je veux une correction complète, robuste et prête pour la production.
+
+══════════════════════════════
+BUG 1 : NOTIFICATION → MAUVAISE REDIRECTION
+══════════════════════════════
+
+PROBLÈME ACTUEL :
+
+Lorsqu'un utilisateur clique sur une notification :
+
+- L'application s'ouvre.
+- Mais la conversation concernée ne s'ouvre pas.
+- Ou l'utilisateur est redirigé vers une mauvaise page.
+
+COMPORTEMENT ATTENDU :
+
+Notification message privé :
+→ Ouvrir directement la conversation concernée.
+
+Notification groupe :
+→ Ouvrir directement le groupe concerné.
+
+Notification commentaire :
+→ Ouvrir directement la publication concernée.
+
+Notification demande d'ami :
+→ Ouvrir directement le profil concerné.
+
+Notification appel :
+→ Ouvrir directement l'écran d'appel.
+
+Notification réaction :
+→ Ouvrir directement la publication ou le commentaire concerné.
+
+══════════════════════════════
+DEEP LINKING OBLIGATOIRE
+══════════════════════════════
+
+Chaque notification doit contenir :
+
+- type
+- target_id
+- conversation_id
+- group_id
+- post_id
+- user_id
+
+Selon le contexte.
+
+Lors du clic :
+
+Le système doit analyser ces données et naviguer automatiquement vers la page exacte.
+
+Aucun passage par l'accueil.
+
+══════════════════════════════
+CAS À TESTER
+══════════════════════════════
+
+✓ Application fermée
+
+✓ Application ouverte
+
+✓ Application en arrière-plan
+
+✓ Android
+
+✓ iPhone
+
+✓ Web
+
+Dans tous les cas :
+
+L'utilisateur doit arriver directement sur le contenu concerné.
+
+══════════════════════════════
+BUG 2 : RAFRAÎCHISSEMENT DE PAGE
+══════════════════════════════
+
+PROBLÈME ACTUEL :
+
+Si je suis sur :
+
+- Une conversation
+- Un groupe
+- Un profil
+- Une publication
+
+et que je rafraîchis l'application :
+
+Je suis redirigé vers une autre page.
+
+Ce comportement est incorrect.
+
+══════════════════════════════
+COMPORTEMENT ATTENDU
+══════════════════════════════
+
+L'application doit mémoriser :
+
+- La route actuelle
+- Les paramètres
+- L'identifiant de la conversation
+- L'identifiant du groupe
+- L'identifiant du profil
+- L'identifiant de la publication
+
+Après un refresh :
+
+L'utilisateur doit revenir exactement au même endroit.
+
+══════════════════════════════
+EXEMPLES
+══════════════════════════════
+
+Conversation privée ouverte :
+
+/messages/123
+
+Refresh
+
+Résultat attendu :
+
+/messages/123
+
+---
+
+Groupe ouvert :
+
+/groups/456
+
+Refresh
+
+Résultat attendu :
+
+/groups/456
+
+---
+
+Profil ouvert :
+
+/profile/789
+
+Refresh
+
+Résultat attendu :
+
+/profile/789
+
+---
+
+Publication ouverte :
+
+/post/111
+
+Refresh
+
+Résultat attendu :
+
+/post/111
+
+══════════════════════════════
+SAUVEGARDE D'ÉTAT
+══════════════════════════════
+
+Sauvegarder automatiquement :
+
+- Dernière page visitée
+- Paramètres de navigation
+- Position de scroll
+- Conversation active
+- Groupe actif
+
+Restaurer automatiquement au redémarrage.
+
+══════════════════════════════
+NOTIFICATIONS LUES
+══════════════════════════════
+
+Lorsqu'un utilisateur ouvre la conversation :
+
+- Marquer les messages comme lus.
+- Mettre à jour les ✓✓ bleus.
+- Supprimer automatiquement la notification Android associée.
+
+Aucune notification lue ne doit rester visible.
+
+══════════════════════════════
+OBJECTIF FINAL
+══════════════════════════════
+
+Obtenir un comportement identique ou supérieur à :
+
+- WhatsApp
+- Telegram
+- Messenger
+
+L'utilisateur doit toujours être redirigé vers le bon contenu et retrouver exactement la page où il se trouvait avant un rafraîchissement ou un redémarrage de l'application.
+
+Identifier la cause exacte des bugs actuels, corriger le frontend, le backend, les notifications push et la navigation, puis tester tous les scénarios avant validation.
