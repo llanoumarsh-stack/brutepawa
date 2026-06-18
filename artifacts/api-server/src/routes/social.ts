@@ -45,6 +45,52 @@ function verifyReplyToken(token: string, fromUserId: number, toUserId: number): 
 
 const router = Router();
 
+/* ── Avatar icon proxy (no auth) — for push notification icons ────────────────
+   Returns the sender's real profile picture proxied through the same origin so
+   there are no CORS issues in the service worker.
+   Falls back to a coloured initials SVG when no avatar exists. */
+router.get("/users/:id/avatar-icon", async (req, res): Promise<void> => {
+  const userId = parseInt(req.params.id, 10);
+  if (isNaN(userId)) { res.status(400).end(); return; }
+
+  const [user] = await db.select({
+    firstName: usersTable.firstName,
+    lastName:  usersTable.lastName,
+    avatarUrl: usersTable.avatarUrl,
+  }).from(usersTable).where(eq(usersTable.id, userId)).catch(() => []);
+
+  // Proxy the real avatar (absolute URL — e.g. Supabase storage)
+  if (user?.avatarUrl?.startsWith("http")) {
+    try {
+      const resp = await fetch(user.avatarUrl, { signal: AbortSignal.timeout(4000) });
+      if (resp.ok) {
+        const ct  = resp.headers.get("content-type") ?? "image/jpeg";
+        const buf = await resp.arrayBuffer();
+        res.set("Content-Type", ct);
+        res.set("Cache-Control", "public, max-age=300");
+        res.send(Buffer.from(buf));
+        return;
+      }
+    } catch { /* fall through to SVG */ }
+  }
+
+  // Relative URL on same origin — redirect
+  if (user?.avatarUrl && !user.avatarUrl.startsWith("http")) {
+    res.redirect(user.avatarUrl);
+    return;
+  }
+
+  // No avatar → generate a coloured initials SVG (192×192)
+  const name     = user ? `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() : "";
+  const initials = name.split(" ").map((w: string) => w[0] ?? "").join("").slice(0, 2).toUpperCase() || "?";
+  const COLORS   = ["#16C24A","#3B82F6","#F97316","#8B5CF6","#EF4444","#06B6D4","#D97706"];
+  const bg       = COLORS[userId % COLORS.length];
+  const svg      = `<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192"><circle cx="96" cy="96" r="96" fill="${bg}"/><text x="96" y="96" font-family="Arial,Helvetica,sans-serif" font-size="80" font-weight="700" fill="white" text-anchor="middle" dominant-baseline="central">${initials}</text></svg>`;
+  res.set("Content-Type", "image/svg+xml");
+  res.set("Cache-Control", "public, max-age=60");
+  res.send(svg);
+});
+
 router.get("/posts", requireAuth, async (req, res): Promise<void> => {
   const params = ListPostsQueryParams.safeParse(req.query);
   const page = params.success ? (params.data.page ?? 1) : 1;
@@ -383,11 +429,10 @@ router.post("/messages", requireAuth, async (req, res): Promise<void> => {
     avatarUrl: usersTable.avatarUrl,
   }).from(usersTable).where(eq(usersTable.id, me));
   const senderName = sender ? `${sender.firstName} ${sender.lastName}`.trim() : "Quelqu'un";
-  /* Build an absolute avatar URL for push notifications (relative paths won't load) */
   const origin = `${req.protocol}://${req.get("host")}`;
-  const senderAvatarUrl = sender?.avatarUrl
-    ? (sender.avatarUrl.startsWith("http") ? sender.avatarUrl : `${origin}${sender.avatarUrl}`)
-    : null;
+  /* Always use the same-origin avatar proxy — avoids CORS issues in the SW
+     and falls back to a coloured initials SVG when no photo exists */
+  const avatarIconUrl = `${origin}/api/users/${me}/avatar-icon`;
   const rawContent = parsed.data.content;
   const notifBody = rawContent.startsWith("__audio__")    ? "🎤 Message vocal"
     : rawContent.startsWith("__video__")    ? "📹 Message vidéo"
@@ -398,8 +443,10 @@ router.post("/messages", requireAuth, async (req, res): Promise<void> => {
   pushToUserDevice(toId, {
     title:    senderName,
     body:     notifBody,
-    icon:     senderAvatarUrl ?? "/icons/icon-192.png",
-    badge:    "/icons/icon-192.png",
+    /* Same-origin proxy URL — Chrome always loads this, regardless of whether
+       the user has a real avatar or not. No CORS issues in the service worker. */
+    icon:     avatarIconUrl,
+    badge:    `${origin}/icons/icon-192.png`,
     tag:      `msg-${me}`,
     renotify: true,
     vibrate:  [200, 100, 200],
@@ -414,7 +461,7 @@ router.post("/messages", requireAuth, async (req, res): Promise<void> => {
       toUserId:       toId,
       fromUserId:     me,
       senderName,
-      senderAvatarUrl,
+      senderAvatarUrl: avatarIconUrl,
       deliveryToken:  makeDeliveryToken(msg.id, toId),
       markReadToken:  makeMarkReadToken(me, toId),
       replyToken:     makeReplyToken(me, toId),
