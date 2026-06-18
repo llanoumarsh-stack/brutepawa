@@ -23,7 +23,10 @@ if ("serviceWorker" in navigator) {
   navigator.serviceWorker.addEventListener("message", (event) => {
     const { type, data } = event.data ?? {};
     if (type === "bp:navigate" && data?.url) {
-      window.location.href = data.url;
+      /* Use pushState + popstate so the SPA router updates without a full reload */
+      const base = (import.meta.env.BASE_URL ?? "").replace(/\/$/, "");
+      window.history.pushState(null, "", base + data.url);
+      window.dispatchEvent(new PopStateEvent("popstate"));
     }
     if (type === "bp:incoming-call" && data) {
       window.dispatchEvent(new CustomEvent("bp:sw-call", { detail: data }));

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, Fragment } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { openImageViewer } from "../components/ImageViewer";
@@ -54,6 +54,7 @@ interface Message {
   text: string;
   mine: boolean;
   time: string;
+  date?: string;
   status?: "pending" | "sent" | "delivered" | "read";
   attachment?: { type: "image" | "doc" | "location" | "audio"; label: string; extra?: string; size?: number };
 }
@@ -165,6 +166,16 @@ function renderText(text: string, textColor: string) {
   }
   if (last < text.length) parts.push(text.slice(last));
   return parts.length === 1 && typeof parts[0] === "string" ? text : <>{parts}</>;
+}
+
+function fmtDateLabel(dateStr: string): string {
+  const todayD  = new Date();
+  const todayS  = todayD.toISOString().slice(0, 10);
+  const yestD   = new Date(todayD); yestD.setDate(todayD.getDate() - 1);
+  const yestS   = yestD.toISOString().slice(0, 10);
+  if (dateStr === todayS) return "Aujourd'hui";
+  if (dateStr === yestS)  return "Hier";
+  return new Date(dateStr + "T12:00:00").toLocaleDateString("fr", { day: "numeric", month: "long", year: "numeric" });
 }
 
 function fmtConvPreview(raw: string): { text: string; isAudio: boolean } {
@@ -425,8 +436,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
   const parseApiMsg = useCallback((m: { id: number; content: string; fromUserId: number; createdAt: string; isRead: boolean; isDelivered?: boolean }) => {
     const time   = new Date(m.createdAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
+    const date   = m.createdAt.slice(0, 10);
     const status = m.isRead ? "read" as const : m.isDelivered ? "delivered" as const : "sent" as const;
-    const base   = { id: m.id, mine: m.fromUserId === meId, time, status };
+    const base   = { id: m.id, mine: m.fromUserId === meId, time, date, status };
     if (m.content.startsWith("__audio__:")) {
       const rest  = m.content.slice("__audio__:".length);
       const colon = rest.indexOf(":");
@@ -493,10 +505,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     if (!activeConv) return;
     const convId = activeConv;
     const tmpId = Date.now();
-    const now = new Date().toLocaleTimeString("fr", { hour:"2-digit", minute:"2-digit" });
+    const now  = new Date().toLocaleTimeString("fr", { hour:"2-digit", minute:"2-digit" });
+    const date = new Date().toISOString().slice(0, 10);
     setMessages(prev => ({
       ...prev,
-      [convId]: [...(prev[convId] ?? []), { id: tmpId, text, mine: true, time: now, status: "pending" as const, attachment }],
+      [convId]: [...(prev[convId] ?? []), { id: tmpId, text, mine: true, time: now, date, status: "pending" as const, attachment }],
     }));
     apiSendMessage(convId, encodedContent)
       .then(() => {
@@ -712,12 +725,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         const s    = secs % 60;
         const dur  = `${mins}:${s.toString().padStart(2, "0")}`;
         const tmpId = Date.now();
-        const tmpNow = new Date().toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
+        const tmpNow  = new Date().toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
+        const tmpDate = new Date().toISOString().slice(0, 10);
         const blobUrl = URL.createObjectURL(blob);
         setMessages(prev => ({
           ...prev,
           [convId]: [...(prev[convId] ?? []), {
-            id: tmpId, text: "", mine: true, time: tmpNow, status: "pending" as const,
+            id: tmpId, text: "", mine: true, time: tmpNow, date: tmpDate, status: "pending" as const,
             attachment: { type: "audio" as const, label: blobUrl, extra: dur },
           }],
         }));
@@ -725,12 +739,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           const { url } = await apiUploadVoice(blob, secs);
           const content = `__audio__:${secs}:${url}`;
           const sent = await apiSendMessage(convId, content);
-          const now = new Date(sent.createdAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
+          const now  = new Date(sent.createdAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
+          const date = sent.createdAt.slice(0, 10);
           setTimeout(() => URL.revokeObjectURL(blobUrl), 3000);
           setMessages(prev => ({
             ...prev,
             [convId]: (prev[convId] ?? []).map(m => m.id === tmpId ? {
-              id: sent.id, text: "", mine: true, time: now, status: "sent" as const,
+              id: sent.id, text: "", mine: true, time: now, date, status: "sent" as const,
               attachment: { type: "audio" as const, label: url, extra: dur },
             } : m),
           }));
@@ -1144,9 +1159,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     const content = text ?? newMsg.trim();
     if (!content && !attachment) return;
     if (!activeConv) return;
-    const now = new Date().toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
+    const now  = new Date().toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
+    const date = new Date().toISOString().slice(0, 10);
     const tmpId = Date.now();
-    const msg: Message = { id: tmpId, text: content, mine: true, time: now, status: "pending", attachment };
+    const msg: Message = { id: tmpId, text: content, mine: true, time: now, date, status: "pending", attachment };
     setMessages(ms => ({ ...ms, [activeConv]: [...(ms[activeConv] ?? []), msg] }));
     setConvList(prev => prev.map(c => c.id === activeConv ? { ...c, lastMessage: content, time: now } : c));
     if (!text) setNewMsg("");
@@ -2398,7 +2414,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             </button>
           )}
 
-          {currentMessages.length === 0 ? (
+          {currentMessages.length === 0 && (
             <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:10, padding:"60px 32px", textAlign:"center" }}>
               <div style={{ width:58, height:58, borderRadius:"50%", background:"rgba(0,0,0,0.08)", display:"flex", alignItems:"center", justifyContent:"center" }}>
                 <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="rgba(0,0,0,0.35)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
@@ -2409,8 +2425,6 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 Démarrer une conversation
               </div>
             </div>
-          ) : (
-            <div style={{ textAlign:"center", fontSize:11.5, color:"#888", background:"rgba(0,0,0,0.05)", borderRadius:20, padding:"3px 14px", margin:"4px auto 10px", display:"inline-block", alignSelf:"center" }}>Aujourd'hui</div>
           )}
 
           {currentMessages.map((msg, i) => {
@@ -2422,8 +2436,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             const isVoicePlaying = isAudio && playingAudioId === msg.id;
             const wfBars     = isAudio ? voiceWaveform(msg.id) : [];
             const playedBars = isVoicePlaying ? Math.floor(wfBars.length * audioProgress) : 0;
+            const prevMsg    = i > 0 ? currentMessages[i - 1] : null;
+            const showDateSep = !prevMsg || (msg.date && prevMsg.date !== msg.date);
+            const dateLabel  = showDateSep && msg.date ? fmtDateLabel(msg.date) : null;
             return (
-              <div key={msg.id}
+              <Fragment key={msg.id}>
+              {dateLabel && <div style={{ textAlign:"center", fontSize:11.5, color:"#888", background:"rgba(0,0,0,0.05)", borderRadius:20, padding:"3px 14px", margin:"8px auto 6px", display:"inline-block", alignSelf:"center" }}>{dateLabel}</div>}
+              <div
                 style={{ display:"flex", justifyContent: msg.mine ? "flex-end" : "flex-start", alignItems:"flex-end", gap:6, marginTop:2,
                   background: isSelected ? "rgba(22,194,74,0.10)" : isAct ? "rgba(24,119,242,0.15)" : isHL ? "rgba(255,235,59,0.25)" : "transparent",
                   borderRadius:10, transition:"all 0.2s", paddingLeft: selectionMode ? 38 : 0, paddingRight: selectionMode ? 6 : 0, position:"relative",
@@ -2957,6 +2976,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   })()}
                 </div>
               </div>
+              </Fragment>
             );
           })}
           {false && currentMessages.length === 0 && (
@@ -4615,7 +4635,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 const ini = req.senderName.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
                 const t = req.createdAt ? new Date(req.createdAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }) : "";
                 return (
-                  <div key={req.id} style={{ display: "flex", alignItems: "center", gap: 13, padding: "12px 16px", borderBottom: i < msgRequests.length - 1 ? "1px solid #F1F5F9" : "none" }}>
+                  <div key={req.id} style={{ display: "flex", alignItems: "center", gap: 13, padding: "12px 16px", borderBottom: i < msgRequests.length - 1 ? "1px solid #F1F5F9" : "none", cursor: "pointer" }}
+                    onClick={() => {
+                      apiUpdateMessageRequest(req.id, "accepted").catch(() => {});
+                      setActiveConv(req.senderId);
+                      setActiveGroupId(null);
+                      setSettingsPage("none");
+                    }}>
                     <div style={{ width: 50, height: 50, borderRadius: "50%", background: c, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 17, flexShrink: 0 }}>{ini}</div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontWeight: 600, fontSize: 15, color: "#0F172A" }}>{req.senderName}</div>

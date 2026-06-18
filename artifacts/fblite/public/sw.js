@@ -153,10 +153,8 @@ self.addEventListener("notificationclick", (e) => {
         if (isCall) {
           appClient.postMessage({ type: "bp:incoming-call", data: d });
         } else {
-          const target = new URL(url, self.location.origin).href;
-          appClient.navigate(target).catch(() => {
-            appClient.postMessage({ type: "bp:navigate", data: { url } });
-          });
+          /* Always use postMessage so the SPA router handles navigation via pushState+popstate */
+          appClient.postMessage({ type: "bp:navigate", data: { url } });
         }
         return;
       }
