@@ -2499,9 +2499,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           .wa-typing-dot { width:7px; height:7px; border-radius:50%; background:#999; display:inline-block; animation:wa-typing-dot 1.2s infinite; }
           .wa-typing-dot:nth-child(2) { animation-delay:0.2s; }
           .wa-typing-dot:nth-child(3) { animation-delay:0.4s; }
-          .wa-attach-icon { display:flex; flex-direction:column; align-items:center; gap:7px; cursor:pointer; background:none; border:none; padding:0; }
-          .wa-attach-icon span { font-size:12px; color:#555; text-align:center; line-height:1.2; max-width:64px; }
-          .wa-attach-circle { width:52px; height:52px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; }
+          .tg-attach-btn { display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer; background:none; border:none; padding:4px 6px; flex-shrink:0; }
+          .tg-attach-btn span { font-size:13px; font-weight:500; color:#2F3542; text-align:center; white-space:nowrap; }
+          .tg-attach-box { width:62px; height:62px; border-radius:18px; background:#F0F2F5; display:flex; align-items:center; justify-content:center; }
         `}</style>
 
         {/* ── HEADER ── */}
@@ -4199,7 +4199,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         {attachSheet && createPortal(
           <div style={{ position:"fixed", inset:0, zIndex:10002, display:"flex", flexDirection:"column", justifyContent:"flex-end" }}>
             <div style={{ background:"rgba(0,0,0,0.45)", position:"absolute", inset:0 }} onClick={() => { setAttachSheet(false); setAttachPage("none"); }} />
-            <div style={{ background:"#fff", borderRadius:"18px 18px 0 0", position:"relative", zIndex:1, animation:"fbl-sheet-up 0.22s ease", maxHeight:"90dvh", overflowY:"auto" }}>
+            <div style={{ background:"#fff", borderRadius:"22px 22px 0 0", position:"relative", zIndex:1, animation:"fbl-sheet-up 0.22s cubic-bezier(.2,.8,.2,1)", boxShadow:"0 -2px 20px rgba(0,0,0,0.08)", maxHeight:"90dvh", overflowY:"auto" }}>
 
               {/* Hidden file inputs */}
               <input ref={galleryInputRef} type="file" accept="image/*" style={{ display:"none" }}
@@ -4209,142 +4209,100 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               <input ref={docInputRef} type="file" accept=".pdf,.doc,.docx,.txt,.xls,.xlsx,.ppt,.pptx,.csv,.zip" style={{ display:"none" }}
                 onChange={e => { const f=e.target.files?.[0]; if(f) handleFileInput(f,"doc"); e.target.value=""; }} />
 
-              {/* MAIN ICONS GRID */}
+              {/* MAIN ICONS — Telegram Premium single row */}
               {attachPage === "none" && (
                 <>
-                  <div style={{ width:36, height:4, background:"#DDD", borderRadius:2, margin:"10px auto 0" }} />
-                  <div style={{ padding:"18px 18px 6px", display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:"18px 8px" }}>
+                  <div style={{ width:36, height:4, background:"#E0E0E0", borderRadius:2, margin:"10px auto 6px" }} />
+                  <div style={{ display:"flex", flexDirection:"row", justifyContent:"space-evenly", alignItems:"center",
+                    padding:"6px 4px 18px", overflowX:"auto" }}>
 
-                    {/* 1 — GALERIE */}
-                    <button className="wa-attach-icon" onClick={() => galleryInputRef.current?.click()}>
-                      <div className="wa-attach-circle" style={{ background:"linear-gradient(145deg,#3ECF8E,#29A96B)" }}>
-                        <svg viewBox="0 0 28 28" width="27" height="27" fill="none">
-                          <rect x="4" y="5" width="20" height="16" rx="2.5" fill="rgba(255,255,255,0.22)" stroke="rgba(255,255,255,0.6)" strokeWidth="1.2"/>
-                          <rect x="5" y="6" width="18" height="13" rx="2" fill="#fff" opacity="0.95"/>
-                          <rect x="5" y="6" width="18" height="7" rx="2" fill="#87CEEB"/>
-                          <ellipse cx="18.5" cy="8.5" rx="1.8" ry="1.8" fill="#FFD700"/>
-                          <ellipse cx="8.5" cy="8" rx="2.2" ry="1.3" fill="rgba(255,255,255,0.85)"/>
-                          <ellipse cx="12.5" cy="7.5" rx="1.5" ry="1" fill="rgba(255,255,255,0.75)"/>
-                          <polygon points="5,19 10,12.5 15.5,19" fill="#4CAF50"/>
-                          <polygon points="12,19 17.5,13.5 23,19" fill="#2E7D32"/>
-                          <rect x="5" y="17.5" width="18" height="1.5" fill="#66BB6A"/>
-                          <circle cx="7.5" cy="8" r="1" fill="#FFD700" opacity="0.9"/>
+                    {/* 1 — GALERIE (actif) */}
+                    <button className="tg-attach-btn" onClick={() => { galleryInputRef.current?.click(); setAttachSheet(false); }}>
+                      <div className="tg-attach-box" style={{ background:"#EAF3FF" }}>
+                        <svg viewBox="0 0 28 28" width="28" height="28" fill="none">
+                          <rect x="3" y="6" width="22" height="16" rx="3" stroke="#3390EC" strokeWidth="1.8"/>
+                          <circle cx="9" cy="11" r="2" fill="#3390EC" opacity="0.8"/>
+                          <path d="M3 18l6-6 4.5 4.5 3-3 7.5 7.5" stroke="#3390EC" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
                       </div>
-                      <span>Galerie</span>
+                      <span style={{ color:"#3390EC" }}>Gallery</span>
                     </button>
 
                     {/* 2 — CAMÉRA */}
-                    <button className="wa-attach-icon" onClick={() => cameraInputRef.current?.click()}>
-                      <div className="wa-attach-circle" style={{ background:"linear-gradient(145deg,#6EA8F7,#3F7BE8)" }}>
-                        <svg viewBox="0 0 28 28" width="27" height="27" fill="none">
-                          <rect x="3" y="10" width="22" height="13" rx="3" fill="rgba(255,255,255,0.9)"/>
-                          <path d="M10.5 10V8.5C10.5 7.8 11.05 7.2 11.75 7.2h4.5C16.95 7.2 17.5 7.8 17.5 8.5V10" fill="rgba(255,255,255,0.85)" stroke="rgba(200,200,200,0.4)" strokeWidth="0.5"/>
-                          <circle cx="14" cy="16.5" r="4.5" fill="#CFD8DC"/>
-                          <circle cx="14" cy="16.5" r="3.2" fill="#1E88E5"/>
-                          <circle cx="14" cy="16.5" r="1.8" fill="#0D47A1"/>
-                          <circle cx="12.7" cy="15.2" r="0.7" fill="rgba(255,255,255,0.7)"/>
-                          <rect x="19.5" y="12" width="3" height="2" rx="1" fill="#FF5252"/>
-                          <rect x="5" y="12.5" width="2.5" height="1.8" rx="0.9" fill="#B0BEC5"/>
+                    <button className="tg-attach-btn" onClick={() => { cameraInputRef.current?.click(); setAttachSheet(false); }}>
+                      <div className="tg-attach-box">
+                        <svg viewBox="0 0 28 28" width="28" height="28" fill="none">
+                          <rect x="3" y="9" width="22" height="14" rx="3" stroke="#2F3542" strokeWidth="1.8"/>
+                          <path d="M10.5 9V7.5C10.5 6.95 10.95 6.5 11.5 6.5h5C17.05 6.5 17.5 6.95 17.5 7.5V9" stroke="#2F3542" strokeWidth="1.7" strokeLinecap="round"/>
+                          <circle cx="14" cy="16" r="3.8" stroke="#2F3542" strokeWidth="1.7"/>
+                          <circle cx="14" cy="16" r="1.6" fill="#2F3542"/>
+                          <circle cx="20.5" cy="11.5" r="1" fill="#2F3542"/>
                         </svg>
                       </div>
                       <span>Caméra</span>
                     </button>
 
-                    {/* 3 — LOCALISATION */}
-                    <button className="wa-attach-icon" onClick={handleLocation}>
-                      <div className="wa-attach-circle" style={{ background:"linear-gradient(145deg,#3ECF8E,#29A96B)" }}>
-                        <svg viewBox="0 0 28 28" width="27" height="27" fill="none">
-                          <path d="M14 3C10.13 3 7 6.13 7 10C7 15.25 14 25 14 25C14 25 21 15.25 21 10C21 6.13 17.87 3 14 3Z" fill="#F44336"/>
-                          <path d="M14 3C10.13 3 7 6.13 7 10C7 11 7.18 11.95 7.5 12.82C9.1 8.6 11.72 6 14 6C16.28 6 18.9 8.6 20.5 12.82C20.82 11.95 21 11 21 10C21 6.13 17.87 3 14 3Z" fill="#EF9A9A" opacity="0.55"/>
-                          <circle cx="14" cy="10" r="3.5" fill="rgba(255,255,255,0.95)"/>
-                          <circle cx="14" cy="10" r="1.5" fill="#F44336" opacity="0.4"/>
-                          <ellipse cx="14" cy="25.5" rx="2.5" ry="0.9" fill="rgba(0,0,0,0.12)"/>
+                    {/* 3 — FICHIER */}
+                    <button className="tg-attach-btn" onClick={() => { docInputRef.current?.click(); setAttachSheet(false); }}>
+                      <div className="tg-attach-box">
+                        <svg viewBox="0 0 28 28" width="28" height="28" fill="none">
+                          <path d="M8 4h8l6 6v14H8V4z" stroke="#2F3542" strokeWidth="1.8" strokeLinejoin="round"/>
+                          <path d="M16 4v6h6" stroke="#2F3542" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+                          <line x1="11" y1="14" x2="17" y2="14" stroke="#2F3542" strokeWidth="1.6" strokeLinecap="round"/>
+                          <line x1="11" y1="17.5" x2="17" y2="17.5" stroke="#2F3542" strokeWidth="1.6" strokeLinecap="round"/>
+                          <line x1="11" y1="21" x2="15" y2="21" stroke="#2F3542" strokeWidth="1.6" strokeLinecap="round"/>
                         </svg>
                       </div>
-                      <span>Localisation</span>
+                      <span>File</span>
                     </button>
 
-                    {/* 4 — CONTACT */}
-                    <button className="wa-attach-icon" onClick={() => setAttachPage("contacts")}>
-                      <div className="wa-attach-circle" style={{ background:"linear-gradient(145deg,#7B9EF5,#4A6EE8)" }}>
-                        <svg viewBox="0 0 28 28" width="27" height="27" fill="none">
-                          <circle cx="14" cy="10.5" r="5" fill="rgba(255,255,255,0.95)"/>
-                          <path d="M5 26C5 21 9.03 17.5 14 17.5C18.97 17.5 23 21 23 26" fill="rgba(255,255,255,0.95)"/>
+                    {/* 4 — LOCALISATION */}
+                    <button className="tg-attach-btn" onClick={() => { handleLocation(); setAttachSheet(false); }}>
+                      <div className="tg-attach-box">
+                        <svg viewBox="0 0 28 28" width="28" height="28" fill="none">
+                          <path d="M14 3C10.13 3 7 6.13 7 10C7 15.25 14 25 14 25C14 25 21 15.25 21 10C21 6.13 17.87 3 14 3Z" stroke="#2F3542" strokeWidth="1.8" strokeLinejoin="round"/>
+                          <circle cx="14" cy="10" r="3" stroke="#2F3542" strokeWidth="1.6"/>
+                        </svg>
+                      </div>
+                      <span>Location</span>
+                    </button>
+
+                    {/* 5 — SONDAGE */}
+                    <button className="tg-attach-btn" onClick={() => setAttachPage("poll")}>
+                      <div className="tg-attach-box">
+                        <svg viewBox="0 0 28 28" width="28" height="28" fill="none">
+                          <rect x="5.5" y="9" width="4.5" height="13" rx="2" stroke="#2F3542" strokeWidth="1.7"/>
+                          <rect x="11.75" y="13" width="4.5" height="9" rx="2" stroke="#2F3542" strokeWidth="1.7"/>
+                          <rect x="18" y="17" width="4.5" height="5" rx="2" stroke="#2F3542" strokeWidth="1.7"/>
+                          <line x1="4" y1="22.5" x2="24" y2="22.5" stroke="#2F3542" strokeWidth="1.6" strokeLinecap="round"/>
+                        </svg>
+                      </div>
+                      <span>Poll</span>
+                    </button>
+
+                    {/* 6 — CHECKLIST */}
+                    <button className="tg-attach-btn" onClick={() => setAttachPage("poll")}>
+                      <div className="tg-attach-box">
+                        <svg viewBox="0 0 28 28" width="28" height="28" fill="none">
+                          <rect x="5" y="5" width="18" height="18" rx="4" stroke="#2F3542" strokeWidth="1.8"/>
+                          <path d="M9 14l3.5 3.5L19 10" stroke="#2F3542" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </div>
+                      <span>Checklist</span>
+                    </button>
+
+                    {/* 7 — CONTACT */}
+                    <button className="tg-attach-btn" onClick={() => setAttachPage("contacts")}>
+                      <div className="tg-attach-box">
+                        <svg viewBox="0 0 28 28" width="28" height="28" fill="none">
+                          <circle cx="14" cy="10" r="5" stroke="#2F3542" strokeWidth="1.8"/>
+                          <path d="M5 26C5 20.48 9 17 14 17C19 17 23 20.48 23 26" stroke="#2F3542" strokeWidth="1.8" strokeLinecap="round"/>
                         </svg>
                       </div>
                       <span>Contact</span>
                     </button>
 
-                    {/* 5 — DOCUMENT */}
-                    <button className="wa-attach-icon" onClick={() => docInputRef.current?.click()}>
-                      <div className="wa-attach-circle" style={{ background:"linear-gradient(145deg,#9B7FD4,#7048B8)" }}>
-                        <svg viewBox="0 0 28 28" width="27" height="27" fill="none">
-                          <path d="M7 3H18L22 7.5V25C22 25.55 21.55 26 21 26H7C6.45 26 6 25.55 6 25V4C6 3.45 6.45 3 7 3Z" fill="rgba(255,255,255,0.95)"/>
-                          <path d="M18 3L22 7.5H19.5C18.67 7.5 18 6.83 18 6V3Z" fill="#CFD8DC"/>
-                          <line x1="9" y1="12" x2="19" y2="12" stroke="#90A4AE" strokeWidth="1.5" strokeLinecap="round"/>
-                          <line x1="9" y1="15" x2="19" y2="15" stroke="#90A4AE" strokeWidth="1.5" strokeLinecap="round"/>
-                          <line x1="9" y1="18" x2="15" y2="18" stroke="#90A4AE" strokeWidth="1.5" strokeLinecap="round"/>
-                        </svg>
-                      </div>
-                      <span>Document</span>
-                    </button>
-
-                    {/* 6 — SONDAGE */}
-                    <button className="wa-attach-icon" onClick={() => setAttachPage("poll")}>
-                      <div className="wa-attach-circle" style={{ background:"linear-gradient(145deg,#F7B84B,#E8920A)" }}>
-                        <svg viewBox="0 0 28 28" width="27" height="27" fill="none">
-                          <rect x="5" y="9" width="5" height="13" rx="2" fill="#4CAF50"/>
-                          <rect x="5" y="8" width="5" height="2" rx="1" fill="#81C784"/>
-                          <rect x="11.5" y="13" width="5" height="9" rx="2" fill="#FFD54F"/>
-                          <rect x="11.5" y="12" width="5" height="2" rx="1" fill="#FFF176"/>
-                          <rect x="18" y="16" width="5" height="6" rx="2" fill="#2196F3"/>
-                          <rect x="18" y="15" width="5" height="2" rx="1" fill="#64B5F6"/>
-                          <line x1="4" y1="22.5" x2="24" y2="22.5" stroke="rgba(255,255,255,0.6)" strokeWidth="1.2" strokeLinecap="round"/>
-                        </svg>
-                      </div>
-                      <span>Sondage</span>
-                    </button>
-
-                    {/* 7 — ÉVÉNEMENT */}
-                    <button className="wa-attach-icon" onClick={() => setAttachPage("event")}>
-                      <div className="wa-attach-circle" style={{ background:"linear-gradient(145deg,#FF8EC4,#F0479A)" }}>
-                        <svg viewBox="0 0 28 28" width="27" height="27" fill="none">
-                          <rect x="4.5" y="7" width="19" height="17" rx="2.5" fill="rgba(255,255,255,0.95)"/>
-                          <rect x="4.5" y="7" width="19" height="6" rx="2.5" fill="#F44336"/>
-                          <rect x="4.5" y="11" width="19" height="2" fill="#F44336"/>
-                          <rect x="9" y="4.5" width="2.5" height="5" rx="1.25" fill="#90A4AE"/>
-                          <rect x="16.5" y="4.5" width="2.5" height="5" rx="1.25" fill="#90A4AE"/>
-                          <text x="14" y="11.8" textAnchor="middle" fill="rgba(255,255,255,0.95)" fontSize="3.2" fontWeight="700" fontFamily="Arial,sans-serif">July</text>
-                          <text x="14" y="21" textAnchor="middle" fill="#1A1A1A" fontSize="7.5" fontWeight="900" fontFamily="Arial,sans-serif">17</text>
-                        </svg>
-                      </div>
-                      <span>Événement</span>
-                    </button>
-
-                    {/* 8 — IMAGES D'IA */}
-                    <button className="wa-attach-icon" onClick={() => setAttachPage("ai")}>
-                      <div className="wa-attach-circle" style={{ background:"linear-gradient(145deg,#26D7E8,#0BB8CC)" }}>
-                        <svg viewBox="0 0 28 28" width="27" height="27" fill="none">
-                          <line x1="14" y1="4" x2="14" y2="8" stroke="rgba(255,255,255,0.75)" strokeWidth="1.5" strokeLinecap="round"/>
-                          <circle cx="14" cy="3.2" r="1.8" fill="#FF5252"/>
-                          <rect x="7" y="8" width="14" height="13" rx="3.5" fill="rgba(255,255,255,0.92)"/>
-                          <rect x="4.5" y="11" width="3" height="5.5" rx="1.5" fill="rgba(255,255,255,0.8)"/>
-                          <rect x="20.5" y="11" width="3" height="5.5" rx="1.5" fill="rgba(255,255,255,0.8)"/>
-                          <circle cx="11" cy="14.5" r="2.5" fill="#90A4AE"/>
-                          <circle cx="11" cy="14.5" r="1.6" fill="#37474F"/>
-                          <circle cx="10.3" cy="13.7" r="0.55" fill="rgba(255,255,255,0.75)"/>
-                          <circle cx="17" cy="14.5" r="2.5" fill="#90A4AE"/>
-                          <circle cx="17" cy="14.5" r="1.6" fill="#37474F"/>
-                          <circle cx="16.3" cy="13.7" r="0.55" fill="rgba(255,255,255,0.75)"/>
-                          <path d="M11 19Q14 21 17 19" stroke="#90A4AE" strokeWidth="1.3" strokeLinecap="round" fill="none"/>
-                        </svg>
-                      </div>
-                      <span>Images d'IA</span>
-                    </button>
-
                   </div>
-                  <div style={{ height:20 }} />
                 </>
               )}
 

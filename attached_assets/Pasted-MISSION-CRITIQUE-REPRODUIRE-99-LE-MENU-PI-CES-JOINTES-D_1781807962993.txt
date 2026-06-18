@@ -1,0 +1,144 @@
+MISSION CRITIQUE : REPRODUIRE À 99 % LE MENU PIÈCES JOINTES DE TELEGRAM DANS BRUTEPAWA
+
+Utilise la capture fournie comme référence visuelle absolue.
+
+OBJECTIF :
+Le menu pièces jointes de BrutePawa doit être pratiquement identique à Telegram Android Premium.
+
+═══════════════════════════════
+STRUCTURE GÉNÉRALE
+═══════════════════════════════
+
+- Panneau collé au bas de l'écran.
+- Fond blanc pur : #FFFFFF.
+- Coins supérieurs arrondis :
+  border-top-left-radius: 22px;
+  border-top-right-radius: 22px;
+
+- Largeur : 100%.
+- Hauteur totale : entre 95px et 110px.
+- Ombre Telegram légère :
+
+box-shadow: 0 -2px 20px rgba(0,0,0,0.08);
+
+- Aucun rectangle gris derrière.
+- Aucun effet de carte Android.
+- Aucun espace vide excessif.
+
+═══════════════════════════════
+ALIGNEMENT
+═══════════════════════════════
+
+Les éléments doivent être alignés sur UNE SEULE LIGNE :
+
+📷 Gallery
+📄 File
+📍 Location
+📊 Poll
+✅ Checklist
+👤 Contact
+
+Disposition :
+
+display: flex;
+flex-direction: row;
+justify-content: space-evenly;
+align-items: center;
+
+Chaque élément doit avoir exactement le même espace.
+
+═══════════════════════════════
+GALLERY (ÉLÉMENT ACTIF)
+═══════════════════════════════
+
+Gallery est sélectionné par défaut.
+
+Fond :
+
+#EAF3FF
+
+Icône :
+
+#3390EC
+
+Texte :
+
+#3390EC
+
+Taille du conteneur :
+
+width: 62px;
+height: 62px;
+border-radius: 18px;
+
+Aucune ombre excessive.
+
+═══════════════════════════════
+AUTRES ÉLÉMENTS
+═══════════════════════════════
+
+Couleur des icônes :
+
+#2F3542
+
+Couleur des textes :
+
+#2F3542
+
+Taille icônes :
+
+28px
+
+Texte :
+
+font-size: 13px;
+font-weight: 500;
+
+═══════════════════════════════
+COMPORTEMENT TELEGRAM
+═══════════════════════════════
+
+Ouverture :
+
+transform: translateY(100%);
+
+Animation :
+
+transform: translateY(0);
+
+transition:
+220ms cubic-bezier(.2,.8,.2,1);
+
+Fermeture identique.
+
+═══════════════════════════════
+INTÉGRATION BRUTEPAWA
+═══════════════════════════════
+
+Conserver uniquement :
+
+- couleurs de marque BrutePawa (#22C55E)
+- typographie BrutePawa
+- identité BrutePawa
+
+Tout le reste doit suivre Telegram.
+
+═══════════════════════════════
+INTERDICTIONS
+═══════════════════════════════
+
+❌ Ne pas utiliser une grille 2 lignes
+❌ Ne pas afficher de gros boutons circulaires
+❌ Ne pas agrandir les icônes
+❌ Ne pas ajouter de cartes séparées
+❌ Ne pas ajouter de fond gris
+❌ Ne pas ajouter d'espace vide important
+❌ Ne pas créer un style Android personnalisé
+
+═══════════════════════════════
+RÉSULTAT ATTENDU
+═══════════════════════════════
+
+Un utilisateur qui compare BrutePawa et Telegram doit avoir l'impression qu'il s'agit du même composant UI.
+
+Niveau de fidélité visuelle attendu : 99 % Telegram Android Premium.
