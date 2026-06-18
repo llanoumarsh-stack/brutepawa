@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { openImageViewer } from "../components/ImageViewer";
-import { apiGetPosts, apiCreatePost, apiLikePost, apiGetStories, apiToggleSaved, apiFollow, apiCheckFollowing, apiDeletePost, type FeedPost, type StoryGroup } from "../lib/api";
+import { apiGetPosts, apiGetMe, apiCreatePost, apiLikePost, apiGetStories, apiToggleSaved, apiFollow, apiCheckFollowing, apiDeletePost, type FeedPost, type StoryGroup } from "../lib/api";
 import StoryViewer from "../components/StoryViewer";
 import { storyDraftStore } from "../lib/storyDraft";
 
@@ -240,8 +240,10 @@ export default function Feed() {
 
   const rawUser = localStorage.getItem("fb_user");
   const user = rawUser ? JSON.parse(rawUser) as { id?: number; name: string; email: string; avatarUrl?: string; flag?: string } : { name: "Moi", email: "" };
-  const myUserId = user.id != null ? Number(user.id) : null;
   const userInitials = user.name ? user.name.slice(0, 2).toUpperCase() : "ME";
+
+  // meId fetched from server — the single source of truth for ownership checks
+  const [meId, setMeId] = useState<number | null>(null);
 
   const loadPosts = useCallback(async () => {
     setLoading(true);
@@ -255,7 +257,11 @@ export default function Feed() {
     catch { setStoryGroups([]); }
   }, []);
 
-  useEffect(() => { loadPosts(); loadStories(); }, [loadPosts, loadStories]);
+  useEffect(() => {
+    loadPosts();
+    loadStories();
+    apiGetMe().then(me => { if (me) setMeId(me.id); });
+  }, [loadPosts, loadStories]);
 
   // Charge la liste des utilisateurs déjà suivis dès que les posts sont chargés
   useEffect(() => {
@@ -683,8 +689,8 @@ export default function Feed() {
                     ···
                   </button>
                   <button
-                    onClick={() => post.isOwner ? archivePost(post.id) : undefined}
-                    style={{ width: 32, height: 32, borderRadius: "50%", background: "none", border: "none", cursor: post.isOwner ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", color: post.isOwner ? "#EF4444" : "#65676b", fontSize: 16, fontWeight: 700 }}>
+                    onClick={() => (meId !== null && post.authorId === meId) ? archivePost(post.id) : undefined}
+                    style={{ width: 32, height: 32, borderRadius: "50%", background: "none", border: "none", cursor: (meId !== null && post.authorId === meId) ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", color: (meId !== null && post.authorId === meId) ? "#EF4444" : "#65676b", fontSize: 16, fontWeight: 700 }}>
                     ✕
                   </button>
                 </div>
@@ -874,7 +880,7 @@ export default function Feed() {
               {/* Green group */}
               {(() => {
                 const menuPost = posts.find(p => p.id === postMenuId);
-                const isMyPost = menuPost?.isOwner === true;
+                const isMyPost = meId !== null && menuPost?.authorId === meId;
                 const greenItems: {svg:React.ReactNode;bg:string;label:string;desc:string;action:()=>void}[] = isMyPost
                   ? [
                       { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#F59E0B" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><line x1="10" y1="12" x2="14" y2="12"/></svg>, bg: "#FEF3C7", label: "Archiver le post", desc: "Cette publication sera supprimée du fil pour tout le monde.", action: () => { if (postMenuId !== null) archivePost(postMenuId); } },
