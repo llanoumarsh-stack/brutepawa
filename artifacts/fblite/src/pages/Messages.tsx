@@ -397,13 +397,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [convWpKey, setConvWpKey]             = useState<WallpaperKey>("none");
   const [pendingWpKey, setPendingWpKey]       = useState<WallpaperKey>("none");
 
-  // Persist & restore theme/wallpaper per conversation
+  // Restore theme per conversation; wallpaper always defaults to bp-default (never restore old photo wallpapers)
   useEffect(() => {
     if (!activeConv) return;
     const savedTheme = localStorage.getItem(`bp_theme_${activeConv}`) as ThemeKey | null;
-    const savedWp    = localStorage.getItem(`bp_wp_${activeConv}`) as WallpaperKey | null;
     setConvThemeKey(savedTheme && CONV_THEMES[savedTheme] ? savedTheme : "bp-green");
-    setConvWpKey(savedWp && CONV_WALLPAPERS.find(w => w.key === savedWp) ? savedWp : "none");
+    // Always reset wallpaper to bp-default — ignore any previously saved wallpaper key
+    setConvWpKey("none");
+    setConvWallpaper(null);
   }, [activeConv]);
   const [showChatSearch, setShowChatSearch]   = useState(false);
   const [chatSearchQ, setChatSearchQ]         = useState("");
