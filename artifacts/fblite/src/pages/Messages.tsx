@@ -841,18 +841,26 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
   const onNewMessage = useCallback((data: NewMessagePayload) => {
     const fromId = data.fromUserId;
-    const time   = new Date(data.createdAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" });
-    const msg: Message = { id: data.id, text: data.content, mine: false, time, status: "sent" };
-    setMessages(prev => ({ ...prev, [fromId]: [...(prev[fromId] ?? []), msg] }));
+    /* Parse the raw content (handles __audio__:, __image__:, __doc__:, etc.) */
+    const parsed = parseApiMsg({
+      id: data.id,
+      content: data.content,
+      fromUserId: data.fromUserId,
+      createdAt: data.createdAt,
+      isRead: false,
+    });
+    setMessages(prev => ({ ...prev, [fromId]: [...(prev[fromId] ?? []), parsed] }));
     /* If the recipient has this conversation open right now, mark as read immediately */
     if (activeConvRef.current === fromId) {
       apiMarkMessagesRead(fromId);
     }
+    /* Use human-readable preview for conversation list (not raw encoded content) */
+    const preview = fmtConvPreview(data.content).text;
     setConvList(prev => {
       const exists = prev.find(c => c.id === fromId);
       if (exists) {
         return prev.map(c => c.id === fromId
-          ? { ...c, lastMessage: data.content, time, unread: activeConvRef.current === fromId ? 0 : c.unread + 1 }
+          ? { ...c, lastMessage: preview, time: parsed.time, unread: activeConvRef.current === fromId ? 0 : c.unread + 1 }
           : c);
       }
       const u = allUsersRef.current.find(x => x.id === fromId);
@@ -860,10 +868,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       return [{
         id: fromId,
         user: { name, initials: mkInitials(name), color: CONV_COLORS[fromId % CONV_COLORS.length] },
-        lastMessage: data.content, unread: 1, time,
+        lastMessage: preview, unread: 1, time: parsed.time,
       }, ...prev];
     });
-  }, []);
+  }, [parseApiMsg]);
 
   const onMessageDelivered = useCallback((messageIds: number[]) => {
     const idSet = new Set(messageIds);
