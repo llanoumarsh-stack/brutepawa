@@ -367,6 +367,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [groupInfo, setGroupInfo]           = useState<ApiChatGroupInfo | null>(null);
   const [showGroupInfo, setShowGroupInfo]   = useState(false);
   const [groupNewMsg, setGroupNewMsg]       = useState("");
+  const [dismissedAddBanner, setDismissedAddBanner]   = useState<Set<number>>(new Set());
+  const [dismissedInfoPanel, setDismissedInfoPanel]   = useState<Set<number>>(new Set());
 
   const [groupWizard, setGroupWizard]           = useState<"none" | "members" | "name">("none");
   const [groupWizardType, setGroupWizardType]   = useState<"group" | "channel">("group");
@@ -2433,100 +2435,147 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   if (activeGroupId !== null) {
     const grp = chatGroups.find(g => g.id === activeGroupId);
     const gmsgs = groupMsgs[activeGroupId] ?? [];
+    const grpInitial = (grp?.name ?? "G")[0].toUpperCase();
+    const grpColor = ["#EC4899","#8B5CF6","#F97316","#22C55E","#14B8A6","#3B82F6","#F59E0B"][activeGroupId % 7];
+    const isNewGroup = gmsgs.filter(m => m.type !== "system").length === 0;
+    const showBanner = !dismissedAddBanner.has(activeGroupId);
+    const showInfoCard = isNewGroup && !dismissedInfoPanel.has(activeGroupId);
+
     return createPortal(
-      <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, display: "flex", flexDirection: "column", zIndex: 10000, overflow: "hidden",
-        backgroundImage:`url(${import.meta.env.BASE_URL}wallpapers/bp-default.jpg)`,
-        backgroundSize:"180px auto", backgroundRepeat:"repeat", backgroundAttachment:"fixed" }}>
+      <div style={{ position:"fixed", top:0, bottom:0, left:0, right:0, display:"flex", flexDirection:"column", zIndex:10000, overflow:"hidden",
+        background:"linear-gradient(180deg,#dcedc8 0%,#c5e1a5 18%,#a5d6a7 42%,#81c784 70%,#66bb6a 100%)" }}>
         <style>{`
           .bp-msg-mine   { background:#DCECCB; color:#111; border-radius:18px 18px 4px 18px; box-shadow:0 1px 3px rgba(0,0,0,0.14); }
-          textarea:focus  { outline:none !important; box-shadow:none !important; border:none !important; }
-          textarea        { -webkit-appearance:none; scrollbar-width:none; }
-          textarea::-webkit-scrollbar { display:none; }
           .bp-msg-theirs { background:#fff;    color:#111; border-radius:18px 18px 18px 4px; box-shadow:0 1px 3px rgba(0,0,0,0.12); }
+          textarea:focus { outline:none !important; box-shadow:none !important; border:none !important; }
+          textarea { -webkit-appearance:none; scrollbar-width:none; }
+          textarea::-webkit-scrollbar { display:none; }
+          @keyframes grp-slide-in { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
         `}</style>
 
-        {/* ── Header — même style que les DMs ── */}
-        <div style={{ background:"#fff", padding:"8px 10px", display:"flex", alignItems:"center", gap:8, flexShrink:0, boxShadow:"0 1px 3px rgba(0,0,0,0.10)", borderBottom:"1px solid #F1F5F9" }}>
+        {/* ══ HEADER — Telegram exact ══ */}
+        <div style={{ background:"#fff", padding:"6px 8px 6px 4px", display:"flex", alignItems:"center", gap:6, flexShrink:0, boxShadow:"0 1px 4px rgba(0,0,0,0.10)" }}>
           <button onClick={() => { setActiveGroupId(null); setShowGroupInfo(false); }}
-            style={{ background:"none", border:"none", cursor:"pointer", padding:"4px 6px", display:"flex", alignItems:"center" }}>
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="#16C24A"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            style={{ background:"none", border:"none", cursor:"pointer", width:40, height:44, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
           </button>
-          <div style={{ width:40, height:40, borderRadius:"50%", background: grp?.type === "channel" ? "#DCF8C6" : "#E8F5E9", display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, cursor:"pointer", border:"2px solid #16C24A", flexShrink:0 }}
-            onClick={() => setShowGroupInfo(true)}>
-            {grp?.type === "channel" ? "📢" : "👥"}
+          {/* Avatar with initial */}
+          <div onClick={() => setShowGroupInfo(true)}
+            style={{ width:42, height:42, borderRadius:"50%", background:grpColor, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, fontSize:18, cursor:"pointer", flexShrink:0 }}>
+            {grp?.avatarUrl
+              ? <img src={grp.avatarUrl} style={{ width:42, height:42, borderRadius:"50%", objectFit:"cover" }} alt={grp.name} />
+              : grpInitial
+            }
           </div>
           <div style={{ flex:1, minWidth:0, cursor:"pointer" }} onClick={() => setShowGroupInfo(true)}>
-            <div style={{ fontWeight:700, fontSize:15, color:"#0F172A", lineHeight:1.2 }}>{grp?.name ?? "Groupe"}</div>
-            <div style={{ fontSize:11.5, color:"#64748B" }}>{grp?.membersCount ?? 0} membre{(grp?.membersCount ?? 0) !== 1 ? "s" : ""}</div>
+            <div style={{ fontWeight:700, fontSize:15.5, color:"#000", lineHeight:1.25, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{grp?.name ?? "Groupe"}</div>
+            <div style={{ fontSize:12, color:"#8E8E93" }}>{grp?.membersCount ?? 0} membre{(grp?.membersCount ?? 0) !== 1 ? "s" : ""}</div>
           </div>
           <button onClick={() => setShowGroupInfo(true)}
-            style={{ background:"none", border:"none", borderRadius:"50%", width:38, height:38, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="#64748B"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+            style={{ background:"none", border:"none", width:40, height:40, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="#8E8E93"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
           </button>
         </div>
 
-        {/* ── Zone messages — même wallpaper que les DMs ── */}
-        <div style={{ flex:1, overflowY:"auto", padding:"10px 10px 6px", display:"flex", flexDirection:"column", gap:2,
-          backgroundImage:`url(${import.meta.env.BASE_URL}wallpapers/bp-default.jpg)`,
-          backgroundSize:"180px auto", backgroundRepeat:"repeat", backgroundPosition:"center", backgroundAttachment:"fixed" }}>
+        {/* ══ ADD MEMBERS BANNER ══ */}
+        {showBanner && (
+          <div style={{ padding:"8px 12px 0", flexShrink:0, animation:"grp-slide-in 0.15s ease" }}>
+            <div style={{ background:"#fff", borderRadius:14, padding:"12px 16px", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(0,0,0,0.14)", position:"relative" }}>
+              <button onClick={() => setShowGroupInfo(true)}
+                style={{ background:"none", border:"none", cursor:"pointer", color:"#22C55E", fontWeight:700, fontSize:15, padding:0, flex:1, textAlign:"center" }}>
+                Add Members
+              </button>
+              <button onClick={() => setDismissedAddBanner(s => { const n = new Set(s); n.add(activeGroupId); return n; })}
+                style={{ position:"absolute", right:14, background:"none", border:"none", cursor:"pointer", color:"#8E8E93", fontSize:18, lineHeight:1, padding:0 }}>✕</button>
+            </div>
+          </div>
+        )}
 
-          <div style={{ textAlign:"center", fontSize:11.5, color:"#555", background:"rgba(255,255,255,0.92)", borderRadius:20, padding:"4px 14px", margin:"2px auto 10px", display:"inline-block", alignSelf:"center", boxShadow:"0 1px 4px rgba(0,0,0,0.10)", fontWeight:500 }}>Aujourd'hui</div>
+        {/* ══ MESSAGES AREA ══ */}
+        <div style={{ flex:1, overflowY:"auto", padding:"12px 10px 6px", display:"flex", flexDirection:"column", gap:2 }}>
+
+          {/* Date pill */}
+          <div style={{ alignSelf:"center", background:"rgba(0,0,0,0.32)", borderRadius:20, padding:"4px 14px", marginBottom:6 }}>
+            <span style={{ fontSize:12, color:"#fff", fontWeight:500 }}>Aujourd'hui</span>
+          </div>
 
           {gmsgs.map((msg, i) => {
             const isFirst = i === 0 || gmsgs[i - 1]?.mine !== msg.mine;
             if (msg.type === "system") {
-              return <div key={msg.id} style={{ textAlign:"center", fontSize:11.5, color:"#555", background:"rgba(255,255,255,0.92)", borderRadius:20, padding:"4px 14px", margin:"6px auto", display:"inline-block", alignSelf:"center", boxShadow:"0 1px 4px rgba(0,0,0,0.10)", fontWeight:500 }}>{msg.text}</div>;
+              return (
+                <div key={msg.id} style={{ alignSelf:"center", background:"rgba(0,0,0,0.32)", borderRadius:20, padding:"4px 14px", margin:"4px auto" }}>
+                  <span style={{ fontSize:12, color:"#fff", fontWeight:500 }}>{msg.text}</span>
+                </div>
+              );
             }
             return (
-              <div key={msg.id} style={{ display:"flex", justifyContent: msg.mine ? "flex-end" : "flex-start", alignItems:"flex-end", gap:6, marginTop: isFirst ? 6 : 1 }}>
+              <div key={msg.id} style={{ display:"flex", justifyContent:msg.mine?"flex-end":"flex-start", alignItems:"flex-end", gap:6, marginTop:isFirst?6:1 }}>
                 {!msg.mine && (
                   <div style={{ width:28, flexShrink:0, alignSelf:"flex-end", paddingBottom:2 }}>
-                    {isFirst && <div className="avatar xs" style={{ width:26, height:26, fontSize:10, background: CONV_COLORS[Math.abs(msg.text.length + i) % CONV_COLORS.length] }}>{mkInitials(msg.senderName)}</div>}
+                    {isFirst && <div style={{ width:26, height:26, borderRadius:"50%", background:CONV_COLORS[Math.abs(msg.text.length+i)%CONV_COLORS.length], display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontSize:10, fontWeight:700 }}>{mkInitials(msg.senderName)}</div>}
                   </div>
                 )}
                 <div style={{ maxWidth:"72%", display:"flex", flexDirection:"column" }}>
-                  {!msg.mine && isFirst && <div style={{ fontSize:11, color:"#16C24A", fontWeight:700, marginBottom:2, paddingLeft:2 }}>{msg.senderName}</div>}
-                  <div className={msg.mine ? "bp-msg-mine" : "bp-msg-theirs"} style={{ padding:"8px 12px 6px", fontSize:14.5, lineHeight:1.45, wordBreak:"break-word" }}>
+                  {!msg.mine && isFirst && <div style={{ fontSize:11, color:"#22C55E", fontWeight:700, marginBottom:2, paddingLeft:2 }}>{msg.senderName}</div>}
+                  <div className={msg.mine?"bp-msg-mine":"bp-msg-theirs"} style={{ padding:"8px 12px 6px", fontSize:14.5, lineHeight:1.45, wordBreak:"break-word" }}>
                     {msg.text}
-                    <div style={{ fontSize:10, marginTop:2, color:"#888", textAlign:"right" }}>{msg.time}{msg.mine && <span style={{ marginLeft:3, color:"#53bdeb" }}>✓✓</span>}</div>
+                    <div style={{ fontSize:10, marginTop:2, color:"#888", textAlign:"right" }}>{msg.time}{msg.mine && <span style={{ marginLeft:3, color:"#66bb6a" }}>✓✓</span>}</div>
                   </div>
                 </div>
               </div>
             );
           })}
-          {gmsgs.length === 0 && (
-            <div style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", padding:"40px 0" }}>
-              <div style={{ background:"rgba(255,255,255,0.92)", borderRadius:20, padding:"8px 18px", fontSize:13, color:"#555", textAlign:"center", boxShadow:"0 1px 4px rgba(0,0,0,0.10)", fontWeight:500 }}>🔒 Les messages sont chiffrés de bout en bout</div>
+
+          {/* ── Info panel for new groups ── */}
+          {showInfoCard && (
+            <div style={{ alignSelf:"center", width:"85%", background:"rgba(27,94,32,0.82)", borderRadius:16, padding:"16px 18px", margin:"12px auto", animation:"grp-slide-in 0.2s ease" }}
+              onClick={() => setDismissedInfoPanel(s => { const n = new Set(s); n.add(activeGroupId); return n; })}>
+              <div style={{ fontWeight:700, fontSize:15, color:"#fff", marginBottom:6 }}>Vous avez créé un groupe</div>
+              <div style={{ fontSize:13, color:"rgba(255,255,255,0.85)", marginBottom:10 }}>Les groupes peuvent avoir :</div>
+              {["Jusqu'à 200 000 membres","Historique permanent","Appels de groupe","Plusieurs administrateurs","Liens d'invitation"].map(f => (
+                <div key={f} style={{ display:"flex", alignItems:"center", gap:10, marginBottom:6 }}>
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span style={{ fontSize:13.5, color:"#fff" }}>{f}</span>
+                </div>
+              ))}
             </div>
           )}
+
           <div ref={groupBottomRef} />
         </div>
 
-        {/* ── Barre d'input — floating pill (même style que les DMs) ── */}
-        <div style={{ background:"transparent", flexShrink:0, padding:"8px 10px 10px" }}>
-          <div style={{ display:"flex", alignItems:"center" }}>
-            <div style={{ flex:1, display:"flex", alignItems:"center", background:"#fff", border:"1px solid #E5E7EB", borderRadius:9999, padding:"0 5px 0 14px", minHeight:52 }}>
-              <button style={{ background:"none", border:"none", cursor:"pointer", padding:0, flexShrink:0, display:"flex", alignItems:"center", marginRight:4 }}>
-                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="#94A3B8"/><circle cx="15" cy="9" r="1" fill="#94A3B8"/></svg>
+        {/* ══ INPUT BAR — Telegram pill ══ */}
+        <div style={{ flexShrink:0, padding:"6px 10px 10px", display:"flex", alignItems:"center", gap:8 }}>
+          <div style={{ flex:1, display:"flex", alignItems:"center", background:"#fff", borderRadius:9999, padding:"0 6px 0 14px", minHeight:50, boxShadow:"0 1px 4px rgba(0,0,0,0.12)" }}>
+            {/* Emoji */}
+            <button style={{ background:"none", border:"none", cursor:"pointer", padding:0, flexShrink:0, display:"flex", alignItems:"center", marginRight:4 }}>
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8E8E93" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1.2" fill="#8E8E93"/><circle cx="15" cy="9" r="1.2" fill="#8E8E93"/></svg>
+            </button>
+            {/* Text */}
+            <textarea ref={grpInputRef} value={groupNewMsg}
+              rows={1}
+              onChange={e => { setGroupNewMsg(e.target.value); autoResize(e.target); }}
+              onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendGroupMsg(); } }}
+              placeholder="Écrire un message..."
+              style={{ flex:1, background:"transparent", border:"none", outline:"none", resize:"none", padding:"0 6px", fontSize:15, color:"#000", minWidth:0, lineHeight:"22px", height:"22px", maxHeight:"130px", overflowY:"hidden", transition:"height 0.15s ease", display:"block", alignSelf:"center", fontFamily:"inherit", WebkitAppearance:"none" as React.CSSProperties["WebkitAppearance"] }} />
+            {/* Attachment */}
+            {!groupNewMsg.trim() && (
+              <button style={{ background:"none", border:"none", cursor:"pointer", padding:0, flexShrink:0, display:"flex", alignItems:"center", marginRight:6 }}>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#8E8E93" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
               </button>
-              <textarea ref={grpInputRef} value={groupNewMsg}
-                rows={1}
-                onChange={e => { setGroupNewMsg(e.target.value); autoResize(e.target); }}
-                onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendGroupMsg(); } }}
-                placeholder="Écrire un message..."
-                style={{ flex:1, background:"transparent", border:"none", outline:"none", resize:"none", padding:"0 6px", fontSize:15, color:"#0F172A", minWidth:0, lineHeight:"22px", height:"22px", maxHeight:"130px", overflowY:"hidden", transition:"height 0.15s ease", display:"block", alignSelf:"center", fontFamily:"inherit", WebkitAppearance:"none" as React.CSSProperties["WebkitAppearance"] }} />
-              {groupNewMsg.trim() ? (
-                <button onClick={sendGroupMsg}
-                  style={{ background:"#22C55E", border:"none", borderRadius:"50%", width:44, height:44, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 3px 12px rgba(34,197,94,0.40)", cursor:"pointer" }}>
-                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                </button>
-              ) : (
-                <button style={{ background:"linear-gradient(135deg,#22C55E 0%,#16a34a 100%)", border:"none", borderRadius:"50%", width:44, height:44, cursor:"pointer", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 3px 12px rgba(34,197,94,0.40)" }}>
-                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-                </button>
-              )}
-            </div>
+            )}
           </div>
+          {/* Mic / Send */}
+          {groupNewMsg.trim() ? (
+            <button onClick={sendGroupMsg}
+              style={{ background:"#22C55E", border:"none", borderRadius:"50%", width:50, height:50, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 3px 12px rgba(34,197,94,0.45)", cursor:"pointer" }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          ) : (
+            <button style={{ background:"#22C55E", border:"none", borderRadius:"50%", width:50, height:50, cursor:"pointer", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 3px 12px rgba(34,197,94,0.45)" }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+            </button>
+          )}
         </div>
       </div>
     , document.body);
