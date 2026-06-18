@@ -378,6 +378,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [wizardCreating, setWizardCreating]     = useState(false);
   const [autoDeleteOption, setAutoDeleteOption] = useState("Désactivée");
   const [showAutoDeletePopup, setShowAutoDeletePopup] = useState(false);
+  const [autoDelPopupPos, setAutoDelPopupPos]         = useState({ top: 0, right: 16 });
+  const autoDelBtnRef = useRef<HTMLDivElement>(null);
   const [fabOpen, setFabOpen]   = useState(false);
   const [inboxTab, setInboxTab] = useState<"all" | "unread" | "groups">("all");
   const [showInboxSearch, setShowInboxSearch] = useState(false);
@@ -1550,6 +1552,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, display: "flex", flexDirection: "column", background: "#FFFFFF", zIndex: 10000 }}>
         <style>{`
           @keyframes wiz-in { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+          @keyframes autoDelIn { from{opacity:0;transform:scale(0.85)} to{opacity:1;transform:scale(1)} }
           @keyframes wiz-check { from{transform:scale(0.4)} to{transform:scale(1)} }
           .wiz-row:active { background: #f5f5f5 !important; }
         `}</style>
@@ -1706,8 +1709,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
             {/* ── AUTO-SUPPRESSION ROW ── */}
             <div style={{ background: "#fff", borderTop: "1px solid rgba(0,0,0,0.08)", borderBottom: "1px solid rgba(0,0,0,0.08)", marginTop: 28 }}>
-              <div
-                onClick={e => { e.stopPropagation(); setShowAutoDeletePopup(p => !p); }}
+              <div ref={autoDelBtnRef}
+                onClick={e => {
+                  e.stopPropagation();
+                  const rect = autoDelBtnRef.current?.getBoundingClientRect();
+                  if (rect) setAutoDelPopupPos({ top: rect.bottom + 4, right: window.innerWidth - rect.right });
+                  setShowAutoDeletePopup(p => !p);
+                }}
                 style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 16px", cursor: "pointer" }}>
                 {/* Timer icon */}
                 <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -1770,7 +1778,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               <>
                 <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 100 }}
                   onClick={() => setShowAutoDeletePopup(false)} />
-                <div style={{ position: "fixed", right: 16, top: "38%", background: "#fff", borderRadius: 14, zIndex: 101, minWidth: 210, boxShadow: "0 8px 32px rgba(0,0,0,0.22)", overflow: "hidden", animation: "wiz-in 0.15s ease" }}>
+                <div style={{ position: "fixed", top: autoDelPopupPos.top, right: Math.max(autoDelPopupPos.right, 8), background: "#fff", borderRadius: 16, zIndex: 101, width: 240, boxShadow: "0 8px 24px rgba(0,0,0,0.15)", overflow: "hidden", transformOrigin: "top right", animation: "autoDelIn 0.15s cubic-bezier(0.25,0.46,0.45,0.94)" }}>
                   {[
                     { label: "1 jour",       icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#000" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/><text x="9.5" y="10.5" fontSize="4.5" fill="#000" stroke="none">1D</text></svg> },
                     { label: "1 semaine",    icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#000" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/><text x="8.5" y="10.5" fontSize="4.5" fill="#000" stroke="none">1W</text></svg> },

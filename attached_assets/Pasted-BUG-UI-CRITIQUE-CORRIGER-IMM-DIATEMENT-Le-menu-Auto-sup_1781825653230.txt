@@ -1,0 +1,139 @@
+BUG UI CRITIQUE À CORRIGER IMMÉDIATEMENT
+
+Le menu Auto-suppression est mal positionné.
+
+Actuellement :
+
+❌ Le popup est décalé vers la gauche.
+❌ Le popup semble flotter au hasard.
+❌ Le popup n'est pas lié visuellement à "Désactivée".
+❌ L'expérience ne ressemble pas à Telegram.
+
+OBJECTIF :
+
+Reproduire exactement le comportement Telegram.
+
+━━━━━━━━━━━━━━━━━━━━━━
+POSITIONNEMENT OBLIGATOIRE
+━━━━━━━━━━━━━━━━━━━━━━
+
+Le popup doit être ANCRÉ à l'élément cliqué.
+
+Élément cible :
+
+"Désactivée >"
+
+Le menu doit sembler sortir directement de cette zone.
+
+INTERDICTION :
+
+- centrer le popup dans l'écran
+- utiliser un positionnement aléatoire
+- utiliser un modal classique
+
+━━━━━━━━━━━━━━━━━━━━━━
+ALIGNEMENT
+━━━━━━━━━━━━━━━━━━━━━━
+
+Le bord droit du popup doit être aligné avec :
+
+"Désactivée >"
+
+Visuellement :
+
+Auto-suppression      Désactivée >
+
+                      ┌───────────────┐
+                      │ 1 jour        │
+                      │ 1 semaine     │
+                      │ 1 mois        │
+                      │ Définir délai │
+                      └───────────────┘
+
+Le popup doit apparaître juste sous la valeur sélectionnée.
+
+━━━━━━━━━━━━━━━━━━━━━━
+RÈGLES DE POSITIONNEMENT
+━━━━━━━━━━━━━━━━━━━━━━
+
+Utiliser :
+
+anchorOrigin:
+vertical: bottom
+horizontal: right
+
+transformOrigin:
+vertical: top
+horizontal: right
+
+ou l'équivalent selon le framework.
+
+Le popup doit suivre l'élément déclencheur.
+
+━━━━━━━━━━━━━━━━━━━━━━
+DIMENSIONS
+━━━━━━━━━━━━━━━━━━━━━━
+
+Largeur :
+
+220px à 260px maximum
+
+Ne jamais dépasser.
+
+Hauteur :
+
+auto
+
+━━━━━━━━━━━━━━━━━━━━━━
+STYLE
+━━━━━━━━━━━━━━━━━━━━━━
+
+Fond :
+#FFFFFF
+
+Border radius :
+16px
+
+Ombre :
+
+0 8px 24px rgba(0,0,0,0.15)
+
+Séparateurs :
+
+rgba(0,0,0,0.08)
+
+━━━━━━━━━━━━━━━━━━━━━━
+ANIMATION
+━━━━━━━━━━━━━━━━━━━━━━
+
+Animation Telegram.
+
+Durée :
+
+150ms
+
+Scale + Fade
+
+Origine de l'animation :
+
+coin supérieur droit
+
+Le popup doit sembler émerger depuis "Désactivée".
+
+━━━━━━━━━━━━━━━━━━━━━━
+VALIDATION
+━━━━━━━━━━━━━━━━━━━━━━
+
+Comparer avec Telegram.
+
+Si le popup semble attaché à :
+
+"Désactivée >"
+
+VALIDÉ.
+
+Si le popup semble simplement posé au centre de l'écran :
+
+ÉCHEC.
+
+Corriger jusqu'à obtenir le même comportement visuel que Telegram.
