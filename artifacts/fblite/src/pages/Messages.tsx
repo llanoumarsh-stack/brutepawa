@@ -8,7 +8,7 @@ import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignal
 void ({} as ApiChatGroup);
 
 const CONV_THEMES = {
-  "bp-green": { label:"BrutePawa Vert",  bg:"#F0FDF4", mine:"#16C24A", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#16C24A" },
+  "bp-green": { label:"BrutePawa Vert",  bg:"#F0FDF4", mine:"#DCECCB", mineText:"#111", theirs:"#fff",     theirsText:"#111", accent:"#16C24A" },
   "ocean":    { label:"Océan Bleu",      bg:"#EFF6FF", mine:"#3B82F6", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#3B82F6" },
   "orange":   { label:"Soleil Orange",   bg:"#FFF7ED", mine:"#F97316", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#F97316" },
   "violet":   { label:"Violet Premium",  bg:"#FAF5FF", mine:"#8B5CF6", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#8B5CF6" },
