@@ -1,0 +1,114 @@
+MISSION CRITIQUE — AUCUNE INTERPRÉTATION CRÉATIVE AUTORISÉE
+
+UTILISE L'IMAGE DE RÉFÉRENCE COMME SOURCE UNIQUE DE VÉRITÉ.
+
+JE NE VEUX PAS UNE VERSION INSPIRÉE.
+JE NE VEUX PAS UNE VERSION SIMILAIRE.
+JE NE VEUX PAS UNE RÉINTERPRÉTATION.
+
+JE VEUX UNE REPRODUCTION VISUELLE À 99%-100% DE L'IMAGE DE RÉFÉRENCE FOURNIE.
+
+OBLIGATIONS :
+
+1. Reproduire exactement :
+   
+   - Les couleurs.
+   - Le dégradé.
+   - La densité des motifs.
+   - Les espacements.
+   - Le style des icônes.
+   - L'épaisseur des traits.
+   - La transparence.
+   - La disposition générale.
+
+2. Les motifs doivent couvrir toute la surface comme sur l'image.
+
+3. Aucun espace vide supplémentaire.
+
+4. Aucun changement de palette.
+
+5. Aucun changement de style.
+
+6. Aucun changement de proportions.
+
+7. Aucun ajout artistique personnel.
+
+8. Aucun redesign.
+
+9. Aucun remplacement des motifs existants.
+
+10. Le résultat final doit être visuellement indiscernable de l'image de référence à l'œil nu.
+
+REMPLACEMENTS AUTORISÉS :
+
+Conserver la même structure visuelle mais remplacer progressivement certains motifs génériques par des éléments BrutePawa :
+
+- Logo B BrutePawa.
+- Groupe.
+- Marketplace.
+- Vérification ✓✓.
+- Localisation.
+- Appel audio.
+- Appel vidéo.
+- Publication.
+- Réaction.
+- Communauté.
+
+Ces nouveaux motifs doivent respecter EXACTEMENT :
+
+- Le même style outline.
+- La même épaisseur.
+- La même opacité.
+- La même taille.
+- Le même espacement.
+
+COULEURS OBLIGATOIRES :
+
+Fond principal :
+#F2FAF4
+
+Dégradé :
+#F2FAF4 → #EDF8F0 → #EAF7EC
+
+Opacité des motifs :
+3% à 5%
+
+STYLE OBLIGATOIRE :
+
+- Vectoriel.
+- Outline.
+- Premium.
+- Telegram-like.
+- Ultra léger.
+- Haute lisibilité.
+
+TECHNIQUE OBLIGATOIRE :
+
+Créer le fond en SVG dynamique.
+
+INTERDICTION :
+
+- PNG comme fond principal.
+- JPG.
+- Canvas bitmap.
+- Génération aléatoire des motifs.
+- Réorganisation automatique des éléments.
+
+L'EMPLACEMENT DES MOTIFS DOIT RESTER STABLE ET IDENTIQUE ENTRE CHAQUE CHARGEMENT.
+
+LIVRABLE ATTENDU :
+
+Créer un composant React Native / Expo nommé :
+
+BrutePawaChatWallpaper
+
+et l'appliquer automatiquement à :
+
+- Conversations privées.
+- Groupes.
+- Canaux.
+- Support.
+
+CRITÈRE DE VALIDATION :
+
+Si l'image de référence est affichée à gauche et le wallpaper généré à droite, un utilisateur normal ne doit pratiquement pas remarquer de différence visuelle.

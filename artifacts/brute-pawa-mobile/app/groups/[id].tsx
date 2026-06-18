@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import { useColors } from "@/hooks/useColors";
 import { useAuth } from "@/context/AuthContext";
+import BrutePawaChatWallpaper from "@/components/BrutePawaChatWallpaper";
 import { API_BASE_URL } from "@/constants/api";
 
 interface GroupDetail {
@@ -64,7 +65,8 @@ export default function GroupDetailScreen() {
   const group = groupQuery.data;
 
   return (
-    <View style={[styles.root, { backgroundColor: colors.background }]}>
+    <View style={styles.root}>
+      <BrutePawaChatWallpaper />
       <View
         style={[
           styles.header,
@@ -204,7 +206,7 @@ function InfoRow({
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1 },
+  root: { flex: 1, backgroundColor: "#EFF8F1" },
   header: {
     flexDirection: "row",
     alignItems: "center",

@@ -16,6 +16,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQueryClient } from "@tanstack/react-query";
 import { useColors } from "@/hooks/useColors";
 import { useAuth } from "@/context/AuthContext";
+import BrutePawaChatWallpaper from "@/components/BrutePawaChatWallpaper";
 
 function timeAgo(date: string): string {
   const now = Date.now();
@@ -45,7 +46,8 @@ export default function MessagesScreen() {
   }, [queryClient, convQuery.queryKey]);
 
   return (
-    <View style={[styles.root, { backgroundColor: colors.background }]}>
+    <View style={styles.root}>
+      <BrutePawaChatWallpaper />
       <View style={[styles.header, { paddingTop: topPadding, backgroundColor: colors.card, borderBottomColor: colors.border }]}>
         <Text style={[styles.title, { color: colors.foreground }]}>Messages</Text>
         <TouchableOpacity style={[styles.iconBtn, { backgroundColor: colors.secondary }]}>
@@ -150,7 +152,7 @@ function ConversationRow({
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1 },
+  root: { flex: 1, backgroundColor: "#EFF8F1" },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -182,6 +184,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderBottomWidth: StyleSheet.hairlineWidth,
     gap: 12,
+    backgroundColor: "rgba(255,255,255,0.55)",
   },
   avatar: {
     width: 52,

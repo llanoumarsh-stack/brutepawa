@@ -20,6 +20,7 @@ import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useColors } from "@/hooks/useColors";
 import { useAuth } from "@/context/AuthContext";
+import BrutePawaChatWallpaper from "@/components/BrutePawaChatWallpaper";
 
 export default function ChatScreen() {
   const { userId } = useLocalSearchParams<{ userId: string }>();
@@ -61,7 +62,8 @@ export default function ChatScreen() {
   const topPadding = isWeb ? 67 : insets.top;
 
   return (
-    <View style={[styles.root, { backgroundColor: colors.background }]}>
+    <View style={styles.root}>
+      <BrutePawaChatWallpaper />
       <View style={[styles.header, { paddingTop: topPadding, backgroundColor: colors.card, borderBottomColor: colors.border }]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={24} color={colors.foreground} />
@@ -163,8 +165,8 @@ export default function ChatScreen() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1 },
-  flex: { flex: 1 },
+  root: { flex: 1, backgroundColor: "#EFF8F1" },
+  flex: { flex: 1, backgroundColor: "transparent" },
   header: {
     flexDirection: "row",
     alignItems: "center",
