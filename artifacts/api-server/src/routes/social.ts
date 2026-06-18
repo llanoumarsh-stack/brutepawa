@@ -22,6 +22,26 @@ function makeMarkReadToken(fromUserId: number, toUserId: number): string {
 function verifyMarkReadToken(token: string, fromUserId: number, toUserId: number): boolean {
   return token === makeMarkReadToken(fromUserId, toUserId);
 }
+/* Reply tokens expire after 24 h — encoded as hourly bucket in the signature */
+const REPLY_EXPIRY_HOURS = 24;
+function makeReplyToken(fromUserId: number, toUserId: number): string {
+  const bucket = Math.floor(Date.now() / 3_600_000) + REPLY_EXPIRY_HOURS;
+  const hash   = createHmac("sha256", DELIVERY_SECRET)
+    .update(`reply:${fromUserId}:${toUserId}:${bucket}`)
+    .digest("hex");
+  return `${hash}:${bucket}`;
+}
+function verifyReplyToken(token: string, fromUserId: number, toUserId: number): boolean {
+  const parts  = token.split(":");
+  if (parts.length !== 2) return false;
+  const [hash, bucketStr] = parts;
+  const bucket = parseInt(bucketStr, 10);
+  if (isNaN(bucket) || Math.floor(Date.now() / 3_600_000) > bucket) return false;
+  const expected = createHmac("sha256", DELIVERY_SECRET)
+    .update(`reply:${fromUserId}:${toUserId}:${bucket}`)
+    .digest("hex");
+  return hash === expected;
+}
 
 const router = Router();
 
@@ -392,6 +412,7 @@ router.post("/messages", requireAuth, async (req, res): Promise<void> => {
       senderName,
       deliveryToken: makeDeliveryToken(msg.id, toId),
       markReadToken: makeMarkReadToken(me, toId),
+      replyToken:    makeReplyToken(me, toId),
     },
   }).catch(() => {});
 
@@ -440,6 +461,48 @@ router.post("/messages/sw-mark-read", async (req, res): Promise<void> => {
     .catch(() => {});
   pushToUser(Number(fromUserId), "message:read", { byUserId: Number(toUserId) });
   res.json({ ok: true });
+});
+
+/* ── SW inline-reply (unauthenticated, token-verified, expires in 24 h) ────
+   Called by the service worker when the user types a reply directly from the
+   Android notification without opening the app.
+   fromUserId = original sender, toUserId = notification recipient (replier). */
+router.post("/messages/sw-reply", async (req, res): Promise<void> => {
+  const { token, fromUserId, toUserId, text } = req.body as {
+    token?: string; fromUserId?: number; toUserId?: number; text?: string;
+  };
+  const content = (text ?? "").trim().slice(0, 2000);
+  if (!token || !fromUserId || !toUserId || !content ||
+      !verifyReplyToken(token, Number(fromUserId), Number(toUserId))) {
+    res.status(403).json({ ok: false });
+    return;
+  }
+  /* The replier (toUserId) sends a message to the original sender (fromUserId) */
+  const [msg] = await db.insert(messagesTable).values({
+    fromUserId: Number(toUserId),
+    toUserId:   Number(fromUserId),
+    content,
+  }).returning().catch(() => []);
+
+  if (!msg) { res.status(500).json({ ok: false }); return; }
+
+  /* Real-time delivery if recipient is online */
+  const recipientOnline = pushToUser(Number(fromUserId), "message:new", {
+    id:         msg.id,
+    fromUserId: Number(toUserId),
+    toUserId:   Number(fromUserId),
+    content:    msg.content,
+    createdAt:  msg.createdAt,
+  });
+  if (recipientOnline) {
+    db.update(messagesTable)
+      .set({ isDelivered: true, deliveredAt: new Date() })
+      .where(eq(messagesTable.id, msg.id))
+      .catch(() => {});
+    pushToUser(Number(toUserId), "message:delivered", { messageIds: [msg.id] });
+  }
+
+  res.json({ ok: true, msgId: msg.id });
 });
 
 router.get("/messages/:userId", requireAuth, async (req, res): Promise<void> => {

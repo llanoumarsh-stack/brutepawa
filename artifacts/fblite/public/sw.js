@@ -41,15 +41,23 @@ self.addEventListener("push", (e) => {
   const title = data.title || "Brute Pawa";
   const isCall = !!data.data?.callType;
 
+  /* Augment the reply action with type:"text" + placeholder so Android Chrome
+     shows an inline text field the user can type into without opening the app. */
+  const actions = (data.actions || []).map((a) =>
+    a.action === "reply"
+      ? { ...a, type: "text", placeholder: "Votre message…" }
+      : a
+  );
+
   const options = {
     body:               data.body || "",
-    icon:               "/icons/icon-192.png",
+    icon:               data.icon || "/icons/icon-192.png",
     badge:              "/icons/icon-192.png",
     tag:                data.tag || "bp-notification",
     renotify:           true,
     requireInteraction: isCall ? true : (data.requireInteraction || false),
     data:               data.data || {},
-    actions:            data.actions || [],
+    actions,
     vibrate:            isCall
                           ? [500, 200, 500, 200, 500, 200, 500]
                           : (data.vibrate || [200, 100, 200]),
@@ -143,7 +151,44 @@ self.addEventListener("notificationclick", (e) => {
     return;
   }
 
-  /* ── Répondre : ouvre la conversation (la réponse inline Android requiert HTTPS + Chrome 79+) ── */
+  /* ── Répondre inline (Android Chrome 102+ / type:"text" action) ─────────────
+     e.replyText contient le texte tapé par l'utilisateur dans la notification.
+     Si disponible → envoi silencieux via API + notification de confirmation.
+     Si absent (bureau, navigateur non supporté) → ouvre l'application.        */
+  if (action === "reply") {
+    const text = e.replyText;   /* propriété standard du ServiceWorker Notifications API */
+
+    if (text && text.trim() && d.replyToken && d.fromUserId && d.toUserId) {
+      e.waitUntil(
+        fetch(self.location.origin + "/api/messages/sw-reply", {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            token:      d.replyToken,
+            fromUserId: d.fromUserId,
+            toUserId:   d.toUserId,
+            text:       text.trim(),
+          }),
+        })
+          .then((r) => r.json())
+          .then(() =>
+            /* Petite notification de confirmation — disparaît en 3 s */
+            self.registration.showNotification("Message envoyé ✓", {
+              body:    text.trim().slice(0, 60),
+              icon:    d.senderAvatarUrl || "/icons/icon-192.png",
+              badge:   "/icons/icon-192.png",
+              tag:     `reply-sent-${d.fromUserId}`,
+              silent:  true,
+              vibrate: [80],
+            })
+          )
+          .catch(() => {})
+      );
+      return;
+    }
+    /* Fallback si replyText non disponible (bureau) : ouvrir le chat */
+  }
+
   /* ── Ouvrir le chat / tap par défaut ── */
   const url = d.url || "/";
 
