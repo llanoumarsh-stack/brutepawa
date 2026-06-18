@@ -1,0 +1,268 @@
+MISSION CRITIQUE — REDESSIN COMPLET DE L'ÉCRAN "NOUVEAU GROUPE"
+
+UTILISER LA CAPTURE TELEGRAM FOURNIE COMME RÉFÉRENCE ABSOLUE.
+
+INTERDICTION DE S'EN INSPIRER.
+INTERDICTION DE L'INTERPRÉTER.
+INTERDICTION DE LA MODERNISER.
+INTERDICTION DE CRÉER UNE VERSION "BRUTEPAWA STYLE".
+
+L'OBJECTIF EST DE REPRODUIRE LE COMPORTEMENT ET LE DESIGN DE TELEGRAM À 99% MINIMUM.
+
+90% = ÉCHEC
+95% = ÉCHEC
+98% = ÉCHEC
+
+SEULEMENT 99% OU PLUS EST ACCEPTÉ.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+RÈGLE FONDAMENTALE
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ANALYSER LA CAPTURE TELEGRAM PIXEL PAR PIXEL.
+
+REPRODUIRE EXACTEMENT :
+
+- structure
+- hiérarchie
+- dimensions
+- espacements
+- alignements
+- animations
+- interactions
+- comportement
+
+La seule modification autorisée :
+
+Bleu Telegram → Vert BrutePawa #22C55E
+
+AUCUNE AUTRE MODIFICATION.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+HEADER
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Copier exactement :
+
+- bouton retour
+- titre "Nouveau groupe"
+- taille du texte
+- poids de police
+- hauteur du header
+
+Même positionnement.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+BLOC PHOTO + NOM
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Même hauteur que Telegram.
+Même largeur.
+Même padding.
+
+À gauche :
+
+- avatar rond
+- bouton caméra intégré
+
+À droite :
+
+- champ nom du groupe
+
+Même ligne.
+Même alignement.
+
+Même comportement focus.
+
+Seule différence :
+
+ligne active verte BrutePawa.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+AUTO-SUPPRESSION
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+FONCTION OBLIGATOIRE.
+
+La ligne doit être identique à Telegram.
+
+Contenu :
+
+⏱ Auto-suppression
+
+Valeur affichée :
+
+- Désactivée
+- 1 jour
+- 1 semaine
+- 1 mois
+- Durée personnalisée
+
+Même police.
+Même taille.
+Même espacement.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+COMPORTEMENT AUTO-SUPPRESSION
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Quand l'utilisateur clique :
+
+1. Assombrir le fond.
+
+2. Afficher un menu popup flottant.
+
+3. Popup identique à Telegram.
+
+Options exactes :
+
+🕐 1 jour
+
+🕐 1 semaine
+
+🕐 1 mois
+
+⚙ Définir un délai
+
+Même ordre.
+Même taille.
+Même ombre.
+Même animation.
+
+Aucun bouton supplémentaire.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+DESCRIPTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Sous Auto-suppression :
+
+Afficher exactement :
+
+"Les nouveaux messages de ce groupe seront automatiquement supprimés pour tous les membres après une certaine durée."
+
+Même style Telegram.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+MEMBRES
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Afficher :
+
+MEMBRES : X
+
+Même style Telegram.
+
+Liste :
+
+- avatar
+- nom
+- statut
+- rôle
+
+Même densité visuelle.
+
+Même hauteur de ligne.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+BOUTON FLOTTANT
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Copier exactement Telegram.
+
+Même :
+
+- taille
+- ombre
+- position
+- animation
+
+Remplacer uniquement :
+
+Bleu Telegram → Vert BrutePawa
+
+#22C55E
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+CLAVIER
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Lorsque le champ nom est actif :
+
+Afficher le clavier.
+
+Le popup Auto-suppression doit rester visible au-dessus du clavier.
+
+Même comportement Telegram.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+COULEURS
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Fond :
+#FFFFFF
+
+Texte principal :
+#000000
+
+Texte secondaire :
+#8E8E93
+
+Séparateurs :
+rgba(0,0,0,0.08)
+
+Couleur d'action :
+#22C55E
+
+Aucune autre couleur verte.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+INTERDICTIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+INTERDIT :
+
+- glassmorphism
+- cartes premium
+- grosses ombres
+- Material You
+- design personnalisé
+- design futuriste
+- bordures vertes partout
+- gros espaces vides
+- composants inventés
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+VALIDATION FINALE
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Comparer chaque composant à Telegram.
+
+Champ nom :
+100% identique
+
+Auto-suppression :
+100% identique
+
+Popup :
+100% identique
+
+Description :
+100% identique
+
+Liste membres :
+100% identique
+
+Bouton flottant :
+100% identique
+
+Animations :
+100% identiques
+
+Si l'utilisateur reconnaît immédiatement Telegram après 1 seconde :
+
+VALIDÉ.
+
+Sinon :
+
+ÉCHEC ET REDESSIN COMPLET.

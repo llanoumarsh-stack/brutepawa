@@ -374,6 +374,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [wizardGroupName, setWizardGroupName]   = useState("");
   const [wizardSearch, setWizardSearch]         = useState("");
   const [wizardCreating, setWizardCreating]     = useState(false);
+  const [autoDeleteOption, setAutoDeleteOption] = useState("Désactivée");
+  const [showAutoDeletePopup, setShowAutoDeletePopup] = useState(false);
   const [fabOpen, setFabOpen]   = useState(false);
   const [inboxTab, setInboxTab] = useState<"all" | "unread" | "groups">("all");
   const [showInboxSearch, setShowInboxSearch] = useState(false);
@@ -1666,46 +1668,126 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             )}
           </div>
         ) : (
-          /* Step 2: Name + Settings — Telegram style */
-          <div style={{ flex: 1, overflowY: "auto", background: "#FFFFFF" }}>
-            {/* Avatar picker */}
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 32, paddingBottom: 24 }}>
-              <div style={{ position: "relative", cursor: "pointer", marginBottom: 12 }}>
-                <div style={{ width: 96, height: 96, borderRadius: "50%", background: isChannel ? "#00ACC1" : "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40 }}>
-                  {isChannel ? "📢" : "👥"}
+          /* ── Step 2: Nom du groupe — Telegram exact ── */
+          <div style={{ flex: 1, overflowY: "auto", background: "#F2F2F7", position: "relative" }}
+            onClick={() => { if (showAutoDeletePopup) setShowAutoDeletePopup(false); }}>
+
+            {/* ── PHOTO + NOM (same row, Telegram layout) ── */}
+            <div style={{ background: "#fff", borderTop: "1px solid rgba(0,0,0,0.08)", borderBottom: "1px solid rgba(0,0,0,0.08)", padding: "14px 16px", display: "flex", alignItems: "center", gap: 14 }}>
+              {/* Avatar circle with camera badge */}
+              <div style={{ position: "relative", flexShrink: 0, cursor: "pointer" }}>
+                <div style={{ width: 74, height: 74, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                    <circle cx="12" cy="13" r="4"/>
+                  </svg>
                 </div>
-                <div style={{ position: "absolute", bottom: 0, right: 0, width: 28, height: 28, borderRadius: "50%", background: "#fff", border: "1px solid rgba(0,0,0,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14 }}>📷</div>
+                <div style={{ position: "absolute", bottom: 1, right: 1, width: 22, height: 22, borderRadius: "50%", background: "#22C55E", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </div>
+              </div>
+              {/* Name field + emoji */}
+              <div style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 10, paddingBottom: 8, borderBottom: "2px solid #22C55E" }}>
+                <input
+                  value={wizardGroupName}
+                  onChange={e => setWizardGroupName(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter") createGroup(); }}
+                  placeholder="Entrez le nom du groupe"
+                  autoFocus
+                  style={{ flex: 1, border: "none", padding: "4px 0", fontSize: 17, outline: "none", color: "#000", background: "transparent" }}
+                />
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8E8E93" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, cursor: "pointer" }}>
+                  <circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
+                </svg>
               </div>
             </div>
 
-            {/* Name input — Telegram style */}
-            <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", borderBottom: "1px solid rgba(0,0,0,0.06)", background: "#fff", padding: "14px 16px" }}>
-              <div style={{ fontSize: 12, color: "#22C55E", fontWeight: 500, marginBottom: 4 }}>
-                Nom du {isChannel ? "canal" : "groupe"}
+            {/* ── AUTO-SUPPRESSION ROW ── */}
+            <div style={{ background: "#fff", borderTop: "1px solid rgba(0,0,0,0.08)", borderBottom: "1px solid rgba(0,0,0,0.08)", marginTop: 28 }}>
+              <div
+                onClick={e => { e.stopPropagation(); setShowAutoDeletePopup(p => !p); }}
+                style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 16px", cursor: "pointer" }}>
+                {/* Timer icon */}
+                <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <span style={{ flex: 1, fontSize: 16, color: "#000" }}>Autosuppression</span>
+                <span style={{ fontSize: 15, color: "#8E8E93" }}>{autoDeleteOption}</span>
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#C7C7CC" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
               </div>
-              <input
-                value={wizardGroupName} onChange={e => setWizardGroupName(e.target.value)}
-                onKeyDown={e => { if (e.key === "Enter") createGroup(); }}
-                placeholder={isChannel ? "Annonces officielles" : "Famille Konaté"}
-                autoFocus
-                style={{ width: "100%", border: "none", padding: "4px 0", fontSize: 17, outline: "none", boxSizing: "border-box", color: "#000", background: "transparent" }}
-              />
-              <div style={{ marginTop: 6, height: 1, background: "#22C55E" }} />
             </div>
 
-            {/* Members count */}
-            <div style={{ padding: "12px 16px", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
-              <span style={{ fontSize: 14, color: "#6B7280" }}>{wizardMembers.size + 1} participant{wizardMembers.size !== 0 ? "s" : ""}</span>
+            {/* ── Description ── */}
+            <div style={{ padding: "10px 16px 0", color: "#8E8E93", fontSize: 13, lineHeight: 1.5 }}>
+              Les nouveaux messages de ce groupe seront automatiquement supprimés pour tous les membres après une certaine durée.
             </div>
 
-            {/* Create FAB */}
+            {/* ── MEMBRES ── */}
+            <div style={{ background: "#fff", borderTop: "1px solid rgba(0,0,0,0.08)", borderBottom: "1px solid rgba(0,0,0,0.08)", marginTop: 28 }}>
+              <div style={{ padding: "12px 16px 8px", color: "#22C55E", fontSize: 13, fontWeight: 700, letterSpacing: 0.2 }}>
+                {wizardMembers.size + 1} membre{wizardMembers.size !== 0 ? "s" : ""}
+              </div>
+              {[meId, ...selectedArr].map((uid, idx) => {
+                const u = uid === meId ? null : allUsers.find(x => x.id === uid);
+                const isMe = uid === meId;
+                const WIZ_COLORS = ["#EC4899","#8B5CF6","#F97316","#22C55E","#14B8A6","#EF4444","#3B82F6","#F59E0B","#6366F1","#D946EF"];
+                const col = WIZ_COLORS[uid % WIZ_COLORS.length];
+                const displayName = isMe ? ((() => { try { const s = JSON.parse(localStorage.getItem("fb_user")??"{}"); return s.firstName && s.lastName ? `${s.firstName} ${s.lastName}` : "Vous"; } catch { return "Vous"; } })()) : (u ? `${u.firstName} ${u.lastName}` : `Utilisateur #${uid}`);
+                const initials = displayName.split(" ").map((w: string) => w[0]).join("").toUpperCase().slice(0, 2);
+                const avatarUrl = u?.avatarUrl ?? null;
+                return (
+                  <div key={uid} style={{ display: "flex", gap: 14, padding: "10px 16px", alignItems: "center", borderTop: "1px solid rgba(0,0,0,0.06)" }}>
+                    <div style={{ flexShrink: 0 }}>
+                      {avatarUrl
+                        ? <img src={avatarUrl} style={{ width: 46, height: 46, borderRadius: "50%", objectFit: "cover" }} alt={displayName} />
+                        : <div style={{ width: 46, height: 46, borderRadius: "50%", background: col, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 16 }}>{initials}</div>
+                      }
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 600, fontSize: 15, color: "#000", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{displayName}</div>
+                      <div style={{ fontSize: 13, color: "#8E8E93", marginTop: 1 }}>{isMe ? "Administrateur" : "en ligne récemment"}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div style={{ height: 90 }} />
+
+            {/* ── FAB ✓ ── */}
             <button onClick={createGroup} disabled={!wizardGroupName.trim() || wizardCreating}
-              style={{ position: "fixed", bottom: 24, right: 20, width: 56, height: 56, borderRadius: "50%", background: wizardGroupName.trim() ? "#22C55E" : "#C7C7CC", border: "none", cursor: wizardGroupName.trim() ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 12px rgba(0,0,0,0.25)", zIndex: 10, transition: "all 0.15s" }}>
+              style={{ position: "fixed", bottom: 24, right: 20, width: 56, height: 56, borderRadius: "50%", background: wizardGroupName.trim() ? "#22C55E" : "#C7C7CC", border: "none", cursor: wizardGroupName.trim() ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 14px rgba(0,0,0,0.25)", zIndex: 20, transition: "all 0.15s" }}>
               {wizardCreating
                 ? <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
-                : <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                : <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               }
             </button>
+
+            {/* ── AUTO-SUPPRESSION POPUP ── */}
+            {showAutoDeletePopup && (
+              <>
+                <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 100 }}
+                  onClick={() => setShowAutoDeletePopup(false)} />
+                <div style={{ position: "fixed", right: 16, top: "38%", background: "#fff", borderRadius: 14, zIndex: 101, minWidth: 210, boxShadow: "0 8px 32px rgba(0,0,0,0.22)", overflow: "hidden", animation: "wiz-in 0.15s ease" }}>
+                  {[
+                    { label: "1 jour",       icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#000" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/><text x="9.5" y="10.5" fontSize="4.5" fill="#000" stroke="none">1D</text></svg> },
+                    { label: "1 semaine",    icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#000" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/><text x="8.5" y="10.5" fontSize="4.5" fill="#000" stroke="none">1W</text></svg> },
+                    { label: "1 mois",       icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#000" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/><text x="8.5" y="10.5" fontSize="4.5" fill="#000" stroke="none">1M</text></svg> },
+                    { label: "Définir un délai", icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#000" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/></svg> },
+                  ].map(({ label, icon }, i, arr) => {
+                    const chosen = autoDeleteOption === label;
+                    return (
+                      <div key={label}
+                        onClick={() => { setAutoDeleteOption(label === "Définir un délai" ? "Désactivée" : label); setShowAutoDeletePopup(false); }}
+                        style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 18px", cursor: "pointer", borderBottom: i < arr.length - 1 ? "1px solid rgba(0,0,0,0.06)" : "none", background: chosen ? "#F2FDF5" : "#fff" }}>
+                        <div style={{ color: chosen ? "#22C55E" : "#000", flexShrink: 0 }}>{icon}</div>
+                        <span style={{ fontSize: 16, color: chosen ? "#22C55E" : "#000" }}>{label}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>
