@@ -2424,9 +2424,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         </div>
 
         {/* ── Barre d'input — floating pill (même style que les DMs) ── */}
-        <div style={{ background:"#fff", flexShrink:0, padding:"8px 10px 10px" }}>
+        <div style={{ background:"#F0F2F5", flexShrink:0, padding:"8px 10px 10px" }}>
           <div style={{ display:"flex", alignItems:"center" }}>
-            <div style={{ flex:1, display:"flex", alignItems:"center", background:"#F0F2F5", borderRadius:9999, padding:"0 5px 0 14px", minHeight:52 }}>
+            <div style={{ flex:1, display:"flex", alignItems:"center", background:"#fff", border:"1px solid #E5E7EB", borderRadius:9999, padding:"0 5px 0 14px", minHeight:52 }}>
               <button style={{ background:"none", border:"none", cursor:"pointer", padding:0, flexShrink:0, display:"flex", alignItems:"center", marginRight:4 }}>
                 <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="#94A3B8"/><circle cx="15" cy="9" r="1" fill="#94A3B8"/></svg>
               </button>
@@ -3488,7 +3488,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           </div>
         ) : (
           /* NORMAL INPUT BAR — Floating pill composer */
-          <div style={{ background:"#fff", flexShrink:0 }}>
+          <div style={{ background:"#F0F2F5", flexShrink:0 }}>
 
             {/* ── LOCKED RECORDING: full capsule with controls ── */}
             {isRecording && recLocked && (
@@ -3557,7 +3557,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             {/* ── Main input row — floating pill composer ── */}
             <div style={{ padding:"8px 10px 10px", display: recLocked ? "none" : "flex", alignItems:"center", userSelect:"none", WebkitUserSelect:"none" }}>
               {/* ═══ THE FLOATING PILL ═══ */}
-              <div style={{ flex:1, display:"flex", alignItems:"center", background:"#F0F2F5", borderRadius:9999, padding:"0 5px 0 14px", minHeight:52, overflow:"visible", position:"relative" }}>
+              <div style={{ flex:1, display:"flex", alignItems:"center", background:"#fff", border:"1px solid #E5E7EB", borderRadius:9999, padding:"0 5px 0 14px", minHeight:52, overflow:"visible", position:"relative" }}>
 
                 {/* Unlocked recording: waveform lives inside the pill */}
                 {isRecording && !recLocked && (
