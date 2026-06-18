@@ -46,6 +46,7 @@ outputType = "webview"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "PORT=22853 BASE_PATH=/ pnpm --filter @workspace/fblite run dev"
+waitForPort = 22853
 
 [agent]
 stack = "PNPM_WORKSPACE"
