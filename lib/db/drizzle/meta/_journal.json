@@ -15,6 +15,13 @@
       "when": 1781591826920,
       "tag": "0001_add_music_to_posts",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1781783035568,
+      "tag": "0002_parched_namora",
+      "breakpoints": true
     }
   ]
 }
