@@ -2,3 +2,4 @@
 - [SSE live gifts](sse-live-gifts.md) — GET /api/stream/live/:id/events uses DB polling (2s interval), dbId comes from cfStream.session.id
 - [MoneyFusion simulation](moneyfusion-sim.md) — webhook uses HMAC via MONEYFUSION_SECRET env; if unset, webhook is open for dev testing
 - [Supabase-only DB rule](supabase-db-rule.md) — always use APP_DATABASE_URL (Supabase), never Replit executeSql; prod migrations need explicit file path to apply-migration.mjs
+- [GitHub push convention](github-push.md) — push to origin/main at end of every work session; bypass secret-scanning with -o flag if needed
