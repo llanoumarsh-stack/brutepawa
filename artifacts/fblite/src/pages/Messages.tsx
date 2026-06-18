@@ -199,6 +199,77 @@ function fmtConvPreview(raw: string): { text: string; isAudio: boolean } {
   return { text: raw.length > 55 ? raw.slice(0, 55) + "…" : raw, isAudio: false };
 }
 
+/* ── MapThumbnail — static Wikimedia map with skeleton + auto-retry ── */
+function MapThumbnail({ lat, lng }: { lat: number; lng: number }) {
+  const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
+  const [retries, setRetries] = useState(0);
+  const zoom = 15;
+  /* Wikimedia static maps: free, no API key, proper OSM rendering */
+  const src = `https://maps.wikimedia.org/img/osm-intl,${zoom},${lat.toFixed(5)},${lng.toFixed(5)},300x150.png`;
+
+  useEffect(() => {
+    if (status !== "error" || retries >= 2) return;
+    const t = setTimeout(() => { setStatus("loading"); setRetries(r => r + 1); }, 3000);
+    return () => clearTimeout(t);
+  }, [status, retries]);
+
+  return (
+    <div style={{ position:"relative", width:"100%", height:140, overflow:"hidden",
+      background: status === "error" ? "linear-gradient(160deg,#1a3a2a 0%,#2d6a4f 50%,#1a3a2a 100%)" : "#e8f5e9" }}>
+      {/* Skeleton pulse while loading */}
+      {status === "loading" && (
+        <div style={{ position:"absolute", inset:0,
+          background:"linear-gradient(90deg,#e2ede9 25%,#c8ddd4 50%,#e2ede9 75%)",
+          backgroundSize:"200% 100%",
+          animation:"map-shimmer 1.6s ease-in-out infinite" }}/>
+      )}
+      {/* Actual map tile */}
+      {status !== "error" && (
+        <img key={retries} src={src} alt="carte" decoding="async"
+          style={{ width:"100%", height:"100%", objectFit:"cover", display:"block",
+            opacity: status === "ok" ? 1 : 0, transition:"opacity 0.4s" }}
+          onLoad={() => setStatus("ok")}
+          onError={() => setStatus("error")} />
+      )}
+      {/* Error fallback — hand-drawn map-like appearance */}
+      {status === "error" && (
+        <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column",
+          alignItems:"center", justifyContent:"center", gap:6 }}>
+          <svg viewBox="0 0 64 64" width="56" height="56" opacity={0.55}>
+            {/* Simulated roads */}
+            <line x1="0" y1="32" x2="64" y2="32" stroke="#4ade80" strokeWidth="3" opacity={0.6}/>
+            <line x1="32" y1="0" x2="32" y2="64" stroke="#4ade80" strokeWidth="2" opacity={0.4}/>
+            <line x1="0" y1="18" x2="64" y2="46" stroke="#4ade80" strokeWidth="1.5" opacity={0.3}/>
+            {/* Block shapes */}
+            <rect x="8" y="8" width="16" height="12" rx="2" fill="#86efac" opacity={0.4}/>
+            <rect x="40" y="14" width="14" height="10" rx="2" fill="#86efac" opacity={0.3}/>
+            <rect x="10" y="40" width="18" height="14" rx="2" fill="#86efac" opacity={0.35}/>
+            <rect x="38" y="42" width="12" height="12" rx="2" fill="#86efac" opacity={0.3}/>
+          </svg>
+          <span style={{ color:"rgba(255,255,255,0.7)", fontSize:11, fontWeight:600 }}>
+            Carte non disponible
+          </span>
+        </div>
+      )}
+      {/* Red pin overlay — always shown */}
+      <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center",
+        justifyContent:"center", pointerEvents:"none" }}>
+        <svg viewBox="0 0 24 30" width="30" height="37"
+          style={{ filter:"drop-shadow(0 2px 5px rgba(0,0,0,0.45))" }}>
+          <path d="M12 0C7.16 0 3.25 3.91 3.25 8.75c0 6.56 8.75 16.25 8.75 16.25s8.75-9.69 8.75-16.25C20.75 3.91 16.84 0 12 0z"
+            fill="#EF4444"/>
+          <circle cx="12" cy="8.75" r="3.5" fill="#fff" opacity={0.9}/>
+        </svg>
+      </div>
+      {/* Dark gradient at bottom for readability */}
+      {status === "ok" && (
+        <div style={{ position:"absolute", bottom:0, left:0, right:0, height:32,
+          background:"linear-gradient(to top, rgba(0,0,0,0.28), transparent)" }}/>
+      )}
+    </div>
+  );
+}
+
 function voiceWaveform(seed: number, bars = 36): number[] {
   return Array.from({ length: bars }, (_, i) => {
     const t = i / bars;
@@ -2807,62 +2878,81 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     );
                   })()}
                   {msg.attachment?.type === "location" && (() => {
-                    const coords = msg.attachment.extra ?? "";
+                    const coords  = msg.attachment.extra ?? "";
                     const [latStr, lngStr] = coords.split(",");
                     const lat = parseFloat(latStr);
                     const lng = parseFloat(lngStr);
                     const hasCoords = !isNaN(lat) && !isNaN(lng);
-                    const mapUrl = msg.attachment.label;
                     const geo = locationGeo[coords];
-                    const tileUrl = hasCoords
-                      ? `https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${lng}&zoom=15&size=80x80&markers=${lat},${lng},red-pushpin`
-                      : null;
+
+                    /* Smart deep-link: geo: URI on Android, maps:// on iOS, Google Maps fallback */
+                    const ua = navigator.userAgent;
+                    const isIOS = /iPad|iPhone|iPod/.test(ua);
+                    const mapHref = hasCoords
+                      ? (isIOS
+                          ? `https://maps.apple.com/?q=${lat},${lng}&ll=${lat},${lng}&z=16`
+                          : `https://www.google.com/maps?q=${lat},${lng}`)
+                      : msg.attachment.label;
+
                     return (
-                      <div style={{ borderRadius:14, overflow:"hidden", marginBottom:2,
-                        maxWidth:262, background:"#fff",
-                        boxShadow:"0 2px 12px rgba(0,0,0,0.10)",
+                      <div style={{ borderRadius:16, overflow:"hidden", marginBottom:2,
+                        width:262, background:"#fff",
+                        boxShadow:"0 3px 16px rgba(0,0,0,0.12)",
                         border:"1px solid #E5E7EB",
                         animation:"fbl-fade-in 0.35s cubic-bezier(.22,1,.36,1)" }}>
-                        {/* Top row: thumbnail + text */}
-                        <div style={{ display:"flex", alignItems:"stretch" }}>
-                          {/* Map thumbnail */}
-                          <div style={{ width:80, height:82, flexShrink:0, overflow:"hidden",
-                            background:"linear-gradient(135deg,#bbf7d0,#86efac)",
-                            display:"flex", alignItems:"center", justifyContent:"center" }}>
-                            {tileUrl ? (
-                              <img src={tileUrl} alt="map"
-                                onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
-                                style={{ width:"100%", height:"100%", objectFit:"cover", display:"block" }} />
-                            ) : (
-                              <span style={{ fontSize:26 }}>📍</span>
-                            )}
-                          </div>
-                          {/* Text column */}
-                          <div style={{ flex:1, padding:"10px 12px",
-                            display:"flex", flexDirection:"column", justifyContent:"center", gap:2 }}>
-                            <span style={{ fontWeight:700, fontSize:13.5, color:"#111", lineHeight:1.3 }}>
+
+                        {/* Full-width map thumbnail */}
+                        {hasCoords
+                          ? <MapThumbnail lat={lat} lng={lng} />
+                          : (
+                            <div style={{ width:"100%", height:140,
+                              background:"linear-gradient(160deg,#1a3a2a,#2d6a4f)",
+                              display:"flex", alignItems:"center", justifyContent:"center" }}>
+                              <span style={{ fontSize:48 }}>📍</span>
+                            </div>
+                          )
+                        }
+
+                        {/* Info section */}
+                        <div style={{ padding:"10px 12px 6px" }}>
+                          <div style={{ display:"flex", alignItems:"center", gap:5, marginBottom:2 }}>
+                            <svg viewBox="0 0 24 24" width="13" height="13" fill="#EF4444">
+                              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                            </svg>
+                            <span style={{ fontWeight:700, fontSize:13.5, color:"#111" }}>
                               Position partagée
                             </span>
-                            {geo?.city ? (
-                              <span style={{ fontSize:12, color:"#374151", lineHeight:1.3 }}>{geo.city}</span>
-                            ) : hasCoords ? (
-                              <span style={{ fontSize:11, color:"#9CA3AF" }}>{lat.toFixed(4)}, {lng.toFixed(4)}</span>
-                            ) : null}
-                            {geo?.district ? (
-                              <span style={{ fontSize:11.5, color:"#6B7280", lineHeight:1.3 }}>{geo.district}</span>
-                            ) : null}
                           </div>
+                          {/* City */}
+                          {geo?.city
+                            ? <span style={{ fontSize:12.5, color:"#374151", display:"block", lineHeight:1.4 }}>
+                                {geo.city}
+                              </span>
+                            : hasCoords && !geo
+                              ? <span style={{ fontSize:11.5, color:"#9CA3AF", display:"block" }}>
+                                  {lat.toFixed(4)}, {lng.toFixed(4)}
+                                </span>
+                              : null
+                          }
+                          {/* District */}
+                          {geo?.district &&
+                            <span style={{ fontSize:12, color:"#6B7280", display:"block", lineHeight:1.4 }}>
+                              {geo.district}
+                            </span>
+                          }
                         </div>
+
                         {/* Divider */}
-                        <div style={{ height:1, background:"#F1F5F9" }} />
-                        {/* Link + time */}
-                        <div style={{ padding:"8px 12px 9px",
+                        <div style={{ height:1, background:"#F1F5F9", margin:"0 12px" }} />
+
+                        {/* Footer: Voir sur la carte + time */}
+                        <div style={{ padding:"8px 12px 10px",
                           display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-                          <a href={mapUrl} target="_blank" rel="noreferrer"
+                          <a href={mapHref} target="_blank" rel="noreferrer"
                             style={{ textDecoration:"none", display:"flex", alignItems:"center",
-                              gap:5, color:"#16C24A", fontWeight:600, fontSize:13 }}>
+                              gap:5, color:"#16C24A", fontWeight:700, fontSize:13 }}>
                             <svg viewBox="0 0 24 24" width="15" height="15" fill="none"
-                              stroke="#16C24A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                               <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
                               <line x1="9" y1="3" x2="9" y2="18"/>
                               <line x1="15" y1="6" x2="15" y2="21"/>
