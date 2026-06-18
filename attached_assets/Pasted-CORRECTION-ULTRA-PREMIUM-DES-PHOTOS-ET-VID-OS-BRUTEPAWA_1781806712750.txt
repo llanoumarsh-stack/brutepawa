@@ -1,0 +1,224 @@
+CORRECTION ULTRA PREMIUM DES PHOTOS ET VIDÉOS BRUTEPAWA
+
+OBJECTIF :
+
+Reproduire le comportement Telegram Premium à 99 % pour les photos et vidéos tout en conservant l'identité visuelle BrutePawa.
+
+═══════════════════════
+1. AFFICHAGE DES PHOTOS
+═══════════════════════
+
+TRÈS IMPORTANT :
+
+La photo doit être affichée dans toute sa dimension disponible à l'intérieur de la bulle.
+
+La photo doit être l'élément dominant.
+
+La photo doit occuper entre 85 % et 95 % de la hauteur totale de la bulle.
+
+INTERDICTION :
+
+❌ petite miniature perdue au milieu
+❌ grande zone verte sous l'image
+❌ espace vide inutile
+❌ image écrasée
+❌ image tronquée inutilement
+
+COMPORTEMENT ATTENDU :
+
+✓ la photo remplit presque toute la bulle
+
+✓ l'utilisateur voit immédiatement la photo
+
+✓ le bandeau d'informations reste compact
+
+Utiliser :
+
+object-fit: cover;
+
+ou
+
+object-fit: contain;
+
+selon le format afin de préserver au maximum les dimensions originales du média.
+
+Le média doit toujours être affiché avec la meilleure surface visible possible.
+
+═══════════════════════
+2. BANDEAU D'INFORMATIONS
+═══════════════════════
+
+Le bandeau inférieur doit être compact.
+
+Hauteur maximale :
+
+40px à 55px
+
+Contenu :
+
+Photo
+744.6 Ko • JPG
+18:56 ✓✓
+
+ou
+
+Vidéo
+2.3 Mo • MP4
+18:56 ✓✓
+
+Le bandeau ne doit jamais voler l'espace de la photo.
+
+═══════════════════════
+3. ENVOI DE PHOTO
+═══════════════════════
+
+Pendant l'envoi :
+
+Conserver exactement la taille finale du média.
+
+Ne jamais redimensionner la bulle.
+
+Afficher :
+
+✓ overlay semi-transparent
+
+rgba(0,0,0,0.25)
+
+✓ bouton X centré
+
+Fond :
+#8E8E93
+
+Icône :
+#FFFFFF
+
+✓ cercle de progression
+
+#34C759
+
+✓ compteur réel
+
+0 KB / 1.4 MB
+
+125 KB / 1.4 MB
+
+900 KB / 1.4 MB
+
+✓ horloge Telegram
+
+#8E8E93
+
+═══════════════════════
+4. ENVOI DE VIDÉO
+═══════════════════════
+
+Même comportement que Telegram Premium.
+
+La vidéo garde sa taille finale.
+
+Le bouton X reste centré.
+
+Le cercle de progression tourne autour du bouton X.
+
+Le compteur de progression reste visible.
+
+Aucun écran de chargement séparé.
+
+═══════════════════════
+5. CHAMP DE SAISIE
+═══════════════════════
+
+Supprimer définitivement le grand rectangle gris derrière la barre de saisie.
+
+La zone de saisie doit flotter directement sur l'écran comme Telegram.
+
+Structure :
+
+🙂 | Écrire un message... | 📎 | 📷 | 🎤
+
+Coins très arrondis.
+
+Ombre légère.
+
+Aucun conteneur gris externe.
+
+═══════════════════════
+6. FOND DE CONVERSATION
+═══════════════════════
+
+Le fond ne doit jamais :
+
+❌ zoomer
+
+❌ se déformer
+
+❌ changer de taille
+
+❌ se déplacer
+
+même après :
+
+- ajout photo
+- ajout vidéo
+- ajout audio
+- ajout de centaines de messages
+
+Utiliser :
+
+background-repeat: repeat;
+background-position: center;
+background-size: auto;
+
+Le fond doit rester parfaitement stable.
+
+═══════════════════════
+7. STATUTS
+═══════════════════════
+
+Upload :
+
+X + Progression + Horloge
+
+Envoyé :
+
+✓
+
+Reçu :
+
+✓✓
+
+Lu :
+
+✓✓ colorés
+
+Erreur :
+
+Icône erreur + bouton renvoyer
+
+═══════════════════════
+8. RÉSULTAT FINAL
+═══════════════════════
+
+L'utilisateur doit avoir l'impression d'utiliser Telegram Premium :
+
+✓ même fluidité
+
+✓ mêmes animations
+
+✓ mêmes dimensions
+
+✓ même logique
+
+✓ mêmes comportements
+
+mais avec :
+
+Vert BrutePawa :
+#22C55E
+
+Identité :
+BrutePawa
+
+Style :
+Ultra Premium
+Modern Messaging Experience

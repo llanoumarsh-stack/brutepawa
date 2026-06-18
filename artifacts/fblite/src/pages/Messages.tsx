@@ -2878,115 +2878,108 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     const fname  = msg.attachment.extra || "photo";
                     const ups    = mediaUploads.get(msg.id);
                     const pct    = ups?.progress ?? 0;
-                    const R      = 22;
-                    const CIRC   = 2 * Math.PI * R;
+                    const R      = 22; const CIRC = 2 * Math.PI * R;
                     const dash   = CIRC * (1 - pct / 100);
-                    const sizeLabel = ups
-                      ? fmtBytes(ups.fileSize)
-                      : msg.attachment.size ? fmtBytes(msg.attachment.size) : "";
+                    const sizeLabel = ups ? fmtBytes(ups.fileSize) : msg.attachment.size ? fmtBytes(msg.attachment.size) : "";
                     const ext = fname.includes(".") ? fname.split(".").pop()?.toUpperCase() ?? "" : "";
                     const captionSub = [sizeLabel, ext].filter(Boolean).join(" • ");
+                    const counterText = ups ? `${fmtBytes(Math.round(ups.fileSize * pct / 100))} / ${fmtBytes(ups.fileSize)}` : "";
                     return (
                       <div style={{ borderRadius:18, overflow:"hidden", marginBottom:2, width:252,
-                        background: msg.mine ? "#16C24A" : "#fff",
-                        boxShadow: msg.mine ? "0 4px 18px rgba(22,194,74,0.28)" : "0 2px 12px rgba(0,0,0,0.10)",
+                        background: msg.mine ? "#DCECCB" : "#fff",
+                        boxShadow:"0 2px 12px rgba(0,0,0,0.10)",
                         animation:"fbl-fade-in 0.28s cubic-bezier(.22,1,.36,1)" }}>
-                        {/* Image area */}
-                        <div style={{ position:"relative", height:168, background:"#d1d5db" }}>
+                        {/* Image area — dominant (85-95 % de la bulle) */}
+                        <div style={{ position:"relative", aspectRatio:"4/3", background:"#CBD5E1" }}>
                           <img key={imgUrl} src={imgUrl} alt={fname} loading="lazy" decoding="async"
                             onClick={() => { if (!ups) openImageViewer(imgUrl); }}
-                            style={{ width:"100%", height:"100%", display:"block", objectFit:"cover", cursor: ups ? "default" : "zoom-in" }} />
+                            style={{ width:"100%", height:"100%", display:"block", objectFit:"cover",
+                              position:"absolute", inset:0, cursor: ups ? "default" : "zoom-in" }} />
 
-                          {/* Waiting / offline overlay */}
+                          {/* Upload en cours — overlay Telegram style */}
+                          {ups && ups.network !== "waiting" && ups.network !== "offline" && ups.network !== "error" && (
+                            <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.28)",
+                              display:"flex", alignItems:"center", justifyContent:"center" }}>
+                              {/* Compteur haut centre */}
+                              <div style={{ position:"absolute", top:8, left:0, right:0, textAlign:"center" }}>
+                                <span style={{ color:"#fff", fontSize:12, fontWeight:700,
+                                  textShadow:"0 1px 3px rgba(0,0,0,0.6)" }}>{counterText}</span>
+                              </div>
+                              {/* × centré + cercle de progression */}
+                              <div style={{ position:"relative", width:54, height:54 }}>
+                                <svg width="54" height="54" viewBox="0 0 54 54"
+                                  style={{ position:"absolute", inset:0, transform:"rotate(-90deg)" }}>
+                                  <circle cx="27" cy="27" r={R} fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="3.5"/>
+                                  <circle cx="27" cy="27" r={R} fill="none" stroke="#34C759" strokeWidth="3.5"
+                                    strokeDasharray={CIRC} strokeDashoffset={dash}
+                                    strokeLinecap="round" style={{ transition:"stroke-dashoffset 0.35s ease" }}/>
+                                </svg>
+                                <button onClick={e => { e.stopPropagation(); ups.cancelFn?.(); }}
+                                  style={{ position:"absolute", inset:5, display:"flex", alignItems:"center",
+                                    justifyContent:"center", background:"#8E8E93", border:"none",
+                                    borderRadius:"50%", cursor:"pointer" }}>
+                                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none"
+                                    stroke="#fff" strokeWidth="2.5" strokeLinecap="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                                  </svg>
+                                </button>
+                              </div>
+                              {ups.network === "slow" && (
+                                <div style={{ position:"absolute", bottom:8, left:0, right:0, textAlign:"center" }}>
+                                  <span style={{ color:"#F59E0B", fontSize:11, fontWeight:700 }}>Connexion lente...</span>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* En attente de connexion */}
                           {(ups?.network === "waiting" || ups?.network === "offline") && (
-                            <div style={{ position:"absolute", inset:0,
-                              background:"rgba(0,0,0,0.62)",
+                            <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.52)",
                               display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:6 }}>
-                              <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round">
+                              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round">
                                 <circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 3"/>
                               </svg>
-                              <span style={{ color:"#fff", fontWeight:700, fontSize:12.5, textAlign:"center" }}>En attente de connexion</span>
-                              <span style={{ color:"rgba(255,255,255,0.65)", fontSize:11, textAlign:"center", padding:"0 24px" }}>
-                                Envoi automatique dès le retour du réseau
+                              <span style={{ color:"#fff", fontWeight:700, fontSize:12, textAlign:"center", padding:"0 20px" }}>
+                                En attente de connexion
                               </span>
                             </div>
                           )}
 
-                          {/* Error overlay */}
+                          {/* Erreur */}
                           {ups?.network === "error" && (
-                            <div style={{ position:"absolute", inset:0,
-                              background:"rgba(0,0,0,0.60)",
+                            <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.55)",
                               display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:8 }}>
-                              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#EF4444" strokeWidth="2.2" strokeLinecap="round">
+                              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#EF4444" strokeWidth="2.2" strokeLinecap="round">
                                 <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
                               </svg>
                               <span style={{ color:"#fff", fontWeight:700, fontSize:12 }}>Échec de l'envoi</span>
                               <button onClick={() => retryUpload(msg.id)}
                                 style={{ background:"#22C55E", border:"none", borderRadius:20, color:"#fff",
-                                  padding:"6px 18px", fontSize:12.5, fontWeight:700, cursor:"pointer",
-                                  display:"flex", alignItems:"center", gap:5 }}>
-                                <svg viewBox="0 0 24 24" width="13" height="13" fill="#fff"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 .49-7.6" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"/></svg>
+                                  padding:"5px 16px", fontSize:12, fontWeight:700, cursor:"pointer",
+                                  display:"flex", alignItems:"center", gap:4 }}>
+                                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round">
+                                  <path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 .49-7.6" fill="none"/>
+                                </svg>
                                 Réessayer
                               </button>
                             </div>
                           )}
-
-                          {/* Progress ring */}
-                          {ups && ups.network !== "waiting" && ups.network !== "offline" && ups.network !== "error" && (
-                            <div style={{ position:"absolute", top:8, right:8,
-                              display:"flex", flexDirection:"column", alignItems:"center", gap:4 }}>
-                              <div style={{ position:"relative", width:56, height:56,
-                                background:"rgba(0,0,0,0.52)", borderRadius:"50%",
-                                display:"flex", alignItems:"center", justifyContent:"center" }}>
-                                <svg width="56" height="56" viewBox="0 0 56 56"
-                                  style={{ position:"absolute", inset:0, transform:"rotate(-90deg)" }}>
-                                  <circle cx="28" cy="28" r={R} fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="3.5"/>
-                                  <circle cx="28" cy="28" r={R} fill="none" stroke="#22C55E" strokeWidth="3.5"
-                                    strokeDasharray={CIRC} strokeDashoffset={dash}
-                                    strokeLinecap="round" style={{ transition:"stroke-dashoffset 0.35s ease" }}/>
-                                </svg>
-                                <div style={{ display:"flex", flexDirection:"column", alignItems:"center", lineHeight:1.1 }}>
-                                  <span style={{ color:"#fff", fontSize:12, fontWeight:800 }}>{pct}%</span>
-                                  <button onClick={e => { e.stopPropagation(); ups.cancelFn?.(); }}
-                                    style={{ background:"none", border:"none", color:"rgba(255,255,255,0.85)",
-                                      fontSize:15, lineHeight:1, cursor:"pointer", padding:"1px 0", fontWeight:400 }}>
-                                    ×
-                                  </button>
-                                </div>
-                              </div>
-                              {ups.network === "slow" && (
-                                <div style={{ background:"rgba(0,0,0,0.58)", borderRadius:10,
-                                  padding:"3px 8px", display:"flex", alignItems:"center", gap:4 }}>
-                                  <svg viewBox="0 0 24 24" width="11" height="11" fill="none"
-                                    stroke="#F59E0B" strokeWidth="2.5" strokeLinecap="round">
-                                    <circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 3"/>
-                                  </svg>
-                                  <span style={{ color:"#F59E0B", fontSize:10.5, fontWeight:700, whiteSpace:"nowrap" }}>
-                                    Connexion lente...
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-                          )}
                         </div>
 
-                        {/* Caption section */}
-                        <div style={{ padding:"7px 11px 8px" }}>
-                          <div style={{ fontWeight:700, fontSize:13,
-                            color: msg.mine ? "#fff" : "#111", marginBottom:1 }}>
-                            Photo
+                        {/* Bandeau compact — max 50px */}
+                        <div style={{ padding:"6px 10px 8px", display:"flex", alignItems:"center", justifyContent:"space-between", gap:4 }}>
+                          <div style={{ minWidth:0 }}>
+                            <div style={{ fontWeight:700, fontSize:12.5, color:"#111", lineHeight:1.2 }}>Photo</div>
+                            {captionSub && <div style={{ color:"#6B7280", fontSize:11, lineHeight:1.3 }}>{captionSub}</div>}
                           </div>
-                          <div style={{ display:"flex", alignItems:"center",
-                            justifyContent:"space-between", gap:4 }}>
-                            <span style={{ color: msg.mine ? "rgba(255,255,255,0.78)" : "#6B7280", fontSize:11.5 }}>
-                              {captionSub}
-                            </span>
-                            <div style={{ display:"flex", alignItems:"center", gap:3, flexShrink:0 }}>
-                              <span style={{ color: msg.mine ? "rgba(255,255,255,0.75)" : "#9CA3AF", fontSize:11 }}>
-                                {msg.time}
-                              </span>
-                              {msg.mine && <MsgStatus status={msg.status} dark={true} />}
-                            </div>
+                          <div style={{ display:"flex", alignItems:"center", gap:3, flexShrink:0 }}>
+                            {ups && (
+                              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#8E8E93" strokeWidth="2" strokeLinecap="round">
+                                <circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 3"/>
+                              </svg>
+                            )}
+                            <span style={{ color:"#6B7280", fontSize:11 }}>{msg.time}</span>
+                            {msg.mine && !ups && <MsgStatus status={msg.status} dark={false} />}
                           </div>
                         </div>
                       </div>
@@ -3093,6 +3086,110 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     const iconLabel = isPdf ? "PDF" : fname.split(".").pop()?.toUpperCase()?.slice(0,4) ?? "DOC";
                     const pct     = ups?.progress ?? 0;
                     const typeSize = [iconLabel, sizeStr].filter(Boolean).join(" • ");
+                    /* ── Détection vidéo ── */
+                    const isVid = /\.(mp4|mov|webm|avi|mkv|m4v|3gp)$/i.test(fname) || Boolean(ups?.file?.type?.startsWith("video/"));
+                    if (isVid) {
+                      const vExt      = fname.includes(".") ? fname.split(".").pop()?.toUpperCase() ?? "" : "";
+                      const vCaption  = [sizeStr, vExt].filter(Boolean).join(" • ");
+                      const Rv = 22; const CIRCv = 2 * Math.PI * Rv;
+                      const dashv     = CIRCv * (1 - pct / 100);
+                      const cntText   = ups ? `${fmtBytes(Math.round(ups.fileSize * pct / 100))} / ${fmtBytes(ups.fileSize)}` : "";
+                      return (
+                        <div style={{ borderRadius:18, overflow:"hidden", marginBottom:2, width:252,
+                          background: msg.mine ? "#DCECCB" : "#fff",
+                          boxShadow:"0 2px 12px rgba(0,0,0,0.10)",
+                          animation:"fbl-fade-in 0.28s cubic-bezier(.22,1,.36,1)" }}>
+                          {/* Miniature vidéo */}
+                          <div style={{ position:"relative", aspectRatio:"4/3", background:"#111" }}>
+                            <video src={docUrl} preload="metadata" muted playsInline
+                              style={{ width:"100%", height:"100%", objectFit:"cover", position:"absolute", inset:0, display:"block" }}
+                              onError={e => { (e.currentTarget as HTMLVideoElement).style.display="none"; }}/>
+                            {/* Bouton play (quand pas en upload) */}
+                            {!ups && (
+                              <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center",
+                                justifyContent:"center", background:"rgba(0,0,0,0.18)" }}>
+                                <div style={{ width:50, height:50, borderRadius:"50%",
+                                  background:"rgba(0,0,0,0.55)", backdropFilter:"blur(4px)",
+                                  display:"flex", alignItems:"center", justifyContent:"center" }}>
+                                  <svg viewBox="0 0 24 24" width="22" height="22" fill="#fff">
+                                    <polygon points="6,4 20,12 6,20"/>
+                                  </svg>
+                                </div>
+                              </div>
+                            )}
+                            {/* Upload overlay */}
+                            {ups && ups.network !== "waiting" && ups.network !== "offline" && ups.network !== "error" && (
+                              <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.28)",
+                                display:"flex", alignItems:"center", justifyContent:"center" }}>
+                                <div style={{ position:"absolute", top:8, left:0, right:0, textAlign:"center" }}>
+                                  <span style={{ color:"#fff", fontSize:12, fontWeight:700,
+                                    textShadow:"0 1px 3px rgba(0,0,0,0.6)" }}>{cntText}</span>
+                                </div>
+                                <div style={{ position:"relative", width:54, height:54 }}>
+                                  <svg width="54" height="54" viewBox="0 0 54 54"
+                                    style={{ position:"absolute", inset:0, transform:"rotate(-90deg)" }}>
+                                    <circle cx="27" cy="27" r={Rv} fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="3.5"/>
+                                    <circle cx="27" cy="27" r={Rv} fill="none" stroke="#34C759" strokeWidth="3.5"
+                                      strokeDasharray={CIRCv} strokeDashoffset={dashv}
+                                      strokeLinecap="round" style={{ transition:"stroke-dashoffset 0.35s ease" }}/>
+                                  </svg>
+                                  <button onClick={e => { e.stopPropagation(); ups.cancelFn?.(); }}
+                                    style={{ position:"absolute", inset:5, display:"flex", alignItems:"center",
+                                      justifyContent:"center", background:"#8E8E93", border:"none",
+                                      borderRadius:"50%", cursor:"pointer" }}>
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none"
+                                      stroke="#fff" strokeWidth="2.5" strokeLinecap="round">
+                                      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                                    </svg>
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                            {(ups?.network === "waiting" || ups?.network === "offline") && (
+                              <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.52)",
+                                display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:6 }}>
+                                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round">
+                                  <circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 3"/>
+                                </svg>
+                                <span style={{ color:"#fff", fontWeight:700, fontSize:12, textAlign:"center", padding:"0 20px" }}>
+                                  En attente de connexion
+                                </span>
+                              </div>
+                            )}
+                            {ups?.network === "error" && (
+                              <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.55)",
+                                display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:8 }}>
+                                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#EF4444" strokeWidth="2.2" strokeLinecap="round">
+                                  <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
+                                </svg>
+                                <span style={{ color:"#fff", fontWeight:700, fontSize:12 }}>Échec de l'envoi</span>
+                                <button onClick={() => retryUpload(msg.id)}
+                                  style={{ background:"#22C55E", border:"none", borderRadius:20, color:"#fff",
+                                    padding:"5px 16px", fontSize:12, fontWeight:700, cursor:"pointer",
+                                    display:"flex", alignItems:"center", gap:4 }}>
+                                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round">
+                                    <path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 .49-7.6" fill="none"/>
+                                  </svg>
+                                  Réessayer
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                          {/* Bandeau compact */}
+                          <div style={{ padding:"6px 10px 8px", display:"flex", alignItems:"center", justifyContent:"space-between", gap:4 }}>
+                            <div style={{ minWidth:0 }}>
+                              <div style={{ fontWeight:700, fontSize:12.5, color:"#111", lineHeight:1.2 }}>Vidéo</div>
+                              {vCaption && <div style={{ color:"#6B7280", fontSize:11, lineHeight:1.3 }}>{vCaption}</div>}
+                            </div>
+                            <div style={{ display:"flex", alignItems:"center", gap:3, flexShrink:0 }}>
+                              {ups && (<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#8E8E93" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 3"/></svg>)}
+                              <span style={{ color:"#6B7280", fontSize:11 }}>{msg.time}</span>
+                              {msg.mine && !ups && <MsgStatus status={msg.status} dark={false} />}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
                     return (
                       <div style={{ borderRadius:14, overflow:"hidden", marginBottom:2,
                         maxWidth:262, background:"#fff",
