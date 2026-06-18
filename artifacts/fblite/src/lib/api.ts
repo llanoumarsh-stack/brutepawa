@@ -519,6 +519,10 @@ export async function apiLikePost(id: number, action: "like" | "unlike"): Promis
   });
 }
 
+export async function apiDeletePost(id: number): Promise<void> {
+  await apiFetch(`/posts/${id}`, { method: "DELETE" });
+}
+
 export function saveFbUser(user: BpUser): void {
   const COUNTRY_FLAGS: Record<string, string> = {
     CI: "🇨🇮", SN: "🇸🇳", BJ: "🇧🇯", TG: "🇹🇬", BF: "🇧🇫", NE: "🇳🇪",

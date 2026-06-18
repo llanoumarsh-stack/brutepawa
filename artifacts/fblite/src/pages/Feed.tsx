@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { openImageViewer } from "../components/ImageViewer";
-import { apiGetPosts, apiCreatePost, apiLikePost, apiGetStories, apiToggleSaved, apiFollow, apiCheckFollowing, type FeedPost, type StoryGroup } from "../lib/api";
+import { apiGetPosts, apiCreatePost, apiLikePost, apiGetStories, apiToggleSaved, apiFollow, apiCheckFollowing, apiDeletePost, type FeedPost, type StoryGroup } from "../lib/api";
 import StoryViewer from "../components/StoryViewer";
 import { storyDraftStore } from "../lib/storyDraft";
 
@@ -283,6 +283,12 @@ export default function Feed() {
         return next;
       });
     }
+  };
+
+  const archivePost = async (id: number) => {
+    setPostMenuId(null);
+    setPosts(ps => ps.filter(p => p.id !== id));
+    try { await apiDeletePost(id); } catch { loadPosts(); }
   };
 
   const toggleLike = async (id: number) => {
@@ -864,12 +870,22 @@ export default function Feed() {
             <div style={{ padding: "4px 14px 32px", display: "flex", flexDirection: "column", gap: 10 }}>
 
               {/* Green group */}
+              {(() => {
+                const menuPost = posts.find(p => p.id === postMenuId);
+                const isMyPost = menuPost?.authorId === user.id;
+                const greenItems: {svg:React.ReactNode;bg:string;label:string;desc:string;action:()=>void}[] = isMyPost
+                  ? [
+                      { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#F59E0B" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><line x1="10" y1="12" x2="14" y2="12"/></svg>, bg: "#FEF3C7", label: "Archiver le post", desc: "Cette publication sera supprimée du fil pour tout le monde.", action: () => { if (postMenuId !== null) archivePost(postMenuId); } },
+                      { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>, bg: "#DCFCE7", label: "Activer les notifications", desc: "Recevez des notifications pour cette publication.", action: () => setPostMenuId(null) },
+                    ]
+                  : [
+                      { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>, bg: "#DCFCE7", label: "Ça m'intéresse", desc: "Vous verrez plus de publications de ce type.", action: () => setPostMenuId(null) },
+                      { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>, bg: "#DCFCE7", label: "Enregistrer la publication", desc: "Ajoutez ceci à vos éléments enregistrés.", action: () => { if (postMenuId !== null) toggleSave(postMenuId); setPostMenuId(null); } },
+                      { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>, bg: "#DCFCE7", label: "Activer les notifications", desc: "Recevez des notifications pour cette publication.", action: () => setPostMenuId(null) },
+                    ];
+                return (
               <div style={{ background: "#F8FAFC", borderRadius: 20, overflow: "hidden" }}>
-                {([
-                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>, bg: "#DCFCE7", label: "Ça m'intéresse", desc: "Vous verrez plus de publications de ce type.", action: () => setPostMenuId(null) },
-                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>, bg: "#DCFCE7", label: "Enregistrer la publication", desc: "Ajoutez ceci à vos éléments enregistrés.", action: () => { if (postMenuId !== null) toggleSave(postMenuId); setPostMenuId(null); } },
-                  { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>, bg: "#DCFCE7", label: "Activer les notifications", desc: "Recevez des notifications pour cette publication.", action: () => setPostMenuId(null) },
-                ] as {svg:React.ReactNode;bg:string;label:string;desc:string;action:()=>void}[]).map((item, i, arr) => (
+                {(greenItems).map((item, i, arr) => (
                   <button key={i} onClick={item.action} style={{ width: "100%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 14, padding: "13px 16px", borderBottom: i < arr.length - 1 ? "1px solid #F1F5F9" : "none", textAlign: "left" }}>
                     <div style={{ width: 42, height: 42, borderRadius: "50%", background: item.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.svg}</div>
                     <div style={{ flex: 1 }}><div style={{ fontWeight: 700, fontSize: 15, color: "#0F172A" }}>{item.label}</div><div style={{ fontSize: 12.5, color: "#94A3B8", marginTop: 2 }}>{item.desc}</div></div>
@@ -877,6 +893,8 @@ export default function Feed() {
                   </button>
                 ))}
               </div>
+                );
+              })()}
 
               {/* Blue group */}
               <div style={{ background: "#F8FAFC", borderRadius: 20, overflow: "hidden" }}>
