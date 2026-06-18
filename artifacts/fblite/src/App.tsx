@@ -45,6 +45,47 @@ import InstallBanner from "./components/InstallBanner";
 import TopLoadingBar from "./components/TopLoadingBar";
 import { usePushNotifications } from "./hooks/usePushNotifications";
 
+class GlobalErrorBoundary extends Component<{ children: ReactNode }, { err: Error | null }> {
+  state: { err: Error | null } = { err: null };
+  static getDerivedStateFromError(e: Error) { return { err: e }; }
+  render() {
+    const { err } = this.state;
+    if (err) {
+      return (
+        <div style={{
+          position: "fixed", inset: 0, background: "#fff", zIndex: 99999,
+          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+          padding: 24, gap: 16, fontFamily: "monospace",
+        }}>
+          <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2">
+            <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
+          </svg>
+          <p style={{ fontWeight: 800, fontSize: 18, color: "#111", margin: 0 }}>Une erreur s'est produite</p>
+          <div style={{
+            width: "100%", maxWidth: 520, background: "#fef2f2", border: "1px solid #fca5a5",
+            borderRadius: 12, padding: "14px 16px", wordBreak: "break-all",
+          }}>
+            <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: "#dc2626" }}>{err.name}: {err.message}</p>
+            {err.stack && (
+              <pre style={{
+                margin: "8px 0 0", fontSize: 11, color: "#7f1d1d", overflowX: "auto",
+                whiteSpace: "pre-wrap", maxHeight: 220, overflowY: "auto",
+              }}>{err.stack}</pre>
+            )}
+          </div>
+          <button
+            onClick={() => { this.setState({ err: null }); window.location.reload(); }}
+            style={{ background: "#22C55E", color: "#fff", border: "none", borderRadius: 12, padding: "12px 28px", fontWeight: 700, fontSize: 15, cursor: "pointer" }}
+          >
+            Réessayer
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 class MessagesBoundary extends Component<{ children: ReactNode }, { err: string | null }> {
   state = { err: null };
   static getDerivedStateFromError(e: Error) { return { err: e?.message ?? "Erreur inconnue" }; }
@@ -408,11 +449,13 @@ function AppContent() {
 
 export default function App() {
   return (
-    <Router>
-      <TopLoadingBar />
-      <PushAutoSubscribe />
-      <AppContent />
-      <InstallBanner />
-    </Router>
+    <GlobalErrorBoundary>
+      <Router>
+        <TopLoadingBar />
+        <PushAutoSubscribe />
+        <AppContent />
+        <InstallBanner />
+      </Router>
+    </GlobalErrorBoundary>
   );
 }
