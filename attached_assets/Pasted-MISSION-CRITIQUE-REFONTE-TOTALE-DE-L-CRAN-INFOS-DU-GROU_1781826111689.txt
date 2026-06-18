@@ -1,0 +1,275 @@
+MISSION CRITIQUE – REFONTE TOTALE DE L'ÉCRAN "INFOS DU GROUPE"
+
+UTILISER LA CAPTURE TELEGRAM COMME RÉFÉRENCE ABSOLUE.
+
+INTERDICTION DE S'EN INSPIRER.
+INTERDICTION DE L'INTERPRÉTER.
+INTERDICTION DE MODERNISER.
+INTERDICTION DE CRÉER UNE VERSION PERSONNALISÉE.
+
+REPRODUIRE À 99% LE DESIGN, LA STRUCTURE, LES ESPACEMENTS ET LE COMPORTEMENT DE TELEGRAM.
+
+90% = ÉCHEC
+95% = ÉCHEC
+98% = ÉCHEC
+
+SEUL 99% EST ACCEPTÉ.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+PROBLÈME ACTUEL
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+L'écran actuel BrutePawa ressemble à une page d'administration.
+
+Telegram ressemble à une messagerie.
+
+Le résultat final doit donner immédiatement l'impression :
+
+"Telegram version BrutePawa"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+HEADER
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Reproduire exactement Telegram :
+
+- Bouton retour à gauche
+- Bouton édition à droite
+- Menu 3 points à droite
+- Aucun fond coloré
+- Fond blanc
+
+Même hauteur.
+Même alignement.
+Même espacement.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+AVATAR DU GROUPE
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Centré horizontalement.
+
+Taille identique à Telegram.
+
+PAS DE :
+
+- bannière colorée
+- fond dégradé
+- double contour
+- ombre excessive
+
+Avatar simple.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+NOM DU GROUPE
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Sous l'avatar.
+
+Centré.
+
+Même taille que Telegram.
+
+Même poids de police.
+
+Sous-titre :
+
+2 membres
+
+Même couleur Telegram.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+ACTIONS RAPIDES
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Créer exactement 4 cartes :
+
+Message
+Silencieux
+Vidéo
+Quitter
+
+Même largeur.
+Même hauteur.
+Même rayon.
+
+Toutes les cartes doivent être identiques.
+
+INTERDICTION :
+
+- couleurs différentes
+- styles différents
+
+Utiliser uniquement :
+
+Accent BrutePawa #22C55E
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+CARTE PRINCIPALE
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SUPPRIMER :
+
+- section "Ajouter des membres" indépendante
+- section "Membres" indépendante
+
+Fusionner dans UNE SEULE CARTE.
+
+Structure :
+
+┌────────────────────┐
+│ Ajouter des membres│
+├────────────────────┤
+│ Avatar Utilisateur │
+│ Statut             │
+│ Badge rôle         │
+├────────────────────┤
+│ Avatar Utilisateur │
+│ Statut             │
+│ Badge rôle         │
+└────────────────────┘
+
+Exactement comme Telegram.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+AJOUTER DES MEMBRES
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Première ligne de la carte.
+
+Icône :
+
+Ajouter membre
+
+Texte :
+
+Ajouter des membres
+
+Même taille Telegram.
+
+Même position Telegram.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+LISTE DES MEMBRES
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Afficher dans la même carte.
+
+Pas de nouvelle section.
+
+Pas de titre "MEMBRES".
+
+Pas de séparateur géant.
+
+Même densité Telegram.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+BADGES
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Propriétaire
+
+Administrateur
+
+Même style Telegram.
+
+Petit badge discret.
+
+Pas de gros badge orange.
+
+Pas de gros badge coloré.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+ESPACEMENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Réduire tous les espaces verticaux.
+
+Objectif :
+
+Même densité que Telegram.
+
+L'écran doit tenir davantage d'informations sans paraître chargé.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+COULEURS
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Fond :
+#FFFFFF
+
+Texte principal :
+#000000
+
+Texte secondaire :
+#8E8E93
+
+Accent :
+#22C55E
+
+INTERDICTION :
+
+- bleu Telegram
+- rouge
+- violet
+- orange
+
+Tout doit être cohérent.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+OMBRES
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Très légères.
+
+Style Telegram.
+
+Pas de grosses ombres.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+ANIMATIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Même comportement Telegram :
+
+- ouverture écran
+- ajout membre
+- modification groupe
+
+150ms maximum.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+VALIDATION FINALE
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Avatar :
+100% Telegram
+
+Nom :
+100% Telegram
+
+Actions :
+100% Telegram
+
+Carte principale :
+100% Telegram
+
+Ajouter membre :
+100% Telegram
+
+Liste membres :
+100% Telegram
+
+Badges :
+100% Telegram
+
+Espacements :
+100% Telegram
+
+Si un utilisateur pense immédiatement à Telegram :
+
+VALIDÉ.
+
+Sinon :
+
+ÉCHEC ET REDESSIN COMPLET.

@@ -2210,84 +2210,142 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   }
 
   /* ══════════════════════════════════════════════════════════════
-     GROUP INFO VIEW — Premium redesign
+     GROUP INFO VIEW — Telegram 99%
   ══════════════════════════════════════════════════════════════ */
   if (activeGroupId !== null && showGroupInfo) {
     const grp = chatGroups.find(g => g.id === activeGroupId);
     const gInfo = groupInfo;
     const isChannelG = grp?.type === "channel";
+    const memberCount = gInfo?.members.length ?? grp?.membersCount ?? 0;
+    const grpInitialInfo = (grp?.name ?? "G")[0].toUpperCase();
+    const grpColorInfo = ["#EC4899","#8B5CF6","#F97316","#22C55E","#14B8A6","#3B82F6","#F59E0B"][activeGroupId % 7];
+
+    const GRP_ACTIONS = [
+      {
+        label: "Message",
+        action: () => setShowGroupInfo(false),
+        icon: (
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        ),
+      },
+      {
+        label: "Silencieux",
+        action: () => {},
+        icon: (
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+        ),
+      },
+      {
+        label: "Vidéo",
+        action: () => {},
+        icon: (
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+          </svg>
+        ),
+      },
+      {
+        label: "Quitter",
+        action: async () => {
+          await apiLeaveChatGroup(activeGroupId);
+          setChatGroups(p => p.filter(g => g.id !== activeGroupId));
+          setActiveGroupId(null);
+          setShowGroupInfo(false);
+        },
+        icon: (
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        ),
+      },
+    ];
 
     return createPortal(
-      <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, background: "#F0F2F5", zIndex: 10000, overflowY: "auto" }}>
+      <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, background: "#F2F2F7", zIndex: 10000, overflowY: "auto" }}>
+        <style>{`
+          @keyframes gi-in { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
+        `}</style>
 
-        {/* Header */}
-        <div style={{ background: "#fff", display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", borderBottom: "1px solid #E4E6EB", position: "sticky", top: 0, zIndex: 5 }}>
+        {/* ── HEADER — Telegram: ← | title | ✏ ⋮ ── */}
+        <div style={{ background: "#fff", display: "flex", alignItems: "center", padding: "6px 8px", position: "sticky", top: 0, zIndex: 5, boxShadow: "0 1px 0 rgba(0,0,0,0.08)" }}>
           <button onClick={() => setShowGroupInfo(false)}
-            style={{ background: "#F0F2F5", border: "none", borderRadius: "50%", width: 40, height: 40, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, color: "#111" }}>←</button>
-          <div style={{ fontWeight: 800, fontSize: 18, color: "#111" }}>Infos du {isChannelG ? "canal" : "groupe"}</div>
+            style={{ background: "none", border: "none", cursor: "pointer", width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div style={{ flex: 1 }} />
+          <button style={{ background: "none", border: "none", cursor: "pointer", width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button style={{ background: "none", border: "none", cursor: "pointer", width: 40, height: 44, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="#8E8E93"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+          </button>
         </div>
 
-        {/* Profile card */}
-        <div style={{ background: "#fff", marginBottom: 8 }}>
-          {/* Color banner */}
-          <div style={{ height: 80, background: isChannelG ? "linear-gradient(135deg, #00838F 0%, #00ACC1 100%)" : "linear-gradient(135deg, #1877F2 0%, #42A5F5 100%)" }} />
-
-          {/* Avatar overlapping banner */}
-          <div style={{ textAlign: "center", marginTop: -48, position: "relative", zIndex: 1, paddingBottom: 20 }}>
-            <div style={{ width: 94, height: 94, borderRadius: "50%", background: isChannelG ? "linear-gradient(135deg, #00838F, #00ACC1)" : "linear-gradient(135deg, #1877F2, #42A5F5)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 38, margin: "0 auto", border: "4px solid #fff", boxShadow: "0 4px 16px rgba(0,0,0,0.18)" }}>
-              {isChannelG ? "📢" : "👥"}
-            </div>
-            <div style={{ fontWeight: 900, fontSize: 22, color: "#111", marginTop: 12, marginBottom: 3 }}>{grp?.name ?? "Groupe"}</div>
-            <div style={{ fontSize: 13, color: "#65676B" }}>
-              {gInfo?.members.length ?? grp?.membersCount ?? 0} membre{(gInfo?.members.length ?? 1) !== 1 ? "s" : ""}
-              {" · "}{isChannelG ? "Canal" : "Groupe"}
-            </div>
-
-            {/* Action buttons */}
-            <div style={{ display: "flex", justifyContent: "center", gap: 16, marginTop: 20, padding: "0 20px" }}>
-              {[
-                { icon: "💬", label: "Message",   color: "#1877F2", bg: "#E8F0FE", action: () => setShowGroupInfo(false) },
-                { icon: "🔕", label: "Silencieux", color: "#607D8B", bg: "#ECEFF1", action: () => {} },
-                { icon: "🎥", label: "Vidéo",      color: "#9C27B0", bg: "#F3E5F5", action: () => {} },
-                { icon: "🚪", label: "Quitter",    color: "#F44336", bg: "#FFEBEE", action: async () => { await apiLeaveChatGroup(activeGroupId); setChatGroups(p => p.filter(g => g.id !== activeGroupId)); setActiveGroupId(null); setShowGroupInfo(false); } },
-              ].map(a => (
-                <div key={a.label} onClick={a.action} style={{ cursor: "pointer", textAlign: "center", flex: 1, maxWidth: 70 }}>
-                  <div style={{ width: 52, height: 52, borderRadius: "50%", background: a.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, margin: "0 auto 6px" }}>{a.icon}</div>
-                  <div style={{ fontSize: 11, color: a.color, fontWeight: 700 }}>{a.label}</div>
-                </div>
-              ))}
-            </div>
+        {/* ── AVATAR + NAME — centered, no banner ── */}
+        <div style={{ background: "#fff", paddingTop: 28, paddingBottom: 20, textAlign: "center", marginBottom: 10 }}>
+          <div style={{ width: 100, height: 100, borderRadius: "50%", background: grpColorInfo, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 42, margin: "0 auto 14px" }}>
+            {grp?.avatarUrl
+              ? <img src={grp.avatarUrl} style={{ width: 100, height: 100, borderRadius: "50%", objectFit: "cover" }} alt={grp.name} />
+              : grpInitialInfo
+            }
           </div>
+          <div style={{ fontWeight: 700, fontSize: 22, color: "#000", marginBottom: 4 }}>{grp?.name ?? "Groupe"}</div>
+          <div style={{ fontSize: 14, color: "#8E8E93" }}>{memberCount} membre{memberCount !== 1 ? "s" : ""} · {isChannelG ? "Canal" : "Groupe"}</div>
         </div>
 
-        {/* Add members */}
-        <div style={{ background: "#fff", marginBottom: 8 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 20px", cursor: "pointer", borderBottom: "1px solid #F5F5F5" }}>
-            <div style={{ width: 46, height: 46, borderRadius: "50%", background: "#E8F0FE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, color: "#1877F2", fontWeight: 900, flexShrink: 0 }}>+</div>
-            <div>
-              <div style={{ fontWeight: 700, fontSize: 15, color: "#1877F2" }}>Ajouter des membres</div>
-              <div style={{ fontSize: 12, color: "#888" }}>Inviter des contacts dans le {isChannelG ? "canal" : "groupe"}</div>
+        {/* ── QUICK ACTIONS — 4 white cards ── */}
+        <div style={{ display: "flex", gap: 10, padding: "0 12px", marginBottom: 10 }}>
+          {GRP_ACTIONS.map(a => (
+            <div key={a.label} onClick={a.action}
+              style={{ flex: 1, background: "#fff", borderRadius: 14, padding: "14px 0 10px", display: "flex", flexDirection: "column", alignItems: "center", gap: 6, cursor: "pointer", boxShadow: "0 1px 2px rgba(0,0,0,0.06)" }}>
+              {a.icon}
+              <span style={{ fontSize: 12, color: "#000", fontWeight: 400 }}>{a.label}</span>
             </div>
-          </div>
+          ))}
         </div>
 
-        {/* Members list */}
-        <div style={{ background: "#fff" }}>
-          <div style={{ padding: "10px 20px 6px", fontSize: 11, fontWeight: 700, color: "#888", letterSpacing: 0.8, textTransform: "uppercase" }}>
-            Membres · {gInfo?.members.length ?? grp?.membersCount ?? 0}
+        {/* ── MAIN CARD: Add members + member list ── */}
+        <div style={{ background: "#fff", borderRadius: 14, margin: "0 0 10px", overflow: "hidden", boxShadow: "0 1px 2px rgba(0,0,0,0.06)" }}>
+          {/* Ajouter des membres */}
+          <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "13px 16px", cursor: "pointer", borderBottom: "1px solid rgba(0,0,0,0.07)" }}>
+            <div style={{ width: 46, height: 46, borderRadius: "50%", background: "#E8F9EE", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>
+              </svg>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 16, color: "#22C55E", fontWeight: 500 }}>Ajouter des membres</div>
+              <div style={{ fontSize: 13, color: "#8E8E93", marginTop: 1 }}>Inviter des contacts dans le {isChannelG ? "canal" : "groupe"}</div>
+            </div>
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#C7C7CC" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
           </div>
+
+          {/* Member rows */}
           {(gInfo?.members ?? []).map((m, i) => {
             const name = m.firstName && m.lastName ? `${m.firstName} ${m.lastName}` : `Utilisateur #${m.userId}`;
-            const roleLabel = m.role === "owner" ? "Propriétaire" : m.role === "admin" ? "Admin" : null;
-            const roleColor = m.role === "owner" ? "#F57C00" : "#1877F2";
+            const isMe = m.userId === meId;
+            const statusText = isMe ? "Vous" : "en ligne";
+            const statusColor = isMe ? "#22C55E" : "#22C55E";
+            const roleLabel = m.role === "owner" ? "Propriétaire" : m.role === "admin" ? "Administrateur" : null;
+            const avatarColor = CONV_COLORS[m.userId % CONV_COLORS.length];
             return (
-              <div key={m.userId} style={{ display: "flex", gap: 12, padding: "11px 20px", alignItems: "center", borderBottom: i < (gInfo?.members.length ?? 0) - 1 ? "1px solid #F5F5F5" : "none" }}>
-                <div style={{ width: 46, height: 46, borderRadius: "50%", background: CONV_COLORS[m.userId % CONV_COLORS.length], display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 16, flexShrink: 0 }}>{mkInitials(name)}</div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 700, fontSize: 14.5, color: "#111" }}>{name}</div>
-                  {m.userId === meId && <div style={{ fontSize: 12, color: "#888" }}>Vous</div>}
+              <div key={m.userId} style={{ display: "flex", gap: 12, padding: "11px 16px", alignItems: "center", borderBottom: i < (gInfo?.members.length ?? 0) - 1 ? "1px solid rgba(0,0,0,0.07)" : "none" }}>
+                <div style={{ width: 46, height: 46, borderRadius: "50%", background: avatarColor, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 16, flexShrink: 0 }}>
+                  {mkInitials(name)}
                 </div>
-                {roleLabel && <div style={{ fontSize: 11, color: roleColor, fontWeight: 700, background: roleColor + "18", borderRadius: 12, padding: "3px 10px", flexShrink: 0 }}>{roleLabel}</div>}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 700, fontSize: 15, color: "#000", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{name}</div>
+                  <div style={{ fontSize: 12.5, color: statusColor, marginTop: 1 }}>{statusText}</div>
+                </div>
+                {roleLabel && (
+                  <div style={{ fontSize: 12, color: "#22C55E", border: "1px solid #22C55E", borderRadius: 10, padding: "2px 9px", flexShrink: 0, fontWeight: 500 }}>
+                    {roleLabel}
+                  </div>
+                )}
               </div>
             );
           })}
