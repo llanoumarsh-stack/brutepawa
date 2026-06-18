@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "../router";
+import { openImageViewer } from "../components/ImageViewer";
 import {
   apiFetch,
   apiGetComments,
@@ -405,7 +406,8 @@ export default function PostDetailPage({ postId }: Props) {
           <div style={{ margin:"0 14px 14px", borderRadius:20, overflow:"hidden", boxShadow:"0 2px 12px rgba(0,0,0,0.08)" }}>
             {isVideo(post.imageUrl)
               ? <video src={post.imageUrl} poster={post.thumbnailUrl ?? undefined} controls style={{ width:"100%", maxHeight:420, objectFit:"cover", display:"block", background:"#0F172A" }} />
-              : <img src={post.imageUrl} alt="" style={{ width:"100%", maxHeight:480, objectFit:"cover", display:"block" }} />
+              : <img src={post.imageUrl} alt="" onClick={() => openImageViewer(post.imageUrl!)}
+                  style={{ width:"100%", maxHeight:480, objectFit:"cover", display:"block", cursor:"zoom-in" }} />
             }
           </div>
         )}

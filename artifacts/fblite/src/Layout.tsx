@@ -5,6 +5,7 @@ import PostModal from "./components/PostModal";
 import SearchSuggestionsDropdown from "./components/SearchSuggestionsDropdown";
 import MobileSearchOverlay from "./components/MobileSearchOverlay";
 import { apiGetFriendRequests, apiGetUnreadNotifCount } from "./lib/api";
+import ImageViewer from "./components/ImageViewer";
 
 interface Props {
   children: ReactNode;
@@ -162,6 +163,7 @@ export default function Layout({ children, onNewPost }: Props) {
   const isFullscreen = FULLSCREEN_PATHS.some(p => path === p || path.startsWith(p + "?") || path.startsWith(p + "/"));
 
   return (
+    <>
     <div className="app-shell">
 
       {/* ══════════════════════════════════════════════════
@@ -402,5 +404,7 @@ export default function Layout({ children, onNewPost }: Props) {
         })()}
       </nav>
     </div>
+    <ImageViewer />
+    </>
   );
 }

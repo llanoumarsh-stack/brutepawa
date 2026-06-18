@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "../router";
+import { openImageViewer } from "../components/ImageViewer";
 import {
   apiGetUserById, apiGetUsersWithStatus, apiGetFriendRequests, apiGetUserPosts,
   apiSendFriendRequest, apiAcceptFriendRequest, apiRejectFriendRequest,
@@ -1062,7 +1063,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                   </div>
                 </div>
                 <div style={{ fontSize: 14.5, color: "#374151", lineHeight: 1.65 }}>{post.content}</div>
-                {post.imageUrl && <img src={post.imageUrl} alt="" style={{ width: "100%", maxHeight: 320, objectFit: "cover", borderRadius: 14, marginTop: 12 }} />}
+                {post.imageUrl && <img src={post.imageUrl} alt="" onClick={() => openImageViewer(post.imageUrl!)} style={{ width: "100%", maxHeight: 320, objectFit: "cover", borderRadius: 14, marginTop: 12, cursor: "zoom-in" }} />}
                 <div style={{ display: "flex", gap: 2, marginTop: 12, paddingTop: 10, borderTop: "1px solid #F8FAFC" }}>
                   {[
                     { icon: <IcoLike />, label: `${post.likesCount}`, suffix: "J'aime" },
@@ -1116,12 +1117,12 @@ export default function UserProfilePage({ userId }: { userId: number }) {
             ) : (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 5 }}>
                 {user.avatarUrl && (
-                  <div style={{ aspectRatio: "1", borderRadius: 14, overflow: "hidden", border: "2.5px solid #22C55E", boxShadow: "0 2px 8px rgba(34,197,94,0.2)" }}>
+                  <div onClick={() => openImageViewer(user.avatarUrl!)} style={{ aspectRatio: "1", borderRadius: 14, overflow: "hidden", border: "2.5px solid #22C55E", boxShadow: "0 2px 8px rgba(34,197,94,0.2)", cursor: "zoom-in" }}>
                     <img src={user.avatarUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   </div>
                 )}
                 {posts.filter(p => p.imageUrl).map(p => (
-                  <div key={p.id} style={{ aspectRatio: "1", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
+                  <div key={p.id} onClick={() => openImageViewer(p.imageUrl!)} style={{ aspectRatio: "1", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.08)", cursor: "zoom-in" }}>
                     <img src={p.imageUrl!} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   </div>
                 ))}

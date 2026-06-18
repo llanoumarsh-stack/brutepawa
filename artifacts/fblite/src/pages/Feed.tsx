@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
+import { openImageViewer } from "../components/ImageViewer";
 import { apiGetPosts, apiCreatePost, apiLikePost, apiGetStories, apiToggleSaved, apiFollow, apiCheckFollowing, type FeedPost, type StoryGroup } from "../lib/api";
 import StoryViewer from "../components/StoryViewer";
 import { storyDraftStore } from "../lib/storyDraft";
@@ -665,7 +666,9 @@ export default function Feed() {
               {/* Media */}
               {post.imageUrl && (
                 <div style={{ margin: "0 0 0 0", overflow: "hidden" }}>
-                  <img src={post.imageUrl} alt="" loading="lazy" decoding="async" style={{ width: "100%", maxHeight: 420, objectFit: "cover", display: "block" }} />
+                  <img src={post.imageUrl} alt="" loading="lazy" decoding="async"
+                    onClick={() => openImageViewer(post.imageUrl!)}
+                    style={{ width: "100%", maxHeight: 420, objectFit: "cover", display: "block", cursor: "zoom-in" }} />
                 </div>
               )}
 

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
+import { openImageViewer } from "../components/ImageViewer";
 import { apiGetConversations, apiGetMessages, apiMarkMessagesRead, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadFileXHR, apiUploadVoice, apiDeleteConversation, apiDeleteMessage, apiGetLinkPreview, apiGetMessagingSettings, apiUpdateMessagingSettings, apiGetMessageRequests, apiUpdateMessageRequest, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview, type MessageRequest } from "../lib/api";
 import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignaling";
 
@@ -2596,7 +2597,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                         {/* Image area */}
                         <div style={{ position:"relative", height:168, background:"#d1d5db" }}>
                           <img key={imgUrl} src={imgUrl} alt={fname} loading="lazy" decoding="async"
-                            style={{ width:"100%", height:"100%", display:"block", objectFit:"cover" }} />
+                            onClick={() => { if (!ups) openImageViewer(imgUrl); }}
+                            style={{ width:"100%", height:"100%", display:"block", objectFit:"cover", cursor: ups ? "default" : "zoom-in" }} />
 
                           {/* Offline overlay */}
                           {ups?.network === "offline" && (
