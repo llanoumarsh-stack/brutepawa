@@ -252,8 +252,16 @@ select:focus { border-color: var(--fb-blue); }
   50%       { opacity: 0.4; transform: scale(0.75); }
 }
 @keyframes wf-playhead {
-  0%, 100% { transform: scaleY(1.22); opacity: 1; }
-  50%       { transform: scaleY(0.78); opacity: 0.65; }
+  0%, 100% { transform: scaleY(1.28); opacity: 1; }
+  50%       { transform: scaleY(0.72); opacity: 0.65; }
+}
+@keyframes wf-near-a {
+  0%, 100% { transform: scaleY(1.12); }
+  50%       { transform: scaleY(0.86); }
+}
+@keyframes wf-near-b {
+  0%, 100% { transform: scaleY(0.9); }
+  50%       { transform: scaleY(1.18); }
 }
 @keyframes wf-pop {
   0%   { transform: scaleY(1); }

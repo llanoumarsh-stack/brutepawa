@@ -1222,14 +1222,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     if (playingAudioId === msgId) {
       voiceAudiosRef.current.get(msgId)?.pause();
       setPlayingAudioId(null);
-      setAudioProgress(0);
       return;
     }
 
     let a = voiceAudiosRef.current.get(msgId);
+    const isNew = !a;
     if (!a) {
       a = new Audio(src);
-      a.preload = "metadata";
+      a.preload = "auto"; /* buffer immediately — eliminates 5s startup delay */
       a.crossOrigin = "anonymous";
       a.ontimeupdate = () => {
         if (a!.duration) setAudioProgress(a!.currentTime / a!.duration);
@@ -1238,7 +1238,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       a.onerror = () => {
         // Retry without crossOrigin (some CDN configs don't support CORS headers)
         const b = new Audio(src);
-        b.preload = "metadata";
+        b.preload = "auto";
         b.ontimeupdate = () => { if (b.duration) setAudioProgress(b.currentTime / b.duration); };
         b.onended = () => { setPlayingAudioId(null); setAudioProgress(0); };
         voiceAudiosRef.current.set(msgId, b);
@@ -1248,8 +1248,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       voiceAudiosRef.current.set(msgId, a);
     }
     a.playbackRate = voiceSpeed;
-    a.currentTime = 0;
-    setAudioProgress(0);
+    /* Only reset to start when playing a brand-new audio element — don't
+       clobber a position set by a previous seek */
+    if (isNew) { a.currentTime = 0; setAudioProgress(0); }
     a.play().catch(() => {});
     setPlayingAudioId(msgId);
   };
@@ -1270,13 +1271,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     let a = voiceAudiosRef.current.get(msgId);
     if (!a) {
       a = new Audio(src);
-      a.preload = "metadata";
+      a.preload = "auto"; /* buffer immediately so seek works on fresh audio */
       a.crossOrigin = "anonymous";
       a.ontimeupdate = () => { if (a!.duration) setAudioProgress(a!.currentTime / a!.duration); };
       a.onended = () => { setPlayingAudioId(null); setAudioProgress(0); };
       a.onerror = () => {
         const b = new Audio(src);
-        b.preload = "metadata";
+        b.preload = "auto";
         b.ontimeupdate = () => { if (b.duration) setAudioProgress(b.currentTime / b.duration); };
         b.onended = () => { setPlayingAudioId(null); setAudioProgress(0); };
         voiceAudiosRef.current.set(msgId, b);
@@ -1288,10 +1289,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     }
     a.playbackRate = voiceSpeed;
     setAudioProgress(progress);
+    /* Use canplay so seek works even when audio isn't buffered yet */
     const doSeek = () => {
       if (a!.duration && isFinite(a!.duration)) a!.currentTime = progress * a!.duration;
     };
-    if (a.readyState >= 1) { doSeek(); } else { a.addEventListener("loadedmetadata", doSeek, { once: true }); }
+    if (a.readyState >= 2) { doSeek(); } else { a.addEventListener("canplay", doSeek, { once: true }); }
     a.play().catch(() => {});
     setPlayingAudioId(msgId);
   }, [voiceSpeed]);
@@ -2533,19 +2535,35 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                               e.currentTarget.setPointerCapture(e.pointerId);
                               const rect = e.currentTarget.getBoundingClientRect();
                               const p = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-                              seekVoice(msg.id, msg.attachment!.label, p);
+                              /* Instant visual feedback — actual seek fires on pointerUp */
+                              setAudioProgress(p);
+                              setPlayingAudioId(msg.id);
                             }}
                             onPointerMove={e => {
                               if (e.buttons !== 1) return;
                               const rect = e.currentTarget.getBoundingClientRect();
                               const p = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                              /* Only update visual during drag — no audio seek spam */
+                              setAudioProgress(p);
+                            }}
+                            onPointerUp={e => {
+                              const rect = e.currentTarget.getBoundingClientRect();
+                              const p = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                              /* Commit the seek + start playing on release */
                               seekVoice(msg.id, msg.attachment!.label, p);
                             }}
                           >
                             {wfBars.map((h, bi) => {
                               const fraction  = bi / wfBars.length;
-                              const played    = isVoicePlaying ? fraction < audioProgress : false;
-                              const isHead    = isVoicePlaying && Math.abs(fraction - audioProgress) < (1.5 / wfBars.length);
+                              const isActive  = playingAudioId === msg.id;
+                              const played    = isActive ? fraction < audioProgress : false;
+                              const isHead    = isActive && Math.abs(fraction - audioProgress) < (1.5 / wfBars.length);
+                              const isNearA   = isActive && !isHead && Math.abs(fraction - audioProgress) < (3.5 / wfBars.length) && bi % 2 === 0;
+                              const isNearB   = isActive && !isHead && Math.abs(fraction - audioProgress) < (3.5 / wfBars.length) && bi % 2 === 1;
+                              const anim = isHead  ? `wf-playhead ${0.48}s ease-in-out infinite`
+                                         : isNearA ? `wf-near-a ${0.58 + bi * 0.01}s ease-in-out infinite`
+                                         : isNearB ? `wf-near-b ${0.54 + bi * 0.01}s ease-in-out infinite`
+                                         : undefined;
                               return (
                                 <div key={bi} style={{
                                   flex:1, borderRadius:3,
@@ -2556,7 +2574,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                                     : (played ? "#16C24A" : "#BFD4E5"),
                                   transition:"background 0.06s",
                                   transformOrigin:"center",
-                                  animation: isHead ? "wf-playhead 0.52s ease-in-out infinite" : undefined,
+                                  animation: anim,
                                 }}/>
                               );
                             })}
