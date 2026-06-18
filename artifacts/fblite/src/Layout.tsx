@@ -107,6 +107,10 @@ export default function Layout({ children, onNewPost }: Props) {
     }
   }, [path]);
 
+  /* Pages that manage their own fullscreen header — hide the 3-row Layout header */
+  const FULLSCREEN_PATHS = ["/messages", "/community", "/menu", "/wallet", "/notifications", "/jobs", "/formations", "/tontines", "/marketplace"];
+  const isFullscreen = FULLSCREEN_PATHS.some(p => path === p || path.startsWith(p + "?") || path.startsWith(p + "/"));
+
   useEffect(() => {
     const updateHeaderHeight = () => {
       const h = headerRef.current?.offsetHeight ?? 0;
@@ -169,10 +173,6 @@ export default function Layout({ children, onNewPost }: Props) {
       },
     },
   ];
-
-  /* Pages that manage their own fullscreen header — hide the 3-row Layout header */
-  const FULLSCREEN_PATHS = ["/messages", "/community", "/menu", "/wallet", "/notifications", "/jobs", "/formations", "/tontines", "/marketplace"];
-  const isFullscreen = FULLSCREEN_PATHS.some(p => path === p || path.startsWith(p + "?") || path.startsWith(p + "/"));
 
   return (
     <>
