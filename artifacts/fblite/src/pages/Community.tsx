@@ -3,8 +3,8 @@ import { useNavigate } from "../router";
 import {
   apiGetUsersWithStatus, apiGetFriends, apiGetFriendRequests,
   apiSendFriendRequest, apiAcceptFriendRequest, apiRejectFriendRequest,
-  apiGetGroups, apiJoinGroup, apiLeaveGroup,
-  PublicUser, PublicUserWithStatus, FriendRequest, ApiGroup,
+  apiGetGroups, apiJoinGroup, apiLeaveGroup, apiGetChatGroups,
+  PublicUser, PublicUserWithStatus, FriendRequest, ApiGroup, ApiChatGroup,
 } from "../lib/api";
 
 const BP_GREEN = "#16C24A";
@@ -103,6 +103,7 @@ export default function Community() {
   const [friends, setFriends] = useState<PublicUser[]>([]);
   const [requests,setRequests]= useState<FriendRequest[]>([]);
   const [groups,  setGroups]  = useState<ApiGroup[]>([]);
+  const [chatGroups, setChatGroups] = useState<ApiChatGroup[]>([]);
   const [groupSearch, setGroupSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading]   = useState<Record<number,boolean>>({});
@@ -111,11 +112,11 @@ export default function Community() {
   const loadAll = useCallback(async () => {
     setLoading(true);
     try {
-      const [u,f,r,g] = await Promise.all([
+      const [u,f,r,g,cg] = await Promise.all([
         apiGetUsersWithStatus(), apiGetFriends(),
-        apiGetFriendRequests(),  apiGetGroups(),
+        apiGetFriendRequests(),  apiGetGroups(), apiGetChatGroups(),
       ]);
-      setUsers(u); setFriends(f); setRequests(r); setGroups(g);
+      setUsers(u); setFriends(f); setRequests(r); setGroups(g); setChatGroups(cg);
     } catch { /* ignore */ }
     setLoading(false);
   }, []);
@@ -509,36 +510,88 @@ export default function Community() {
           ) : (() => {
             const q = groupSearch.toLowerCase().trim();
             const fg = q ? groups.filter(g=>g.name.toLowerCase().includes(q)||(g.description??"").toLowerCase().includes(q)) : groups;
-            if (!fg.length) return <EmptyPlaceholder icon={<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke={BP_GREEN} strokeWidth="1.8" strokeLinecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>} title={q?"Aucun groupe trouvé":"Aucun groupe disponible"} sub="Les groupes arrivent bientôt." />;
+            const fcg = chatGroups.filter(g=> !q || g.name.toLowerCase().includes(q));
+            const hasAny = fg.length > 0 || fcg.length > 0;
+
+            if (!hasAny) return <EmptyPlaceholder icon={<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke={BP_GREEN} strokeWidth="1.8" strokeLinecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>} title={q?"Aucun groupe trouvé":"Aucun groupe disponible"} sub="Créez votre premier groupe depuis Messages." />;
+
             return (
               <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-                {fg.map(group => (
-                  <div key={group.id} style={{ background:"#fff", borderRadius:20, overflow:"hidden", boxShadow:"0 2px 8px rgba(0,0,0,0.05)" }}>
-                    <div onClick={()=>navigate(`/groups/${group.id}`)} style={{ height:72, background:group.coverUrl?`url(${group.coverUrl}) center/cover no-repeat`:`linear-gradient(135deg, ${BP_GREEN}80 0%, ${BP_GREEN} 100%)`, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", fontSize:32 }}>
-                      {!group.coverUrl && <span style={{ opacity:0.6, fontSize:28 }}>🏘</span>}
+
+                {/* ── Groupes de discussion (chat groups) ── */}
+                {fcg.length > 0 && (
+                  <>
+                    <div style={{ fontSize:12, fontWeight:700, color:"#94A3B8", letterSpacing:0.5, padding:"4px 4px 2px", textTransform:"uppercase" }}>
+                      Groupes de discussion
                     </div>
-                    <div style={{ padding:"12px 14px", display:"flex", alignItems:"center", gap:12 }}>
-                      <div style={{ flex:1, cursor:"pointer", minWidth:0 }} onClick={()=>navigate(`/groups/${group.id}`)}>
-                        <div style={{ fontWeight:700, fontSize:14.5, color:"#0F172A", marginBottom:3 }}>{group.name}</div>
-                        <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
-                          <span style={{ fontSize:12, color:"#94A3B8" }}>{Ico.people} {group.membersCount.toLocaleString()} membres</span>
-                          <span style={{ fontSize:12, color:"#94A3B8" }}>{group.privacy==="public"?"Public":"Privé"}</span>
-                          {group.country && <span style={{ fontSize:12, color:"#94A3B8" }}>{countryFlag(group.country)} {group.country}</span>}
+                    {fcg.map(cg => {
+                      const WIZ_COLORS = ["#EC4899","#8B5CF6","#F97316","#22C55E","#14B8A6","#EF4444","#3B82F6","#F59E0B","#6366F1","#D946EF"];
+                      const col = WIZ_COLORS[cg.id % WIZ_COLORS.length];
+                      const initials = cg.name.split(" ").map((w:string)=>w[0]).join("").toUpperCase().slice(0,2);
+                      return (
+                        <div key={`cg-${cg.id}`}
+                          onClick={()=>navigate(`/messages?groupId=${cg.id}`)}
+                          style={{ background:"#fff", borderRadius:16, padding:"12px 14px", display:"flex", alignItems:"center", gap:12, cursor:"pointer", boxShadow:"0 1px 6px rgba(0,0,0,0.05)" }}>
+                          <div style={{ width:48, height:48, borderRadius:"50%", background:col, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, fontSize:17, flexShrink:0 }}>
+                            {cg.avatarUrl
+                              ? <img src={cg.avatarUrl} style={{ width:48, height:48, borderRadius:"50%", objectFit:"cover" }} alt={cg.name} />
+                              : initials
+                            }
+                          </div>
+                          <div style={{ flex:1, minWidth:0 }}>
+                            <div style={{ fontWeight:700, fontSize:14.5, color:"#0F172A", marginBottom:2, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{cg.name}</div>
+                            <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                              <span style={{ fontSize:12, color:"#94A3B8" }}>{Ico.people} {cg.membersCount} membre{cg.membersCount!==1?"s":""}</span>
+                              <span style={{ fontSize:11, background:`${BP_GREEN}18`, color:BP_GREEN, borderRadius:8, padding:"1px 7px", fontWeight:600 }}>
+                                {cg.type==="channel"?"Canal":"Discussion"}
+                              </span>
+                            </div>
+                            {cg.lastMessage && <div style={{ fontSize:12, color:"#64748B", marginTop:2, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{cg.lastMessage}</div>}
+                          </div>
+                          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#CBD5E1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                         </div>
-                        {group.description && <div style={{ fontSize:12, color:"#64748B", marginTop:4, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{group.description}</div>}
+                      );
+                    })}
+                  </>
+                )}
+
+                {/* ── Communautés ── */}
+                {fg.length > 0 && (
+                  <>
+                    {fcg.length > 0 && (
+                      <div style={{ fontSize:12, fontWeight:700, color:"#94A3B8", letterSpacing:0.5, padding:"8px 4px 2px", textTransform:"uppercase" }}>
+                        Communautés
                       </div>
-                      {group.isMember ? (
-                        <button disabled={groupActionLoading[group.id]} onClick={async()=>{ setGroupActionLoading(p=>({...p,[group.id]:true})); try { await apiLeaveGroup(group.id); setGroups(p=>p.map(g=>g.id===group.id?{...g,isMember:false,membersCount:Math.max(0,g.membersCount-1)}:g)); } catch{} setGroupActionLoading(p=>({...p,[group.id]:false})); }} style={{ ...btnOutline, borderColor: BP_GREEN, color:BP_GREEN }}>
-                          {groupActionLoading[group.id]?"…":"Membre"}
-                        </button>
-                      ) : (
-                        <button disabled={groupActionLoading[group.id]} onClick={async()=>{ setGroupActionLoading(p=>({...p,[group.id]:true})); try { await apiJoinGroup(group.id); setGroups(p=>p.map(g=>g.id===group.id?{...g,isMember:true,membersCount:g.membersCount+1}:g)); } catch{} setGroupActionLoading(p=>({...p,[group.id]:false})); }} style={btnSolid}>
-                          {groupActionLoading[group.id]?"…":"Rejoindre"}
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                    )}
+                    {fg.map(group => (
+                      <div key={group.id} style={{ background:"#fff", borderRadius:20, overflow:"hidden", boxShadow:"0 2px 8px rgba(0,0,0,0.05)" }}>
+                        <div onClick={()=>navigate(`/groups/${group.id}`)} style={{ height:72, background:group.coverUrl?`url(${group.coverUrl}) center/cover no-repeat`:`linear-gradient(135deg, ${BP_GREEN}80 0%, ${BP_GREEN} 100%)`, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", fontSize:32 }}>
+                          {!group.coverUrl && <span style={{ opacity:0.6, fontSize:28 }}>🏘</span>}
+                        </div>
+                        <div style={{ padding:"12px 14px", display:"flex", alignItems:"center", gap:12 }}>
+                          <div style={{ flex:1, cursor:"pointer", minWidth:0 }} onClick={()=>navigate(`/groups/${group.id}`)}>
+                            <div style={{ fontWeight:700, fontSize:14.5, color:"#0F172A", marginBottom:3 }}>{group.name}</div>
+                            <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
+                              <span style={{ fontSize:12, color:"#94A3B8" }}>{Ico.people} {group.membersCount.toLocaleString()} membres</span>
+                              <span style={{ fontSize:12, color:"#94A3B8" }}>{group.privacy==="public"?"Public":"Privé"}</span>
+                              {group.country && <span style={{ fontSize:12, color:"#94A3B8" }}>{countryFlag(group.country)} {group.country}</span>}
+                            </div>
+                            {group.description && <div style={{ fontSize:12, color:"#64748B", marginTop:4, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{group.description}</div>}
+                          </div>
+                          {group.isMember ? (
+                            <button disabled={groupActionLoading[group.id]} onClick={async()=>{ setGroupActionLoading(p=>({...p,[group.id]:true})); try { await apiLeaveGroup(group.id); setGroups(p=>p.map(g=>g.id===group.id?{...g,isMember:false,membersCount:Math.max(0,g.membersCount-1)}:g)); } catch{} setGroupActionLoading(p=>({...p,[group.id]:false})); }} style={{ ...btnOutline, borderColor: BP_GREEN, color:BP_GREEN }}>
+                              {groupActionLoading[group.id]?"…":"Membre"}
+                            </button>
+                          ) : (
+                            <button disabled={groupActionLoading[group.id]} onClick={async()=>{ setGroupActionLoading(p=>({...p,[group.id]:true})); try { await apiJoinGroup(group.id); setGroups(p=>p.map(g=>g.id===group.id?{...g,isMember:true,membersCount:g.membersCount+1}:g)); } catch{} setGroupActionLoading(p=>({...p,[group.id]:false})); }} style={btnSolid}>
+                              {groupActionLoading[group.id]?"…":"Rejoindre"}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </>
+                )}
               </div>
             );
           })()}
