@@ -1,0 +1,77 @@
+CORRECTION OBLIGATOIRE – INTERFACE MESSAGERIE BRUTEPAWA
+
+La conversation affichée actuellement est incorrecte. Je veux une reproduction à 98% de la maquette fournie.
+
+EXIGENCES OBLIGATOIRES :
+
+1. Fond de conversation
+- Utiliser exactement le fond fourni comme wallpaper.
+- Le fond doit être visible sur toute la hauteur de la conversation.
+- Ne jamais afficher un fond uni gris ou vert vide.
+- Le wallpaper doit rester visible même lorsqu'il n'y a aucun message.
+
+2. Zone vide de conversation
+- Supprimer complètement le message "Démarrer une conversation".
+- Afficher uniquement le wallpaper BrutePawa lorsque la discussion est vide.
+- Aucun texte centré.
+- Aucun icône centré.
+
+3. Header
+- Conserver avatar utilisateur.
+- Nom utilisateur.
+- Statut en ligne/hors ligne.
+- Boutons appel vocal.
+- Boutons appel vidéo.
+- Menu options.
+
+4. Messages
+- Bulles modernes type WhatsApp.
+- Messages reçus à gauche.
+- Messages envoyés à droite.
+- Double coche visible.
+- Double coche bleue lorsque lu.
+
+5. Persistance
+- Lorsqu'un utilisateur actualise la page, il doit rester exactement dans la conversation ouverte.
+- Ne jamais rediriger vers une autre page après refresh.
+- Restaurer automatiquement la conversation active.
+
+6. Notifications
+- Afficher l'avatar réel de l'expéditeur.
+- Afficher le nom réel de l'expéditeur.
+- Afficher le vrai contenu du message.
+- Afficher le logo BrutePawa en petit en bas à droite de l'avatar.
+- Utiliser le format des notifications WhatsApp modernes.
+
+7. Notification → Conversation
+- Cliquer sur une notification doit ouvrir directement le message correspondant.
+- Ouvrir exactement la bonne conversation.
+- Scroller automatiquement vers le message concerné.
+
+8. Répondre depuis notification
+- Le bouton "Répondre" doit envoyer réellement le message.
+- Le destinataire doit recevoir immédiatement le message.
+- La conversation doit être mise à jour en temps réel.
+
+9. Marquer comme lu
+- Le bouton "Marquer comme lu" ne doit PAS ouvrir la conversation.
+- Il doit marquer le message comme lu en arrière-plan.
+- Les doubles coches doivent devenir bleues chez l'expéditeur.
+- Aucune redirection.
+
+10. Temps réel
+- Messages instantanés.
+- Statut lu instantané.
+- Notifications instantanées.
+- Synchronisation multi-onglets.
+
+11. Qualité
+- Aucun placeholder.
+- Aucun écran vide.
+- Aucun comportement simulé.
+- Toutes les fonctionnalités doivent être réellement connectées au backend Supabase.
+
+IMPORTANT :
+Ne crée pas une approximation.
+Ne crée pas une version simplifiée.
+Reproduis fidèlement la maquette fournie avec le wallpaper BrutePawa visible en permanence et un comportement identique à une application de messagerie moderne de niveau WhatsApp/Telegram.
