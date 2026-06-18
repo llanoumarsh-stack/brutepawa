@@ -174,7 +174,13 @@ router.post("/chat-groups/:id/messages", requireAuth, async (req, res): Promise<
   const allMembers = await db.select({ userId: chatGroupMembersTable.userId })
     .from(chatGroupMembersTable).where(eq(chatGroupMembersTable.groupId, id));
   const otherMembers = allMembers.filter(m => m.userId !== me);
-  const preview = content.trim().length > 80 ? content.trim().slice(0, 80) + "…" : content.trim();
+  const raw = content.trim();
+  const preview = raw.startsWith("__audio__")    ? "🎤 Message vocal"
+    : raw.startsWith("__video__")    ? "📹 Message vidéo"
+    : raw.startsWith("__image__")    ? "📷 Photo"
+    : raw.startsWith("__doc__")      ? "📎 Document"
+    : raw.startsWith("__location__") ? "📍 Localisation"
+    : raw.length > 80 ? raw.slice(0, 80) + "…" : raw;
   otherMembers.forEach(m => {
     pushToUserDevice(m.userId, {
       title: `💬 ${group?.name ?? "Groupe"} — ${senderName}`,

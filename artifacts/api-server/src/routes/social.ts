@@ -355,10 +355,11 @@ router.post("/messages", requireAuth, async (req, res): Promise<void> => {
     .from(usersTable).where(eq(usersTable.id, me));
   const senderName = sender ? `${sender.firstName} ${sender.lastName}`.trim() : "Quelqu'un";
   const rawContent = parsed.data.content;
-  const notifBody = rawContent.startsWith("__audio__")
-    ? "🎤 Message vocal"
-    : rawContent.startsWith("__video__")
-    ? "📹 Message vidéo"
+  const notifBody = rawContent.startsWith("__audio__")    ? "🎤 Message vocal"
+    : rawContent.startsWith("__video__")    ? "📹 Message vidéo"
+    : rawContent.startsWith("__image__")    ? "📷 Photo"
+    : rawContent.startsWith("__doc__")      ? "📎 Document"
+    : rawContent.startsWith("__location__") ? "📍 Localisation"
     : rawContent.length > 80 ? rawContent.slice(0, 80) + "…" : rawContent;
   pushToUserDevice(toId, {
     title:              senderName,
