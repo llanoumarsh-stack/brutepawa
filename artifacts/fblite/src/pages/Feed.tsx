@@ -260,7 +260,7 @@ export default function Feed() {
   useEffect(() => {
     loadPosts();
     loadStories();
-    apiGetMe().then(me => { if (me) setMeId(me.id); });
+    apiGetMe().then(me => { if (me) setMeId(me.id); }).catch(() => {});
   }, [loadPosts, loadStories]);
 
   // Charge la liste des utilisateurs déjà suivis dès que les posts sont chargés

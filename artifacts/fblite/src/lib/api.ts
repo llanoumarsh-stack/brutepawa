@@ -260,15 +260,6 @@ export async function apiHideUser(userId: number): Promise<void> {
   if (!res.ok) throw new Error("Erreur");
 }
 
-export async function apiGetMe(): Promise<{ id: number } | null> {
-  try {
-    const res = await apiFetch("/users/me");
-    if (!res.ok) return null;
-    const data = await res.json() as { id: number };
-    return data;
-  } catch { return null; }
-}
-
 export async function apiGetPosts(page = 1): Promise<FeedPost[]> {
   const res = await apiFetch(`/posts?page=${page}`);
   if (!res.ok) return [];
