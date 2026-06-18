@@ -44,18 +44,88 @@ function timeAgo(date: string): string {
 
 function notifIcon(type: string): { name: React.ComponentProps<typeof Ionicons>["name"]; color: string } {
   switch (type) {
-    case "group":
-      return { name: "people", color: "#1877F2" };
-    case "like":
-      return { name: "heart", color: "#E0245E" };
-    case "comment":
-      return { name: "chatbubble", color: "#17BF63" };
-    case "follow":
-      return { name: "person-add", color: "#794BC4" };
+    case "group":      return { name: "people",         color: "#1877F2" };
+    case "like":       return { name: "heart",          color: "#E0245E" };
+    case "comment":    return { name: "chatbubble",     color: "#17BF63" };
+    case "follow":     return { name: "person-add",     color: "#794BC4" };
+    case "friend_request": return { name: "person-add", color: "#794BC4" };
+    case "message":    return { name: "mail",           color: "#F5A623" };
+    case "call":       return { name: "call",           color: "#1C7A42" };
+    case "reaction":   return { name: "happy",          color: "#F5A623" };
+    default:           return { name: "notifications",  color: "#657786" };
+  }
+}
+
+/**
+ * Résout la destination de navigation à partir du lien et du type de notification.
+ * Retourne { pathname, params } compatibles avec router.push.
+ */
+function resolveNotifDestination(
+  item: Notification,
+): { pathname: string; params?: Record<string, string> } | null {
+  const link = item.link ?? "";
+
+  // — /chat/:userId
+  const chatMatch = link.match(/^\/chat\/(\d+)$/);
+  if (chatMatch) {
+    return { pathname: "/chat/[userId]", params: { userId: chatMatch[1] } };
+  }
+
+  // — /groups/:id ou /chat-groups/:id
+  const groupMatch = link.match(/^\/(?:groups|chat-groups)\/(\d+)$/);
+  if (groupMatch) {
+    return { pathname: "/groups/[id]", params: { id: groupMatch[1] } };
+  }
+
+  // — /post/:id  (pas encore d'écran dédié → accueil)
+  const postMatch = link.match(/^\/post\/(\d+)$/);
+  if (postMatch) {
+    return { pathname: "/(tabs)/" };
+  }
+
+  // — /profile/:id
+  const profileMatch = link.match(/^\/profile\/(\d+)$/);
+  if (profileMatch) {
+    // Likes / commentaires / réactions → accueil (pas d'écran publication)
+    if (["like", "comment", "reaction"].includes(item.type)) {
+      return { pathname: "/(tabs)/" };
+    }
+    // Follow / demande d'ami → ouvrir un chat avec l'acteur
+    const targetId = item.actorId ?? parseInt(profileMatch[1], 10);
+    if (targetId) {
+      return { pathname: "/chat/[userId]", params: { userId: String(targetId) } };
+    }
+    return { pathname: "/(tabs)/" };
+  }
+
+  // — Fallback par type
+  switch (item.type) {
     case "message":
-      return { name: "mail", color: "#F5A623" };
+      if (item.actorId) {
+        return { pathname: "/chat/[userId]", params: { userId: String(item.actorId) } };
+      }
+      return { pathname: "/(tabs)/messages" };
+
+    case "call":
+      return { pathname: "/(tabs)/messages" };
+
+    case "group":
+      return { pathname: "/(tabs)/" };
+
+    case "follow":
+    case "friend_request":
+      if (item.actorId) {
+        return { pathname: "/chat/[userId]", params: { userId: String(item.actorId) } };
+      }
+      return { pathname: "/(tabs)/" };
+
+    case "like":
+    case "comment":
+    case "reaction":
+      return { pathname: "/(tabs)/" };
+
     default:
-      return { name: "notifications", color: "#657786" };
+      return null;
   }
 }
 
@@ -82,7 +152,23 @@ function useMarkAllRead(token: string | null) {
         method: "PATCH",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
-      if (!res.ok) throw new Error("Failed to mark as read");
+      if (!res.ok) throw new Error("Failed");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["notif-unread-count"] });
+    },
+  });
+}
+
+function useMarkOneRead(token: string | null) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      await fetch(`${API_BASE_URL}/api/notifications/${id}/read`, {
+        method: "PATCH",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
@@ -101,6 +187,7 @@ export default function NotificationsScreen() {
 
   const notifQuery = useNotifications(token);
   const markAllRead = useMarkAllRead(token);
+  const markOneRead = useMarkOneRead(token);
   const notifications = notifQuery.data ?? [];
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
@@ -158,7 +245,11 @@ export default function NotificationsScreen() {
           data={notifications}
           keyExtractor={(item) => String(item.id)}
           renderItem={({ item }) => (
-            <NotifRow item={item} colors={colors} />
+            <NotifRow
+              item={item}
+              colors={colors}
+              onMarkRead={(id) => markOneRead.mutate(id)}
+            />
           )}
           refreshControl={
             <RefreshControl
@@ -187,16 +278,36 @@ export default function NotificationsScreen() {
   );
 }
 
-function NotifRow({ item, colors }: { item: Notification; colors: any }) {
+function NotifRow({
+  item,
+  colors,
+  onMarkRead,
+}: {
+  item: Notification;
+  colors: any;
+  onMarkRead: (id: number) => void;
+}) {
   const icon = notifIcon(item.type);
 
   const handlePress = () => {
-    if (!item.link) return;
-    const groupMatch = item.link.match(/^\/groups\/(\d+)$/);
-    if (groupMatch) {
-      router.push({ pathname: "/groups/[id]", params: { id: groupMatch[1] } });
+    // Marquer comme lu
+    if (!item.isRead) {
+      onMarkRead(item.id);
+    }
+
+    // Résoudre la destination
+    const dest = resolveNotifDestination(item);
+    if (!dest) return;
+
+    if (dest.params) {
+      router.push({ pathname: dest.pathname as any, params: dest.params });
+    } else {
+      router.push(dest.pathname as any);
     }
   };
+
+  const dest = resolveNotifDestination(item);
+  const tappable = dest !== null;
 
   return (
     <TouchableOpacity
@@ -208,7 +319,7 @@ function NotifRow({ item, colors }: { item: Notification; colors: any }) {
         },
       ]}
       onPress={handlePress}
-      activeOpacity={item.link ? 0.75 : 1}
+      activeOpacity={tappable ? 0.75 : 1}
     >
       <View style={[styles.iconCircle, { backgroundColor: `${icon.color}20` }]}>
         <Ionicons name={icon.name} size={22} color={icon.color} />
@@ -240,9 +351,14 @@ function NotifRow({ item, colors }: { item: Notification; colors: any }) {
         </Text>
       </View>
 
-      {!item.isRead && (
-        <View style={[styles.unreadDot, { backgroundColor: colors.primary }]} />
-      )}
+      <View style={styles.rowRight}>
+        {!item.isRead && (
+          <View style={[styles.unreadDot, { backgroundColor: colors.primary }]} />
+        )}
+        {tappable && (
+          <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
+        )}
+      </View>
     </TouchableOpacity>
   );
 }
@@ -326,11 +442,16 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_400Regular",
     marginTop: 4,
   },
+  rowRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    flexShrink: 0,
+  },
   unreadDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    flexShrink: 0,
   },
   empty: {
     flex: 1,

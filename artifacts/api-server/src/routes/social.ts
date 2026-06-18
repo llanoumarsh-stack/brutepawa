@@ -890,6 +890,17 @@ router.patch("/notifications/read-all", requireAuth, async (req, res): Promise<v
   res.json({ ok: true });
 });
 
+router.patch("/notifications/:id/read", requireAuth, async (req, res): Promise<void> => {
+  const userId = req.userId!;
+  const notifId = parseInt(req.params.id, 10);
+  if (isNaN(notifId)) { res.status(400).json({ error: "Invalid id" }); return; }
+  await db
+    .update(notificationsTable)
+    .set({ isRead: true })
+    .where(and(eq(notificationsTable.id, notifId), eq(notificationsTable.userId, userId)));
+  res.json({ ok: true });
+});
+
 router.post("/posts/:id/archive", requireAuth, async (req, res): Promise<void> => {
   const postId = Number(req.params.id);
   const userId = req.userId!;
