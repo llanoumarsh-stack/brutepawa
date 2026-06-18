@@ -41,6 +41,7 @@ export default function Layout({ children, onNewPost }: Props) {
     } catch { return []; }
   });
   const searchWrapRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
 
   const saveRecent = (q: string) => {
     const trimmed = q.trim();
@@ -107,6 +108,17 @@ export default function Layout({ children, onNewPost }: Props) {
   }, [path]);
 
   useEffect(() => {
+    const updateHeaderHeight = () => {
+      const h = headerRef.current?.offsetHeight ?? 0;
+      document.documentElement.style.setProperty("--layout-header-height", `${h}px`);
+    };
+    updateHeaderHeight();
+    const ro = new ResizeObserver(updateHeaderHeight);
+    if (headerRef.current) ro.observe(headerRef.current);
+    return () => ro.disconnect();
+  }, [isFullscreen]);
+
+  useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (searchWrapRef.current && !searchWrapRef.current.contains(e.target as Node)) {
         setShowSuggestions(false);
@@ -170,7 +182,7 @@ export default function Layout({ children, onNewPost }: Props) {
           FACEBOOK LITE STICKY HEADER — 3 rows
           Hidden on fullscreen-managed pages
       ══════════════════════════════════════════════════ */}
-      <div style={{ position: "sticky", top: 0, zIndex: 100, background: "#fff", boxShadow: "0 1px 0 #e4e6eb", display: isFullscreen ? "none" : undefined }}>
+      <div ref={headerRef} style={{ position: "sticky", top: 0, zIndex: 100, background: "#fff", boxShadow: "0 1px 0 #e4e6eb", display: isFullscreen ? "none" : undefined }}>
 
         {/* Row 1 — Mode payant */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "7px 14px", borderBottom: "1px solid #f0f2f5" }}>

@@ -1234,9 +1234,22 @@ select:focus { border-color: var(--fb-blue); }
   to { transform: rotate(360deg); }
 }
 
+/* ===== RESPONSIVE: SMALL PHONES (< 380px) ===== */
+@media (max-width: 379px) {
+  .login-page { padding: 20px 12px 32px; }
+  .login-card { padding: 16px; }
+  .fb-tagline { font-size: 18px; }
+}
+
 /* ===== RESPONSIVE: MOBILE ONLY (< 768px) ===== */
 @media (max-width: 767px) {
   .navbar-search-wrap { display: none; }
+
+  /* Row 1 "Mode payant" more compact on mobile */
+  .layout-row1-btn {
+    padding: 4px 10px !important;
+    font-size: 12px !important;
+  }
 }
 
 /* ===== RESPONSIVE: TABLET (768px+) ===== */
@@ -1252,8 +1265,8 @@ select:focus { border-color: var(--fb-blue); }
     width: var(--sidebar-width);
     min-width: var(--sidebar-width);
     position: sticky;
-    top: var(--navbar-height);
-    height: calc(100vh - var(--navbar-height));
+    top: var(--layout-header-height, var(--navbar-height));
+    height: calc(100vh - var(--layout-header-height, var(--navbar-height)));
     overflow-y: auto;
     overflow-x: hidden;
     padding: 8px;

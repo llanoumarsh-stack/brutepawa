@@ -96,10 +96,10 @@ export default function Login() {
 
         {/* ── Badge de confiance ── */}
         <div style={{
-          display: "inline-flex", alignItems: "center", gap: 14,
+          display: "flex", alignItems: "center", justifyContent: "center", flexWrap: "wrap", gap: "6px 12px",
           background: "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)",
           border: "1px solid #bbf7d0",
-          borderRadius: 50, padding: "7px 18px",
+          borderRadius: 50, padding: "7px 16px",
           marginBottom: 28,
         }}>
           {[
