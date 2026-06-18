@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { useR2Upload } from "../hooks/useR2Upload";
-import { apiGetMe, apiUpdateMe, saveFbUser, apiGetFriends, apiGetUserPosts, type PublicUser, type FeedPost } from "../lib/api";
+import { apiGetMe, apiUpdateMe, saveFbUser, apiGetFriends, apiGetUserPosts, apiDeletePost, type PublicUser, type FeedPost } from "../lib/api";
 import { computeScore, type ScoreFactors } from "../lib/score";
 import ProModeModal from "../components/ProModeModal";
 import ProfileStatusModal from "../components/ProfileStatusModal";
@@ -61,6 +61,13 @@ export default function Profile() {
 
   const [myPosts, setMyPosts] = useState<FeedPost[]>([]);
   const [friends, setFriends] = useState<PublicUser[]>([]);
+  const [postMenuId, setPostMenuId] = useState<number | null>(null);
+
+  const archivePost = async (id: number) => {
+    setPostMenuId(null);
+    setMyPosts(ps => ps.filter(p => p.id !== id));
+    try { await apiDeletePost(id); } catch { /* silently ignore */ }
+  };
 
   useEffect(() => {
     apiGetMe().then(user => {
@@ -520,18 +527,24 @@ export default function Profile() {
             )}
             {myPosts.map(post => (
               <div key={post.id} className="post-card">
-                <div className="post-header">
-                  {avatarUrl
-                    ? <img src={avatarUrl} alt="Avatar" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
-                    : <div className="avatar" style={{ background: "#1877F2" }}>{userInitials}</div>
-                  }
-                  <div className="post-meta">
-                    <div className="post-author">
-                      {localUser.name}
-                      {localUser.flag && <span style={{ marginLeft: 4, fontSize: 14 }}>{localUser.flag}</span>}
+                <div className="post-header" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    {avatarUrl
+                      ? <img src={avatarUrl} alt="Avatar" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+                      : <div className="avatar" style={{ background: "#1877F2" }}>{userInitials}</div>
+                    }
+                    <div className="post-meta">
+                      <div className="post-author">
+                        {localUser.name}
+                        {localUser.flag && <span style={{ marginLeft: 4, fontSize: 14 }}>{localUser.flag}</span>}
+                      </div>
+                      <div className="post-time">🌐 {new Date(post.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}</div>
                     </div>
-                    <div className="post-time">🌐 {new Date(post.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}</div>
                   </div>
+                  <button onClick={() => setPostMenuId(post.id)}
+                    style={{ background: "none", border: "none", cursor: "pointer", padding: "4px 8px", borderRadius: 20, color: "#65676b", fontSize: 20, fontWeight: 700, lineHeight: 1, flexShrink: 0 }}>
+                    ···
+                  </button>
                 </div>
                 {post.imageUrl && (() => {
                   const url = post.imageUrl!;
@@ -549,6 +562,39 @@ export default function Profile() {
               </div>
             ))}
           </div>
+        )}
+
+        {/* Post menu portal — own posts */}
+        {postMenuId !== null && createPortal(
+          <div onClick={() => setPostMenuId(null)}
+            style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 9999, display: "flex", alignItems: "flex-end" }}>
+            <div onClick={e => e.stopPropagation()}
+              style={{ width: "100%", background: "#fff", borderRadius: "20px 20px 0 0", paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
+              <div style={{ display: "flex", justifyContent: "center", paddingTop: 12, paddingBottom: 6 }}>
+                <div style={{ width: 44, height: 5, background: "#E2E8F0", borderRadius: 99 }} />
+              </div>
+              <div style={{ padding: "4px 14px 24px", display: "flex", flexDirection: "column", gap: 10 }}>
+                <div style={{ background: "#FFF9F0", borderRadius: 20, overflow: "hidden" }}>
+                  <button onClick={() => archivePost(postMenuId)}
+                    style={{ width: "100%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 14, padding: "13px 16px", textAlign: "left" }}>
+                    <div style={{ width: 42, height: 42, borderRadius: "50%", background: "#FEF3C7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#F59E0B" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 700, fontSize: 15, color: "#0F172A" }}>Archiver le post</div>
+                      <div style={{ fontSize: 12.5, color: "#94A3B8", marginTop: 2 }}>Cette publication sera supprimée du fil.</div>
+                    </div>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  </button>
+                </div>
+                <button onClick={() => setPostMenuId(null)}
+                  style={{ width: "100%", background: "#F8FAFC", border: "none", borderRadius: 20, padding: "16px", fontWeight: 700, fontSize: 16, color: "#475569", cursor: "pointer" }}>
+                  Annuler
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
         )}
 
         {/* À PROPOS — premium redesign */}
