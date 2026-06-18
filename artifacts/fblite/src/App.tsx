@@ -421,12 +421,18 @@ function AppContent() {
 
   if (path.startsWith("/messages")) {
     const qs2 = path.includes("?") ? path.slice(path.indexOf("?") + 1) : "";
-    const uid = new URLSearchParams(qs2).get("userId");
+    const params2 = new URLSearchParams(qs2);
+    const uid = params2.get("userId");
+    const gid2 = params2.get("groupId");
     const initUid = uid ? parseInt(uid, 10) : undefined;
+    const initGid = gid2 ? parseInt(gid2, 10) : undefined;
     return (
       <Layout onNewPost={handleNewPost}>
         <MessagesBoundary>
-          <Messages initialUserId={!initUid || isNaN(initUid) ? undefined : initUid} />
+          <Messages
+            initialUserId={!initUid || isNaN(initUid) ? undefined : initUid}
+            initialGroupId={!initGid || isNaN(initGid) ? undefined : initGid}
+          />
         </MessagesBoundary>
       </Layout>
     );
