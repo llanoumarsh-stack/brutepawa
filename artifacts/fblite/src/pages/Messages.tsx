@@ -2389,7 +2389,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         {/* ── Zone messages — même wallpaper que les DMs ── */}
         <div style={{ flex:1, overflowY:"auto", padding:"10px 10px 6px", display:"flex", flexDirection:"column", gap:2,
           backgroundImage:`url(${import.meta.env.BASE_URL}wallpapers/bp-default.jpg)`,
-          backgroundSize:"cover", backgroundPosition:"center", backgroundAttachment:"local" }}>
+          backgroundSize:"180px auto", backgroundRepeat:"repeat", backgroundPosition:"center", backgroundAttachment:"fixed" }}>
 
           <div style={{ textAlign:"center", fontSize:11.5, color:"#555", background:"rgba(255,255,255,0.92)", borderRadius:20, padding:"4px 14px", margin:"2px auto 10px", display:"inline-block", alignSelf:"center", boxShadow:"0 1px 4px rgba(0,0,0,0.10)", fontWeight:500 }}>Aujourd'hui</div>
 
@@ -2597,7 +2597,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             : convWpKey !== "none" && wpUrl(convWpKey)
               ? `url(${wpUrl(convWpKey)})`
               : `url(${import.meta.env.BASE_URL}wallpapers/bp-default.jpg)`,
-          backgroundSize:"cover", backgroundPosition:"center", backgroundAttachment:"local",
+          backgroundSize:"180px auto", backgroundRepeat:"repeat", backgroundPosition:"center", backgroundAttachment:"fixed",
         }}>
 
           {/* Load older messages button */}
