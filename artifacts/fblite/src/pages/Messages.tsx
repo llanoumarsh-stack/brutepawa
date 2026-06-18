@@ -2770,18 +2770,6 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                               }}>
                               {voiceSpeed}x
                             </button>
-                            <div style={{
-                              width:26, height:26, borderRadius:"50%", flexShrink:0, overflow:"hidden",
-                              background: mine ? "#A8D39A" : "#D1FAE5",
-                              display:"flex", alignItems:"center", justifyContent:"center",
-                              fontSize:9, fontWeight:800,
-                              color: mine ? "#fff" : "#059669",
-                            }}>
-                              {mine
-                                ? (() => { try { const u=JSON.parse(localStorage.getItem("fb_user")||"{}"); return ((u.firstName||"")[0]||(u.lastName||"")[0]||"M").toUpperCase()+(((u.lastName||"")[0])||"E").toUpperCase(); } catch { return "ME"; } })()
-                                : (activeUser?.initials || "?")
-                              }
-                            </div>
                           </div>
                         </div>
 
