@@ -2434,8 +2434,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     return createPortal(
       <div style={{ position:"fixed", top: vpOffset ? `${vpOffset}px` : 0, left:0, right:0, height: vpHeight ? `${vpHeight}px` : "100dvh", display:"flex", flexDirection:"column", zIndex:10000, overflow:"hidden" }}>
         <style>{`
-          .fbl-msg-mine   { background:#DCF8C6; color:#111; border-radius:8px 8px 2px 8px; box-shadow:0 1px 1px rgba(0,0,0,0.12); }
-          .fbl-msg-theirs { background:#fff; color:#111; border-radius:8px 8px 8px 2px; box-shadow:0 1px 1px rgba(0,0,0,0.10); }
+          .fbl-msg-mine   { background:#DCF8C6; color:#111; border-radius:18px 18px 4px 18px; box-shadow:0 1px 3px rgba(0,0,0,0.14); }
+          .fbl-msg-theirs { background:#fff; color:#111; border-radius:18px 18px 18px 4px; box-shadow:0 1px 3px rgba(0,0,0,0.12); }
           .fbl-menu-btn { display:flex; align-items:center; gap:14px; padding:13px 20px; background:none; border:none; width:100%; font-size:15px; color:#111; cursor:pointer; text-align:left; font-family:inherit; }
           .fbl-menu-btn:active { background:#F0F2F5; }
           .fbl-react-btn:active { transform:scale(1.35); }
@@ -2562,9 +2562,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
         {/* ── MESSAGES AREA ── */}
         <div style={{ flex:1, overflowY:"auto", padding:"8px 10px 4px", display:"flex", flexDirection:"column", gap:2,
-          ...(convWpKey !== "none" && wpUrl(convWpKey) ? {
-            backgroundImage:`url(${wpUrl(convWpKey)})`, backgroundSize:"cover", backgroundPosition:"center", backgroundAttachment:"local"
-          } : { background: convWallpaper ?? CONV_THEMES[convThemeKey].bg }) }}>
+          /* Always show a wallpaper: user-selected > custom upload > BP default */
+          backgroundImage: convWallpaper
+            ? `url(${convWallpaper})`
+            : convWpKey !== "none" && wpUrl(convWpKey)
+              ? `url(${wpUrl(convWpKey)})`
+              : `url(${import.meta.env.BASE_URL}wallpapers/bp-default.jpg)`,
+          backgroundSize:"cover", backgroundPosition:"center", backgroundAttachment:"local",
+        }}>
 
           {/* Load older messages button */}
           {activeConv && hasMoreMessages[activeConv] && (
@@ -2575,18 +2580,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             </button>
           )}
 
-          {currentMessages.length === 0 && (
-            <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:10, padding:"60px 32px", textAlign:"center" }}>
-              <div style={{ width:58, height:58, borderRadius:"50%", background:"rgba(0,0,0,0.08)", display:"flex", alignItems:"center", justifyContent:"center" }}>
-                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="rgba(0,0,0,0.35)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                </svg>
-              </div>
-              <div style={{ fontSize:14, fontWeight:600, color:"rgba(0,0,0,0.45)", lineHeight:1.5 }}>
-                Démarrer une conversation
-              </div>
-            </div>
-          )}
+          {/* Empty state: wallpaper only — no placeholder text */}
 
           {currentMessages.map((msg, i) => {
             const isLast     = i === currentMessages.length - 1 || currentMessages[i + 1]?.mine !== msg.mine;
@@ -2602,7 +2596,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             const dateLabel  = showDateSep && msg.date ? fmtDateLabel(msg.date) : null;
             return (
               <Fragment key={msg.id}>
-              {dateLabel && <div style={{ textAlign:"center", fontSize:11.5, color:"#888", background:"rgba(0,0,0,0.05)", borderRadius:20, padding:"3px 14px", margin:"8px auto 6px", display:"inline-block", alignSelf:"center" }}>{dateLabel}</div>}
+              {dateLabel && <div style={{ textAlign:"center", fontSize:11.5, color:"#555", background:"rgba(255,255,255,0.92)", borderRadius:20, padding:"4px 14px", margin:"8px auto 6px", display:"inline-block", alignSelf:"center", boxShadow:"0 1px 4px rgba(0,0,0,0.10)", fontWeight:500 }}>{dateLabel}</div>}
               <div
                 style={{ display:"flex", justifyContent: msg.mine ? "flex-end" : "flex-start", alignItems:"flex-end", gap:6, marginTop:2,
                   background: isSelected ? "rgba(22,194,74,0.10)" : isAct ? "rgba(24,119,242,0.15)" : isHL ? "rgba(255,235,59,0.25)" : "transparent",
