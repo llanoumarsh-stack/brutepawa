@@ -2147,7 +2147,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           {/* name + verified badge */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, marginBottom: 6 }}>
             <span style={{ fontWeight: 900, fontSize: 22, color: "#0D1B2A", letterSpacing: -0.3 }}>{activeUser.name}</span>
-            {activeUser.id === 13 && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 22, height: 22, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />}
+            {activeConv === 13 && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 22, height: 22, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />}
           </div>
 
           {/* presence text */}
@@ -2362,7 +2362,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             <div style={{ flex:1, minWidth:0, cursor:"pointer" }} onClick={() => setOverlay("info")}>
               <div style={{ display:"flex", alignItems:"center", gap:5 }}>
                 <span style={{ fontWeight:800, fontSize:16, color:"#0F172A", lineHeight:1.2 }}>{activeUser.name}</span>
-                {activeUser.id === 13 && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width:18, height:18, objectFit:"cover", borderRadius:"50%", flexShrink:0 }} />}
+                {activeConv === 13 && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width:18, height:18, objectFit:"cover", borderRadius:"50%", flexShrink:0 }} />}
               </div>
               <div style={{ fontSize:12, fontWeight: (presence.online || peerTyping.typing) ? 600 : 400, color: peerTyping.typing ? "#F59E0B" : presence.online ? "#16C24A" : "#94A3B8" }}>
                 {peerTyping.typing
