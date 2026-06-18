@@ -240,6 +240,7 @@ export default function Feed() {
 
   const rawUser = localStorage.getItem("fb_user");
   const user = rawUser ? JSON.parse(rawUser) as { id?: number; name: string; email: string; avatarUrl?: string; flag?: string } : { name: "Moi", email: "" };
+  const myUserId = user.id != null ? Number(user.id) : null;
   const userInitials = user.name ? user.name.slice(0, 2).toUpperCase() : "ME";
 
   const loadPosts = useCallback(async () => {
@@ -872,7 +873,7 @@ export default function Feed() {
               {/* Green group */}
               {(() => {
                 const menuPost = posts.find(p => p.id === postMenuId);
-                const isMyPost = menuPost?.authorId === user.id;
+                const isMyPost = myUserId !== null && menuPost?.authorId === myUserId;
                 const greenItems: {svg:React.ReactNode;bg:string;label:string;desc:string;action:()=>void}[] = isMyPost
                   ? [
                       { svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#F59E0B" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><line x1="10" y1="12" x2="14" y2="12"/></svg>, bg: "#FEF3C7", label: "Archiver le post", desc: "Cette publication sera supprimée du fil pour tout le monde.", action: () => { if (postMenuId !== null) archivePost(postMenuId); } },
