@@ -6299,7 +6299,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
                     <span style={{ fontWeight: 700, fontSize: 16.5, color: "#0F172A" }}>{fullName}</span>
                     <span style={{ background: "#22C55E", color: "#fff", fontSize: 11, fontWeight: 700, borderRadius: 20, padding: "2px 9px", letterSpacing: .2 }}>Premium</span>
-                    <svg viewBox="0 0 24 24" width="18" height="18"><circle cx="12" cy="12" r="12" fill="#22C55E"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="#fff" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    <img src="/bp-badge-premium.jpeg" alt="vérifié" style={{ width: 20, height: 20, borderRadius: "50%", objectFit: "cover" }} />
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
                     <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#22C55E", flexShrink: 0 }} />
@@ -6336,12 +6336,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
               {/* ── BrutePawa Premium card ── */}
               <div style={{ background: "linear-gradient(135deg,#f0fdf4 0%,#dcfce7 60%,#bbf7d0 100%)", borderRadius: 28, padding: "18px 20px", display: "flex", alignItems: "center", gap: 14, boxShadow: "0 2px 16px rgba(34,197,94,0.13), 0 1px 4px rgba(0,0,0,.05)", marginTop: 14, border: "1px solid rgba(34,197,94,0.12)" }}>
-                {/* BP Logo */}
-                <div style={{ width: 52, height: 52, borderRadius: 14, background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 2px 10px rgba(34,197,94,0.35)" }}>
-                  <svg viewBox="0 0 40 40" width="30" height="30" fill="none">
-                    <text x="5" y="30" fontSize="26" fontWeight="800" fill="#fff" fontFamily="Arial, sans-serif">B</text>
-                  </svg>
-                </div>
+                {/* BP Logo image */}
+                <img src="/bp-logo-b.jpeg" alt="BrutePawa" style={{ width: 52, height: 52, borderRadius: 14, objectFit: "cover", flexShrink: 0, boxShadow: "0 2px 10px rgba(34,197,94,0.35)" }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
                     <span style={{ fontWeight: 800, fontSize: 16, color: "#0F172A" }}>BrutePawa</span>
@@ -6350,10 +6346,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   <div style={{ fontSize: 12, color: "#64748B", fontWeight: 400 }}>Réseau social africain nouvelle génération</div>
                   <div style={{ width: 28, height: 3, borderRadius: 2, background: "linear-gradient(90deg,#22C55E,#16a34a)", marginTop: 6 }} />
                 </div>
-                {/* Premium badge */}
-                <div style={{ width: 44, height: 44, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 2px 10px rgba(34,197,94,0.4)" }}>
-                  <svg viewBox="0 0 24 24" width="24" height="24"><path d="M9 12l2 2 4-4" stroke="#fff" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="12" r="10" stroke="#fff" strokeWidth="2" fill="none"/></svg>
-                </div>
+                {/* Premium badge image */}
+                <img src="/bp-badge-premium.jpeg" alt="Premium" style={{ width: 48, height: 48, borderRadius: "50%", objectFit: "cover", flexShrink: 0, boxShadow: "0 2px 12px rgba(34,197,94,0.4)" }} />
               </div>
 
               {/* ── Footer ── */}
