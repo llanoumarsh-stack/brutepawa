@@ -1,0 +1,252 @@
+MISSION CRITIQUE – REPRODUCTION PIXEL PERFECT
+
+Tu dois reproduire EXACTEMENT la maquette de référence fournie.
+
+IMPORTANT :
+Cette maquette est la source de vérité absolue.
+
+INTERDICTIONS ABSOLUES :
+
+❌ Ne pas réinventer le design
+❌ Ne pas déplacer les éléments
+❌ Ne pas modifier les espacements
+❌ Ne pas modifier les proportions
+❌ Ne pas changer les dimensions
+❌ Ne pas remplacer les couleurs
+❌ Ne pas simplifier le layout
+❌ Ne pas utiliser ton propre jugement UI
+❌ Ne pas créer une interprétation
+❌ Ne pas créer une variante
+
+OBLIGATION :
+
+Créer une copie visuelle à 99,9% identique.
+
+=================================================
+
+METHODE OBLIGATOIRE
+
+=================================================
+
+Analyser l'image pixel par pixel.
+
+Identifier précisément :
+
+- Position X/Y de chaque élément
+- Largeur de chaque carte
+- Hauteur de chaque carte
+- Border radius exact
+- Padding exact
+- Margin exact
+- Taille exacte des icônes
+- Taille exacte des textes
+- Poids exact des polices
+- Ombres exactes
+- Dégradés exacts
+- Transparences exactes
+
+Reproduire les valeurs à l'identique.
+
+=================================================
+
+PHOTO DE COUVERTURE
+
+=================================================
+
+Conserver exactement :
+
+- même hauteur
+- même forme
+- même courbure
+- même dégradé
+- même effet lumineux
+- même niveau de contraste
+
+Ne jamais remplacer par une autre proposition.
+
+=================================================
+
+PHOTO DE PROFIL
+
+=================================================
+
+Conserver exactement :
+
+- même taille
+- même position
+- même chevauchement avec la couverture
+- même bordure
+- même ombre
+- même badge
+
+Tolérance maximale :
+2 px
+
+=================================================
+
+CARTE PROFIL
+
+=================================================
+
+Reproduire exactement :
+
+- largeur
+- hauteur
+- border-radius
+- ombre
+- profondeur
+
+Tolérance maximale :
+2 px
+
+=================================================
+
+TYPOGRAPHIE
+
+=================================================
+
+Police :
+Inter
+
+Reproduire exactement :
+
+- taille
+- graisse
+- hauteur de ligne
+- espacement
+
+Aucune approximation.
+
+=================================================
+
+BOUTONS
+
+=================================================
+
+Reproduire exactement :
+
+- largeur
+- hauteur
+- coins
+- couleurs
+- ombres
+- icônes
+- position
+
+Même animation.
+
+Hover :
+translateY(-2px)
+
+Press :
+scale(0.98)
+
+Transition :
+200ms ease-out
+
+=================================================
+
+STATISTIQUES
+
+=================================================
+
+Conserver exactement :
+
+- même disposition
+- même espacement
+- même alignement
+- même taille
+
+=================================================
+
+ONGLETS
+
+=================================================
+
+Conserver exactement :
+
+- même hauteur
+- même position
+- même indicateur actif
+- même animation
+
+=================================================
+
+PALETTE OFFICIELLE BRUTEPAWA
+
+=================================================
+
+Vert principal :
+#22C55E
+
+Vert secondaire :
+#16A34A
+
+Vert sombre :
+#065F46
+
+Fond :
+#F8FAFC
+
+Surface :
+#FFFFFF
+
+Texte principal :
+#111827
+
+Texte secondaire :
+#6B7280
+
+Bordure :
+#E5E7EB
+
+=================================================
+
+ANIMATIONS
+
+=================================================
+
+Toutes les animations doivent correspondre visuellement à la maquette.
+
+- transitions fluides
+- 60 FPS
+- aucun lag
+- aucun effet différent
+
+=================================================
+
+RESPONSIVE
+
+=================================================
+
+La version mobile doit rester identique à la maquette.
+
+Tolérance maximale :
+
+Position : ±2px
+Dimensions : ±2px
+Espacement : ±2px
+
+=================================================
+
+VALIDATION FINALE
+
+=================================================
+
+Avant de terminer :
+
+Comparer chaque composant avec la maquette.
+
+Si une différence est visible à l'œil nu :
+
+corriger automatiquement.
+
+Objectif final :
+
+Une reproduction visuelle pixel-perfect de la maquette fournie avec l'identité BrutePawa.
+
+Aucune interprétation.
+Aucune simplification.
+Aucune amélioration créative.
+
+COPIER FIDÈLEMENT LA MAQUETTE.
