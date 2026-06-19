@@ -400,6 +400,26 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [grpEditDesc, setGrpEditDesc]               = useState("");
   const [grpEditSaving, setGrpEditSaving]           = useState(false);
   const [grpEditToast, setGrpEditToast]             = useState(false);
+  /* ─── Channel wizard ─── */
+  const [chWiz, setChWiz]                     = useState<"none"|"info"|"type"|"members">("none");
+  const [chName, setChName]                   = useState("");
+  const [chDesc, setChDesc]                   = useState("");
+  const [chType, setChType]                   = useState<"public"|"private">("public");
+  const [chLink, setChLink]                   = useState("");
+  const [chLinkAvail, setChLinkAvail]         = useState<null|"ok"|"err">(null);
+  const [chMembers, setChMembers]             = useState<Set<number>>(new Set());
+  const [chSearch, setChSearch]               = useState("");
+  const [chConvs, setChConvs]                 = useState<{id:number;name:string;desc:string;type:"public"|"private";link:string;members:number[];admins:number[];msgs:{id:number;text:string;time:string}[]}[]>([]);
+  const [activeChId, setActiveChId]           = useState<number|null>(null);
+  const [chMenuOpen, setChMenuOpen]           = useState(false);
+  const [chViewPage, setChViewPage]           = useState<"chat"|"edit"|"members">("chat");
+  const [chEditName, setChEditName]           = useState("");
+  const [chEditDesc, setChEditDesc]           = useState("");
+  const [chEditLink, setChEditLink]           = useState("");
+  const [chEditType, setChEditType]           = useState<"public"|"private">("public");
+  const [chEditLinkAvail, setChEditLinkAvail] = useState<null|"ok"|"err">(null);
+  const [chInput, setChInput]                 = useState("");
+  /* ─── Broadcast ─── */
   const [showBroadcast, setShowBroadcast]     = useState(false);
   const [bcSelected, setBcSelected]           = useState<Set<number>>(new Set());
   const [bcSearch, setBcSearch]               = useState("");
@@ -5204,6 +5224,429 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   );
 
   /* ══════════════════════════════════════════════════════════════
+     CHANNEL — Chat / Edit / Members view
+  ══════════════════════════════════════════════════════════════ */
+  if (activeChId !== null) {
+    const ch = chConvs.find(c => c.id === activeChId);
+    if (!ch) { setActiveChId(null); }
+    else {
+      const chCol = CONV_COLORS[ch.id % CONV_COLORS.length];
+      const chInitials = mkInitials(ch.name);
+      const handleChSend = () => {
+        if (!chInput.trim()) return;
+        const msg = { id: Date.now(), text: chInput.trim(), time: new Date().toLocaleTimeString("fr",{hour:"2-digit",minute:"2-digit"}) };
+        setChConvs(prev => prev.map(c => c.id === activeChId ? {...c, msgs:[...c.msgs, msg]} : c));
+        setChInput("");
+      };
+      const chMenuItems = [
+        { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#111" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>, label:"Rechercher", action:()=>{ setChMenuOpen(false); } },
+        { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#111" strokeWidth="2" strokeLinecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>, label:"Notifications", action:()=>{ setChMenuOpen(false); } },
+        { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#111" strokeWidth="2" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>, label:"Modifier le canal", action:()=>{ setChEditName(ch.name); setChEditDesc(ch.desc); setChEditLink(ch.link); setChEditType(ch.type); setChEditLinkAvail(null); setChViewPage("edit"); setChMenuOpen(false); } },
+        { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#111" strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, label:"Gérer les abonnés", action:()=>{ setChViewPage("members"); setChMenuOpen(false); } },
+        { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#111" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>, label:"Copier le lien", action:()=>{ navigator.clipboard?.writeText(`https://brutepawa.com/c/${ch.link||ch.id}`); setChMenuOpen(false); } },
+        { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#111" strokeWidth="2" strokeLinecap="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>, label:"Partager le canal", action:()=>setChMenuOpen(false) },
+        { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#111" strokeWidth="2" strokeLinecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>, label:"Booster le canal", action:()=>setChMenuOpen(false) },
+        { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>, label:"Signaler", labelColor:"#EF4444", action:()=>setChMenuOpen(false) },
+        { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>, label:"Supprimer le canal", labelColor:"#EF4444", action:()=>{ setChConvs(prev=>prev.filter(c=>c.id!==activeChId)); setActiveChId(null); setChMenuOpen(false); } },
+      ];
+
+      /* ── EDIT PAGE ── */
+      if (chViewPage === "edit") return createPortal(
+        <div style={{position:"fixed",inset:0,background:"#F2F2F7",zIndex:10001,display:"flex",flexDirection:"column"}}>
+          <div style={{background:"#fff",display:"flex",alignItems:"center",padding:"0 4px",height:56,boxShadow:"0 1px 0 rgba(0,0,0,0.09)",flexShrink:0}}>
+            <button onClick={()=>setChViewPage("chat")} style={{background:"none",border:"none",cursor:"pointer",width:48,height:48,display:"flex",alignItems:"center",justifyContent:"center"}}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div style={{flex:1,fontWeight:700,fontSize:16.5,color:"#111"}}>Modifier le canal</div>
+            <button onClick={()=>{
+              if(!chEditName.trim()) return;
+              setChConvs(prev=>prev.map(c=>c.id===activeChId?{...c,name:chEditName.trim(),desc:chEditDesc.trim(),type:chEditType,link:chEditType==="public"?chEditLink:c.link}:c));
+              setChViewPage("chat");
+            }} style={{background:"none",border:"none",cursor:"pointer",padding:"0 14px",color:"#22C55E",fontWeight:700,fontSize:16}}>✓</button>
+          </div>
+          <div style={{flex:1,overflowY:"auto",padding:"20px 0"}}>
+            {/* Avatar + Name */}
+            <div style={{background:"#fff",borderTop:"1px solid rgba(0,0,0,0.08)",borderBottom:"1px solid rgba(0,0,0,0.08)",padding:"16px",display:"flex",alignItems:"center",gap:14,marginBottom:8}}>
+              <div style={{width:74,height:74,borderRadius:"50%",background:chCol,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,position:"relative",cursor:"pointer"}}>
+                <span style={{color:"#fff",fontWeight:700,fontSize:24}}>{chInitials}</span>
+                <div style={{position:"absolute",bottom:1,right:1,width:22,height:22,borderRadius:"50%",background:"#22C55E",border:"2px solid #fff",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </div>
+              </div>
+              <div style={{flex:1}}>
+                <input value={chEditName} onChange={e=>setChEditName(e.target.value)} placeholder="Nom du canal" style={{width:"100%",border:"none",borderBottom:"2px solid #22C55E",outline:"none",fontSize:16,fontWeight:600,color:"#111",padding:"6px 0",background:"transparent"}}/>
+                <textarea value={chEditDesc} onChange={e=>setChEditDesc(e.target.value)} placeholder="Description (facultative)" rows={2} style={{width:"100%",border:"none",outline:"none",fontSize:14,color:"#6B7280",marginTop:8,background:"transparent",resize:"none",fontFamily:"inherit"}}/>
+              </div>
+            </div>
+            {/* Type */}
+            <div style={{background:"#fff",borderTop:"1px solid rgba(0,0,0,0.08)",borderBottom:"1px solid rgba(0,0,0,0.08)",marginBottom:8}}>
+              <div onClick={()=>{setChEditType("public");}} style={{display:"flex",alignItems:"center",padding:"16px",gap:12,cursor:"pointer",borderBottom:"1px solid rgba(0,0,0,0.06)"}}>
+                <div style={{width:22,height:22,borderRadius:"50%",border:`2px solid ${chEditType==="public"?"#22C55E":"#C7C7CC"}`,background:chEditType==="public"?"#22C55E":"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                  {chEditType==="public"&&<div style={{width:8,height:8,borderRadius:"50%",background:"#fff"}}/>}
+                </div>
+                <div><div style={{fontWeight:600,fontSize:15,color:"#111"}}>Canal public</div><div style={{fontSize:13,color:"#6B7280"}}>Visible dans la recherche</div></div>
+              </div>
+              <div onClick={()=>setChEditType("private")} style={{display:"flex",alignItems:"center",padding:"16px",gap:12,cursor:"pointer"}}>
+                <div style={{width:22,height:22,borderRadius:"50%",border:`2px solid ${chEditType==="private"?"#22C55E":"#C7C7CC"}`,background:chEditType==="private"?"#22C55E":"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                  {chEditType==="private"&&<div style={{width:8,height:8,borderRadius:"50%",background:"#fff"}}/>}
+                </div>
+                <div><div style={{fontWeight:600,fontSize:15,color:"#111"}}>Canal privé</div><div style={{fontSize:13,color:"#6B7280"}}>Accessible via invitation uniquement</div></div>
+              </div>
+            </div>
+            {/* Link (public) */}
+            {chEditType==="public" && (
+              <div style={{background:"#fff",borderTop:"1px solid rgba(0,0,0,0.08)",borderBottom:"1px solid rgba(0,0,0,0.08)",padding:"16px",marginBottom:8}}>
+                <div style={{fontSize:13,color:"#6B7280",marginBottom:6}}>Lien public</div>
+                <div style={{display:"flex",alignItems:"center",gap:4}}>
+                  <span style={{fontSize:15,color:"#6B7280",whiteSpace:"nowrap"}}>brutepawa.com/c/</span>
+                  <input value={chEditLink} onChange={e=>{const v=e.target.value.replace(/[^a-z0-9_]/g,"").slice(0,30);setChEditLink(v);setChEditLinkAvail(v.length>=5?"ok":null);}} placeholder="nom_canal" style={{flex:1,border:"none",borderBottom:`2px solid ${chEditLinkAvail==="ok"?"#22C55E":chEditLinkAvail==="err"?"#EF4444":"#E5E7EB"}`,outline:"none",fontSize:15,color:"#111",padding:"4px 0",background:"transparent"}}/>
+                  {chEditLinkAvail==="ok"&&<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>}
+                </div>
+                {chEditLinkAvail==="ok"&&<div style={{fontSize:12,color:"#22C55E",marginTop:4}}>{chEditLink} est disponible</div>}
+              </div>
+            )}
+          </div>
+        </div>
+      , document.body);
+
+      /* ── MEMBERS PAGE ── */
+      if (chViewPage === "members") return createPortal(
+        <div style={{position:"fixed",inset:0,background:"#F2F2F7",zIndex:10001,display:"flex",flexDirection:"column"}}>
+          <div style={{background:"#fff",display:"flex",alignItems:"center",padding:"0 4px",height:56,boxShadow:"0 1px 0 rgba(0,0,0,0.09)",flexShrink:0}}>
+            <button onClick={()=>setChViewPage("chat")} style={{background:"none",border:"none",cursor:"pointer",width:48,height:48,display:"flex",alignItems:"center",justifyContent:"center"}}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div style={{flex:1}}>
+              <div style={{fontWeight:700,fontSize:16.5,color:"#111"}}>Gérer les abonnés</div>
+              <div style={{fontSize:12,color:"#6B7280"}}>{ch.members.length} abonné{ch.members.length>1?"s":""} mix</div>
+            </div>
+          </div>
+          <div style={{flex:1,overflowY:"auto",background:"#F2F2F7",paddingTop:8}}>
+            {/* Ajouter admin + Inviter */}
+            <div style={{background:"#fff",borderTop:"1px solid rgba(0,0,0,0.08)",borderBottom:"1px solid rgba(0,0,0,0.08)",marginBottom:8}}>
+              <div style={{display:"flex",alignItems:"center",gap:14,padding:"14px 16px",cursor:"pointer",borderBottom:"1px solid rgba(0,0,0,0.06)"}}>
+                <div style={{width:44,height:44,borderRadius:"50%",background:"#E5F9EE",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                </div>
+                <div style={{fontWeight:600,fontSize:15,color:"#22C55E"}}>Ajouter un administrateur</div>
+              </div>
+              <div style={{display:"flex",alignItems:"center",gap:14,padding:"14px 16px",cursor:"pointer"}}>
+                <div style={{width:44,height:44,borderRadius:"50%",background:"#E5F9EE",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                </div>
+                <div style={{fontWeight:600,fontSize:15,color:"#22C55E"}}>Inviter via lien</div>
+              </div>
+            </div>
+            {/* Members list */}
+            <div style={{background:"#fff",borderTop:"1px solid rgba(0,0,0,0.08)",borderBottom:"1px solid rgba(0,0,0,0.08)"}}>
+              {/* Owner (me) */}
+              <div style={{display:"flex",alignItems:"center",gap:14,padding:"12px 16px",borderBottom:"1px solid rgba(0,0,0,0.06)"}}>
+                <div style={{width:44,height:44,borderRadius:"50%",background:CONV_COLORS[meId%CONV_COLORS.length],display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontWeight:700,fontSize:16,flexShrink:0}}>
+                  {mkInitials("Moi")}
+                </div>
+                <div style={{flex:1}}><div style={{fontWeight:600,fontSize:15,color:"#111"}}>Vous</div><div style={{fontSize:13,color:"#6B7280"}}>en ligne</div></div>
+                <span style={{fontSize:13,color:"#6B7280",fontWeight:500}}>Propriétaire</span>
+              </div>
+              {ch.members.map((uid,i) => {
+                const u = allUsers.find(x=>x.id===uid);
+                const name = u ? (u.firstName&&u.lastName?`${u.firstName} ${u.lastName}`:u.name??`#${uid}`) : `#${uid}`;
+                const isAdmin = ch.admins.includes(uid);
+                return (
+                  <div key={uid} style={{display:"flex",alignItems:"center",gap:14,padding:"12px 16px",borderBottom:i<ch.members.length-1?"1px solid rgba(0,0,0,0.06)":"none"}}>
+                    <div style={{width:44,height:44,borderRadius:"50%",background:CONV_COLORS[uid%CONV_COLORS.length],display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontWeight:700,fontSize:16,flexShrink:0}}>{mkInitials(name)}</div>
+                    <div style={{flex:1}}><div style={{fontWeight:600,fontSize:15,color:"#111"}}>{name}</div><div style={{fontSize:13,color:"#6B7280"}}>vu récemment</div></div>
+                    {isAdmin&&<span style={{fontSize:13,color:"#6B7280",fontWeight:500}}>Administrateur</span>}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      , document.body);
+
+      /* ── CHAT VIEW ── */
+      return createPortal(
+        <div style={{position:"fixed",inset:0,background:`url(${import.meta.env.BASE_URL}wallpapers/bp-chat-bg.jpg) center/cover no-repeat`,zIndex:10000,display:"flex",flexDirection:"column"}}
+          onClick={()=>{if(chMenuOpen)setChMenuOpen(false);}}>
+          <style>{`@keyframes ch-menu-in{from{opacity:0;transform:translateY(-6px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}`}</style>
+
+          {/* Header */}
+          <div style={{background:"rgba(255,255,255,0.97)",display:"flex",alignItems:"center",padding:"6px 6px",boxShadow:"0 1px 4px rgba(0,0,0,0.1)",flexShrink:0,position:"relative"}}>
+            <button onClick={()=>{setActiveChId(null);setChViewPage("chat");}} style={{background:"none",border:"none",cursor:"pointer",width:44,height:44,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div style={{width:40,height:40,borderRadius:"50%",background:chCol,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginRight:10,color:"#fff",fontWeight:700,fontSize:16}}>{chInitials}</div>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontWeight:700,fontSize:16,color:"#111",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{ch.name}</div>
+              <div style={{fontSize:12,color:"#6B7280"}}>{ch.members.length} abonné{ch.members.length!==1?"s":""} mix</div>
+            </div>
+            <button onClick={e=>{e.stopPropagation();setChMenuOpen(p=>!p);}} style={{background:"none",border:"none",cursor:"pointer",width:44,height:44,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="#6B7280"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+            </button>
+            {/* ⋮ Dropdown */}
+            {chMenuOpen && (
+              <div onClick={e=>e.stopPropagation()} style={{position:"absolute",top:54,right:8,background:"#fff",borderRadius:10,boxShadow:"0 6px 30px rgba(0,0,0,0.15)",zIndex:20,minWidth:220,overflow:"hidden",animation:"ch-menu-in 0.15s ease"}}>
+                {chMenuItems.map((item,i)=>(
+                  <div key={i} onClick={item.action} style={{display:"flex",alignItems:"center",gap:14,padding:"13px 16px",cursor:"pointer",borderBottom:i<chMenuItems.length-1?"1px solid rgba(0,0,0,0.06)":"none"}}
+                    onMouseEnter={e=>e.currentTarget.style.background="#F9FAFB"}
+                    onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                    {item.icon}
+                    <span style={{fontSize:15,fontWeight:500,color:(item as any).labelColor??(i>=7?"#EF4444":"#111")}}>{item.label}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Messages */}
+          <div style={{flex:1,overflowY:"auto",padding:"12px 10px",display:"flex",flexDirection:"column",gap:6}}>
+            {/* System messages */}
+            <div style={{alignSelf:"center",background:"rgba(0,0,0,0.35)",borderRadius:12,padding:"4px 12px",fontSize:12,color:"#fff",fontWeight:500}}>
+              {new Date().toLocaleDateString("fr",{day:"numeric",month:"long"})}
+            </div>
+            <div style={{alignSelf:"center",background:"rgba(0,0,0,0.35)",borderRadius:12,padding:"4px 12px",fontSize:12,color:"#fff",fontWeight:500}}>Canal créé</div>
+            {ch.desc && <div style={{alignSelf:"center",background:"rgba(0,0,0,0.35)",borderRadius:12,padding:"4px 12px",fontSize:12,color:"#fff",fontWeight:500}}>Description du canal mise à jour</div>}
+            {ch.msgs.map(m=>(
+              <div key={m.id} style={{display:"flex",justifyContent:"flex-start"}}>
+                <div style={{maxWidth:"78%",background:"rgba(255,255,255,0.97)",borderRadius:"16px 16px 16px 4px",padding:"8px 12px 6px",fontSize:14.5,boxShadow:"0 1px 2px rgba(0,0,0,0.1)"}}>
+                  {m.text}
+                  <div style={{fontSize:10,color:"#888",textAlign:"right",marginTop:2}}>{m.time}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Input */}
+          <div style={{background:"rgba(255,255,255,0.97)",padding:"8px 10px",display:"flex",alignItems:"center",gap:8,boxShadow:"0 -1px 4px rgba(0,0,0,0.06)",flexShrink:0}}>
+            <button style={{background:"none",border:"none",cursor:"pointer",width:38,height:38,display:"flex",alignItems:"center",justifyContent:"center"}}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1.2" fill="#6B7280"/><circle cx="15" cy="9" r="1.2" fill="#6B7280"/></svg>
+            </button>
+            <input value={chInput} onChange={e=>setChInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")handleChSend();}}
+              placeholder="Diffuser..."
+              style={{flex:1,height:42,borderRadius:22,border:"1px solid #E5E7EB",outline:"none",padding:"0 14px",fontSize:15,background:"#fff"}}/>
+            <button style={{background:"none",border:"none",cursor:"pointer",width:36,height:36,display:"flex",alignItems:"center",justifyContent:"center"}}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+            </button>
+            <button style={{background:"none",border:"none",cursor:"pointer",width:36,height:36,display:"flex",alignItems:"center",justifyContent:"center"}}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </button>
+            {chInput.trim() ? (
+              <button onClick={handleChSend} style={{width:44,height:44,borderRadius:"50%",background:"#22C55E",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 2px 10px rgba(34,197,94,0.4)"}}>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
+            ) : (
+              <button style={{width:44,height:44,borderRadius:"50%",background:"#22C55E",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 2px 10px rgba(34,197,94,0.4)"}}>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+              </button>
+            )}
+          </div>
+        </div>
+      , document.body);
+    }
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     CHANNEL — Wizard (info → type → members)
+  ══════════════════════════════════════════════════════════════ */
+  if (chWiz !== "none") {
+    const WIZ_COLORS = ["#EC4899","#8B5CF6","#F97316","#22C55E","#14B8A6","#EF4444","#3B82F6","#F59E0B","#6366F1","#D946EF"];
+    const wizCol = (id:number) => WIZ_COLORS[id % WIZ_COLORS.length];
+    const chFilteredUsers = allUsers.filter(u => u.id !== meId && (
+      !chSearch.trim() || `${u.firstName??""} ${u.lastName??""}`.toLowerCase().includes(chSearch.toLowerCase()) || (u.name??"").toLowerCase().includes(chSearch.toLowerCase())
+    ));
+    const chSelectedArr = [...chMembers];
+
+    const handleChCreate = () => {
+      const newCh = { id: Date.now(), name: chName.trim(), desc: chDesc.trim(), type: chType, link: chLink, members: chSelectedArr, admins: [] as number[], msgs: [] };
+      setChConvs(prev => [...prev, newCh]);
+      setActiveChId(newCh.id);
+      setChViewPage("chat");
+      setChWiz("none");
+    };
+
+    return createPortal(
+      <div style={{position:"fixed",inset:0,background:chWiz==="members"?"#fff":"#fff",zIndex:10000,display:"flex",flexDirection:"column"}}>
+        <style>{`@keyframes ch-wiz-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}} @keyframes ch-check{from{transform:scale(0.4)}to{transform:scale(1)}} .ch-wiz-row:active{background:#F5F5F5!important}`}</style>
+
+        {/* ── HEADER ── */}
+        <div style={{display:"flex",alignItems:"center",padding:"0 4px",height:56,background:"#fff",borderBottom:"1px solid rgba(0,0,0,0.09)",flexShrink:0}}>
+          <button onClick={()=>{
+            if(chWiz==="info"){setChWiz("none");} else if(chWiz==="type"){setChWiz("info");} else {setChWiz("type");}
+          }} style={{background:"none",border:"none",cursor:"pointer",width:48,height:48,display:"flex",alignItems:"center",justifyContent:"center"}}>
+            {chWiz==="info" ? <span style={{color:"#22C55E",fontSize:15,fontWeight:600}}>Annuler</span>
+              : <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>}
+          </button>
+          <div style={{flex:1,fontWeight:700,fontSize:17,color:"#111"}}>
+            {chWiz==="info"?"Nouveau canal":chWiz==="type"?"Type de canal":"Ajouter des abonnés"}
+          </div>
+          {chWiz==="info" && chName.trim().length>=1 && (
+            <button onClick={()=>setChWiz("type")} style={{background:"none",border:"none",cursor:"pointer",padding:"0 16px",color:"#22C55E",fontWeight:700,fontSize:16}}>Continuer</button>
+          )}
+          {chWiz==="type" && (
+            <button onClick={()=>{if(chType==="public"&&chLink.length<5)return;setChWiz("members");}} style={{background:"none",border:"none",cursor:"pointer",padding:"0 16px",color:chType==="private"||(chLink.length>=5)?"#22C55E":"#C7C7CC",fontWeight:700,fontSize:16}}>Continuer</button>
+          )}
+          {chWiz==="members" && (
+            <button onClick={handleChCreate} style={{background:"none",border:"none",cursor:"pointer",padding:"0 16px"}}>
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#22C55E" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </button>
+          )}
+        </div>
+
+        {/* ── STEP 1: INFO ── */}
+        {chWiz==="info" && (
+          <div style={{flex:1,overflowY:"auto",background:"#F2F2F7"}}>
+            <div style={{background:"#fff",borderTop:"1px solid rgba(0,0,0,0.08)",borderBottom:"1px solid rgba(0,0,0,0.08)",padding:"20px 16px",display:"flex",alignItems:"flex-start",gap:16,marginTop:8}}>
+              {/* Camera circle */}
+              <div style={{width:74,height:74,borderRadius:"50%",background:"#22C55E",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,cursor:"pointer",position:"relative"}}>
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                  <circle cx="12" cy="13" r="4"/>
+                </svg>
+                <div style={{position:"absolute",bottom:1,right:1,width:22,height:22,borderRadius:"50%",background:"#22C55E",border:"2px solid #fff",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </div>
+              </div>
+              <div style={{flex:1,paddingTop:8}}>
+                <div style={{display:"flex",alignItems:"center",borderBottom:"2px solid #22C55E",paddingBottom:6,marginBottom:10}}>
+                  <input autoFocus value={chName} onChange={e=>setChName(e.target.value)} placeholder="Nom du canal" style={{flex:1,border:"none",outline:"none",fontSize:17,fontWeight:600,color:"#111",background:"transparent"}}/>
+                  <button style={{background:"none",border:"none",cursor:"pointer",padding:4,flexShrink:0}}>
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#C7C7CC" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1.2" fill="#C7C7CC"/><circle cx="15" cy="9" r="1.2" fill="#C7C7CC"/></svg>
+                  </button>
+                </div>
+                <textarea value={chDesc} onChange={e=>setChDesc(e.target.value)} placeholder="Description (facultative)" rows={3} style={{width:"100%",border:"none",outline:"none",fontSize:15,color:"#6B7280",resize:"none",background:"transparent",fontFamily:"inherit"}}/>
+              </div>
+            </div>
+            <div style={{padding:"10px 16px"}}>
+              <p style={{fontSize:13,color:"#6B7280",margin:0,lineHeight:1.6}}>
+                Vous pouvez ajouter une description facultative pour votre canal.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* ── STEP 2: TYPE ── */}
+        {chWiz==="type" && (
+          <div style={{flex:1,overflowY:"auto",background:"#F2F2F7"}}>
+            <div style={{background:"#fff",borderTop:"1px solid rgba(0,0,0,0.08)",borderBottom:"1px solid rgba(0,0,0,0.08)",marginTop:8}}>
+              {/* Public */}
+              <div onClick={()=>setChType("public")} style={{display:"flex",alignItems:"flex-start",gap:14,padding:"16px",cursor:"pointer",borderBottom:"1px solid rgba(0,0,0,0.06)"}}>
+                <div style={{width:22,height:22,borderRadius:"50%",border:`2px solid ${chType==="public"?"#22C55E":"#C7C7CC"}`,background:chType==="public"?"#22C55E":"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:2,transition:"all 0.15s"}}>
+                  {chType==="public"&&<div style={{width:8,height:8,borderRadius:"50%",background:"#fff"}}/>}
+                </div>
+                <div>
+                  <div style={{fontWeight:600,fontSize:15.5,color:"#111",marginBottom:3}}>Canal public</div>
+                  <div style={{fontSize:13.5,color:"#6B7280",lineHeight:1.5}}>Les canaux publics sont visibles dans la recherche et tout le monde peut les rejoindre.</div>
+                </div>
+              </div>
+              {/* Private */}
+              <div onClick={()=>setChType("private")} style={{display:"flex",alignItems:"flex-start",gap:14,padding:"16px",cursor:"pointer"}}>
+                <div style={{width:22,height:22,borderRadius:"50%",border:`2px solid ${chType==="private"?"#22C55E":"#C7C7CC"}`,background:chType==="private"?"#22C55E":"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:2,transition:"all 0.15s"}}>
+                  {chType==="private"&&<div style={{width:8,height:8,borderRadius:"50%",background:"#fff"}}/>}
+                </div>
+                <div>
+                  <div style={{fontWeight:600,fontSize:15.5,color:"#111",marginBottom:3}}>Canal privé</div>
+                  <div style={{fontSize:13.5,color:"#6B7280",lineHeight:1.5}}>Les canaux privés ne peuvent être rejoints que via un lien d'invitation.</div>
+                </div>
+              </div>
+            </div>
+            {/* Link field (public) */}
+            {chType==="public" && (
+              <div style={{background:"#fff",borderTop:"1px solid rgba(0,0,0,0.08)",borderBottom:"1px solid rgba(0,0,0,0.08)",padding:"16px",marginTop:8}}>
+                <div style={{display:"flex",alignItems:"center",gap:6,borderBottom:`2px solid ${chLinkAvail==="ok"?"#22C55E":chLinkAvail==="err"?"#EF4444":"#E5E7EB"}`,paddingBottom:8,marginBottom:6}}>
+                  <span style={{fontSize:15,color:"#6B7280",whiteSpace:"nowrap",flexShrink:0}}>brutepawa.com/c/</span>
+                  <input autoFocus={chType==="public"} value={chLink} onChange={e=>{
+                    const v=e.target.value.replace(/[^a-z0-9_]/g,"").slice(0,30);
+                    setChLink(v);
+                    setChLinkAvail(v.length>=5?"ok":v.length>0?"err":null);
+                  }} placeholder="nom_canal" style={{flex:1,border:"none",outline:"none",fontSize:15,color:"#111",background:"transparent"}}/>
+                  {chLinkAvail==="ok"&&<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>}
+                </div>
+                {chLinkAvail==="ok" && <div style={{fontSize:12.5,color:"#22C55E"}}>{chLink} est disponible.</div>}
+                {chLinkAvail==="err" && <div style={{fontSize:12.5,color:"#6B7280"}}>Vous pouvez utiliser a–z, 0–9 et underscore. Minimum 5 caractères.</div>}
+                {!chLinkAvail && <div style={{fontSize:12.5,color:"#6B7280"}}>Vous pouvez utiliser a–z, 0–9 et underscore. Minimum 5 caractères.</div>}
+              </div>
+            )}
+            {/* Private invite link */}
+            {chType==="private" && (
+              <div style={{background:"#fff",borderTop:"1px solid rgba(0,0,0,0.08)",borderBottom:"1px solid rgba(0,0,0,0.08)",padding:"16px",marginTop:8}}>
+                <div style={{fontSize:13,color:"#6B7280",marginBottom:6}}>Lien d'invitation</div>
+                <div style={{fontSize:14.5,color:"#22C55E",fontWeight:600}}>https://brutepawa.com/invite/{Math.random().toString(36).slice(2,9)}</div>
+                <div style={{fontSize:12,color:"#6B7280",marginTop:4}}>Lien unique et sécurisé. Renouvelable à tout moment.</div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── STEP 3: MEMBERS ── */}
+        {chWiz==="members" && (
+          <div style={{flex:1,display:"flex",flexDirection:"column",overflowY:"hidden",position:"relative"}}>
+            {/* Selected strip */}
+            {chSelectedArr.length>0 && (
+              <div style={{padding:"12px 16px 0",flexShrink:0,borderBottom:"1px solid rgba(0,0,0,0.06)"}}>
+                <div style={{display:"flex",gap:16,overflowX:"auto",scrollbarWidth:"none",paddingBottom:12}}>
+                  {chSelectedArr.map(uid=>{
+                    const u=allUsers.find(x=>x.id===uid);
+                    const nm=u?(u.firstName&&u.lastName?`${u.firstName} ${u.lastName}`:u.name??`#${uid}`):`#${uid}`;
+                    return (
+                      <div key={uid} onClick={()=>setChMembers(prev=>{const s=new Set(prev);s.delete(uid);return s;})} style={{flexShrink:0,textAlign:"center",cursor:"pointer",width:60,animation:"ch-wiz-in 0.15s ease"}}>
+                        <div style={{position:"relative",marginBottom:4}}>
+                          <div style={{width:52,height:52,borderRadius:"50%",background:wizCol(uid),display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontWeight:700,fontSize:17,margin:"0 auto"}}>{mkInitials(nm)}</div>
+                          <div style={{position:"absolute",top:-1,right:2,width:18,height:18,background:"#8E8E93",borderRadius:"50%",border:"2px solid #fff",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                            <svg viewBox="0 0 24 24" width="8" height="8" stroke="#fff" strokeWidth="3" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                          </div>
+                        </div>
+                        <div style={{fontSize:11,color:"#111",maxWidth:60,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{nm.split(" ")[0]}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+            {/* Search */}
+            <div style={{padding:"10px 16px 6px",flexShrink:0}}>
+              <div className="bp-search">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input value={chSearch} onChange={e=>setChSearch(e.target.value)} placeholder="Rechercher des personnes..."/>
+                {chSearch&&<div onClick={()=>setChSearch("")} style={{width:20,height:20,borderRadius:"50%",background:"#94A3B8",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0}}>
+                  <svg viewBox="0 0 24 24" width="10" height="10" stroke="#fff" strokeWidth="3" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </div>}
+              </div>
+            </div>
+            {/* Contacts */}
+            <div style={{flex:1,overflowY:"auto"}}>
+              {chFilteredUsers.map(u=>{
+                const nm=u.firstName&&u.lastName?`${u.firstName} ${u.lastName}`:u.name??`#${u.id}`;
+                const sel=chMembers.has(u.id);
+                return (
+                  <div key={u.id} className="ch-wiz-row" onClick={()=>setChMembers(prev=>{const s=new Set(prev);if(s.has(u.id))s.delete(u.id);else s.add(u.id);return s;})}
+                    style={{display:"flex",gap:14,padding:"10px 16px",alignItems:"center",cursor:"pointer",borderBottom:"1px solid rgba(0,0,0,0.06)",background:"#fff",transition:"background 0.1s"}}>
+                    <div style={{width:50,height:50,borderRadius:"50%",background:wizCol(u.id),display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontWeight:700,fontSize:18,flexShrink:0}}>{mkInitials(nm)}</div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontWeight:600,fontSize:16,color:"#111",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{nm}</div>
+                      <div style={{fontSize:13,color:"#6B7280",marginTop:1}}>vu récemment</div>
+                    </div>
+                    <div style={{width:24,height:24,borderRadius:"50%",border:sel?"none":"2px solid #C7C7CC",background:sel?"#22C55E":"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,transition:"all 0.15s"}}>
+                      {sel&&<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{animation:"ch-check 0.15s ease"}}><polyline points="20 6 9 17 4 12"/></svg>}
+                    </div>
+                  </div>
+                );
+              })}
+              {chFilteredUsers.length===0&&<div style={{padding:"52px 24px",textAlign:"center",color:"#6B7280",fontSize:15}}>Aucun contact trouvé</div>}
+              <div style={{height:80}}/>
+            </div>
+            {/* FAB — skip or confirm */}
+            <button onClick={handleChCreate} style={{position:"absolute",bottom:24,right:20,width:56,height:56,borderRadius:"50%",background:"#22C55E",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 2px 12px rgba(0,0,0,0.25)",zIndex:10,transition:"transform 0.15s"}}
+              onMouseEnter={e=>e.currentTarget.style.transform="scale(1.06)"}
+              onMouseLeave={e=>e.currentTarget.style.transform="scale(1)"}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        )}
+      </div>
+    , document.body);
+  }
+
+  /* ══════════════════════════════════════════════════════════════
      BROADCAST — Chat view
   ══════════════════════════════════════════════════════════════ */
   if (activeBcId !== null) {
@@ -5789,7 +6232,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               {([
                 { label: "Nouvelle discussion", iconBg: "#16C24A", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>, action: () => setFabOpen(false) },
                 { label: "Nouveau groupe", iconBg: "#3B82F6", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, action: () => { setGroupWizardType("group"); setGroupWizard("members"); setWizardSearch(""); setWizardMembers(new Set()); setFabOpen(false); } },
-                { label: "Créer un canal", iconBg: "#8B5CF6", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>, action: () => { setGroupWizardType("channel"); setGroupWizard("members"); setWizardSearch(""); setWizardMembers(new Set()); setFabOpen(false); } },
+                { label: "Créer un canal", iconBg: "#22C55E", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>, action: () => { setChWiz("info"); setChName(""); setChDesc(""); setChType("public"); setChLink(""); setChLinkAvail(null); setChMembers(new Set()); setChSearch(""); setFabOpen(false); } },
                 { label: "Diffuser une annonce", iconBg: "#F59E0B", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 11a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 0h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 7.91a16 16 0 0 0 6.1 6.1l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>, action: () => { setShowBroadcast(true); setBcSelected(new Set()); setBcSearch(""); setBcSearchMode(false); setFabOpen(false); } },
                 { label: "Inviter des amis", iconBg: "#7C3AED", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>, action: () => setFabOpen(false) },
                 { label: "Fermer", iconBg: "#16C24A", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>, action: () => setFabOpen(false) },

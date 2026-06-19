@@ -1,0 +1,295 @@
+MISSION CRITIQUE : Créer pour BrutePawa un système complet de CANAUX (Channels) inspiré de Telegram avec une fidélité UX/UI de 99%, tout en conservant l'identité visuelle BrutePawa.
+
+INTERDICTION ABSOLUE :
+- Ne pas simplifier.
+- Ne pas remplacer par une version basique.
+- Ne pas modifier les espacements.
+- Ne pas modifier les hiérarchies visuelles.
+- Ne pas improviser.
+
+OBJECTIF :
+Reproduire écran par écran, colonne par colonne, cadre par cadre, couleur par couleur, animation par animation, l'expérience Telegram pour la création et la gestion des canaux.
+
+═══════════════════════
+ÉTAPE 1 : MENU CRÉATION
+═══════════════════════
+
+Depuis Messages :
+
+Bouton +
+ouvre un menu flottant avec :
+
+• Nouvelle discussion
+• Nouveau groupe
+• Créer un canal
+• Diffuser une annonce
+• Inviter des amis
+
+Style :
+- Cartes blanches
+- Ombres douces
+- Coins 24px
+- Animation scale + fade
+- Fermeture fluide
+
+═══════════════════════
+ÉTAPE 2 : NOUVEAU CANAL
+═══════════════════════
+
+Écran :
+
+← Retour
+
+Créer un canal
+
+[Avatar du canal]
+
+Nom du canal *
+Description facultative
+
+✓ Continuer
+
+Fonctionnalités :
+
+- Upload image
+- Recadrage image
+- Compression image
+- Emoji dans le nom
+- Validation temps réel
+
+Couleurs :
+
+Vert principal :
+#22C55E
+
+Vert secondaire :
+#16A34A
+
+Fond :
+#FFFFFF
+
+═══════════════════════
+ÉTAPE 3 : TYPE DE CANAL
+═══════════════════════
+
+Deux choix :
+
+○ Canal public
+
+Description :
+Visible dans la recherche.
+Tout le monde peut rejoindre.
+
+○ Canal privé
+
+Description :
+Accessible uniquement via invitation.
+
+═══════════════════════
+CANAL PUBLIC
+═══════════════════════
+
+Champ :
+
+brutepawa.com/c/nom_canal
+
+Validation instantanée :
+
+✓ Disponible
+
+ou
+
+✗ Déjà utilisé
+
+Règles :
+
+- Lettres
+- Chiffres
+- Underscore
+- Minimum 5 caractères
+
+═══════════════════════
+CANAL PRIVÉ
+═══════════════════════
+
+Générer automatiquement :
+
+https://brutepawa.com/invite/xxxxx
+
+Lien unique
+Lien sécurisé
+Lien renouvelable
+
+═══════════════════════
+ÉTAPE 4 : AJOUT DES ABONNÉS
+═══════════════════════
+
+Recherche en haut.
+
+Contacts sélectionnés affichés horizontalement.
+
+Badges verts sur avatars sélectionnés.
+
+Sélection multiple illimitée.
+
+Bouton flottant :
+
+Continuer →
+
+Animation Telegram-like.
+
+═══════════════════════
+ÉTAPE 5 : CANAL CRÉÉ
+═══════════════════════
+
+Afficher :
+
+Avatar
+Nom du canal
+Nombre d'abonnés
+
+Zone de publication
+
+Placeholder :
+
+"Publier une annonce..."
+
+Pièces jointes
+Images
+Vidéos
+Documents
+Sondages
+GIF
+
+═══════════════════════
+MENU ⋮
+═══════════════════════
+
+Au clic :
+
+• Rechercher
+• Notifications
+• Modifier le canal
+• Gérer les abonnés
+• Copier le lien
+• Partager le canal
+• Booster le canal
+• Statistiques
+• Signaler
+• Supprimer le canal
+
+Animation identique Telegram.
+
+═══════════════════════
+MODIFIER LE CANAL
+═══════════════════════
+
+Avatar modifiable
+
+Nom modifiable
+
+Description modifiable
+
+Lien public modifiable
+
+Type :
+
+Public
+Privé
+
+Validation instantanée.
+
+═══════════════════════
+GESTION DES ABONNÉS
+═══════════════════════
+
+Liste complète :
+
+Photo
+Nom
+Statut
+
+Actions :
+
+Promouvoir administrateur
+
+Retirer
+
+Bloquer
+
+Inviter via lien
+
+═══════════════════════
+BASE DE DONNÉES
+═══════════════════════
+
+Créer :
+
+channels
+
+channel_members
+
+channel_admins
+
+channel_invites
+
+channel_posts
+
+channel_reactions
+
+channel_statistics
+
+channel_reports
+
+═══════════════════════
+ANIMATIONS
+═══════════════════════
+
+Exiger :
+
+60 FPS
+
+Aucune saccade
+
+Transition native Android
+
+Fade
+
+Scale
+
+Slide
+
+Haptic feedback
+
+═══════════════════════
+DESIGN
+═══════════════════════
+
+Respect absolu :
+
+- Marges Telegram
+- Tailles Telegram
+- Alignements Telegram
+- Espacements Telegram
+- Structure Telegram
+
+MAIS avec identité BrutePawa :
+
+Vert #22C55E
+Vert #16A34A
+
+═══════════════════════
+VALIDATION FINALE
+═══════════════════════
+
+Avant déploiement :
+
+Comparer chaque écran à Telegram.
+
+Si une différence visuelle dépasse 1% :
+corriger automatiquement.
+
+Ne jamais livrer une version simplifiée.
+
+Objectif obligatoire :
+Expérience premium, fluide et professionnelle équivalente à Telegram, adaptée à BrutePawa.
