@@ -146,7 +146,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
     ? selectedBg.value
     : undefined;
 
-  const visibleTools = toolbarExpanded ? TOOLS : TOOLS.slice(0, 6);
+  const visibleTools = toolbarExpanded ? TOOLS : TOOLS;
 
   return (
     <div style={{
@@ -157,8 +157,9 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
         : textBackground && mode === "text" && (text || selectedEmoji)
           ? textBackground
           : `
-            radial-gradient(circle at top left, rgba(34,197,94,0.15), transparent 45%),
-            radial-gradient(circle at bottom right, rgba(21,128,61,0.08), transparent 50%),
+            radial-gradient(circle at 20% 10%, rgba(34,197,94,0.18), transparent 42%),
+            radial-gradient(circle at 80% 85%, rgba(21,128,61,0.12), transparent 40%),
+            radial-gradient(circle at 55% 50%, rgba(34,197,94,0.04), transparent 55%),
             linear-gradient(180deg, #02150D 0%, #032417 50%, #053322 100%)
           `,
       transition: "background 0.3s ease-out",
@@ -168,10 +169,27 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
 
       {/* Aurora vignette overlay */}
       {!photoPreview && !(mode === "text" && (text || selectedEmoji)) && (
-        <div style={{
-          position: "absolute", inset: 0, pointerEvents: "none", zIndex: 1,
-          background: "radial-gradient(ellipse at center, transparent 30%, rgba(2,21,13,0.7) 100%)",
-        }} />
+        <>
+          <div style={{
+            position: "absolute", inset: 0, pointerEvents: "none", zIndex: 1,
+            background: "radial-gradient(ellipse at center, transparent 25%, rgba(2,21,13,0.65) 100%)",
+          }} />
+          {/* Aurora animated blob */}
+          <div style={{
+            position: "absolute", top: "8%", left: "5%",
+            width: 220, height: 220, borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 70%)",
+            pointerEvents: "none", zIndex: 1,
+            animation: "bpAurora 6s ease-in-out infinite alternate",
+          }} />
+          <div style={{
+            position: "absolute", bottom: "20%", right: "8%",
+            width: 160, height: 160, borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(21,128,61,0.07) 0%, transparent 70%)",
+            pointerEvents: "none", zIndex: 1,
+            animation: "bpAurora 8s ease-in-out infinite alternate-reverse",
+          }} />
+        </>
       )}
 
       {/* BrutePawa logo watermark */}
@@ -179,14 +197,16 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
         <div style={{
           position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
           zIndex: 2, pointerEvents: "none",
+          paddingRight: 120,
         }}>
           <img
             src="/bp-logo-b.jpeg"
             alt=""
             style={{
-              width: "62%", maxWidth: 260, opacity: 0.12,
-              filter: "blur(0.5px) grayscale(20%)",
+              width: "78%", maxWidth: 300, opacity: 0.13,
+              filter: "blur(0.3px) saturate(0.4)",
               userSelect: "none",
+              mixBlendMode: "luminosity",
             }}
           />
         </div>
@@ -339,30 +359,14 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
             </button>
           ))}
 
-          {/* Expand/collapse */}
-          <button
-            onClick={() => setToolbarExpanded(!toolbarExpanded)}
-            style={{
-              background: "rgba(255,255,255,0.05)",
-              backdropFilter: "blur(24px)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              borderRadius: 24, height: 44, width: 44,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              cursor: "pointer",
-              boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
-              transition: "all 200ms ease-out",
-              alignSelf: "flex-end",
-              marginTop: 2,
-            }}
-          >
-            <ChevronDown
-              size={18} color="#9CA3AF" strokeWidth={2}
-              style={{
-                transition: "transform 200ms ease-out",
-                transform: toolbarExpanded ? "rotate(180deg)" : "rotate(0deg)",
-              }}
-            />
-          </button>
+          {/* Chevron décoratif bas */}
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "center",
+            height: 32, alignSelf: "center",
+            opacity: 0.4,
+          }}>
+            <ChevronDown size={16} color="#9CA3AF" strokeWidth={2} />
+          </div>
         </div>
 
         {/* CENTRAL BRAND — shown when no photo */}
@@ -375,21 +379,26 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
           }}>
             <h1 style={{
               margin: 0,
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Inter', 'SF Pro Display', sans-serif",
               fontSize: 42, fontWeight: 800, lineHeight: 1,
-              letterSpacing: "-0.5px",
+              letterSpacing: "-1px",
               color: "#fff",
+              textShadow: "0 2px 24px rgba(0,0,0,0.4)",
             }}>
-              Brute<span style={{ color: "#22C55E" }}>Pawa</span>
+              Brute<span style={{
+                color: "#22C55E",
+                textShadow: "0 0 32px rgba(34,197,94,0.5), 0 2px 8px rgba(0,0,0,0.3)",
+              }}>Pawa</span>
             </h1>
             <p style={{
-              margin: 0, fontSize: 16, color: "#9BE3B4",
-              fontWeight: 400, letterSpacing: "0.01em",
+              margin: 0, fontSize: 15, color: "#9BE3B4",
+              fontWeight: 400, letterSpacing: "0.02em",
               textAlign: "center",
+              textShadow: "0 1px 8px rgba(0,0,0,0.3)",
             }}>
               Réseau social de nouvelle génération
             </p>
-            <div style={{ width: 32, height: 2, background: "linear-gradient(90deg, #22C55E, #16A34A)", borderRadius: 999, marginTop: 4 }} />
+            <div style={{ width: 36, height: 2.5, background: "linear-gradient(90deg, #22C55E, #16A34A)", borderRadius: 999, marginTop: 6, boxShadow: "0 0 12px rgba(34,197,94,0.5)" }} />
           </div>
         )}
 
@@ -887,11 +896,16 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
         </button>
       )}
 
-      {/* Wave animation keyframes */}
+      {/* Keyframes */}
       <style>{`
         @keyframes bpWave {
           from { opacity: 0.5; transform: scaleY(0.6); }
           to   { opacity: 1;   transform: scaleY(1.0); }
+        }
+        @keyframes bpAurora {
+          0%   { opacity: 0.6; transform: scale(1) translate(0, 0); }
+          50%  { opacity: 1;   transform: scale(1.15) translate(6px, -8px); }
+          100% { opacity: 0.7; transform: scale(0.95) translate(-4px, 6px); }
         }
       `}</style>
     </div>
