@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { useR2Upload } from "../hooks/useR2Upload";
-import { apiGetMe, apiUpdateMe, saveFbUser, apiGetFriends, apiGetUserPosts, apiDeletePost, apiArchivePost, apiPinPost, type PublicUser, type FeedPost } from "../lib/api";
+import { apiGetMe, apiUpdateMe, saveFbUser, apiGetFriends, apiGetUserPosts, apiDeletePost, apiArchivePost, apiPinPost, apiUnpinPost, apiTogglePostComments, apiSetPostAudience, apiGetPostStats, type PublicUser, type FeedPost } from "../lib/api";
 import { computeScore, type ScoreFactors } from "../lib/score";
 import ProModeModal from "../components/ProModeModal";
 import ProfileStatusModal from "../components/ProfileStatusModal";
@@ -61,9 +61,11 @@ export default function Profile() {
 
   const [myPosts, setMyPosts] = useState<FeedPost[]>([]);
   const [friends, setFriends] = useState<PublicUser[]>([]);
-  const [postMenuId, setPostMenuId] = useState<number | null>(null);
-  const [menuPos, setMenuPos] = useState<{ top: number; right: number } | null>(null);
-  const closeMenu = () => { setPostMenuId(null); setMenuPos(null); };
+  const [openMenu, setOpenMenu] = useState<{ id: number; isPinned: boolean; commentsDisabled: boolean; audience: string } | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+  const [statsModal, setStatsModal] = useState<{ views: number; likes: number; comments: number; shares: number; saves: number; engagement: string; reach: number } | null>(null);
+  const [audienceSheet, setAudienceSheet] = useState<number | null>(null);
+  const closeMenu = () => setOpenMenu(null);
 
   const archivePost = async (id: number) => {
     closeMenu();
@@ -71,16 +73,44 @@ export default function Profile() {
     try { await apiArchivePost(id); } catch { /* silently ignore */ }
   };
 
-  const pinPost = async (id: number) => {
+  const pinPost = async (id: number, alreadyPinned: boolean) => {
     closeMenu();
-    setMyPosts(ps => ps.map(p => ({ ...p, isPinned: p.id === id })));
-    try { await apiPinPost(id); } catch { /* silently ignore */ }
+    if (alreadyPinned) {
+      setMyPosts(ps => ps.map(p => p.id === id ? { ...p, isPinned: false } : p));
+      try { await apiUnpinPost(id); } catch { /* silently ignore */ }
+    } else {
+      setMyPosts(ps => ps.map(p => ({ ...p, isPinned: p.id === id })));
+      try { await apiPinPost(id); } catch { /* silently ignore */ }
+    }
   };
 
   const deletePost = async (id: number) => {
-    closeMenu();
+    setConfirmDeleteId(null);
     setMyPosts(ps => ps.filter(p => p.id !== id));
     try { await apiDeletePost(id); } catch { /* silently ignore */ }
+  };
+
+  const toggleComments = async (id: number) => {
+    closeMenu();
+    setMyPosts(ps => ps.map(p => p.id === id ? { ...p, commentsDisabled: !p.commentsDisabled } : p));
+    try { await apiTogglePostComments(id); } catch { /* silently ignore */ }
+  };
+
+  const fetchStats = async (id: number) => {
+    closeMenu();
+    try { const data = await apiGetPostStats(id); setStatsModal(data); } catch { /* silently ignore */ }
+  };
+
+  const copyPostLink = (id: number) => {
+    closeMenu();
+    const url = `${window.location.origin}${import.meta.env.BASE_URL ?? ""}post/${id}`;
+    navigator.clipboard?.writeText(url).catch(() => {});
+  };
+
+  const setAudience = async (id: number, audience: string) => {
+    setAudienceSheet(null);
+    setMyPosts(ps => ps.map(p => p.id === id ? { ...p, audience } : p));
+    try { await apiSetPostAudience(id, audience); } catch { /* silently ignore */ }
   };
 
   useEffect(() => {
@@ -563,7 +593,7 @@ export default function Profile() {
                       <div className="post-time">🌐 {new Date(post.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}</div>
                     </div>
                   </div>
-                  <button onClick={(e) => { e.stopPropagation(); const r = e.currentTarget.getBoundingClientRect(); setMenuPos({ top: r.bottom + 6, right: window.innerWidth - r.right }); setPostMenuId(post.id); }}
+                  <button onClick={(e) => { e.stopPropagation(); setOpenMenu({ id: post.id, isPinned: post.isPinned ?? false, commentsDisabled: post.commentsDisabled ?? false, audience: post.audience ?? "public" }); }}
                     style={{ background: "none", border: "none", cursor: "pointer", padding: "4px 8px", borderRadius: 20, color: "#65676b", fontSize: 20, fontWeight: 700, lineHeight: 1, flexShrink: 0 }}>
                     ···
                   </button>
@@ -586,45 +616,112 @@ export default function Profile() {
           </div>
         )}
 
-        {/* ── Floating post menu — own posts ── */}
-        {postMenuId !== null && menuPos !== null && createPortal(
-          <div onClick={closeMenu} style={{ position: "fixed", inset: 0, zIndex: 9999 }}>
-            <style>{`@keyframes bpMenuIn { from { opacity: 0; transform: scale(0.88); } to { opacity: 1; transform: scale(1); } }`}</style>
-            <div onClick={e => e.stopPropagation()} style={{
-              position: "fixed",
-              top: menuPos.top,
-              right: menuPos.right,
-              width: 235,
-              background: "#FFFFFF",
-              borderRadius: 20,
-              boxShadow: "0 12px 40px rgba(0,0,0,0.12)",
-              border: "1px solid rgba(34,197,94,0.08)",
-              overflow: "hidden",
-              animation: "bpMenuIn 180ms ease",
-              transformOrigin: "top right",
-            }}>
+        {/* ── Post menu bottom sheet — own posts ── */}
+        {openMenu !== null && createPortal(
+          <>
+            <div onClick={closeMenu} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 9990 }} />
+            <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#fff", borderRadius: "24px 24px 0 0", zIndex: 9991, paddingBottom: "env(safe-area-inset-bottom,12px)", maxHeight: "80vh", overflowY: "auto" }}>
+              <div style={{ width: 40, height: 4, background: "#E2E8F0", borderRadius: 2, margin: "10px auto 6px" }} />
               {([
-                { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>, label: "Modifier le post", color: "#22C55E", action: closeMenu },
-                { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1v3.76z"/></svg>, label: "Épingler le post", color: "#22C55E", action: () => { if (postMenuId !== null) pinPost(postMenuId); } },
-                { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><line x1="10" y1="12" x2="14" y2="12"/></svg>, label: "Archiver le post", color: "#22C55E", action: () => { if (postMenuId !== null) archivePost(postMenuId); } },
-              ] as { icon: React.ReactNode; label: string; color: string; action: () => void }[]).map((item, i) => (
-                <button key={i} onClick={item.action}
-                  onMouseEnter={e => (e.currentTarget.style.background = "rgba(34,197,94,0.06)")}
-                  onMouseLeave={e => (e.currentTarget.style.background = "none")}
-                  style={{ width: "100%", background: "none", border: "none", borderBottom: "1px solid rgba(34,197,94,0.07)", cursor: "pointer", display: "flex", alignItems: "center", gap: 12, padding: "0 16px", height: 52, textAlign: "left", transition: "background 0.15s ease" }}>
-                  {item.icon}
-                  <span style={{ flex: 1, fontSize: 14.5, fontWeight: 600, color: item.color }}>{item.label}</span>
+                { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>, label: "Modifier le post", action: closeMenu },
+                { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1v3.76z"/></svg>, label: openMenu.isPinned ? "Désépingler le post" : "Épingler le post", action: () => pinPost(openMenu.id, openMenu.isPinned) },
+                { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><line x1="10" y1="12" x2="14" y2="12"/></svg>, label: "Archiver le post", action: () => archivePost(openMenu.id) },
+                { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>{openMenu.commentsDisabled && <line x1="5" y1="5" x2="19" y2="19" strokeWidth="2.5"/>}</svg>, label: openMenu.commentsDisabled ? "Activer les commentaires" : "Désactiver les commentaires", action: () => toggleComments(openMenu.id) },
+                { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{openMenu.audience === "friends" ? <><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></> : <><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></>}</svg>, label: "Audience du post", action: () => { setAudienceSheet(openMenu.id); closeMenu(); } },
+                { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>, label: "Statistiques du post", action: () => fetchStats(openMenu.id) },
+                { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>, label: "Copier le lien", action: () => copyPostLink(openMenu.id) },
+              ].map((item, i) => (
+                <button key={i} onClick={item.action} style={{ width: "100%", background: "none", border: "none", borderTop: i === 0 ? "none" : "1px solid #F8FAFC", cursor: "pointer", display: "flex", alignItems: "center", gap: 14, padding: "0 20px", height: 56, textAlign: "left" }}>
+                  <div style={{ width: 38, height: 38, borderRadius: 12, background: "rgba(34,197,94,0.08)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.icon}</div>
+                  <span style={{ flex: 1, fontSize: 15, fontWeight: 600, color: "#0D1B2A" }}>{item.label}</span>
                 </button>
-              ))}
-              <button onClick={() => { if (postMenuId !== null) deletePost(postMenuId); }}
-                onMouseEnter={e => (e.currentTarget.style.background = "rgba(239,68,68,0.06)")}
-                onMouseLeave={e => (e.currentTarget.style.background = "none")}
-                style={{ width: "100%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 12, padding: "0 16px", height: 52, textAlign: "left", transition: "background 0.15s ease" }}>
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-                <span style={{ flex: 1, fontSize: 14.5, fontWeight: 600, color: "#EF4444" }}>Supprimer le post</span>
+              )))}
+              <button onClick={() => { setConfirmDeleteId(openMenu.id); closeMenu(); }} style={{ width: "100%", background: "none", border: "none", borderTop: "1px solid #F8FAFC", cursor: "pointer", display: "flex", alignItems: "center", gap: 14, padding: "0 20px", height: 56, textAlign: "left" }}>
+                <div style={{ width: 38, height: 38, borderRadius: 12, background: "rgba(239,68,68,0.08)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                </div>
+                <span style={{ flex: 1, fontSize: 15, fontWeight: 600, color: "#EF4444" }}>Supprimer le post</span>
               </button>
             </div>
-          </div>,
+          </>,
+          document.body
+        )}
+
+        {/* ── Confirm delete dialog ── */}
+        {confirmDeleteId !== null && createPortal(
+          <>
+            <div onClick={() => setConfirmDeleteId(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 9995 }} />
+            <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#fff", borderRadius: "24px 24px 0 0", zIndex: 9996, padding: "24px 20px calc(24px + env(safe-area-inset-bottom,0px))" }}>
+              <div style={{ width: 40, height: 4, background: "#E2E8F0", borderRadius: 2, margin: "0 auto 20px" }} />
+              <div style={{ fontWeight: 800, fontSize: 17, color: "#0D1B2A", textAlign: "center", marginBottom: 8 }}>Supprimer ce post ?</div>
+              <div style={{ fontSize: 14, color: "#64748B", textAlign: "center", marginBottom: 24 }}>Cette action est irréversible.</div>
+              <button onClick={() => deletePost(confirmDeleteId)} style={{ width: "100%", height: 52, background: "#EF4444", border: "none", borderRadius: 16, color: "#fff", fontWeight: 700, fontSize: 15, cursor: "pointer", marginBottom: 10 }}>Supprimer</button>
+              <button onClick={() => setConfirmDeleteId(null)} style={{ width: "100%", height: 52, background: "#F1F5F9", border: "none", borderRadius: 16, color: "#64748B", fontWeight: 600, fontSize: 15, cursor: "pointer" }}>Annuler</button>
+            </div>
+          </>,
+          document.body
+        )}
+
+        {/* ── Stats modal ── */}
+        {statsModal !== null && createPortal(
+          <>
+            <div onClick={() => setStatsModal(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 9995 }} />
+            <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#fff", borderRadius: "24px 24px 0 0", zIndex: 9996, padding: "24px 20px calc(24px + env(safe-area-inset-bottom,0px))" }}>
+              <div style={{ width: 40, height: 4, background: "#E2E8F0", borderRadius: 2, margin: "0 auto 20px" }} />
+              <div style={{ fontWeight: 800, fontSize: 17, color: "#0D1B2A", marginBottom: 20 }}>Statistiques</div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 12 }}>
+                {[
+                  { label: "Vues", value: statsModal.views },
+                  { label: "J'aime", value: statsModal.likes },
+                  { label: "Commentaires", value: statsModal.comments },
+                  { label: "Partages", value: statsModal.shares },
+                  { label: "Enregistrements", value: statsModal.saves },
+                  { label: "Portée", value: statsModal.reach },
+                ].map((s, i) => (
+                  <div key={i} style={{ background: "#F8FAFC", borderRadius: 16, padding: "14px 10px", textAlign: "center" }}>
+                    <div style={{ fontWeight: 800, fontSize: 20, color: "#22C55E" }}>{s.value}</div>
+                    <div style={{ fontSize: 11, color: "#64748B", marginTop: 4 }}>{s.label}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ background: "rgba(34,197,94,0.06)", borderRadius: 12, padding: "12px 16px", textAlign: "center", marginBottom: 20 }}>
+                <span style={{ fontSize: 13, color: "#22C55E", fontWeight: 600 }}>Engagement : {statsModal.engagement}</span>
+              </div>
+              <button onClick={() => setStatsModal(null)} style={{ width: "100%", height: 52, background: "#F1F5F9", border: "none", borderRadius: 16, color: "#64748B", fontWeight: 600, fontSize: 15, cursor: "pointer" }}>Fermer</button>
+            </div>
+          </>,
+          document.body
+        )}
+
+        {/* ── Audience picker sheet ── */}
+        {audienceSheet !== null && createPortal(
+          <>
+            <div onClick={() => setAudienceSheet(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 9995 }} />
+            <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#fff", borderRadius: "24px 24px 0 0", zIndex: 9996, padding: "24px 20px calc(24px + env(safe-area-inset-bottom,0px))" }}>
+              <div style={{ width: 40, height: 4, background: "#E2E8F0", borderRadius: 2, margin: "0 auto 20px" }} />
+              <div style={{ fontWeight: 800, fontSize: 17, color: "#0D1B2A", marginBottom: 20 }}>Qui peut voir ce post ?</div>
+              {[
+                { value: "public", label: "Public", desc: "Tout le monde peut voir ce post" },
+                { value: "friends", label: "Amis seulement", desc: "Seuls vos amis peuvent voir ce post" },
+                { value: "private", label: "Moi uniquement", desc: "Seul vous pouvez voir ce post" },
+              ].map(opt => {
+                const post = myPosts.find(p => p.id === audienceSheet);
+                const selected = (post?.audience ?? "public") === opt.value;
+                return (
+                  <button key={opt.value} onClick={() => setAudience(audienceSheet, opt.value)}
+                    style={{ width: "100%", background: selected ? "rgba(34,197,94,0.06)" : "none", border: selected ? "1.5px solid #22C55E" : "1.5px solid #F1F5F9", borderRadius: 16, padding: "14px 16px", marginBottom: 10, cursor: "pointer", textAlign: "left", display: "flex", alignItems: "center", gap: 12 }}>
+                    <div style={{ width: 20, height: 20, borderRadius: "50%", border: `2px solid ${selected ? "#22C55E" : "#CBD5E1"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      {selected && <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#22C55E" }} />}
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: 14, color: "#0D1B2A" }}>{opt.label}</div>
+                      <div style={{ fontSize: 12, color: "#64748B", marginTop: 2 }}>{opt.desc}</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </>,
           document.body
         )}
 

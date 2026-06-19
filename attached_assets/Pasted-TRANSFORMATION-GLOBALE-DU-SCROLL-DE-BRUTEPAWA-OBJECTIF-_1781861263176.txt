@@ -1,0 +1,185 @@
+TRANSFORMATION GLOBALE DU SCROLL DE BRUTEPAWA
+
+OBJECTIF :
+
+Je veux que chaque défilement de BrutePawa donne une sensation premium identique aux meilleures applications mondiales :
+
+- Telegram
+- Instagram
+- TikTok
+- X (Twitter)
+- Facebook
+
+Le scroll doit être :
+
+✓ ultra fluide
+✓ dynamique
+✓ naturel
+✓ moderne
+✓ élégant
+✓ sans saccade
+✓ sans blocage
+✓ sans chargement visible
+
+------------------------------------------------
+
+SCROLL GLOBAL
+
+Appliquer les optimisations à :
+
+- Accueil
+- Messages
+- Groupes
+- Pages
+- Profils
+- Notifications
+- Recherche
+- Commentaires
+- Amis
+- Historique
+- Portefeuille
+
+------------------------------------------------
+
+ANIMATIONS DE SCROLL
+
+Ajouter :
+
+- inertie naturelle
+- momentum scrolling
+- décélération progressive
+- rebond doux
+- aucune coupure brutale
+
+Le mouvement doit paraître vivant.
+
+------------------------------------------------
+
+APPARITION DES ÉLÉMENTS
+
+Quand l'utilisateur scrolle :
+
+- fade in léger
+- translation verticale légère
+- durée 150ms à 250ms
+
+Effet discret et premium.
+
+Jamais d'animation agressive.
+
+------------------------------------------------
+
+PERFORMANCES
+
+Utiliser :
+
+- FlashList
+- Virtualisation
+- Lazy Loading
+- Image Caching
+- Memoization
+
+sur toutes les listes.
+
+------------------------------------------------
+
+IMAGES
+
+Précharger les images visibles.
+
+Mettre en cache :
+
+- avatars
+- publications
+- stories
+- groupes
+- pages
+
+Aucune image ne doit provoquer un lag.
+
+------------------------------------------------
+
+PROFILS
+
+Ajouter :
+
+- header dynamique
+- effet parallaxe léger
+- avatar qui se repositionne en douceur
+- transition fluide
+
+comme les applications premium.
+
+------------------------------------------------
+
+BARRES DE NAVIGATION
+
+Lors du scroll :
+
+- apparition fluide
+- disparition fluide
+- aucune secousse
+
+------------------------------------------------
+
+PULL TO REFRESH
+
+Animation moderne :
+
+- rebond naturel
+- rotation fluide
+- transition élégante
+
+------------------------------------------------
+
+CHARGEMENT
+
+Utiliser :
+
+Skeleton Loaders
+
+au lieu des spinners classiques.
+
+------------------------------------------------
+
+FPS
+
+Objectif :
+
+60 FPS minimum
+
+120 FPS sur appareils compatibles.
+
+------------------------------------------------
+
+RERENDERS
+
+Empêcher les rerenders inutiles.
+
+Utiliser :
+
+React.memo
+useMemo
+useCallback
+
+partout où nécessaire.
+
+------------------------------------------------
+
+MESURE AUTOMATIQUE
+
+Surveiller :
+
+- FPS
+- mémoire
+- temps de rendu
+
+et corriger les composants les plus lourds.
+
+------------------------------------------------
+
+RÉSULTAT ATTENDU
+
+BrutePawa doit donner immédiatement une impression de produit premium dès le premier scroll.
+
+Le défilement doit être aussi agréable que Telegram, Instagram et TikTok, avec des animations discrètes, fluides et professionnelles sur tout le site.

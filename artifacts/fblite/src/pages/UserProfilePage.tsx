@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { openImageViewer } from "../components/ImageViewer";
 import {
@@ -6,6 +7,7 @@ import {
   apiSendFriendRequest, apiAcceptFriendRequest, apiRejectFriendRequest,
   apiBlockUser, apiUnblockUser, apiCheckBlock, apiReportUser, apiGetUserStats,
   apiGetMutualFriends, apiGetMutualGroups, apiHideUser,
+  apiToggleSaved, apiHidePost, apiReportPost,
   type PublicUser, type PublicUserWithStatus, type FriendRequest, type FeedPost,
 } from "../lib/api";
 
@@ -237,6 +239,11 @@ export default function UserProfilePage({ userId }: { userId: number }) {
   const [activeTab, setActiveTab] = useState<ProfileTab>("posts");
   const [isBlocked, setIsBlocked] = useState(false);
   const [stats, setStats] = useState<{ postsCount: number; followersCount: number; followingCount: number } | null>(null);
+
+  const [postMenu, setPostMenu] = useState<number | null>(null);
+  const [savedPostIds, setSavedPostIds] = useState<Set<number>>(new Set());
+  const [postReportSheet, setPostReportSheet] = useState<number | null>(null);
+  const [postReportReason, setPostReportReason] = useState("");
 
   const [menuPanel, setMenuPanel] = useState<MenuPanel>(null);
   const [reportReason, setReportReason] = useState("");
@@ -1061,6 +1068,10 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                       <IcoGlobe />{relTime(post.createdAt)}
                     </div>
                   </div>
+                  <button onClick={(e) => { e.stopPropagation(); setPostMenu(post.id); }}
+                    style={{ background: "none", border: "none", cursor: "pointer", padding: "4px 8px", borderRadius: 20, color: "#8896A6", fontSize: 20, fontWeight: 700, lineHeight: 1, flexShrink: 0 }}>
+                    ···
+                  </button>
                 </div>
                 <div style={{ fontSize: 14.5, color: "#374151", lineHeight: 1.65 }}>{post.content}</div>
                 {post.imageUrl && <img src={post.imageUrl} alt="" onClick={() => openImageViewer(post.imageUrl!)} style={{ width: "100%", maxHeight: 320, objectFit: "cover", borderRadius: 14, marginTop: 12, cursor: "zoom-in" }} />}
@@ -1131,6 +1142,100 @@ export default function UserProfilePage({ userId }: { userId: number }) {
           </div>
         )}
       </div>
+
+      {/* ── Post menu bottom sheet — other user's posts ── */}
+      {postMenu !== null && createPortal(
+        <>
+          <div onClick={() => setPostMenu(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 9990 }} />
+          <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#fff", borderRadius: "24px 24px 0 0", zIndex: 9991, paddingBottom: "env(safe-area-inset-bottom,12px)" }}>
+            <div style={{ width: 40, height: 4, background: "#E2E8F0", borderRadius: 2, margin: "10px auto 6px" }} />
+            {([
+              {
+                icon: savedPostIds.has(postMenu)
+                  ? <svg viewBox="0 0 24 24" width="20" height="20" fill="#22C55E" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                  : <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>,
+                label: savedPostIds.has(postMenu) ? "Enregistré" : "Enregistrer",
+                action: async () => {
+                  const id = postMenu; setPostMenu(null);
+                  try {
+                    const r = await apiToggleSaved(id);
+                    setSavedPostIds(prev => { const s = new Set(prev); r.saved ? s.add(id) : s.delete(id); return s; });
+                  } catch { /* ignore */ }
+                },
+              },
+              {
+                icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>,
+                label: "Copier le lien",
+                action: () => {
+                  const id = postMenu; setPostMenu(null);
+                  const url = `${window.location.origin}${import.meta.env.BASE_URL ?? ""}post/${id}`;
+                  navigator.clipboard?.writeText(url).catch(() => {});
+                },
+              },
+              {
+                icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>,
+                label: "Partager",
+                action: () => {
+                  const id = postMenu; setPostMenu(null);
+                  const url = `${window.location.origin}${import.meta.env.BASE_URL ?? ""}post/${id}`;
+                  if (navigator.share) navigator.share({ url }).catch(() => {});
+                  else navigator.clipboard?.writeText(url).catch(() => {});
+                },
+              },
+              {
+                icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>,
+                label: "Masquer ce post",
+                action: async () => {
+                  const id = postMenu; setPostMenu(null);
+                  setPosts(ps => ps.filter(p => p.id !== id));
+                  try { await apiHidePost(id); } catch { /* ignore */ }
+                },
+              },
+              {
+                icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
+                label: "Signaler ce post",
+                red: true,
+                action: () => { const id = postMenu; setPostMenu(null); setPostReportSheet(id); setPostReportReason(""); },
+              },
+            ] as { icon: React.ReactNode; label: string; action: () => void; red?: boolean }[]).map((item, i) => (
+              <button key={i} onClick={item.action} style={{ width: "100%", background: "none", border: "none", borderTop: i === 0 ? "none" : "1px solid #F8FAFC", cursor: "pointer", display: "flex", alignItems: "center", gap: 14, padding: "0 20px", height: 56, textAlign: "left" }}>
+                <div style={{ width: 38, height: 38, borderRadius: 12, background: item.red ? "rgba(239,68,68,0.08)" : "rgba(34,197,94,0.08)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.icon}</div>
+                <span style={{ flex: 1, fontSize: 15, fontWeight: 600, color: item.red ? "#EF4444" : "#0D1B2A" }}>{item.label}</span>
+              </button>
+            ))}
+          </div>
+        </>,
+        document.body
+      )}
+
+      {/* ── Post report reason sheet ── */}
+      {postReportSheet !== null && createPortal(
+        <>
+          <div onClick={() => setPostReportSheet(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 9992 }} />
+          <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#fff", borderRadius: "24px 24px 0 0", zIndex: 9993, padding: "24px 20px calc(24px + env(safe-area-inset-bottom,0px))" }}>
+            <div style={{ width: 40, height: 4, background: "#E2E8F0", borderRadius: 2, margin: "0 auto 20px" }} />
+            <div style={{ fontWeight: 800, fontSize: 17, color: "#0D1B2A", marginBottom: 16 }}>Signaler ce post</div>
+            {["Spam ou publicité", "Contenu inapproprié", "Harcèlement ou intimidation", "Fausses informations", "Contenu haineux", "Violence ou contenu choquant", "Autre raison"].map(reason => (
+              <button key={reason} onClick={() => setPostReportReason(reason)}
+                style={{ width: "100%", background: postReportReason === reason ? "rgba(34,197,94,0.06)" : "none", border: postReportReason === reason ? "1.5px solid #22C55E" : "1.5px solid #F1F5F9", borderRadius: 14, padding: "12px 16px", marginBottom: 8, cursor: "pointer", textAlign: "left", fontSize: 14, fontWeight: 600, color: "#374151", display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ width: 18, height: 18, borderRadius: "50%", border: `2px solid ${postReportReason === reason ? "#22C55E" : "#CBD5E1"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  {postReportReason === reason && <div style={{ width: 9, height: 9, borderRadius: "50%", background: "#22C55E" }} />}
+                </div>
+                {reason}
+              </button>
+            ))}
+            <button onClick={async () => {
+              if (!postReportReason) return;
+              const id = postReportSheet; setPostReportSheet(null);
+              try { await apiReportPost(id, postReportReason); } catch { /* ignore */ }
+            }} disabled={!postReportReason}
+              style={{ width: "100%", height: 52, background: postReportReason ? "#EF4444" : "#F1F5F9", border: "none", borderRadius: 16, color: postReportReason ? "#fff" : "#94A3B8", fontWeight: 700, fontSize: 15, cursor: postReportReason ? "pointer" : "default", marginTop: 4 }}>
+              Signaler
+            </button>
+          </div>
+        </>,
+        document.body
+      )}
 
       {/* ── OVERLAYS ── */}
       <MenuOverlays />
