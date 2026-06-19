@@ -1,4 +1,4 @@
-const CACHE = "brutepawa-v20260618c";
+const CACHE = "brutepawa-v20260619d";
 const PRECACHE = ["/", "/manifest.webmanifest"];
 
 self.addEventListener("install", (e) => {
@@ -54,8 +54,8 @@ self.addEventListener("push", (e) => {
     /* Use sender avatar (proxied via same-origin /api/users/:id/avatar-icon).
        Falls back to app icon only if not provided. */
     icon:               data.icon || "/icons/icon-192.png",
-    /* badge = tiny monochrome status-bar icon */
-    badge:              data.badge || "/icons/icon-192.png",
+    /* badge = tiny monochrome status-bar icon (white "b" on transparent) */
+    badge:              data.badge || "/icons/badge-96.svg",
     tag:                data.tag || "bp-notification",
     renotify:           true,
     requireInteraction: isCall ? true : (data.requireInteraction || false),
@@ -183,7 +183,7 @@ self.addEventListener("notificationclick", (e) => {
             self.registration.showNotification("Message envoyé ✓", {
               body:    text.trim().slice(0, 80),
               icon:    d.senderAvatarUrl || "/icons/icon-192.png",
-              badge:   "/icons/icon-192.png",
+              badge:   "/icons/badge-96.svg",
               tag:     `reply-sent-${d.fromUserId}`,
               silent:  true,
               vibrate: [80],
