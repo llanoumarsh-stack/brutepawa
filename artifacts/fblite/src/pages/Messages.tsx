@@ -5847,57 +5847,46 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
     <div style={{ position: "fixed", top: 0, bottom: "58px", left: 0, right: 0, display: "flex", flexDirection: "column", background: "#fff", zIndex: 9999, overflow: "hidden" }}>
 
-      {/* ── PREMIUM HEADER ── */}
+      {/* ── HEADER ── */}
       <div style={{ background: "#fff", flexShrink: 0, paddingTop: "env(safe-area-inset-top, 0px)" }}>
-        {/* Row 1 — Logo + title + actions */}
-        <div style={{ display: "flex", alignItems: "center", padding: "12px 16px 8px", gap: 10 }}>
-          {/* BP Logo */}
-          <button onClick={() => navigate("/")} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-            <img src="/logo.png" alt="Brute Pawa" style={{ width: 32, height: 32, borderRadius: 10, objectFit: "cover" }} />
-          </button>
-          <span style={{ fontWeight: 800, fontSize: 20, color: "#0F172A", letterSpacing: -0.4, flex: 1 }}>Messages</span>
-          {totalUnread > 0 && (
-            <div style={{ background: "#16C24A", color: "#fff", borderRadius: 99, minWidth: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, padding: "0 6px" }}>
-              {totalUnread > 99 ? "99+" : totalUnread}
-            </div>
-          )}
-          <button onClick={() => setShowInboxSearch(true)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex", alignItems: "center" }}>
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0F172A" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
-          </button>
-          <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex", alignItems: "center" }}>
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0F172A" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          </button>
-          <div style={{ width: 36, height: 36, borderRadius: "50%", background: "linear-gradient(135deg,#16C24A,#0ea541)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 800, color: "#fff", flexShrink: 0, boxShadow: "0 2px 8px rgba(22,194,74,0.3)", cursor: "pointer" }}
-            onClick={() => navigate("/")}>
-            {(() => { try { const n = (JSON.parse(localStorage.getItem("fb_user") ?? "{}") as { name?: string }).name ?? ""; return n.split(" ").map((w:string) => w[0]).join("").slice(0,2).toUpperCase() || "BP"; } catch { return "BP"; } })()}
-          </div>
-        </div>
-        {/* Row 2 — Search bar */}
-        {!showInboxSearch ? (
-          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 16px 12px" }}>
-            <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10, background: "#F1F5F9", borderRadius: 14, padding: "10px 14px" }}>
-              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#94A3B8" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
-              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher des personnes, groupes, canaux..." style={{ flex: 1, background: "none", border: "none", outline: "none", fontSize: 14, color: "#0F172A" }} />
-              {search && <button onClick={() => setSearch("")} style={{ background: "none", border: "none", cursor: "pointer", color: "#94A3B8", padding: 0, lineHeight: 1 }}>
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#94A3B8" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </button>}
-            </div>
-            <button style={{ width: 44, height: 44, borderRadius: 14, background: "#F1F5F9", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#475569" strokeWidth="2.2" strokeLinecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="12" y1="18" x2="20" y2="18"/></svg>
-            </button>
-          </div>
-        ) : (
-          <div style={{ display: "flex", alignItems: "center", padding: "0 12px 12px", gap: 8 }}>
-            <button onClick={() => { setShowInboxSearch(false); setSearch(""); }} style={{ background: "none", border: "none", cursor: "pointer", padding: "6px 4px", display: "flex", alignItems: "center" }}>
+        {showInboxSearch ? (
+          /* ── Expanded search row ── */
+          <div style={{ display: "flex", alignItems: "center", padding: "10px 12px 10px", gap: 8 }}>
+            <button onClick={() => { setShowInboxSearch(false); setSearch(""); }} style={{ background: "none", border: "none", cursor: "pointer", padding: "6px 4px", display: "flex", alignItems: "center", flexShrink: 0 }}>
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0F172A" strokeWidth="2.2" strokeLinecap="round"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
             </button>
-            <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher des personnes, groupes, canaux…" style={{ flex: 1, background: "#F1F5F9", border: "none", borderRadius: 14, padding: "10px 14px", fontSize: 14, outline: "none", color: "#0F172A" }} />
-            {search && <button onClick={() => setSearch("")} style={{ background: "none", border: "none", cursor: "pointer", padding: "0 2px" }}>
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#94A3B8" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>}
+            <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 8, background: "#F1F5F9", borderRadius: 22, padding: "9px 14px" }}>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#94A3B8" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher des personnes, groupes…" style={{ flex: 1, background: "none", border: "none", outline: "none", fontSize: 14, color: "#0F172A" }} />
+              {search && <button onClick={() => setSearch("")} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1, flexShrink: 0 }}>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#94A3B8" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>}
+            </div>
+          </div>
+        ) : (
+          /* ── Normal header ── */
+          <div style={{ display: "flex", alignItems: "center", padding: "10px 8px 10px 14px", gap: 4 }}>
+            {/* BP Logo */}
+            <button onClick={() => navigate("/")} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", flexShrink: 0, marginRight: 6 }}>
+              <img src="/logo.png" alt="Brute Pawa" style={{ width: 30, height: 30, borderRadius: 9, objectFit: "cover" }} />
+            </button>
+            <span style={{ fontWeight: 800, fontSize: 20, color: "#0F172A", letterSpacing: -0.4, flex: 1 }}>Messages</span>
+            {/* Search icon */}
+            <button onClick={() => setShowInboxSearch(true)} style={{ background: "none", border: "none", cursor: "pointer", width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#374151" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+            </button>
+            {/* Filter ≡ */}
+            <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#374151" strokeWidth="2.2" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="15" y2="18"/></svg>
+            </button>
+            {/* Avatar initials */}
+            <div style={{ width: 34, height: 34, borderRadius: "50%", background: "linear-gradient(135deg,#22C55E,#16A34A)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, color: "#fff", flexShrink: 0, cursor: "pointer", marginLeft: 2 }}
+              onClick={() => navigate("/profile")}>
+              {(() => { try { const n = (JSON.parse(localStorage.getItem("fb_user") ?? "{}") as { name?: string }).name ?? ""; return n.split(" ").map((w:string) => w[0]).join("").slice(0,2).toUpperCase() || "BP"; } catch { return "BP"; } })()}
+            </div>
           </div>
         )}
-        <div style={{ height: 1, background: "#F1F5F9" }} />
+        <div style={{ height: 1, background: "#F0F2F5" }} />
       </div>
 
       {/* ── BODY ── */}
@@ -5905,30 +5894,30 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
         {/* Story / contacts bar */}
         {!search && convList.length > 0 && (
-          <div style={{ background: "#fff", borderBottom: "1px solid #e5e5e5" }}>
-            <div style={{ display: "flex", overflowX: "auto", scrollbarWidth: "none", padding: "10px 8px 12px", gap: 0 }}>
+          <div style={{ background: "#fff", borderBottom: "1px solid #F0F2F5" }}>
+            <div style={{ display: "flex", overflowX: "auto", scrollbarWidth: "none", padding: "8px 6px 10px", gap: 0 }}>
               {/* "Votre note" */}
-              <div style={{ flexShrink: 0, textAlign: "center", width: 72, padding: "0 4px" }}>
-                <div style={{ position: "relative", marginBottom: 5 }}>
-                  <div className="avatar" style={{ width: 56, height: 56, fontSize: 19, margin: "0 auto", background: "#E4E6EB", color: "#65676B", border: "3px solid #fff" }}>
+              <div style={{ flexShrink: 0, textAlign: "center", width: 66, padding: "0 3px" }}>
+                <div style={{ position: "relative", marginBottom: 4 }}>
+                  <div className="avatar" style={{ width: 52, height: 52, fontSize: 17, margin: "0 auto", background: "#E4E6EB", color: "#65676B", border: "2.5px solid #fff" }}>
                     {(() => { try { return (JSON.parse(localStorage.getItem("fb_user") ?? "{}") as { name?: string }).name?.slice(0,2).toUpperCase() ?? "??"; } catch { return "??"; } })()}
                   </div>
-                  <div style={{ position: "absolute", bottom: 0, right: 6, width: 20, height: 20, background: "#1877F2", borderRadius: "50%", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 14, fontWeight: 900, lineHeight: 1 }}>+</div>
+                  <div style={{ position: "absolute", bottom: 0, right: 5, width: 18, height: 18, background: "#22C55E", borderRadius: "50%", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 13, fontWeight: 900, lineHeight: 1 }}>+</div>
                 </div>
-                <div style={{ fontSize: 11, color: "#444", fontWeight: 400, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Votre note</div>
+                <div style={{ fontSize: 10.5, color: "#65676B", fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Votre note</div>
               </div>
               {convList.slice(0, 8).map(conv => {
                 const isOnline = convPresence[conv.id]?.online ?? false;
                 return (
-                <div key={conv.id} onClick={() => setActiveConv(conv.id)} style={{ flexShrink: 0, textAlign: "center", width: 72, padding: "0 4px", cursor: "pointer" }}>
-                  <div style={{ position: "relative", marginBottom: 5 }}>
+                <div key={conv.id} onClick={() => setActiveConv(conv.id)} style={{ flexShrink: 0, textAlign: "center", width: 66, padding: "0 3px", cursor: "pointer" }}>
+                  <div style={{ position: "relative", marginBottom: 4 }}>
                     {conv.user.avatarUrl
-                      ? <img src={conv.user.avatarUrl} alt={conv.user.name} loading="lazy" decoding="async" style={{ width: 56, height: 56, borderRadius: "50%", objectFit: "cover", display: "block", margin: "0 auto", border: "3px solid #fff" }} />
-                      : <div className="avatar" style={{ width: 56, height: 56, fontSize: 19, margin: "0 auto", background: conv.user.color, border: "3px solid #fff" }}>{conv.user.initials}</div>
+                      ? <img src={conv.user.avatarUrl} alt={conv.user.name} loading="lazy" decoding="async" style={{ width: 52, height: 52, borderRadius: "50%", objectFit: "cover", display: "block", margin: "0 auto", border: "2.5px solid #fff" }} />
+                      : <div className="avatar" style={{ width: 52, height: 52, fontSize: 17, margin: "0 auto", background: conv.user.color, border: "2.5px solid #fff" }}>{conv.user.initials}</div>
                     }
-                    <div style={{ position: "absolute", bottom: 0, right: 6, width: 14, height: 14, background: isOnline ? "#22C55E" : "#CBD5E1", borderRadius: "50%", border: "2.5px solid #fff" }} />
+                    {isOnline && <div style={{ position: "absolute", bottom: 1, right: 5, width: 12, height: 12, background: "#22C55E", borderRadius: "50%", border: "2px solid #fff" }} />}
                   </div>
-                  <div style={{ fontSize: 11, color: "#444", fontWeight: 400, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  <div style={{ fontSize: 10.5, color: "#374151", fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     {conv.user.name.split(" ")[0]}
                   </div>
                 </div>
@@ -5954,18 +5943,18 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         ].map(item => (
           <div key={item.key} className="fbl-row"
             onClick={() => item.type === "conv" ? setActiveConv(item.id) : setActiveGroupId(item.id)}
-            style={{ display:"flex", alignItems:"center", gap:12, padding:"11px 16px", background:"#fff", borderBottom:"1px solid #F1F5F9", cursor:"pointer" }}>
+            style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 16px", background:"#fff", borderBottom:"1px solid #F5F5F5", cursor:"pointer" }}>
 
             {/* Avatar + online dot */}
             <div style={{ position:"relative", flexShrink:0 }}>
               {"avatarUrl" in item && item.avatarUrl
-                ? <img src={item.avatarUrl} alt={item.name} loading="lazy" decoding="async" style={{ width:56, height:56, borderRadius:"50%", objectFit:"cover", display:"block" }} />
-                : <div className="avatar" style={{ width:56, height:56, fontSize: item.type==="group" ? 24 : 20, background:item.color, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:700, color:"#fff" }}>{item.initials}</div>
+                ? <img src={item.avatarUrl} alt={item.name} loading="lazy" decoding="async" style={{ width:50, height:50, borderRadius:"50%", objectFit:"cover", display:"block" }} />
+                : <div className="avatar" style={{ width:50, height:50, fontSize: item.type==="group" ? 22 : 18, background:item.color, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:700, color:"#fff" }}>{item.initials}</div>
               }
               {item.online ? (
-                <div style={{ position:"absolute", bottom:1, right:1, width:14, height:14, background:"#22C55E", borderRadius:"50%", border:"2.5px solid #fff" }} />
+                <div style={{ position:"absolute", bottom:1, right:1, width:13, height:13, background:"#22C55E", borderRadius:"50%", border:"2px solid #fff" }} />
               ) : item.type === "conv" ? (
-                <div style={{ position:"absolute", bottom:1, right:1, width:14, height:14, background:"#CBD5E1", borderRadius:"50%", border:"2.5px solid #fff" }} />
+                <div style={{ position:"absolute", bottom:1, right:1, width:13, height:13, background:"#D1D5DB", borderRadius:"50%", border:"2px solid #fff" }} />
               ) : null}
             </div>
 
