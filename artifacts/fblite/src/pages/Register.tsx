@@ -176,7 +176,7 @@ export default function Register() {
         @keyframes slideBack { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
         .reg-step { animation: slideIn 0.22s ease; }
         .reg-step-back { animation: slideBack 0.22s ease; }
-        .reg-field:focus { border-color: #22c55e !important; box-shadow: 0 0 0 3px rgba(34,197,94,0.12) !important; background: #fff !important; }
+        .reg-field:focus { border-color: #22c55e !important; box-shadow: none !important; outline: none !important; background: #fff !important; }
         .reg-tab-btn { flex: 1; padding: 10px 0; background: none; border: none; border-bottom: 2.5px solid transparent; font-size: 14px; font-weight: 600; color: #9ca3af; cursor: pointer; transition: all 0.15s; font-family: inherit; }
         .reg-tab-btn.active { color: #16a34a; border-bottom-color: #22c55e; }
         .reg-radio-opt { display: flex; align-items: center; justify-content: space-between; border: 1.5px solid #e5e7eb; border-radius: 14px; padding: 13px 16px; cursor: pointer; font-size: 15px; color: #111827; font-weight: 500; transition: all 0.15s; background: #fafafa; }

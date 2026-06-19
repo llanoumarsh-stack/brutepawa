@@ -345,7 +345,7 @@ export default function PostDetailPage({ postId }: Props) {
         .bp-action    { flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 4px;background:none;border:none;cursor:pointer;font-size:13px;font-weight:700;color:#374151;transition:color .13s,background .13s;white-space:nowrap;min-width:0 }
         .bp-action:active { background:#F8FAFC }
         .bp-action-active { color:#22C55E!important }
-        .bp-input-wrap:focus-within { border-color:#22C55E!important;box-shadow:0 0 0 3px rgba(34,197,94,0.12)!important }
+        .bp-input-wrap:focus-within { border-color:#22C55E!important;box-shadow:none!important }
       `}</style>
 
       {/* ── HEADER ─────────────────────────────────────────────── */}
