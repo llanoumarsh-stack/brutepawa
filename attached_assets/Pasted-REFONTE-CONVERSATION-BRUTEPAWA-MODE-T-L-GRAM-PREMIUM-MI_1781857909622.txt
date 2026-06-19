@@ -1,0 +1,193 @@
+REFONTE CONVERSATION BRUTEPAWA — MODE TÉLÉGRAM PREMIUM
+
+MISSION :
+
+Transformer l'écran de conversation BrutePawa pour reproduire fidèlement l'expérience visuelle Telegram Android moderne.
+
+Je ne veux pas une simple inspiration.
+
+Je veux les mêmes principes UI/UX :
+- mêmes espacements
+- mêmes proportions
+- mêmes alignements
+- mêmes densités visuelles
+- mêmes comportements
+
+Sans modifier le backend.
+
+═══════════════════════
+HEADER
+═══════════════════════
+
+Copier la structure Telegram :
+
+← Avatar Nom
+Statut
+
+📞 🎥 ⋮
+
+EXIGENCES :
+
+- Réduire la hauteur du header.
+- Réduire la taille de l'avatar.
+- Alignement identique Telegram.
+- Plus d'espace pour le nom.
+- Statut plus discret.
+- Ombres très légères.
+
+═══════════════════════
+MENU ⋮
+═══════════════════════
+
+Le menu actuel est trop grand.
+
+Reproduire Telegram :
+
+- largeur plus compacte
+- moins d'espace vertical
+- coins plus arrondis
+- ombre légère
+- animation fluide
+
+Largeur similaire Telegram.
+
+═══════════════════════
+BULLES DE MESSAGE
+═══════════════════════
+
+Reproduire Telegram :
+
+- hauteur plus compacte
+- marges identiques
+- coins identiques
+- densité identique
+
+Messages reçus :
+
+- fond blanc
+- ombre discrète
+
+Messages envoyés :
+
+- vert très léger
+- mêmes couleurs Telegram
+
+═══════════════════════
+HEURES ET COCHES
+═══════════════════════
+
+Position Telegram exacte :
+
+✓ envoyé
+
+✓✓ livré
+
+✓✓ lu
+
+Alignement identique Telegram.
+
+═══════════════════════
+MESSAGES VOCAUX
+═══════════════════════
+
+Reproduire Telegram :
+
+- hauteur réduite
+- bouton lecture plus petit
+- onde sonore plus fine
+- durée parfaitement alignée
+- vitesse 1x compacte
+
+Afficher davantage de messages à l'écran.
+
+═══════════════════════
+FOND DE CONVERSATION
+═══════════════════════
+
+Conserver le fond BrutePawa.
+
+MAIS :
+
+- réduire l'opacité des motifs
+- améliorer le contraste
+- style Telegram
+
+═══════════════════════
+BARRE DE SAISIE
+═══════════════════════
+
+Copier Telegram :
+
+🙂 Message 📎 📷 🎤
+
+EXIGENCES :
+
+- hauteur Telegram
+- micro plus petit
+- icônes parfaitement centrées
+- espaces internes identiques
+- coins arrondis Telegram
+
+═══════════════════════
+OMBRES
+═══════════════════════
+
+Réduire fortement :
+
+- glow vert
+- ombres excessives
+- effets lumineux
+
+Utiliser des ombres Telegram très discrètes.
+
+═══════════════════════
+ESPACEMENT
+═══════════════════════
+
+Objectif :
+
+Afficher plus de messages sur un même écran.
+
+Réduire :
+
+- marges inutiles
+- espaces verticaux
+- padding excessif
+
+═══════════════════════
+ANIMATIONS
+═══════════════════════
+
+Ajouter :
+
+- ripple effect Android
+- animations Telegram
+- ouverture fluide des menus
+- réactions fluides
+- sélection fluide
+
+═══════════════════════
+INTERDICTIONS
+═══════════════════════
+
+❌ Ne pas modifier le backend
+
+❌ Ne pas modifier les API
+
+❌ Ne pas modifier la logique métier
+
+❌ Ne pas supprimer de fonctionnalités
+
+═══════════════════════
+RÉSULTAT ATTENDU
+═══════════════════════
+
+Une conversation BrutePawa donnant immédiatement l'impression d'utiliser Telegram Premium.
+
+Même qualité visuelle.
+Même densité.
+Même fluidité.
+Même professionnalisme.
+
+Objectif final :
+9.5/10 minimum en UI/UX.
