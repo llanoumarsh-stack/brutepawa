@@ -3242,30 +3242,29 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
         {/* ── HEADER ── */}
         {selectionMode ? (
-          /* ── PREMIUM SELECTION HEADER ── */
-          <div style={{ background:"linear-gradient(135deg,#16C24A,#0ea541)", padding:"0 10px", height:58, display:"flex", alignItems:"center", gap:8, flexShrink:0, boxShadow:"0 2px 16px rgba(22,194,74,0.35)" }}>
-            {/* Back arrow */}
+          /* ── TELEGRAM-STYLE SELECTION HEADER ── */
+          <div style={{ background:"#fff", height:52, display:"flex", alignItems:"center", padding:"0 4px", flexShrink:0, borderBottom:"1px solid rgba(0,0,0,0.08)" }}>
+            {/* ✕ close */}
             <button onClick={() => { setSelectionMode(false); setSelectedMsgs(new Set()); setLongPressMsg(null); }}
-              style={{ background:"none", border:"none", cursor:"pointer", color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", padding:8, borderRadius:"50%", flexShrink:0 }}>
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+              style={{ background:"none", border:"none", cursor:"pointer", width:46, height:46, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#111827" strokeWidth="2.2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
-            {/* Count capsule */}
-            <div style={{ background:"rgba(255,255,255,0.22)", borderRadius:20, padding:"4px 14px", display:"flex", alignItems:"center", gap:7, backdropFilter:"blur(8px)", flex:1 }}>
-              <span style={{ color:"#fff", fontWeight:900, fontSize:19, lineHeight:1 }}>{selectedMsgs.size}</span>
-              <span style={{ color:"rgba(255,255,255,0.92)", fontSize:13, fontWeight:500 }}>{selectedMsgs.size <= 1 ? "sélectionné" : "sélectionnés"}</span>
-            </div>
-            {/* Edit icon */}
-            <button style={{ background:"rgba(255,255,255,0.18)", border:"none", width:38, height:38, borderRadius:"50%", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, backdropFilter:"blur(8px)" }}>
-              <svg viewBox="0 0 24 24" width="19" height="19" fill="#fff"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+            {/* Count */}
+            <span style={{ flex:1, fontSize:17, fontWeight:600, color:"#111827" }}>{selectedMsgs.size}</span>
+            {/* Copy */}
+            <button onClick={() => { copySelected(); }}
+              style={{ background:"none", border:"none", cursor:"pointer", width:46, height:46, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#111827" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             </button>
-            {/* Delete icon */}
+            {/* Forward */}
+            <button onClick={() => { setSelectionMode(false); setSelectedMsgs(new Set()); setLongPressMsg(null); }}
+              style={{ background:"none", border:"none", cursor:"pointer", width:46, height:46, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#111827" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 10 20 15 15 20"/><path d="M4 4v7a4 4 0 0 0 4 4h12"/></svg>
+            </button>
+            {/* Delete */}
             <button onClick={() => { confirmDelete(); setLongPressMsg(null); }}
-              style={{ background:"rgba(255,255,255,0.18)", border:"none", width:38, height:38, borderRadius:"50%", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, backdropFilter:"blur(8px)" }}>
-              <svg viewBox="0 0 24 24" width="19" height="19" fill="#fff"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-            </button>
-            {/* More icon */}
-            <button style={{ background:"rgba(255,255,255,0.18)", border:"none", width:38, height:38, borderRadius:"50%", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, backdropFilter:"blur(8px)" }}>
-              <svg viewBox="0 0 24 24" width="19" height="19" fill="#fff"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+              style={{ background:"none", border:"none", cursor:"pointer", width:46, height:46, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#111827" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
             </button>
           </div>
         ) : showChatSearch ? (
@@ -3383,26 +3382,23 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               {dateLabel && <div style={{ textAlign:"center", fontSize:11.5, color:"#555", background:"rgba(255,255,255,0.92)", borderRadius:20, padding:"4px 14px", margin:"8px auto 6px", display:"inline-block", alignSelf:"center", boxShadow:"0 1px 4px rgba(0,0,0,0.10)", fontWeight:500 }}>{dateLabel}</div>}
               <div
                 style={{ display:"flex", justifyContent: msg.mine ? "flex-end" : "flex-start", alignItems:"flex-end", gap:6, marginTop:2,
-                  background: isSelected ? "rgba(22,194,74,0.10)" : isAct ? "rgba(24,119,242,0.15)" : isHL ? "rgba(255,235,59,0.25)" : "transparent",
-                  borderRadius:10, transition:"all 0.2s", paddingLeft: selectionMode ? 38 : 0, paddingRight: selectionMode ? 6 : 0, position:"relative",
+                  background: isSelected ? "rgba(34,197,94,0.12)" : isAct ? "rgba(24,119,242,0.15)" : isHL ? "rgba(255,235,59,0.25)" : "transparent",
+                  transition:"background 0.15s", paddingLeft: selectionMode ? 46 : 0, paddingRight: selectionMode ? 6 : 0, position:"relative",
                   cursor: selectionMode ? "pointer" : "default" }}
                 onClick={() => { if (selectionMode) toggleSelect(msg.id); }}
                 onPointerDown={() => { if (!selectionMode) startLongPress(msg.id); }}
                 onPointerUp={cancelLongPress} onPointerLeave={cancelLongPress}
                 onContextMenu={e => { e.preventDefault(); cancelLongPress(); setSelectionMode(true); setSelectedMsgs(new Set([msg.id])); setLongPressMsg(msg.id); }}>
-                {/* Premium selection circle */}
+                {/* Telegram-style selection circle — gray thin, green+check when selected */}
                 {selectionMode && (
-                  <div style={{ position:"absolute", left:7, top:"50%", transform:"translateY(-50%)", width:26, height:26, borderRadius:"50%",
-                    background: isSelected ? "#16C24A" : "#fff",
-                    border: `2.5px solid ${isSelected ? "#16C24A" : "#CBD5E1"}`,
-                    boxShadow: isSelected ? "0 0 0 4px rgba(22,194,74,0.2), 0 2px 8px rgba(22,194,74,0.3)" : "0 1px 4px rgba(0,0,0,0.1)",
-                    display:"flex", alignItems:"center", justifyContent:"center", transition:"all 0.18s", flexShrink:0, zIndex:2 }}>
-                    {isSelected && <svg viewBox="0 0 24 24" width="14" height="14" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>}
+                  <div style={{ position:"absolute", left:10, top:"50%", transform:"translateY(-50%)",
+                    width:22, height:22, borderRadius:"50%",
+                    background: isSelected ? "#22C55E" : "transparent",
+                    border: `1.5px solid ${isSelected ? "#22C55E" : "#B0B8C1"}`,
+                    display:"flex", alignItems:"center", justifyContent:"center",
+                    transition:"all 0.15s", flexShrink:0, zIndex:2 }}>
+                    {isSelected && <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
                   </div>
-                )}
-                {/* Green glow outline on selected bubble */}
-                {isSelected && (
-                  <div style={{ position:"absolute", inset:1, borderRadius:10, border:"2px solid rgba(22,194,74,0.55)", boxShadow:"0 0 14px rgba(22,194,74,0.22)", pointerEvents:"none", zIndex:1 }} />
                 )}
                 {!msg.mine && (
                   <div style={{ width:28, flexShrink:0, alignSelf:"flex-end", paddingBottom:2 }}>
@@ -4305,66 +4301,20 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
         {/* ── INPUT BAR ── */}
         {selectionMode ? (
-          /* ── PREMIUM GLASSMORPHISM SELECTION PANEL ── */
-          <div style={{ background:"rgba(248,250,252,0.94)", backdropFilter:"blur(24px)", WebkitBackdropFilter:"blur(24px)", borderRadius:"24px 24px 0 0", boxShadow:"0 -8px 40px rgba(0,0,0,0.13), 0 -1px 0 rgba(255,255,255,0.8)", flexShrink:0, paddingBottom:"env(safe-area-inset-bottom, 12px)" }}>
-            {/* Drag handle */}
-            <div style={{ width:40, height:4, borderRadius:2, background:"#CBD5E1", margin:"10px auto 14px" }} />
-
-            {/* Reaction bubbles row */}
-            <div style={{ display:"flex", gap:6, padding:"0 12px 14px", overflowX:"auto", scrollbarWidth:"none", WebkitOverflowScrolling:"touch" } as React.CSSProperties}>
-              {["😊","❤️","👍","👎","🔥","😍","👏","😂","😮","😢"].map(em => (
-                <button key={em}
-                  onClick={() => { setSelectionMode(false); setSelectedMsgs(new Set()); setLongPressMsg(null); }}
-                  style={{ background:"#fff", border:"1.5px solid #F1F5F9", borderRadius:"50%", width:50, height:50, flexShrink:0, fontSize:26, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(0,0,0,0.08)", transition:"transform 0.12s, box-shadow 0.12s" }}
-                  onMouseEnter={e => { e.currentTarget.style.transform="scale(1.28)"; e.currentTarget.style.boxShadow="0 4px 16px rgba(22,194,74,0.25)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.transform="scale(1)"; e.currentTarget.style.boxShadow="0 2px 8px rgba(0,0,0,0.08)"; }}>
-                  {em}
-                </button>
-              ))}
-            </div>
-
-            {/* Separator */}
-            <div style={{ height:1, background:"linear-gradient(90deg,transparent,#E2E8F0 20%,#E2E8F0 80%,transparent)", margin:"0 16px 14px" }} />
-
-            {/* Actions grid 3×2 */}
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(6,1fr)", gap:6, padding:"0 10px 16px" }}>
-              {/* Répondre */}
-              <button onClick={() => { setSelectionMode(false); setSelectedMsgs(new Set()); setLongPressMsg(null); }}
-                style={{ background:"#fff", border:"1.5px solid #F1F5F9", borderRadius:18, padding:"12px 4px 8px", display:"flex", flexDirection:"column", alignItems:"center", gap:5, cursor:"pointer", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="#16C24A"><path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"/></svg>
-                <span style={{ fontSize:9.5, fontWeight:700, color:"#334155", lineHeight:1.1, textAlign:"center" }}>Répondre</span>
-              </button>
-              {/* Transférer */}
-              <button onClick={() => { setSelectionMode(false); setSelectedMsgs(new Set()); setLongPressMsg(null); }}
-                style={{ background:"#fff", border:"1.5px solid #F1F5F9", borderRadius:18, padding:"12px 4px 8px", display:"flex", flexDirection:"column", alignItems:"center", gap:5, cursor:"pointer", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="#16C24A"><path d="M14 15l7-7-7-7v4.1c-5 0-8.5-1.6-11-5.1 1 5 4 10 11 11V15z"/></svg>
-                <span style={{ fontSize:9.5, fontWeight:700, color:"#334155", lineHeight:1.1, textAlign:"center" }}>Transférer</span>
-              </button>
-              {/* Copier */}
-              <button onClick={() => { copySelected(); }}
-                style={{ background:"#fff", border:"1.5px solid #F1F5F9", borderRadius:18, padding:"12px 4px 8px", display:"flex", flexDirection:"column", alignItems:"center", gap:5, cursor:"pointer", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="#16C24A"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-                <span style={{ fontSize:9.5, fontWeight:700, color:"#334155", lineHeight:1.1, textAlign:"center" }}>Copier</span>
-              </button>
-              {/* Épingler */}
-              <button onClick={() => { setSelectionMode(false); setSelectedMsgs(new Set()); setLongPressMsg(null); }}
-                style={{ background:"#fff", border:"1.5px solid #F1F5F9", borderRadius:18, padding:"12px 4px 8px", display:"flex", flexDirection:"column", alignItems:"center", gap:5, cursor:"pointer", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="#16C24A"><path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/></svg>
-                <span style={{ fontSize:9.5, fontWeight:700, color:"#334155", lineHeight:1.1, textAlign:"center" }}>Épingler</span>
-              </button>
-              {/* Enregistrer */}
-              <button onClick={() => { setSelectionMode(false); setSelectedMsgs(new Set()); setLongPressMsg(null); }}
-                style={{ background:"#fff", border:"1.5px solid #F1F5F9", borderRadius:18, padding:"12px 4px 8px", display:"flex", flexDirection:"column", alignItems:"center", gap:5, cursor:"pointer", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="#16C24A"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-                <span style={{ fontSize:9.5, fontWeight:700, color:"#334155", lineHeight:1.1, textAlign:"center" }}>Enregistrer</span>
-              </button>
-              {/* Supprimer */}
-              <button onClick={() => { confirmDelete(); setLongPressMsg(null); }}
-                style={{ background:"#FFF5F5", border:"1.5px solid #FEE2E2", borderRadius:18, padding:"12px 4px 8px", display:"flex", flexDirection:"column", alignItems:"center", gap:5, cursor:"pointer", boxShadow:"0 1px 6px rgba(239,68,68,0.08)" }}>
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="#EF4444"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                <span style={{ fontSize:9.5, fontWeight:700, color:"#EF4444", lineHeight:1.1, textAlign:"center" }}>Supprimer</span>
-              </button>
-            </div>
+          /* ── TELEGRAM-STYLE SELECTION BOTTOM BAR ── */
+          <div style={{ background:"#fff", borderTop:"1px solid rgba(0,0,0,0.09)", padding:"10px 12px", display:"flex", gap:10, flexShrink:0 }}>
+            {/* Reply */}
+            <button onClick={() => { setSelectionMode(false); setSelectedMsgs(new Set()); setLongPressMsg(null); }}
+              style={{ flex:1, height:48, borderRadius:10, border:"none", background:"#F2F3F5", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:10, fontSize:15, fontWeight:600, color:"#111827" }}>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#111827" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>
+              Reply
+            </button>
+            {/* Forward */}
+            <button onClick={() => { setSelectionMode(false); setSelectedMsgs(new Set()); setLongPressMsg(null); }}
+              style={{ flex:1, height:48, borderRadius:10, border:"none", background:"#F2F3F5", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:10, fontSize:15, fontWeight:600, color:"#111827" }}>
+              Forward
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#111827" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 17 20 12 15 7"/><path d="M4 18v-2a4 4 0 0 1 4-4h12"/></svg>
+            </button>
           </div>
         ) : (
           /* NORMAL INPUT BAR — Floating pill composer */
