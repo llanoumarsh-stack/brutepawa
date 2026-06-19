@@ -1,0 +1,187 @@
+MISSION CRITIQUE – RECONCEPTION DE LA PAGE "MODIFIER LE GROUPE"
+
+La page actuelle est REFUSÉE.
+
+Objectif : reproduire l'expérience visuelle Telegram à 99% minimum.
+
+IMPORTANT :
+- 90% = ÉCHEC.
+- 95% = ÉCHEC.
+- Seule une ressemblance visuelle de 99% est acceptée.
+
+RÈGLE ABSOLUE :
+Analyser minutieusement la capture Telegram fournie.
+Reproduire la structure, les espacements, les proportions, l'organisation visuelle, les cartes, les alignements et la hiérarchie visuelle.
+
+INTERDICTION :
+- Ne pas improviser.
+- Ne pas réinventer le design.
+- Ne pas utiliser un style Android générique.
+- Ne pas remplacer les cartes Telegram par des listes simples.
+
+========================
+SECTION 1 : EN-TÊTE
+========================
+
+Même hauteur que Telegram.
+
+Gauche :
+- Flèche retour.
+
+Centre :
+- Titre "Modifier".
+
+Droite :
+- Icône validation ✓.
+
+Fond :
+- Blanc pur #FFFFFF.
+
+========================
+SECTION 2 : CARTE PRINCIPALE
+========================
+
+Créer UNE GRANDE CARTE BLANCHE.
+
+Caractéristiques :
+
+- Border radius : 24px.
+- Fond : #FFFFFF.
+- Ombre légère premium.
+- Marges identiques à Telegram.
+
+Contenu :
+
+Ligne 1 :
+- Avatar groupe.
+- Nom du groupe.
+- Emoji picker à droite.
+
+Ligne 2 :
+- Bouton photo.
+
+Ligne 3 :
+- Description.
+
+TOUT doit être contenu dans la même carte.
+
+========================
+SECTION 3 : CARTE PARAMÈTRES
+========================
+
+Nouvelle carte séparée.
+
+Même largeur.
+Même radius.
+Même style.
+
+Colonnes obligatoires :
+
+1. Icône
+2. Titre
+3. Valeur à droite
+
+Lignes :
+
+👥 Type de groupe
+💬 Historique des discussions
+🧩 Sujets
+
+Même ordre que Telegram.
+
+========================
+SECTION 4 : TEXTE D'EXPLICATION
+========================
+
+Sous la carte.
+
+Texte gris.
+
+Même taille.
+Même espacement.
+
+========================
+SECTION 5 : CARTE OPTIONS
+========================
+
+Nouvelle carte indépendante.
+
+Même radius.
+Même fond.
+Même ombre.
+
+Colonnes identiques :
+
+Icône | Titre | Valeur
+
+❤️ Réactions
+🔑 Autorisations
+🔗 Liens d'invitation
+🛡 Administrateurs
+👥 Membres
+
+ALIGNEMENT IDENTIQUE À TELEGRAM.
+
+========================
+SECTION 6 : SUPPRESSION
+========================
+
+Carte indépendante.
+
+Texte rouge.
+
+Même hauteur Telegram.
+
+========================
+COULEURS OBLIGATOIRES
+========================
+
+Fond application :
+#F1F1F4
+
+Cartes :
+#FFFFFF
+
+Texte principal :
+#1F1F1F
+
+Texte secondaire :
+#8E8E93
+
+Bleu Telegram :
+#3390EC
+
+Rouge suppression :
+#FF3B30
+
+========================
+ESPACEMENTS
+========================
+
+Reproduire pixel par pixel :
+
+- Marges externes.
+- Marges internes.
+- Distance entre cartes.
+- Distance entre lignes.
+
+Aucune section ne doit sembler collée.
+
+========================
+CONTRÔLE QUALITÉ
+========================
+
+Avant validation :
+
+Comparer capture BrutePawa et capture Telegram.
+
+Si :
+- une couleur diffère,
+- un espacement diffère,
+- une carte manque,
+- une icône manque,
+- une colonne est mal alignée,
+
+alors considérer le travail comme NON TERMINÉ.
+
+L'objectif est que l'utilisateur reconnaisse immédiatement le design Telegram tout en conservant l'identité BrutePawa.

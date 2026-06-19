@@ -400,6 +400,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [grpEditDesc, setGrpEditDesc]               = useState("");
   const [grpEditSaving, setGrpEditSaving]           = useState(false);
   const [grpEditToast, setGrpEditToast]             = useState(false);
+  const [showBroadcast, setShowBroadcast]     = useState(false);
+  const [bcSelected, setBcSelected]           = useState<Set<number>>(new Set());
+  const [bcSearch, setBcSearch]               = useState("");
+  const [bcSearchMode, setBcSearchMode]       = useState(false);
+  const [bcConvs, setBcConvs]                 = useState<{ id: number; recipients: number[]; msgs: {id:number;text:string;time:string;mine:boolean}[] }[]>([]);
+  const [activeBcId, setActiveBcId]           = useState<number|null>(null);
+  const [bcInput, setBcInput]                 = useState("");
   const [fabOpen, setFabOpen]   = useState(false);
   const [inboxTab, setInboxTab] = useState<"all" | "unread" | "groups">("all");
   const [showInboxSearch, setShowInboxSearch] = useState(false);

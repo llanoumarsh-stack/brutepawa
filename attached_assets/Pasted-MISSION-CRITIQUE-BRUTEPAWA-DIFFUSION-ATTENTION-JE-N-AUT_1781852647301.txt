@@ -1,0 +1,274 @@
+MISSION CRITIQUE – BRUTEPAWA DIFFUSION
+
+ATTENTION :
+
+JE N'AUTORISE AUCUNE INTERPRÉTATION.
+
+JE N'AUTORISE AUCUNE CRÉATIVITÉ.
+
+JE N'AUTORISE AUCUNE VERSION "INSPIRÉE".
+
+JE VEUX UNE REPRODUCTION VISUELLE ET FONCTIONNELLE À 99%.
+
+90% = ÉCHEC
+95% = ÉCHEC
+98% = ÉCHEC
+
+SEUL 99% OU PLUS EST ACCEPTÉ.
+
+==================================
+ANALYSE OBLIGATOIRE
+==================================
+
+Avant d'écrire une seule ligne de code :
+
+1. Observer chaque capture.
+2. Mesurer chaque espacement.
+3. Mesurer chaque marge.
+4. Mesurer chaque rayon.
+5. Mesurer chaque taille de police.
+6. Mesurer chaque taille d'avatar.
+7. Mesurer chaque icône.
+8. Mesurer chaque ombre.
+9. Mesurer chaque couleur.
+
+Puis reproduire EXACTEMENT.
+
+==================================
+ÉCRAN 1
+SÉLECTION DES DESTINATAIRES
+==================================
+
+Header :
+
+← Retour
+
+Titre :
+Nouvelle diffusion
+
+Sous-titre :
+
+0 sélectionné sur XXX
+
+Icône recherche à droite.
+
+Fond blanc.
+
+Hauteur identique Telegram.
+
+Même alignement.
+
+Même typographie.
+
+Même taille.
+
+==================================
+BARRE DE RECHERCHE
+==================================
+
+Même hauteur.
+
+Même largeur.
+
+Même rayon.
+
+Même padding.
+
+Même icône.
+
+Même position.
+
+Même animation focus.
+
+Fond :
+
+#F3F4F6
+
+Coins :
+
+30px
+
+==================================
+LISTE DES CONTACTS
+==================================
+
+Avatar rond.
+
+Taille identique Telegram.
+
+Nom :
+
+Poids identique Telegram.
+
+Sous-titre :
+
+Même couleur.
+
+Même taille.
+
+Même espacement vertical.
+
+Même hauteur de ligne.
+
+==================================
+SÉLECTION
+==================================
+
+Quand un utilisateur est sélectionné :
+
+Afficher badge vert.
+
+Couleur :
+
+#22C55E
+
+Animation identique Telegram.
+
+Même vitesse.
+
+Même position.
+
+==================================
+BANDEAU DESTINATAIRES
+==================================
+
+Lorsque au moins un utilisateur est sélectionné :
+
+Afficher bandeau horizontal.
+
+Défilement horizontal.
+
+Avatar.
+
+Nom.
+
+Bouton X.
+
+Même hauteur.
+
+Même espacement.
+
+Même comportement.
+
+==================================
+BOUTON VALIDER
+==================================
+
+Bouton flottant.
+
+Bas droite.
+
+Diamètre identique Telegram.
+
+Vert BrutePawa :
+
+#22C55E
+
+Icône blanche.
+
+Même ombre.
+
+Même animation.
+
+==================================
+PAGE DIFFUSION
+==================================
+
+Après validation :
+
+Créer conversation diffusion.
+
+Header :
+
+Avatar diffusion
+
+Titre :
+
+X destinataires
+
+Sous-titre :
+
+Liste de diffusion
+
+Menu ⋮
+
+Alignement identique Telegram.
+
+==================================
+ZONE MESSAGE
+==================================
+
+Champ message :
+
+Même hauteur Telegram.
+
+Même rayon.
+
+Même padding.
+
+Même animation.
+
+Même comportement clavier.
+
+==================================
+COULEURS
+==================================
+
+OBLIGATOIRE
+
+Vert principal :
+#22C55E
+
+Vert secondaire :
+#16A34A
+
+Fond :
+#FFFFFF
+
+Texte principal :
+#111827
+
+Texte secondaire :
+#6B7280
+
+Séparateurs :
+#E5E7EB
+
+==================================
+INTERDICTIONS
+==================================
+
+INTERDIT :
+
+- Android Material standard
+- Espacements aléatoires
+- Icônes différentes
+- Ombres différentes
+- Boutons différents
+- Couleurs approximatives
+- Marges approximatives
+- Tailles approximatives
+
+==================================
+VALIDATION
+==================================
+
+Comparer chaque écran avec Telegram.
+
+Comparer :
+
+- couleur par couleur
+- pixel par pixel
+- rayon par rayon
+- marge par marge
+- cadre par cadre
+- animation par animation
+- position par position
+
+Si une différence est visible :
+
+SUPPRIMER ET REFAIRE.
+
+Objectif final :
+
+L'utilisateur doit avoir l'impression d'utiliser Telegram, mais avec l'identité visuelle BrutePawa verte (#22C55E).
