@@ -28,6 +28,9 @@ export default function Layout({ children, onNewPost }: Props) {
   const [showCreate,        setShowCreate]        = useState(false);
   const [showPostModal,     setShowPostModal]     = useState(false);
   const [showSearchOverlay, setShowSearchOverlay] = useState(false);
+  const [navHidden,         setNavHidden]         = useState(false);
+  const lastScrollY     = useRef(0);
+  const scrollTicking   = useRef(false);
   const [searchQuery,   setSearchQuery]   = useState(() => {
     const qs = window.location.search;
     return new URLSearchParams(qs).get("q") ?? "";
