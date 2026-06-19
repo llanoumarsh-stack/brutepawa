@@ -175,6 +175,9 @@ function AppContent() {
         authorName: p.authorName,
         authorAvatarUrl: p.authorAvatarUrl,
         authorCountry: p.authorCountry ?? undefined,
+        isPinned: p.isPinned,
+        commentsDisabled: p.commentsDisabled,
+        audience: p.audience,
       }));
       setPosts(converted);
     } catch {

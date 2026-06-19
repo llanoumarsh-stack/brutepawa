@@ -1,0 +1,155 @@
+CORRECTION CRITIQUE DU SYSTÈME DE STATUTS DES MESSAGES
+
+BUG ACTUEL :
+Dans la liste des conversations, les icônes ✓ et ✓✓ apparaissent correctement puis disparaissent après quelques secondes ou changent d'état de manière incohérente.
+
+OBJECTIF :
+Reproduire exactement le comportement de Telegram, WhatsApp et Messenger.
+
+RÈGLES OFFICIELLES :
+
+✓ gris = message envoyé au serveur
+
+✓✓ gris = message reçu par le destinataire
+
+✓✓ vert = message lu par le destinataire
+
+Une fois qu'un message atteint un état supérieur, il ne doit JAMAIS revenir à un état inférieur.
+
+INTERDICTIONS :
+
+read → delivered ❌
+
+read → sent ❌
+
+delivered → sent ❌
+
+ARCHITECTURE BACKEND :
+
+Table messages :
+
+id
+sender_id
+receiver_id
+content
+status
+sent_at
+delivered_at
+read_at
+
+Valeurs autorisées :
+
+sent
+delivered
+read
+
+Lorsqu'un message est envoyé :
+
+status = sent
+
+Lorsqu'il arrive sur l'appareil du destinataire :
+
+status = delivered
+
+Enregistrer delivered_at
+
+Lorsqu'il est ouvert ou vu :
+
+status = read
+
+Enregistrer read_at
+
+SYNC TEMPS RÉEL :
+
+Supabase Realtime doit envoyer immédiatement :
+
+message_delivered
+message_read
+
+Tous les clients doivent être mis à jour instantanément.
+
+PROTECTION ANTI-RÉGRESSION :
+
+const priority = {
+ sent: 1,
+ delivered: 2,
+ read: 3
+};
+
+if (
+ priority[newStatus] >
+ priority[currentStatus]
+) {
+ updateStatus(newStatus);
+}
+
+Ne jamais remplacer un statut plus avancé par un statut plus ancien.
+
+LISTE DES CONVERSATIONS :
+
+Afficher les statuts à droite du dernier message exactement comme Telegram :
+
+✓ gris
+
+✓✓ gris
+
+✓✓ vert
+
+Le statut doit rester visible :
+
+après refresh
+
+après fermeture de l'application
+
+après reconnexion
+
+après synchronisation
+
+après retour en arrière
+
+CHAT INTERNE :
+
+Le même statut doit apparaître sous chaque bulle envoyée.
+
+COHÉRENCE OBLIGATOIRE :
+
+Le statut affiché dans :
+
+- la conversation
+- la liste des discussions
+- les notifications
+- les données Supabase
+
+doit toujours être identique.
+
+TESTS À EFFECTUER :
+
+Envoyer message
+
+Voir ✓
+
+Recevoir message
+
+Voir ✓✓ gris
+
+Ouvrir conversation
+
+Voir ✓✓ vert
+
+Actualiser la page
+
+Le ✓✓ vert doit rester
+
+Fermer l'application
+
+Rouvrir
+
+Le ✓✓ vert doit rester
+
+Changer de réseau
+
+Le ✓✓ vert doit rester
+
+RÉSULTAT ATTENDU :
+
+Les coches ne doivent plus jamais apparaître puis disparaître. Le système doit fonctionner exactement comme Telegram et WhatsApp avec synchronisation temps réel fiable et persistante.

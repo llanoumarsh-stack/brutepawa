@@ -120,6 +120,8 @@ export interface FeedPost {
   liked: boolean;
   isOwner: boolean;
   isPinned?: boolean;
+  commentsDisabled?: boolean;
+  audience?: string;
 }
 
 export interface PublicUser {
@@ -537,6 +539,28 @@ export async function apiArchivePost(id: number): Promise<void> {
 
 export async function apiPinPost(id: number): Promise<void> {
   await apiFetch(`/posts/${id}/pin`, { method: "POST" });
+}
+
+export async function apiUnpinPost(id: number): Promise<void> {
+  await apiFetch(`/posts/${id}/unpin`, { method: "POST" });
+}
+
+export async function apiHidePost(id: number): Promise<void> {
+  await apiFetch(`/posts/${id}/hide`, { method: "POST" });
+}
+
+export async function apiTogglePostComments(id: number): Promise<void> {
+  await apiFetch(`/posts/${id}/comments/toggle`, { method: "POST" });
+}
+
+export async function apiSetPostAudience(id: number, audience: string): Promise<void> {
+  await apiFetch(`/posts/${id}/audience`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ audience }) });
+}
+
+export async function apiGetPostStats(id: number): Promise<{ views: number; likes: number; comments: number; shares: number; saves: number; engagement: string; reach: number }> {
+  const res = await apiFetch(`/posts/${id}/statistics`);
+  if (!res.ok) throw new Error("Erreur stats");
+  return res.json() as Promise<{ views: number; likes: number; comments: number; shares: number; saves: number; engagement: string; reach: number }>;
 }
 
 export function saveFbUser(user: BpUser): void {

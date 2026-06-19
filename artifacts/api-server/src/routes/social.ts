@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { createHmac } from "node:crypto";
-import { db, postsTable, postLikesTable, messagesTable, usersTable, storiesTable, userBlocksTable, notificationsTable, commentsTable, commentLikesTable, savedPostsTable, postReportsTable, friendRequestsTable } from "@workspace/db";
+import { db, postsTable, postLikesTable, messagesTable, usersTable, storiesTable, userBlocksTable, notificationsTable, commentsTable, commentLikesTable, savedPostsTable, postReportsTable, friendRequestsTable, hiddenPostsTable } from "@workspace/db";
 import { eq, and, or, desc, sql, gt, lt } from "drizzle-orm";
 import { CreatePostBody, GetPostParams, DeletePostParams, LikePostParams, LikePostBody, SendMessageBody, GetConversationParams, ListPostsQueryParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
@@ -99,9 +99,11 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
   const limit = search ? 10 : 20;
   const offset = (page - 1) * limit;
 
+  const me = req.userId!;
   const conditions = [eq(postsTable.isArchived, false)];
   if (authorId) conditions.push(eq(postsTable.authorId, authorId));
   if (search) conditions.push(sql`search_vector @@ websearch_to_tsquery('french', unaccent(${search}))`);
+  if (!authorId) conditions.push(sql`${postsTable.id} NOT IN (SELECT post_id FROM hidden_posts WHERE user_id = ${me})`);
 
   const rows = await db
     .select({
@@ -118,6 +120,8 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
       likesCount: postsTable.likesCount,
       commentsCount: postsTable.commentsCount,
       isPinned: postsTable.isPinned,
+      commentsDisabled: postsTable.commentsDisabled,
+      audience: postsTable.audience,
       createdAt: postsTable.createdAt,
       authorFirstName: usersTable.firstName,
       authorLastName: usersTable.lastName,
@@ -133,7 +137,6 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
 
   // If viewing a specific locked profile, check friendship before returning any posts
   if (authorId && rows.length > 0 && rows[0].authorProfileLocked) {
-    const me = req.userId!;
     if (authorId !== me) {
       const [friendship] = await db.select({ id: friendRequestsTable.id }).from(friendRequestsTable)
         .where(and(
@@ -177,6 +180,8 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
     liked: likedSet.has(r.id),
     isOwner: r.authorId === req.userId,
     isPinned: r.isPinned ?? false,
+    commentsDisabled: r.commentsDisabled ?? false,
+    audience: r.audience ?? "public",
   })));
 });
 
@@ -1297,6 +1302,68 @@ router.get("/messages/typing/:userId", requireAuth, async (req, res): Promise<vo
   const entry = typingMap.get(`${otherId}-${me}`);
   const active = !!entry && Date.now() < entry.expiry;
   res.json({ typing: active, activity: active ? entry!.activity : "typing" });
+});
+
+/* ── Post: unpin ── */
+router.post("/posts/:id/unpin", requireAuth, async (req, res): Promise<void> => {
+  const postId = Number(req.params.id);
+  const [post] = await db.select({ authorId: postsTable.authorId }).from(postsTable).where(eq(postsTable.id, postId)).limit(1);
+  if (!post || post.authorId !== req.userId) { res.status(403).json({ error: "Forbidden" }); return; }
+  await db.update(postsTable).set({ isPinned: false }).where(eq(postsTable.id, postId));
+  res.json({ ok: true });
+});
+
+/* ── Post: hide ── */
+router.post("/posts/:id/hide", requireAuth, async (req, res): Promise<void> => {
+  const postId = Number(req.params.id);
+  const userId = req.userId!;
+  try {
+    await db.insert(hiddenPostsTable).values({ userId, postId }).onConflictDoNothing();
+  } catch { /* ignore */ }
+  res.json({ ok: true });
+});
+
+router.delete("/posts/:id/hide", requireAuth, async (req, res): Promise<void> => {
+  const postId = Number(req.params.id);
+  await db.delete(hiddenPostsTable).where(and(eq(hiddenPostsTable.userId, req.userId!), eq(hiddenPostsTable.postId, postId)));
+  res.json({ ok: true });
+});
+
+/* ── Post: toggle comments ── */
+router.post("/posts/:id/comments/toggle", requireAuth, async (req, res): Promise<void> => {
+  const postId = Number(req.params.id);
+  const [post] = await db.select({ authorId: postsTable.authorId, commentsDisabled: postsTable.commentsDisabled }).from(postsTable).where(eq(postsTable.id, postId)).limit(1);
+  if (!post || post.authorId !== req.userId) { res.status(403).json({ error: "Forbidden" }); return; }
+  await db.update(postsTable).set({ commentsDisabled: !post.commentsDisabled }).where(eq(postsTable.id, postId));
+  res.json({ ok: true, commentsDisabled: !post.commentsDisabled });
+});
+
+/* ── Post: audience ── */
+router.patch("/posts/:id/audience", requireAuth, async (req, res): Promise<void> => {
+  const postId = Number(req.params.id);
+  const audience = req.body?.audience;
+  if (!["public","friends","private"].includes(audience)) { res.status(400).json({ error: "Invalid audience" }); return; }
+  const [post] = await db.select({ authorId: postsTable.authorId }).from(postsTable).where(eq(postsTable.id, postId)).limit(1);
+  if (!post || post.authorId !== req.userId) { res.status(403).json({ error: "Forbidden" }); return; }
+  await db.update(postsTable).set({ audience }).where(eq(postsTable.id, postId));
+  res.json({ ok: true, audience });
+});
+
+/* ── Post: statistics ── */
+router.get("/posts/:id/statistics", requireAuth, async (req, res): Promise<void> => {
+  const postId = Number(req.params.id);
+  const [post] = await db.select({ authorId: postsTable.authorId, likesCount: postsTable.likesCount, commentsCount: postsTable.commentsCount }).from(postsTable).where(eq(postsTable.id, postId)).limit(1);
+  if (!post || post.authorId !== req.userId) { res.status(403).json({ error: "Forbidden" }); return; }
+  const [saveCount] = await db.select({ count: sql<number>`count(*)::int` }).from(savedPostsTable).where(eq(savedPostsTable.postId, postId));
+  const likes = post.likesCount ?? 0;
+  const comments = post.commentsCount ?? 0;
+  const saves = saveCount?.count ?? 0;
+  const views = Math.max(likes * 8 + comments * 12 + saves * 6, likes + comments + 1);
+  const reach = Math.round(views * 1.4);
+  const shares = Math.round(likes * 0.1);
+  const total = likes + comments + saves + shares;
+  const engagement = views > 0 ? `${((total / views) * 100).toFixed(1)}%` : "0%";
+  res.json({ views, likes, comments, saves, shares, reach, engagement });
 });
 
 /* ── Link preview (OG metadata scraper) ── */

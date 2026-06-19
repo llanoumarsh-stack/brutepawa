@@ -1,0 +1,209 @@
+Implémente entièrement le système de menu (...) des publications BrutePawa avec frontend + backend + base de données + API + permissions + sécurité.
+
+====================================================
+FRONTEND
+====================================================
+
+Lorsqu'un utilisateur appuie sur les trois points (...) d'une publication :
+
+Si la publication appartient à un autre utilisateur :
+
+📌 Enregistrer la publication
+🔗 Copier le lien
+📤 Partager
+🔔 Activer/Désactiver les notifications
+🙈 Masquer cette publication
+👤 Ne plus suivre l'auteur
+⚠️ Signaler la publication
+🚫 Bloquer l'utilisateur
+
+Si la publication appartient à l'utilisateur connecté :
+
+✏️ Modifier
+📌 Épingler au profil
+🗂️ Archiver
+💬 Désactiver les commentaires
+👁️ Modifier l'audience
+📊 Voir statistiques
+📤 Partager
+🗑️ Supprimer
+
+Bottom Sheet premium :
+- Coins 24px
+- Animation fluide
+- Fermeture par swipe
+- Fermeture en cliquant hors zone
+- Compatible Android/iOS
+- Design moderne type Facebook / Threads
+
+====================================================
+BACKEND
+====================================================
+
+Créer les tables Supabase PostgreSQL suivantes :
+
+saved_posts
+---------------
+id
+user_id
+post_id
+created_at
+
+hidden_posts
+---------------
+id
+user_id
+post_id
+created_at
+
+reported_posts
+---------------
+id
+reporter_id
+post_id
+reason
+details
+status
+created_at
+
+blocked_users
+---------------
+id
+user_id
+blocked_user_id
+created_at
+
+post_notifications
+---------------
+id
+user_id
+target_user_id
+enabled
+created_at
+
+archived_posts
+---------------
+id
+post_id
+user_id
+created_at
+
+pinned_posts
+---------------
+id
+post_id
+user_id
+position
+created_at
+
+====================================================
+API
+====================================================
+
+POST /api/posts/save
+POST /api/posts/unsave
+
+POST /api/posts/hide
+POST /api/posts/unhide
+
+POST /api/posts/report
+
+POST /api/users/block
+POST /api/users/unblock
+
+POST /api/users/follow
+POST /api/users/unfollow
+
+POST /api/posts/pin
+POST /api/posts/unpin
+
+POST /api/posts/archive
+POST /api/posts/unarchive
+
+POST /api/posts/comments/disable
+POST /api/posts/comments/enable
+
+GET /api/posts/statistics/:postId
+
+====================================================
+PERMISSIONS
+====================================================
+
+Modifier :
+Seulement propriétaire du post
+
+Supprimer :
+Seulement propriétaire
+
+Épingler :
+Seulement propriétaire
+
+Archiver :
+Seulement propriétaire
+
+Voir statistiques :
+Seulement propriétaire
+
+Signaler :
+Tous utilisateurs authentifiés
+
+Bloquer :
+Tous utilisateurs authentifiés
+
+Enregistrer :
+Tous utilisateurs authentifiés
+
+====================================================
+STATISTIQUES
+====================================================
+
+Calculer en temps réel :
+
+- Vues
+- Likes
+- Commentaires
+- Partages
+- Sauvegardes
+- Taux d'engagement
+- Portée estimée
+
+====================================================
+SÉCURITÉ
+====================================================
+
+Utiliser Row Level Security Supabase.
+
+Empêcher :
+
+- Sauvegardes dupliquées
+- Signalements spam
+- Épinglage multiple illimité
+- Archivage d'un post d'autrui
+- Modification d'un post d'autrui
+- Blocage de soi-même
+
+Créer index SQL sur :
+
+user_id
+post_id
+target_user_id
+created_at
+
+====================================================
+NOTIFICATIONS
+====================================================
+
+Déclencher notifications pour :
+
+- Nouveau signalement admin
+- Nouveau partage
+- Nouveau commentaire
+- Nouveau like
+- Nouvel abonné
+- Publication épinglée
+
+====================================================
+OBJECTIF FINAL
+====================================================
+
+Le système doit être totalement fonctionnel, connecté à Supabase, optimisé pour plusieurs millions d'utilisateurs, sécurisé, scalable et prêt pour la production sans code factice, sans données simulées et sans fonctionnalités incomplètes.

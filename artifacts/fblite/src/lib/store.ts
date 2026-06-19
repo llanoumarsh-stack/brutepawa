@@ -17,6 +17,9 @@ export interface Post {
   authorName?: string;
   authorAvatarUrl?: string | null;
   authorCountry?: string;
+  isPinned?: boolean;
+  commentsDisabled?: boolean;
+  audience?: string;
 }
 
 // ── Posts ──────────────────────────────────────────────────────────────────

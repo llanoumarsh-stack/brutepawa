@@ -1,0 +1,90 @@
+Ajoute un menu contextuel complet lorsqu'un utilisateur appuie sur les trois points (...) d'une publication sur BrutePawa.
+
+OBJECTIF :
+Créer une expérience premium similaire à Facebook, Threads, X et LinkedIn tout en conservant l'identité BrutePawa.
+
+LORSQUE L'UTILISATEUR APPUIE SUR (...) D'UNE PUBLICATION D'UN AUTRE UTILISATEUR :
+
+Afficher un Bottom Sheet moderne avec :
+
+📌 Enregistrer la publication
+- Sauvegarder dans les éléments enregistrés
+
+🔗 Copier le lien
+- Copier l'URL de la publication
+
+📤 Partager
+- Partager vers BrutePawa
+- Copier le lien
+- Partager vers applications externes
+
+🔔 Activer les notifications
+- Être averti des nouvelles publications de cet utilisateur
+
+🙈 Masquer cette publication
+- Ne plus voir cette publication
+
+👤 Ne plus suivre cet utilisateur
+- Arrêter de recevoir ses publications
+
+⚠️ Signaler la publication
+- Spam
+- Arnaque
+- Harcèlement
+- Contenu inapproprié
+- Fausse information
+- Autre
+
+🚫 Bloquer l'utilisateur
+- Empêcher toute interaction future
+
+------------------------------------------------
+
+LORSQUE L'UTILISATEUR APPUIE SUR (...) DE SA PROPRE PUBLICATION :
+
+✏️ Modifier la publication
+
+📌 Épingler au profil
+
+🗂️ Archiver
+
+💬 Désactiver les commentaires
+
+👁️ Modifier l'audience
+- Public
+- Amis
+- Privé
+
+📊 Voir les statistiques
+
+📤 Partager
+
+🗑️ Supprimer la publication
+
+------------------------------------------------
+
+DESIGN :
+
+- Bottom Sheet moderne
+- Coins arrondis 24px
+- Animation fluide
+- Icônes professionnelles
+- Respect de la palette BrutePawa
+- Effet premium
+- Compatible Android et iPhone
+
+ERGONOMIE :
+
+- Appui léger sur (...)
+- Ouverture instantanée
+- Fermeture en cliquant hors du menu
+- Fermeture par glissement vers le bas
+
+IMPORTANT :
+
+- Les options dangereuses (Supprimer, Bloquer) doivent apparaître en rouge.
+- Les options principales doivent être clairement séparées.
+- Afficher une confirmation avant suppression ou blocage.
+- L'interface doit paraître au niveau d'un réseau social de classe mondiale.
+
+Le résultat doit donner l'impression d'une application mature, professionnelle et prête pour plusieurs millions d'utilisateurs.

@@ -18,6 +18,8 @@ export const postsTable = pgTable("posts", {
   isPinned: boolean("is_pinned").notNull().default(false),
   isArchived: boolean("is_archived").notNull().default(false),
   archivedAt: timestamp("archived_at", { withTimezone: true }),
+  commentsDisabled: boolean("comments_disabled").notNull().default(false),
+  audience: text("audience").notNull().default("public"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });
@@ -179,6 +181,13 @@ export const eventRsvpsTable = pgTable("event_rsvps", {
   status: text("status").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [uniqueIndex("event_rsvps_pair_idx").on(t.eventId, t.userId)]);
+
+export const hiddenPostsTable = pgTable("hidden_posts", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  postId: integer("post_id").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [uniqueIndex("hidden_posts_pair_idx").on(t.userId, t.postId)]);
 
 export const savedPostsTable = pgTable("saved_posts", {
   id: serial("id").primaryKey(),
