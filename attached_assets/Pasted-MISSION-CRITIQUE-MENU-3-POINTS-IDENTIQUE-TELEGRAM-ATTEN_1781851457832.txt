@@ -1,0 +1,175 @@
+MISSION CRITIQUE – MENU 3 POINTS IDENTIQUE À TELEGRAM
+
+ATTENTION :
+
+90% = ÉCHEC
+95% = ÉCHEC
+98% = ÉCHEC
+
+Le menu actuel de BrutePawa est incomplet.
+
+Je veux reproduire le comportement Telegram à 99% minimum.
+
+═══════════════════════════════
+
+1. MENU 3 POINTS
+
+Quand l'utilisateur clique sur les 3 points en haut à droite de la page Infos Groupe :
+
+Ouvrir un menu flottant Telegram.
+
+Position :
+- Ancré sous les 3 points.
+- Alignement identique Telegram.
+- Même marge par rapport au bord droit.
+
+Style :
+
+- Fond blanc.
+- Coins 18px.
+- Ombre Telegram douce.
+- Largeur environ 280px.
+- Animation fade + scale.
+- Fermeture au clic extérieur.
+- Fermeture au bouton retour Android.
+
+═══════════════════════════════
+
+2. OPTIONS DU MENU
+
+Afficher exactement :
+
+⏱ Auto-suppression
+
+🎥 Démarrer un appel vidéo de groupe
+
+🔍 Rechercher des membres
+
+📱 Ajouter à l'écran d'accueil
+
+🚪 Supprimer et quitter le groupe
+
+Même ordre.
+Même espacement.
+Même hauteur de ligne.
+Même style Telegram.
+
+═══════════════════════════════
+
+3. AUTO-SUPPRESSION
+
+Au clic :
+
+Ouvrir un sous-menu Telegram.
+
+Afficher :
+
+✓ Désactivée
+
+○ 1 jour
+
+○ 1 semaine
+
+○ 1 mois
+
+○ Définir un délai
+
+Comportement :
+
+- Une seule option active.
+- Coche verte.
+- Fermeture automatique après sélection.
+- Sauvegarde immédiate.
+
+═══════════════════════════════
+
+4. RECHERCHER DES MEMBRES
+
+Au clic :
+
+Remplacer l'en-tête par une barre de recherche.
+
+Fonctionnalités :
+
+- Recherche instantanée.
+- Filtrage en temps réel.
+- Mise en surbrillance des résultats.
+- Navigation résultat précédent/suivant.
+- Même comportement Telegram.
+
+═══════════════════════════════
+
+5. AJOUTER À L'ÉCRAN D'ACCUEIL
+
+Au clic :
+
+Afficher une boîte Telegram.
+
+Titre :
+Ajouter à l'écran d'accueil
+
+Contenu :
+Nom du groupe
+Avatar du groupe
+
+Boutons :
+
+ANNULER
+
+AJOUTER
+
+Même design Telegram.
+
+═══════════════════════════════
+
+6. SUPPRIMER ET QUITTER LE GROUPE
+
+Au clic :
+
+Afficher une boîte Telegram identique.
+
+Titre :
+
+Supprimer et quitter le groupe
+
+Message :
+
+Êtes-vous sûr de vouloir quitter ce groupe ?
+
+Case à cocher :
+
+☐ Supprimer le groupe pour tous les membres
+
+Boutons :
+
+ANNULER
+
+SUPPRIMER
+
+Même taille.
+Même rayon.
+Même ombre.
+Même animation.
+
+═══════════════════════════════
+
+7. CONTRÔLE QUALITÉ
+
+Comparer chaque élément avec Telegram :
+
+✓ Position
+✓ Icônes
+✓ Marges
+✓ Ombres
+✓ Coins arrondis
+✓ Animations
+✓ Menus
+✓ Dialogues
+
+Si une différence dépasse 1% :
+
+CONTINUER À CORRIGER.
+
+Objectif final :
+
+Un utilisateur habitué à Telegram doit reconnaître immédiatement le comportement Telegram dans BrutePawa tout en conservant uniquement les couleurs officielles BrutePawa (#22C55E).

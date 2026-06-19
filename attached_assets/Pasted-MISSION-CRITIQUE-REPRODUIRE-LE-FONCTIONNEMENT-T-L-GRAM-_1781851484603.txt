@@ -1,0 +1,150 @@
+MISSION CRITIQUE – REPRODUIRE LE FONCTIONNEMENT TÉLÉGRAM À 99,9 %
+
+IMPORTANT :
+90% DE RESSEMBLANCE = ÉCHEC.
+95% DE RESSEMBLANCE = ÉCHEC.
+98% DE RESSEMBLANCE = ÉCHEC.
+
+OBJECTIF OBLIGATOIRE :
+La page Informations Groupe et le système d'édition doivent être reproduits à 99,9% du comportement Telegram tout en conservant l'identité visuelle BrutePawa.
+
+=========================
+BOUTON CRAYON (ÉDITION)
+=========================
+
+Lorsque l'utilisateur clique sur l'icône crayon en haut à droite :
+
+- Ouvrir immédiatement la page d'édition du groupe.
+- Animation fluide identique à Telegram.
+- Temps de réponse inférieur à 200 ms.
+
+La page d'édition doit permettre :
+
+✓ Modifier la photo du groupe
+✓ Modifier le nom du groupe
+✓ Modifier la description
+✓ Modifier les permissions
+✓ Modifier les administrateurs
+✓ Modifier les membres
+✓ Modifier les liens d'invitation
+✓ Modifier les paramètres du groupe
+
+=========================
+DONNÉES PRÉREMPLIES
+=========================
+
+Toutes les données existantes doivent être automatiquement chargées :
+
+- Nom actuel
+- Photo actuelle
+- Description actuelle
+- Paramètres actuels
+- Membres actuels
+
+Aucun champ vide ne doit apparaître si des données existent.
+
+=========================
+DESIGN À RESPECTER
+=========================
+
+Conserver l'identité BrutePawa :
+
+Couleur principale :
+#22C55E
+
+Fond :
+#FFFFFF
+
+Texte principal :
+#111827
+
+Texte secondaire :
+#6B7280
+
+Bordures :
+#E5E7EB
+
+=========================
+SAUVEGARDE
+=========================
+
+Lors du clic sur Validation :
+
+1. Afficher un loader moderne.
+2. Sauvegarder dans Supabase.
+3. Vérifier que les données sont enregistrées.
+4. Fermer la page d'édition.
+5. Actualiser automatiquement la page groupe.
+
+Sans rechargement manuel.
+
+=========================
+MISE À JOUR INSTANTANÉE
+=========================
+
+Après validation :
+
+Le nouveau nom doit apparaître immédiatement.
+
+La nouvelle photo doit apparaître immédiatement.
+
+La nouvelle description doit apparaître immédiatement.
+
+Aucun délai visible.
+
+=========================
+GESTION DES ERREURS
+=========================
+
+Si erreur :
+
+- Afficher un message clair.
+- Conserver les données saisies.
+- Permettre une nouvelle tentative.
+
+Ne jamais perdre les modifications.
+
+=========================
+TESTS OBLIGATOIRES
+=========================
+
+Avant validation du développement :
+
+TEST 1 :
+Cliquer sur le crayon.
+Résultat attendu :
+Page d'édition ouverte.
+
+TEST 2 :
+Modifier le nom.
+Résultat attendu :
+Nom mis à jour instantanément.
+
+TEST 3 :
+Modifier la photo.
+Résultat attendu :
+Nouvelle photo visible immédiatement.
+
+TEST 4 :
+Fermer et rouvrir le groupe.
+Résultat attendu :
+Les modifications persistent.
+
+TEST 5 :
+Vérifier Supabase.
+Résultat attendu :
+Toutes les données enregistrées.
+
+=========================
+RÈGLE FINALE
+=========================
+
+Ne pas considérer la tâche terminée tant que :
+
+- Le bouton crayon ouvre réellement l'édition.
+- Les données sont modifiables.
+- Les données sont sauvegardées.
+- Les données sont synchronisées.
+- Le comportement est visuellement et fonctionnellement identique à Telegram à 99,9%.
+
+Toute différence visible ou fonctionnelle est considérée comme un échec.
