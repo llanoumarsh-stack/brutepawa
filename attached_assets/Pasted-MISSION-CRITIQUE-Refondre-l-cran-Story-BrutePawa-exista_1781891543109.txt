@@ -1,0 +1,333 @@
+MISSION CRITIQUE :
+
+Refondre l'écran Story BrutePawa existant sans changer son architecture générale. Conserver exactement les mêmes fonctionnalités mais transformer l'apparence en un design premium digne d'Instagram, Telegram Premium, Spotify, Threads et WhatsApp Business.
+
+⚠️ RÈGLE ABSOLUE :
+AUCUNE couleur ne doit être inventée.
+Respecter STRICTEMENT la palette BrutePawa.
+
+==================================================
+PALETTE OFFICIELLE BRUTEPAWA
+==================================================
+
+Couleur primaire :
+#22C55E
+
+Couleur primaire hover :
+#16A34A
+
+Couleur primaire glow :
+rgba(34,197,94,0.25)
+
+Couleur secondaire :
+#15803D
+
+Fond principal :
+#02150D
+
+Fond secondaire :
+#032417
+
+Fond tertiaire :
+#053322
+
+Texte principal :
+#FFFFFF
+
+Texte secondaire :
+#D1D5DB
+
+Texte faible :
+#9CA3AF
+
+Bordure :
+rgba(255,255,255,0.08)
+
+Glass :
+rgba(255,255,255,0.05)
+
+==================================================
+STYLE VISUEL
+==================================================
+
+Style :
+Premium Social Network
+
+Inspirations :
+- Instagram Stories
+- Telegram Premium
+- Threads
+- Spotify
+- Notion Mobile
+- WhatsApp Business
+
+Interdictions :
+❌ Aucun vert fluo agressif
+❌ Aucun effet amateur
+❌ Aucun dégradé arc-en-ciel
+❌ Aucun bouton carré
+❌ Aucune ombre dure
+❌ Aucun effet Android ancien
+
+==================================================
+FOND
+==================================================
+
+Créer un fond premium :
+
+background:
+radial-gradient(
+circle at top left,
+rgba(34,197,94,0.15),
+transparent 45%
+),
+linear-gradient(
+180deg,
+#02150D 0%,
+#032417 50%,
+#053322 100%
+);
+
+Ajouter :
+
+- légère profondeur
+- effet Aurora très discret
+- vignette douce
+
+Le fond doit donner immédiatement une sensation premium.
+
+==================================================
+LOGO CENTRAL
+==================================================
+
+Logo BrutePawa géant au centre :
+
+- 12% d'opacité
+- effet verre dépoli
+- parfaitement centré
+- sans attirer trop l'attention
+
+==================================================
+BOUTONS LATÉRAUX
+==================================================
+
+Tous les outils :
+
+Texte
+Stickers
+Musique
+Effets
+Dessin
+Identifier
+Lien
+Recadrer
+
+Design :
+
+background:
+rgba(255,255,255,0.05);
+
+backdrop-filter:
+blur(24px);
+
+border:
+1px solid rgba(255,255,255,0.08);
+
+border-radius:
+24px;
+
+Hauteur :
+56px
+
+Ombre :
+
+0 8px 32px rgba(0,0,0,0.25)
+
+Icônes :
+
+- Lucide Icons
+- Stroke 2px
+- Taille 22px
+- Couleur #22C55E
+
+==================================================
+BARRE STORIES
+==================================================
+
+Stories progress :
+
+Hauteur :
+4px
+
+Coins :
+999px
+
+Story active :
+
+background:
+linear-gradient(
+90deg,
+#22C55E,
+#16A34A
+);
+
+Stories non vues :
+
+rgba(255,255,255,0.15)
+
+==================================================
+AVATAR
+==================================================
+
+Anneau Story :
+
+épaisseur :
+3px
+
+Dégradé :
+
+#22C55E → #16A34A
+
+Glow :
+
+0 0 25px rgba(34,197,94,0.35)
+
+==================================================
+BOUTON PUBLIC
+==================================================
+
+Capsule premium :
+
+background:
+rgba(34,197,94,0.12);
+
+border:
+1px solid rgba(34,197,94,0.25);
+
+border-radius:
+999px;
+
+==================================================
+TEXTE CENTRAL
+==================================================
+
+BrutePawa
+
+Police :
+Inter ExtraBold
+
+Poids :
+800
+
+Taille :
+42px
+
+Couleur :
+#FFFFFF
+
+Le mot Pawa :
+
+#22C55E
+
+Slogan :
+
+Réseau social de nouvelle génération
+
+Taille :
+16px
+
+Couleur :
+#9BE3B4
+
+==================================================
+BOUTON PARTAGER
+==================================================
+
+ÉLÉMENT LE PLUS IMPORTANT
+
+Hauteur :
+60px
+
+Coins :
+20px
+
+Dégradé :
+
+#22C55E → #16A34A
+
+Texte :
+Blanc
+
+Poids :
+700
+
+Glow :
+
+0 10px 40px rgba(34,197,94,0.35)
+
+Au clic :
+
+scale(0.98)
+
+==================================================
+CARTE MUSIQUE
+==================================================
+
+Glassmorphism Premium
+
+background:
+rgba(255,255,255,0.04);
+
+backdrop-filter:
+blur(30px);
+
+border:
+1px solid rgba(255,255,255,0.08);
+
+border-radius:
+28px;
+
+Afficher :
+
+- Pochette
+- Titre
+- Artiste
+- Animation audio verte
+
+==================================================
+ANIMATIONS
+==================================================
+
+Toutes les animations :
+
+200ms
+
+ease-out
+
+Hover :
+
+translateY(-2px)
+
+Press :
+
+scale(0.98)
+
+==================================================
+QUALITÉ VISUELLE
+==================================================
+
+Objectif :
+
+Créer un écran qui semble conçu par une équipe senior UI/UX de Meta ou Telegram.
+
+Le résultat final doit paraître :
+- premium
+- moderne
+- crédible
+- prêt Play Store
+- prêt App Store
+- cohérent avec l'identité BrutePawa
+
+Ne modifier aucune fonctionnalité.
+Ne modifier aucun emplacement majeur.
+Améliorer uniquement le design visuel jusqu'à un niveau 99% professionnel.

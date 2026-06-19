@@ -43,8 +43,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
   const rawUser = localStorage.getItem("fb_user");
   const user = rawUser ? (() => { try { return JSON.parse(rawUser); } catch { return null; } })() : null;
 
-  const draft = storyDraftStore.get();
-  const [mode, setMode] = useState<"text" | "photo">(draft ? "photo" : "text");
+  const [mode, setMode] = useState<"text" | "photo">("text");
   const [text, setText] = useState("");
   const [selectedBg, setSelectedBg] = useState(BG_OPTIONS[0]);
   const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
@@ -55,7 +54,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
   const [draftText, setDraftText] = useState("");
   const [toolbarExpanded, setToolbarExpanded] = useState(false);
 
-  const [photoPreview, setPhotoPreview] = useState<string | null>(draft?.previewUrl ?? null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -64,15 +63,18 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
   useEffect(() => {
     const d = storyDraftStore.get();
     if (!d) return;
-    const { file, previewUrl } = d;
     storyDraftStore.clear();
+    const { file } = d;
+    const freshPreview = URL.createObjectURL(file);
+    setPhotoPreview(freshPreview);
+    setMode("photo");
     upload(file).then(result => {
       if (result) {
         setPhotoUrl(result.url);
         setThumbnailUrl(result.thumbnailUrl ?? null);
       }
     });
-    return () => URL.revokeObjectURL(previewUrl);
+    return () => URL.revokeObjectURL(freshPreview);
   }, []);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -157,10 +159,10 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
         : textBackground && mode === "text" && (text || selectedEmoji)
           ? textBackground
           : `
-            radial-gradient(circle at 20% 10%, rgba(34,197,94,0.18), transparent 42%),
-            radial-gradient(circle at 80% 85%, rgba(21,128,61,0.12), transparent 40%),
-            radial-gradient(circle at 55% 50%, rgba(34,197,94,0.04), transparent 55%),
-            linear-gradient(180deg, #02150D 0%, #032417 50%, #053322 100%)
+            radial-gradient(circle at 18% 8%, rgba(34,197,94,0.28), transparent 40%),
+            radial-gradient(circle at 82% 88%, rgba(22,163,74,0.20), transparent 38%),
+            radial-gradient(circle at 50% 48%, rgba(34,197,94,0.06), transparent 52%),
+            linear-gradient(180deg, #031A0D 0%, #042B1B 45%, #063D28 100%)
           `,
       transition: "background 0.3s ease-out",
       overflow: "hidden",
