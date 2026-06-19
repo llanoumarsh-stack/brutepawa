@@ -1,4 +1,4 @@
-const CACHE = "brutepawa-v20260619d";
+const CACHE = "brutepawa-v20260619e";
 const PRECACHE = ["/", "/manifest.webmanifest"];
 
 self.addEventListener("install", (e) => {
@@ -55,7 +55,7 @@ self.addEventListener("push", (e) => {
        Falls back to app icon only if not provided. */
     icon:               data.icon || "/icons/icon-192.png",
     /* badge = tiny monochrome status-bar icon (white "b" on transparent) */
-    badge:              data.badge || "/icons/badge-96.svg",
+    badge:              data.badge || "/icons/badge-96.png",
     tag:                data.tag || "bp-notification",
     renotify:           true,
     requireInteraction: isCall ? true : (data.requireInteraction || false),
@@ -97,6 +97,16 @@ self.addEventListener("push", (e) => {
     }, 4000);
   }
 });
+
+/* Helper: close ALL open notifications from this app + clear badge */
+function closeAllNotifications() {
+  return self.registration.getNotifications().then((notifs) => {
+    notifs.forEach((n) => n.close());
+    if (self.navigator && self.navigator.clearAppBadge) {
+      self.navigator.clearAppBadge().catch(() => {});
+    }
+  });
+}
 
 self.addEventListener("notificationclick", (e) => {
   e.notification.close();
@@ -200,23 +210,26 @@ self.addEventListener("notificationclick", (e) => {
   const url = d.url || "/";
 
   e.waitUntil(
-    clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
-      const appClient = list.find((c) => c.url.startsWith(self.location.origin));
+    Promise.all([
+      closeAllNotifications(),
+      clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
+        const appClient = list.find((c) => c.url.startsWith(self.location.origin));
 
-      if (appClient) {
-        return appClient.focus().then((w) => {
-          if (isCall) {
-            w.postMessage({ type: "bp:incoming-call", data: d });
-          } else {
-            /* Naviguer vers la bonne conversation via le router SPA */
-            w.postMessage({ type: "bp:navigate", data: { url } });
-          }
+        if (appClient) {
+          return appClient.focus().then((w) => {
+            if (isCall) {
+              w.postMessage({ type: "bp:incoming-call", data: d });
+            } else {
+              /* Naviguer vers la bonne conversation via le router SPA */
+              w.postMessage({ type: "bp:navigate", data: { url } });
+            }
+          });
+        }
+
+        return clients.openWindow(new URL(url, self.location.origin).href).then((w) => {
+          if (w && isCall) setTimeout(() => w.postMessage({ type: "bp:incoming-call", data: d }), 1500);
         });
-      }
-
-      return clients.openWindow(new URL(url, self.location.origin).href).then((w) => {
-        if (w && isCall) setTimeout(() => w.postMessage({ type: "bp:incoming-call", data: d }), 1500);
-      });
-    })
+      }),
+    ])
   );
 });
