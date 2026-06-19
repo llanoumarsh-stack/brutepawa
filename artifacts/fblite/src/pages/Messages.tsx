@@ -2918,8 +2918,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         backgroundImage:`url(${import.meta.env.BASE_URL}wallpapers/bp-chat-bg.jpg)`,
         backgroundSize:"cover", backgroundRepeat:"no-repeat", backgroundPosition:"center" }}>
         <style>{`
-          .bp-msg-mine   { background:#DCECCB; color:#111; border-radius:18px 18px 4px 18px; box-shadow:0 1px 3px rgba(0,0,0,0.14); }
-          .bp-msg-theirs { background:#fff;    color:#111; border-radius:18px 18px 18px 4px; box-shadow:0 1px 3px rgba(0,0,0,0.12); }
+          .bp-msg-mine   { background:#DCECCB; color:#111; border-radius:16px 16px 4px 16px; box-shadow:0 1px 2px rgba(0,0,0,0.10); }
+          .bp-msg-theirs { background:#fff;    color:#111; border-radius:4px 16px 16px 16px; box-shadow:0 1px 2px rgba(0,0,0,0.08); }
           textarea:focus { outline:none !important; box-shadow:none !important; border:none !important; }
           textarea { -webkit-appearance:none; scrollbar-width:none; }
           textarea::-webkit-scrollbar { display:none; }
@@ -2964,54 +2964,54 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             })()}
           </div>
         ) : (
-          /* ── NORMAL header ── */
-          <div style={{ background:"#fff", padding:"6px 8px 6px 4px", display:"flex", alignItems:"center", gap:6, flexShrink:0, boxShadow:"0 1px 4px rgba(0,0,0,0.10)", position:"relative" }}>
+          /* ── NORMAL header — Telegram compact ── */
+          <div style={{ background:"#fff", padding:"5px 4px 5px 2px", display:"flex", alignItems:"center", gap:6, flexShrink:0, borderBottom:"1px solid #EBEBEB", boxShadow:"0 1px 3px rgba(0,0,0,0.04)", position:"relative" }}>
             <button onClick={() => { setActiveGroupId(null); setShowGroupInfo(false); setShowGrpMenu(false); }}
-              style={{ background:"none", border:"none", cursor:"pointer", width:40, height:44, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+              style={{ background:"none", border:"none", cursor:"pointer", padding:"8px 2px 8px 6px", display:"flex", alignItems:"center", flexShrink:0 }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#1F2937" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
             </button>
             <div onClick={() => setShowGroupInfo(true)}
-              style={{ width:42, height:42, borderRadius:"50%", background:grpColor, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, fontSize:18, cursor:"pointer", flexShrink:0 }}>
+              style={{ width:38, height:38, borderRadius:"50%", background:grpColor, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, fontSize:15, cursor:"pointer", flexShrink:0 }}>
               {grp?.avatarUrl
-                ? <img src={grp.avatarUrl} style={{ width:42, height:42, borderRadius:"50%", objectFit:"cover" }} alt={grp.name} />
+                ? <img src={grp.avatarUrl} style={{ width:38, height:38, borderRadius:"50%", objectFit:"cover" }} alt={grp.name} />
                 : grpInitial}
             </div>
             <div style={{ flex:1, minWidth:0, cursor:"pointer" }} onClick={() => setShowGroupInfo(true)}>
-              <div style={{ fontWeight:700, fontSize:15.5, color:"#000", lineHeight:1.25, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{grp?.name ?? "Groupe"}</div>
-              <div style={{ fontSize:12, color:"#8E8E93" }}>{grp?.membersCount ?? 0} membre{(grp?.membersCount ?? 0) !== 1 ? "s" : ""}</div>
+              <div style={{ fontWeight:700, fontSize:15.5, color:"#0F172A", lineHeight:1.25, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{grp?.name ?? "Groupe"}</div>
+              <div style={{ fontSize:11.5, color:"#9CA3AF" }}>{grp?.membersCount ?? 0} membre{(grp?.membersCount ?? 0) !== 1 ? "s" : ""}</div>
             </div>
             <button onClick={() => setShowGrpMenu(m => !m)}
               style={{ background:"none", border:"none", width:40, height:40, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="#8E8E93"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#374151" strokeWidth="2.1" strokeLinecap="round"><circle cx="12" cy="5" r="1.2" fill="#374151"/><circle cx="12" cy="12" r="1.2" fill="#374151"/><circle cx="12" cy="19" r="1.2" fill="#374151"/></svg>
             </button>
 
-            {/* ── TELEGRAM-STYLE POPUP MENU ── */}
+            {/* ── POPUP MENU ── */}
             {showGrpMenu && (
               <>
                 <div style={{ position:"fixed", inset:0, zIndex:10050 }} onClick={() => setShowGrpMenu(false)} />
-                <div style={{ position:"absolute", top:52, right:8, background:"#fff", borderRadius:10, boxShadow:"0 4px 24px rgba(0,0,0,0.20)", zIndex:10051, minWidth:200, overflow:"hidden", animation:"grp-slide-in 0.15s ease", transformOrigin:"top right" }}
+                <div style={{ position:"absolute", top:48, right:6, background:"#fff", borderRadius:16, boxShadow:"0 3px 16px rgba(0,0,0,0.16)", zIndex:10051, minWidth:192, overflow:"hidden", animation:"grp-slide-in 0.12s ease", transformOrigin:"top right" }}
                   onClick={e => e.stopPropagation()}>
                   <button onClick={() => setShowGrpMenu(false)}
-                    style={{ display:"flex", alignItems:"center", gap:16, width:"100%", background:"none", border:"none", padding:"13px 18px", fontSize:15, color:"#111", cursor:"pointer", fontFamily:"inherit", textAlign:"left" }}>
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#555" strokeWidth="1.8" strokeLinecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/><line x1="8.7" y1="2" x2="8.7" y2="4"/><line x1="15.3" y1="2" x2="15.3" y2="4"/></svg>
+                    style={{ display:"flex", alignItems:"center", gap:12, width:"100%", background:"none", border:"none", padding:"10px 16px", fontSize:14.5, color:"#111", cursor:"pointer", fontFamily:"inherit", textAlign:"left" }}>
+                    <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#555" strokeWidth="1.8" strokeLinecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                     Mettre en sourdine
                   </button>
-                  <div style={{ height:1, background:"#F2F2F7", margin:"0 18px" }} />
+                  <div style={{ height:1, background:"#F2F2F7" }} />
                   <button onClick={() => { setShowGrpMenu(false); setShowGrpSearch(true); setGrpSearchQ(""); setGrpSearchIdx(0); }}
-                    style={{ display:"flex", alignItems:"center", gap:16, width:"100%", background:"none", border:"none", padding:"13px 18px", fontSize:15, color:"#111", cursor:"pointer", fontFamily:"inherit", textAlign:"left" }}>
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#555" strokeWidth="1.8" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    style={{ display:"flex", alignItems:"center", gap:12, width:"100%", background:"none", border:"none", padding:"10px 16px", fontSize:14.5, color:"#111", cursor:"pointer", fontFamily:"inherit", textAlign:"left" }}>
+                    <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#555" strokeWidth="1.8" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                     Rechercher
                   </button>
-                  <div style={{ height:1, background:"#F2F2F7", margin:"0 18px" }} />
+                  <div style={{ height:1, background:"#F2F2F7" }} />
                   <button onClick={() => { setShowGrpMenu(false); setShowClearHist(true); }}
-                    style={{ display:"flex", alignItems:"center", gap:16, width:"100%", background:"none", border:"none", padding:"13px 18px", fontSize:15, color:"#111", cursor:"pointer", fontFamily:"inherit", textAlign:"left" }}>
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#555" strokeWidth="1.8" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                    style={{ display:"flex", alignItems:"center", gap:12, width:"100%", background:"none", border:"none", padding:"10px 16px", fontSize:14.5, color:"#111", cursor:"pointer", fontFamily:"inherit", textAlign:"left" }}>
+                    <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#555" strokeWidth="1.8" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
                     Effacer l'historique
                   </button>
-                  <div style={{ height:1, background:"#F2F2F7", margin:"0 18px" }} />
+                  <div style={{ height:1, background:"#F2F2F7" }} />
                   <button onClick={() => { setShowGrpMenu(false); setShowLeaveGrp(true); setLeaveDeleteAll(false); }}
-                    style={{ display:"flex", alignItems:"center", gap:16, width:"100%", background:"none", border:"none", padding:"13px 18px", fontSize:15, color:"#E02020", cursor:"pointer", fontFamily:"inherit", textAlign:"left" }}>
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#E02020" strokeWidth="1.8" strokeLinecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    style={{ display:"flex", alignItems:"center", gap:12, width:"100%", background:"none", border:"none", padding:"10px 16px", fontSize:14.5, color:"#E02020", cursor:"pointer", fontFamily:"inherit", textAlign:"left" }}>
+                    <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#E02020" strokeWidth="1.8" strokeLinecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                     Quitter le groupe
                   </button>
                 </div>
@@ -3214,12 +3214,12 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         backgroundImage: convWallpaper ? `url(${convWallpaper})` : convWpKey !== "none" && wpUrl(convWpKey) ? `url(${wpUrl(convWpKey)})` : `url(${import.meta.env.BASE_URL}wallpapers/bp-chat-bg.jpg)`,
         backgroundSize:"cover", backgroundRepeat:"no-repeat", backgroundPosition:"center" }}>
         <style>{`
-          .fbl-msg-mine   { background:#DCECCB; color:#111; border-radius:18px 18px 4px 18px; box-shadow:0 1px 3px rgba(0,0,0,0.14); }
+          .fbl-msg-mine   { background:#DCECCB; color:#111; border-radius:16px 16px 4px 16px; box-shadow:0 1px 2px rgba(0,0,0,0.10); }
+          .fbl-msg-theirs { background:#fff; color:#111; border-radius:4px 16px 16px 16px; box-shadow:0 1px 2px rgba(0,0,0,0.08); }
           textarea:focus  { outline:none !important; box-shadow:none !important; border:none !important; }
           textarea        { -webkit-appearance:none; scrollbar-width:none; }
           textarea::-webkit-scrollbar { display:none; }
-          .fbl-msg-theirs { background:#fff; color:#111; border-radius:18px 18px 18px 4px; box-shadow:0 1px 3px rgba(0,0,0,0.12); }
-          .fbl-menu-btn { display:flex; align-items:center; gap:14px; padding:13px 20px; background:none; border:none; width:100%; font-size:15px; color:#111; cursor:pointer; text-align:left; font-family:inherit; }
+          .fbl-menu-btn { display:flex; align-items:center; gap:12px; padding:10px 16px; background:none; border:none; width:100%; font-size:14.5px; color:#111; cursor:pointer; text-align:left; font-family:inherit; }
           .fbl-menu-btn:active { background:#F0F2F5; }
           .fbl-react-btn:active { transform:scale(1.35); }
           @keyframes fbl-sheet-up { from{transform:translateY(100%)} to{transform:translateY(0)} }
@@ -3289,44 +3289,49 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             </div>
           </div>
         ) : (
-          /* NORMAL HEADER — Premium white design */
-          <div style={{ background:"#fff", padding:"10px 12px", display:"flex", alignItems:"center", gap:10, flexShrink:0, borderBottom:"1px solid #F1F5F9", boxShadow:"0 1px 8px rgba(0,0,0,0.06)" }}>
+          /* NORMAL HEADER — Telegram-style compact */
+          <div style={{ background:"#fff", padding:"5px 4px 5px 2px", display:"flex", alignItems:"center", gap:6, flexShrink:0, borderBottom:"1px solid #EBEBEB", boxShadow:"0 1px 3px rgba(0,0,0,0.04)" }}>
+            {/* Back arrow */}
             <button onClick={() => { setActiveConv(null); setOverlay("none"); setShowConvMenu(false); }}
-              style={{ background:"none", border:"none", cursor:"pointer", color:"#16C24A", display:"flex", alignItems:"center", padding:"4px 6px 4px 0", flexShrink:0 }}>
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16C24A" strokeWidth="2.5" strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+              style={{ background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", padding:"8px 2px 8px 6px", flexShrink:0 }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#1F2937" strokeWidth="2.3" strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
             </button>
+            {/* Avatar */}
             <div style={{ position:"relative", cursor:"pointer", flexShrink:0 }} onClick={() => setOverlay("info")}>
               {activeUser.avatarUrl
-                ? <img src={activeUser.avatarUrl} alt={activeUser.name} style={{ width:44, height:44, borderRadius:"50%", objectFit:"cover", display:"block" }} />
-                : <div style={{ width:44, height:44, borderRadius:"50%", background:"linear-gradient(135deg,#16C24A,#0ea541)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, fontWeight:800, color:"#fff", boxShadow:"0 2px 8px rgba(22,194,74,0.35)" }}>{activeUser.initials}</div>
+                ? <img src={activeUser.avatarUrl} alt={activeUser.name} style={{ width:38, height:38, borderRadius:"50%", objectFit:"cover", display:"block" }} />
+                : <div style={{ width:38, height:38, borderRadius:"50%", background:"linear-gradient(135deg,#22C55E,#16A34A)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:800, color:"#fff" }}>{activeUser.initials}</div>
               }
-              {presence.online && <div style={{ position:"absolute", bottom:1, right:1, width:12, height:12, background:"#16C24A", borderRadius:"50%", border:"2.5px solid #fff" }} />}
+              {presence.online && <div style={{ position:"absolute", bottom:0, right:0, width:10, height:10, background:"#22C55E", borderRadius:"50%", border:"2px solid #fff" }} />}
             </div>
+            {/* Name + status */}
             <div style={{ flex:1, minWidth:0, cursor:"pointer" }} onClick={() => setOverlay("info")}>
-              <div style={{ display:"flex", alignItems:"center", gap:5 }}>
-                <span style={{ fontWeight:800, fontSize:16, color:"#0F172A", lineHeight:1.2 }}>{activeUser.name}</span>
-                {activeConv === 13 && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width:18, height:18, objectFit:"cover", borderRadius:"50%", flexShrink:0 }} />}
+              <div style={{ display:"flex", alignItems:"center", gap:4 }}>
+                <span style={{ fontWeight:700, fontSize:15.5, color:"#0F172A", lineHeight:1.2, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{activeUser.name}</span>
+                {activeConv === 13 && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width:15, height:15, objectFit:"cover", borderRadius:"50%", flexShrink:0 }} />}
               </div>
-              <div style={{ fontSize:12, fontWeight: (presence.online || peerTyping.typing) ? 600 : 400, color: peerTyping.typing ? "#F59E0B" : presence.online ? "#16C24A" : "#94A3B8" }}>
+              <div style={{ fontSize:11.5, fontWeight: (presence.online || peerTyping.typing) ? 500 : 400, color: peerTyping.typing ? "#F59E0B" : presence.online ? "#22C55E" : "#9CA3AF", lineHeight:1.3 }}>
                 {peerTyping.typing
-                  ? peerTyping.activity === "audio" ? "En train d'envoyer un vocal 🎤"
-                    : peerTyping.activity === "video" ? "En train d'envoyer une vidéo 📹"
-                    : "En train d'écrire..."
+                  ? peerTyping.activity === "audio" ? "🎤 vocal en cours..."
+                    : peerTyping.activity === "video" ? "📹 vidéo en cours..."
+                    : "en train d'écrire..."
                   : presText}
               </div>
             </div>
+            {/* Call icons — flat, no circle */}
             <button onClick={() => sig.startCall(activeConv, "audio")}
-              style={{ background:"#F0FDF4", border:"none", width:38, height:38, borderRadius:"50%", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.24 1.01L6.6 10.8z"/></svg>
+              style={{ background:"none", border:"none", width:40, height:40, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#374151" strokeWidth="2.1" strokeLinecap="round"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.24 1.01L6.6 10.8z"/></svg>
             </button>
             <button onClick={() => sig.startCall(activeConv, "video")}
-              style={{ background:"#F0FDF4", border:"none", width:38, height:38, borderRadius:"50%", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+              style={{ background:"none", border:"none", width:40, height:40, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#374151" strokeWidth="2.1" strokeLinecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
             </button>
+            {/* ⋮ dot menu */}
             <div style={{ position:"relative", flexShrink:0 }}>
               <button onClick={() => { setShowConvMenu(m => !m); setShowNotifSub(false); }}
-                style={{ background:"none", border:"none", width:34, height:34, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#64748B" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="5" r="1.2" fill="#64748B"/><circle cx="12" cy="12" r="1.2" fill="#64748B"/><circle cx="12" cy="19" r="1.2" fill="#64748B"/></svg>
+                style={{ background:"none", border:"none", width:40, height:40, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#374151" strokeWidth="2.1" strokeLinecap="round"><circle cx="12" cy="5" r="1.2" fill="#374151"/><circle cx="12" cy="12" r="1.2" fill="#374151"/><circle cx="12" cy="19" r="1.2" fill="#374151"/></svg>
               </button>
             </div>
           </div>
@@ -3405,7 +3410,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     {isLast && <div className="avatar xs" style={{ background:activeUser.color, width:26, height:26, fontSize:10 }}>{activeUser.initials}</div>}
                   </div>
                 )}
-                <div style={{ maxWidth:"72%" }}>
+                <div style={{ maxWidth:"78%" }}>
                   {msg.attachment && (
                     msg.attachment.type === "audio" ? (() => {
                       const durStr   = msg.attachment!.extra || "0:00";
@@ -3419,11 +3424,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       <div style={{
                         background: mine ? "#DCECCB" : "#fff",
                         borderRadius: mine ? "18px 4px 18px 18px" : "4px 18px 18px 18px",
-                        padding:"10px 12px 8px",
-                        minWidth:224, maxWidth:282,
+                        padding:"7px 10px 6px",
+                        minWidth:196, maxWidth:258,
                         boxShadow: mine
-                          ? "0 2px 10px rgba(0,0,0,0.10)"
-                          : "0 2px 14px rgba(0,0,0,0.10)",
+                          ? "0 1px 4px rgba(0,0,0,0.10)"
+                          : "0 1px 4px rgba(0,0,0,0.10)",
                         marginBottom:2,
                         userSelect:"none",
                         WebkitUserSelect:"none",
@@ -3477,10 +3482,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                             <button
                               onClick={() => toggleVoice(msg.id, msg.attachment!.label)}
                               style={{
-                                width:44, height:44, borderRadius:"50%", flexShrink:0, border:"none", cursor:"pointer",
-                                background: mine ? "#8BCB7A" : "#16C24A",
+                                width:38, height:38, borderRadius:"50%", flexShrink:0, border:"none", cursor:"pointer",
+                                background: mine ? "#8BCB7A" : "#22C55E",
                                 display:"flex", alignItems:"center", justifyContent:"center",
-                                boxShadow: mine ? "0 3px 14px rgba(139,203,122,0.44)" : "0 3px 14px rgba(22,194,74,0.44)",
+                                boxShadow: mine ? "0 2px 6px rgba(139,203,122,0.30)" : "0 2px 6px rgba(34,197,94,0.28)",
                                 transition:"transform 0.11s, opacity 0.11s",
                                 WebkitTapHighlightColor:"transparent",
                                 touchAction:"manipulation",
@@ -3540,7 +3545,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                                   minHeight:3,
                                   background: mine
                                     ? (played ? "#8BCB7A" : "#A8D39A")
-                                    : (played ? "#16C24A" : "#BFD4E5"),
+                                    : (played ? "#22C55E" : "#BFD4E5"),
                                   transition:"background 0.06s",
                                   transformOrigin:"center",
                                   animation: anim,
@@ -3556,7 +3561,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                               style={{
                                 background: mine ? "rgba(121,176,107,0.18)" : "rgba(22,194,74,0.13)",
                                 border:"none", borderRadius:7, padding:"2px 7px", cursor:"pointer",
-                                color: mine ? "#79B06B" : "#16C24A",
+                                color: mine ? "#79B06B" : "#22C55E",
                                 fontSize:11, fontWeight:800, letterSpacing:0.3,
                                 transition:"background 0.15s",
                                 WebkitTapHighlightColor:"transparent",
@@ -3790,9 +3795,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                           display:"flex", alignItems:"center", justifyContent:"space-between" }}>
                           <a href={mapHref} target="_blank" rel="noreferrer"
                             style={{ textDecoration:"none", display:"flex", alignItems:"center",
-                              gap:5, color:"#16C24A", fontWeight:700, fontSize:13 }}>
+                              gap:5, color:"#22C55E", fontWeight:700, fontSize:13 }}>
                             <svg viewBox="0 0 24 24" width="15" height="15" fill="none"
-                              stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                              stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                               <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
                               <line x1="9" y1="3" x2="9" y2="18"/>
                               <line x1="15" y1="6" x2="15" y2="21"/>
@@ -4385,9 +4390,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             )}
 
             {/* ── Main input row — floating pill composer ── */}
-            <div style={{ padding:"8px 10px 10px", display: recLocked ? "none" : "flex", alignItems:"center", userSelect:"none", WebkitUserSelect:"none" }}>
+            <div style={{ padding:"5px 8px 7px", display: recLocked ? "none" : "flex", alignItems:"center", userSelect:"none", WebkitUserSelect:"none" }}>
               {/* ═══ THE FLOATING PILL ═══ */}
-              <div style={{ flex:1, display:"flex", alignItems:"center", background:"#fff", border:"1px solid #E5E7EB", borderRadius:9999, padding:"0 5px 0 14px", minHeight:52, overflow:"visible", position:"relative" }}>
+              <div style={{ flex:1, display:"flex", alignItems:"center", background:"#fff", border:"1px solid #E2E8F0", borderRadius:9999, padding:"0 4px 0 12px", minHeight:44, overflow:"visible", position:"relative" }}>
 
                 {/* Unlocked recording: waveform lives inside the pill */}
                 {isRecording && !recLocked && (
@@ -4442,7 +4447,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 {newMsg.trim() && !isRecording ? (
                   /* Send button — green circle inside the pill */
                   <button onClick={() => sendMsg()}
-                    style={{ background:"#22C55E", border:"none", borderRadius:"50%", width:44, height:44, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 3px 12px rgba(34,197,94,0.40)", cursor:"pointer" }}>
+                    style={{ background:"#22C55E", border:"none", borderRadius:"50%", width:36, height:36, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(34,197,94,0.28)", cursor:"pointer" }}>
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                   </button>
                 ) : (
@@ -4450,11 +4455,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     {!isRecording && (
                       <>
                         <button onClick={() => { setAttachSheet(true); setAttachPage("none"); }}
-                          style={{ background:"none", border:"none", cursor:"pointer", padding:"0 4px", flexShrink:0, display:"flex", alignItems:"center" }}>
-                          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                          style={{ background:"none", border:"none", cursor:"pointer", padding:"0 3px", flexShrink:0, display:"flex", alignItems:"center" }}>
+                          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
                         </button>
-                        <button onClick={() => cameraInputRef.current?.click()} style={{ background:"none", border:"none", cursor:"pointer", padding:"0 4px", flexShrink:0, display:"flex", alignItems:"center" }}>
-                          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                        <button onClick={() => cameraInputRef.current?.click()} style={{ background:"none", border:"none", cursor:"pointer", padding:"0 3px", flexShrink:0, display:"flex", alignItems:"center" }}>
+                          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                         </button>
                       </>
                     )}
@@ -4589,7 +4594,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         {showConvMenu && (
           <>
             <div style={{ position:"fixed", inset:0, zIndex:98 }} onClick={() => { setShowConvMenu(false); setShowNotifSub(false); }} />
-            <div style={{ position:"fixed", top:56, right:8, background:"#fff", borderRadius:12, boxShadow:"0 4px 24px rgba(0,0,0,0.22)", zIndex:10001, minWidth:"min(234px, calc(100vw - 16px))", maxWidth:"calc(100vw - 16px)", overflow:"hidden", animation:"fbl-fade-in 0.15s ease" }}
+            <div style={{ position:"fixed", top:50, right:6, background:"#fff", borderRadius:16, boxShadow:"0 3px 16px rgba(0,0,0,0.16)", zIndex:10001, minWidth:"min(200px, calc(100vw - 16px))", maxWidth:"calc(100vw - 16px)", overflow:"hidden", animation:"fbl-fade-in 0.12s ease" }}
               onClick={e => e.stopPropagation()}>
               <button className="fbl-menu-btn" onClick={() => setShowNotifSub(n => !n)}>
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="#555"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
