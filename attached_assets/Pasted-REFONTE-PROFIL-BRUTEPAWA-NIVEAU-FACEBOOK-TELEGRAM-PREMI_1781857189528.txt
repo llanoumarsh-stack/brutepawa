@@ -1,0 +1,96 @@
+REFONTE PROFIL BRUTEPAWA – NIVEAU FACEBOOK / TELEGRAM PREMIUM
+
+Analyse l'écran Profil actuel et améliore-le sans casser la logique existante.
+
+OBJECTIF :
+Créer un profil moderne, premium, équilibré et professionnel inspiré des meilleures pratiques Facebook, Telegram Premium et X.
+
+AMÉLIORATIONS OBLIGATOIRES :
+
+1. COUVERTURE
+- Remplacer la couverture verte trop vide.
+- Ajouter un fond premium avec dégradés subtils.
+- Ajouter des formes abstraites légères.
+- Garder la couleur officielle BrutePawa (#22C55E).
+- Aspect plus luxueux et moderne.
+
+2. AVATAR
+- Avatar légèrement plus grand.
+- Ombre douce.
+- Bordure blanche propre.
+- Position identique à Facebook.
+
+3. INFORMATIONS UTILISATEUR
+- Nom plus visible.
+- Badge vérifié mieux aligné.
+- Métier, pays et informations secondaires plus discrètes.
+- Espacement cohérent.
+
+4. NIVEAU UTILISATEUR
+- Transformer "Niveau Or 53%" en badge premium.
+- Fond blanc.
+- Bordure légère.
+- Icône médaille plus élégante.
+
+5. CARTE PROFIL VERROUILLÉ
+- Réduire sa dominance visuelle.
+- Fond blanc.
+- Bordure légère.
+- Icône verte discrète.
+- Hauteur réduite.
+
+6. STATISTIQUES
+Actuellement :
+Amis
+Abonnés
+Publications
+
+Les transformer en vraie carte statistique :
+
+┌─────────────┐
+│ 9 │ 0 │ 0 │
+│Amis Abonnés Publications│
+└─────────────┘
+
+- Chiffres beaucoup plus visibles.
+- Cartes séparées.
+- Alignement parfait.
+- Style Facebook moderne.
+
+7. BOUTONS
+- Réduire légèrement la hauteur.
+- Coins arrondis premium.
+- Espacement uniforme.
+- Ajouter micro-animation au clic.
+
+8. ONGLETS
+Publications
+À propos
+Amis
+Photos
+
+- Inspirés Facebook.
+- Indicateur actif plus élégant.
+- Animation fluide.
+
+9. ESPACEMENT
+- Augmenter les marges.
+- Réduire l'effet "tout collé".
+- Meilleure respiration visuelle.
+
+10. STYLE GLOBAL
+- Moins de vert partout.
+- Plus de blanc.
+- Plus de gris clair.
+- Plus de profondeur.
+- Plus de hiérarchie visuelle.
+
+RÈGLE ABSOLUE :
+Ne supprimer aucune fonctionnalité existante.
+Ne modifier aucune logique backend.
+Uniquement améliorer l'UI/UX.
+
+RÉSULTAT ATTENDU :
+Interface digne d'une application ayant plus de 10 millions d'utilisateurs.
+Aspect Facebook + Telegram Premium + X.
+Design premium, propre, moderne et professionnel.

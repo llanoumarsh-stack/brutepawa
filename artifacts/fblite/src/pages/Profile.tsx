@@ -336,14 +336,22 @@ export default function Profile() {
           {/* Clipped layer for abstract shapes + rounded corners */}
           <div style={{ position: "absolute", inset: 0, borderRadius: "12px 12px 0 0", overflow: "hidden", pointerEvents: "none", zIndex: 1 }}>
             {!coverUrl && (
-              <svg style={{ position: "absolute", right: 0, top: 0, width: "100%", height: "100%" }} viewBox="0 0 400 200" fill="none" preserveAspectRatio="xMaxYMin slice">
-                <circle cx="360" cy="-20" r="160" fill="white" fillOpacity="0.13"/>
-                <circle cx="410" cy="130" r="110" fill="white" fillOpacity="0.10"/>
-                <path d="M180 0 Q310 55 400 170" stroke="white" strokeOpacity="0.18" strokeWidth="65" fill="none" strokeLinecap="round"/>
-                <circle cx="300" cy="175" r="48" fill="white" fillOpacity="0.07"/>
+              <svg style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "100%" }} viewBox="0 0 400 175" fill="none" preserveAspectRatio="xMidYMid slice">
+                {/* Large diagonal triangle — top right */}
+                <polygon points="240,0 400,0 400,175" fill="white" fillOpacity="0.06"/>
+                {/* Second triangle — bottom left accent */}
+                <polygon points="0,175 0,90 120,175" fill="white" fillOpacity="0.05"/>
+                {/* Subtle stripe top-left to bottom-right */}
+                <line x1="-20" y1="80" x2="420" y2="80" stroke="white" strokeOpacity="0.04" strokeWidth="60"/>
+                {/* Geometric diamond shape center-right */}
+                <polygon points="320,30 355,75 320,120 285,75" fill="white" fillOpacity="0.06"/>
+                {/* Small circle top-left */}
+                <circle cx="60" cy="40" r="55" fill="white" fillOpacity="0.04"/>
+                {/* Medium circle bottom-right */}
+                <circle cx="380" cy="155" r="70" fill="white" fillOpacity="0.05"/>
               </svg>
             )}
-            {coverUrl && <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.15)" }} />}
+            {coverUrl && <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.18)" }} />}
           </div>
 
           {/* Flag — top right white circle */}
@@ -371,12 +379,12 @@ export default function Profile() {
               style={{ position: "relative", cursor: "pointer" }}
             >
               {avatarUrl ? (
-                <img src={avatarUrl} alt="Avatar" style={{ width: 92, height: 92, borderRadius: "50%", border: "5px solid #fff", objectFit: "cover", display: "block", boxShadow: "0 2px 10px rgba(0,0,0,0.18)" }} />
+                <img src={avatarUrl} alt="Avatar" style={{ width: 96, height: 96, borderRadius: "50%", border: "4px solid #fff", objectFit: "cover", display: "block", boxShadow: "0 4px 16px rgba(0,0,0,0.22)" }} />
               ) : (
                 <div className="profile-avatar-lg">{userInitials}</div>
               )}
               {/* Camera icon */}
-              <div style={{ position: "absolute", bottom: 2, right: 2, width: 28, height: 28, borderRadius: "50%", background: "#1877F2", border: "2.5px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 1px 4px rgba(0,0,0,0.2)" }}>
+              <div style={{ position: "absolute", bottom: 2, right: 2, width: 28, height: 28, borderRadius: "50%", background: "#22C55E", border: "2.5px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 1px 6px rgba(34,197,94,0.35)" }}>
                 {uploadingWhat === "avatar"
                   ? <div style={{ width: 12, height: 12, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
                   : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
@@ -442,11 +450,10 @@ export default function Profile() {
                 {/* Level badge */}
                 <button
                   onClick={() => navigate("/score")}
-                  style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "#f0faf0", border: "1.5px solid #c3eacc", borderRadius: 20, padding: "4px 11px", marginTop: 8, cursor: "pointer" }}
+                  style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#fff", border: "1px solid #E5E7EB", borderRadius: 99, padding: "5px 13px", marginTop: 9, cursor: "pointer", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
                 >
-                  {/* Medal ribbon icon */}
-                  <span style={{ fontSize: 13 }}>🥈</span>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: "#555" }}>Niveau {score.label} · {score.pct}%</span>
+                  <span style={{ fontSize: 14 }}>🥈</span>
+                  <span style={{ fontSize: 12.5, fontWeight: 700, color: "#374151" }}>Niveau {score.label} · {score.pct}%</span>
                 </button>
               </div>
 
@@ -464,33 +471,34 @@ export default function Profile() {
             {isProfileLocked && (
               <div
                 onClick={() => setShowLockProfile(true)}
-                style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12, padding: "10px 14px", background: "linear-gradient(135deg,#F0FDF4,#DCFCE7)", border: "1.5px solid #86EFAC", borderRadius: 14, cursor: "pointer" }}
+                style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12, padding: "10px 14px", background: "#fff", border: "1px solid #E5E7EB", borderRadius: 12, cursor: "pointer" }}
               >
-                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg,#22C55E,#16A34A)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 2px 8px rgba(34,197,94,0.3)" }}>
+                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-                    <rect x="3" y="11" width="18" height="11" rx="3" fill="#fff" opacity="0.2"/>
-                    <path d="M7 11V7a5 5 0 0110 0v4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"/>
-                    <circle cx="12" cy="16.5" r="1.8" fill="#fff"/>
+                    <rect x="3" y="11" width="18" height="11" rx="3" fill="#22C55E" opacity="0.25"/>
+                    <path d="M7 11V7a5 5 0 0110 0v4" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"/>
+                    <circle cx="12" cy="16.5" r="1.8" fill="#22C55E"/>
                   </svg>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 700, fontSize: 13.5, color: "#16A34A" }}>Profil verrouillé</div>
-                  <div style={{ fontSize: 12, color: "#22C55E", marginTop: 1 }}>Seuls vos amis voient votre contenu · Gérer</div>
+                  <div style={{ fontWeight: 600, fontSize: 13.5, color: "#111827" }}>Profil verrouillé</div>
+                  <div style={{ fontSize: 12, color: "#6B7280", marginTop: 1 }}>Seuls vos amis voient votre contenu</div>
                 </div>
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                <span style={{ fontSize: 12, fontWeight: 600, color: "#22C55E", flexShrink: 0 }}>Gérer</span>
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#9CA3AF" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
               </div>
             )}
 
-            {/* Stats */}
-            <div style={{ display: "flex", gap: 24, marginTop: 14, marginBottom: 4 }}>
+            {/* Stats — Facebook-style card with vertical dividers */}
+            <div style={{ display: "flex", marginTop: 16, marginBottom: 4, border: "1px solid #F0F2F5", borderRadius: 12, overflow: "hidden", background: "#FAFAFA" }}>
               {[
-                { label: "Amis",        value: String(friends.length) },
-                { label: "Abonnés",     value: "0" },
+                { label: "Amis",         value: String(friends.length) },
+                { label: "Abonnés",      value: "0" },
                 { label: "Publications", value: String(myPosts.length) },
-              ].map(s => (
-                <div key={s.label}>
-                  <div style={{ fontWeight: 900, fontSize: 19, color: "#050505", lineHeight: 1.1 }}>{s.value}</div>
-                  <div style={{ fontSize: 12, color: "#65676b", marginTop: 1 }}>{s.label}</div>
+              ].map((s, i) => (
+                <div key={s.label} style={{ flex: 1, textAlign: "center", padding: "12px 4px", borderRight: i < 2 ? "1px solid #F0F2F5" : "none" }}>
+                  <div style={{ fontWeight: 900, fontSize: 22, color: "#111827", lineHeight: 1 }}>{s.value}</div>
+                  <div style={{ fontSize: 11.5, color: "#6B7280", marginTop: 3, fontWeight: 500 }}>{s.label}</div>
                 </div>
               ))}
             </div>
@@ -498,14 +506,14 @@ export default function Profile() {
             {/* Action buttons */}
             <div style={{ display: "flex", gap: 8, marginTop: 12, marginBottom: 14 }}>
               <button
-                style={{ flex: 1, padding: "9px 8px", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontSize: 14, fontWeight: 700, borderRadius: 8, background: "#2ECC40", color: "#fff", border: "none", cursor: "pointer" }}
+                style={{ flex: 1, padding: "8px 8px", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontSize: 14, fontWeight: 700, borderRadius: 10, background: "#22C55E", color: "#fff", border: "none", cursor: "pointer" }}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
                 Ajouter à l'histoire
               </button>
               <button
                 onClick={() => navigate("/edit-profile")}
-                style={{ flex: 1, padding: "9px 8px", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontSize: 14, fontWeight: 700, borderRadius: 8, background: "#fff", border: "1.5px solid #ccc", color: "#050505", cursor: "pointer" }}
+                style={{ flex: 1, padding: "8px 8px", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontSize: 14, fontWeight: 700, borderRadius: 10, background: "#F3F4F6", border: "none", color: "#111827", cursor: "pointer" }}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                 Modifier le profil
