@@ -2594,14 +2594,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
           {/* ── Info panel for new groups ── */}
           {showInfoCard && (
-            <div style={{ alignSelf:"center", width:"85%", background:"rgba(27,94,32,0.82)", borderRadius:16, padding:"16px 18px", margin:"12px auto", animation:"grp-slide-in 0.2s ease" }}
+            <div style={{ alignSelf:"center", width:"85%", background:"rgba(255,255,255,0.88)", borderRadius:16, padding:"16px 18px", margin:"12px auto", animation:"grp-slide-in 0.2s ease", boxShadow:"0 2px 12px rgba(0,0,0,0.08)", backdropFilter:"blur(6px)" }}
               onClick={() => setDismissedInfoPanel(s => { const n = new Set(s); n.add(activeGroupId); return n; })}>
-              <div style={{ fontWeight:700, fontSize:15, color:"#fff", marginBottom:6 }}>Vous avez créé un groupe</div>
-              <div style={{ fontSize:13, color:"rgba(255,255,255,0.85)", marginBottom:10 }}>Les groupes peuvent avoir :</div>
+              <div style={{ fontWeight:700, fontSize:15, color:"#166534", marginBottom:6 }}>Vous avez créé un groupe</div>
+              <div style={{ fontSize:13, color:"#4B5563", marginBottom:10 }}>Les groupes peuvent avoir :</div>
               {["Jusqu'à 200 000 membres","Historique permanent","Appels de groupe","Plusieurs administrateurs","Liens d'invitation"].map(f => (
                 <div key={f} style={{ display:"flex", alignItems:"center", gap:10, marginBottom:6 }}>
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                  <span style={{ fontSize:13.5, color:"#fff" }}>{f}</span>
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span style={{ fontSize:13.5, color:"#1C1E21" }}>{f}</span>
                 </div>
               ))}
             </div>
