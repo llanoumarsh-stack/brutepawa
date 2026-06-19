@@ -387,6 +387,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [showClearHist, setShowClearHist]     = useState(false);
   const [showLeaveGrp, setShowLeaveGrp]       = useState(false);
   const [leaveDeleteAll, setLeaveDeleteAll]   = useState(false);
+  const [showGrpInfoMenu, setShowGrpInfoMenu]       = useState(false);
+  const [showAutoDelSubmenu, setShowAutoDelSubmenu] = useState(false);
+  const [autoDelOption, setAutoDelOption]           = useState<"off"|"1d"|"1w"|"1m"|"custom">("off");
+  const [showGrpInfoSearch, setShowGrpInfoSearch]   = useState(false);
+  const [grpInfoSearchQ, setGrpInfoSearchQ]         = useState("");
+  const [showAddToHomeDlg, setShowAddToHomeDlg]     = useState(false);
+  const [showDeleteQuitDlg, setShowDeleteQuitDlg]   = useState(false);
+  const [deleteQuitAll, setDeleteQuitAll]           = useState(false);
   const [fabOpen, setFabOpen]   = useState(false);
   const [inboxTab, setInboxTab] = useState<"all" | "unread" | "groups">("all");
   const [showInboxSearch, setShowInboxSearch] = useState(false);
@@ -2235,6 +2243,22 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     const grpInitialInfo = (grp?.name ?? "G")[0].toUpperCase();
     const grpColorInfo = ["#EC4899","#8B5CF6","#F97316","#22C55E","#14B8A6","#3B82F6","#F59E0B"][activeGroupId % 7];
 
+    const allMembers = gInfo?.members ?? [];
+    const filteredMembers = grpInfoSearchQ.trim()
+      ? allMembers.filter(m => {
+          const n = m.firstName && m.lastName ? `${m.firstName} ${m.lastName}` : `Utilisateur #${m.userId}`;
+          return n.toLowerCase().includes(grpInfoSearchQ.toLowerCase());
+        })
+      : allMembers;
+
+    const AUTO_DEL_OPTS: { key: "off"|"1d"|"1w"|"1m"|"custom"; label: string }[] = [
+      { key: "off",    label: "Désactivée" },
+      { key: "1d",     label: "1 jour" },
+      { key: "1w",     label: "1 semaine" },
+      { key: "1m",     label: "1 mois" },
+      { key: "custom", label: "Définir un délai" },
+    ];
+
     const GRP_ACTIONS = [
       {
         label: "Message",
@@ -2265,12 +2289,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       },
       {
         label: "Quitter",
-        action: async () => {
-          await apiLeaveChatGroup(activeGroupId);
-          setChatGroups(p => p.filter(g => g.id !== activeGroupId));
-          setActiveGroupId(null);
-          setShowGroupInfo(false);
-        },
+        action: () => setShowDeleteQuitDlg(true),
         icon: (
           <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
@@ -2279,28 +2298,135 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       },
     ];
 
+    const MENU_ITEMS = [
+      {
+        key: "autodel",
+        label: "Auto-suppression",
+        color: "#000",
+        hasArrow: true,
+        icon: (
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#555" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="9"/><polyline points="12 6 12 12 15.5 14"/>
+          </svg>
+        ),
+        action: () => { setShowAutoDelSubmenu(true); setShowGrpInfoMenu(false); },
+      },
+      {
+        key: "video",
+        label: "Démarrer un appel vidéo de groupe",
+        color: "#000",
+        hasArrow: false,
+        icon: (
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#555" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+          </svg>
+        ),
+        action: () => setShowGrpInfoMenu(false),
+      },
+      {
+        key: "search",
+        label: "Rechercher des membres",
+        color: "#000",
+        hasArrow: false,
+        icon: (
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#555" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/>
+          </svg>
+        ),
+        action: () => { setShowGrpInfoSearch(true); setGrpInfoSearchQ(""); setShowGrpInfoMenu(false); },
+      },
+      {
+        key: "home",
+        label: "Ajouter à l'écran d'accueil",
+        color: "#000",
+        hasArrow: false,
+        icon: (
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#555" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/>
+          </svg>
+        ),
+        action: () => { setShowAddToHomeDlg(true); setShowGrpInfoMenu(false); },
+      },
+      {
+        key: "quit",
+        label: "Supprimer et quitter le groupe",
+        color: "#FF3B30",
+        hasArrow: false,
+        icon: (
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#FF3B30" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        ),
+        action: () => { setShowDeleteQuitDlg(true); setShowGrpInfoMenu(false); },
+      },
+    ];
+
     return createPortal(
       <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, background: "#F2F2F7", zIndex: 10000, overflowY: "auto" }}>
         <style>{`
-          @keyframes gi-in { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
+          @keyframes gi-in  { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
+          @keyframes gi-menu-in { from{opacity:0;transform:scale(0.92) translateY(-6px)} to{opacity:1;transform:scale(1) translateY(0)} }
+          @keyframes gi-dlg-in  { from{opacity:0;transform:scale(0.93)} to{opacity:1;transform:scale(1)} }
         `}</style>
 
-        {/* ── HEADER — Telegram: ← | title | ✏ ⋮ ── */}
-        <div style={{ background: "#fff", display: "flex", alignItems: "center", padding: "6px 8px", position: "sticky", top: 0, zIndex: 5, boxShadow: "0 1px 0 rgba(0,0,0,0.08)" }}>
-          <button onClick={() => setShowGroupInfo(false)}
-            style={{ background: "none", border: "none", cursor: "pointer", width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-          </button>
-          <div style={{ flex: 1 }} />
-          <button style={{ background: "none", border: "none", cursor: "pointer", width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          </button>
-          <button style={{ background: "none", border: "none", cursor: "pointer", width: 40, height: 44, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="#8E8E93"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
-          </button>
+        {/* ── HEADER ── */}
+        <div style={{ background: "#fff", display: "flex", alignItems: "center", padding: "6px 8px", position: "sticky", top: 0, zIndex: 20, boxShadow: "0 1px 0 rgba(0,0,0,0.08)" }}>
+          {showGrpInfoSearch ? (
+            <>
+              <button onClick={() => { setShowGrpInfoSearch(false); setGrpInfoSearchQ(""); }}
+                style={{ background: "none", border: "none", cursor: "pointer", width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <input autoFocus value={grpInfoSearchQ} onChange={e => setGrpInfoSearchQ(e.target.value)}
+                placeholder="Rechercher des membres..."
+                style={{ flex: 1, border: "none", outline: "none", fontSize: 16, background: "transparent", color: "#000" }} />
+              {grpInfoSearchQ && (
+                <button onClick={() => setGrpInfoSearchQ("")} style={{ background:"none",border:"none",cursor:"pointer",padding:8 }}>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#8E8E93" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              )}
+            </>
+          ) : (
+            <>
+              <button onClick={() => setShowGroupInfo(false)}
+                style={{ background: "none", border: "none", cursor: "pointer", width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <div style={{ flex: 1 }} />
+              <button style={{ background: "none", border: "none", cursor: "pointer", width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+              <div style={{ position: "relative" }}>
+                <button onClick={() => setShowGrpInfoMenu(v => !v)}
+                  style={{ background: "none", border: "none", cursor: "pointer", width: 40, height: 44, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="#8E8E93"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+                </button>
+                {/* ── 3-DOT POPUP MENU ── */}
+                {showGrpInfoMenu && (
+                  <>
+                    <div onClick={() => setShowGrpInfoMenu(false)} style={{ position: "fixed", inset: 0, zIndex: 29 }} />
+                    <div style={{ position: "absolute", top: 48, right: 0, width: 280, background: "#fff", borderRadius: 18, boxShadow: "0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.10)", zIndex: 30, overflow: "hidden", animation: "gi-menu-in 0.18s cubic-bezier(0.34,1.56,0.64,1)" }}>
+                      {MENU_ITEMS.map((item, idx) => (
+                        <div key={item.key}>
+                          <div onClick={item.action} style={{ display: "flex", alignItems: "center", gap: 14, padding: "13px 18px", cursor: "pointer", background: "transparent" }}
+                            onMouseEnter={e => (e.currentTarget.style.background = "#F5F5F5")}
+                            onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                            <span style={{ width: 24, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.icon}</span>
+                            <span style={{ flex: 1, fontSize: 15.5, color: item.color, fontWeight: 400 }}>{item.label}</span>
+                            {item.hasArrow && <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#C7C7CC" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>}
+                          </div>
+                          {idx < MENU_ITEMS.length - 1 && <div style={{ height: 1, background: "rgba(0,0,0,0.07)", margin: "0 18px" }} />}
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            </>
+          )}
         </div>
 
-        {/* ── AVATAR + NAME — centered, no banner ── */}
+        {/* ── AVATAR + NAME ── */}
         <div style={{ background: "#fff", paddingTop: 28, paddingBottom: 20, textAlign: "center", marginBottom: 10 }}>
           <div style={{ width: 100, height: 100, borderRadius: "50%", background: grpColorInfo, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 42, margin: "0 auto 14px" }}>
             {grp?.avatarUrl
@@ -2312,7 +2438,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           <div style={{ fontSize: 14, color: "#8E8E93" }}>{memberCount} membre{memberCount !== 1 ? "s" : ""} · {isChannelG ? "Canal" : "Groupe"}</div>
         </div>
 
-        {/* ── QUICK ACTIONS — 4 white cards ── */}
+        {/* ── QUICK ACTIONS ── */}
         <div style={{ display: "flex", gap: 10, padding: "0 12px", marginBottom: 10 }}>
           {GRP_ACTIONS.map(a => (
             <div key={a.label} onClick={a.action}
@@ -2323,9 +2449,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           ))}
         </div>
 
-        {/* ── MAIN CARD: Add members + member list ── */}
+        {/* ── MEMBERS CARD ── */}
         <div style={{ background: "#fff", borderRadius: 14, margin: "0 0 10px", overflow: "hidden", boxShadow: "0 1px 2px rgba(0,0,0,0.06)" }}>
-          {/* Ajouter des membres */}
           <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "13px 16px", cursor: "pointer", borderBottom: "1px solid rgba(0,0,0,0.07)" }}>
             <div style={{ width: 46, height: 46, borderRadius: "50%", background: "#E8F9EE", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -2339,22 +2464,20 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#C7C7CC" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
           </div>
 
-          {/* Member rows */}
-          {(gInfo?.members ?? []).map((m, i) => {
+          {filteredMembers.map((m, i) => {
             const name = m.firstName && m.lastName ? `${m.firstName} ${m.lastName}` : `Utilisateur #${m.userId}`;
             const isMe = m.userId === meId;
-            const statusText = isMe ? "Vous" : "en ligne";
-            const statusColor = isMe ? "#22C55E" : "#22C55E";
             const roleLabel = m.role === "owner" ? "Propriétaire" : m.role === "admin" ? "Administrateur" : null;
             const avatarColor = CONV_COLORS[m.userId % CONV_COLORS.length];
+            const isHighlight = grpInfoSearchQ.trim() && name.toLowerCase().includes(grpInfoSearchQ.toLowerCase());
             return (
-              <div key={m.userId} style={{ display: "flex", gap: 12, padding: "11px 16px", alignItems: "center", borderBottom: i < (gInfo?.members.length ?? 0) - 1 ? "1px solid rgba(0,0,0,0.07)" : "none" }}>
+              <div key={m.userId} style={{ display: "flex", gap: 12, padding: "11px 16px", alignItems: "center", borderBottom: i < filteredMembers.length - 1 ? "1px solid rgba(0,0,0,0.07)" : "none", background: isHighlight ? "rgba(34,197,94,0.07)" : "transparent" }}>
                 <div style={{ width: 46, height: 46, borderRadius: "50%", background: avatarColor, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 16, flexShrink: 0 }}>
                   {mkInitials(name)}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 700, fontSize: 15, color: "#000", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{name}</div>
-                  <div style={{ fontSize: 12.5, color: statusColor, marginTop: 1 }}>{statusText}</div>
+                  <div style={{ fontSize: 12.5, color: "#22C55E", marginTop: 1 }}>{isMe ? "Vous" : "en ligne"}</div>
                 </div>
                 {roleLabel && (
                   <div style={{ fontSize: 12, color: "#22C55E", border: "1px solid #22C55E", borderRadius: 10, padding: "2px 9px", flexShrink: 0, fontWeight: 500 }}>
@@ -2364,7 +2487,76 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               </div>
             );
           })}
+          {grpInfoSearchQ.trim() && filteredMembers.length === 0 && (
+            <div style={{ textAlign: "center", color: "#8E8E93", fontSize: 14, padding: "24px 16px" }}>Aucun résultat</div>
+          )}
         </div>
+
+        {/* ── AUTO-DELETE SUBMENU DIALOG ── */}
+        {showAutoDelSubmenu && (
+          <>
+            <div onClick={() => setShowAutoDelSubmenu(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 40 }} />
+            <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#fff", borderRadius: "20px 20px 0 0", zIndex: 41, padding: "18px 0 32px", animation: "gi-dlg-in 0.2s ease", boxShadow: "0 -4px 24px rgba(0,0,0,0.12)" }}>
+              <div style={{ textAlign: "center", fontWeight: 700, fontSize: 17, color: "#000", marginBottom: 6, padding: "0 20px" }}>Auto-suppression</div>
+              <div style={{ textAlign: "center", fontSize: 13.5, color: "#8E8E93", marginBottom: 14, padding: "0 20px" }}>Les messages seront supprimés automatiquement</div>
+              {AUTO_DEL_OPTS.map(opt => (
+                <div key={opt.key} onClick={() => { setAutoDelOption(opt.key); setShowAutoDelSubmenu(false); }}
+                  style={{ display: "flex", alignItems: "center", gap: 14, padding: "13px 24px", cursor: "pointer" }}>
+                  <div style={{ width: 22, height: 22, borderRadius: "50%", border: `2px solid ${autoDelOption === opt.key ? "#22C55E" : "#C7C7CC"}`, background: autoDelOption === opt.key ? "#22C55E" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.15s" }}>
+                    {autoDelOption === opt.key && <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
+                  </div>
+                  <span style={{ fontSize: 16, color: "#000", fontWeight: autoDelOption === opt.key ? 600 : 400 }}>{opt.label}</span>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* ── ADD TO HOME DIALOG ── */}
+        {showAddToHomeDlg && (
+          <>
+            <div onClick={() => setShowAddToHomeDlg(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 40 }} />
+            <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: "min(320px,90vw)", background: "#fff", borderRadius: 18, zIndex: 41, padding: "28px 24px 20px", animation: "gi-dlg-in 0.18s ease", boxShadow: "0 8px 32px rgba(0,0,0,0.18)", textAlign: "center" }}>
+              <div style={{ fontWeight: 700, fontSize: 18, color: "#000", marginBottom: 8 }}>Ajouter à l'écran d'accueil</div>
+              <div style={{ fontSize: 13.5, color: "#8E8E93", marginBottom: 20 }}>Ajoutez ce groupe à l'écran d'accueil pour un accès rapide.</div>
+              <div style={{ width: 72, height: 72, borderRadius: "50%", background: grpColorInfo, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 28, margin: "0 auto 10px" }}>
+                {grpInitialInfo}
+              </div>
+              <div style={{ fontWeight: 600, fontSize: 16, color: "#000", marginBottom: 24 }}>{grp?.name ?? "Groupe"}</div>
+              <div style={{ display: "flex", gap: 12, justifyContent: "flex-end" }}>
+                <button onClick={() => setShowAddToHomeDlg(false)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 15, fontWeight: 600, color: "#22C55E", padding: "8px 16px" }}>ANNULER</button>
+                <button onClick={() => setShowAddToHomeDlg(false)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 15, fontWeight: 600, color: "#22C55E", padding: "8px 16px" }}>AJOUTER</button>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* ── DELETE & QUIT DIALOG ── */}
+        {showDeleteQuitDlg && (
+          <>
+            <div onClick={() => setShowDeleteQuitDlg(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 40 }} />
+            <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: "min(320px,90vw)", background: "#fff", borderRadius: 18, zIndex: 41, padding: "28px 24px 20px", animation: "gi-dlg-in 0.18s ease", boxShadow: "0 8px 32px rgba(0,0,0,0.18)" }}>
+              <div style={{ fontWeight: 700, fontSize: 18, color: "#000", marginBottom: 8 }}>Supprimer et quitter le groupe ?</div>
+              <div style={{ fontSize: 14, color: "#8E8E93", marginBottom: 20 }}>Êtes-vous sûr de vouloir quitter ce groupe ?</div>
+              <div onClick={() => setDeleteQuitAll(v => !v)} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24, cursor: "pointer" }}>
+                <div style={{ width: 22, height: 22, borderRadius: 5, border: `2px solid ${deleteQuitAll ? "#22C55E" : "#C7C7CC"}`, background: deleteQuitAll ? "#22C55E" : "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.15s" }}>
+                  {deleteQuitAll && <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
+                </div>
+                <span style={{ fontSize: 14.5, color: "#000" }}>Supprimer le groupe pour tous les membres</span>
+              </div>
+              <div style={{ display: "flex", gap: 12, justifyContent: "flex-end" }}>
+                <button onClick={() => setShowDeleteQuitDlg(false)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 15, fontWeight: 600, color: "#22C55E", padding: "8px 16px" }}>ANNULER</button>
+                <button onClick={async () => {
+                  setShowDeleteQuitDlg(false);
+                  await apiLeaveChatGroup(activeGroupId);
+                  setChatGroups(p => p.filter(g => g.id !== activeGroupId));
+                  setActiveGroupId(null);
+                  setShowGroupInfo(false);
+                }} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 15, fontWeight: 600, color: "#FF3B30", padding: "8px 16px" }}>SUPPRIMER</button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     , document.body);
   }
