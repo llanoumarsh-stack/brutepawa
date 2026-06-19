@@ -76,7 +76,7 @@ const selectBase: React.CSSProperties = {
 
 function fieldFocus(e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
   e.target.style.borderColor = "#22c55e";
-  e.target.style.boxShadow = "0 0 0 3px rgba(34,197,94,0.12)";
+  e.target.style.boxShadow = "none";
   e.target.style.background = "#fff";
 }
 function fieldBlur(e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
