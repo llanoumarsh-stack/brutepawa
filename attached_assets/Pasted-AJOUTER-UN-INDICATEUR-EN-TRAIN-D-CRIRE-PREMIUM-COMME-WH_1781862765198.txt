@@ -1,0 +1,133 @@
+AJOUTER UN INDICATEUR "EN TRAIN D'ÉCRIRE..." PREMIUM COMME WHATSAPP
+
+OBJECTIF :
+Reproduire exactement le comportement de WhatsApp pour l'indicateur de saisie.
+
+------------------------------------------------
+
+DANS LA LISTE DES CONVERSATIONS
+
+Quand un utilisateur tape un message :
+
+- Remplacer temporairement le dernier message par :
+  "écrit..."
+
+- Couleur :
+  Vert BrutePawa (#22C55E)
+
+- Style :
+  Font-size 14px
+  Font-weight 500
+
+- Animation légère de fondu
+
+- Dès que le message est envoyé :
+  Remettre le dernier message normal.
+
+------------------------------------------------
+
+DANS LA CONVERSATION
+
+Afficher une petite bulle de saisie exactement comme WhatsApp.
+
+Caractéristiques :
+
+- Fond blanc
+- Coins arrondis 18px
+- Ombre très légère
+- Largeur automatique
+- Positionnée à gauche sous le dernier message reçu
+
+Contenu :
+
+● ● ●
+
+Animation :
+
+- Les 3 points s'animent en cascade
+- Point 1 → Point 2 → Point 3
+- Boucle infinie
+- Animation douce de montée/descente
+
+Durée :
+1 seconde
+
+------------------------------------------------
+
+TEMPS RÉEL
+
+Créer les événements :
+
+typing_start
+typing_stop
+
+Lorsqu'un utilisateur commence à écrire :
+
+→ envoyer typing_start
+
+Lorsqu'il arrête de taper pendant 2 secondes :
+
+→ envoyer typing_stop
+
+Lorsqu'il envoie le message :
+
+→ supprimer immédiatement l'indicateur
+
+------------------------------------------------
+
+SUPABASE
+
+Créer une table :
+
+conversation_typing
+
+id
+conversation_id
+user_id
+is_typing
+updated_at
+
+------------------------------------------------
+
+NETTOYAGE AUTOMATIQUE
+
+Si aucun événement reçu depuis 5 secondes :
+
+→ masquer automatiquement l'indicateur
+
+Même en cas de perte réseau.
+
+------------------------------------------------
+
+PERFORMANCES
+
+- Aucun rerender complet
+- Mise à jour temps réel uniquement
+- Pas de clignotement
+- Pas de lag
+
+------------------------------------------------
+
+COMPORTEMENT FINAL
+
+Liste des conversations :
+
+Promoteur
+écrit...
+
+Conversation :
+
+╭────────╮
+│ ● ● ● │
+╰────────╯
+
+Animation fluide identique à WhatsApp.
+
+Le système doit fonctionner dans :
+
+- Messages privés
+- Groupes
+- Canaux avec commentaires
+
+Objectif :
+Obtenir un indicateur de saisie moderne, élégant, fluide et professionnel identique à WhatsApp.

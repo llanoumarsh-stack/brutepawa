@@ -482,6 +482,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [vpHeight, setVpHeight]         = useState<number | null>(null);
   const [vpOffset, setVpOffset]         = useState(0);
   const [peerTyping, setPeerTyping]     = useState<{ typing: boolean; activity: string }>({ typing: false, activity: "typing" });
+  const [convTypingMap, setConvTypingMap] = useState<Record<number, boolean>>({});
   const [attachSheet, setAttachSheet]   = useState(false);
   const [attachPage, setAttachPage]     = useState<"none"|"poll"|"event"|"contacts"|"ai">("none");
   const mediaUploadsRef = useRef<Map<number, MediaUploadState>>(new Map(_uploadsCache));
@@ -938,6 +939,24 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     const id = setInterval(poll, 2000);
     return () => clearInterval(id);
   }, [activeConv]);
+
+  /* ── Typing indicator in conversation LIST (polls top convs when no active conv) ── */
+  useEffect(() => {
+    if (activeConv) return;
+    const ids = convList.slice(0, 15).map(c => c.id);
+    if (ids.length === 0) return;
+    const poll = async () => {
+      const results = await Promise.all(ids.map(id => apiGetTyping(id).then(t => ({ id, typing: t.typing })).catch(() => ({ id, typing: false }))));
+      setConvTypingMap(prev => {
+        const next = { ...prev };
+        results.forEach(({ id, typing }) => { next[id] = typing; });
+        return next;
+      });
+    };
+    poll();
+    const timer = setInterval(poll, 2000);
+    return () => clearInterval(timer);
+  }, [activeConv, convList]);
 
   /* ── Broadcast audio-recording activity to peer ── */
   useEffect(() => {
@@ -3327,7 +3346,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 <span style={{ fontWeight:700, fontSize:15.5, color:"#0F172A", lineHeight:1.2, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{activeUser.name}</span>
                 {activeConv === 13 && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width:15, height:15, objectFit:"cover", borderRadius:"50%", flexShrink:0 }} />}
               </div>
-              <div style={{ fontSize:11.5, fontWeight: (presence.online || peerTyping.typing) ? 500 : 400, color: peerTyping.typing ? "#F59E0B" : presence.online ? "#22C55E" : "#9CA3AF", lineHeight:1.3 }}>
+              <div style={{ fontSize:11.5, fontWeight: (presence.online || peerTyping.typing) ? 500 : 400, color: peerTyping.typing ? "#22C55E" : presence.online ? "#22C55E" : "#9CA3AF", lineHeight:1.3 }}>
                 {peerTyping.typing
                   ? peerTyping.activity === "audio" ? "🎤 vocal en cours..."
                     : peerTyping.activity === "video" ? "📹 vidéo en cours..."
@@ -6027,6 +6046,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                         {item.previewText}
                       </span>
                     </>
+                  ) : (item.type === "conv" && convTypingMap[item.id]) ? (
+                    <span style={{ fontSize:13.5, color:"#22C55E", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontWeight:500, fontStyle:"italic" }}>
+                      écrit...
+                    </span>
                   ) : (
                     <span style={{ fontSize:13.5, color: item.unread > 0 ? "#334155" : "#64748B", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontWeight: item.unread > 0 ? 500 : 400 }}>
                       {item.previewText}
