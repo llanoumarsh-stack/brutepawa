@@ -2247,16 +2247,6 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     const grpInitialEdit = (grp?.name ?? "G")[0].toUpperCase();
     const memberCount = groupInfo?.members.length ?? grp?.membersCount ?? 0;
 
-    const SETTINGS_ROWS = [
-      { label: "Type de groupe", value: "Privé" },
-      { label: "Historique des discussions", value: "Masqué" },
-      { label: "Réactions", value: "Toutes" },
-      { label: "Autorisations", value: "13/14" },
-      { label: "Liens d'invitation", value: "1" },
-      { label: "Administrateurs", value: "1" },
-      { label: "Membres", value: String(memberCount) },
-    ];
-
     const handleSave = async () => {
       if (!grpEditName.trim()) return;
       setGrpEditSaving(true);
@@ -2265,105 +2255,143 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         setChatGroups(prev => prev.map(g => g.id === activeGroupId ? { ...g, name: updated.name } : g));
         setGrpEditSaving(false);
         setGrpEditToast(true);
-        setTimeout(() => {
-          setGrpEditToast(false);
-          setShowGrpEdit(false);
-        }, 1800);
-      } catch {
-        setGrpEditSaving(false);
-      }
+        setTimeout(() => { setGrpEditToast(false); setShowGrpEdit(false); }, 1800);
+      } catch { setGrpEditSaving(false); }
     };
 
+    const CARD_STYLE: React.CSSProperties = { background: "#fff", borderRadius: 14, margin: "0 16px 10px", overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.08)" };
+    const ROW_STYLE: React.CSSProperties = { display: "flex", alignItems: "center", padding: "14px 16px", gap: 14, cursor: "pointer" };
+    const SEP = <div style={{ height: 1, background: "rgba(0,0,0,0.07)", marginLeft: 56 }} />;
+    const Chevron = () => <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#C7C7CC" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>;
+    const Val = ({ v }: { v: string }) => <span style={{ fontSize: 15, color: "#22C55E", marginRight: 4, flexShrink: 0 }}>{v}</span>;
+
     return createPortal(
-      <div style={{ position: "fixed", inset: 0, background: "#F2F2F7", zIndex: 10001, overflowY: "auto" }}>
+      <div style={{ position: "fixed", inset: 0, background: "#F1F1F4", zIndex: 10001, display: "flex", flexDirection: "column" }}>
         <style>{`@keyframes ge-toast-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}} @keyframes spin{to{transform:rotate(360deg)}}`}</style>
 
-        {/* ── HEADER ── */}
-        <div style={{ background: "#fff", display: "flex", alignItems: "center", padding: "6px 8px", position: "sticky", top: 0, zIndex: 5, boxShadow: "0 1px 0 rgba(0,0,0,0.08)" }}>
+        {/* ══ HEADER ══ */}
+        <div style={{ background: "#fff", display: "flex", alignItems: "center", height: 56, padding: "0 4px", flexShrink: 0, boxShadow: "0 1px 0 rgba(0,0,0,0.08)", zIndex: 5 }}>
           <button onClick={() => setShowGrpEdit(false)}
-            style={{ background: "none", border: "none", cursor: "pointer", width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            style={{ background: "none", border: "none", cursor: "pointer", width: 48, height: 48, display: "flex", alignItems: "center", justifyContent: "center" }}>
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
           </button>
-          <span style={{ flex: 1, fontWeight: 600, fontSize: 17, color: "#000", paddingLeft: 4 }}>Modifier</span>
+          <span style={{ flex: 1, fontWeight: 600, fontSize: 17, color: "#1F1F1F", textAlign: "center", marginRight: 48 }}>Modifier</span>
           <button onClick={handleSave} disabled={grpEditSaving || !grpEditName.trim()}
-            style={{ background: "none", border: "none", cursor: grpEditName.trim() ? "pointer" : "default", width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center", opacity: grpEditName.trim() ? 1 : 0.4 }}>
+            style={{ position: "absolute", right: 4, background: "none", border: "none", cursor: grpEditName.trim() ? "pointer" : "default", width: 48, height: 48, display: "flex", alignItems: "center", justifyContent: "center", opacity: grpEditName.trim() ? 1 : 0.35 }}>
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </button>
         </div>
 
-        {/* ── AVATAR + NAME INPUTS ── */}
-        <div style={{ background: "#fff", padding: "24px 16px 16px", marginBottom: 10 }}>
-          <div style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
-            <div style={{ position: "relative", flexShrink: 0 }}>
-              <div style={{ width: 72, height: 72, borderRadius: "50%", background: grpColorEdit, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 28 }}>
+        {/* ══ SCROLLABLE BODY ══ */}
+        <div style={{ flex: 1, overflowY: "auto", paddingTop: 14, paddingBottom: 32 }}>
+
+          {/* ── CARTE 1 : Avatar + Nom + Photo + Description ── */}
+          <div style={{ ...CARD_STYLE }}>
+            {/* Row: Avatar + Nom + Emoji */}
+            <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "16px 16px 12px" }}>
+              <div style={{ width: 62, height: 62, borderRadius: "50%", background: grpColorEdit, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 24, flexShrink: 0 }}>
                 {grpInitialEdit}
               </div>
-              <div style={{ position: "absolute", bottom: 0, right: 0, width: 22, height: 22, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-              </div>
-            </div>
-            <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
-              <div style={{ borderBottom: "2px solid #22C55E", paddingBottom: 4 }}>
-                <input value={grpEditName} onChange={e => setGrpEditName(e.target.value)}
+              <div style={{ flex: 1, borderBottom: "2px solid #22C55E", paddingBottom: 3 }}>
+                <input autoFocus value={grpEditName} onChange={e => setGrpEditName(e.target.value)}
                   placeholder={grp?.name ?? (isChannelG ? "Nom du canal" : "Nom du groupe")}
-                  style={{ width: "100%", border: "none", outline: "none", fontSize: 16, color: "#000", background: "transparent" }} />
+                  style={{ width: "100%", border: "none", outline: "none", fontSize: 16.5, color: "#1F1F1F", background: "transparent", fontWeight: 500 }} />
               </div>
-              <div style={{ borderBottom: "1px solid #E5E5EA", paddingBottom: 4, marginTop: 12 }}>
-                <input value={grpEditDesc} onChange={e => setGrpEditDesc(e.target.value)}
-                  placeholder="Description (facultative)"
-                  style={{ width: "100%", border: "none", outline: "none", fontSize: 15, color: "#000", background: "transparent" }} />
-              </div>
+              <button style={{ background: "none", border: "none", cursor: "pointer", padding: 4, flexShrink: 0 }}>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8E8E93" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1.2" fill="#8E8E93"/><circle cx="15" cy="9" r="1.2" fill="#8E8E93"/></svg>
+              </button>
+            </div>
+            {/* Row: Définir une photo */}
+            <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 16px 12px" }}>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              <span style={{ fontSize: 15, color: "#22C55E", fontWeight: 500 }}>Définir une photo</span>
+            </div>
+            {/* Separator */}
+            <div style={{ height: 1, background: "rgba(0,0,0,0.07)", margin: "0 0 0 16px" }} />
+            {/* Row: Description */}
+            <div style={{ padding: "12px 16px 14px" }}>
+              <input value={grpEditDesc} onChange={e => setGrpEditDesc(e.target.value)}
+                placeholder="Description (facultative)"
+                style={{ width: "100%", border: "none", outline: "none", fontSize: 15, color: "#1F1F1F", background: "transparent" }} />
             </div>
           </div>
-        </div>
 
-        {/* ── SUJETS TOGGLE ── */}
-        <div style={{ background: "#fff", marginBottom: 10, padding: "0 16px" }}>
-          <div style={{ display: "flex", alignItems: "center", padding: "13px 0", borderBottom: "1px solid rgba(0,0,0,0.07)" }}>
-            <span style={{ flex: 1, fontSize: 15.5, color: "#000" }}>Sujets</span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: "#fff", background: "#22C55E", borderRadius: 5, padding: "2px 5px", marginRight: 10 }}>NOUVEAU</span>
-            <div style={{ width: 44, height: 26, borderRadius: 13, background: "#E5E5EA", position: "relative" }}>
-              <div style={{ position: "absolute", top: 3, left: 3, width: 20, height: 20, borderRadius: "50%", background: "#fff", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
+          {/* ── CARTE 2 : Type / Historique / Sujets ── */}
+          <div style={{ ...CARD_STYLE }}>
+            {/* Type de groupe */}
+            <div style={{ ...ROW_STYLE }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8E8E93" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <span style={{ flex: 1, fontSize: 15.5, color: "#1F1F1F" }}>Type de groupe</span>
+              <Val v="Privé" /><Chevron />
+            </div>
+            {SEP}
+            {/* Historique des discussions */}
+            <div style={{ ...ROW_STYLE }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8E8E93" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span style={{ flex: 1, fontSize: 15.5, color: "#1F1F1F" }}>Historique des discussions</span>
+              <Val v="Masqué" /><Chevron />
+            </div>
+            {SEP}
+            {/* Sujets */}
+            <div style={{ ...ROW_STYLE }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8E8E93" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              <span style={{ flex: 1, fontSize: 15.5, color: "#1F1F1F" }}>Sujets</span>
+              <span style={{ fontSize: 10.5, fontWeight: 700, color: "#fff", background: "#22C55E", borderRadius: 5, padding: "2px 6px", marginRight: 10 }}>NOUVEAU</span>
+              <div style={{ width: 44, height: 26, borderRadius: 13, background: "#E5E5EA", position: "relative", flexShrink: 0 }}>
+                <div style={{ position: "absolute", top: 3, left: 3, width: 20, height: 20, borderRadius: "50%", background: "#fff", boxShadow: "0 1px 3px rgba(0,0,0,0.25)" }} />
+              </div>
             </div>
           </div>
-          <div style={{ padding: "10px 0 14px", fontSize: 13, color: "#8E8E93", lineHeight: 1.5 }}>
+
+          {/* ── TEXTE EXPLICATIF ── */}
+          <p style={{ margin: "0 16px 10px", padding: "0 4px", fontSize: 13, color: "#8E8E93", lineHeight: 1.5 }}>
             Les sujets divisent le groupe en sections créées par les administrateurs ou les membres.
+          </p>
+
+          {/* ── CARTE 3 : Options ── */}
+          <div style={{ ...CARD_STYLE }}>
+            {[
+              { label: "Réactions", val: "Toutes", icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8E8E93" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> },
+              { label: "Autorisations", val: "13/14", icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8E8E93" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> },
+              { label: "Liens d'invitation", val: "1", icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8E8E93" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> },
+              { label: "Administrateurs", val: "1", icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8E8E93" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> },
+              { label: "Membres", val: String(memberCount), icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8E8E93" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> },
+            ].map((row, i, arr) => (
+              <Fragment key={row.label}>
+                <div style={{ ...ROW_STYLE }}>
+                  <span style={{ flexShrink: 0 }}>{row.icon}</span>
+                  <span style={{ flex: 1, fontSize: 15.5, color: "#1F1F1F" }}>{row.label}</span>
+                  <Val v={row.val} /><Chevron />
+                </div>
+                {i < arr.length - 1 && SEP}
+              </Fragment>
+            ))}
           </div>
-        </div>
 
-        {/* ── SETTINGS ROWS ── */}
-        <div style={{ background: "#fff", marginBottom: 10, overflow: "hidden" }}>
-          {SETTINGS_ROWS.map((row, i) => (
-            <div key={row.label} style={{ display: "flex", alignItems: "center", padding: "13px 16px", borderBottom: i < SETTINGS_ROWS.length - 1 ? "1px solid rgba(0,0,0,0.07)" : "none", cursor: "pointer" }}>
-              <span style={{ flex: 1, fontSize: 15.5, color: "#000" }}>{row.label}</span>
-              <span style={{ fontSize: 15, color: "#22C55E", marginRight: 6 }}>{row.value}</span>
-              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#C7C7CC" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+          {/* ── CARTE 4 : Supprimer ── */}
+          <div style={{ ...CARD_STYLE, cursor: "pointer" }} onClick={() => setShowDeleteQuitDlg(true)}>
+            <div style={{ padding: "15px 16px" }}>
+              <span style={{ fontSize: 15.5, color: "#FF3B30", fontWeight: 500 }}>Supprimer et quitter le groupe</span>
             </div>
-          ))}
-        </div>
-
-        {/* ── SUPPRIMER ET QUITTER ── */}
-        <div style={{ background: "#fff", padding: "13px 16px", marginBottom: 30, cursor: "pointer" }}
-          onClick={() => setShowDeleteQuitDlg(true)}>
-          <span style={{ fontSize: 15.5, color: "#FF3B30", fontWeight: 500 }}>Supprimer et quitter le groupe</span>
+          </div>
         </div>
 
         {/* ── LOADING OVERLAY ── */}
         {grpEditSaving && (
           <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <div style={{ background: "rgba(30,30,30,0.9)", borderRadius: 16, padding: "24px 32px", display: "flex", flexDirection: "column", alignItems: "center", gap: 14 }}>
-              <div style={{ width: 40, height: 40, borderRadius: "50%", border: "3px solid rgba(255,255,255,0.2)", borderTopColor: "#22C55E", animation: "spin 0.8s linear infinite" }} />
-              <span style={{ color: "#fff", fontSize: 14 }}>Enregistrement...</span>
-              <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}>Veuillez patienter</span>
+            <div style={{ background: "rgba(28,28,28,0.92)", borderRadius: 18, padding: "24px 32px", display: "flex", flexDirection: "column", alignItems: "center", gap: 14 }}>
+              <div style={{ width: 40, height: 40, borderRadius: "50%", border: "3px solid rgba(255,255,255,0.15)", borderTopColor: "#22C55E", animation: "spin 0.8s linear infinite" }} />
+              <span style={{ color: "#fff", fontSize: 14, fontWeight: 600 }}>Enregistrement...</span>
+              <span style={{ color: "rgba(255,255,255,0.55)", fontSize: 12 }}>Veuillez patienter</span>
             </div>
           </div>
         )}
 
         {/* ── SUCCESS TOAST ── */}
         {grpEditToast && (
-          <div style={{ position: "fixed", bottom: 40, left: "50%", transform: "translateX(-50%)", background: "rgba(34,197,94,0.95)", borderRadius: 24, padding: "12px 22px", display: "flex", alignItems: "center", gap: 10, boxShadow: "0 4px 20px rgba(0,0,0,0.18)", animation: "ge-toast-in 0.3s ease", zIndex: 20 }}>
+          <div style={{ position: "fixed", bottom: 40, left: "50%", transform: "translateX(-50%)", background: "rgba(34,197,94,0.96)", borderRadius: 26, padding: "12px 22px", display: "flex", alignItems: "center", gap: 10, boxShadow: "0 4px 20px rgba(0,0,0,0.18)", animation: "ge-toast-in 0.3s ease", zIndex: 20, whiteSpace: "nowrap" }}>
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            <span style={{ color: "#fff", fontWeight: 600, fontSize: 14, whiteSpace: "nowrap" }}>Groupe mis à jour avec succès</span>
+            <span style={{ color: "#fff", fontWeight: 600, fontSize: 14 }}>Groupe mis à jour avec succès</span>
           </div>
         )}
       </div>
