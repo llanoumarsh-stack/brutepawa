@@ -57,6 +57,18 @@ export default function Profile() {
 
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef  = useRef<HTMLInputElement>(null);
+  const coverRef       = useRef<HTMLDivElement>(null);
+
+  /* ── Cover parallax on scroll ── */
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!coverRef.current) return;
+      const y = window.scrollY;
+      coverRef.current.style.backgroundPositionY = `calc(center + ${y * 0.35}px)`;
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
   const { upload, progress, error: uploadErr } = useR2Upload();
 
   const [myPosts, setMyPosts] = useState<FeedPost[]>([]);
@@ -354,6 +366,7 @@ export default function Profile() {
 
         {/* Cover photo */}
         <div
+          ref={coverRef}
           className="profile-cover"
           style={{
             backgroundImage: coverUrl ? `url(${coverUrl})` : undefined,

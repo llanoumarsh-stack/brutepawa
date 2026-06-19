@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { openImageViewer } from "../components/ImageViewer";
@@ -231,6 +231,19 @@ const EmptyMutualIllustration = () => (
 export default function UserProfilePage({ userId }: { userId: number }) {
   const navigate = useNavigate();
 
+  const coverImgRef = useRef<HTMLImageElement>(null);
+
+  /* ── Cover parallax on scroll ── */
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!coverImgRef.current) return;
+      const y = window.scrollY;
+      coverImgRef.current.style.transform = `translateY(${y * 0.3}px)`;
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const [user, setUser] = useState<PublicUserWithStatus | null>(null);
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -448,7 +461,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
         <div style={{ height: 190, position: "relative", background: "#1A2E1A" }}>
           <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
             {user.coverUrl
-              ? <img src={user.coverUrl} alt="cover" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+              ? <img ref={coverImgRef} src={user.coverUrl} alt="cover" loading="lazy" style={{ width: "100%", height: "115%", objectFit: "cover", display: "block", transformOrigin: "top center", willChange: "transform" }} />
               : <div style={{ width: "100%", height: "100%", background: "linear-gradient(135deg,#0D2318 0%,#1A4D2E 40%,#22C55E44 80%,#0D2318 100%)" }}>
                   <svg viewBox="0 0 480 190" width="100%" height="100%" style={{ position: "absolute", inset: 0 }}>
                     <defs><radialGradient id="glw" cx="60%" cy="40%" r="60%"><stop offset="0%" stopColor="#22C55E" stopOpacity="0.35"/><stop offset="100%" stopColor="#22C55E" stopOpacity="0"/></radialGradient></defs>

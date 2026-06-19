@@ -125,6 +125,29 @@ export default function Layout({ children, onNewPost }: Props) {
     return () => ro.disconnect();
   }, [isFullscreen]);
 
+  /* ── Nav hide/show on scroll ── */
+  useEffect(() => {
+    lastScrollY.current = window.scrollY;
+    const handleScroll = () => {
+      if (scrollTicking.current) return;
+      scrollTicking.current = true;
+      requestAnimationFrame(() => {
+        const currentY = window.scrollY;
+        const delta = currentY - lastScrollY.current;
+        if (Math.abs(delta) > 5) {
+          setNavHidden(delta > 0 && currentY > 100);
+        }
+        lastScrollY.current = currentY;
+        scrollTicking.current = false;
+      });
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  /* Reset nav visibility on route change */
+  useEffect(() => { setNavHidden(false); }, [path]);
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (searchWrapRef.current && !searchWrapRef.current.contains(e.target as Node)) {
@@ -363,7 +386,7 @@ export default function Layout({ children, onNewPost }: Props) {
       {/* ══════════════════════════════════════════════════
           BOTTOM NAV — mobile only
       ══════════════════════════════════════════════════ */}
-      <nav className="bottom-nav-main" style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
+      <nav className={`bottom-nav-main${navHidden ? " nav-hidden" : ""}`} style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
         {/* Accueil */}
         {(() => {
           const active = path === "/";
