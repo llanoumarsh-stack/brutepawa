@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback, Fragment } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { openImageViewer } from "../components/ImageViewer";
-import { apiGetConversations, apiGetMessages, apiMarkMessagesRead, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadFileXHR, apiUploadVoice, apiDeleteConversation, apiDeleteMessage, apiGetLinkPreview, apiGetMessagingSettings, apiUpdateMessagingSettings, apiGetMessageRequests, apiUpdateMessageRequest, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview, type MessageRequest } from "../lib/api";
+import { apiGetConversations, apiGetMessages, apiMarkMessagesRead, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiUpdateChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadFileXHR, apiUploadVoice, apiDeleteConversation, apiDeleteMessage, apiGetLinkPreview, apiGetMessagingSettings, apiUpdateMessagingSettings, apiGetMessageRequests, apiUpdateMessageRequest, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview, type MessageRequest } from "../lib/api";
 import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignaling";
 
 void ({} as ApiChatGroup);
@@ -395,6 +395,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [showAddToHomeDlg, setShowAddToHomeDlg]     = useState(false);
   const [showDeleteQuitDlg, setShowDeleteQuitDlg]   = useState(false);
   const [deleteQuitAll, setDeleteQuitAll]           = useState(false);
+  const [showGrpEdit, setShowGrpEdit]               = useState(false);
+  const [grpEditName, setGrpEditName]               = useState("");
+  const [grpEditDesc, setGrpEditDesc]               = useState("");
+  const [grpEditSaving, setGrpEditSaving]           = useState(false);
+  const [grpEditToast, setGrpEditToast]             = useState(false);
   const [fabOpen, setFabOpen]   = useState(false);
   const [inboxTab, setInboxTab] = useState<"all" | "unread" | "groups">("all");
   const [showInboxSearch, setShowInboxSearch] = useState(false);
@@ -2233,6 +2238,139 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   }
 
   /* ══════════════════════════════════════════════════════════════
+     EDIT GROUP PAGE — Telegram style
+  ══════════════════════════════════════════════════════════════ */
+  if (activeGroupId !== null && showGroupInfo && showGrpEdit) {
+    const grp = chatGroups.find(g => g.id === activeGroupId);
+    const isChannelG = grp?.type === "channel";
+    const grpColorEdit = ["#EC4899","#8B5CF6","#F97316","#22C55E","#14B8A6","#3B82F6","#F59E0B"][activeGroupId % 7];
+    const grpInitialEdit = (grp?.name ?? "G")[0].toUpperCase();
+    const memberCount = groupInfo?.members.length ?? grp?.membersCount ?? 0;
+
+    const SETTINGS_ROWS = [
+      { label: "Type de groupe", value: "Privé" },
+      { label: "Historique des discussions", value: "Masqué" },
+      { label: "Réactions", value: "Toutes" },
+      { label: "Autorisations", value: "13/14" },
+      { label: "Liens d'invitation", value: "1" },
+      { label: "Administrateurs", value: "1" },
+      { label: "Membres", value: String(memberCount) },
+    ];
+
+    const handleSave = async () => {
+      if (!grpEditName.trim()) return;
+      setGrpEditSaving(true);
+      try {
+        const updated = await apiUpdateChatGroup(activeGroupId, { name: grpEditName.trim() });
+        setChatGroups(prev => prev.map(g => g.id === activeGroupId ? { ...g, name: updated.name } : g));
+        setGrpEditSaving(false);
+        setGrpEditToast(true);
+        setTimeout(() => {
+          setGrpEditToast(false);
+          setShowGrpEdit(false);
+        }, 1800);
+      } catch {
+        setGrpEditSaving(false);
+      }
+    };
+
+    return createPortal(
+      <div style={{ position: "fixed", inset: 0, background: "#F2F2F7", zIndex: 10001, overflowY: "auto" }}>
+        <style>{`@keyframes ge-toast-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}} @keyframes spin{to{transform:rotate(360deg)}}`}</style>
+
+        {/* ── HEADER ── */}
+        <div style={{ background: "#fff", display: "flex", alignItems: "center", padding: "6px 8px", position: "sticky", top: 0, zIndex: 5, boxShadow: "0 1px 0 rgba(0,0,0,0.08)" }}>
+          <button onClick={() => setShowGrpEdit(false)}
+            style={{ background: "none", border: "none", cursor: "pointer", width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <span style={{ flex: 1, fontWeight: 600, fontSize: 17, color: "#000", paddingLeft: 4 }}>Modifier</span>
+          <button onClick={handleSave} disabled={grpEditSaving || !grpEditName.trim()}
+            style={{ background: "none", border: "none", cursor: grpEditName.trim() ? "pointer" : "default", width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center", opacity: grpEditName.trim() ? 1 : 0.4 }}>
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+        </div>
+
+        {/* ── AVATAR + NAME INPUTS ── */}
+        <div style={{ background: "#fff", padding: "24px 16px 16px", marginBottom: 10 }}>
+          <div style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
+            <div style={{ position: "relative", flexShrink: 0 }}>
+              <div style={{ width: 72, height: 72, borderRadius: "50%", background: grpColorEdit, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 28 }}>
+                {grpInitialEdit}
+              </div>
+              <div style={{ position: "absolute", bottom: 0, right: 0, width: 22, height: 22, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              </div>
+            </div>
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+              <div style={{ borderBottom: "2px solid #22C55E", paddingBottom: 4 }}>
+                <input value={grpEditName} onChange={e => setGrpEditName(e.target.value)}
+                  placeholder={grp?.name ?? (isChannelG ? "Nom du canal" : "Nom du groupe")}
+                  style={{ width: "100%", border: "none", outline: "none", fontSize: 16, color: "#000", background: "transparent" }} />
+              </div>
+              <div style={{ borderBottom: "1px solid #E5E5EA", paddingBottom: 4, marginTop: 12 }}>
+                <input value={grpEditDesc} onChange={e => setGrpEditDesc(e.target.value)}
+                  placeholder="Description (facultative)"
+                  style={{ width: "100%", border: "none", outline: "none", fontSize: 15, color: "#000", background: "transparent" }} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── SUJETS TOGGLE ── */}
+        <div style={{ background: "#fff", marginBottom: 10, padding: "0 16px" }}>
+          <div style={{ display: "flex", alignItems: "center", padding: "13px 0", borderBottom: "1px solid rgba(0,0,0,0.07)" }}>
+            <span style={{ flex: 1, fontSize: 15.5, color: "#000" }}>Sujets</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: "#fff", background: "#22C55E", borderRadius: 5, padding: "2px 5px", marginRight: 10 }}>NOUVEAU</span>
+            <div style={{ width: 44, height: 26, borderRadius: 13, background: "#E5E5EA", position: "relative" }}>
+              <div style={{ position: "absolute", top: 3, left: 3, width: 20, height: 20, borderRadius: "50%", background: "#fff", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
+            </div>
+          </div>
+          <div style={{ padding: "10px 0 14px", fontSize: 13, color: "#8E8E93", lineHeight: 1.5 }}>
+            Les sujets divisent le groupe en sections créées par les administrateurs ou les membres.
+          </div>
+        </div>
+
+        {/* ── SETTINGS ROWS ── */}
+        <div style={{ background: "#fff", marginBottom: 10, overflow: "hidden" }}>
+          {SETTINGS_ROWS.map((row, i) => (
+            <div key={row.label} style={{ display: "flex", alignItems: "center", padding: "13px 16px", borderBottom: i < SETTINGS_ROWS.length - 1 ? "1px solid rgba(0,0,0,0.07)" : "none", cursor: "pointer" }}>
+              <span style={{ flex: 1, fontSize: 15.5, color: "#000" }}>{row.label}</span>
+              <span style={{ fontSize: 15, color: "#22C55E", marginRight: 6 }}>{row.value}</span>
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#C7C7CC" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          ))}
+        </div>
+
+        {/* ── SUPPRIMER ET QUITTER ── */}
+        <div style={{ background: "#fff", padding: "13px 16px", marginBottom: 30, cursor: "pointer" }}
+          onClick={() => setShowDeleteQuitDlg(true)}>
+          <span style={{ fontSize: 15.5, color: "#FF3B30", fontWeight: 500 }}>Supprimer et quitter le groupe</span>
+        </div>
+
+        {/* ── LOADING OVERLAY ── */}
+        {grpEditSaving && (
+          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={{ background: "rgba(30,30,30,0.9)", borderRadius: 16, padding: "24px 32px", display: "flex", flexDirection: "column", alignItems: "center", gap: 14 }}>
+              <div style={{ width: 40, height: 40, borderRadius: "50%", border: "3px solid rgba(255,255,255,0.2)", borderTopColor: "#22C55E", animation: "spin 0.8s linear infinite" }} />
+              <span style={{ color: "#fff", fontSize: 14 }}>Enregistrement...</span>
+              <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}>Veuillez patienter</span>
+            </div>
+          </div>
+        )}
+
+        {/* ── SUCCESS TOAST ── */}
+        {grpEditToast && (
+          <div style={{ position: "fixed", bottom: 40, left: "50%", transform: "translateX(-50%)", background: "rgba(34,197,94,0.95)", borderRadius: 24, padding: "12px 22px", display: "flex", alignItems: "center", gap: 10, boxShadow: "0 4px 20px rgba(0,0,0,0.18)", animation: "ge-toast-in 0.3s ease", zIndex: 20 }}>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span style={{ color: "#fff", fontWeight: 600, fontSize: 14, whiteSpace: "nowrap" }}>Groupe mis à jour avec succès</span>
+          </div>
+        )}
+      </div>
+    , document.body);
+  }
+
+  /* ══════════════════════════════════════════════════════════════
      GROUP INFO VIEW — Telegram 99%
   ══════════════════════════════════════════════════════════════ */
   if (activeGroupId !== null && showGroupInfo) {
@@ -2393,7 +2531,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
               </button>
               <div style={{ flex: 1 }} />
-              <button style={{ background: "none", border: "none", cursor: "pointer", width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <button onClick={() => {
+                  const grp = chatGroups.find(g => g.id === activeGroupId);
+                  setGrpEditName(grp?.name ?? "");
+                  setGrpEditDesc("");
+                  setShowGrpEdit(true);
+                }}
+                style={{ background: "none", border: "none", cursor: "pointer", width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
               </button>
               <div style={{ position: "relative" }}>

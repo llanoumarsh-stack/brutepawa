@@ -860,6 +860,18 @@ export async function apiLeaveChatGroup(id: number): Promise<void> {
   await apiFetch(`/chat-groups/${id}/leave`, { method: "DELETE" });
 }
 
+export async function apiUpdateChatGroup(id: number, data: { name?: string; avatarUrl?: string }): Promise<ApiChatGroup> {
+  const res = await apiFetch(`/chat-groups/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(err.error ?? "Erreur lors de la mise à jour");
+  }
+  return res.json() as Promise<ApiChatGroup>;
+}
+
 export async function apiAddChatGroupMembers(id: number, userIds: number[]): Promise<void> {
   await apiFetch(`/chat-groups/${id}/members`, {
     method: "POST",
