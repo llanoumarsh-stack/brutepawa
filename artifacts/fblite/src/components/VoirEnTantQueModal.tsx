@@ -9,91 +9,199 @@ interface Props {
   flag?: string;
   friendsCount: number;
   postsCount: number;
+  followersCount?: number;
+  likesCount?: number;
 }
 
-export default function VoirEnTantQueModal({ onClose, userName, avatarUrl, bio, country, flag, friendsCount, postsCount }: Props) {
-  const userInitials = userName.slice(0, 2).toUpperCase();
+const AVATAR_COLORS = ["#22C55E","#E91E63","#9C27B0","#FF9800","#4CAF50","#00BCD4","#F44336","#3F51B5"];
+
+export default function VoirEnTantQueModal({
+  onClose, userName, avatarUrl, bio, country, flag,
+  friendsCount, postsCount, followersCount = 0, likesCount = 0
+}: Props) {
+  const initials = (userName ?? "??").slice(0, 2).toUpperCase();
+  const colorIdx = (userName?.charCodeAt(0) ?? 0) + (userName?.charCodeAt(1) ?? 0);
+  const color = AVATAR_COLORS[colorIdx % AVATAR_COLORS.length];
+
+  const stats = [
+    { icon: "👥", value: friendsCount, label: "Amis" },
+    { icon: "👤", value: followersCount, label: "Abonnés" },
+    { icon: "📋", value: postsCount, label: "Publications" },
+    { icon: "❤️", value: likesCount, label: "Likes" },
+  ];
+
+  const badges: { icon: string; label: string }[] = [];
+  if (country) badges.push({ icon: "📍", label: country + (flag ? ` ${flag}` : "") });
+  if (bio) badges.push({ icon: "💼", label: bio.split(" ").slice(0, 3).join(" ") });
+  badges.push({ icon: "🟢", label: "BrutePawa Creator" });
 
   return createPortal(
-    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", zIndex: 200, overflowY: "auto" }}>
-      <div style={{ maxWidth: 600, margin: "0 auto", minHeight: "100vh", background: "#f0f2f5", position: "relative" }}>
-        {/* Banner */}
-        <div style={{ background: "#1877F2", color: "#fff", padding: "14px 16px", display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={onClose} style={{ background: "rgba(255,255,255,0.2)", border: "none", borderRadius: "50%", width: 34, height: 34, color: "#fff", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 800, fontSize: 16 }}>Voir en tant que</div>
-            <div style={{ fontSize: 12, opacity: 0.85 }}>Aperçu tel que vos visiteurs vous voient</div>
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.65)", zIndex: 200, overflowY: "auto" }}>
+      <style>{`
+        @keyframes vtqSlideUp { from { transform: translateY(24px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .vtq-tabs::-webkit-scrollbar { display: none; }
+      `}</style>
+      <div style={{ maxWidth: 600, margin: "0 auto", minHeight: "100vh", background: "#F8FAFC", position: "relative", animation: "vtqSlideUp 0.22s ease-out", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" }}>
+
+        {/* ── TOP BAR ── */}
+        <div style={{ background: "#fff", boxShadow: "0 1px 0 #E5E7EB", padding: "0 14px", height: 58, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 10 }}>
+          <button onClick={onClose} style={{ background: "none", border: "none", width: 40, height: 40, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+            onPointerDown={e => (e.currentTarget.style.background = "#F1F5F9")}
+            onPointerUp={e => (e.currentTarget.style.background = "none")}
+            onPointerLeave={e => (e.currentTarget.style.background = "none")}
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0D1B2A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5M12 5l-7 7 7 7"/>
+            </svg>
+          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+            <div style={{ width: 30, height: 30, borderRadius: "50%", background: "linear-gradient(135deg,#22C55E,#16A34A)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(34,197,94,0.35)" }}>
+              <span style={{ color: "#fff", fontWeight: 900, fontSize: 17, lineHeight: 1, fontFamily: "Arial Black,Arial,sans-serif" }}>b</span>
+            </div>
+            <span style={{ fontWeight: 800, fontSize: 18, color: "#111827", letterSpacing: -0.3 }}>BrutePawa</span>
+          </div>
+          <div style={{ width: 40 }} />
+        </div>
+
+        {/* ── INFO BANNER ── */}
+        <div style={{ background: "#F0FDF4", borderLeft: "4px solid #22C55E", padding: "10px 16px", fontSize: 13, color: "#15803D", fontWeight: 600, display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: 16 }}>👁️</span>
+          <span>Aperçu visiteur — seules vos informations publiques sont visibles.</span>
+        </div>
+
+        {/* ── COVER + AVATAR ── */}
+        <div style={{ position: "relative" }}>
+          <div style={{ height: 195, position: "relative", overflow: "hidden" }}>
+            <svg viewBox="0 0 480 195" preserveAspectRatio="xMidYMid slice" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
+              <defs>
+                <radialGradient id="vtqGlow1" cx="55%" cy="40%" r="65%">
+                  <stop offset="0%" stopColor="#22C55E" stopOpacity="0.36"/>
+                  <stop offset="100%" stopColor="#22C55E" stopOpacity="0"/>
+                </radialGradient>
+                <radialGradient id="vtqGlow2" cx="18%" cy="72%" r="38%">
+                  <stop offset="0%" stopColor="#4ADE80" stopOpacity="0.18"/>
+                  <stop offset="100%" stopColor="#4ADE80" stopOpacity="0"/>
+                </radialGradient>
+              </defs>
+              <rect width="480" height="195" fill="#0A1F0F"/>
+              <rect width="480" height="195" fill="url(#vtqGlow1)"/>
+              <rect width="480" height="195" fill="url(#vtqGlow2)"/>
+              <path d="M-10 108 C 70 52, 150 148, 250 96 S 390 44, 500 82" stroke="#22C55E" strokeOpacity="0.26" strokeWidth="2.5" fill="none"/>
+              <path d="M-10 138 C 80 78, 165 162, 265 112 S 400 62, 510 108" stroke="#22C55E" strokeOpacity="0.18" strokeWidth="1.8" fill="none"/>
+              <path d="M-10 78 C 100 28, 185 118, 285 68 S 415 18, 510 52" stroke="#4ADE80" strokeOpacity="0.14" strokeWidth="1.2" fill="none"/>
+              <path d="M-10 162 C 60 108, 155 178, 255 138 S 392 92, 510 132" stroke="#22C55E" strokeOpacity="0.09" strokeWidth="1" fill="none"/>
+            </svg>
+            <div style={{ position: "absolute", right: -8, top: -18, fontSize: 158, fontWeight: 900, color: "#22C55E", opacity: 0.1, lineHeight: 1, fontFamily: "Arial Black,Arial,sans-serif", userSelect: "none", pointerEvents: "none" }}>b</div>
+          </div>
+
+          <div style={{ position: "absolute", bottom: -46, left: 16, zIndex: 5 }}>
+            <div style={{ position: "relative", display: "inline-block" }}>
+              {avatarUrl
+                ? <img src={avatarUrl} alt={userName} style={{ width: 94, height: 94, borderRadius: "50%", border: "4px solid #fff", objectFit: "cover", boxShadow: "0 4px 20px rgba(0,0,0,0.22)", display: "block" }} />
+                : <div style={{ width: 94, height: 94, borderRadius: "50%", background: color, border: "4px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 900, fontSize: 30, boxShadow: "0 4px 20px rgba(0,0,0,0.22)" }}>{initials}</div>
+              }
+              <div style={{ position: "absolute", bottom: 4, right: 3, width: 18, height: 18, borderRadius: "50%", background: "#22C55E", border: "2.5px solid #fff", boxShadow: "0 1px 4px rgba(34,197,94,0.5)" }} />
+            </div>
           </div>
         </div>
 
-        <div style={{ background: "#fff2cc", borderLeft: "4px solid #f0ad00", padding: "10px 16px", fontSize: 13, color: "#7a5c00" }}>
-          ⚠️ Ceci est un aperçu. Seules les informations publiques sont affichées.
-        </div>
+        {/* ── PROFILE CARD ── */}
+        <div style={{ background: "#fff", paddingTop: 62, borderBottom: "1px solid #F1F5F9" }}>
+          <div style={{ padding: "0 16px 18px" }}>
 
-        {/* Cover */}
-        <div style={{ height: 160, background: "linear-gradient(135deg, #1877F2, #42b0ff)", position: "relative" }}>
-          {/* Avatar overlapping */}
-          <div style={{ position: "absolute", bottom: -40, left: 16 }}>
-            {avatarUrl
-              ? <img src={avatarUrl} alt={userName} style={{ width: 80, height: 80, borderRadius: "50%", border: "4px solid #fff", objectFit: "cover" }} />
-              : <div style={{ width: 80, height: 80, borderRadius: "50%", border: "4px solid #fff", background: "#1877F2", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 26 }}>{userInitials}</div>
-            }
-          </div>
-        </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 7, flexWrap: "wrap", marginBottom: 3 }}>
+              <span style={{ fontWeight: 900, fontSize: 22, color: "#0D1B2A", letterSpacing: -0.3 }}>{userName}</span>
+              {flag && <span style={{ fontSize: 17 }}>{flag}</span>}
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="11" fill="#1E88E5"/>
+                <polyline points="7,12 10,15 17,9" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+              </svg>
+            </div>
 
-        {/* Profile info */}
-        <div style={{ background: "#fff", paddingTop: 52, paddingBottom: 16, paddingLeft: 16, paddingRight: 16, borderBottom: "1px solid #e4e6eb" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-            <div>
-              <div style={{ fontWeight: 800, fontSize: 20, display: "flex", alignItems: "center", gap: 6 }}>
-                {userName}
-                {flag && <span style={{ fontSize: 18 }}>{flag}</span>}
-                <span style={{ color: "#1877F2", fontSize: 14 }}>✔️</span>
+            {bio && <div style={{ fontSize: 13.5, color: "#6B7280", marginBottom: 10, lineHeight: 1.5 }}>{bio}</div>}
+
+            {badges.length > 0 && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
+                {badges.map((badge, i) => (
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 4, background: "#F0FDF4", border: "1px solid #DCFCE7", borderRadius: 20, padding: "4px 10px" }}>
+                    <span style={{ fontSize: 12 }}>{badge.icon}</span>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: "#15803D" }}>{badge.label}</span>
+                  </div>
+                ))}
               </div>
-              {bio && <div style={{ fontSize: 14, color: "#65676b", marginTop: 4 }}>{bio}</div>}
-              {country && <div style={{ fontSize: 13, color: "#65676b", marginTop: 4 }}>📍 {country}</div>}
+            )}
+
+            <div style={{ display: "flex", paddingTop: 14, borderTop: "1px solid #F1F5F9", marginTop: 4 }}>
+              {stats.map((stat, i) => (
+                <div key={i} style={{ flex: 1, textAlign: "center", borderRight: i < 3 ? "1px solid #F1F5F9" : "none", padding: "2px 4px" }}>
+                  <div style={{ fontSize: 14, marginBottom: 2 }}>{stat.icon}</div>
+                  <div style={{ fontWeight: 900, fontSize: 17, color: "#0D1B2A", lineHeight: 1.15 }}>{stat.value}</div>
+                  <div style={{ fontSize: 10.5, color: "#8896A6", marginTop: 2, fontWeight: 500 }}>{stat.label}</div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
+              <div style={{ flex: 2, padding: "12px 8px", background: "linear-gradient(135deg,#22C55E,#16A34A)", color: "#fff", borderRadius: 14, fontWeight: 700, fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, boxShadow: "0 4px 14px rgba(34,197,94,0.35)" }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                Ajouter comme ami
+              </div>
+              <div style={{ flex: 1, padding: "12px 6px", background: "#fff", color: "#374151", border: "1.5px solid #E5E7EB", borderRadius: 14, fontWeight: 700, fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                Message
+              </div>
+              <div style={{ flex: 1, padding: "12px 6px", background: "#fff", color: "#374151", border: "1.5px solid #E5E7EB", borderRadius: 14, fontWeight: 700, fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Suivre
+              </div>
             </div>
           </div>
-          <div style={{ display: "flex", gap: 24, marginTop: 12 }}>
-            <div style={{ textAlign: "center" }}>
-              <div style={{ fontWeight: 900, fontSize: 18 }}>{friendsCount}</div>
-              <div style={{ fontSize: 12, color: "#65676b" }}>Amis</div>
-            </div>
-            <div style={{ textAlign: "center" }}>
-              <div style={{ fontWeight: 900, fontSize: 18 }}>{postsCount}</div>
-              <div style={{ fontSize: 12, color: "#65676b" }}>Publications</div>
-            </div>
-          </div>
-          {/* Visitor sees these buttons */}
-          <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
-            <div style={{ flex: 1, background: "#e7f3ff", borderRadius: 8, padding: "9px", textAlign: "center", fontWeight: 700, color: "#1877F2", fontSize: 14 }}>👥 Ajouter</div>
-            <div style={{ flex: 1, background: "#f0f2f5", borderRadius: 8, padding: "9px", textAlign: "center", fontWeight: 700, color: "#050505", fontSize: 14 }}>💬 Message</div>
+
+          <div className="vtq-tabs" style={{ display: "flex", overflowX: "auto", scrollbarWidth: "none", borderTop: "1px solid #F1F5F9" }}>
+            {["Publications", "Photos", "Vidéos", "Amis", "À propos"].map((t, i) => (
+              <button key={t} style={{ flex: "0 0 auto", padding: "13px 16px", background: "none", border: "none", cursor: "default", fontSize: 13, fontWeight: i === 0 ? 800 : 500, color: i === 0 ? "#22C55E" : "#8896A6", borderBottom: i === 0 ? "2.5px solid #22C55E" : "2.5px solid transparent", whiteSpace: "nowrap" }}>
+                {t}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Tabs (read-only view) */}
-        <div style={{ background: "#fff", borderBottom: "1px solid #e4e6eb", display: "flex" }}>
-          {["Publications", "À propos", "Amis", "Photos"].map((t, i) => (
-            <button key={t} style={{ flex: 1, background: "none", border: "none", padding: "12px 4px", fontSize: 13, fontWeight: i === 0 ? 700 : 400, color: i === 0 ? "#1877F2" : "#65676b", borderBottom: i === 0 ? "3px solid #1877F2" : "3px solid transparent", cursor: "default" }}>
-              {t}
+        {/* ── LOCKED CONTENT ── */}
+        <div style={{ padding: "20px 14px 24px" }}>
+          <div style={{ background: "#fff", borderRadius: 22, padding: "32px 20px 28px", textAlign: "center", boxShadow: "0 2px 12px rgba(0,0,0,0.06)", border: "1px solid rgba(34,197,94,0.07)" }}>
+            <div style={{ marginBottom: 18, display: "flex", justifyContent: "center" }}>
+              <svg width="100" height="110" viewBox="0 0 100 110" fill="none">
+                <ellipse cx="50" cy="102" rx="40" ry="5.5" fill="#F0FDF4" opacity="0.9"/>
+                <path d="M20 97 Q 8 72 28 62 Q 22 82 38 93Z" fill="#86EFAC" opacity="0.7"/>
+                <path d="M80 97 Q 92 72 72 62 Q 78 82 62 93Z" fill="#86EFAC" opacity="0.7"/>
+                <path d="M12 90 Q 2 68 20 58 Q 16 78 30 88Z" fill="#DCFCE7" opacity="0.8"/>
+                <path d="M88 90 Q 98 68 80 58 Q 84 78 70 88Z" fill="#DCFCE7" opacity="0.8"/>
+                <path d="M27 98 Q 14 76 32 65 Q 28 84 44 95Z" fill="#4ADE80" opacity="0.45"/>
+                <path d="M73 98 Q 86 76 68 65 Q 72 84 56 95Z" fill="#4ADE80" opacity="0.45"/>
+                <rect x="28" y="84" width="44" height="16" rx="8" fill="#fff" stroke="#E5E7EB" strokeWidth="1.5"/>
+                <rect x="33" y="55" width="34" height="31" rx="7" fill="#fff" stroke="#E5E7EB" strokeWidth="1.5"/>
+                <rect x="37" y="59" width="26" height="23" rx="5" fill="#F0FDF4"/>
+                <path d="M40 55V45a10 10 0 0120 0v10" stroke="#22C55E" strokeWidth="3" strokeLinecap="round" fill="none"/>
+                <circle cx="50" cy="69" r="5" fill="#22C55E"/>
+                <rect x="48" y="69" width="4" height="7" rx="2" fill="#22C55E"/>
+              </svg>
+            </div>
+            <div style={{ fontWeight: 900, fontSize: 17, color: "#0D1B2A", marginBottom: 8 }}>Publications visibles par vos amis uniquement</div>
+            <div style={{ fontSize: 13, color: "#8896A6", lineHeight: 1.65, marginBottom: 22 }}>Les visiteurs qui ne sont pas vos amis voient cette vue.</div>
+            <button style={{ padding: "12px 28px", background: "#fff", color: "#22C55E", border: "2px solid #22C55E", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: "default", display: "inline-flex", alignItems: "center", gap: 7 }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+              Ajouter des amis
             </button>
-          ))}
-        </div>
-
-        <div style={{ padding: 16 }}>
-          <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #e4e6eb", padding: 20, textAlign: "center", color: "#65676b", fontSize: 14 }}>
-            <div style={{ fontSize: 36, marginBottom: 8 }}>🔒</div>
-            <div style={{ fontWeight: 700, marginBottom: 4 }}>Publications visibles par vos amis uniquement</div>
-            <div style={{ fontSize: 13 }}>Les visiteurs qui ne sont pas vos amis voient cette vue.</div>
           </div>
         </div>
 
-        <div style={{ padding: "0 16px 32px" }}>
-          <button onClick={onClose}
-            style={{ width: "100%", background: "#1877F2", color: "#fff", border: "none", borderRadius: 8, padding: 13, fontWeight: 700, fontSize: 15, cursor: "pointer" }}>
+        {/* ── QUIT BUTTON ── */}
+        <div style={{ padding: "0 14px 52px" }}>
+          <button onClick={onClose} style={{ width: "100%", background: "linear-gradient(135deg,#22C55E,#16A34A)", color: "#fff", border: "none", borderRadius: 16, padding: 15, fontWeight: 800, fontSize: 15, cursor: "pointer", boxShadow: "0 4px 16px rgba(34,197,94,0.35)" }}>
             Quitter l'aperçu
           </button>
         </div>
+
       </div>
     </div>,
     document.body
