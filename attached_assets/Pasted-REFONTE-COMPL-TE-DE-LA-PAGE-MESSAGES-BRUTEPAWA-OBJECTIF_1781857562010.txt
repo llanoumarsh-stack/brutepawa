@@ -1,0 +1,157 @@
+REFONTE COMPLÈTE DE LA PAGE MESSAGES BRUTEPAWA
+
+OBJECTIF :
+S'inspirer fortement de Telegram Android (2026) pour obtenir une interface premium, compacte, rapide et professionnelle.
+
+ATTENTION :
+Je ne veux PAS une interprétation libre.
+Je veux reproduire les mêmes principes visuels, espacements, hiérarchie, tailles, alignements et comportements que Telegram.
+
+========================
+HEADER
+========================
+
+- Réduire la hauteur du header.
+- Alignement identique à Telegram.
+- Avatar utilisateur à droite.
+- Icônes recherche et paramètres parfaitement centrées.
+- Réduire les espaces inutiles.
+
+========================
+BARRE DE RECHERCHE
+========================
+
+- Copier le style Telegram.
+- Hauteur plus faible.
+- Fond gris très léger.
+- Coins fortement arrondis.
+- Icône recherche discrète.
+- Placeholder plus petit.
+
+========================
+STORIES
+========================
+
+- Réduire légèrement le diamètre des avatars.
+- Afficher davantage de stories à l'écran.
+- Espacement identique à Telegram.
+- Scroll horizontal fluide.
+- Indicateur en ligne plus propre.
+- Cercles plus nets.
+
+========================
+LISTE DES CONVERSATIONS
+========================
+
+Chaque conversation doit suivre la structure Telegram :
+
+Avatar
+Nom
+Dernier message
+Heure
+Badge non lu
+
+Alignements identiques.
+
+- Réduire les espaces verticaux.
+- Afficher plus de conversations à l'écran.
+- Nom plus visible.
+- Dernier message plus discret.
+- Heure alignée à droite.
+- Avatar parfaitement centré.
+
+========================
+BADGES NON LUS
+========================
+
+- Copier Telegram.
+- Cercle compact.
+- Position exacte.
+- Couleurs cohérentes.
+- Animation douce.
+
+========================
+INDICATEURS DE LECTURE
+========================
+
+Ajouter :
+
+✓ envoyé
+✓✓ livré
+✓✓ lu
+
+Même logique visuelle que Telegram.
+
+========================
+MESSAGES VOCAUX
+========================
+
+- Icône micro plus élégante.
+- Durée mieux alignée.
+- Apparence identique Telegram.
+
+========================
+BOUTON FLOTTANT "+"
+========================
+
+Actuellement trop gros.
+
+Le remplacer par :
+
+- Taille Telegram.
+- Ombre Telegram.
+- Position Telegram.
+- Animation Telegram.
+
+========================
+BARRE DE NAVIGATION
+========================
+
+- Réduire légèrement la hauteur.
+- Icônes mieux centrées.
+- Animation plus fluide.
+- Onglet actif plus élégant.
+
+========================
+COULEURS
+========================
+
+- Réduire l'abus du vert.
+- Utiliser davantage de blanc.
+- Gris Telegram.
+- Contrastes modernes.
+
+========================
+ANIMATIONS
+========================
+
+Ajouter :
+
+- Ripple effect.
+- Sélection fluide.
+- Transitions Telegram.
+- Ouverture conversation fluide.
+
+========================
+PERFORMANCES
+========================
+
+Ne rien casser.
+
+Ne modifier aucun backend.
+
+Ne modifier aucune logique métier.
+
+Uniquement améliorer l'UI et l'UX.
+
+========================
+RÉSULTAT ATTENDU
+========================
+
+Un écran Messages qui donne immédiatement l'impression d'utiliser Telegram Premium.
+
+Même densité visuelle.
+Même niveau de finition.
+Même sensation de fluidité.
+Même hiérarchie visuelle.
+Même professionnalisme.
