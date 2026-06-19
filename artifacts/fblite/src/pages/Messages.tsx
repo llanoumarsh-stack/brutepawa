@@ -1326,6 +1326,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             const existing = prev.find(p => p.id === c.userId);
             const u    = allUsersRef.current.find(u => u.id === c.userId);
             const name = u ? `${u.firstName} ${u.lastName}` : `Utilisateur #${c.userId}`;
+            const newMine      = c.lastSenderId === meId;
+            const newRead      = c.lastMsgIsRead      ?? false;
+            const newDelivered = c.lastMsgIsDelivered ?? false;
+            // Anti-regression: never downgrade status for the same last message
+            const msgChanged = !existing || existing.lastMessage !== c.lastMessage;
+            const exPrio = existing?.lastMsgRead ? 3 : existing?.lastMsgDelivered ? 2 : 1;
+            const newPrio = newRead ? 3 : newDelivered ? 2 : 1;
+            const effectivePrio = msgChanged ? newPrio : Math.max(newPrio, exPrio);
             return {
               id: c.userId,
               user: existing?.user
@@ -1334,6 +1342,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               lastMessage: c.lastMessage,
               unread: activeConvRef.current === c.userId ? 0 : c.unreadCount,
               time: new Date(c.updatedAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }),
+              lastMsgMine:      newMine,
+              lastMsgRead:      effectivePrio >= 3,
+              lastMsgDelivered: effectivePrio >= 2,
             };
           });
           // Preserve the active conversation even if it has no messages yet
