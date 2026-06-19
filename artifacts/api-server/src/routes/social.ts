@@ -343,12 +343,12 @@ router.get("/messages", requireAuth, async (req, res): Promise<void> => {
   );
   const blockedUserIds = new Set(blocks.map(b => b.blockerId === me ? b.blockedId : b.blockerId));
 
-  type RawMsg = { id: number; from_user_id: number; to_user_id: number; content: string; is_read: boolean; created_at: Date };
+  type RawMsg = { id: number; from_user_id: number; to_user_id: number; content: string; is_read: boolean; is_delivered: boolean; created_at: Date };
   const _convoResult = await db.execute(sql`
-    SELECT id, from_user_id, to_user_id, content, is_read, created_at
+    SELECT id, from_user_id, to_user_id, content, is_read, is_delivered, created_at
     FROM (
       SELECT
-        id, from_user_id, to_user_id, content, is_read, created_at,
+        id, from_user_id, to_user_id, content, is_read, is_delivered, created_at,
         ROW_NUMBER() OVER (
           PARTITION BY CASE WHEN from_user_id = ${me} THEN to_user_id ELSE from_user_id END
           ORDER BY created_at DESC
@@ -371,10 +371,13 @@ router.get("/messages", requireAuth, async (req, res): Promise<void> => {
 
   const convos = latestPerConvo
     .map(m => ({
-      userId:       m.from_user_id === me ? m.to_user_id : m.from_user_id,
-      lastMessage:  m.content,
-      unreadCount:  0,
-      updatedAt:    m.created_at,
+      userId:              m.from_user_id === me ? m.to_user_id : m.from_user_id,
+      lastMessage:         m.content,
+      lastSenderId:        m.from_user_id,
+      lastMsgIsRead:       m.is_read,
+      lastMsgIsDelivered:  m.is_delivered,
+      unreadCount:         0,
+      updatedAt:           m.created_at,
     }))
     .filter(c => !blockedUserIds.has(c.userId))
     .map(c => ({ ...c, unreadCount: unreadMap.get(c.userId) ?? 0 }));

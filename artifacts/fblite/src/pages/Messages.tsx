@@ -85,6 +85,9 @@ interface NormConv {
   time: string;
   online?: boolean;
   lastSeenAt?: string | null;
+  lastMsgMine?: boolean;
+  lastMsgRead?: boolean;
+  lastMsgDelivered?: boolean;
 }
 
 interface ChatGroupConv {
@@ -1105,7 +1108,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       const exists = prev.find(c => c.id === fromId);
       if (exists) {
         return prev.map(c => c.id === fromId
-          ? { ...c, lastMessage: preview, time: parsed.time, unread: activeConvRef.current === fromId ? 0 : c.unread + 1 }
+          ? { ...c, lastMessage: preview, time: parsed.time, unread: activeConvRef.current === fromId ? 0 : c.unread + 1, lastMsgMine: false, lastMsgRead: false, lastMsgDelivered: false }
           : c);
       }
       const u = allUsersRef.current.find(x => x.id === fromId);
@@ -1113,7 +1116,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       return [{
         id: fromId,
         user: { name, initials: mkInitials(name), color: CONV_COLORS[fromId % CONV_COLORS.length] },
-        lastMessage: preview, unread: 1, time: parsed.time,
+        lastMessage: preview, unread: 1, time: parsed.time, lastMsgMine: false, lastMsgRead: false, lastMsgDelivered: false,
       }, ...prev];
     });
   }, [parseApiMsg]);
@@ -1225,6 +1228,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               user: { name, initials: mkInitials(name), color: CONV_COLORS[c.userId % CONV_COLORS.length], avatarUrl: u?.avatarUrl ?? null, role: u?.role },
               lastMessage: c.lastMessage, unread: c.unreadCount,
               time: new Date(c.updatedAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }),
+              lastMsgMine:      c.lastSenderId === meId,
+              lastMsgRead:      c.lastMsgIsRead,
+              lastMsgDelivered: c.lastMsgIsDelivered,
             };
           });
         if (initialUserId && !normalized.find(c => c.id === initialUserId)) {
@@ -1410,7 +1416,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     const tmpId = Date.now();
     const msg: Message = { id: tmpId, text: content, mine: true, time: now, date, status: "pending", attachment };
     setMessages(ms => ({ ...ms, [activeConv]: [...(ms[activeConv] ?? []), msg] }));
-    setConvList(prev => prev.map(c => c.id === activeConv ? { ...c, lastMessage: content, time: now } : c));
+    setConvList(prev => prev.map(c => c.id === activeConv ? { ...c, lastMessage: content, time: now, lastMsgMine: true, lastMsgRead: false, lastMsgDelivered: false } : c));
     if (!text) { setNewMsg(""); if (dmInputRef.current) { dmInputRef.current.style.height = "22px"; dmInputRef.current.style.overflowY = "hidden"; } }
     /* Si hors-ligne, le message reste "pending" — le retry se fera au retour du réseau */
     if (!navigator.onLine) return;
@@ -5937,13 +5943,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           ...visibleConvs.map(c => {
             const pres = convPresence[c.id];
             const { text: previewText, isAudio } = fmtConvPreview(c.lastMessage);
-            return { type: "conv" as const, id: c.id, key: `c${c.id}`, name: c.user.name, previewText, isAudio, time: c.time, unread: c.unread, color: c.user.color, initials: c.user.initials, avatarUrl: c.user.avatarUrl ?? null, online: pres?.online ?? false, lastSeenAt: pres?.lastSeenAt ?? null, grp: null };
+            return { type: "conv" as const, id: c.id, key: `c${c.id}`, name: c.user.name, previewText, isAudio, time: c.time, unread: c.unread, color: c.user.color, initials: c.user.initials, avatarUrl: c.user.avatarUrl ?? null, online: pres?.online ?? false, lastSeenAt: pres?.lastSeenAt ?? null, grp: null, lastMsgMine: c.lastMsgMine ?? false, lastMsgRead: c.lastMsgRead ?? false, lastMsgDelivered: c.lastMsgDelivered ?? false };
           }),
           ...visibleGroups.map(g => {
             const isChan = g.type === "channel";
             const ts = g.lastMessageAt ? new Date(g.lastMessageAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }) : "";
             const { text: previewText, isAudio } = fmtConvPreview(g.lastMessage || `${g.membersCount} membre${g.membersCount !== 1 ? "s" : ""}`);
-            return { type: "group" as const, id: g.id, key: `g${g.id}`, name: g.name, previewText, isAudio, time: ts, unread: g.unread, color: isChan ? "#00838F" : "#1877F2", initials: isChan ? "📢" : "👥", online: false, lastSeenAt: null as string|null, grp: g };
+            return { type: "group" as const, id: g.id, key: `g${g.id}`, name: g.name, previewText, isAudio, time: ts, unread: g.unread, color: isChan ? "#00838F" : "#1877F2", initials: isChan ? "📢" : "👥", online: false, lastSeenAt: null as string|null, grp: g, lastMsgMine: false, lastMsgRead: false, lastMsgDelivered: false };
           }),
         ].map(item => (
           <div key={item.key} className="fbl-row"
@@ -5965,36 +5971,59 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
             {/* Content */}
             <div style={{ flex:1, minWidth:0 }}>
-              {/* Row 1: name + time */}
-              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:3 }}>
-                <span style={{ fontWeight: item.unread > 0 ? 700 : 600, fontSize:15.5, color:"#0F172A", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:"70%" }}>
+              {/* Row 1: name + (checkmark for mine + time) */}
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:2 }}>
+                <span style={{ fontWeight: item.unread > 0 ? 700 : 600, fontSize:15.5, color:"#0F172A", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", flex:1, minWidth:0, marginRight:6 }}>
                   {item.name}
                 </span>
-                <span style={{ fontSize:12, color: item.unread > 0 ? "#16C24A" : "#94A3B8", fontWeight: item.unread > 0 ? 700 : 400, flexShrink:0 }}>
-                  {item.time}
-                </span>
+                <div style={{ display:"flex", alignItems:"center", gap:3, flexShrink:0 }}>
+                  {/* Telegram-style checkmarks — only for mine, only in DM conv */}
+                  {item.type === "conv" && item.lastMsgMine && (() => {
+                    const read = item.lastMsgRead;
+                    const delivered = item.lastMsgDelivered;
+                    const color = read ? "#22C55E" : "#94A3B8";
+                    if (read || delivered) {
+                      return (
+                        <svg width="16" height="11" viewBox="0 0 16 11" fill="none" style={{ flexShrink:0 }}>
+                          <path d="M1 5.5L4.5 9L10.5 2" stroke={color} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M5 5.5L8.5 9L14.5 2" stroke={color} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      );
+                    }
+                    return (
+                      <svg width="10" height="11" viewBox="0 0 10 11" fill="none" style={{ flexShrink:0 }}>
+                        <path d="M1 5.5L4 8.5L9 2" stroke="#94A3B8" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    );
+                  })()}
+                  <span style={{ fontSize:12, color: item.unread > 0 ? "#22C55E" : "#94A3B8", fontWeight: item.unread > 0 ? 700 : 400 }}>
+                    {item.time}
+                  </span>
+                </div>
               </div>
 
               {/* Row 2: preview + badge */}
-              <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-                {item.isAudio ? (
-                  <div style={{ flex:1, display:"flex", alignItems:"center", gap:5, overflow:"hidden" }}>
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="#16C24A">
-                      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                      <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="#16C24A" strokeWidth="2.2" fill="none" strokeLinecap="round"/>
-                      <line x1="12" y1="19" x2="12" y2="23" stroke="#16C24A" strokeWidth="2" strokeLinecap="round"/>
-                    </svg>
-                    <span style={{ fontSize:13.5, color: item.unread > 0 ? "#334155" : "#64748B", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontWeight: item.unread > 0 ? 600 : 400 }}>
+              <div style={{ display:"flex", alignItems:"center", gap:4 }}>
+                <div style={{ flex:1, display:"flex", alignItems:"center", gap:4, overflow:"hidden", minWidth:0 }}>
+                  {item.isAudio ? (
+                    <>
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="#22C55E" style={{ flexShrink:0 }}>
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="#22C55E" strokeWidth="2.2" fill="none" strokeLinecap="round"/>
+                        <line x1="12" y1="19" x2="12" y2="23" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"/>
+                      </svg>
+                      <span style={{ fontSize:13.5, color: item.unread > 0 ? "#334155" : "#64748B", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontWeight: item.unread > 0 ? 500 : 400 }}>
+                        {item.previewText}
+                      </span>
+                    </>
+                  ) : (
+                    <span style={{ fontSize:13.5, color: item.unread > 0 ? "#334155" : "#64748B", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontWeight: item.unread > 0 ? 500 : 400 }}>
                       {item.previewText}
                     </span>
-                  </div>
-                ) : (
-                  <span style={{ flex:1, fontSize:13.5, color: item.unread > 0 ? "#334155" : "#64748B", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontWeight: item.unread > 0 ? 600 : 400 }}>
-                    {item.previewText}
-                  </span>
-                )}
+                  )}
+                </div>
                 {item.unread > 0 && (
-                  <div style={{ background:"#16C24A", color:"#fff", borderRadius:99, minWidth:20, height:20, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:800, padding:"0 5px", flexShrink:0, boxShadow:"0 2px 8px rgba(22,194,74,0.35)" }}>
+                  <div style={{ background:"#22C55E", color:"#fff", borderRadius:99, minWidth:20, height:20, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, padding:"0 5px", flexShrink:0 }}>
                     {item.unread > 99 ? "99+" : item.unread}
                   </div>
                 )}
@@ -6002,7 +6031,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
               {/* Row 3: last seen (offline users only) */}
               {!item.online && item.type === "conv" && item.lastSeenAt && (
-                <div style={{ fontSize:11.5, color:"#94A3B8", marginTop:2 }}>
+                <div style={{ fontSize:11.5, color:"#94A3B8", marginTop:1 }}>
                   {presenceLabel(false, item.lastSeenAt)}
                 </div>
               )}

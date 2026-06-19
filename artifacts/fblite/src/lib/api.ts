@@ -717,6 +717,9 @@ export async function apiContribute(tontineId: number, amount: number): Promise<
 export interface ApiConversation {
   userId: number;
   lastMessage: string;
+  lastSenderId: number;
+  lastMsgIsRead: boolean;
+  lastMsgIsDelivered: boolean;
   unreadCount: number;
   updatedAt: string;
 }
