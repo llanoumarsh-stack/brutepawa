@@ -6258,41 +6258,113 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     {settingsPage !== "none" && createPortal(
       <div style={{ position: "fixed", inset: 0, zIndex: 10000, display: "flex", flexDirection: "column", background: "#F7F8FA" }}>
 
-        {/* ── SCREEN 1 — Paramètres de messagerie ── */}
-        {settingsPage === "main" && <>
-          <div style={{ background: "#fff", display: "flex", alignItems: "center", padding: "10px 4px", borderBottom: "1px solid #E5E7EB", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,.06)" }}>
-            <button onClick={() => setSettingsPage("none")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 12px" }}>
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="#0F172A"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-            </button>
-            <span style={{ flex: 1, fontWeight: 700, fontSize: 18, color: "#0F172A" }}>Paramètres de messagerie</span>
-          </div>
-          <div style={{ flex: 1, overflowY: "auto", paddingTop: 10 }}>
-            {[
-              { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="#22C55E"><circle cx="12" cy="8" r="4"/><path d="M6 20c0-3.31 2.69-6 6-6s6 2.69 6 6H6z"/></svg>, label: "Statut En ligne", right: <span style={{ fontSize: 14, color: "#22C55E", fontWeight: 700 }}>{onlineStatus ? "Oui" : "Non"}</span>, page: "status" as const },
-              { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="#22C55E"><path d="M18 8a6 6 0 0 0-12 0c0 4-2 5-2 5h16s-2-1-2-5"/><path d="M13.73 21a2 2 0 0 1-3.46 0" fill="none" stroke="#22C55E" strokeWidth="2"/></svg>, label: "Notifications de messages", right: null, page: "notifs" as const },
-              { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="#22C55E"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>, label: "Invitations", right: null, page: "invitations" as const },
-              { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="#22C55E"><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM12 17.5L6.5 12H10v-2h4v2h3.5L12 17.5zM5.12 5h13.76l.81.97H4.31l.81-.97z"/></svg>, label: "Archive", right: null, page: "archive" as const },
-              { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="#22C55E"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>, label: "Confidentialité et sécurité", right: null, page: "privacy" as const },
-            ].map(item => (
-              <div key={item.label} onClick={() => setSettingsPage(item.page)}
-                style={{ background: "#fff", borderRadius: 14, margin: "0 14px 10px", padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, boxShadow: "0 1px 5px rgba(0,0,0,.07)", cursor: "pointer", transition: "background .15s" }}
-                onMouseDown={e => (e.currentTarget.style.background = "#F0FDF4")}
-                onMouseUp={e => (e.currentTarget.style.background = "#fff")}
-                onMouseLeave={e => (e.currentTarget.style.background = "#fff")}>
-                <div style={{ width: 42, height: 42, borderRadius: "50%", background: "#DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.icon}</div>
-                <span style={{ flex: 1, fontSize: 15, fontWeight: 500, color: "#0F172A" }}>{item.label}</span>
-                {item.right ?? <svg viewBox="0 0 24 24" width="18" height="18" fill="#CBD5E1"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>}
-              </div>
-            ))}
-            <div style={{ textAlign: "center", padding: "28px 20px 44px", marginTop: 4 }}>
-              <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
-                <span style={{ fontSize: 30 }}>🤛</span>
-                <span style={{ fontWeight: 800, fontSize: 16, color: "#0F172A" }}>BrutePawa</span>
-                <span style={{ fontSize: 12.5, color: "#94A3B8" }}>Réseau social 100% africain ❤️</span>
-              </div>
+        {/* ── SCREEN 1 — Paramètres de messagerie PREMIUM ── */}
+        {settingsPage === "main" && (() => {
+          const fbUser = (() => { try { return JSON.parse(localStorage.getItem("fb_user") ?? "{}") as { id?: number; name?: string; firstName?: string; lastName?: string; avatarUrl?: string }; } catch { return {}; } })();
+          const fullName = fbUser.firstName && fbUser.lastName ? `${fbUser.firstName} ${fbUser.lastName}` : fbUser.name ?? "Mon profil";
+          const initials = fullName.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
+          const chevron = <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#C4C9D4" strokeWidth="2.2" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>;
+          const rows = [
+            { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="#22C55E"><circle cx="12" cy="8" r="4"/><path d="M6 20c0-3.31 2.69-6 6-6s6 2.69 6 6H6z"/></svg>, label: "Statut en ligne", desc: "Autorisez les autres à vous voir en ligne", page: null as null, toggle: true },
+            { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="#22C55E"><path d="M18 8a6 6 0 0 0-12 0c0 4-2 5-2 5h16s-2-1-2-5"/><path d="M13.73 21a2 2 0 0 1-3.46 0" fill="none" stroke="#22C55E" strokeWidth="2"/></svg>, label: "Notifications de messages", desc: "Personnalisez vos notifications", page: "notifs" as const, toggle: false },
+            { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="#22C55E"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>, label: "Invitations", desc: "Gérez vos invitations reçues", page: "invitations" as const, toggle: false },
+            { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="#22C55E"><path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM12 17.5L6.5 12H10v-2h4v2h3.5L12 17.5zM5.12 5h13.76l.81.97H4.31l.81-.97z"/></svg>, label: "Archive", desc: "Voir et gérer vos conversations archivées", page: "archive" as const, toggle: false },
+            { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="#22C55E"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>, label: "Confidentialité et sécurité", desc: "Contrôlez votre confidentialité", page: "privacy" as const, toggle: false },
+          ];
+          return <>
+            {/* ── Header ── */}
+            <div style={{ background: "#fff", display: "flex", alignItems: "center", padding: "10px 4px", borderBottom: "1px solid rgba(0,0,0,0.06)", flexShrink: 0, boxShadow: "0 1px 4px rgba(0,0,0,.05)" }}>
+              <button onClick={() => setSettingsPage("none")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 14px", display: "flex", alignItems: "center" }}>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="#0F172A"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+              </button>
+              <span style={{ flex: 1, fontWeight: 700, fontSize: 18, color: "#0F172A" }}>Paramètres de messagerie</span>
             </div>
-          </div>
-        </>}
+
+            <div style={{ flex: 1, overflowY: "auto", background: "#F5F7FA", padding: "14px 14px 32px" }}>
+
+              {/* ── Profile card premium ── */}
+              <div onClick={() => setSettingsPage("status")}
+                style={{ background: "linear-gradient(135deg,#f0fdf4 0%,#dcfce7 50%,#bbf7d0 100%)", borderRadius: 28, padding: "18px 18px 18px 20px", display: "flex", alignItems: "center", gap: 16, boxShadow: "0 2px 16px rgba(34,197,94,0.13), 0 1px 4px rgba(0,0,0,.05)", marginBottom: 14, cursor: "pointer", border: "1px solid rgba(34,197,94,0.12)" }}>
+                {/* Avatar */}
+                <div style={{ position: "relative", flexShrink: 0 }}>
+                  {fbUser.avatarUrl
+                    ? <img src={fbUser.avatarUrl} alt={fullName} style={{ width: 64, height: 64, borderRadius: "50%", objectFit: "cover", border: "3px solid #fff", boxShadow: "0 2px 10px rgba(0,0,0,0.12)" }} />
+                    : <div style={{ width: 64, height: 64, borderRadius: "50%", background: "linear-gradient(135deg,#22C55E,#16a34a)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 22, border: "3px solid #fff", boxShadow: "0 2px 10px rgba(0,0,0,0.12)" }}>{initials}</div>
+                  }
+                  {/* Online dot */}
+                  <div style={{ position: "absolute", bottom: 2, right: 2, width: 16, height: 16, borderRadius: "50%", background: "#22C55E", border: "2.5px solid #fff", boxShadow: "0 1px 4px rgba(34,197,94,0.4)" }} />
+                </div>
+                {/* Info */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
+                    <span style={{ fontWeight: 700, fontSize: 16.5, color: "#0F172A" }}>{fullName}</span>
+                    <span style={{ background: "#22C55E", color: "#fff", fontSize: 11, fontWeight: 700, borderRadius: 20, padding: "2px 9px", letterSpacing: .2 }}>Premium</span>
+                    <svg viewBox="0 0 24 24" width="18" height="18"><circle cx="12" cy="12" r="12" fill="#22C55E"/><path d="M7 12.5l3.5 3.5 6.5-7" stroke="#fff" strokeWidth="2.2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
+                    <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#22C55E", flexShrink: 0 }} />
+                    <span style={{ fontSize: 13, color: "#22C55E", fontWeight: 600 }}>En ligne</span>
+                  </div>
+                  <div style={{ fontSize: 12.5, color: "#64748B" }}>Disponible pour discuter</div>
+                </div>
+                {chevron}
+              </div>
+
+              {/* ── Settings rows ── */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {rows.map(item => (
+                  <div key={item.label}
+                    onClick={() => { if (item.toggle) { const v = !onlineStatus; setOnlineStatus(v); apiUpdateMessagingSettings({ onlineStatus: v }).catch(() => {}); } else if (item.page) setSettingsPage(item.page); }}
+                    style={{ background: "#fff", borderRadius: 24, padding: "16px 18px", display: "flex", alignItems: "center", gap: 14, boxShadow: "0 1px 6px rgba(0,0,0,.06)", cursor: "pointer", transition: "background .15s, transform .1s", border: "1px solid rgba(0,0,0,0.035)" }}
+                    onMouseDown={e => { (e.currentTarget.style.background = "#F0FDF4"); (e.currentTarget.style.transform = "scale(0.99)"); }}
+                    onMouseUp={e => { (e.currentTarget.style.background = "#fff"); (e.currentTarget.style.transform = "scale(1)"); }}
+                    onMouseLeave={e => { (e.currentTarget.style.background = "#fff"); (e.currentTarget.style.transform = "scale(1)"); }}
+                    onTouchStart={e => (e.currentTarget.style.background = "#F0FDF4")}
+                    onTouchEnd={e => (e.currentTarget.style.background = "#fff")}>
+                    <div style={{ width: 46, height: 46, borderRadius: 14, background: "linear-gradient(135deg,#f0fdf4,#dcfce7)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 1px 4px rgba(34,197,94,0.15)" }}>{item.icon}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 15.5, fontWeight: 600, color: "#0F172A", marginBottom: 2 }}>{item.label}</div>
+                      <div style={{ fontSize: 12.5, color: "#94A3B8", fontWeight: 400 }}>{item.desc}</div>
+                    </div>
+                    {item.toggle
+                      ? <button onClick={e => { e.stopPropagation(); const v = !onlineStatus; setOnlineStatus(v); apiUpdateMessagingSettings({ onlineStatus: v }).catch(() => {}); }} className={`fbl-toggle ${onlineStatus ? "fbl-toggle-on" : "fbl-toggle-off"}`} />
+                      : chevron
+                    }
+                  </div>
+                ))}
+              </div>
+
+              {/* ── BrutePawa Premium card ── */}
+              <div style={{ background: "linear-gradient(135deg,#f0fdf4 0%,#dcfce7 60%,#bbf7d0 100%)", borderRadius: 28, padding: "18px 20px", display: "flex", alignItems: "center", gap: 14, boxShadow: "0 2px 16px rgba(34,197,94,0.13), 0 1px 4px rgba(0,0,0,.05)", marginTop: 14, border: "1px solid rgba(34,197,94,0.12)" }}>
+                {/* BP Logo */}
+                <div style={{ width: 52, height: 52, borderRadius: 14, background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 2px 10px rgba(34,197,94,0.35)" }}>
+                  <svg viewBox="0 0 40 40" width="30" height="30" fill="none">
+                    <text x="5" y="30" fontSize="26" fontWeight="800" fill="#fff" fontFamily="Arial, sans-serif">B</text>
+                  </svg>
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
+                    <span style={{ fontWeight: 800, fontSize: 16, color: "#0F172A" }}>BrutePawa</span>
+                    <span style={{ fontWeight: 700, fontSize: 16, color: "#22C55E" }}>Premium</span>
+                  </div>
+                  <div style={{ fontSize: 12, color: "#64748B", fontWeight: 400 }}>Réseau social africain nouvelle génération</div>
+                  <div style={{ width: 28, height: 3, borderRadius: 2, background: "linear-gradient(90deg,#22C55E,#16a34a)", marginTop: 6 }} />
+                </div>
+                {/* Premium badge */}
+                <div style={{ width: 44, height: 44, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 2px 10px rgba(34,197,94,0.4)" }}>
+                  <svg viewBox="0 0 24 24" width="24" height="24"><path d="M9 12l2 2 4-4" stroke="#fff" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="12" r="10" stroke="#fff" strokeWidth="2" fill="none"/></svg>
+                </div>
+              </div>
+
+              {/* ── Footer ── */}
+              <div style={{ textAlign: "center", padding: "28px 0 8px", color: "#94A3B8" }}>
+                <div style={{ fontSize: 14, fontWeight: 500 }}>Fait en Afrique 🇧🇯</div>
+                <div style={{ fontSize: 12.5, marginTop: 4 }}>Version 1.0.0</div>
+              </div>
+
+            </div>
+          </>;
+        })()}
 
         {/* ── SCREEN 2 — Statut En ligne ── */}
         {settingsPage === "status" && <>

@@ -1,0 +1,108 @@
+REPRODUIRE EXACTEMENT L'INTERFACE FOURNIE EN RÉFÉRENCE.
+
+IMPORTANT :
+Cette maquette est la référence absolue. Ne pas l'interpréter, ne pas la simplifier, ne pas la redessiner à votre façon.
+
+OBJECTIF :
+Recréer à 100% le même écran Paramètres de messagerie BrutePawa avec la même hiérarchie visuelle, les mêmes espacements, les mêmes couleurs, les mêmes dimensions, les mêmes ombres, les mêmes rayons de bordure et la même sensation premium.
+
+RÈGLES STRICTES :
+
+✅ Conserver exactement la palette de couleurs actuelle.
+✅ Conserver exactement le vert BrutePawa.
+✅ Conserver exactement le fond gris très clair.
+✅ Conserver exactement le style des cartes.
+✅ Conserver exactement les ombres.
+✅ Conserver exactement les coins arrondis.
+✅ Conserver exactement la structure de l'écran.
+✅ Conserver exactement les espacements verticaux.
+✅ Conserver exactement les marges latérales.
+✅ Conserver exactement le style premium moderne.
+
+EN-TÊTE :
+
+- Titre : Paramètres de messagerie
+- Flèche retour à gauche
+- Police Inter SemiBold
+- Même taille et positionnement que la maquette
+
+CARTE PROFIL PREMIUM :
+
+- Grande carte premium en haut
+- Fond dégradé vert BrutePawa très léger
+- Coins arrondis 28px
+- Ombre douce
+- Avatar circulaire
+- Nom utilisateur
+- Badge Premium vert
+- Badge vérifié
+- Statut en ligne
+- Description utilisateur
+- Flèche navigation à droite
+
+LISTE PARAMÈTRES :
+
+1. Statut en ligne
+2. Notifications de messages
+3. Invitations
+4. Archive
+5. Confidentialité et sécurité
+
+Pour chaque élément :
+
+- Carte blanche
+- Coins arrondis 24px
+- Hauteur identique à la maquette
+- Icône verte dans cercle vert clair
+- Titre principal
+- Sous-titre descriptif
+- Chevron à droite
+- Ombre très légère
+- Animation tactile moderne
+
+STATUT EN LIGNE :
+
+- Switch iOS moderne vert
+- Alignement parfait
+- Animation fluide
+
+SECTION BASSE :
+
+Carte BrutePawa Premium :
+
+- Logo BrutePawa
+- Texte "BrutePawa Premium"
+- Sous-titre :
+  "Réseau social africain nouvelle génération"
+- Badge premium à droite
+- Fond dégradé vert très léger
+- Coins arrondis 28px
+- Ombre premium
+
+PIED DE PAGE :
+
+Fait en Afrique 🇧🇯
+Version 1.0.0
+
+STYLE VISUEL :
+
+- Apparence haut de gamme 2026
+- Inspiré des meilleures applications premium
+- Glassmorphism léger
+- Ombres réalistes
+- Animations 60 FPS
+- Design mobile natif
+- Aspect professionnel international
+
+INTERDICTION :
+
+❌ Ne pas changer les couleurs.
+❌ Ne pas changer les espacements.
+❌ Ne pas changer les tailles.
+❌ Ne pas remplacer les icônes.
+❌ Ne pas modifier le design.
+❌ Ne pas simplifier la maquette.
+
+RÉSULTAT ATTENDU :
+
+Une reproduction pixel-perfect de la maquette de référence avec une fidélité visuelle supérieure à 99%.
