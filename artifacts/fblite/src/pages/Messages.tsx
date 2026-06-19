@@ -3263,6 +3263,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           @keyframes fbl-rec-pulse { 0%,100%{opacity:1} 50%{opacity:0.2} }
           @keyframes fbl-pulse { 0%,100%{opacity:1} 50%{opacity:0.45} }
           @keyframes wa-typing-dot { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
+          @keyframes bp-send-in { from{transform:scale(0.55) rotate(-20deg);opacity:0} to{transform:scale(1) rotate(0deg);opacity:1} }
+          @keyframes bp-mic-pulse { 0%,100%{box-shadow:0 4px 20px rgba(34,197,94,0.55)} 50%{box-shadow:0 4px 28px rgba(34,197,94,0.80),0 0 0 8px rgba(34,197,94,0.12)} }
           @keyframes fbl-loc-ripple { 0%{transform:scale(0.6);opacity:0.8} 100%{transform:scale(2.2);opacity:0} }
           @keyframes fbl-spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
           @keyframes fbl-upload-card { from{opacity:0;transform:scale(0.88)} to{opacity:1;transform:scale(1)} }
@@ -4425,10 +4427,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               </div>
             )}
 
-            {/* ── Main input row — floating pill composer ── */}
-            <div style={{ padding:"5px 8px 7px", display: recLocked ? "none" : "flex", alignItems:"center", userSelect:"none", WebkitUserSelect:"none" }}>
-              {/* ═══ THE FLOATING PILL ═══ */}
-              <div style={{ flex:1, display:"flex", alignItems:"center", background:"#fff", border:"1px solid #E2E8F0", borderRadius:9999, padding:"0 4px 0 12px", minHeight:44, overflow:"visible", position:"relative" }}>
+            {/* ── Main input row — PREMIUM 2026 ── */}
+            <div style={{ padding:"6px 12px 8px", display: recLocked ? "none" : "flex", alignItems:"flex-end", gap:10, userSelect:"none", WebkitUserSelect:"none" }}>
+              {/* ═══ FLOATING GLASS PILL ═══ */}
+              <div style={{ flex:1, display:"flex", alignItems:"center", background:"rgba(255,255,255,0.97)", backdropFilter:"blur(20px)", WebkitBackdropFilter:"blur(20px)", borderRadius:32, boxShadow:"0 4px 28px rgba(0,0,0,0.13), 0 1px 6px rgba(0,0,0,0.07)", padding:"6px 10px 6px 14px", minHeight:52, border:"1px solid rgba(255,255,255,0.85)", overflow:"visible", position:"relative" }}>
 
                 {/* Unlocked recording: waveform lives inside the pill */}
                 {isRecording && !recLocked && (
@@ -4464,60 +4466,57 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="#94A3B8"/><circle cx="15" cy="9" r="1" fill="#94A3B8"/></svg>
                   </button>
                 )}
-                {/* Text input — transparent inside the pill, hidden during recording */}
+                {/* Text input — gray inner pill, hidden during recording */}
                 {!isRecording && (
-                  <textarea ref={dmInputRef} value={newMsg}
-                    rows={1}
-                    onChange={e => {
-                      setNewMsg(e.target.value);
-                      autoResize(e.target);
-                      if (typingDebounceRef.current) clearTimeout(typingDebounceRef.current);
-                      apiSendTyping(activeConv!, "typing").catch(() => {});
-                      typingDebounceRef.current = setTimeout(() => { typingDebounceRef.current = null; }, 2500);
-                    }}
-                    onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMsg(); } }}
-                    placeholder="Écrire un message..."
-                    style={{ flex:1, background:"transparent", border:"none", outline:"none", resize:"none", padding:"0 6px", fontSize:15, color:"#0F172A", minWidth:0, lineHeight:"22px", height:"22px", maxHeight:"130px", overflowY:"hidden", transition:"height 0.15s ease", display:"block", alignSelf:"center", fontFamily:"inherit", WebkitAppearance:"none" as React.CSSProperties["WebkitAppearance"] }} />
+                  <div style={{ flex:1, background:"#F5F7FA", borderRadius:22, padding:"9px 13px", margin:"0 6px" }}>
+                    <textarea ref={dmInputRef} value={newMsg}
+                      rows={1}
+                      onChange={e => {
+                        setNewMsg(e.target.value);
+                        autoResize(e.target);
+                        if (typingDebounceRef.current) clearTimeout(typingDebounceRef.current);
+                        apiSendTyping(activeConv!, "typing").catch(() => {});
+                        typingDebounceRef.current = setTimeout(() => { typingDebounceRef.current = null; }, 2500);
+                      }}
+                      onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMsg(); } }}
+                      placeholder="Écrire un message..."
+                      style={{ flex:1, background:"transparent", border:"none", outline:"none", resize:"none", padding:0, fontSize:15, color:"#0F172A", minWidth:0, lineHeight:"22px", height:"22px", maxHeight:"130px", overflowY:"hidden", transition:"height 0.15s ease", display:"block", alignSelf:"center", fontFamily:"inherit", caretColor:"#22C55E", WebkitAppearance:"none" as React.CSSProperties["WebkitAppearance"] }} />
+                  </div>
                 )}
 
-                {newMsg.trim() && !isRecording ? (
-                  /* Send button — green circle inside the pill */
-                  <button onClick={() => sendMsg()}
-                    style={{ background:"#22C55E", border:"none", borderRadius:"50%", width:36, height:36, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(34,197,94,0.28)", cursor:"pointer" }}>
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                  </button>
-                ) : (
-                  <>
-                    {!isRecording && (
-                      <>
-                        <button onClick={() => { setAttachSheet(true); setAttachPage("none"); }}
-                          style={{ background:"none", border:"none", cursor:"pointer", padding:"0 3px", flexShrink:0, display:"flex", alignItems:"center" }}>
-                          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-                        </button>
-                        <button onClick={() => cameraInputRef.current?.click()} style={{ background:"none", border:"none", cursor:"pointer", padding:"0 3px", flexShrink:0, display:"flex", alignItems:"center" }}>
-                          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                        </button>
-                      </>
-                    )}
-                  {/* ── MIC BUTTON — gesture lock/cancel/send ── */}
-                  {!recLocked && (() => {
-                    // Lock icon is fixed 110px above mic center
-                    const LOCK_DIST = 110; // px from mic center to lock center
-                    const LOCK_RADIUS = 24; // half-size of lock zone
-                    const isNearLock = recDragY < -(LOCK_DIST - LOCK_RADIUS - 8); // -78px
-                    const isAtLock   = recDragY < -(LOCK_DIST - LOCK_RADIUS);     // -86px
-                    // Clamp mic movement: can't go past lock center
-                    const micDy = Math.max(-LOCK_DIST, recDragY);
-                    // Slight magnetic pull near lock (mic accelerates into lock)
-                    const visualDy = micDy < -70
-                      ? micDy + (micDy + 70) * 0.18   // extra pull
-                      : micDy;
-                    const visualDx = Math.max(-100, recDragX) * 0.35;
-                    const SIZE = isRecording ? 52 : 44;
+                {/* Attachment + Camera — inside pill, only when no text */}
+                {!newMsg.trim() && !isRecording && (
+                  <div style={{ display:"flex", alignItems:"center", gap:2, flexShrink:0 }}>
+                    <button onClick={() => { setAttachSheet(true); setAttachPage("none"); }}
+                      style={{ background:"none", border:"none", cursor:"pointer", padding:"0 4px", flexShrink:0, display:"flex", alignItems:"center" }}>
+                      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                    </button>
+                    <button onClick={() => cameraInputRef.current?.click()}
+                      style={{ background:"none", border:"none", cursor:"pointer", padding:"0 4px", flexShrink:0, display:"flex", alignItems:"center" }}>
+                      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    </button>
+                  </div>
+                )}
+              </div>{/* end glass pill */}
 
-                    return (
-                    <div style={{ position:"relative", flexShrink:0, width:SIZE, height:SIZE,
-                      overflow:"visible", marginLeft:"auto" }}>
+              {/* ═══ EXTERNAL RIGHT BUTTON — Send (when typing) or Mic ═══ */}
+              {newMsg.trim() && !isRecording ? (
+                <button onClick={() => sendMsg()}
+                  style={{ width:52, height:52, borderRadius:"50%", flexShrink:0, border:"none", background:"linear-gradient(135deg,#22C55E 0%,#16a34a 100%)", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 4px 20px rgba(34,197,94,0.55)", cursor:"pointer", animation:"bp-send-in 0.22s cubic-bezier(0.34,1.56,0.64,1)" }}>
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2" fill="#fff" stroke="none"/></svg>
+                </button>
+              ) : !recLocked ? (() => {
+                const LOCK_DIST = 110;
+                const LOCK_RADIUS = 24;
+                const isNearLock = recDragY < -(LOCK_DIST - LOCK_RADIUS - 8);
+                const isAtLock   = recDragY < -(LOCK_DIST - LOCK_RADIUS);
+                const micDy = Math.max(-LOCK_DIST, recDragY);
+                const visualDy = micDy < -70 ? micDy + (micDy + 70) * 0.18 : micDy;
+                const visualDx = Math.max(-100, recDragX) * 0.35;
+                const SIZE = isRecording ? 56 : 52;
+                return (
+                <div style={{ position:"relative", flexShrink:0, width:SIZE, height:SIZE,
+                  overflow:"visible" }}>
 
                       {/* ── LOCK ICON — fixed 110px above mic (never moves) ── */}
                       {isRecording && (
@@ -4616,12 +4615,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                           <line x1="8" y1="23" x2="16" y2="23"/>
                         </svg>
                       </button>
-                    </div>
-                    );
-                  })()}
-                </>
-              )}
-              </div>
+                </div>
+                );
+              })() : null}
             </div>
           </div>
         )}

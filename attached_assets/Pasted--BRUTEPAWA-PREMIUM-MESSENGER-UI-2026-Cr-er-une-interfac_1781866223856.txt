@@ -1,0 +1,85 @@
+🎨 BRUTEPAWA PREMIUM MESSENGER UI 2026
+
+Créer une interface de messagerie mobile ultra premium pour BrutePawa en conservant strictement les couleurs officielles de la marque : vert BrutePawa (#22C55E), blanc pur (#FFFFFF) et gris très clair (#F5F7FA).
+
+L'objectif est d'obtenir une interface plus moderne que WhatsApp, plus élégante que Telegram et plus fluide que Messenger, sans copier aucune application existante.
+
+═══════════════════════════════
+
+BARRE DE SAISIE PREMIUM
+
+• Position fixe en bas de l'écran
+• Conteneur flottant avec effet premium
+• Fond blanc pur
+• Coins ultra arrondis (32px)
+• Ombre douce et réaliste
+• Marges latérales de 12px
+• Hauteur totale : 64px
+
+═══════════════════════════════
+
+CHAMP DE TEXTE
+
+• Placeholder : "Écrire un message..."
+• Fond gris très clair (#F5F7FA)
+• Coins arrondis 28px
+• Hauteur : 52px
+• Police Inter SemiBold
+• Animation de focus fluide
+• Curseur vert BrutePawa
+
+═══════════════════════════════
+
+ICÔNES
+
+Gauche :
+• Emoji dans un cercle discret
+
+Droite :
+• Pièce jointe
+• Caméra
+• Microphone
+
+Style :
+• Icônes SVG premium
+• Taille cohérente
+• Espacement parfait
+• Animation au toucher
+
+═══════════════════════════════
+
+BOUTON MICROPHONE
+
+• Cercle parfait
+• Dégradé vert BrutePawa
+• Ombre premium
+• Effet glow léger
+• Animation pulsation discrète
+• Lorsque l'utilisateur écrit du texte, transformation automatique du micro en bouton envoyer avec animation fluide
+
+═══════════════════════════════
+
+FOND DE CONVERSATION
+
+• Motifs BrutePawa très subtils
+• Opacité entre 3% et 5%
+• Aucun élément géant
+• Design propre et professionnel
+• Priorité maximale à la lisibilité des messages
+
+═══════════════════════════════
+
+EFFETS PREMIUM
+
+• Glassmorphism léger
+• Micro-interactions modernes
+• Animations 60 FPS
+• Transitions fluides
+• Effets de profondeur réalistes
+• Apparence application mobile haut de gamme 2026
+
+═══════════════════════════════
+
+RÉSULTAT ATTENDU
+
+Une messagerie qui donne immédiatement une impression de produit premium, moderne, professionnel et international tout en conservant l'identité visuelle unique de BrutePawa.
