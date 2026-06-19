@@ -5203,6 +5203,238 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     (!search || g.name.toLowerCase().includes(search.toLowerCase()))
   );
 
+  /* ══════════════════════════════════════════════════════════════
+     BROADCAST — Chat view
+  ══════════════════════════════════════════════════════════════ */
+  if (activeBcId !== null) {
+    const bc = bcConvs.find(b => b.id === activeBcId);
+    if (!bc) { setActiveBcId(null); }
+    else {
+      const bcRecipNames = bc.recipients.map(uid => {
+        const u = allUsers.find(x => x.id === uid);
+        return u ? (u.firstName && u.lastName ? `${u.firstName} ${u.lastName}` : u.name ?? `#${uid}`) : `#${uid}`;
+      });
+      const handleBcSend = () => {
+        if (!bcInput.trim()) return;
+        const msg = { id: Date.now(), text: bcInput.trim(), time: new Date().toLocaleTimeString("fr",{hour:"2-digit",minute:"2-digit"}), mine: true };
+        setBcConvs(prev => prev.map(b => b.id === activeBcId ? {...b, msgs:[...b.msgs, msg]} : b));
+        setBcInput("");
+      };
+      return createPortal(
+        <div style={{ position:"fixed", inset:0, background: `url(${import.meta.env.BASE_URL}wallpapers/bp-chat-bg.jpg) center/cover no-repeat`, zIndex:10000, display:"flex", flexDirection:"column" }}>
+          {/* Header */}
+          <div style={{ background:"rgba(255,255,255,0.97)", display:"flex", alignItems:"center", padding:"6px 8px", boxShadow:"0 1px 4px rgba(0,0,0,0.1)", flexShrink:0 }}>
+            <button onClick={() => setActiveBcId(null)} style={{ background:"none",border:"none",cursor:"pointer",width:44,height:44,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div style={{ width:40,height:40,borderRadius:"50%",background:"#22C55E",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginRight:10 }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 11a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 0h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 7.91a16 16 0 0 0 6.1 6.1l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <div style={{ flex:1, minWidth:0 }}>
+              <div style={{ fontWeight:700,fontSize:16,color:"#111827",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis" }}>{bc.recipients.length} destinataire{bc.recipients.length>1?"s":""}</div>
+              <div style={{ fontSize:12,color:"#6B7280" }}>Liste de diffusion</div>
+            </div>
+            <button style={{ background:"none",border:"none",cursor:"pointer",width:40,height:40,display:"flex",alignItems:"center",justifyContent:"center" }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="#6B7280"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+            </button>
+          </div>
+          {/* Messages */}
+          <div style={{ flex:1, overflowY:"auto", padding:"12px 10px", display:"flex", flexDirection:"column", gap:4 }}>
+            {/* Info card */}
+            <div style={{ alignSelf:"center", maxWidth:"85%", background:"rgba(70,110,70,0.65)", backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)", borderRadius:20, padding:"16px 20px", margin:"8px auto", boxShadow:"0 4px 16px rgba(0,0,0,0.12)", textAlign:"center" }}>
+              <div style={{ fontSize:13.5, color:"rgba(255,255,255,0.92)", lineHeight:1.5 }}>
+                Seuls les contacts que vous avez enregistrés dans leur carnet d'adresses recevront vos messages de diffusion.
+              </div>
+              <div style={{ marginTop:10, display:"flex", flexWrap:"wrap", gap:4, justifyContent:"center" }}>
+                {bcRecipNames.map(n => <span key={n} style={{ background:"rgba(255,255,255,0.18)", borderRadius:12, padding:"2px 10px", fontSize:12, color:"#fff" }}>{n}</span>)}
+              </div>
+            </div>
+            {bc.msgs.map(m => (
+              <div key={m.id} style={{ display:"flex", justifyContent:"flex-end" }}>
+                <div style={{ maxWidth:"72%", background:"#DCF8C6", borderRadius:"16px 16px 4px 16px", padding:"8px 12px 6px", fontSize:14.5, boxShadow:"0 1px 2px rgba(0,0,0,0.1)" }}>
+                  {m.text}
+                  <div style={{ fontSize:10,color:"#888",textAlign:"right",marginTop:2 }}>{m.time} <span style={{ color:"#34D399" }}>✓✓</span></div>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Input */}
+          <div style={{ background:"rgba(255,255,255,0.97)", padding:"8px 10px", display:"flex", alignItems:"center", gap:8, boxShadow:"0 -1px 4px rgba(0,0,0,0.06)", flexShrink:0 }}>
+            <button style={{ background:"none",border:"none",cursor:"pointer",width:38,height:38,display:"flex",alignItems:"center",justifyContent:"center" }}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1.2" fill="#6B7280"/><circle cx="15" cy="9" r="1.2" fill="#6B7280"/></svg>
+            </button>
+            <input value={bcInput} onChange={e=>setBcInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")handleBcSend();}}
+              placeholder="Message"
+              style={{ flex:1,height:42,borderRadius:22,border:"1px solid #E5E7EB",outline:"none",padding:"0 14px",fontSize:15,background:"#fff" }} />
+            <button style={{ background:"none",border:"none",cursor:"pointer",width:38,height:38,display:"flex",alignItems:"center",justifyContent:"center" }}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+            </button>
+            {bcInput.trim() ? (
+              <button onClick={handleBcSend} style={{ width:44,height:44,borderRadius:"50%",background:"#22C55E",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 2px 10px rgba(34,197,94,0.4)" }}>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
+            ) : (
+              <button style={{ width:44,height:44,borderRadius:"50%",background:"#22C55E",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 2px 10px rgba(34,197,94,0.4)" }}>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+              </button>
+            )}
+          </div>
+        </div>
+      , document.body);
+    }
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     BROADCAST — Contact picker
+  ══════════════════════════════════════════════════════════════ */
+  if (showBroadcast) {
+    const allContacts = allUsers.filter(u => u.id !== meId);
+    const filteredContacts = bcSearch.trim()
+      ? allContacts.filter(u => {
+          const n = u.firstName && u.lastName ? `${u.firstName} ${u.lastName}` : u.name ?? "";
+          return n.toLowerCase().includes(bcSearch.toLowerCase());
+        })
+      : allContacts;
+    const selectedUsers = allContacts.filter(u => bcSelected.has(u.id));
+
+    const toggleContact = (id: number) => {
+      setBcSelected(prev => {
+        const next = new Set(prev);
+        if (next.has(id)) next.delete(id); else next.add(id);
+        return next;
+      });
+    };
+
+    const handleValidate = () => {
+      if (bcSelected.size === 0) return;
+      const newBc = { id: Date.now(), recipients: [...bcSelected], msgs: [] };
+      setBcConvs(prev => [...prev, newBc]);
+      setActiveBcId(newBc.id);
+      setBcSelected(new Set());
+      setBcSearch("");
+      setBcSearchMode(false);
+      setShowBroadcast(false);
+    };
+
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, background:"#fff", zIndex:10000, display:"flex", flexDirection:"column" }}>
+        <style>{`@keyframes bc-check-in{from{opacity:0;transform:scale(0.5)}to{opacity:1;transform:scale(1)}} @keyframes bc-strip-in{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}`}</style>
+
+        {/* ── HEADER ── */}
+        <div style={{ background:"#fff", display:"flex", alignItems:"center", height:56, padding:"0 4px", flexShrink:0, boxShadow:"0 1px 0 rgba(0,0,0,0.09)", zIndex:5 }}>
+          {bcSearchMode ? (
+            <>
+              <button onClick={() => { setBcSearchMode(false); setBcSearch(""); }}
+                style={{ background:"none",border:"none",cursor:"pointer",width:48,height:48,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <input autoFocus value={bcSearch} onChange={e=>setBcSearch(e.target.value)}
+                placeholder="Rechercher..."
+                style={{ flex:1,border:"none",outline:"none",fontSize:16,background:"transparent",color:"#111827" }} />
+              {bcSearch && <button onClick={()=>setBcSearch("")} style={{ background:"none",border:"none",cursor:"pointer",padding:8 }}>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>}
+            </>
+          ) : (
+            <>
+              <button onClick={() => { setShowBroadcast(false); setBcSelected(new Set()); setBcSearch(""); }}
+                style={{ background:"none",border:"none",cursor:"pointer",width:48,height:48,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <div style={{ flex:1 }}>
+                <div style={{ fontWeight:700, fontSize:16.5, color:"#111827" }}>Nouvelle diffusion</div>
+                <div style={{ fontSize:12, color:"#6B7280" }}>{bcSelected.size} sélectionné{bcSelected.size>1?"s":""} sur {allContacts.length}</div>
+              </div>
+              <button onClick={() => { setBcSearchMode(true); setBcSearch(""); }}
+                style={{ background:"none",border:"none",cursor:"pointer",width:48,height:48,display:"flex",alignItems:"center",justifyContent:"center" }}>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+              </button>
+            </>
+          )}
+        </div>
+
+        {/* ── SELECTED STRIP ── */}
+        {selectedUsers.length > 0 && (
+          <div style={{ background:"#fff", borderBottom:"1px solid #E5E7EB", padding:"10px 12px", display:"flex", gap:10, overflowX:"auto", flexShrink:0, animation:"bc-strip-in 0.2s ease" }}>
+            {selectedUsers.map(u => {
+              const name = u.firstName && u.lastName ? `${u.firstName} ${u.lastName}` : u.name ?? `#${u.id}`;
+              const col = CONV_COLORS[u.id % CONV_COLORS.length];
+              return (
+                <div key={u.id} style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:4, flexShrink:0, cursor:"pointer" }}
+                  onClick={() => toggleContact(u.id)}>
+                  <div style={{ position:"relative" }}>
+                    <div style={{ width:50, height:50, borderRadius:"50%", background:col, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, fontSize:18 }}>
+                      {mkInitials(name)}
+                    </div>
+                    <div style={{ position:"absolute", top:-2, right:-2, width:20, height:20, borderRadius:"50%", background:"#4B5563", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 1px 3px rgba(0,0,0,0.25)" }}>
+                      <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </div>
+                  </div>
+                  <span style={{ fontSize:11, color:"#111827", maxWidth:58, textAlign:"center", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{name}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* ── SEARCH BAR ── */}
+        <div style={{ padding:"10px 14px", background:"#fff", borderBottom:"1px solid #E5E7EB", flexShrink:0 }}>
+          <div style={{ display:"flex", alignItems:"center", background:"#F3F4F6", borderRadius:30, padding:"9px 16px", gap:8 }}>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#9CA3AF" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+            <input value={bcSearch} onChange={e=>setBcSearch(e.target.value)}
+              placeholder="Rechercher des personnes, groupes..."
+              style={{ flex:1,border:"none",outline:"none",fontSize:14.5,background:"transparent",color:"#111827" }} />
+          </div>
+        </div>
+
+        {/* ── CONTACT LIST ── */}
+        <div style={{ flex:1, overflowY:"auto", background:"#fff" }}>
+          {!bcSearch.trim() && (
+            <div style={{ padding:"12px 16px 6px", fontSize:13, fontWeight:600, color:"#6B7280", textTransform:"uppercase", letterSpacing:"0.04em" }}>
+              Contacts sur BrutePawa
+            </div>
+          )}
+          {filteredContacts.map(u => {
+            const name = u.firstName && u.lastName ? `${u.firstName} ${u.lastName}` : u.name ?? `Utilisateur #${u.id}`;
+            const col = CONV_COLORS[u.id % CONV_COLORS.length];
+            const isSelected = bcSelected.has(u.id);
+            return (
+              <div key={u.id} onClick={() => toggleContact(u.id)}
+                style={{ display:"flex", alignItems:"center", padding:"10px 16px", gap:14, cursor:"pointer", borderBottom:"1px solid #F3F4F6", transition:"background 0.1s" }}
+                onMouseEnter={e=>(e.currentTarget.style.background="#F9FAFB")}
+                onMouseLeave={e=>(e.currentTarget.style.background="transparent")}>
+                <div style={{ width:50, height:50, borderRadius:"50%", background:col, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, fontSize:18, flexShrink:0 }}>
+                  {mkInitials(name)}
+                </div>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ fontWeight:600, fontSize:15.5, color:"#111827", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{name}</div>
+                  <div style={{ fontSize:13, color:"#6B7280", marginTop:1 }}>en ligne</div>
+                </div>
+                {/* Checkbox */}
+                <div style={{ width:24, height:24, borderRadius:"50%", border:`2px solid ${isSelected ? "#22C55E" : "#D1D5DB"}`, background: isSelected ? "#22C55E" : "#fff", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, transition:"all 0.15s", animation: isSelected ? "bc-check-in 0.15s ease" : "none" }}>
+                  {isSelected && <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
+                </div>
+              </div>
+            );
+          })}
+          {filteredContacts.length === 0 && (
+            <div style={{ textAlign:"center", color:"#9CA3AF", fontSize:14, padding:"40px 16px" }}>Aucun contact trouvé</div>
+          )}
+          {/* Bottom padding for FAB */}
+          <div style={{ height:80 }} />
+        </div>
+
+        {/* ── VALIDATE FAB ── */}
+        {bcSelected.size > 0 && (
+          <button onClick={handleValidate}
+            style={{ position:"absolute", bottom:24, right:24, width:60, height:60, borderRadius:"50%", background:"#22C55E", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 4px 20px rgba(34,197,94,0.5)", animation:"bc-check-in 0.2s ease", zIndex:10 }}>
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+        )}
+      </div>
+    , document.body);
+  }
+
   return (
     <>
     {/* Hidden voice player — lives here so it renders always, not only during calls */}
@@ -5558,7 +5790,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 { label: "Nouvelle discussion", iconBg: "#16C24A", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>, action: () => setFabOpen(false) },
                 { label: "Nouveau groupe", iconBg: "#3B82F6", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, action: () => { setGroupWizardType("group"); setGroupWizard("members"); setWizardSearch(""); setWizardMembers(new Set()); setFabOpen(false); } },
                 { label: "Créer un canal", iconBg: "#8B5CF6", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>, action: () => { setGroupWizardType("channel"); setGroupWizard("members"); setWizardSearch(""); setWizardMembers(new Set()); setFabOpen(false); } },
-                { label: "Diffuser une annonce", iconBg: "#F59E0B", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 11a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 0h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 7.91a16 16 0 0 0 6.1 6.1l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>, action: () => setFabOpen(false) },
+                { label: "Diffuser une annonce", iconBg: "#F59E0B", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 11a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 0h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 7.91a16 16 0 0 0 6.1 6.1l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>, action: () => { setShowBroadcast(true); setBcSelected(new Set()); setBcSearch(""); setBcSearchMode(false); setFabOpen(false); } },
                 { label: "Inviter des amis", iconBg: "#7C3AED", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>, action: () => setFabOpen(false) },
                 { label: "Fermer", iconBg: "#16C24A", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>, action: () => setFabOpen(false) },
               ] as {label:string;iconBg:string;svg:React.ReactNode;action:()=>void}[]).map((item, i) => (
