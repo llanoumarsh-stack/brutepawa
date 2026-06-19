@@ -1,0 +1,163 @@
+MISSION CRITIQUE – REPRODUIRE LE COMPORTEMENT TELEGRAM À 99% MINIMUM
+
+ATTENTION :
+90% = ÉCHEC
+95% = ÉCHEC
+98% = ÉCHEC
+
+L'objectif est une reproduction VISUELLE et FONCTIONNELLE à 99% du comportement Telegram tout en conservant l'identité visuelle BrutePawa (couleur verte officielle).
+
+RÈGLES ABSOLUES :
+
+1. MENU DES 3 POINTS
+- Au clic sur les 3 points verticaux en haut à droite :
+  - Ouvrir un menu popup EXACTEMENT comme Telegram.
+  - Même position.
+  - Même largeur.
+  - Même espacement.
+  - Même rayon des coins.
+  - Même ombre.
+  - Même animation d'apparition.
+  - Même comportement de fermeture au clic extérieur.
+
+Le menu doit contenir :
+
+🔇 Mettre en sourdine
+🔍 Rechercher
+🗑 Effacer l'historique
+🚪 Quitter le groupe
+
+2. RECHERCHE DANS LE CHAT
+Au clic sur "Rechercher" :
+
+- Remplacer l'en-tête par une barre de recherche Telegram.
+- Afficher le compteur de résultats.
+- Afficher les flèches précédent/suivant.
+- Surligner les résultats trouvés.
+- Défilement automatique vers le message trouvé.
+- Même animation Telegram.
+- Même disposition Telegram.
+
+3. EFFACER L'HISTORIQUE
+Au clic sur "Effacer l'historique" :
+
+Afficher une boîte de dialogue identique à Telegram :
+
+Titre :
+Effacer l'historique
+
+Message :
+Êtes-vous sûr de vouloir effacer l'historique de cette conversation ?
+
+Boutons :
+ANNULER
+EFFACER
+
+Exigences :
+- Même taille.
+- Même espacement.
+- Même rayon des coins.
+- Même ombre.
+- Même fond assombri derrière.
+
+4. QUITTER LE GROUPE
+Au clic sur "Quitter le groupe" :
+
+Afficher une boîte Telegram identique :
+
+Titre :
+Quitter le groupe
+
+Texte :
+Êtes-vous sûr de vouloir quitter ce groupe ?
+
+Case à cocher :
+Supprimer le groupe pour tous les membres
+
+Boutons :
+ANNULER
+SUPPRIMER
+
+Même design Telegram.
+
+5. FOND DE DISCUSSION
+
+UTILISER EXACTEMENT le fond BrutePawa fourni.
+
+INTERDICTION :
+- Ne pas modifier les couleurs.
+- Ne pas modifier l'opacité.
+- Ne pas modifier les icônes.
+- Ne pas modifier les dimensions.
+- Ne pas remplacer par un autre fond.
+- Ne pas appliquer de filtre.
+
+Le fond doit être affiché intégralement dans :
+
+✓ Discussions privées
+✓ Groupes
+✓ Canaux
+✓ Recherche
+✓ Menus
+✓ Dialogues
+
+Le fond doit couvrir tout l'écran comme Telegram.
+
+6. BARRE DE RECHERCHE
+
+SUPPRIMER DÉFINITIVEMENT :
+
+- Bordure bleue.
+- Halo bleu.
+- Focus bleu Android.
+- Contour bleu.
+
+Remplacer par :
+
+- Fond blanc.
+- Coins arrondis modernes (20px).
+- Ombre légère.
+- Bordure transparente.
+- Style premium Telegram.
+
+7. DESIGN GLOBAL
+
+Conserver :
+
+Couleur principale :
+#22C55E
+
+Ne jamais :
+- Ajouter du bleu.
+- Ajouter du violet.
+- Ajouter du rose.
+- Ajouter des couleurs non prévues.
+
+Le style doit rester :
+
+✓ Telegram
+✓ Moderne
+✓ Minimaliste
+✓ Premium
+✓ Fluide
+
+8. CONTRÔLE QUALITÉ OBLIGATOIRE
+
+Avant de considérer le travail terminé :
+
+Comparer chaque écran avec Telegram :
+
+- Position des éléments.
+- Marges.
+- Icônes.
+- Taille des textes.
+- Ombres.
+- Menus.
+- Dialogues.
+- Animations.
+- Recherche.
+
+Si une différence visuelle dépasse 1%, continuer à corriger.
+
+OBJECTIF FINAL :
+BrutePawa doit donner la même sensation visuelle et fonctionnelle que Telegram tout en conservant uniquement la couleur verte officielle BrutePawa et le fond personnalisé fourni.

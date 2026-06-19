@@ -380,6 +380,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [showAutoDeletePopup, setShowAutoDeletePopup] = useState(false);
   const [autoDelPopupPos, setAutoDelPopupPos]         = useState({ top: 0, right: 16 });
   const autoDelBtnRef = useRef<HTMLDivElement>(null);
+  const [showGrpMenu, setShowGrpMenu]         = useState(false);
+  const [showGrpSearch, setShowGrpSearch]     = useState(false);
+  const [grpSearchQ, setGrpSearchQ]           = useState("");
+  const [grpSearchIdx, setGrpSearchIdx]       = useState(0);
+  const [showClearHist, setShowClearHist]     = useState(false);
+  const [showLeaveGrp, setShowLeaveGrp]       = useState(false);
+  const [leaveDeleteAll, setLeaveDeleteAll]   = useState(false);
   const [fabOpen, setFabOpen]   = useState(false);
   const [inboxTab, setInboxTab] = useState<"all" | "unread" | "groups">("all");
   const [showInboxSearch, setShowInboxSearch] = useState(false);
@@ -1341,6 +1348,15 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   }, [activeGroupId, meId]);
 
   useEffect(() => { groupBottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [groupMsgs, activeGroupId]);
+  useEffect(() => {
+    const grpMatches = grpSearchQ.trim()
+      ? (groupMsgs[activeGroupId ?? -1] ?? []).filter((m: {type?:string; text:string}) => m.type !== "system" && m.text.toLowerCase().includes(grpSearchQ.toLowerCase()))
+      : [];
+    const target = grpMatches[grpSearchIdx];
+    if (target) {
+      document.getElementById(`grp-msg-${target.id}`)?.scrollIntoView({ behavior:"smooth", block:"center" });
+    }
+  }, [grpSearchIdx, grpSearchQ]);
 
   const fmtTime = (s: number) =>
     `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
@@ -2520,28 +2536,98 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         `}</style>
 
         {/* ══ HEADER — Telegram exact ══ */}
-        <div style={{ background:"#fff", padding:"6px 8px 6px 4px", display:"flex", alignItems:"center", gap:6, flexShrink:0, boxShadow:"0 1px 4px rgba(0,0,0,0.10)" }}>
-          <button onClick={() => { setActiveGroupId(null); setShowGroupInfo(false); }}
-            style={{ background:"none", border:"none", cursor:"pointer", width:40, height:44, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-          </button>
-          {/* Avatar with initial */}
-          <div onClick={() => setShowGroupInfo(true)}
-            style={{ width:42, height:42, borderRadius:"50%", background:grpColor, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, fontSize:18, cursor:"pointer", flexShrink:0 }}>
-            {grp?.avatarUrl
-              ? <img src={grp.avatarUrl} style={{ width:42, height:42, borderRadius:"50%", objectFit:"cover" }} alt={grp.name} />
-              : grpInitial
-            }
+        {showGrpSearch ? (
+          /* ── SEARCH MODE header ── */
+          <div style={{ background:"#fff", padding:"6px 8px", display:"flex", alignItems:"center", gap:8, flexShrink:0, boxShadow:"0 1px 4px rgba(0,0,0,0.10)" }}>
+            <button onClick={() => { setShowGrpSearch(false); setGrpSearchQ(""); setGrpSearchIdx(0); }}
+              style={{ background:"none", border:"none", cursor:"pointer", width:36, height:44, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <input autoFocus value={grpSearchQ} onChange={e => { setGrpSearchQ(e.target.value); setGrpSearchIdx(0); }}
+              placeholder="Rechercher..."
+              style={{ flex:1, border:"none", outline:"none", fontSize:16, color:"#000", background:"transparent", fontFamily:"inherit" }} />
+            {(() => {
+              const matches = grpSearchQ.trim() ? gmsgs.filter(m => m.type !== "system" && m.text.toLowerCase().includes(grpSearchQ.toLowerCase())) : [];
+              return matches.length > 0 ? (
+                <span style={{ fontSize:13, color:"#8E8E93", whiteSpace:"nowrap", flexShrink:0 }}>
+                  {grpSearchIdx + 1} sur {matches.length}
+                </span>
+              ) : grpSearchQ.trim() ? (
+                <span style={{ fontSize:13, color:"#8E8E93", flexShrink:0 }}>0 résultat</span>
+              ) : null;
+            })()}
+            {grpSearchQ.trim() && (() => {
+              const matches = gmsgs.filter(m => m.type !== "system" && m.text.toLowerCase().includes(grpSearchQ.toLowerCase()));
+              return (
+                <div style={{ display:"flex", gap:2, flexShrink:0 }}>
+                  <button onClick={() => setGrpSearchIdx(i => Math.max(0, i - 1))} disabled={grpSearchIdx === 0}
+                    style={{ background:"none", border:"none", cursor:"pointer", padding:4, opacity: grpSearchIdx === 0 ? 0.3 : 1 }}>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="18 15 12 9 6 15"/></svg>
+                  </button>
+                  <button onClick={() => setGrpSearchIdx(i => Math.min(matches.length - 1, i + 1))} disabled={grpSearchIdx >= matches.length - 1}
+                    style={{ background:"none", border:"none", cursor:"pointer", padding:4, opacity: grpSearchIdx >= matches.length - 1 ? 0.3 : 1 }}>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+                </div>
+              );
+            })()}
           </div>
-          <div style={{ flex:1, minWidth:0, cursor:"pointer" }} onClick={() => setShowGroupInfo(true)}>
-            <div style={{ fontWeight:700, fontSize:15.5, color:"#000", lineHeight:1.25, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{grp?.name ?? "Groupe"}</div>
-            <div style={{ fontSize:12, color:"#8E8E93" }}>{grp?.membersCount ?? 0} membre{(grp?.membersCount ?? 0) !== 1 ? "s" : ""}</div>
+        ) : (
+          /* ── NORMAL header ── */
+          <div style={{ background:"#fff", padding:"6px 8px 6px 4px", display:"flex", alignItems:"center", gap:6, flexShrink:0, boxShadow:"0 1px 4px rgba(0,0,0,0.10)", position:"relative" }}>
+            <button onClick={() => { setActiveGroupId(null); setShowGroupInfo(false); setShowGrpMenu(false); }}
+              style={{ background:"none", border:"none", cursor:"pointer", width:40, height:44, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div onClick={() => setShowGroupInfo(true)}
+              style={{ width:42, height:42, borderRadius:"50%", background:grpColor, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, fontSize:18, cursor:"pointer", flexShrink:0 }}>
+              {grp?.avatarUrl
+                ? <img src={grp.avatarUrl} style={{ width:42, height:42, borderRadius:"50%", objectFit:"cover" }} alt={grp.name} />
+                : grpInitial}
+            </div>
+            <div style={{ flex:1, minWidth:0, cursor:"pointer" }} onClick={() => setShowGroupInfo(true)}>
+              <div style={{ fontWeight:700, fontSize:15.5, color:"#000", lineHeight:1.25, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{grp?.name ?? "Groupe"}</div>
+              <div style={{ fontSize:12, color:"#8E8E93" }}>{grp?.membersCount ?? 0} membre{(grp?.membersCount ?? 0) !== 1 ? "s" : ""}</div>
+            </div>
+            <button onClick={() => setShowGrpMenu(m => !m)}
+              style={{ background:"none", border:"none", width:40, height:40, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="#8E8E93"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+            </button>
+
+            {/* ── TELEGRAM-STYLE POPUP MENU ── */}
+            {showGrpMenu && (
+              <>
+                <div style={{ position:"fixed", inset:0, zIndex:10050 }} onClick={() => setShowGrpMenu(false)} />
+                <div style={{ position:"absolute", top:52, right:8, background:"#fff", borderRadius:10, boxShadow:"0 4px 24px rgba(0,0,0,0.20)", zIndex:10051, minWidth:200, overflow:"hidden", animation:"grp-slide-in 0.15s ease", transformOrigin:"top right" }}
+                  onClick={e => e.stopPropagation()}>
+                  <button onClick={() => setShowGrpMenu(false)}
+                    style={{ display:"flex", alignItems:"center", gap:16, width:"100%", background:"none", border:"none", padding:"13px 18px", fontSize:15, color:"#111", cursor:"pointer", fontFamily:"inherit", textAlign:"left" }}>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#555" strokeWidth="1.8" strokeLinecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/><line x1="8.7" y1="2" x2="8.7" y2="4"/><line x1="15.3" y1="2" x2="15.3" y2="4"/></svg>
+                    Mettre en sourdine
+                  </button>
+                  <div style={{ height:1, background:"#F2F2F7", margin:"0 18px" }} />
+                  <button onClick={() => { setShowGrpMenu(false); setShowGrpSearch(true); setGrpSearchQ(""); setGrpSearchIdx(0); }}
+                    style={{ display:"flex", alignItems:"center", gap:16, width:"100%", background:"none", border:"none", padding:"13px 18px", fontSize:15, color:"#111", cursor:"pointer", fontFamily:"inherit", textAlign:"left" }}>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#555" strokeWidth="1.8" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    Rechercher
+                  </button>
+                  <div style={{ height:1, background:"#F2F2F7", margin:"0 18px" }} />
+                  <button onClick={() => { setShowGrpMenu(false); setShowClearHist(true); }}
+                    style={{ display:"flex", alignItems:"center", gap:16, width:"100%", background:"none", border:"none", padding:"13px 18px", fontSize:15, color:"#111", cursor:"pointer", fontFamily:"inherit", textAlign:"left" }}>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#555" strokeWidth="1.8" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                    Effacer l'historique
+                  </button>
+                  <div style={{ height:1, background:"#F2F2F7", margin:"0 18px" }} />
+                  <button onClick={() => { setShowGrpMenu(false); setShowLeaveGrp(true); setLeaveDeleteAll(false); }}
+                    style={{ display:"flex", alignItems:"center", gap:16, width:"100%", background:"none", border:"none", padding:"13px 18px", fontSize:15, color:"#E02020", cursor:"pointer", fontFamily:"inherit", textAlign:"left" }}>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#E02020" strokeWidth="1.8" strokeLinecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    Quitter le groupe
+                  </button>
+                </div>
+              </>
+            )}
           </div>
-          <button onClick={() => setShowGroupInfo(true)}
-            style={{ background:"none", border:"none", width:40, height:40, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="#8E8E93"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
-          </button>
-        </div>
+        )}
 
         {/* ══ ADD MEMBERS BANNER ══ */}
         {showBanner && (
@@ -2565,32 +2651,44 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             <span style={{ fontSize:12, color:"#fff", fontWeight:500 }}>Aujourd'hui</span>
           </div>
 
-          {gmsgs.map((msg, i) => {
-            const isFirst = i === 0 || gmsgs[i - 1]?.mine !== msg.mine;
-            if (msg.type === "system") {
+          {(() => {
+            const grpMatches = showGrpSearch && grpSearchQ.trim()
+              ? gmsgs.filter(m => m.type !== "system" && m.text.toLowerCase().includes(grpSearchQ.toLowerCase()))
+              : [];
+            const grpHighlightId = grpMatches[grpSearchIdx]?.id ?? null;
+            return gmsgs.map((msg, i) => {
+              const isFirst = i === 0 || gmsgs[i - 1]?.mine !== msg.mine;
+              const isMatch = showGrpSearch && grpSearchQ.trim() && msg.type !== "system" && msg.text.toLowerCase().includes(grpSearchQ.toLowerCase());
+              const isCurrent = msg.id === grpHighlightId;
+              if (msg.type === "system") {
+                return (
+                  <div key={msg.id} style={{ alignSelf:"center", background:"rgba(0,0,0,0.32)", borderRadius:20, padding:"4px 14px", margin:"4px auto" }}>
+                    <span style={{ fontSize:12, color:"#fff", fontWeight:500 }}>{msg.text}</span>
+                  </div>
+                );
+              }
               return (
-                <div key={msg.id} style={{ alignSelf:"center", background:"rgba(0,0,0,0.32)", borderRadius:20, padding:"4px 14px", margin:"4px auto" }}>
-                  <span style={{ fontSize:12, color:"#fff", fontWeight:500 }}>{msg.text}</span>
+                <div key={msg.id} id={`grp-msg-${msg.id}`}
+                  style={{ display:"flex", justifyContent:msg.mine?"flex-end":"flex-start", alignItems:"flex-end", gap:6, marginTop:isFirst?6:1,
+                    ...(isCurrent ? { scrollMarginTop: 60 } : {}) }}>
+                  {!msg.mine && (
+                    <div style={{ width:28, flexShrink:0, alignSelf:"flex-end", paddingBottom:2 }}>
+                      {isFirst && <div style={{ width:26, height:26, borderRadius:"50%", background:CONV_COLORS[Math.abs(msg.text.length+i)%CONV_COLORS.length], display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontSize:10, fontWeight:700 }}>{mkInitials(msg.senderName)}</div>}
+                    </div>
+                  )}
+                  <div style={{ maxWidth:"72%", display:"flex", flexDirection:"column" }}>
+                    {!msg.mine && isFirst && <div style={{ fontSize:11, color:"#22C55E", fontWeight:700, marginBottom:2, paddingLeft:2 }}>{msg.senderName}</div>}
+                    <div className={msg.mine?"bp-msg-mine":"bp-msg-theirs"}
+                      style={{ padding:"8px 12px 6px", fontSize:14.5, lineHeight:1.45, wordBreak:"break-word",
+                        ...(isCurrent ? { outline:"2.5px solid #22C55E", outlineOffset:"1px" } : isMatch ? { opacity:0.65 } : {}) }}>
+                      {msg.text}
+                      <div style={{ fontSize:10, marginTop:2, color:"#888", textAlign:"right" }}>{msg.time}{msg.mine && <span style={{ marginLeft:3, color:"#66bb6a" }}>✓✓</span>}</div>
+                    </div>
+                  </div>
                 </div>
               );
-            }
-            return (
-              <div key={msg.id} style={{ display:"flex", justifyContent:msg.mine?"flex-end":"flex-start", alignItems:"flex-end", gap:6, marginTop:isFirst?6:1 }}>
-                {!msg.mine && (
-                  <div style={{ width:28, flexShrink:0, alignSelf:"flex-end", paddingBottom:2 }}>
-                    {isFirst && <div style={{ width:26, height:26, borderRadius:"50%", background:CONV_COLORS[Math.abs(msg.text.length+i)%CONV_COLORS.length], display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontSize:10, fontWeight:700 }}>{mkInitials(msg.senderName)}</div>}
-                  </div>
-                )}
-                <div style={{ maxWidth:"72%", display:"flex", flexDirection:"column" }}>
-                  {!msg.mine && isFirst && <div style={{ fontSize:11, color:"#22C55E", fontWeight:700, marginBottom:2, paddingLeft:2 }}>{msg.senderName}</div>}
-                  <div className={msg.mine?"bp-msg-mine":"bp-msg-theirs"} style={{ padding:"8px 12px 6px", fontSize:14.5, lineHeight:1.45, wordBreak:"break-word" }}>
-                    {msg.text}
-                    <div style={{ fontSize:10, marginTop:2, color:"#888", textAlign:"right" }}>{msg.time}{msg.mine && <span style={{ marginLeft:3, color:"#66bb6a" }}>✓✓</span>}</div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+            });
+          })()}
 
           {/* ── Info panel for new groups ── */}
           {showInfoCard && (
@@ -2643,6 +2741,70 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             </button>
           )}
         </div>
+
+        {/* ── DIALOG: EFFACER L'HISTORIQUE ── */}
+        {showClearHist && (
+          <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.5)", zIndex:10060, display:"flex", alignItems:"center", justifyContent:"center", padding:"0 24px" }}
+            onClick={() => setShowClearHist(false)}>
+            <div style={{ background:"#fff", borderRadius:16, width:"100%", maxWidth:320, overflow:"hidden", boxShadow:"0 8px 32px rgba(0,0,0,0.28)" }}
+              onClick={e => e.stopPropagation()}>
+              {/* Avatar + title row */}
+              <div style={{ display:"flex", alignItems:"center", gap:12, padding:"18px 20px 14px" }}>
+                <div style={{ width:42, height:42, borderRadius:"50%", background:grpColor, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, fontSize:17, flexShrink:0 }}>{grpInitial}</div>
+                <span style={{ fontWeight:700, fontSize:16, color:"#111" }}>Effacer l'historique</span>
+              </div>
+              <div style={{ padding:"0 20px 18px", fontSize:14, color:"#444", lineHeight:1.5 }}>
+                Êtes-vous sûr de vouloir effacer l'historique des messages dans ce groupe ?
+              </div>
+              <div style={{ display:"flex", justifyContent:"flex-end", gap:8, padding:"0 12px 14px" }}>
+                <button onClick={() => setShowClearHist(false)}
+                  style={{ background:"none", border:"none", padding:"10px 16px", fontSize:14, fontWeight:700, color:"#22C55E", cursor:"pointer", borderRadius:8, letterSpacing:0.3 }}>
+                  ANNULER
+                </button>
+                <button onClick={() => { setGroupMsgs(prev => ({ ...prev, [activeGroupId]: [] })); setShowClearHist(false); }}
+                  style={{ background:"none", border:"none", padding:"10px 16px", fontSize:14, fontWeight:700, color:"#22C55E", cursor:"pointer", borderRadius:8, letterSpacing:0.3 }}>
+                  EFFACER
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── DIALOG: QUITTER LE GROUPE ── */}
+        {showLeaveGrp && (
+          <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.5)", zIndex:10060, display:"flex", alignItems:"center", justifyContent:"center", padding:"0 24px" }}
+            onClick={() => setShowLeaveGrp(false)}>
+            <div style={{ background:"#fff", borderRadius:16, width:"100%", maxWidth:320, overflow:"hidden", boxShadow:"0 8px 32px rgba(0,0,0,0.28)" }}
+              onClick={e => e.stopPropagation()}>
+              <div style={{ display:"flex", alignItems:"center", gap:12, padding:"18px 20px 14px" }}>
+                <div style={{ width:42, height:42, borderRadius:"50%", background:grpColor, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, fontSize:17, flexShrink:0 }}>{grpInitial}</div>
+                <span style={{ fontWeight:700, fontSize:16, color:"#111" }}>Quitter le groupe</span>
+              </div>
+              <div style={{ padding:"0 20px 10px", fontSize:14, color:"#444", lineHeight:1.5 }}>
+                Êtes-vous sûr de vouloir quitter ce groupe ?
+              </div>
+              {/* Checkbox: supprimer pour tous */}
+              <div style={{ display:"flex", alignItems:"center", gap:10, padding:"6px 20px 16px", cursor:"pointer" }}
+                onClick={() => setLeaveDeleteAll(v => !v)}>
+                <div style={{ width:20, height:20, borderRadius:4, border:`2px solid ${leaveDeleteAll ? "#22C55E" : "#CCC"}`, background: leaveDeleteAll ? "#22C55E" : "#fff", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, transition:"all 0.15s" }}>
+                  {leaveDeleteAll && <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
+                </div>
+                <span style={{ fontSize:14, color:"#333" }}>Supprimer le groupe pour tous les membres</span>
+              </div>
+              <div style={{ display:"flex", justifyContent:"flex-end", gap:8, padding:"0 12px 14px" }}>
+                <button onClick={() => setShowLeaveGrp(false)}
+                  style={{ background:"none", border:"none", padding:"10px 16px", fontSize:14, fontWeight:700, color:"#22C55E", cursor:"pointer", borderRadius:8, letterSpacing:0.3 }}>
+                  ANNULER
+                </button>
+                <button onClick={() => { setActiveGroupId(null); setShowGroupInfo(false); setShowLeaveGrp(false); }}
+                  style={{ background:"none", border:"none", padding:"10px 16px", fontSize:14, fontWeight:700, color:"#E02020", cursor:"pointer", borderRadius:8, letterSpacing:0.3 }}>
+                  SUPPRIMER
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
     , document.body);
   }
