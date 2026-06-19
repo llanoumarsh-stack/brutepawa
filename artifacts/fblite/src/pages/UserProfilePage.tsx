@@ -431,24 +431,30 @@ export default function UserProfilePage({ userId }: { userId: number }) {
 
   /* ── HEADER (shared) ─────────────────────────────── */
   const StickyHeader = ({ locked = false }: { locked?: boolean }) => (
-    <div style={{ position: "sticky", top: 0, zIndex: 50, background: locked ? "#fff" : "rgba(255,255,255,0.96)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: "0 14px", height: 58, display: "flex", alignItems: "center", gap: 12 }}>
-      <button onClick={() => window.history.back()} style={{ background: "#F1F5F9", border: "none", width: 40, height: 40, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
-        onPointerDown={e => (e.currentTarget.style.background = "#E2E8F0")}
-        onPointerUp={e => (e.currentTarget.style.background = "#F1F5F9")}
-        onPointerLeave={e => (e.currentTarget.style.background = "#F1F5F9")}
+    <div style={{ position: "sticky", top: 0, zIndex: 50, background: "#fff", boxShadow: "0 1px 0 #E5E7EB", padding: "0 14px", height: 58, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <button onClick={() => window.history.back()} style={{ background: "none", border: "none", width: 40, height: 40, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "background 0.15s" }}
+        onPointerDown={e => (e.currentTarget.style.background = "#F1F5F9")}
+        onPointerUp={e => (e.currentTarget.style.background = "none")}
+        onPointerLeave={e => (e.currentTarget.style.background = "none")}
       >
         <IcoBack />
       </button>
-      <span style={{ fontWeight: 900, fontSize: 17, color: "#0D1B2A", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{name}</span>
-      {!isOwner && (
-        <button onClick={openMenu} style={{ background: "#F1F5F9", border: "none", width: 40, height: 40, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
-          onPointerDown={e => (e.currentTarget.style.background = "#E2E8F0")}
-          onPointerUp={e => (e.currentTarget.style.background = "#F1F5F9")}
-          onPointerLeave={e => (e.currentTarget.style.background = "#F1F5F9")}
+      {/* BrutePawa logo centered */}
+      <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+        <div style={{ width: 30, height: 30, borderRadius: "50%", background: "linear-gradient(135deg,#22C55E,#16A34A)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(34,197,94,0.35)" }}>
+          <span style={{ color: "#fff", fontWeight: 900, fontSize: 17, lineHeight: 1, fontFamily: "Arial Black,Arial,sans-serif" }}>b</span>
+        </div>
+        <span style={{ fontWeight: 800, fontSize: 18, color: "#111827", letterSpacing: -0.3 }}>BrutePawa</span>
+      </div>
+      {!isOwner ? (
+        <button onClick={openMenu} style={{ background: "none", border: "none", width: 40, height: 40, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "background 0.15s" }}
+          onPointerDown={e => (e.currentTarget.style.background = "#F1F5F9")}
+          onPointerUp={e => (e.currentTarget.style.background = "none")}
+          onPointerLeave={e => (e.currentTarget.style.background = "none")}
         >
           <IcoDots />
         </button>
-      )}
+      ) : <div style={{ width: 40 }} />}
     </div>
   );
 
