@@ -654,7 +654,7 @@ function MediasPage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
 /* ═══════════════════════════════════════════════════════════════
    ── SUB-PAGE 5 : PARAMÈTRES DE NOTIFICATION ──
 ═══════════════════════════════════════════════════════════════ */
-function NotifPage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
+function NotifPage({ bcId, onBack, onSubPage }: { bcId: number; onBack: () => void; onSubPage: (id: string) => void }) {
   const [settings, setSettings] = useState<NotifSettings>({
     notificationsEnabled: true, soundEnabled: true, vibrationEnabled: true, highPriority: true, muteUntil: null,
   });
@@ -680,13 +680,13 @@ function NotifPage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
         <div style={{ background: "white", borderRadius: 0 }}>
           <SettingRow label="Notifications activées" rightSlot={<Toggle checked={settings.notificationsEnabled} onChange={v => save({ notificationsEnabled: v })}/>}/>
           <div style={{ height: 1, background: "#F3F4F6", margin: "0 20px" }}/>
-          <SettingRow label="Sonnerie" value="BrutePawa Notification" onClick={() => {}}/>
+          <SettingRow label="Sonnerie" value="BrutePawa Notification" onClick={() => onSubPage("sonnerie")}/>
           <div style={{ height: 1, background: "#F3F4F6", margin: "0 20px" }}/>
-          <SettingRow label="Vibration" value="Par défaut" onClick={() => {}}/>
+          <SettingRow label="Vibration" value="Par défaut" onClick={() => onSubPage("vibration")}/>
           <div style={{ height: 1, background: "#F3F4F6", margin: "0 20px" }}/>
-          <SettingRow label="Priorité" value="Haute priorité" onClick={() => {}}/>
+          <SettingRow label="Priorité" value="Haute priorité" onClick={() => onSubPage("priorite")}/>
           <div style={{ height: 1, background: "#F3F4F6", margin: "0 20px" }}/>
-          <SettingRow label="Aperçu des messages" value="Toujours afficher" onClick={() => {}}/>
+          <SettingRow label="Aperçu des messages" value="Toujours afficher" onClick={() => onSubPage("apercu")}/>
         </div>
         <div style={{ height: 12 }}/>
         <div style={{ background: "white" }}>
@@ -1137,9 +1137,363 @@ function RenommerPage({ bcId, list, onBack, onRenamed }: { bcId: number; list: B
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   ── SUB-PAGE 11 : SONNERIE ──
+═══════════════════════════════════════════════════════════════ */
+function SonneriePage({ onBack }: { onBack: () => void }) {
+  const [selected, setSelected] = useState("brutepawanotif");
+  const [volume, setVolume] = useState(70);
+  const SONS = [
+    { key: "brutepawanotif", label: "Son BrutePawa" },
+    { key: "systeme",        label: "Son système" },
+    { key: "perso",          label: "Son personnalisé" },
+    { key: "aucun",          label: "Aucun son" },
+  ];
+  return (
+    <SubPage visible>
+      <SubPageHeader title="Sonnerie" onBack={onBack} />
+      <div style={{ flex: 1, overflowY: "auto" }}>
+        <div style={{ height: 12 }}/>
+        <div style={{ background: "white" }}>
+          {SONS.map((s, i) => (
+            <div key={s.key} onClick={() => setSelected(s.key)} style={{
+              display: "flex", alignItems: "center", padding: "15px 20px", gap: 14,
+              borderTop: i > 0 ? "1px solid #F3F4F6" : "none", cursor: "pointer",
+            }}>
+              <div style={{
+                width: 22, height: 22, borderRadius: "50%", flexShrink: 0,
+                border: `2px solid ${selected === s.key ? "#22C55E" : "#D1D5DB"}`,
+                background: selected === s.key ? "#22C55E" : "white",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                {selected === s.key && <div style={{ width: 8, height: 8, borderRadius: "50%", background: "white" }}/>}
+              </div>
+              <span style={{ fontSize: 15, fontWeight: 500, color: "#111827", fontFamily: "Inter, sans-serif" }}>{s.label}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ height: 12 }}/>
+        {/* Waveform preview */}
+        <div style={{ background: "white", padding: "16px 20px" }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: "#64748B", marginBottom: 12, fontFamily: "Inter, sans-serif" }}>Prévisualisation</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 2, height: 40, marginBottom: 16 }}>
+            {Array.from({ length: 32 }).map((_, i) => (
+              <div key={i} style={{
+                flex: 1, background: "#22C55E",
+                height: `${20 + Math.sin(i * 0.7) * 16}px`,
+                borderRadius: 2, opacity: 0.7,
+              }}/>
+            ))}
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#94A3B8", fontFamily: "Inter, sans-serif", marginBottom: 12 }}>
+            <span>0:00</span><span>0:30</span>
+          </div>
+          {/* Volume */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/></svg>
+            <input type="range" min={0} max={100} value={volume} onChange={e => setVolume(+e.target.value)}
+              style={{ flex: 1, accentColor: "#22C55E" }}
+            />
+            <span style={{ fontSize: 13, fontWeight: 600, color: "#22C55E", fontFamily: "Inter, sans-serif", minWidth: 36 }}>{volume}%</span>
+          </div>
+        </div>
+        <div style={{ height: 12 }}/>
+        <div style={{ padding: "0 16px 24px" }}>
+          <button style={{
+            width: "100%", background: "#22C55E", color: "white", border: "none", borderRadius: 16,
+            padding: "16px", fontSize: 15, fontWeight: 700, cursor: "pointer", fontFamily: "Inter, sans-serif",
+          }}>Tester la sonnerie</button>
+        </div>
+      </div>
+    </SubPage>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ── SUB-PAGE 12 : VIBRATION ──
+═══════════════════════════════════════════════════════════════ */
+function VibrationPage({ onBack }: { onBack: () => void }) {
+  const [selected, setSelected] = useState("normale");
+  const VIBS = [
+    { key: "desactivee",  label: "Désactivée" },
+    { key: "courte",      label: "Courte" },
+    { key: "normale",     label: "Normale" },
+    { key: "longue",      label: "Longue" },
+    { key: "perso",       label: "Personnalisée" },
+  ];
+  return (
+    <SubPage visible>
+      <SubPageHeader title="Vibration" onBack={onBack} />
+      <div style={{ flex: 1, overflowY: "auto" }}>
+        <div style={{ height: 12 }}/>
+        <div style={{ background: "white" }}>
+          {VIBS.map((v, i) => (
+            <div key={v.key} onClick={() => setSelected(v.key)} style={{
+              display: "flex", alignItems: "center", padding: "15px 20px", gap: 14,
+              borderTop: i > 0 ? "1px solid #F3F4F6" : "none", cursor: "pointer",
+            }}>
+              <div style={{
+                width: 22, height: 22, borderRadius: "50%", flexShrink: 0,
+                border: `2px solid ${selected === v.key ? "#22C55E" : "#D1D5DB"}`,
+                background: selected === v.key ? "#22C55E" : "white",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                {selected === v.key && <div style={{ width: 8, height: 8, borderRadius: "50%", background: "white" }}/>}
+              </div>
+              <span style={{ fontSize: 15, fontWeight: 500, color: "#111827", fontFamily: "Inter, sans-serif" }}>{v.label}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ height: 24 }}/>
+        <div style={{ padding: "0 16px 24px" }}>
+          <button style={{
+            width: "100%", background: "#22C55E", color: "white", border: "none", borderRadius: 16,
+            padding: "16px", fontSize: 15, fontWeight: 700, cursor: "pointer", fontFamily: "Inter, sans-serif",
+          }}>Tester la vibration</button>
+        </div>
+      </div>
+    </SubPage>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ── SUB-PAGE 13 : PRIORITÉ ──
+═══════════════════════════════════════════════════════════════ */
+function PrioritePage({ onBack }: { onBack: () => void }) {
+  const [selected, setSelected] = useState("haute");
+  const PRIOS = [
+    { key: "faible",     label: "Faible",      desc: "Vous ne recevez pas de son.", color: "#94A3B8" },
+    { key: "normale",    label: "Normale",     desc: "Vous recevez les notifications standard.", color: "#3B82F6" },
+    { key: "haute",      label: "Haute",       desc: "Vous recevez toutes les notifications prioritaires.", color: "#22C55E" },
+    { key: "urgente",    label: "Urgente",     desc: "Vous recevez toutes les notifications immédiatement.", color: "#F97316" },
+    { key: "silencieuse",label: "Silencieuse", desc: "Aucune notification sonore.", color: "#8B5CF6" },
+  ];
+  return (
+    <SubPage visible>
+      <SubPageHeader title="Priorité" onBack={onBack} />
+      <div style={{ flex: 1, overflowY: "auto" }}>
+        <div style={{ height: 12 }}/>
+        <div style={{ background: "white" }}>
+          {PRIOS.map((p, i) => (
+            <div key={p.key} onClick={() => setSelected(p.key)} style={{
+              display: "flex", alignItems: "center", padding: "14px 20px", gap: 14,
+              borderTop: i > 0 ? "1px solid #F3F4F6" : "none", cursor: "pointer",
+            }}>
+              <div style={{
+                width: 22, height: 22, borderRadius: "50%", flexShrink: 0,
+                border: `2px solid ${selected === p.key ? p.color : "#D1D5DB"}`,
+                background: selected === p.key ? p.color : "white",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                {selected === p.key && <div style={{ width: 8, height: 8, borderRadius: "50%", background: "white" }}/>}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 15, fontWeight: 600, color: "#111827", fontFamily: "Inter, sans-serif" }}>{p.label}</div>
+                <div style={{ fontSize: 13, color: "#64748B", fontFamily: "Inter, sans-serif" }}>{p.desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </SubPage>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ── SUB-PAGE 14 : APERÇU DES MESSAGES ──
+═══════════════════════════════════════════════════════════════ */
+function ApercuPage({ onBack }: { onBack: () => void }) {
+  const [selected, setSelected] = useState("nom_apercu");
+  const OPTS = [
+    { key: "masque",         label: "Masqué",                    desc: "Aucun contenu visible" },
+    { key: "nom_seul",       label: "Nom uniquement",            desc: "Affiche le nom de l'expéditeur" },
+    { key: "nom_apercu",     label: "Nom + aperçu",              desc: "Nom et début du message" },
+    { key: "complet",        label: "Message complet",           desc: "Message entier visible" },
+    { key: "masque_verrou",  label: "Masqué sur écran verrouillé", desc: "Masqué quand l'écran est verrouillé" },
+  ];
+  return (
+    <SubPage visible>
+      <SubPageHeader title="Aperçu des messages" onBack={onBack} />
+      <div style={{ flex: 1, overflowY: "auto" }}>
+        <div style={{ height: 12 }}/>
+        <div style={{ background: "white" }}>
+          {OPTS.map((o, i) => (
+            <div key={o.key} onClick={() => setSelected(o.key)} style={{
+              display: "flex", alignItems: "center", padding: "14px 20px", gap: 14,
+              borderTop: i > 0 ? "1px solid #F3F4F6" : "none", cursor: "pointer",
+            }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 15, fontWeight: 500, color: "#111827", fontFamily: "Inter, sans-serif" }}>{o.label}</div>
+                <div style={{ fontSize: 13, color: "#64748B", fontFamily: "Inter, sans-serif" }}>{o.desc}</div>
+              </div>
+              {selected === o.key && (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </SubPage>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ── SUB-PAGE 6b : RECHERCHE PAR DATE ──
+═══════════════════════════════════════════════════════════════ */
+function RechercheParDatePage({ onBack }: { onBack: () => void }) {
+  const [selected, setSelected] = useState<string | null>(null);
+  const [debut, setDebut] = useState("");
+  const [fin, setFin] = useState("");
+  const PERIODES = [
+    { key: "today",   label: "Aujourd'hui" },
+    { key: "hier",    label: "Hier" },
+    { key: "week",    label: "Cette semaine" },
+    { key: "7j",      label: "7 derniers jours" },
+    { key: "30j",     label: "30 derniers jours" },
+    { key: "mois",    label: "Ce mois-ci" },
+    { key: "annee",   label: "Cette année" },
+  ];
+  return (
+    <SubPage visible>
+      <SubPageHeader title="Recherche par date" onBack={onBack} rightSlot={<span/>} />
+      <div style={{ flex: 1, overflowY: "auto" }}>
+        <div style={{ height: 12 }}/>
+        <div style={{ background: "white" }}>
+          {PERIODES.map((p, i) => (
+            <div key={p.key} onClick={() => setSelected(p.key)} style={{
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              padding: "15px 20px", borderTop: i > 0 ? "1px solid #F3F4F6" : "none", cursor: "pointer",
+            }}>
+              <span style={{ fontSize: 15, fontWeight: 500, color: "#111827", fontFamily: "Inter, sans-serif" }}>{p.label}</span>
+              {selected === p.key && (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              )}
+            </div>
+          ))}
+        </div>
+        <div style={{ height: 12 }}/>
+        <div style={{ background: "white", padding: "16px 20px" }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: "#22C55E", marginBottom: 14, fontFamily: "Inter, sans-serif", textTransform: "uppercase", letterSpacing: 0.8 }}>Période personnalisée</div>
+          {[
+            { label: "Date début", val: debut, set: setDebut },
+            { label: "Date fin",   val: fin,   set: setFin   },
+          ].map((f, i) => (
+            <div key={i} style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 13, color: "#64748B", marginBottom: 6, fontFamily: "Inter, sans-serif" }}>{f.label}</div>
+              <input type="date" value={f.val} onChange={e => f.set(e.target.value)} style={{
+                width: "100%", border: "1.5px solid #E5E7EB", borderRadius: 12,
+                padding: "10px 14px", fontSize: 14, fontFamily: "Inter, sans-serif", outline: "none",
+                accentColor: "#22C55E", boxSizing: "border-box",
+              }}/>
+            </div>
+          ))}
+          <button style={{
+            width: "100%", background: "#22C55E", color: "white", border: "none", borderRadius: 14,
+            padding: "14px", fontSize: 15, fontWeight: 700, cursor: "pointer", fontFamily: "Inter, sans-serif", marginTop: 8,
+          }}>Appliquer le filtre</button>
+        </div>
+      </div>
+    </SubPage>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ── SUB-PAGE 9b : IMPORTER DEPUIS TÉLÉPHONE ──
+═══════════════════════════════════════════════════════════════ */
+function ImporterTelephonePage({ onBack }: { onBack: () => void }) {
+  const [q, setQ] = useState("");
+  const [filtre, setFiltre] = useState("tous");
+  const FILTRES = [
+    { key: "tous",     label: "Tous les auteurs" },
+    { key: "admin",    label: "Administrateurs" },
+    { key: "modo",     label: "Modérateurs" },
+    { key: "verifies", label: "Contacts vérifiés" },
+    { key: "abonnes",  label: "Abonnés" },
+    { key: "createurs",label: "Créateurs" },
+    { key: "entreprises", label: "Entreprises" },
+  ];
+  return (
+    <SubPage visible>
+      <SubPageHeader title="Importer depuis téléphone" onBack={onBack} />
+      <div style={{ background: "white", padding: "10px 16px", borderBottom: "1px solid #F3F4F6" }}>
+        <div style={{ display: "flex", alignItems: "center", background: "#F3F4F6", borderRadius: 24, padding: "8px 14px", gap: 8 }}>
+          <IcSearch />
+          <input value={q} onChange={e => setQ(e.target.value)} placeholder="Rechercher un contact"
+            style={{ flex: 1, border: "none", background: "none", fontSize: 14, outline: "none", fontFamily: "Inter, sans-serif", color: "#111827" }}
+          />
+        </div>
+      </div>
+      <div style={{ flex: 1, overflowY: "auto" }}>
+        <div style={{ height: 12 }}/>
+        <div style={{ background: "white" }}>
+          {FILTRES.map((f, i) => (
+            <div key={f.key} onClick={() => setFiltre(f.key)} style={{
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              padding: "14px 20px", borderTop: i > 0 ? "1px solid #F3F4F6" : "none", cursor: "pointer",
+            }}>
+              <span style={{ fontSize: 15, fontWeight: 500, color: "#111827", fontFamily: "Inter, sans-serif" }}>{f.label}</span>
+              {filtre === f.key && (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              )}
+            </div>
+          ))}
+        </div>
+        <div style={{ height: 12 }}/>
+        <div style={{ padding: "0 20px" }}>
+          <button style={{
+            background: "none", border: "none", cursor: "pointer",
+            fontSize: 14, fontWeight: 500, color: "#22C55E", fontFamily: "Inter, sans-serif",
+          }}>+ Rechercher un utilisateur</button>
+        </div>
+      </div>
+    </SubPage>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ── SUB-PAGE 20 : PARAMÈTRES AVANCÉS ──
+═══════════════════════════════════════════════════════════════ */
+function ParamsAvancesPage({ onBack }: { onBack: () => void }) {
+  const [toggles, setToggles] = useState<Record<string, boolean>>({
+    reponses: false, programmation: false, archivage: false,
+    suppression: false, entreprise: false, createur: false,
+  });
+  const toggle = (k: string) => setToggles(p => ({ ...p, [k]: !p[k] }));
+  const ITEMS = [
+    { key: "reponses",     label: "Réponses automatiques",  desc: "Message auto-répond à vos contacts" },
+    { key: "programmation",label: "Programmation messages", desc: "Envoyer plus tard" },
+    { key: "archivage",    label: "Archivage automatique",  desc: "Archiver les anciennes discussions" },
+    { key: "suppression",  label: "Suppression automatique",desc: "Supprimer les anciens messages" },
+    { key: "entreprise",   label: "Mode entreprise",        desc: "Fonctionnalités avancées" },
+    { key: "createur",     label: "Mode créateur",          desc: "Outils pour créateurs" },
+  ];
+  return (
+    <SubPage visible>
+      <SubPageHeader title="Paramètres avancés" onBack={onBack} />
+      <div style={{ flex: 1, overflowY: "auto" }}>
+        <div style={{ height: 12 }}/>
+        <div style={{ background: "white" }}>
+          {ITEMS.map((item, i) => (
+            <div key={item.key} style={{
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              padding: "14px 20px", borderTop: i > 0 ? "1px solid #F3F4F6" : "none",
+            }}>
+              <div style={{ flex: 1, paddingRight: 12 }}>
+                <div style={{ fontSize: 15, fontWeight: 500, color: "#111827", fontFamily: "Inter, sans-serif" }}>{item.label}</div>
+                <div style={{ fontSize: 13, color: "#64748B", fontFamily: "Inter, sans-serif" }}>{item.desc}</div>
+              </div>
+              <Toggle checked={toggles[item.key]} onChange={() => toggle(item.key)} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </SubPage>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
    ── DROPDOWN MENU (maquette 1) ──
 ═══════════════════════════════════════════════════════════════ */
-type SubPageId = "infos" | "modifier" | "ajouter" | "medias" | "notifs" | "export" | "effacer" | "supprimer" | "recherche" | "renommer";
+type SubPageId = "infos" | "modifier" | "ajouter" | "medias" | "notifs" | "export" | "effacer" | "supprimer" | "recherche" | "renommer" | "sonnerie" | "vibration" | "priorite" | "apercu" | "rechdate" | "importtel" | "avance";
 
 function DropdownMenu({ onSelect, onClose }: { onSelect: (id: SubPageId) => void; onClose: () => void }) {
   const items: { id: SubPageId; label: string; icon: React.ReactNode; danger?: boolean }[] = [
@@ -1381,7 +1735,7 @@ export default function BroadcastListPage({ broadcastId }: { broadcastId: number
         <MediasPage bcId={broadcastId} onBack={() => setSubPage(null)} />
       )}
       {subPage === "notifs" && (
-        <NotifPage bcId={broadcastId} onBack={() => setSubPage(null)} />
+        <NotifPage bcId={broadcastId} onBack={() => setSubPage(null)} onSubPage={id => setSubPage(id as any)} />
       )}
       {subPage === "export" && (
         <ExportPage bcId={broadcastId} onBack={() => setSubPage(null)} />
@@ -1406,6 +1760,27 @@ export default function BroadcastListPage({ broadcastId }: { broadcastId: number
           onBack={() => setSubPage(null)}
           onRenamed={patch => { setList(prev => prev ? { ...prev, ...patch } : prev); setSubPage(null); }}
         />
+      )}
+      {subPage === "sonnerie" && (
+        <SonneriePage onBack={() => setSubPage("notifs")} />
+      )}
+      {subPage === "vibration" && (
+        <VibrationPage onBack={() => setSubPage("notifs")} />
+      )}
+      {subPage === "priorite" && (
+        <PrioritePage onBack={() => setSubPage("notifs")} />
+      )}
+      {subPage === "apercu" && (
+        <ApercuPage onBack={() => setSubPage("notifs")} />
+      )}
+      {subPage === "rechdate" && (
+        <RechercheParDatePage onBack={() => setSubPage("recherche")} />
+      )}
+      {subPage === "importtel" && (
+        <ImporterTelephonePage onBack={() => setSubPage("ajouter")} />
+      )}
+      {subPage === "avance" && (
+        <ParamsAvancesPage onBack={() => setSubPage(null)} />
       )}
     </div>
   );

@@ -12,6 +12,7 @@ const OPTIONS = [
     desc: "Partagez vos idées, actualités et moments avec la communauté.",
     color: "#22C55E",
     bg: "#F0FDF4",
+    badge: "🔥 Populaire",
     icon: (
       <svg viewBox="0 0 24 24" width="26" height="26" fill="none">
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
@@ -26,6 +27,7 @@ const OPTIONS = [
     desc: "Proposez vos produits à des millions d'utilisateurs.",
     color: "#F97316",
     bg: "#FFF7ED",
+    badge: "⭐ Recommandé",
     icon: (
       <svg viewBox="0 0 24 24" width="26" height="26" fill="none">
         <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" stroke="#F97316" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
@@ -155,8 +157,28 @@ export default function CreateModal({ onClose, onSelect }: Props) {
               key={opt.type}
               className="bpcm-item"
               onClick={() => onSelect(opt.type)}
-              style={{ display:"flex", alignItems:"center", gap:14, background:"#fff", borderRadius:20, padding:"14px 16px", cursor:"pointer", boxShadow:"0 1px 4px rgba(0,0,0,0.07), 0 2px 12px rgba(0,0,0,0.05)", border:"1px solid rgba(0,0,0,0.05)", animation:`bpcm-item .3s ${i * 0.04}s both` }}
+              style={{
+                position:"relative", display:"flex", alignItems:"center", gap:14,
+                background: opt.type === "post" ? "#F0FDF4" : "#fff",
+                borderRadius:20, padding:"14px 16px", cursor:"pointer",
+                boxShadow:"0 1px 4px rgba(0,0,0,0.07), 0 2px 12px rgba(0,0,0,0.05)",
+                border: opt.type === "post" ? "1.5px solid #22C55E" : "1px solid rgba(0,0,0,0.05)",
+                animation:`bpcm-item .3s ${i * 0.04}s both`
+              }}
             >
+              {/* Badge */}
+              {"badge" in opt && opt.badge && (
+                <div style={{
+                  position:"absolute", top:10, right:52,
+                  background: opt.type === "post" ? "#22C55E" : "#FFF7ED",
+                  border: opt.type === "post" ? "none" : "1px solid #F97316",
+                  borderRadius:20, padding:"2px 10px",
+                  fontSize:11, fontWeight:700,
+                  color: opt.type === "post" ? "#fff" : "#F97316",
+                }}>
+                  {opt.badge}
+                </div>
+              )}
               {/* Icon block */}
               <div style={{ width:52, height:52, borderRadius:16, background:opt.bg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                 {opt.icon}
@@ -166,10 +188,10 @@ export default function CreateModal({ onClose, onSelect }: Props) {
                 <div style={{ fontWeight:800, fontSize:15, color:"#111", marginBottom:2 }}>{opt.label}</div>
                 <div style={{ fontSize:12, color:"#6B7280", lineHeight:1.4 }}>{opt.desc}</div>
               </div>
-              {/* Arrow */}
-              <div style={{ width:32, height:32, borderRadius:"50%", background:opt.bg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+              {/* Arrow — solid colored circle */}
+              <div style={{ width:36, height:36, borderRadius:"50%", background:opt.color, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
-                  <path d="M9 18l6-6-6-6" stroke={opt.color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M9 18l6-6-6-6" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </div>
             </div>
