@@ -37,6 +37,17 @@ import SavedPage from "./pages/SavedPage";
 import MemoriesPage from "./pages/MemoriesPage";
 import JobInboxPage from "./pages/JobInboxPage";
 import CreateListingPage from "./pages/CreateListingPage";
+import ProfileMenuPage from "./pages/ProfileMenuPage";
+import ArchivePage from "./pages/ArchivePage";
+import PrivacyPage from "./pages/PrivacyPage";
+import NotifSettingsPage from "./pages/NotifSettingsPage";
+import LanguagePage from "./pages/LanguagePage";
+import DataModePage from "./pages/DataModePage";
+import AppearancePage from "./pages/AppearancePage";
+import VerifyPage from "./pages/VerifyPage";
+import BadgePage from "./pages/BadgePage";
+import PremiumPage from "./pages/PremiumPage";
+import StoragePage from "./pages/StoragePage";
 
 import { ADMIN_SECRET_PATH } from "./lib/admin";
 import { Post } from "./lib/store";
@@ -388,6 +399,25 @@ function AppContent() {
   if (path === "/profile") {
     return <Profile />;
   }
+
+  /* ── Settings hub ── */
+  if (path === "/settings") {
+    return (
+      <Layout onNewPost={handleNewPost}>
+        <ProfileMenuPage />
+      </Layout>
+    );
+  }
+  if (path === "/settings/archive") return <ArchivePage />;
+  if (path === "/settings/privacy") return <PrivacyPage />;
+  if (path === "/settings/notifications") return <NotifSettingsPage />;
+  if (path === "/settings/language") return <LanguagePage />;
+  if (path === "/settings/data") return <DataModePage />;
+  if (path === "/settings/appearance") return <AppearancePage />;
+  if (path === "/settings/verify") return <VerifyPage />;
+  if (path === "/settings/badge") return <BadgePage />;
+  if (path === "/settings/premium") return <PremiumPage />;
+  if (path === "/settings/storage") return <StoragePage />;
 
   if (groupMatch) {
     const gid = parseInt(groupMatch.id, 10);

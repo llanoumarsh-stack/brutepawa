@@ -27,13 +27,17 @@ input, textarea, [contenteditable="true"], [contenteditable] {
   --fb-blue: #1877F2;
   --fb-blue-dark: #166FE5;
   --fb-blue-light: #E7F3FF;
-  --fb-green: #42B72A;
-  --fb-green-dark: #36A420;
-  --fb-text: #1C1E21;
-  --fb-text-secondary: #65676B;
-  --fb-border: #CED0D4;
-  --fb-bg: #F0F2F5;
+  --fb-green: #22C55E;
+  --fb-green-dark: #16A34A;
+  --fb-text: #111827;
+  --fb-text-secondary: #64748B;
+  --fb-border: #E5E7EB;
+  --fb-bg: #F8FAFC;
   --fb-white: #FFFFFF;
+  --bp-primary: #22C55E;
+  --bp-primary-dark: #16A34A;
+  --bp-danger: #EF4444;
+  --bp-premium: #F4C542;
   --fb-divider: #DADDE1;
   --sidebar-width: 260px;
   --navbar-height: 56px;
@@ -53,7 +57,7 @@ html {
 }
 
 body {
-  font-family: Helvetica, Arial, sans-serif;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   font-size: 15px;
   background: var(--fb-bg);
   color: var(--fb-text);
@@ -71,9 +75,9 @@ img, video, iframe, svg { max-width: 100%; }
 /* ── Thin premium scrollbar ── */
 ::-webkit-scrollbar { width: 3px; height: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(66,183,42,0.22); border-radius: 100px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(66,183,42,0.45); }
-* { scrollbar-width: thin; scrollbar-color: rgba(66,183,42,0.22) transparent; }
+::-webkit-scrollbar-thumb { background: rgba(34,197,94,0.22); border-radius: 100px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(34,197,94,0.45); }
+* { scrollbar-width: thin; scrollbar-color: rgba(34,197,94,0.22) transparent; }
 
 /* ── Scroll containers — momentum + overscroll ── */
 .app-main, .feed-container, [data-scroll="true"] {
