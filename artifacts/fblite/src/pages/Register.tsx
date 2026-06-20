@@ -25,24 +25,42 @@ const PW_CHECKS = [
 ];
 
 const BENEFITS = [
-  { icon: "🤝", label: "Connectez-vous avec vos amis" },
-  { icon: "📢", label: "Partagez vos idées" },
-  { icon: "💼", label: "Développez votre réseau" },
-  { icon: "🌍", label: "Découvrez du contenu inspirant" },
+  {
+    label: "Connectez-vous avec vos amis",
+    sub: "Trouvez et ajoutez des amis facilement.",
+    svg: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="8" cy="7" r="3.5" stroke="#00FF7A" strokeWidth="1.6"/><path d="M2 18c0-3.31 2.69-5 6-5s6 1.69 6 5" stroke="#00FF7A" strokeWidth="1.6" strokeLinecap="round"/><circle cx="16" cy="7" r="2.5" stroke="#00FF7A" strokeWidth="1.4"/><path d="M18 18c0-2.21-1.34-4-4-4" stroke="#00FF7A" strokeWidth="1.4" strokeLinecap="round"/></svg>,
+  },
+  {
+    label: "Partagez vos idées",
+    sub: "Publiez du contenu et inspirez les autres.",
+    svg: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 14H2a1 1 0 01-1-1V8a1 1 0 011-1h2l5-4v15l-5-4z" stroke="#00FF7A" strokeWidth="1.6" strokeLinejoin="round"/><path d="M15.5 8.5C16.5 9.5 17 10.5 17 11s-.5 1.5-1.5 2.5M18 6c2 1.5 3 3.3 3 5s-1 3.5-3 5" stroke="#00FF7A" strokeWidth="1.6" strokeLinecap="round"/></svg>,
+  },
+  {
+    label: "Développez votre réseau",
+    sub: "Élargissez votre réseau professionnel.",
+    svg: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="12" width="5" height="8" rx="1.5" stroke="#00FF7A" strokeWidth="1.6"/><rect x="8.5" y="7" width="5" height="13" rx="1.5" stroke="#00FF7A" strokeWidth="1.6"/><rect x="15" y="3" width="5" height="17" rx="1.5" stroke="#00FF7A" strokeWidth="1.6"/></svg>,
+  },
+  {
+    label: "Découvrez du contenu inspirant",
+    sub: "Explorez du contenu qui vous passionne.",
+    svg: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8.5" stroke="#00FF7A" strokeWidth="1.6"/><ellipse cx="11" cy="11" rx="3.5" ry="8.5" stroke="#00FF7A" strokeWidth="1.4"/><path d="M2.5 8.5h17M2.5 13.5h17" stroke="#00FF7A" strokeWidth="1.4" strokeLinecap="round"/></svg>,
+  },
 ];
 
 /* ─── Shared Styles ─────────────────────────────────────────── */
 const CSS = `
-  @keyframes fadeInUp { from { opacity:0;transform:translateY(18px); } to { opacity:1;transform:none; } }
-  @keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
-  @keyframes spin     { to { transform:rotate(360deg); } }
-  @keyframes glowPulse { 0%,100%{opacity:.7;} 50%{opacity:1;} }
-  @keyframes floatPt  { 0%,100%{transform:translateY(0);opacity:.55;} 50%{transform:translateY(-9px);opacity:1;} }
-  @keyframes arcMove  { 0%,100%{transform:translateX(0) rotate(-28deg);} 50%{transform:translateX(10px) rotate(-26deg);} }
-  @keyframes confettiDrop { 0%{transform:translateY(-40px) rotate(0deg);opacity:1;} 100%{transform:translateY(110vh) rotate(720deg);opacity:0;} }
-  @keyframes checkPop { 0%{transform:scale(0) rotate(-45deg);opacity:0;} 60%{transform:scale(1.2) rotate(5deg);} 100%{transform:scale(1) rotate(0deg);opacity:1;} }
+  @keyframes fadeInUp  { from{opacity:0;transform:translateY(18px);} to{opacity:1;transform:none;} }
+  @keyframes fadeIn    { from{opacity:0;} to{opacity:1;} }
+  @keyframes spin      { to{transform:rotate(360deg);} }
+  @keyframes glowPulse { 0%,100%{box-shadow:0 0 18px rgba(0,255,122,.35);} 50%{box-shadow:0 0 32px rgba(0,255,122,.7);} }
+  @keyframes floatPt   { 0%,100%{transform:translateY(0);opacity:.6;} 50%{transform:translateY(-10px);opacity:1;} }
+  @keyframes arcMove   { 0%,100%{transform:translateX(0) rotate(-28deg);} 50%{transform:translateX(12px) rotate(-26deg);} }
+  @keyframes confettiDrop { 0%{transform:translateY(-60px) rotate(0deg);opacity:1;} 100%{transform:translateY(110vh) rotate(720deg);opacity:0;} }
+  @keyframes checkBounce { 0%{transform:scale(0);opacity:0;} 55%{transform:scale(1.3);opacity:1;} 75%{transform:scale(.88);} 90%{transform:scale(1.08);} 100%{transform:scale(1);opacity:1;} }
   @keyframes slideUpSheet { from{transform:translateY(100%);} to{transform:translateY(0);} }
-  @keyframes countDown { from{stroke-dashoffset:0;} to{stroke-dashoffset:251;} }
+  @keyframes cardEntry { from{opacity:0;transform:scale(.95) translateY(16px);} to{opacity:1;transform:none;} }
+  @keyframes photoRing { 0%,100%{box-shadow:0 0 0 4px rgba(0,255,122,.25),0 0 24px rgba(0,255,122,.4);} 50%{box-shadow:0 0 0 4px rgba(0,255,122,.5),0 0 40px rgba(0,255,122,.6);} }
+  @keyframes benefitSlide { from{opacity:0;transform:translateX(-12px);} to{opacity:1;transform:none;} }
 
   .rg-field {
     width:100%; box-sizing:border-box;
@@ -54,7 +72,7 @@ const CSS = `
     transition:border-color .2s,box-shadow .2s;
   }
   .rg-field::placeholder { color:#6B7280; }
-  .rg-field:focus { border-color:rgba(34,197,94,.6); box-shadow:0 0 0 3px rgba(34,197,94,.12); }
+  .rg-field:focus { border-color:rgba(0,255,122,.6); box-shadow:0 0 0 3px rgba(0,255,122,.12); }
 
   .rg-select {
     width:100%; box-sizing:border-box;
@@ -68,91 +86,102 @@ const CSS = `
     background-repeat:no-repeat; background-position:right 12px center;
     transition:border-color .2s,box-shadow .2s;
   }
-  .rg-select:focus { border-color:rgba(34,197,94,.6); box-shadow:0 0 0 3px rgba(34,197,94,.12); }
-  .rg-select option { background:#0D1A12; color:#fff; }
+  .rg-select:focus { border-color:rgba(0,255,122,.6); box-shadow:0 0 0 3px rgba(0,255,122,.12); }
+  .rg-select option { background:#07120F; color:#fff; }
 
   .rg-btn {
-    width:100%; height:56px; border:none; border-radius:18px; cursor:pointer;
-    background:linear-gradient(135deg,#22C55E 0%,#16A34A 100%);
-    color:#fff; font-size:17px; font-weight:800; font-family:inherit;
+    width:100%; height:56px; border:none; border-radius:50px; cursor:pointer;
+    background:linear-gradient(135deg,#00FF7A 0%,#00D16A 100%);
+    color:#030A08; font-size:16px; font-weight:700; font-family:inherit;
     display:flex; align-items:center; justify-content:center; gap:10px;
-    box-shadow:0 0 24px rgba(34,197,94,.4), 0 4px 16px rgba(0,0,0,.3);
-    transition:transform .15s,box-shadow .15s;
+    box-shadow:0 0 28px rgba(0,255,122,.45), 0 4px 16px rgba(0,0,0,.35);
+    transition:transform .2s,box-shadow .2s,filter .2s;
   }
-  .rg-btn:hover:not(:disabled) { transform:translateY(-2px) scale(1.02); box-shadow:0 0 32px rgba(34,197,94,.55),0 6px 20px rgba(0,0,0,.4); }
+  .rg-btn:hover:not(:disabled) { transform:translateY(-2px) scale(1.02); box-shadow:0 0 40px rgba(0,255,122,.6),0 6px 20px rgba(0,0,0,.4); filter:brightness(1.06); }
   .rg-btn:active:not(:disabled) { transform:scale(.97); }
-  .rg-btn:disabled { background:linear-gradient(135deg,#166534,#14532d); box-shadow:none; cursor:not-allowed; }
+  .rg-btn:disabled { background:linear-gradient(135deg,#0a4a28,#073a1e); color:#4ade80; box-shadow:none; cursor:not-allowed; }
 
   .rg-btn-outline {
-    width:100%; height:52px; border:1.5px solid rgba(255,255,255,.12); border-radius:16px; cursor:pointer;
-    background:rgba(255,255,255,.03); color:rgba(255,255,255,.8);
-    font-size:15px; font-weight:600; font-family:inherit;
-    display:flex; align-items:center; justify-content:center; gap:8px;
-    transition:background .15s,border-color .15s;
+    width:100%; height:56px; border:1px solid #1C2A22; border-radius:50px; cursor:pointer;
+    background:rgba(255,255,255,.03); color:#fff;
+    font-size:16px; font-weight:600; font-family:inherit;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    transition:background .15s,border-color .2s;
   }
-  .rg-btn-outline:hover { background:rgba(255,255,255,.06); border-color:rgba(34,197,94,.35); }
+  .rg-btn-outline:hover { background:rgba(0,255,122,.05); border-color:rgba(0,255,122,.35); }
 
   .otp-input {
     width:44px; height:54px; text-align:center; font-size:22px; font-weight:700; color:#fff;
     background:rgba(255,255,255,.05); border:1.5px solid rgba(255,255,255,.12);
-    border-radius:14px; font-family:inherit; outline:none; caret-color:#22C55E;
+    border-radius:14px; font-family:inherit; outline:none; caret-color:#00FF7A;
     transition:border-color .2s,box-shadow .2s;
   }
-  .otp-input:focus { border-color:#22C55E; box-shadow:0 0 0 3px rgba(34,197,94,.18); }
-  .otp-input.filled { border-color:rgba(34,197,94,.6); background:rgba(34,197,94,.08); }
+  .otp-input:focus { border-color:#00FF7A; box-shadow:0 0 0 3px rgba(0,255,122,.18); }
+  .otp-input.filled { border-color:rgba(0,255,122,.6); background:rgba(0,255,122,.08); }
 `;
 
 /* ─── Shared Background ─────────────────────────────────────── */
 function RegBackground() {
   return (
     <>
-      {/* Radial glows */}
-      <div style={{ position:"fixed", top:-60, right:-40, width:260, height:260, borderRadius:"50%", background:"radial-gradient(circle,rgba(34,197,94,.2) 0%,transparent 70%)", pointerEvents:"none", zIndex:0 }} />
-      <div style={{ position:"fixed", top:90, right:20, width:160, height:160, borderRadius:"50%", background:"radial-gradient(circle,rgba(74,222,128,.1) 0%,transparent 70%)", pointerEvents:"none", zIndex:0 }} />
+      {/* Top center green halo — main glow */}
+      <div style={{ position:"fixed", top:-120, left:"50%", transform:"translateX(-50%)", width:500, height:500, borderRadius:"50%", background:"radial-gradient(circle,rgba(0,255,122,.18) 0%,rgba(0,209,106,.07) 40%,transparent 70%)", pointerEvents:"none", zIndex:0 }} />
+      {/* Secondary accent glows */}
+      <div style={{ position:"fixed", top:-40, right:-60, width:220, height:220, borderRadius:"50%", background:"radial-gradient(circle,rgba(0,255,122,.1) 0%,transparent 70%)", pointerEvents:"none", zIndex:0 }} />
+      <div style={{ position:"fixed", top:200, left:-40, width:160, height:160, borderRadius:"50%", background:"radial-gradient(circle,rgba(0,255,122,.07) 0%,transparent 70%)", pointerEvents:"none", zIndex:0 }} />
       {/* Giant "B" */}
-      <div style={{ position:"fixed", top:"-6%", left:"-8%", fontSize:"130vw", fontWeight:900, lineHeight:1, color:"rgba(34,197,94,0.06)", pointerEvents:"none", zIndex:0, userSelect:"none", fontFamily:"Arial Black,sans-serif", letterSpacing:"-0.05em" }}>B</div>
-      {/* Neon arc */}
-      <div style={{ position:"fixed", top:"16%", right:"-4%", width:"55%", height:3, background:"linear-gradient(90deg,transparent,rgba(34,197,94,.55),rgba(74,222,128,.25),transparent)", borderRadius:2, transform:"rotate(-28deg)", animation:"arcMove 6s ease-in-out infinite", pointerEvents:"none", zIndex:0 }} />
-      {/* Particles */}
-      {[[10,24,1.6],[88,42,1.2],[18,62,1.8],[74,28,1.4],[50,14,1.0],[36,78,1.5]].map(([x,y,s],i) => (
-        <div key={i} style={{ position:"fixed", left:`${x}%`, top:`${y}%`, width:s, height:s, borderRadius:"50%", background:"#22C55E", boxShadow:`0 0 ${s*3}px rgba(34,197,94,.8)`, animation:`floatPt ${3+i*.5}s ease-in-out infinite`, animationDelay:`${i*.4}s`, pointerEvents:"none", zIndex:0 }} />
+      <div style={{ position:"fixed", top:"-4%", left:"-6%", fontSize:"clamp(340px,95vw,520px)", fontWeight:900, lineHeight:1, color:"rgba(0,255,122,0.055)", pointerEvents:"none", zIndex:0, userSelect:"none", fontFamily:"'Arial Black','Impact',sans-serif", letterSpacing:"-0.05em" }}>B</div>
+      {/* Neon arc top */}
+      <div style={{ position:"fixed", top:"14%", right:"-5%", width:"60%", height:2, background:"linear-gradient(90deg,transparent,rgba(0,255,122,.6),rgba(0,209,106,.25),transparent)", borderRadius:2, transform:"rotate(-28deg)", animation:"arcMove 7s ease-in-out infinite", pointerEvents:"none", zIndex:0 }} />
+      {/* Second arc */}
+      <div style={{ position:"fixed", top:"28%", left:"-5%", width:"45%", height:1.5, background:"linear-gradient(90deg,transparent,rgba(0,255,122,.3),transparent)", borderRadius:2, transform:"rotate(22deg)", animation:"arcMove 9s ease-in-out infinite reverse", pointerEvents:"none", zIndex:0 }} />
+      {/* Floating particles */}
+      {[[8,22,1.8],[90,38,1.3],[16,60,2.0],[76,26,1.5],[52,12,1.1],[34,76,1.6],[68,50,1.2],[22,88,1.4]].map(([x,y,s],i) => (
+        <div key={i} style={{ position:"fixed", left:`${x}%`, top:`${y}%`, width:s, height:s, borderRadius:"50%", background:"#00FF7A", boxShadow:`0 0 ${s*4}px rgba(0,255,122,.9)`, animation:`floatPt ${3.5+i*.45}s ease-in-out infinite`, animationDelay:`${i*.38}s`, pointerEvents:"none", zIndex:0 }} />
       ))}
-      {/* Globe */}
-      <div style={{ position:"fixed", bottom:-10, left:"50%", transform:"translateX(-50%)", width:"115%", zIndex:0, pointerEvents:"none", opacity:0.85 }}>
+      {/* Digital globe at bottom */}
+      <div style={{ position:"fixed", bottom:-20, left:"50%", transform:"translateX(-50%)", width:"120%", zIndex:0, pointerEvents:"none", opacity:0.9 }}>
         <svg viewBox="0 0 400 200" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width:"100%", height:"auto", display:"block" }}>
-          <ellipse cx="200" cy="310" rx="185" ry="185" stroke="rgba(34,197,94,.22)" strokeWidth="1"/>
-          {[255,290,325,360].map((y,i) => { const r=Math.sqrt(Math.max(0,185*185-(y-310)*(y-310))); return r>0?<ellipse key={i} cx="200" cy={y} rx={r} ry={r*.28} stroke="rgba(34,197,94,.16)" strokeWidth=".8"/>:null; })}
-          {[-70,-35,0,35,70].map((a,i) => <ellipse key={i} cx="200" cy="310" rx={185*Math.abs(Math.cos(a*Math.PI/180))+1} ry="185" stroke="rgba(34,197,94,.13)" strokeWidth=".7" style={{ transform:`rotate(${a}deg)`, transformOrigin:"200px 310px" }}/>)}
-          {[[80,262],[130,248],[175,238],[225,238],[270,245],[310,258],[60,285],[110,272],[160,262],[200,258],[250,262],[300,273],[100,300],[155,285],[200,280],[248,286],[295,300],[150,305],[200,302],[245,306]].map(([x,y],i) => <circle key={i} cx={x} cy={y} r="2.5" fill="#22C55E" fillOpacity={.7-i*.02}/>)}
-          {[[80,262,130,248],[130,248,175,238],[175,238,225,238],[225,238,270,245],[270,245,310,258],[60,285,110,272],[110,272,160,262],[160,262,200,258],[200,258,250,262],[250,262,300,273],[100,300,155,285],[155,285,200,280],[200,280,248,286],[130,248,110,272],[175,238,160,262],[225,238,200,258],[200,258,200,280]].map(([x1,y1,x2,y2],i) => <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#22C55E" strokeOpacity=".3" strokeWidth=".8"/>)}
-          {[[175,238],[200,258]].map(([x,y],i) => <circle key={i} cx={x} cy={y} r="5" fill="none" stroke="#22C55E" strokeOpacity=".4" strokeWidth="1"><animate attributeName="r" values="3;8;3" dur={`${2+i*.8}s`} repeatCount="indefinite"/><animate attributeName="stroke-opacity" values=".5;0;.5" dur={`${2+i*.8}s`} repeatCount="indefinite"/></circle>)}
+          <ellipse cx="200" cy="310" rx="190" ry="190" stroke="rgba(0,255,122,.2)" strokeWidth="1"/>
+          {[258,292,328,364].map((y,i) => { const r=Math.sqrt(Math.max(0,190*190-(y-310)*(y-310))); return r>0?<ellipse key={i} cx="200" cy={y} rx={r} ry={r*.27} stroke="rgba(0,255,122,.14)" strokeWidth=".8"/>:null; })}
+          {[-70,-35,0,35,70].map((a,i) => <ellipse key={i} cx="200" cy="310" rx={190*Math.abs(Math.cos(a*Math.PI/180))+1} ry="190" stroke="rgba(0,255,122,.11)" strokeWidth=".7" style={{ transform:`rotate(${a}deg)`, transformOrigin:"200px 310px" }}/>)}
+          {[[80,262],[130,248],[175,238],[225,238],[270,245],[310,258],[60,285],[110,272],[160,262],[200,258],[250,262],[300,273],[100,300],[155,285],[200,280],[248,286],[295,300],[150,305],[200,302],[245,306]].map(([x,y],i) => <circle key={i} cx={x} cy={y} r="2.5" fill="#00FF7A" fillOpacity={.7-i*.02}/>)}
+          {[[80,262,130,248],[130,248,175,238],[175,238,225,238],[225,238,270,245],[270,245,310,258],[60,285,110,272],[110,272,160,262],[160,262,200,258],[200,258,250,262],[250,262,300,273],[100,300,155,285],[155,285,200,280],[200,280,248,286],[130,248,110,272],[175,238,160,262],[225,238,200,258],[200,258,200,280]].map(([x1,y1,x2,y2],i) => <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#00FF7A" strokeOpacity=".25" strokeWidth=".8"/>)}
+          {[[175,238],[200,258]].map(([x,y],i) => <circle key={i} cx={x} cy={y} r="5" fill="none" stroke="#00FF7A" strokeOpacity=".45" strokeWidth="1"><animate attributeName="r" values="3;9;3" dur={`${2.2+i*.8}s`} repeatCount="indefinite"/><animate attributeName="stroke-opacity" values=".5;0;.5" dur={`${2.2+i*.8}s`} repeatCount="indefinite"/></circle>)}
         </svg>
       </div>
     </>
   );
 }
 
-/* ─── Progress dots ─────────────────────────────────────────── */
+/* ─── Progress dots (spec: 6px h × 24px w, 8px gap, #00FF7A / #1C2A22) ── */
 function ProgressDots({ step }: { step: number }) {
+  const TOTAL = 7;
   return (
-    <div style={{ display:"flex", alignItems:"center", gap:6, justifyContent:"center", marginBottom:18 }}>
-      {Array.from({length:7},(_,i) => (
-        <div key={i} style={{ height:4, borderRadius:2, transition:"all .35s", background: i < step ? "#22C55E" : "rgba(255,255,255,.15)", width: i === step-1 ? 28 : 10 }} />
+    <div style={{ display:"flex", alignItems:"center", gap:8, justifyContent:"center", marginBottom:20 }}>
+      {Array.from({length:TOTAL},(_,i) => (
+        <div key={i} style={{
+          height:6, borderRadius:3,
+          transition:"all .5s cubic-bezier(.16,1,.3,1)",
+          background: i < step ? "#00FF7A" : "#1C2A22",
+          width: i === step-1 ? 28 : 24,
+          boxShadow: i < step ? "0 0 6px rgba(0,255,122,.5)" : "none",
+        }} />
       ))}
     </div>
   );
 }
 
-/* ─── Glass Card ─────────────────────────────────────────────── */
+/* ─── Glass Card (spec: bg #0F1A14, blur 20px, border #1C2A22, r 20px) ── */
 function Card({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
   return (
     <div style={{
-      width:"88%", borderRadius:28,
-      background:"rgba(0,0,0,0.30)", backdropFilter:"blur(40px)", WebkitBackdropFilter:"blur(40px)",
-      border:"1px solid rgba(255,255,255,.1)",
-      boxShadow:"0 0 40px rgba(34,197,94,.07), 0 8px 32px rgba(0,0,0,.5)",
-      padding:"22px 20px 20px",
-      animation:"fadeInUp .5s cubic-bezier(.16,1,.3,1)",
+      width:"92%", maxWidth:361, borderRadius:20,
+      background:"#0F1A14", backdropFilter:"blur(20px)", WebkitBackdropFilter:"blur(20px)",
+      border:"1px solid #1C2A22",
+      boxShadow:"0 0 48px rgba(0,255,122,.06), 0 8px 32px rgba(0,0,0,.6)",
+      padding:"24px 24px 24px",
+      animation:"cardEntry .4s cubic-bezier(.16,1,.3,1)",
       ...style,
     }}>
       {children}
@@ -163,9 +192,9 @@ function Card({ children, style }: { children: React.ReactNode; style?: React.CS
 /* ─── Back Button ─────────────────────────────────────────────── */
 function BackBtn({ onClick }: { onClick: () => void }) {
   return (
-    <button onClick={onClick} style={{ position:"absolute", top:16, left:16, width:38, height:38, borderRadius:"50%", background:"rgba(255,255,255,.06)", border:"1px solid rgba(255,255,255,.1)", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", zIndex:5, transition:"background .15s" }}
-      onMouseEnter={e => (e.currentTarget.style.background="rgba(255,255,255,.12)")}
-      onMouseLeave={e => (e.currentTarget.style.background="rgba(255,255,255,.06)")}
+    <button onClick={onClick} style={{ position:"absolute", top:16, left:16, width:38, height:38, borderRadius:"50%", background:"rgba(255,255,255,.05)", border:"1px solid rgba(255,255,255,.1)", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", zIndex:5, transition:"background .15s,border-color .15s" }}
+      onMouseEnter={e => { e.currentTarget.style.background="rgba(0,255,122,.1)"; e.currentTarget.style.borderColor="rgba(0,255,122,.3)"; }}
+      onMouseLeave={e => { e.currentTarget.style.background="rgba(255,255,255,.05)"; e.currentTarget.style.borderColor="rgba(255,255,255,.1)"; }}
     >
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M11 4L6 9l5 5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
     </button>
@@ -175,7 +204,7 @@ function BackBtn({ onClick }: { onClick: () => void }) {
 /* ─── Step Icon ─────────────────────────────────────────────── */
 function StepIcon({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ width:64, height:64, borderRadius:"50%", background:"rgba(34,197,94,.12)", border:"1.5px solid rgba(34,197,94,.25)", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 14px", boxShadow:"0 0 24px rgba(34,197,94,.2)" }}>
+    <div style={{ width:64, height:64, borderRadius:"50%", background:"rgba(0,255,122,.1)", border:"1.5px solid rgba(0,255,122,.25)", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 14px", boxShadow:"0 0 24px rgba(0,255,122,.2)" }}>
       {children}
     </div>
   );
@@ -238,22 +267,30 @@ function LangSheet({ current, onSelect, onClose, regionFlag, regionName }: {
   );
 }
 
-/* ─── Confetti ─────────────────────────────────────────────── */
+/* ─── Confetti (spec: green #00FF7A + white #FFFFFF particles) ── */
 function Confetti() {
-  const items = Array.from({length:40},(_,i) => ({
-    x: Math.random()*100, delay: Math.random()*2, dur: 2.5+Math.random()*2,
-    color: i%3===0?"#22C55E":i%3===1?"#fff":"#4ADE80",
-    size: 6+Math.random()*8, shape: i%2===0?"rect":"circle",
+  const items = Array.from({length:48},(_,i) => ({
+    x: Math.random()*100,
+    delay: Math.random()*1.8,
+    dur: 2.2+Math.random()*2.5,
+    color: i%4===0?"#00FF7A":i%4===1?"#FFFFFF":i%4===2?"#00D16A":"#AFFFCE",
+    size: 5+Math.random()*7,
+    shape: i%3===0?"rect":i%3===1?"circle":"pill",
+    rotate: Math.random()*360,
   }));
   return (
     <div style={{ position:"fixed", inset:0, pointerEvents:"none", zIndex:50, overflow:"hidden" }}>
       {items.map((c,i) => (
         <div key={i} style={{
-          position:"absolute", left:`${c.x}%`, top:0,
-          width:c.size, height:c.shape==="rect"?c.size*.5:c.size,
-          borderRadius:c.shape==="circle"?"50%":2,
-          background:c.color, opacity:0,
+          position:"absolute", left:`${c.x}%`, top:-20,
+          width:c.shape==="pill"?c.size*2:c.size,
+          height:c.shape==="rect"?c.size*.45:c.size,
+          borderRadius:c.shape==="circle"?"50%":c.shape==="pill"?99:2,
+          background:c.color,
+          opacity:0,
+          transform:`rotate(${c.rotate}deg)`,
           animation:`confettiDrop ${c.dur}s ${c.delay}s ease-in forwards`,
+          boxShadow: c.color==="#00FF7A"?`0 0 4px rgba(0,255,122,.6)`:"none",
         }} />
       ))}
     </div>
@@ -321,14 +358,11 @@ export default function Register() {
     return () => clearInterval(t);
   }, [step]);
 
-  /* Welcome countdown */
+  /* Welcome — confetti only, NO auto-redirect */
   useEffect(() => {
     if (step !== 7) return;
     setShowConfetti(true);
-    setCountdown(5);
-    const t = setInterval(() => setCountdown(c => { if(c<=1){clearInterval(t); navigate("/"); return 0;} return c-1; }), 1000);
-    return () => clearInterval(t);
-  }, [step, navigate]);
+  }, [step]);
 
   /* Username debounce check */
   useEffect(() => {
@@ -657,44 +691,140 @@ export default function Register() {
 
     /* ── STEP 6 — Photo profil ── */
     if (step === 6) return (
-      <div style={{ display:"flex", flexDirection:"column", alignItems:"center", width:"100%", paddingTop:"clamp(40px,7vh,70px)", paddingBottom:"clamp(60px,10vh,80px)" }}>
+      <div style={{ display:"flex", flexDirection:"column", alignItems:"center", width:"100%", paddingTop:"clamp(32px,6vh,60px)", paddingBottom:"clamp(60px,10vh,80px)" }}>
         <Card style={{ position:"relative" }}>
           <BackBtn onClick={back} />
           <ProgressDots step={step} />
 
-          {/* Avatar circle */}
-          <div style={{ display:"flex", justifyContent:"center", marginBottom:14 }}>
+          {/* ── Photo circle (spec: 120px, 3px solid #00FF7A, glow) ── */}
+          <div style={{ display:"flex", justifyContent:"center", marginBottom:16 }}>
             <div style={{ position:"relative" }}>
-              <div style={{ width:90, height:90, borderRadius:"50%", background:"rgba(34,197,94,.1)", border:"2px solid rgba(34,197,94,.3)", display:"flex", alignItems:"center", justifyContent:"center", overflow:"hidden" }}>
+              <div style={{
+                width:120, height:120, borderRadius:"50%",
+                border:"3px solid #00FF7A",
+                background:"rgba(0,255,122,.08)",
+                display:"flex", alignItems:"center", justifyContent:"center",
+                overflow:"hidden",
+                animation: photo ? "photoRing 2s ease-in-out infinite" : "none",
+                boxShadow: photo
+                  ? "0 0 0 4px rgba(0,255,122,.25), 0 0 32px rgba(0,255,122,.5)"
+                  : "0 0 24px rgba(0,255,122,.2)",
+                transition:"box-shadow .4s",
+              }}>
                 {photo
                   ? <img src={photo} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
-                  : <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="16" r="9" stroke="rgba(255,255,255,.25)" strokeWidth="2"/><path d="M4 38c0-8.84 7.16-14 16-14s16 5.16 16 14" stroke="rgba(255,255,255,.25)" strokeWidth="2" strokeLinecap="round"/></svg>
+                  : <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="19" r="11" stroke="rgba(255,255,255,.2)" strokeWidth="2"/><path d="M5 45c0-10.49 8.51-17 19-17s19 6.51 19 17" stroke="rgba(255,255,255,.2)" strokeWidth="2" strokeLinecap="round"/></svg>
                 }
               </div>
-              <button onClick={() => fileRef.current?.click()} style={{ position:"absolute", bottom:0, right:0, width:28, height:28, borderRadius:"50%", background:"#22C55E", border:"2px solid #000", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer" }}>
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="4" stroke="#fff" strokeWidth="1.5"/><path d="M5 2h4M6 2l1-1.5 1 1.5" stroke="#fff" strokeWidth="1.2" strokeLinecap="round"/></svg>
+              {/* Camera icon button (spec: 36×36, bg #00FF7A, bottom-right) */}
+              <button onClick={() => fileRef.current?.click()} style={{
+                position:"absolute", bottom:2, right:2,
+                width:36, height:36, borderRadius:"50%",
+                background:"#00FF7A",
+                border:"3px solid #07120F",
+                display:"flex", alignItems:"center", justifyContent:"center",
+                cursor:"pointer",
+                boxShadow:"0 2px 8px rgba(0,0,0,.5)",
+                transition:"transform .15s",
+              }}
+                onMouseEnter={e => e.currentTarget.style.transform="scale(1.12)"}
+                onMouseLeave={e => e.currentTarget.style.transform="scale(1)"}
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <rect x="1" y="4" width="14" height="10" rx="2" fill="#030A08"/>
+                  <circle cx="8" cy="9" r="2.8" fill="#030A08" stroke="#030A08" strokeWidth=".5"/>
+                  <circle cx="8" cy="9" r="2" fill="#00FF7A"/>
+                  <path d="M5.5 4L6.5 2h3l1 2" fill="#030A08"/>
+                  <circle cx="12.5" cy="6.5" r=".8" fill="#00FF7A"/>
+                </svg>
               </button>
             </div>
           </div>
 
-          <h2 style={{ margin:"0 0 4px", color:"#fff", fontSize:"clamp(18px,4.5vw,22px)", fontWeight:800, textAlign:"center" }}>Ajoutez une photo<br/>de profil</h2>
-          <p style={{ margin:"0 0 18px", color:"#9CA3AF", fontSize:13, textAlign:"center" }}>Une photo de profil vous aidera à vous faire connaître.</p>
+          {/* Title */}
+          <h2 style={{ margin:"0 0 6px", color:"#fff", fontSize:22, fontWeight:700, textAlign:"center", lineHeight:1.25 }}>
+            Ajoutez une <span style={{ color:"#00FF7A", fontWeight:800 }}>photo</span><br/>de profil
+          </h2>
+          <p style={{ margin:"0 0 20px", color:"#A8B3B0", fontSize:14, textAlign:"center", lineHeight:"22px" }}>
+            Une photo de profil vous aidera<br/>à vous faire connaître.
+          </p>
 
           <ErrorBanner msg={error} />
 
+          {/* Benefit badge — visible only after photo selected */}
+          {photo && (
+            <div style={{
+              display:"flex", alignItems:"center", gap:10,
+              border:"1px solid rgba(0,255,122,.2)", borderRadius:12,
+              padding:"10px 14px", marginBottom:14,
+              background:"rgba(0,255,122,.06)",
+              animation:"benefitSlide .35s ease",
+            }}>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2l1.8 3.6L15 6.5l-3 2.9.7 4.1L9 11.5l-3.7 2 .7-4.1-3-2.9 4.2-.9L9 2z" stroke="#00FF7A" strokeWidth="1.4" strokeLinejoin="round"/></svg>
+              <span style={{ fontSize:13, color:"#A8B3B0", lineHeight:1.4 }}>
+                Les profils avec photo reçoivent <span style={{ color:"#fff", fontWeight:700 }}>3x plus</span> d'interactions
+              </span>
+            </div>
+          )}
+
+          {/* ── Buttons ── */}
           <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-            <button className="rg-btn" onClick={() => fileRef.current?.click()}>
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2v9M5 6l4-4 4 4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 16h12" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/></svg>
-              Choisir une photo
-            </button>
-            <button className="rg-btn-outline" onClick={() => fileRef.current?.click()}>
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="4" width="14" height="11" rx="2" stroke="rgba(255,255,255,.7)" strokeWidth="1.4"/><circle cx="9" cy="9.5" r="2.5" stroke="rgba(255,255,255,.7)" strokeWidth="1.4"/><path d="M5 4V3.5a.5.5 0 011 0V4" stroke="rgba(255,255,255,.7)" strokeWidth="1.2" strokeLinecap="round"/></svg>
-              Prendre une photo
-            </button>
-            <input ref={fileRef} type="file" accept="image/*" capture="environment" style={{ display:"none" }} onChange={handlePhoto}/>
+            {photo ? (
+              /* AFTER photo: "✓ Continuer immédiatement" + "Changer la photo" */
+              <>
+                <button className="rg-btn" onClick={() => handleSubmit()}>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9l4 4 6-7" stroke="#030A08" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  Continuer immédiatement
+                </button>
+                <button className="rg-btn-outline" onClick={() => fileRef.current?.click()}>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="4" width="14" height="11" rx="2" stroke="rgba(255,255,255,.8)" strokeWidth="1.4"/><circle cx="9" cy="9.5" r="2.5" stroke="rgba(255,255,255,.8)" strokeWidth="1.4"/></svg>
+                  Changer la photo
+                </button>
+              </>
+            ) : (
+              /* BEFORE photo: "Choisir" + "Prendre" */
+              <>
+                <button className="rg-btn" onClick={() => fileRef.current?.click()}>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3v9M5.5 6.5L9 3l3.5 3.5" stroke="#030A08" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 15h12" stroke="#030A08" strokeWidth="2" strokeLinecap="round"/></svg>
+                  Choisir une photo
+                </button>
+                <button className="rg-btn-outline" onClick={() => fileRef.current?.click()}>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="4" width="14" height="11" rx="2" stroke="rgba(255,255,255,.8)" strokeWidth="1.4"/><circle cx="9" cy="9.5" r="2.5" stroke="rgba(255,255,255,.8)" strokeWidth="1.4"/></svg>
+                  Prendre une photo
+                </button>
+              </>
+            )}
+            <input ref={fileRef} type="file" accept="image/*" style={{ display:"none" }} onChange={handlePhoto}/>
           </div>
 
-          <button onClick={() => { next(); handleSubmit(); }} style={{ background:"none", border:"none", cursor:"pointer", color:"#6B7280", fontSize:13, fontWeight:500, marginTop:14, fontFamily:"inherit", width:"100%", textAlign:"center" }}>
+          {/* Drop zone */}
+          <div
+            onClick={() => fileRef.current?.click()}
+            style={{
+              marginTop:14, border:"1px dashed rgba(255,255,255,.12)", borderRadius:14,
+              padding:"14px 16px", display:"flex", alignItems:"center", gap:12,
+              cursor:"pointer", transition:"border-color .2s,background .2s",
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.borderColor="rgba(0,255,122,.3)"; (e.currentTarget as HTMLDivElement).style.background="rgba(0,255,122,.04)"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.borderColor="rgba(255,255,255,.12)"; (e.currentTarget as HTMLDivElement).style.background="transparent"; }}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 16V8M8 12l4-4 4 4" stroke="rgba(255,255,255,.35)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="rgba(255,255,255,.35)" strokeWidth="1.5" strokeLinecap="round"/></svg>
+            <span style={{ fontSize:13, color:"rgba(255,255,255,.4)", lineHeight:1.4 }}>
+              Glisser-déposer une photo ici<br/>
+              ou <span style={{ color:"#00FF7A" }}>cliquer pour parcourir</span>
+            </span>
+          </div>
+
+          {/* Skip link */}
+          <button onClick={() => handleSubmit()} style={{
+            background:"none", border:"none", cursor:"pointer",
+            color:"#6B746F", fontSize:14, marginTop:12,
+            fontFamily:"inherit", width:"100%", textAlign:"center",
+            transition:"color .15s",
+          }}
+            onMouseEnter={e => (e.currentTarget.style.color="#A8B3B0")}
+            onMouseLeave={e => (e.currentTarget.style.color="#6B746F")}
+          >
             Ignorer pour plus tard
           </button>
         </Card>
@@ -703,48 +833,81 @@ export default function Register() {
 
     /* ── STEP 7 — Bienvenue ── */
     if (step === 7) return (
-      <div style={{ display:"flex", flexDirection:"column", alignItems:"center", width:"100%", paddingTop:"clamp(30px,5vh,60px)", paddingBottom:"clamp(60px,10vh,80px)" }}>
+      <div style={{ display:"flex", flexDirection:"column", alignItems:"center", width:"100%", paddingTop:"clamp(24px,4vh,48px)", paddingBottom:"clamp(60px,10vh,80px)" }}>
         {showConfetti && <Confetti/>}
         <Card style={{ position:"relative", textAlign:"center" }}>
-          {/* Success check */}
+
+          {/* ── Checkmark circle (spec: 80px, bounce, glow) ── */}
           <div style={{ display:"flex", justifyContent:"center", marginBottom:14 }}>
-            <div style={{ width:72, height:72, borderRadius:"50%", background:"rgba(34,197,94,.12)", border:"2px solid rgba(34,197,94,.35)", display:"flex", alignItems:"center", justifyContent:"center", animation:"checkPop .6s cubic-bezier(.34,1.56,.64,1) forwards", boxShadow:"0 0 32px rgba(34,197,94,.25)" }}>
-              <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><path d="M8 18l6.5 7L28 10" stroke="#22C55E" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            <div style={{
+              width:80, height:80, borderRadius:"50%",
+              background:"rgba(0,255,122,.12)",
+              border:"2px solid rgba(0,255,122,.4)",
+              display:"flex", alignItems:"center", justifyContent:"center",
+              animation:"checkBounce .7s cubic-bezier(.34,1.56,.64,1) both",
+              boxShadow:"0 0 0 8px rgba(0,255,122,.08), 0 0 40px rgba(0,255,122,.3)",
+            }}>
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <path d="M9 20l7.5 8L31 11" stroke="#00FF7A" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
             </div>
           </div>
 
-          <div style={{ fontSize:12, fontWeight:700, color:"#22C55E", letterSpacing:"0.12em", textTransform:"uppercase", marginBottom:8 }}>✓ Compte créé avec succès</div>
-
-          <div style={{ marginBottom:6 }}>
-            <img src="/logo.png" alt="" style={{ width:48, height:48, objectFit:"contain", filter:"drop-shadow(0 0 12px rgba(34,197,94,.5))" }}/>
+          {/* "— COMPTE CRÉÉ AVEC SUCCÈS —" */}
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8, marginBottom:14 }}>
+            <div style={{ height:1, width:24, background:"#00FF7A", opacity:.6 }} />
+            <span style={{ fontSize:11, fontWeight:700, color:"#00FF7A", letterSpacing:"0.14em", textTransform:"uppercase", whiteSpace:"nowrap" }}>
+              COMPTE CRÉÉ AVEC SUCCÈS
+            </span>
+            <div style={{ height:1, width:24, background:"#00FF7A", opacity:.6 }} />
           </div>
 
-          <h2 style={{ margin:"0 0 8px", color:"#fff", fontSize:"clamp(20px,5vw,26px)", fontWeight:900 }}>
-            Bienvenue sur <span style={{ color:"#22C55E" }}>BrutePawa</span> !
+          {/* BrutePawa logo */}
+          <div style={{ marginBottom:10 }}>
+            <img src="/logo.png" alt="" style={{ width:56, height:56, objectFit:"contain", filter:"drop-shadow(0 0 14px rgba(0,255,122,.55))", animation:"glowPulse 2.5s ease-in-out infinite" }}/>
+          </div>
+
+          <h2 style={{ margin:"0 0 10px", color:"#fff", fontSize:22, fontWeight:700, lineHeight:1.25 }}>
+            Bienvenue sur <span style={{ color:"#00FF7A", fontWeight:800 }}>BrutePawa</span> !
           </h2>
-          <p style={{ margin:"0 0 18px", color:"#9CA3AF", fontSize:13, lineHeight:1.6 }}>
-            Votre compte est prêt. Connectez-vous, développez votre réseau, partagez vos idées et créez des opportunités partout dans le monde.
+          <p style={{ margin:"0 0 20px", color:"#A8B3B0", fontSize:13, lineHeight:1.65 }}>
+            Votre compte est prêt. Connectez-vous,<br/>développez votre réseau, partagez vos idées<br/>et créez des opportunités partout dans le monde.
           </p>
 
-          {/* Benefits */}
-          <div style={{ display:"flex", flexDirection:"column", gap:8, marginBottom:20 }}>
-            {BENEFITS.map((b,i) => (
-              <div key={i} style={{ display:"flex", alignItems:"center", gap:10, padding:"10px 14px", background:"rgba(34,197,94,.06)", border:"1px solid rgba(34,197,94,.12)", borderRadius:12, animation:`fadeInUp .5s ${i*.1+.3}s both` }}>
-                <span style={{ fontSize:20 }}>{b.icon}</span>
-                <span style={{ fontSize:14, color:"rgba(255,255,255,.85)", fontWeight:500, textAlign:"left" }}>{b.label}</span>
+          {/* ── 2×2 Feature grid ── */}
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:22 }}>
+            {BENEFITS.map((b, i) => (
+              <div key={i} style={{
+                display:"flex", flexDirection:"column", alignItems:"center",
+                gap:8, padding:"16px 10px",
+                background:"rgba(0,255,122,.05)",
+                border:"1px solid rgba(0,255,122,.12)",
+                borderRadius:16,
+                animation:`fadeInUp .45s ${i*.1+.25}s both`,
+              }}>
+                {/* Icon in green circle */}
+                <div style={{
+                  width:44, height:44, borderRadius:"50%",
+                  background:"rgba(0,255,122,.12)",
+                  border:"1px solid rgba(0,255,122,.2)",
+                  display:"flex", alignItems:"center", justifyContent:"center",
+                  flexShrink:0,
+                }}>
+                  {b.svg}
+                </div>
+                <div style={{ textAlign:"center" }}>
+                  <div style={{ fontSize:13, fontWeight:700, color:"#fff", lineHeight:1.3, marginBottom:4 }}>{b.label}</div>
+                  <div style={{ fontSize:11, color:"#A8B3B0", lineHeight:1.4 }}>{b.sub}</div>
+                </div>
               </div>
             ))}
           </div>
 
+          {/* ── CTA — ONLY way to enter app, NO auto-redirect ── */}
           <button className="rg-btn" onClick={() => navigate("/")} disabled={loading}>
-            Commencer maintenant <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9h10M9 4l5 5-5 5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            Commencer maintenant
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9h10M9 4l5 5-5 5" stroke="#030A08" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </button>
-
-          {countdown > 0 && (
-            <p style={{ marginTop:12, fontSize:12, color:"#6B7280" }}>
-              Redirection automatique dans <span style={{ color:"#22C55E", fontWeight:700 }}>{countdown}s</span>
-            </p>
-          )}
         </Card>
       </div>
     );
@@ -754,7 +917,7 @@ export default function Register() {
 
   return (
     <div style={{
-      minHeight:"100dvh", background:"#000",
+      minHeight:"100dvh", background:"#030A08",
       display:"flex", flexDirection:"column", alignItems:"center",
       fontFamily:"'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif",
       position:"relative", overflowX:"hidden", overflowY:"auto",
