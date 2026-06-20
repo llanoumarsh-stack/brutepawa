@@ -45,7 +45,7 @@ function getAppName() {
   }
 }
 
-function serveManifest(platform, res) {
+function serveManifest(platform, req, res) {
   const manifestPath = path.join(STATIC_ROOT, platform, "manifest.json");
 
   if (!fs.existsSync(manifestPath)) {
@@ -56,13 +56,28 @@ function serveManifest(platform, res) {
     return;
   }
 
-  const manifest = fs.readFileSync(manifestPath, "utf-8");
+  let manifestStr = fs.readFileSync(manifestPath, "utf-8");
+
+  // Rewrite the baked-in build domain to the actual public domain so that
+  // Expo Go can download bundle assets from the same host it reached us on.
+  // (REPLIT_INTERNAL_APP_DOMAIN used at build time may differ from the
+  //  public-facing host the phone connects to.)
+  const proto = req.headers["x-forwarded-proto"] || "https";
+  const host = req.headers["x-forwarded-host"] || req.headers["host"];
+  if (host) {
+    const currentOrigin = `${proto}://${host}`;
+    const bakedOriginMatch = manifestStr.match(/"(https?:\/\/[^"\/]+)\/mobile\//);
+    if (bakedOriginMatch && bakedOriginMatch[1] !== currentOrigin) {
+      manifestStr = manifestStr.replaceAll(bakedOriginMatch[1], currentOrigin);
+    }
+  }
+
   res.writeHead(200, {
     "content-type": "application/json",
     "expo-protocol-version": "1",
     "expo-sfv-version": "0",
   });
-  res.end(manifest);
+  res.end(manifestStr);
 }
 
 function serveLandingPage(req, res, landingPageTemplate, appName) {
@@ -118,7 +133,7 @@ const server = http.createServer((req, res) => {
   if (pathname === "/" || pathname === "/manifest") {
     const platform = req.headers["expo-platform"];
     if (platform === "ios" || platform === "android") {
-      return serveManifest(platform, res);
+      return serveManifest(platform, req, res);
     }
 
     if (pathname === "/") {
