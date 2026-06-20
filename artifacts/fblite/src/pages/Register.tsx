@@ -168,7 +168,7 @@ export default function Register() {
       flexDirection: "column",
       fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
       position: "relative",
-      overflow: "hidden",
+      overflowX: "hidden",
     }}>
       <style>{`
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }

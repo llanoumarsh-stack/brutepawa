@@ -33,7 +33,7 @@ export default function Login() {
       flexDirection: "column",
       fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
       position: "relative",
-      overflow: "hidden",
+      overflowX: "hidden",
     }}>
 
       {/* ── Fond décoratif ── */}
