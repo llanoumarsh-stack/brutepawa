@@ -145,8 +145,12 @@ export default function Layout({ children, onNewPost }: Props) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  /* Reset nav visibility on route change */
-  useEffect(() => { setNavHidden(false); }, [path]);
+  /* Reset nav visibility on route change + unlock any stuck overflow */
+  useEffect(() => {
+    setNavHidden(false);
+    document.documentElement.style.overflow = "";
+    document.body.style.overflow = "";
+  }, [path]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {

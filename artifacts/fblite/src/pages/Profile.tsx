@@ -32,6 +32,21 @@ export default function Profile() {
   const [uploadingWhat, setUploadingWhat] = useState<"avatar" | "cover" | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  /* Lock/unlock body scroll when profile menu sheet is open */
+  useEffect(() => {
+    if (showProfileMenu) {
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
+    } else {
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+    };
+  }, [showProfileMenu]);
   const [showProMode, setShowProMode] = useState(false);
   const [isPro, setIsPro] = useState(() => localStorage.getItem("bp_pro_mode") === "1");
   const [showProfileStatus, setShowProfileStatus] = useState(false);
@@ -230,8 +245,6 @@ export default function Profile() {
       {/* Profile options bottom sheet — premium design */}
       {showProfileMenu && createPortal(
         <>
-          {/* scroll lock */}
-          {(() => { document.documentElement.style.overflow = "hidden"; document.body.style.overflow = "hidden"; return null; })()}
           {/* Backdrop */}
           <div onClick={() => { setShowProfileMenu(false); document.documentElement.style.overflow = ""; document.body.style.overflow = ""; }} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(5px)", WebkitBackdropFilter: "blur(5px)", zIndex: 9000 }} />
           {/* Sheet */}
