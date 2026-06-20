@@ -1,0 +1,377 @@
+MISSION CRITIQUE
+
+Tu dois reproduire la maquette fournie avec une fidélité visuelle de 99%.
+
+INTERDICTION ABSOLUE :
+- Ne pas réinterpréter le design.
+- Ne pas simplifier l'interface.
+- Ne pas changer les espacements.
+- Ne pas changer les tailles.
+- Ne pas changer les couleurs.
+- Ne pas remplacer les animations.
+- Ne pas remplacer les icônes.
+- Ne pas modifier la hiérarchie visuelle.
+- Ne pas utiliser tes propres choix UX/UI.
+
+RÈGLE PRINCIPALE :
+
+Chaque pixel de l'interface finale doit correspondre à la maquette.
+
+═══════════════════════════════════════
+
+IDENTITÉ VISUELLE BRUTEPAWA
+
+Couleur principale :
+#22C55E
+
+Couleur secondaire :
+#16A34A
+
+Couleur accent :
+#4ADE80
+
+Couleur texte principal :
+#111827
+
+Couleur texte secondaire :
+#6B7280
+
+Fond principal :
+#FFFFFF
+
+Fond secondaire :
+#F8FAFC
+
+Ombres :
+
+box-shadow:
+0px 10px 30px rgba(34,197,94,0.12);
+
+Border radius :
+
+16px
+20px
+24px
+32px
+
+Style général :
+
+- Premium
+- Moderne
+- Réseau social mondial
+- Apple Quality
+- Telegram Quality
+- LinkedIn Quality
+- Glassmorphism léger
+- Ultra propre
+- Ultra fluide
+
+═══════════════════════════════════════
+
+PAGE CONNEXION
+
+Disposition :
+
+Sélecteur langue :
+Position :
+Top Right
+
+Marge haute :
+24px
+
+Marge droite :
+24px
+
+Taille :
+44px hauteur
+
+Style :
+Pill Button
+
+Fond :
+rgba(255,255,255,0.95)
+
+Ombre légère
+
+Animation :
+scale(1.03) au clic
+
+═══════════════════════════════════════
+
+LOGO
+
+Position :
+Centre horizontal
+
+Largeur :
+120px
+
+Hauteur :
+120px
+
+Opacity arrière-plan :
+8%
+
+Animation :
+
+Float Animation
+
+translateY(-6px)
+translateY(6px)
+
+Durée :
+6 secondes
+Infinite
+
+═══════════════════════════════════════
+
+TITRE
+
+"Connectez-vous au monde"
+
+Font Weight :
+800
+
+Font Size :
+48px
+
+Line Height :
+52px
+
+Alignement :
+Centre
+
+Animation :
+
+Fade In Up
+
+500ms
+
+═══════════════════════════════════════
+
+SOUS TITRE
+
+Font Size :
+18px
+
+Font Weight :
+500
+
+Alignement :
+Centre
+
+Largeur max :
+340px
+
+═══════════════════════════════════════
+
+CARTE DE CONNEXION
+
+Largeur :
+92%
+
+Max Width :
+520px
+
+Position :
+Centre
+
+Padding :
+32px
+
+Border Radius :
+32px
+
+Fond :
+
+rgba(255,255,255,0.92)
+
+Backdrop Blur :
+20px
+
+Ombre :
+
+0px 20px 50px rgba(0,0,0,0.08)
+
+Animation :
+
+Fade In Up
+600ms
+
+═══════════════════════════════════════
+
+CHAMPS
+
+Hauteur :
+64px
+
+Radius :
+18px
+
+Icône :
+20px
+
+Padding Horizontal :
+20px
+
+Bordure :
+1.5px solid #E5E7EB
+
+Focus :
+
+border-color #22C55E
+
+Glow :
+
+0 0 0 4px rgba(34,197,94,0.15)
+
+Transition :
+250ms
+
+═══════════════════════════════════════
+
+BOUTON CONNEXION
+
+Hauteur :
+64px
+
+Radius :
+18px
+
+Largeur :
+100%
+
+Gradient :
+
+#22C55E → #16A34A
+
+Texte :
+Blanc
+
+Poids :
+700
+
+Taille :
+20px
+
+Animation Hover :
+
+translateY(-2px)
+
+Animation Press :
+
+scale(0.98)
+
+═══════════════════════════════════════
+
+BOUTON CRÉER UN COMPTE
+
+Style :
+Outline Premium
+
+Hauteur :
+64px
+
+Radius :
+18px
+
+Bordure :
+2px solid #22C55E
+
+Fond :
+Transparent
+
+Animation :
+Glow subtil au hover
+
+═══════════════════════════════════════
+
+SÉLECTEUR DE LANGUE
+
+OUVERTURE :
+
+Bottom Sheet Premium
+
+Animation :
+
+Slide Up
+
+Durée :
+300ms
+
+Fond arrière :
+
+rgba(0,0,0,0.45)
+
+Blur :
+12px
+
+═══════════════════════════════════════
+
+CONTENU LANGUES
+
+Recherche instantanée
+
+Liste :
+
+🇫🇷 Français
+🇬🇧 English
+🇪🇸 Español
+🇵🇹 Português
+🇸🇦 العربية
+🇨🇳 中文
+🇷🇺 Русский
+🇩🇪 Deutsch
+🇯🇵 日本語
+
+Chaque ligne :
+
+Hauteur :
+56px
+
+Radius :
+14px
+
+Hover :
+Fond #F3F4F6
+
+Sélection :
+
+Check vert animé
+
+═══════════════════════════════════════
+
+PERFORMANCES
+
+60 FPS minimum
+
+Animations GPU
+
+Aucun lag
+
+Responsive :
+
+320px
+375px
+390px
+414px
+768px
+1024px
+
+═══════════════════════════════════════
+
+VALIDATION OBLIGATOIRE
+
+Avant de terminer :
+
+1. Comparer chaque élément à la maquette.
+2. Vérifier position exacte.
+3. Vérifier taille exacte.
+4. Vérifier couleurs exactes.
+5. Vérifier rayons exacts.
+6. Vérifier animations exactes.
+7. Corriger automatiquement toute différence supérieure à 1%.
+
+OBJECTIF FINAL :
+
+L'utilisateur doit avoir l'impression que l'application finale est exactement la maquette d'origine, sans aucune simplification ni interprétation.

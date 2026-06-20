@@ -1,0 +1,162 @@
+═══════════════════════════════════════
+
+SÉLECTEUR DE LANGUE MONDIAL PREMIUM
+
+IMPORTANT :
+
+BrutePawa est une plateforme mondiale.
+
+Le sélecteur de langue doit prendre en charge toutes les langues officielles du monde.
+
+Au premier affichage, ne montrer que les 10 langues les plus utilisées :
+
+🇬🇧 English
+🇫🇷 Français
+🇪🇸 Español
+🇵🇹 Português
+🇸🇦 العربية
+🇨🇳 中文 (简体)
+🇷🇺 Русский
+🇩🇪 Deutsch
+🇯🇵 日本語
+🇮🇳 हिन्दी
+
+═══════════════════════════════════════
+
+RECHERCHE DE LANGUE
+
+Les autres langues ne doivent PAS être affichées immédiatement.
+
+Elles doivent être accessibles uniquement via la barre de recherche.
+
+La recherche doit être :
+
+- Temps réel
+- Sans bouton rechercher
+- Résultats instantanés
+- Tolérante aux fautes de frappe
+- Recherche par nom local
+- Recherche par nom anglais
+- Recherche par code ISO
+
+Exemples :
+
+"fr" → Français
+"french" → Français
+"français" → Français
+
+"ar" → العربية
+"arabic" → العربية
+
+"zh" → 中文
+"chinese" → 中文
+
+═══════════════════════════════════════
+
+BASE DE DONNÉES DES LANGUES
+
+Utiliser une liste complète des langues officielles reconnues internationalement.
+
+Inclure :
+
+- Nom natif
+- Nom international
+- Drapeau
+- Code ISO
+- Direction d'écriture (LTR ou RTL)
+
+Exemples :
+
+Français
+English
+Español
+Português
+العربية
+中文
+Русский
+Deutsch
+日本語
+한국어
+हिन्दी
+Türkçe
+Italiano
+Nederlands
+Polski
+Українська
+Svenska
+Norsk
+Dansk
+Suomi
+Čeština
+Magyar
+Română
+Ελληνικά
+עברית
+فارسی
+اردو
+বাংলা
+தமிழ்
+తెలుగు
+ગુજરાતી
+ไทย
+Bahasa Indonesia
+Bahasa Melayu
+Tiếng Việt
+Kiswahili
+Amharic
+Yorùbá
+Igbo
+Hausa
+Lingala
+Wolof
+Fulfulde
+etc.
+
+═══════════════════════════════════════
+
+SERVICE DE RECHERCHE
+
+Créer un LanguageService dédié.
+
+Fonctions :
+
+searchLanguages(query)
+
+getPopularLanguages()
+
+getLanguageByCode()
+
+getLanguageDirection()
+
+getLocalizedName()
+
+getFlag()
+
+═══════════════════════════════════════
+
+PERFORMANCE
+
+La recherche doit fonctionner parmi plusieurs centaines de langues sans ralentissement.
+
+Temps de réponse cible :
+
+< 50ms
+
+Recherche locale indexée.
+
+═══════════════════════════════════════
+
+EXPÉRIENCE PREMIUM
+
+Quand l'utilisateur ouvre le sélecteur :
+
+- Focus automatique sur la recherche
+- Clavier ouvert automatiquement
+- Animation fluide 60 FPS
+- Drapeaux HD
+- Nom natif de chaque langue
+- Check animé sur la langue active
+
+Objectif :
+
+Créer le meilleur sélecteur de langue parmi tous les réseaux sociaux actuels (Telegram, LinkedIn, Facebook, X, WhatsApp).
