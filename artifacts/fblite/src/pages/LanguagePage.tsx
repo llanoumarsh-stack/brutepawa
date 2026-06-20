@@ -1,30 +1,58 @@
 import { useState } from "react";
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", text:"#111827", secondary:"#64748B", border:"#E5E7EB", shadow:"0 1px 4px rgba(0,0,0,0.08)" };
+const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#0F172A", secondary:"#64748B", muted:"#94A3B8", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
 
-const LANGUAGES = [
+function SubHeader({ title, onBack }:{title:string;onBack:()=>void}) {
+  return (
+    <div style={{ background:"#fff", borderBottom:"1px solid #F1F5F9", height:56, display:"flex", alignItems:"center", padding:"0 6px", position:"sticky", top:0, zIndex:30, boxShadow:"0 1px 8px rgba(0,0,0,0.04)" }}>
+      <button onClick={onBack} style={{ width:44,height:44,borderRadius:"50%",background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center" }}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={C.text} strokeWidth="2.2" strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      </button>
+      <h1 style={{ flex:1,fontWeight:700,fontSize:17,color:C.text,margin:0,letterSpacing:"-0.3px",textAlign:"center" }}>{title}</h1>
+      <button style={{ width:44,height:44,borderRadius:"50%",background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center" }}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.5" fill={C.muted}/><circle cx="12" cy="12" r="1.5" fill={C.muted}/><circle cx="12" cy="19" r="1.5" fill={C.muted}/></svg>
+      </button>
+    </div>
+  );
+}
+
+const LANGS = [
   { code:"fr", label:"Français", native:"Français" },
-  { code:"en", label:"Anglais", native:"English" },
-  { code:"bm", label:"Bambara", native:"Bamanankan" },
-  { code:"ha", label:"Haoussa", native:"Hausa" },
-  { code:"wo", label:"Wolof", native:"Wolof" },
-  { code:"sw", label:"Swahili", native:"Kiswahili" },
+  { code:"en", label:"Anglais",  native:"English"  },
+  { code:"bm", label:"Bambara",  native:"Bamanankan"},
+  { code:"ha", label:"Haoussa",  native:"Hausa"    },
+  { code:"sw", label:"Swahili",  native:"Kiswahili" },
+  { code:"wo", label:"Wolof",    native:"Wolof"    },
 ];
 
 const REGIONS = [
-  { code:"ML", flag:"🇲🇱", label:"Mali" },
-  { code:"SN", flag:"🇸🇳", label:"Sénégal" },
-  { code:"CI", flag:"🇨🇮", label:"Côte d'Ivoire" },
-  { code:"GH", flag:"🇬🇭", label:"Ghana" },
-  { code:"NG", flag:"🇳🇬", label:"Nigéria" },
-  { code:"CM", flag:"🇨🇲", label:"Cameroun" },
-  { code:"BF", flag:"🇧🇫", label:"Burkina Faso" },
-  { code:"BJ", flag:"🇧🇯", label:"Bénin" },
+  { code:"ML", label:"Mali" },
+  { code:"SN", label:"Sénégal" },
+  { code:"CI", label:"Côte d'Ivoire" },
+  { code:"BF", label:"Burkina Faso" },
+  { code:"GN", label:"Guinée" },
+  { code:"NG", label:"Nigeria" },
+  { code:"GH", label:"Ghana" },
+  { code:"CM", label:"Cameroun" },
 ];
 
-function CheckIcon() {
-  return <svg width="20" height="20" viewBox="0 0 24 24" fill={C.primary}><path d="M20 6L9 17l-5-5" stroke={C.primary} strokeWidth="2.5" strokeLinecap="round" fill="none"/></svg>;
+function SelectRow({ label, sub, selected, onSelect, last=false }:{label:string;sub?:string;selected:boolean;onSelect:()=>void;last?:boolean}) {
+  const [pressed, setPressed] = useState(false);
+  return (
+    <button onClick={onSelect} onPointerDown={()=>setPressed(true)} onPointerUp={()=>setPressed(false)} onPointerLeave={()=>setPressed(false)}
+      style={{ display:"flex",alignItems:"center",padding:"14px 18px",background:pressed?"#F8FAFB":"none",border:"none",cursor:"pointer",width:"100%",textAlign:"left",borderBottom:last?"none":"1px solid #F1F5F9",transition:"background 150ms" }}>
+      <div style={{ flex:1 }}>
+        <div style={{ fontWeight:selected?700:500,fontSize:15,color:selected?C.primary:C.text }}>{label}</div>
+        {sub && <div style={{ fontSize:12,color:C.muted,marginTop:1 }}>{sub}</div>}
+      </div>
+      {selected && (
+        <div style={{ width:26,height:26,borderRadius:"50%",background:C.primary,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 2px 8px rgba(34,197,94,0.35)" }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+      )}
+    </button>
+  );
 }
 
 export default function LanguagePage() {
@@ -34,62 +62,49 @@ export default function LanguagePage() {
 
   return (
     <div style={{ background:C.bg, minHeight:"100dvh", fontFamily:"Inter,-apple-system,BlinkMacSystemFont,sans-serif" }}>
-      {/* Header */}
-      <div style={{ background:"#fff", borderBottom:`1px solid ${C.border}`, height:56, display:"flex", alignItems:"center", padding:"0 4px", gap:4, position:"sticky", top:0, zIndex:20, boxShadow:C.shadow }}>
-        <button onClick={()=>navigate("/settings")} style={{ width:44, height:44, borderRadius:"50%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={C.text} strokeWidth="2.2" strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        </button>
-        <h1 style={{ flex:1, fontWeight:700, fontSize:17, color:C.text, margin:0 }}>Langue & région</h1>
-        <button style={{ width:44, height:44, borderRadius:"50%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.5" fill={C.secondary}/><circle cx="12" cy="12" r="1.5" fill={C.secondary}/><circle cx="12" cy="19" r="1.5" fill={C.secondary}/></svg>
-        </button>
-      </div>
+      <SubHeader title="Langue & région" onBack={()=>navigate("/settings")}/>
 
-      <div style={{ padding:"16px 12px 40px" }}>
+      <div style={{ padding:"24px 14px 40px" }}>
         {/* Globe illustration */}
-        <div style={{ display:"flex", justifyContent:"center", marginBottom:24 }}>
-          <div style={{ width:96, height:96, borderRadius:"50%", background:"#CFFAFE", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 0 0 12px #E0F7FA" }}>
-            <svg width="56" height="56" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" fill="#06B6D4" opacity=".15"/>
-              <circle cx="12" cy="12" r="10" stroke="#06B6D4" strokeWidth="1.8"/>
-              <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" stroke="#06B6D4" strokeWidth="1.5"/>
-              <path d="M4.93 7h14.14M4.93 17h14.14" stroke="#06B6D4" strokeWidth="1.2" opacity=".5"/>
+        <div style={{ display:"flex",justifyContent:"center",marginBottom:28 }}>
+          <div style={{ width:110,height:110,borderRadius:"50%",background:"radial-gradient(circle at 40% 35%,#E0F2FE,#BAE6FD)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 0 0 12px #F0F9FF,0 8px 30px rgba(14,165,233,0.2)" }}>
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9.5" fill="#0EA5E9" opacity=".12"/>
+              <circle cx="12" cy="12" r="9.5" stroke="#0284C7" strokeWidth="1.5"/>
+              <ellipse cx="12" cy="12" rx="4.5" ry="9.5" stroke="#0284C7" strokeWidth="1.2"/>
+              <line x1="2.5" y1="12" x2="21.5" y2="12" stroke="#0284C7" strokeWidth="1.2"/>
+              <line x1="4" y1="7" x2="20" y2="7" stroke="#0284C7" strokeWidth="1" opacity=".5"/>
+              <line x1="4" y1="17" x2="20" y2="17" stroke="#0284C7" strokeWidth="1" opacity=".5"/>
+              {/* Africa silhouette dot */}
+              <ellipse cx="12" cy="13" rx="2.5" ry="3.5" fill="#0EA5E9" opacity=".3"/>
             </svg>
           </div>
         </div>
 
-        {/* Language section */}
-        <div style={{ marginBottom:12 }}>
-          <div style={{ fontSize:13, fontWeight:700, color:C.secondary, textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:8, paddingLeft:4 }}>Langue</div>
-          <div style={{ background:C.card, borderRadius:20, boxShadow:C.shadow, overflow:"hidden" }}>
-            {LANGUAGES.map((l, i) => (
-              <button key={l.code} onClick={()=>setLang(l.code)} style={{ display:"flex", alignItems:"center", gap:14, padding:"13px 16px", width:"100%", background:"none", border:"none", cursor:"pointer", textAlign:"left", borderBottom:i<LANGUAGES.length-1?`1px solid ${C.border}`:"none", transition:"background .12s" }}>
-                <div style={{ flex:1 }}>
-                  <div style={{ fontWeight:500, fontSize:15, color:C.text }}>{l.label}</div>
-                  <div style={{ fontSize:12, color:C.secondary, marginTop:1 }}>{l.native}</div>
-                </div>
-                {lang===l.code && <CheckIcon/>}
-              </button>
+        {/* Langue */}
+        <div style={{ marginBottom:8 }}>
+          <div style={{ fontWeight:700,fontSize:13,color:C.muted,textTransform:"uppercase",letterSpacing:"0.8px",padding:"0 4px 10px" }}>Langue</div>
+          <div style={{ background:C.card,borderRadius:24,boxShadow:C.shadow,overflow:"hidden" }}>
+            {LANGS.map((l,i)=>(
+              <SelectRow key={l.code} label={l.native} sub={l.label!==l.native?l.label:undefined} selected={lang===l.code} onSelect={()=>setLang(l.code)} last={i===LANGS.length-1}/>
             ))}
           </div>
         </div>
 
-        {/* Region section */}
+        {/* Région */}
         <div>
-          <div style={{ fontSize:13, fontWeight:700, color:C.secondary, textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:8, paddingLeft:4 }}>Région</div>
-          <div style={{ background:C.card, borderRadius:20, boxShadow:C.shadow, overflow:"hidden" }}>
-            {REGIONS.map((r, i) => (
-              <button key={r.code} onClick={()=>setRegion(r.code)} style={{ display:"flex", alignItems:"center", gap:14, padding:"13px 16px", width:"100%", background:"none", border:"none", cursor:"pointer", textAlign:"left", borderBottom:i<REGIONS.length-1?`1px solid ${C.border}`:"none", transition:"background .12s" }}>
-                <span style={{ fontSize:22 }}>{r.flag}</span>
-                <div style={{ flex:1 }}>
-                  <div style={{ fontWeight:500, fontSize:15, color:C.text }}>{r.label}</div>
-                  <div style={{ fontSize:12, color:C.secondary, marginTop:1 }}>{r.code}</div>
-                </div>
-                {region===r.code && <CheckIcon/>}
-              </button>
+          <div style={{ fontWeight:700,fontSize:13,color:C.muted,textTransform:"uppercase",letterSpacing:"0.8px",padding:"16px 4px 10px" }}>Région</div>
+          <div style={{ background:C.card,borderRadius:24,boxShadow:C.shadow,overflow:"hidden" }}>
+            {REGIONS.map((r,i)=>(
+              <SelectRow key={r.code} label={r.label} sub={r.code} selected={region===r.code} onSelect={()=>setRegion(r.code)} last={i===REGIONS.length-1}/>
             ))}
           </div>
         </div>
+
+        {/* Save button */}
+        <button style={{ width:"100%",marginTop:24,padding:"16px",borderRadius:18,background:"linear-gradient(135deg,#16A34A,#22C55E)",border:"none",color:"#fff",fontWeight:700,fontSize:16,cursor:"pointer",boxShadow:"0 8px 24px rgba(34,197,94,0.3)",transition:"opacity 200ms" }}>
+          Enregistrer les préférences
+        </button>
       </div>
     </div>
   );

@@ -1,158 +1,223 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#111827", secondary:"#64748B", border:"#E5E7EB", shadow:"0 1px 4px rgba(0,0,0,0.08)", danger:"#EF4444" };
+const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#0F172A", secondary:"#64748B", muted:"#94A3B8", shadow:"0 8px 30px rgba(0,0,0,0.05)", danger:"#EF4444" };
+type Step = "intro"|"phone"|"otp"|"done";
 
-type Step = "intro" | "phone" | "code" | "done";
+function SubHeader({ title, onBack }:{title:string;onBack:()=>void}) {
+  return (
+    <div style={{ background:"#fff", borderBottom:"1px solid #F1F5F9", height:56, display:"flex", alignItems:"center", padding:"0 6px", position:"sticky", top:0, zIndex:30, boxShadow:"0 1px 8px rgba(0,0,0,0.04)" }}>
+      <button onClick={onBack} style={{ width:44,height:44,borderRadius:"50%",background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center" }}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={C.text} strokeWidth="2.2" strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      </button>
+      <h1 style={{ flex:1,fontWeight:700,fontSize:17,color:C.text,margin:0,letterSpacing:"-0.3px",textAlign:"center" }}>{title}</h1>
+      <div style={{ width:44 }}/>
+    </div>
+  );
+}
+
+function ProgressBar({ step }:{step:Step}) {
+  const pct = step==="intro"?25:step==="phone"?50:step==="otp"?75:100;
+  return (
+    <div style={{ padding:"12px 14px 0" }}>
+      <div style={{ height:4,background:"#E2E8F0",borderRadius:999,overflow:"hidden" }}>
+        <div style={{ height:"100%",width:`${pct}%`,background:"linear-gradient(90deg,#16A34A,#22C55E)",borderRadius:999,transition:"width 400ms ease" }}/>
+      </div>
+      <div style={{ display:"flex",justifyContent:"space-between",marginTop:6 }}>
+        <span style={{ fontSize:11,color:C.muted }}>Étape {pct===25?1:pct===50?2:pct===75?3:4} / 4</span>
+        <span style={{ fontSize:11,color:C.primary,fontWeight:600 }}>{pct}%</span>
+      </div>
+    </div>
+  );
+}
+
+/* Intro step */
+function IntroStep({ onNext }:{onNext:()=>void}) {
+  return (
+    <div style={{ padding:"32px 20px 40px", display:"flex", flexDirection:"column", alignItems:"center" }}>
+      {/* Shield illustration */}
+      <div style={{ position:"relative",marginBottom:28 }}>
+        <div style={{ width:120,height:120,borderRadius:"50%",background:"radial-gradient(circle at 40% 35%,#DBEAFE,#EFF6FF)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 0 0 12px rgba(59,130,246,0.07),0 0 0 24px rgba(59,130,246,0.03),0 12px 40px rgba(59,130,246,0.2)" }}>
+          <svg width="68" height="68" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7L12 2z" fill="#3B82F6" opacity=".15"/>
+            <path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7L12 2z" stroke="#2563EB" strokeWidth="1.8" fill="none"/>
+            <path d="M9 12l2 2 4-4" stroke="#2563EB" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+        <div style={{ position:"absolute",top:4,right:-4,width:14,height:14,borderRadius:"50%",background:"#FBBF24",opacity:.9 }}/>
+        <div style={{ position:"absolute",bottom:6,left:-8,width:9,height:9,borderRadius:"50%",background:"#60A5FA",opacity:.8 }}/>
+      </div>
+
+      <h2 style={{ fontWeight:800,fontSize:22,color:C.text,marginBottom:10,letterSpacing:"-0.5px",textAlign:"center" }}>Vérification du compte</h2>
+      <p style={{ fontSize:14,color:C.secondary,lineHeight:1.7,textAlign:"center",marginBottom:28,maxWidth:260 }}>
+        Ajoutez votre numéro de téléphone pour sécuriser votre compte et accéder à toutes les fonctionnalités.
+      </p>
+
+      {/* Benefits */}
+      <div style={{ width:"100%",background:C.card,borderRadius:20,boxShadow:C.shadow,overflow:"hidden",marginBottom:28 }}>
+        {[
+          { t:"Sécurité renforcée", s:"Protégez l'accès à votre compte" },
+          { t:"Récupération facile", s:"Retrouvez votre compte si nécessaire" },
+          { t:"Fonctionnalités complètes", s:"Accès à toutes les options premium" },
+        ].map((b,i,a)=>(
+          <div key={i} style={{ display:"flex",alignItems:"center",gap:12,padding:"13px 16px",borderBottom:i<a.length-1?"1px solid #F1F5F9":"none" }}>
+            <div style={{ width:36,height:36,borderRadius:"50%",background:"linear-gradient(135deg,#DBEAFE,#EFF6FF)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+            </div>
+            <div>
+              <div style={{ fontWeight:600,fontSize:14,color:C.text }}>{b.t}</div>
+              <div style={{ fontSize:12,color:C.muted,marginTop:1 }}>{b.s}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ fontSize:11,color:C.muted,marginBottom:16,textAlign:"center" }}>Durée estimée : environ 2 minutes</div>
+
+      <button onClick={onNext} style={{ width:"100%",padding:"16px",borderRadius:18,background:"linear-gradient(135deg,#1D4ED8,#3B82F6)",border:"none",color:"#fff",fontWeight:700,fontSize:16,cursor:"pointer",boxShadow:"0 8px 24px rgba(59,130,246,0.35)" }}>
+        Commencer la vérification
+      </button>
+    </div>
+  );
+}
+
+/* Phone step */
+function PhoneStep({ onNext }:{onNext:(phone:string)=>void}) {
+  const [phone, setPhone] = useState("");
+  const [country, setCountry] = useState("+223");
+  const valid = phone.replace(/\D/g,"").length >= 8;
+  return (
+    <div style={{ padding:"32px 20px 40px" }}>
+      <div style={{ display:"flex",justifyContent:"center",marginBottom:24 }}>
+        <div style={{ width:80,height:80,borderRadius:"50%",background:"linear-gradient(135deg,#DBEAFE,#EFF6FF)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 8px 24px rgba(59,130,246,0.18)" }}>
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="1.8" strokeLinecap="round">
+            <rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>
+          </svg>
+        </div>
+      </div>
+      <h2 style={{ fontWeight:800,fontSize:20,color:C.text,marginBottom:8,textAlign:"center" }}>Votre numéro</h2>
+      <p style={{ fontSize:14,color:C.secondary,textAlign:"center",marginBottom:24 }}>Nous vous enverrons un code de vérification.</p>
+
+      <div style={{ background:C.card,borderRadius:20,boxShadow:C.shadow,overflow:"hidden",marginBottom:16 }}>
+        <div style={{ padding:"4px 0 0" }}>
+          <select value={country} onChange={e=>setCountry(e.target.value)} style={{ width:"100%",padding:"14px 16px",border:"none",borderBottom:"1px solid #F1F5F9",background:"none",fontSize:14,color:C.text,fontFamily:"inherit",outline:"none",cursor:"pointer" }}>
+            <option value="+223">🇲🇱 Mali (+223)</option>
+            <option value="+221">🇸🇳 Sénégal (+221)</option>
+            <option value="+225">🇨🇮 Côte d'Ivoire (+225)</option>
+            <option value="+226">🇧🇫 Burkina Faso (+226)</option>
+            <option value="+224">🇬🇳 Guinée (+224)</option>
+            <option value="+234">🇳🇬 Nigeria (+234)</option>
+          </select>
+        </div>
+        <div style={{ display:"flex",alignItems:"center",padding:"14px 16px",gap:10 }}>
+          <span style={{ fontWeight:700,fontSize:15,color:C.secondary,flexShrink:0 }}>{country}</span>
+          <div style={{ width:1,height:22,background:"#E2E8F0" }}/>
+          <input type="tel" value={phone} onChange={e=>setPhone(e.target.value)} placeholder="Numéro de téléphone" style={{ flex:1,border:"none",outline:"none",fontSize:15,color:C.text,fontFamily:"inherit",background:"none",letterSpacing:"0.5px" }}/>
+        </div>
+      </div>
+
+      <button onClick={()=>valid&&onNext(country+phone.replace(/\D/g,""))} disabled={!valid} style={{ width:"100%",padding:"16px",borderRadius:18,background:valid?"linear-gradient(135deg,#1D4ED8,#3B82F6)":"#E2E8F0",border:"none",color:valid?"#fff":C.muted,fontWeight:700,fontSize:16,cursor:valid?"pointer":"not-allowed",boxShadow:valid?"0 8px 24px rgba(59,130,246,0.35)":"none",transition:"all 250ms" }}>
+        Envoyer le code
+      </button>
+    </div>
+  );
+}
+
+/* OTP step */
+function OtpStep({ phone, onNext }:{phone:string;onNext:()=>void}) {
+  const [code, setCode] = useState(["","","","","",""]);
+  const r0=useRef<HTMLInputElement>(null), r1=useRef<HTMLInputElement>(null), r2=useRef<HTMLInputElement>(null);
+  const r3=useRef<HTMLInputElement>(null), r4=useRef<HTMLInputElement>(null), r5=useRef<HTMLInputElement>(null);
+  const refs = [r0,r1,r2,r3,r4,r5];
+  const valid = code.every(c=>c!=="");
+
+  const handleInput = (i:number, v:string) => {
+    if(!/^\d?$/.test(v)) return;
+    const n=[...code]; n[i]=v; setCode(n);
+    if(v&&i<5) refs[i+1].current?.focus();
+  };
+  const handleKey = (i:number, e:React.KeyboardEvent) => {
+    if(e.key==="Backspace"&&!code[i]&&i>0) refs[i-1].current?.focus();
+  };
+
+  return (
+    <div style={{ padding:"32px 20px 40px" }}>
+      <div style={{ display:"flex",justifyContent:"center",marginBottom:24 }}>
+        <div style={{ width:80,height:80,borderRadius:"50%",background:"linear-gradient(135deg,#DBEAFE,#EFF6FF)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 8px 24px rgba(59,130,246,0.18)" }}>
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="1.8" strokeLinecap="round">
+            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+            <line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="13" y2="14"/>
+          </svg>
+        </div>
+      </div>
+      <h2 style={{ fontWeight:800,fontSize:20,color:C.text,marginBottom:8,textAlign:"center" }}>Code de vérification</h2>
+      <p style={{ fontSize:14,color:C.secondary,textAlign:"center",marginBottom:28 }}>Code envoyé au <strong>{phone.slice(0,6)}···{phone.slice(-2)}</strong></p>
+
+      <div style={{ display:"flex",gap:10,justifyContent:"center",marginBottom:28 }}>
+        {code.map((d,i)=>(
+          <input key={i} ref={refs[i]} maxLength={1} value={d}
+            onChange={e=>handleInput(i,e.target.value)} onKeyDown={e=>handleKey(i,e)}
+            style={{ width:48,height:58,borderRadius:16,border:d?"2px solid "+C.primary:"2px solid #E2E8F0",background:d?"#F0FDF4":"#fff",textAlign:"center",fontSize:22,fontWeight:800,color:C.text,outline:"none",transition:"all 200ms",fontFamily:"inherit",boxShadow:d?"0 0 0 4px rgba(34,197,94,0.1)":"none" }}/>
+        ))}
+      </div>
+
+      <button onClick={()=>valid&&onNext()} disabled={!valid} style={{ width:"100%",padding:"16px",borderRadius:18,background:valid?"linear-gradient(135deg,#1D4ED8,#3B82F6)":"#E2E8F0",border:"none",color:valid?"#fff":C.muted,fontWeight:700,fontSize:16,cursor:valid?"pointer":"not-allowed",boxShadow:valid?"0 8px 24px rgba(59,130,246,0.35)":"none",transition:"all 250ms",marginBottom:14 }}>
+        Vérifier le code
+      </button>
+      <button style={{ width:"100%",padding:"12px",background:"none",border:"none",color:C.primary,fontWeight:600,fontSize:14,cursor:"pointer" }}>
+        Renvoyer le code dans 59s
+      </button>
+    </div>
+  );
+}
+
+/* Done step */
+function DoneStep({ onClose }:{onClose:()=>void}) {
+  return (
+    <div style={{ padding:"48px 24px 40px",display:"flex",flexDirection:"column",alignItems:"center",textAlign:"center" }}>
+      <div style={{ width:120,height:120,borderRadius:"50%",background:"radial-gradient(circle at 40% 35%,#DCFCE7,#BBF7D0)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 0 0 12px rgba(34,197,94,0.08),0 0 0 24px rgba(34,197,94,0.04),0 12px 40px rgba(34,197,94,0.25)",marginBottom:28,animation:"popIn 400ms cubic-bezier(0.34,1.56,0.64,1)" }}>
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2.2" strokeLinecap="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M9 12l2 2 4-4"/>
+        </svg>
+      </div>
+      <h2 style={{ fontWeight:800,fontSize:24,color:C.text,marginBottom:10,letterSpacing:"-0.5px" }}>Compte vérifié !</h2>
+      <p style={{ fontSize:15,color:C.secondary,lineHeight:1.7,marginBottom:32,maxWidth:260 }}>Votre identité a été confirmée avec succès. Profitez de toutes les fonctionnalités BrutePawa.</p>
+      <div style={{ display:"flex",gap:10,width:"100%" }}>
+        <div style={{ flex:1,background:"#F0FDF4",borderRadius:18,padding:"14px",textAlign:"center",border:"1px solid #BBF7D0" }}>
+          <div style={{ fontSize:11,color:C.muted }}>Badge</div>
+          <div style={{ fontWeight:700,fontSize:13,color:C.primary,marginTop:2 }}>Activé</div>
+        </div>
+        <div style={{ flex:1,background:"#F0FDF4",borderRadius:18,padding:"14px",textAlign:"center",border:"1px solid #BBF7D0" }}>
+          <div style={{ fontSize:11,color:C.muted }}>Statut</div>
+          <div style={{ fontWeight:700,fontSize:13,color:C.primary,marginTop:2 }}>Vérifié</div>
+        </div>
+      </div>
+      <button onClick={onClose} style={{ width:"100%",marginTop:20,padding:"16px",borderRadius:18,background:"linear-gradient(135deg,#16A34A,#22C55E)",border:"none",color:"#fff",fontWeight:700,fontSize:16,cursor:"pointer",boxShadow:"0 8px 24px rgba(34,197,94,0.35)" }}>
+        Revenir aux paramètres
+      </button>
+      <style>{`@keyframes popIn{from{transform:scale(0.6);opacity:0}to{transform:scale(1);opacity:1}}`}</style>
+    </div>
+  );
+}
 
 export default function VerifyPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>("intro");
   const [phone, setPhone] = useState("");
-  const [code, setCode] = useState(["","","","","",""]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const handleSendCode = async () => {
-    if (phone.length < 8) { setError("Numéro invalide"); return; }
-    setError(""); setLoading(true);
-    await new Promise(r=>setTimeout(r,1200));
-    setLoading(false); setStep("code");
-  };
-
-  const handleVerify = async () => {
-    const entered = code.join("");
-    if (entered.length < 6) { setError("Code incomplet"); return; }
-    setError(""); setLoading(true);
-    await new Promise(r=>setTimeout(r,1200));
-    setLoading(false); setStep("done");
-  };
-
-  const handleCodeInput = (i: number, v: string) => {
-    const next = [...code];
-    next[i] = v.slice(-1);
-    setCode(next);
-    if (v && i < 5) {
-      const el = document.getElementById(`otp-${i+1}`);
-      el?.focus();
-    }
-  };
 
   return (
     <div style={{ background:C.bg, minHeight:"100dvh", fontFamily:"Inter,-apple-system,BlinkMacSystemFont,sans-serif" }}>
-      {/* Header */}
-      <div style={{ background:"#fff", borderBottom:`1px solid ${C.border}`, height:56, display:"flex", alignItems:"center", padding:"0 4px", gap:4, position:"sticky", top:0, zIndex:20, boxShadow:C.shadow }}>
-        <button onClick={()=>step==="code"?setStep("phone"):navigate("/settings")} style={{ width:44, height:44, borderRadius:"50%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={C.text} strokeWidth="2.2" strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        </button>
-        <h1 style={{ flex:1, fontWeight:700, fontSize:17, color:C.text, margin:0 }}>Vérification du compte</h1>
-        <div style={{ width:44 }}/>
+      <SubHeader title="Vérification du compte" onBack={()=>navigate("/settings")}/>
+      <ProgressBar step={step}/>
+
+      <div style={{ animation:"fadeIn 300ms ease" }}>
+        {step==="intro" && <IntroStep onNext={()=>setStep("phone")}/>}
+        {step==="phone" && <PhoneStep onNext={p=>{setPhone(p);setStep("otp");}}/>}
+        {step==="otp"   && <OtpStep phone={phone} onNext={()=>setStep("done")}/>}
+        {step==="done"  && <DoneStep onClose={()=>navigate("/settings")}/>}
       </div>
-
-      {step === "intro" && (
-        <div style={{ padding:"32px 20px", display:"flex", flexDirection:"column", alignItems:"center" }}>
-          {/* Shield illustration */}
-          <div style={{ width:110, height:110, borderRadius:"50%", background:"#F0FDF4", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:20, boxShadow:"0 0 0 14px #DCFCE7" }}>
-            <svg width="58" height="58" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7L12 2z" fill="#22C55E" opacity=".2"/>
-              <path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7L12 2z" stroke="#22C55E" strokeWidth="1.8"/>
-              <path d="M9 12l2 2 4-4" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
-          <div style={{ fontWeight:800, fontSize:22, color:C.text, marginBottom:8, textAlign:"center" }}>Vérifiez votre compte</div>
-          <div style={{ fontSize:14, color:C.secondary, textAlign:"center", lineHeight:1.7, marginBottom:32 }}>Protégez votre compte et gagnez la confiance de votre communauté en ajoutant votre numéro de téléphone.</div>
-
-          <div style={{ width:"100%", display:"flex", flexDirection:"column", gap:14, marginBottom:28 }}>
-            {[
-              { icon:"🔐", title:"Sécurité renforcée", sub:"Ajoutez une couche de protection supplémentaire" },
-              { icon:"✅", title:"Récupération de compte", sub:"Retrouvez facilement l'accès si besoin" },
-              { icon:"🌍", title:"Confiance de la communauté", sub:"Montrez que vous êtes un vrai membre" },
-            ].map((it, i) => (
-              <div key={i} style={{ background:C.card, borderRadius:16, padding:"14px 16px", display:"flex", gap:14, alignItems:"center", boxShadow:C.shadow }}>
-                <div style={{ fontSize:24, flexShrink:0 }}>{it.icon}</div>
-                <div>
-                  <div style={{ fontWeight:600, fontSize:14, color:C.text }}>{it.title}</div>
-                  <div style={{ fontSize:12, color:C.secondary, marginTop:2 }}>{it.sub}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <button onClick={()=>setStep("phone")} style={{ width:"100%", padding:"15px", borderRadius:16, background:C.primary, border:"none", color:"#fff", fontWeight:700, fontSize:16, cursor:"pointer", boxShadow:`0 4px 16px rgba(34,197,94,0.3)` }}>
-            Ajouter mon numéro
-          </button>
-        </div>
-      )}
-
-      {step === "phone" && (
-        <div style={{ padding:"32px 20px" }}>
-          <div style={{ textAlign:"center", marginBottom:28 }}>
-            <div style={{ fontSize:40, marginBottom:12 }}>📱</div>
-            <div style={{ fontWeight:700, fontSize:18, color:C.text, marginBottom:6 }}>Votre numéro de téléphone</div>
-            <div style={{ fontSize:14, color:C.secondary }}>Nous enverrons un code de vérification à ce numéro.</div>
-          </div>
-
-          <div style={{ background:C.card, borderRadius:20, padding:"20px", boxShadow:C.shadow, marginBottom:16 }}>
-            <label style={{ fontSize:13, fontWeight:600, color:C.secondary, display:"block", marginBottom:8 }}>NUMÉRO DE TÉLÉPHONE</label>
-            <div style={{ display:"flex", gap:10, alignItems:"center" }}>
-              <div style={{ background:"#F8FAFC", border:`1.5px solid ${C.border}`, borderRadius:12, padding:"12px 14px", fontWeight:600, color:C.text, fontSize:15, flexShrink:0 }}>🇲🇱 +223</div>
-              <input
-                type="tel" value={phone} onChange={e=>setPhone(e.target.value.replace(/\D/g,""))}
-                placeholder="XX XX XX XX" maxLength={8}
-                style={{ flex:1, background:"#F8FAFC", border:`1.5px solid ${error?C.danger:phone?C.primary:C.border}`, borderRadius:12, padding:"12px 14px", fontSize:16, color:C.text, fontFamily:"Inter,sans-serif", outline:"none", transition:"border .15s" }}
-              />
-            </div>
-            {error && <div style={{ fontSize:12, color:C.danger, marginTop:6, paddingLeft:2 }}>{error}</div>}
-          </div>
-
-          <button onClick={handleSendCode} disabled={loading} style={{ width:"100%", padding:"15px", borderRadius:16, background:loading?"#A7F3D0":C.primary, border:"none", color:"#fff", fontWeight:700, fontSize:16, cursor:loading?"not-allowed":"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:10 }}>
-            {loading ? <><div style={{ width:20, height:20, borderRadius:"50%", border:"2px solid rgba(255,255,255,0.4)", borderTopColor:"#fff", animation:"spin 0.8s linear infinite" }}/> Envoi…</> : "Envoyer le code"}
-          </button>
-        </div>
-      )}
-
-      {step === "code" && (
-        <div style={{ padding:"32px 20px" }}>
-          <div style={{ textAlign:"center", marginBottom:28 }}>
-            <div style={{ fontSize:40, marginBottom:12 }}>🔢</div>
-            <div style={{ fontWeight:700, fontSize:18, color:C.text, marginBottom:6 }}>Code de vérification</div>
-            <div style={{ fontSize:14, color:C.secondary }}>Entrez le code à 6 chiffres envoyé au<br/><strong>+223 {phone}</strong></div>
-          </div>
-
-          <div style={{ display:"flex", gap:10, justifyContent:"center", marginBottom:16 }}>
-            {code.map((digit, i) => (
-              <input key={i} id={`otp-${i}`} type="text" inputMode="numeric" maxLength={1} value={digit}
-                onChange={e=>handleCodeInput(i, e.target.value)}
-                onKeyDown={e=>{ if(e.key==="Backspace"&&!code[i]&&i>0){ const el=document.getElementById(`otp-${i-1}`); el?.focus(); } }}
-                style={{ width:46, height:56, textAlign:"center", fontSize:24, fontWeight:700, color:C.text, background:digit?"#F0FDF4":"#fff", border:`2px solid ${digit?C.primary:C.border}`, borderRadius:14, outline:"none", fontFamily:"Inter,sans-serif", transition:"border .15s" }}
-              />
-            ))}
-          </div>
-          {error && <div style={{ fontSize:12, color:C.danger, textAlign:"center", marginBottom:12 }}>{error}</div>}
-
-          <button onClick={handleVerify} disabled={loading} style={{ width:"100%", padding:"15px", borderRadius:16, background:loading?"#A7F3D0":C.primary, border:"none", color:"#fff", fontWeight:700, fontSize:16, cursor:loading?"not-allowed":"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:10, marginBottom:12 }}>
-            {loading ? <><div style={{ width:20, height:20, borderRadius:"50%", border:"2px solid rgba(255,255,255,0.4)", borderTopColor:"#fff", animation:"spin 0.8s linear infinite" }}/> Vérification…</> : "Vérifier"}
-          </button>
-
-          <button style={{ width:"100%", padding:"12px", background:"none", border:"none", color:C.secondary, fontSize:14, cursor:"pointer" }}>
-            Renvoyer le code
-          </button>
-        </div>
-      )}
-
-      {step === "done" && (
-        <div style={{ padding:"40px 20px", display:"flex", flexDirection:"column", alignItems:"center" }}>
-          <div style={{ width:110, height:110, borderRadius:"50%", background:"#F0FDF4", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:20, boxShadow:"0 0 0 14px #DCFCE7" }}>
-            <svg width="58" height="58" viewBox="0 0 24 24" fill="none" stroke={C.primaryDark} strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>
-          </div>
-          <div style={{ fontWeight:800, fontSize:22, color:C.text, marginBottom:8, textAlign:"center" }}>Compte vérifié ! 🎉</div>
-          <div style={{ fontSize:14, color:C.secondary, textAlign:"center", lineHeight:1.7, marginBottom:32 }}>Votre numéro a été vérifié avec succès. Votre compte est maintenant sécurisé.</div>
-          <button onClick={()=>navigate("/settings")} style={{ width:"100%", padding:"15px", borderRadius:16, background:C.primary, border:"none", color:"#fff", fontWeight:700, fontSize:16, cursor:"pointer", boxShadow:`0 4px 16px rgba(34,197,94,0.3)` }}>
-            Retour aux paramètres
-          </button>
-        </div>
-      )}
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+      <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}`}</style>
     </div>
   );
 }

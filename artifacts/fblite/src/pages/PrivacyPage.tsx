@@ -1,103 +1,118 @@
 import { useState } from "react";
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#111827", secondary:"#64748B", border:"#E5E7EB", shadow:"0 1px 4px rgba(0,0,0,0.08)" };
+const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#0F172A", secondary:"#64748B", muted:"#94A3B8", border:"#F1F5F9", danger:"#EF4444", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
+type PVal = "Tout le monde"|"Amis"|"Amis uniquement"|"Moi uniquement";
 
-type Privacy = "Amis"|"Tout le monde"|"Moi uniquement"|"Amis uniquement";
-
-function PrivacyRow({ label, value, onPress, last=false }:{label:string;value:string;onPress:()=>void;last?:boolean}) {
+function SubHeader({ title, onBack }:{title:string;onBack:()=>void}) {
   return (
-    <button onClick={onPress} style={{ display:"flex", alignItems:"center", padding:"14px 16px", background:"none", border:"none", cursor:"pointer", width:"100%", textAlign:"left", borderBottom:last?"none":`1px solid ${C.border}`, transition:"background .12s" }}>
+    <div style={{ background:"#fff", borderBottom:"1px solid #F1F5F9", height:56, display:"flex", alignItems:"center", padding:"0 6px", position:"sticky", top:0, zIndex:30, boxShadow:"0 1px 8px rgba(0,0,0,0.04)" }}>
+      <button onClick={onBack} style={{ width:44, height:44, borderRadius:"50%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={C.text} strokeWidth="2.2" strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      </button>
+      <h1 style={{ flex:1, fontWeight:700, fontSize:17, color:C.text, margin:0, letterSpacing:"-0.3px", textAlign:"center" }}>{title}</h1>
+      <button style={{ width:44, height:44, borderRadius:"50%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.5" fill={C.muted}/><circle cx="12" cy="12" r="1.5" fill={C.muted}/><circle cx="12" cy="19" r="1.5" fill={C.muted}/></svg>
+      </button>
+    </div>
+  );
+}
+
+function PrivRow({ label, value, danger=false, onPress, last=false }:{label:string;value:string;danger?:boolean;onPress:()=>void;last?:boolean}) {
+  const [pressed, setPressed] = useState(false);
+  return (
+    <button onClick={onPress} onPointerDown={()=>setPressed(true)} onPointerUp={()=>setPressed(false)} onPointerLeave={()=>setPressed(false)}
+      style={{ display:"flex", alignItems:"center", padding:"14px 18px", background:pressed?"#F8FAFB":"none", border:"none", cursor:"pointer", width:"100%", textAlign:"left", borderBottom:last?"none":"1px solid #F1F5F9", transition:"background 150ms" }}>
+      {danger && <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ marginRight:10, flexShrink:0 }}><circle cx="12" cy="12" r="10" fill="#FEE2E2"/><path d="M12 8v4m0 4h.01" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"/></svg>}
       <div style={{ flex:1 }}>
-        <div style={{ fontWeight:500, fontSize:15, color:C.text }}>{label}</div>
+        <div style={{ fontWeight:500, fontSize:15, color:danger?"#EF4444":C.text }}>{label}</div>
         <div style={{ fontSize:13, color:C.secondary, marginTop:2 }}>{value}</div>
       </div>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="#C4C9D4" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+      <div style={{ display:"flex", alignItems:"center", gap:4 }}>
+        <span style={{ fontSize:13, color:danger?"#EF4444":C.primary, fontWeight:600 }}>{value}</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="#C4C9D4" strokeWidth="2.2" strokeLinecap="round"/></svg>
+      </div>
     </button>
   );
 }
 
-function PrivacySheet({ label, current, options, onSelect, onClose }:{label:string;current:string;options:Privacy[];onSelect:(v:Privacy)=>void;onClose:()=>void}) {
+function Sheet({ label, current, options, onSelect, onClose }:{label:string;current:PVal;options:PVal[];onSelect:(v:PVal)=>void;onClose:()=>void}) {
   return (
-    <div style={{ position:"fixed", inset:0, zIndex:100, display:"flex", flexDirection:"column", justifyContent:"flex-end" }}>
-      <div onClick={onClose} style={{ flex:1, background:"rgba(0,0,0,0.4)" }}/>
-      <div style={{ background:"#fff", borderRadius:"24px 24px 0 0", padding:"8px 0 32px" }}>
-        <div style={{ width:40, height:4, borderRadius:2, background:"#E5E7EB", margin:"12px auto 16px" }}/>
-        <div style={{ padding:"0 20px 16px", fontWeight:700, fontSize:16, color:C.text }}>{label}</div>
-        {options.map(o => (
-          <button key={o} onClick={()=>{onSelect(o);onClose();}} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 20px", width:"100%", background:"none", border:"none", cursor:"pointer", borderTop:`1px solid ${C.border}` }}>
+    <div style={{ position:"fixed", inset:0, zIndex:100 }} onClick={onClose}>
+      <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.45)" }}/>
+      <div onClick={e=>e.stopPropagation()} style={{ position:"absolute", bottom:0, left:0, right:0, background:"#fff", borderRadius:"24px 24px 0 0", paddingBottom:"env(safe-area-inset-bottom,0px)", animation:"slideUp 300ms cubic-bezier(0.34,1.56,0.64,1)" }}>
+        <div style={{ width:40,height:4,borderRadius:2,background:"#E2E8F0",margin:"12px auto 0" }}/>
+        <div style={{ padding:"16px 20px 8px", fontWeight:700, fontSize:16, color:C.text }}>{label}</div>
+        {options.map((o,i) => (
+          <button key={o} onClick={()=>{onSelect(o);onClose();}}
+            style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 20px", width:"100%", background:"none", border:"none", cursor:"pointer", borderTop:"1px solid #F1F5F9" }}>
             <span style={{ fontSize:15, color:C.text, fontWeight:current===o?700:400 }}>{o}</span>
-            {current===o && <svg width="20" height="20" viewBox="0 0 24 24" fill={C.primary}><path d="M20 6L9 17l-5-5" stroke={C.primary} strokeWidth="2.5" strokeLinecap="round"/></svg>}
+            {current===o && <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke={C.primary} strokeWidth="2.5" strokeLinecap="round"/></svg>}
           </button>
         ))}
+        <div style={{ height:12 }}/>
       </div>
+      <style>{`@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}`}</style>
     </div>
   );
 }
 
 export default function PrivacyPage() {
   const navigate = useNavigate();
-  const [posts, setPosts] = useState<Privacy>("Amis");
-  const [messages, setMessages] = useState<Privacy>("Amis");
-  const [findMe, setFindMe] = useState<Privacy>("Tout le monde");
-  const [friendList, setFriendList] = useState<Privacy>("Amis uniquement");
-  const [sheet, setSheet] = useState<null|{label:string;current:Privacy;options:Privacy[];onSelect:(v:Privacy)=>void}>(null);
-
-  const allOptions:Privacy[] = ["Tout le monde","Amis","Amis uniquement","Moi uniquement"];
+  const [posts, setPosts] = useState<PVal>("Amis");
+  const [msgs, setMsgs] = useState<PVal>("Amis");
+  const [find, setFind] = useState<PVal>("Tout le monde");
+  const [friends, setFriends] = useState<PVal>("Amis uniquement");
+  const [sheet, setSheet] = useState<{label:string;current:PVal;onSelect:(v:PVal)=>void}|null>(null);
+  const opts:PVal[] = ["Tout le monde","Amis","Amis uniquement","Moi uniquement"];
 
   return (
     <div style={{ background:C.bg, minHeight:"100dvh", fontFamily:"Inter,-apple-system,BlinkMacSystemFont,sans-serif" }}>
-      {/* Header */}
-      <div style={{ background:"#fff", borderBottom:`1px solid ${C.border}`, height:56, display:"flex", alignItems:"center", padding:"0 4px", gap:4, position:"sticky", top:0, zIndex:20, boxShadow:C.shadow }}>
-        <button onClick={()=>navigate("/settings")} style={{ width:44, height:44, borderRadius:"50%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={C.text} strokeWidth="2.2" strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-        </button>
-        <h1 style={{ flex:1, fontWeight:700, fontSize:17, color:C.text, margin:0 }}>Confidentialité</h1>
-        <button style={{ width:44, height:44, borderRadius:"50%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.5" fill={C.secondary}/><circle cx="12" cy="12" r="1.5" fill={C.secondary}/><circle cx="12" cy="19" r="1.5" fill={C.secondary}/></svg>
-        </button>
-      </div>
+      <SubHeader title="Confidentialité" onBack={()=>navigate("/settings")}/>
 
-      <div style={{ padding:"20px 12px" }}>
-        {/* Shield illustration */}
-        <div style={{ display:"flex", justifyContent:"center", marginBottom:24 }}>
-          <div style={{ width:96, height:96, borderRadius:"50%", background:"#DCFCE7", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 0 0 12px #F0FDF4" }}>
-            <svg width="52" height="52" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7L12 2z" fill="#22C55E" opacity=".2"/>
-              <path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7L12 2z" stroke="#22C55E" strokeWidth="1.8" fill="none"/>
-              <path d="M9 12l2 2 4-4" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+      <div style={{ padding:"24px 14px 40px" }}>
+        {/* Illustration */}
+        <div style={{ display:"flex", justifyContent:"center", marginBottom:28 }}>
+          <div style={{ position:"relative", width:110, height:110 }}>
+            <div style={{ width:110,height:110,borderRadius:"50%",background:"radial-gradient(circle at 40% 35%,#DCFCE7,#BBF7D0)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 0 0 12px #F0FDF4,0 8px 30px rgba(34,197,94,0.2)" }}>
+              <svg width="56" height="56" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7L12 2z" fill="#22C55E" opacity=".18"/>
+                <path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7L12 2z" stroke="#16A34A" strokeWidth="1.8" fill="none"/>
+                <rect x="8" y="11" width="8" height="6" rx="1.5" stroke="#16A34A" strokeWidth="1.6" fill="none"/>
+                <path d="M10 11V9a2 2 0 014 0v2" stroke="#16A34A" strokeWidth="1.6" strokeLinecap="round"/>
+                <circle cx="12" cy="14.5" r="1" fill="#16A34A"/>
+              </svg>
+            </div>
           </div>
         </div>
 
-        {/* Main privacy card */}
-        <div style={{ background:C.card, borderRadius:20, boxShadow:C.shadow, overflow:"hidden", marginBottom:12 }}>
-          <PrivacyRow label="Qui peut voir mes publications" value={posts} onPress={()=>setSheet({label:"Qui peut voir mes publications",current:posts,options:allOptions,onSelect:setPosts})}/>
-          <PrivacyRow label="Qui peut m'envoyer des messages" value={messages} onPress={()=>setSheet({label:"Qui peut m'envoyer des messages",current:messages,options:allOptions,onSelect:setMessages})}/>
-          <PrivacyRow label="Qui peut me trouver" value={findMe} onPress={()=>setSheet({label:"Qui peut me trouver",current:findMe,options:allOptions,onSelect:setFindMe})}/>
-          <PrivacyRow label="Qui peut voir ma liste d'amis" value={friendList} onPress={()=>setSheet({label:"Qui peut voir ma liste d'amis",current:friendList,options:allOptions,onSelect:setFriendList})}/>
-          <PrivacyRow label="Bloqués" value="12 utilisateurs" onPress={()=>{}} last/>
+        {/* Privacy rows */}
+        <div style={{ background:C.card, borderRadius:24, boxShadow:C.shadow, overflow:"hidden", marginBottom:12 }}>
+          <PrivRow label="Qui peut voir mes publications" value={posts} onPress={()=>setSheet({label:"Qui peut voir mes publications",current:posts,onSelect:setPosts})}/>
+          <PrivRow label="Qui peut m'envoyer des messages" value={msgs} onPress={()=>setSheet({label:"Qui peut m'envoyer des messages",current:msgs,onSelect:setMsgs})}/>
+          <PrivRow label="Qui peut me trouver" value={find} onPress={()=>setSheet({label:"Qui peut me trouver",current:find,onSelect:setFind})}/>
+          <PrivRow label="Qui peut voir ma liste d'amis" value={friends} onPress={()=>setSheet({label:"Qui peut voir ma liste d'amis",current:friends,onSelect:setFriends})}/>
+          <PrivRow label="Bloqués" value="12 utilisateurs" danger onPress={()=>{}} last/>
         </div>
 
-        {/* Advanced privacy green card */}
-        <div style={{ background:C.primary, borderRadius:20, padding:"16px", display:"flex", alignItems:"center", gap:16, boxShadow:"0 4px 16px rgba(34,197,94,0.25)" }}>
-          <div style={{ width:48, height:48, borderRadius:"50%", background:"rgba(255,255,255,0.2)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+        {/* Confidentialité avancée card */}
+        <button style={{ width:"100%", background:"linear-gradient(135deg,#15803D,#22C55E)", borderRadius:24, padding:"18px 20px", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, boxShadow:"0 8px 30px rgba(34,197,94,0.3)", overflow:"hidden", position:"relative", textAlign:"left" }}>
+          <div style={{ position:"absolute",top:-30,right:-30,width:100,height:100,borderRadius:"50%",background:"rgba(255,255,255,0.08)",pointerEvents:"none" }}/>
+          <div style={{ width:48,height:48,borderRadius:"50%",background:"rgba(255,255,255,0.2)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,backdropFilter:"blur(8px)" }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               <path d="M9 12l2 2 4-4"/>
             </svg>
           </div>
-          <div>
+          <div style={{ flex:1 }}>
             <div style={{ fontWeight:700, fontSize:15, color:"#fff" }}>Confidentialité avancée</div>
-            <div style={{ fontSize:13, color:"rgba(255,255,255,0.85)", marginTop:2 }}>Protégez votre compte</div>
+            <div style={{ fontSize:13, color:"rgba(255,255,255,0.82)", marginTop:2 }}>Protégez votre compte</div>
           </div>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ marginLeft:"auto", flexShrink:0 }}>
-            <path d="M9 18l6-6-6-6" stroke="rgba(255,255,255,0.7)" strokeWidth="2.2" strokeLinecap="round"/>
-          </svg>
-        </div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ flexShrink:0 }}><path d="M9 18l6-6-6-6" stroke="rgba(255,255,255,0.6)" strokeWidth="2.2" strokeLinecap="round"/></svg>
+        </button>
       </div>
 
-      {sheet && <PrivacySheet {...sheet} onClose={()=>setSheet(null)}/>}
+      {sheet && <Sheet {...sheet} options={opts} onClose={()=>setSheet(null)}/>}
     </div>
   );
 }
