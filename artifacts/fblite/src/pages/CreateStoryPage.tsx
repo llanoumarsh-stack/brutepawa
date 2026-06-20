@@ -104,12 +104,19 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
     setSubmitting(true);
     setError(null);
     try {
+      const musicPayload = selectedMusic ? {
+        musicTrackName:  selectedMusic.title,
+        musicArtist:     selectedMusic.artist,
+        musicUrl:        selectedMusic.previewUrl || null,
+        musicArtworkUrl: selectedMusic.coverUrl   || null,
+      } : {};
+
       if (mode === "photo") {
         if (!photoUrl) { setError("Photo en cours d'upload, attends encore…"); setSubmitting(false); return; }
-        await apiCreateStory({ mediaUrl: photoUrl, thumbnailUrl: thumbnailUrl ?? undefined, content: text.trim() || undefined });
+        await apiCreateStory({ mediaUrl: photoUrl, thumbnailUrl: thumbnailUrl ?? undefined, content: text.trim() || undefined, ...musicPayload });
       } else {
         if (!text.trim() && !selectedEmoji) { setError("Écris quelque chose ou choisis un emoji"); setSubmitting(false); return; }
-        await apiCreateStory({ content: text.trim() || undefined, bgColor: selectedBg.value, emoji: selectedEmoji ?? undefined });
+        await apiCreateStory({ content: text.trim() || undefined, bgColor: selectedBg.value, emoji: selectedEmoji ?? undefined, ...musicPayload });
       }
       onCreated?.();
       navigate("/");

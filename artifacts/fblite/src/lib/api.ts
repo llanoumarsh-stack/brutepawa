@@ -591,6 +591,10 @@ export interface StoryItem {
   content: string | null;
   bgColor: string;
   emoji: string | null;
+  musicTrackName: string | null;
+  musicArtist: string | null;
+  musicUrl: string | null;
+  musicArtworkUrl: string | null;
   expiresAt: string;
   viewsCount: number;
   createdAt: string;
@@ -618,6 +622,10 @@ export async function apiCreateStory(data: {
   content?: string;
   bgColor?: string;
   emoji?: string;
+  musicTrackName?: string | null;
+  musicArtist?: string | null;
+  musicUrl?: string | null;
+  musicArtworkUrl?: string | null;
 }): Promise<void> {
   const res = await apiFetch("/stories", {
     method: "POST",

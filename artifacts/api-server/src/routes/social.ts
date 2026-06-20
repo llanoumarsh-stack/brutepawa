@@ -685,16 +685,20 @@ router.get("/stories", requireAuth, async (req, res): Promise<void> => {
   const now = new Date();
   const rows = await db
     .select({
-      id: storiesTable.id,
-      authorId: storiesTable.authorId,
-      mediaUrl: storiesTable.mediaUrl,
-      thumbnailUrl: storiesTable.thumbnailUrl,
-      content: storiesTable.content,
-      bgColor: storiesTable.bgColor,
-      emoji: storiesTable.emoji,
-      expiresAt: storiesTable.expiresAt,
-      viewsCount: storiesTable.viewsCount,
-      createdAt: storiesTable.createdAt,
+      id:              storiesTable.id,
+      authorId:        storiesTable.authorId,
+      mediaUrl:        storiesTable.mediaUrl,
+      thumbnailUrl:    storiesTable.thumbnailUrl,
+      content:         storiesTable.content,
+      bgColor:         storiesTable.bgColor,
+      emoji:           storiesTable.emoji,
+      musicTrackName:  storiesTable.musicTrackName,
+      musicArtist:     storiesTable.musicArtist,
+      musicUrl:        storiesTable.musicUrl,
+      musicArtworkUrl: storiesTable.musicArtworkUrl,
+      expiresAt:       storiesTable.expiresAt,
+      viewsCount:      storiesTable.viewsCount,
+      createdAt:       storiesTable.createdAt,
       authorFirstName: usersTable.firstName,
       authorLastName: usersTable.lastName,
       authorAvatarUrl: usersTable.avatarUrl,
@@ -737,21 +741,31 @@ router.get("/stories", requireAuth, async (req, res): Promise<void> => {
     stories: a.stories.map(s => ({
       id: s.id,
       mediaUrl: s.mediaUrl,
-      thumbnailUrl: s.thumbnailUrl ?? null,
-      content: s.content,
-      bgColor: s.bgColor,
-      emoji: s.emoji,
-      expiresAt: s.expiresAt,
-      viewsCount: s.viewsCount,
-      createdAt: s.createdAt,
+      thumbnailUrl:    s.thumbnailUrl ?? null,
+      content:         s.content,
+      bgColor:         s.bgColor,
+      emoji:           s.emoji,
+      musicTrackName:  s.musicTrackName ?? null,
+      musicArtist:     s.musicArtist ?? null,
+      musicUrl:        s.musicUrl ?? null,
+      musicArtworkUrl: s.musicArtworkUrl ?? null,
+      expiresAt:       s.expiresAt,
+      viewsCount:      s.viewsCount,
+      createdAt:       s.createdAt,
     })),
     latestStoryAt: a.stories[0]?.createdAt ?? null,
   })));
 });
 
 router.post("/stories", requireAuth, async (req, res): Promise<void> => {
-  const { mediaUrl, thumbnailUrl, content, bgColor, emoji } = req.body as {
-    mediaUrl?: string; thumbnailUrl?: string; content?: string; bgColor?: string; emoji?: string;
+  const {
+    mediaUrl, thumbnailUrl, content, bgColor, emoji,
+    musicTrackName, musicArtist, musicUrl, musicArtworkUrl,
+  } = req.body as {
+    mediaUrl?: string; thumbnailUrl?: string; content?: string;
+    bgColor?: string; emoji?: string;
+    musicTrackName?: string | null; musicArtist?: string | null;
+    musicUrl?: string | null; musicArtworkUrl?: string | null;
   };
 
   if (!mediaUrl && !content) {
@@ -761,12 +775,16 @@ router.post("/stories", requireAuth, async (req, res): Promise<void> => {
   const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
   const [story] = await db.insert(storiesTable).values({
-    authorId: req.userId!,
-    mediaUrl: mediaUrl ?? null,
-    thumbnailUrl: thumbnailUrl ?? null,
-    content: content ?? null,
-    bgColor: bgColor ?? "#1877F2",
-    emoji: emoji ?? null,
+    authorId:        req.userId!,
+    mediaUrl:        mediaUrl        ?? null,
+    thumbnailUrl:    thumbnailUrl    ?? null,
+    content:         content         ?? null,
+    bgColor:         bgColor         ?? "#1877F2",
+    emoji:           emoji           ?? null,
+    musicTrackName:  musicTrackName  ?? null,
+    musicArtist:     musicArtist     ?? null,
+    musicUrl:        musicUrl        ?? null,
+    musicArtworkUrl: musicArtworkUrl ?? null,
     expiresAt,
   }).returning();
 
