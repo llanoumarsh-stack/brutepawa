@@ -165,6 +165,13 @@ export default function ProfileMenuPage() {
           </button>
         </div>
 
+        {/* ── Messagerie card ── */}
+        <div style={{ margin:"0 14px 12px", background:C.card, borderRadius:24, boxShadow:C.shadow, overflow:"hidden" }}>
+          <Row bg="linear-gradient(135deg,#0E7490,#06B6D4)"
+            icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>}
+            title="Messagerie" sub="Notifications, archive, confidentialité…" onClick={()=>navigate("/settings/messaging")} last/>
+        </div>
+
         {/* ── Main settings card ── */}
         <div style={{ margin:"0 14px 12px", background:C.card, borderRadius:24, boxShadow:C.shadow, overflow:"hidden" }}>
           <Row bg="linear-gradient(135deg,#15803D,#22C55E)" icon={I.lock} title="Confidentialité" sub="Gérer qui voit vos informations" onClick={()=>navigate("/settings/privacy")}/>

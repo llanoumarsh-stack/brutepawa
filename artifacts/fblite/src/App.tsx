@@ -48,6 +48,18 @@ import VerifyPage from "./pages/VerifyPage";
 import BadgePage from "./pages/BadgePage";
 import PremiumPage from "./pages/PremiumPage";
 import StoragePage from "./pages/StoragePage";
+import MessagingSettingsPage from "./pages/MessagingSettingsPage";
+import OnlineStatusPage from "./pages/OnlineStatusPage";
+import MessagingArchivePage from "./pages/MessagingArchivePage";
+import MessagingPrivacyPage from "./pages/MessagingPrivacyPage";
+import MessageRequestsPage from "./pages/MessageRequestsPage";
+import MessagingNotifPage from "./pages/MessagingNotifPage";
+import PinnedChatsPage from "./pages/PinnedChatsPage";
+import AutoDownloadPage from "./pages/AutoDownloadPage";
+import MediaQualityPage from "./pages/MediaQualityPage";
+import ChatBackupPage from "./pages/ChatBackupPage";
+import AdvancedSettingsPage from "./pages/AdvancedSettingsPage";
+import AboutPage from "./pages/AboutPage";
 
 import { ADMIN_SECRET_PATH } from "./lib/admin";
 import { Post } from "./lib/store";
@@ -418,6 +430,20 @@ function AppContent() {
   if (path === "/settings/badge") return <BadgePage />;
   if (path === "/settings/premium") return <PremiumPage />;
   if (path === "/settings/storage") return <StoragePage />;
+
+  /* ── Messaging settings ── */
+  if (path === "/settings/messaging") return <MessagingSettingsPage />;
+  if (path === "/settings/messaging/online") return <OnlineStatusPage />;
+  if (path === "/settings/messaging/archive") return <MessagingArchivePage />;
+  if (path === "/settings/messaging/privacy") return <MessagingPrivacyPage />;
+  if (path === "/settings/messaging/requests") return <MessageRequestsPage />;
+  if (path === "/settings/messaging/notifications") return <MessagingNotifPage />;
+  if (path === "/settings/messaging/pinned") return <PinnedChatsPage />;
+  if (path === "/settings/messaging/download") return <AutoDownloadPage />;
+  if (path === "/settings/messaging/quality") return <MediaQualityPage />;
+  if (path === "/settings/messaging/backup") return <ChatBackupPage />;
+  if (path === "/settings/messaging/advanced") return <AdvancedSettingsPage />;
+  if (path === "/settings/messaging/about") return <AboutPage />;
 
   if (groupMatch) {
     const gid = parseInt(groupMatch.id, 10);
