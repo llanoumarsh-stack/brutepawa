@@ -163,6 +163,24 @@ function buildFallback(): RegionInfo {
   };
 }
 
+/* ── Synchronous fast detection (timezone → browser lang, 0ms) ── */
+export function detectRegionFast(): RegionInfo {
+  /* 1. Cached */
+  const cached = getCachedRegion();
+  if (cached) return cached;
+
+  /* 2. Timezone map (instant) */
+  const tzCountry = guessFromTimezone();
+  if (tzCountry) return buildRegion(tzCountry, "", "", "timezone");
+
+  /* 3. Browser language country hint */
+  const lang = navigator.language || (navigator.languages?.[0]) || "";
+  const country = lang.split("-")[1]?.toUpperCase();
+  if (country && COUNTRY_NAMES[country]) return buildRegion(country, "", "", "browser-lang");
+
+  return buildFallback();
+}
+
 /* ── Cache ── */
 const CACHE_KEY = "bp_region_v2";
 const CACHE_TTL = 12 * 60 * 60 * 1000; // 12h (refresh after 12h in case user travels)

@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { apiLogin, saveFbUser, setBpToken } from "../lib/api";
 import { getPopularLanguages, searchLanguages, type Language } from "../services/languageService";
-import { detectRegion, getLanguageForRegion } from "../services/regionService";
+import { detectRegion, detectRegionFast, getLanguageForRegion } from "../services/regionService";
 
 /* ─── Language Bottom Sheet ─────────────────────────────────── */
 function LanguageSheet({ current, onSelect, onClose, regionFlag, regionName }: {
@@ -167,19 +167,22 @@ export default function Login() {
   const [error, setError]       = useState("");
   const [loading, setLoading]   = useState(false);
   const [showLangSheet, setShowLangSheet] = useState(false);
-  const [lang, setLang]         = useState<Language>(getPopularLanguages()[0]);
-  const [regionFlag, setRegionFlag] = useState<string>("");
-  const [regionName, setRegionName] = useState<string>("");
+  /* ── Fast sync init: timezone → instant display ── */
+  const fastRegion = detectRegionFast();
+  const [lang, setLang]         = useState<Language>(() => getLanguageForRegion(fastRegion));
+  const [regionFlag, setRegionFlag] = useState<string>(fastRegion.countryFlag || "🌍");
+  const [regionName, setRegionName] = useState<string>(fastRegion.countryName || "");
   const navigate = useNavigate();
 
-  /* Auto-detect region on mount — always fresh (skipCache=true) */
+  /* ── Async refine: IP-based / Cloudflare (updates silently if different) ── */
   useEffect(() => {
-    detectRegion(true).then(region => {
-      const l = getLanguageForRegion(region);
-      setLang(l);
-      setRegionFlag(region.countryFlag || "🌍");
-      setRegionName(region.countryName || "Monde");
-    }).catch(() => { setRegionFlag("🌍"); setRegionName("Monde"); });
+    detectRegion(false).then(region => {
+      if (region.source !== "timezone" && region.source !== "browser") {
+        setLang(getLanguageForRegion(region));
+        setRegionFlag(region.countryFlag || "🌍");
+        setRegionName(region.countryName || "");
+      }
+    }).catch(() => {});
   }, []);
 
   const handleLogin = useCallback(async (e: React.FormEvent) => {

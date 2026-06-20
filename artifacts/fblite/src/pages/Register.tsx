@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { COUNTRIES } from "../data/mock";
 import { apiRegister, saveFbUser, setBpToken } from "../lib/api";
-import { detectRegion, getLanguageForRegion } from "../services/regionService";
+import { detectRegion, detectRegionFast, getLanguageForRegion } from "../services/regionService";
 import { getPopularLanguages, searchLanguages, type Language } from "../services/languageService";
 
 /* ─── Constants ─────────────────────────────────────────────── */
@@ -193,7 +193,10 @@ function ErrorBanner({ msg }: { msg: string }) {
 }
 
 /* ─── Language Sheet ─────────────────────────────────────────── */
-function LangSheet({ current, onSelect, onClose }: { current: Language; onSelect: (l:Language) => void; onClose: () => void }) {
+function LangSheet({ current, onSelect, onClose, regionFlag, regionName }: {
+  current: Language; onSelect: (l:Language) => void; onClose: () => void;
+  regionFlag?: string; regionName?: string;
+}) {
   const [q, setQ] = useState("");
   const results = q.trim() ? searchLanguages(q) : getPopularLanguages();
   return createPortal(
@@ -208,7 +211,7 @@ function LangSheet({ current, onSelect, onClose }: { current: Language; onSelect
             <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Rechercher..." style={{ flex:1, background:"none", border:"none", outline:"none", fontSize:14, color:"#fff", fontFamily:"inherit" }}/>
           </div>
         </div>
-        <div style={{ overflowY:"auto", flex:1, padding:"0 8px 24px" }}>
+        <div style={{ overflowY:"auto", flex:1, padding:"0 8px 8px" }}>
           {results.map(l => (
             <button key={l.code} onClick={() => { onSelect(l); onClose(); }} style={{ width:"100%", display:"flex", alignItems:"center", gap:12, height:52, padding:"0 12px", borderRadius:12, background:"none", border:"none", cursor:"pointer", fontFamily:"inherit" }}>
               <span style={{ fontSize:22 }}>{l.flag}</span>
@@ -217,6 +220,18 @@ function LangSheet({ current, onSelect, onClose }: { current: Language; onSelect
             </button>
           ))}
         </div>
+        {(regionFlag || regionName) && (
+          <div style={{ padding:"10px 16px 28px", borderTop:"1px solid rgba(255,255,255,0.06)" }}>
+            <div style={{ display:"flex", alignItems:"center", gap:10, border:"1px solid rgba(34,197,94,0.15)", borderRadius:12, padding:"11px 14px", background:"rgba(34,197,94,0.06)" }}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M7 1.3C5.12 1.3 3.6 2.82 3.6 4.7c0 2.84 3.4 7.6 3.4 7.6s3.4-4.76 3.4-7.6C10.4 2.82 8.88 1.3 7 1.3z" stroke="#22C55E" strokeWidth="1.2"/>
+                <circle cx="7" cy="4.7" r="1.1" stroke="#22C55E" strokeWidth="1.2"/>
+              </svg>
+              <span style={{ fontSize:12, color:"#6B7280", fontWeight:500 }}>Pays détecté</span>
+              <span style={{ marginLeft:"auto", fontSize:14, fontWeight:700, color:"#22C55E" }}>{regionFlag} {regionName}</span>
+            </div>
+          </div>
+        )}
       </div>
     </>,
     document.body
@@ -269,7 +284,11 @@ export default function Register() {
   const [photo, setPhoto]   = useState<string|null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError]   = useState("");
-  const [lang, setLang]     = useState<Language>(getPopularLanguages()[0]);
+  /* ── Fast sync init: timezone → instant region display ── */
+  const _fast = detectRegionFast();
+  const [lang, setLang]     = useState<Language>(() => getLanguageForRegion(_fast));
+  const [regionFlag, setRegionFlag] = useState<string>(_fast.countryFlag || "🌍");
+  const [regionName, setRegionName] = useState<string>(_fast.countryName || "");
   const [showLang, setShowLang] = useState(false);
   const [countdown, setCountdown] = useState(5);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -278,9 +297,20 @@ export default function Register() {
   const otpRefs = useRef<(HTMLInputElement|null)[]>([]);
   const fileRef  = useRef<HTMLInputElement>(null);
 
-  /* Detect region on mount */
+  /* ── Async refine: IP-based / Cloudflare ── */
   useEffect(() => {
-    detectRegion().then(r => { setLang(getLanguageForRegion(r)); const c = COUNTRIES.find(x=>x.code===r.countryCode); if(c) setCountryCode(c.code); }).catch(()=>{});
+    detectRegion(false).then(r => {
+      if (r.source !== "timezone" && r.source !== "browser") {
+        setLang(getLanguageForRegion(r));
+        setRegionFlag(r.countryFlag || "🌍");
+        setRegionName(r.countryName || "");
+        const c = COUNTRIES.find(x => x.code === r.countryCode);
+        if (c) setCountryCode(c.code);
+      } else {
+        const c = COUNTRIES.find(x => x.code === r.countryCode);
+        if (c) setCountryCode(c.code);
+      }
+    }).catch(() => {});
   }, []);
 
   /* SMS countdown */
@@ -734,7 +764,7 @@ export default function Register() {
       <div style={{ position:"relative", zIndex:1, width:"100%", display:"flex", flexDirection:"column", alignItems:"center" }}>
         {renderStep()}
       </div>
-      {showLang && <LangSheet current={lang} onSelect={setLang} onClose={() => setShowLang(false)}/>}
+      {showLang && <LangSheet current={lang} onSelect={setLang} onClose={() => setShowLang(false)} regionFlag={regionFlag} regionName={regionName}/>}
     </div>
   );
 }
