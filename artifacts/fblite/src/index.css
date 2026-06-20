@@ -46,7 +46,8 @@ input, textarea, [contenteditable="true"], [contenteditable] {
 
 html {
   scroll-behavior: smooth;
-  overflow-x: hidden;
+  /* overflow: clip ne crée pas de scroll container — position:sticky fonctionne correctement */
+  overflow-x: clip;
   max-width: 100%;
   -webkit-overflow-scrolling: touch;
 }
@@ -57,7 +58,7 @@ body {
   background: var(--fb-bg);
   color: var(--fb-text);
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  /* Ne pas mettre overflow-x:hidden sur body — casse position:sticky sur mobile Chrome */
   max-width: 100%;
   overscroll-behavior-y: none;
   touch-action: manipulation;

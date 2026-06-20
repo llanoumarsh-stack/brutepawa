@@ -134,22 +134,38 @@ export default function Layout({ children, onNewPost }: Props) {
       requestAnimationFrame(() => {
         const currentY = window.scrollY;
         const delta = currentY - lastScrollY.current;
-        if (Math.abs(delta) > 5) {
-          setNavHidden(delta > 0 && currentY > 100);
+        /* Seuil plus élevé (8px) pour éviter les faux positifs sur mobile */
+        if (Math.abs(delta) > 8) {
+          /* Cache nav uniquement après 200px de scroll vers le bas */
+          setNavHidden(delta > 0 && currentY > 200);
         }
         lastScrollY.current = currentY;
         scrollTicking.current = false;
       });
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    /* Fallback pour les navigateurs mobiles où scroll fire sur document */
+    document.addEventListener("scroll", handleScroll, { passive: true });
+    /* Touchstart : si l'utilisateur touche l'écran la nav redevient visible */
+    const handleTouch = () => {
+      if (window.scrollY < 80) setNavHidden(false);
+    };
+    window.addEventListener("touchstart", handleTouch, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      document.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("touchstart", handleTouch);
+    };
   }, []);
 
-  /* Reset nav visibility on route change + unlock any stuck overflow */
+  /* Reset nav + overflow + scroll position sur changement de route */
   useEffect(() => {
     setNavHidden(false);
+    lastScrollY.current = 0;
     document.documentElement.style.overflow = "";
     document.body.style.overflow = "";
+    /* Remonter en haut de page à chaque navigation */
+    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
   }, [path]);
 
   useEffect(() => {
