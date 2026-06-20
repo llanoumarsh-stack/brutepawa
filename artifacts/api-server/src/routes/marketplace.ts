@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { db, productsTable, ordersTable } from "@workspace/db";
-import { eq, ilike, and, desc } from "drizzle-orm";
+import { db, productsTable, ordersTable, marketplaceServicesTable, marketplaceFavoritesTable } from "@workspace/db";
+import { eq, ilike, and, desc, or } from "drizzle-orm";
 import {
   CreateProductBody, GetProductParams, UpdateProductParams, UpdateProductBody,
   DeleteProductParams, ListProductsQueryParams, CreateOrderBody, GetOrderParams
@@ -158,6 +158,101 @@ router.get("/orders/:id", requireAuth, async (req, res): Promise<void> => {
     .where(and(eq(ordersTable.id, params.data.id), eq(ordersTable.buyerId, req.userId!)));
   if (!order) { res.status(404).json({ error: "Order not found" }); return; }
   res.json({ ...order, amount: Number(order.amount) });
+});
+
+/* ── Marketplace Services ──────────────────────────────────── */
+
+router.get("/marketplace/services", requireAuth, async (req, res): Promise<void> => {
+  const search = typeof req.query.search === "string" ? req.query.search.trim() : null;
+  const conditions = [eq(marketplaceServicesTable.status, "active")];
+  if (search) {
+    conditions.push(
+      or(
+        ilike(marketplaceServicesTable.name, `%${search}%`),
+        ilike(marketplaceServicesTable.profession, `%${search}%`),
+      )!
+    );
+  }
+  const services = await db.select().from(marketplaceServicesTable)
+    .where(and(...conditions))
+    .orderBy(desc(marketplaceServicesTable.createdAt))
+    .limit(50);
+  res.json(services.map(s => ({ ...s, rating: s.rating != null ? Number(s.rating) : 5.0 })));
+});
+
+router.post("/marketplace/services", requireAuth, async (req, res): Promise<void> => {
+  const { name, profession, description, price, currency, country, city, avatarUrl, coverColor } = req.body as {
+    name: string; profession: string; description?: string; price?: number;
+    currency?: string; country?: string; city?: string; avatarUrl?: string; coverColor?: string;
+  };
+  if (!name || !profession) { res.status(400).json({ error: "name and profession required" }); return; }
+  const [service] = await db.insert(marketplaceServicesTable).values({
+    userId: req.userId!, name, profession,
+    description: description ?? null,
+    price: price != null ? String(price) : null,
+    currency: currency ?? "XOF",
+    country: country ?? null, city: city ?? null,
+    avatarUrl: avatarUrl ?? null,
+    coverColor: coverColor ?? "#22C55E",
+  }).returning();
+  res.status(201).json({ ...service, rating: service.rating != null ? Number(service.rating) : 5.0 });
+});
+
+/* ── Marketplace Favorites ─────────────────────────────────── */
+
+router.get("/marketplace/favorites", requireAuth, async (req, res): Promise<void> => {
+  const favorites = await db.select().from(marketplaceFavoritesTable)
+    .where(eq(marketplaceFavoritesTable.userId, req.userId!))
+    .orderBy(desc(marketplaceFavoritesTable.createdAt));
+  res.json(favorites);
+});
+
+router.post("/marketplace/favorites", requireAuth, async (req, res): Promise<void> => {
+  const { itemType, itemId } = req.body as { itemType: string; itemId: number };
+  if (!itemType || !itemId) { res.status(400).json({ error: "itemType and itemId required" }); return; }
+
+  const existing = await db.select({ id: marketplaceFavoritesTable.id })
+    .from(marketplaceFavoritesTable)
+    .where(and(
+      eq(marketplaceFavoritesTable.userId, req.userId!),
+      eq(marketplaceFavoritesTable.itemType, itemType),
+      eq(marketplaceFavoritesTable.itemId, itemId),
+    ));
+
+  if (existing.length > 0) {
+    await db.delete(marketplaceFavoritesTable)
+      .where(and(
+        eq(marketplaceFavoritesTable.userId, req.userId!),
+        eq(marketplaceFavoritesTable.itemType, itemType),
+        eq(marketplaceFavoritesTable.itemId, itemId),
+      ));
+    res.json({ favorited: false });
+  } else {
+    await db.insert(marketplaceFavoritesTable).values({ userId: req.userId!, itemType, itemId });
+    res.json({ favorited: true });
+  }
+});
+
+/* ── Marketplace Search ────────────────────────────────────── */
+
+router.get("/marketplace/search", requireAuth, async (req, res): Promise<void> => {
+  const q = typeof req.query.q === "string" ? req.query.q.trim() : "";
+  if (!q) { res.json({ products: [], services: [], jobs: [] }); return; }
+
+  const [products, services] = await Promise.all([
+    db.select().from(productsTable)
+      .where(and(eq(productsTable.status, "active"), ilike(productsTable.title, `%${q}%`)))
+      .limit(20),
+    db.select().from(marketplaceServicesTable)
+      .where(and(eq(marketplaceServicesTable.status, "active"),
+        or(ilike(marketplaceServicesTable.name, `%${q}%`), ilike(marketplaceServicesTable.profession, `%${q}%`))!))
+      .limit(10),
+  ]);
+
+  res.json({
+    products: products.map(p => ({ ...p, price: Number(p.price) })),
+    services: services.map(s => ({ ...s, rating: s.rating != null ? Number(s.rating) : 5.0 })),
+  });
 });
 
 export default router;

@@ -1062,6 +1062,31 @@ export interface ApiProduct {
   status: string;
   sellerId: number;
   location: string | null;
+  viewsCount: number | null;
+  condition: string | null;
+  isVerified: boolean | null;
+  discountPct: number | null;
+  city: string | null;
+  countryCode: string | null;
+  createdAt: string;
+}
+
+export interface ApiMarketplaceService {
+  id: number;
+  userId: number;
+  name: string;
+  profession: string;
+  description: string | null;
+  price: number | null;
+  currency: string;
+  country: string | null;
+  city: string | null;
+  rating: number;
+  reviewsCount: number;
+  avatarUrl: string | null;
+  coverColor: string;
+  isVerified: boolean;
+  status: string;
   createdAt: string;
 }
 
@@ -1080,6 +1105,37 @@ export async function apiGetProduct(id: number): Promise<ApiProduct | null> {
   const res = await apiFetch(`/products/${id}`);
   if (!res.ok) return null;
   return res.json() as Promise<ApiProduct>;
+}
+
+export async function apiGetMarketplaceServices(search?: string): Promise<ApiMarketplaceService[]> {
+  const q = search ? `?search=${encodeURIComponent(search)}` : "";
+  const res = await apiFetch(`/marketplace/services${q}`);
+  if (!res.ok) return [];
+  return res.json() as Promise<ApiMarketplaceService[]>;
+}
+
+export async function apiCreateMarketplaceService(data: {
+  name: string; profession: string; description?: string; price?: number;
+  currency?: string; country?: string; city?: string; avatarUrl?: string; coverColor?: string;
+}): Promise<ApiMarketplaceService> {
+  const res = await apiFetch("/marketplace/services", { method: "POST", body: JSON.stringify(data) });
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(e.error ?? "Erreur lors de la création");
+  }
+  return res.json() as Promise<ApiMarketplaceService>;
+}
+
+export async function apiToggleMarketplaceFavorite(itemType: string, itemId: number): Promise<{ favorited: boolean }> {
+  const res = await apiFetch("/marketplace/favorites", { method: "POST", body: JSON.stringify({ itemType, itemId }) });
+  if (!res.ok) return { favorited: false };
+  return res.json() as Promise<{ favorited: boolean }>;
+}
+
+export async function apiGetMarketplaceFavorites(): Promise<{ itemType: string; itemId: number }[]> {
+  const res = await apiFetch("/marketplace/favorites");
+  if (!res.ok) return [];
+  return res.json() as Promise<{ itemType: string; itemId: number }[]>;
 }
 
 export async function apiCreateProduct(data: {
