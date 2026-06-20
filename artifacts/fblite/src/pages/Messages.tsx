@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback, Fragment } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { openImageViewer } from "../components/ImageViewer";
-import { apiGetConversations, apiGetMessages, apiMarkMessagesRead, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiUpdateChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadFileXHR, apiUploadVoice, apiDeleteConversation, apiDeleteMessage, apiGetLinkPreview, apiGetMessagingSettings, apiUpdateMessagingSettings, apiGetMessageRequests, apiUpdateMessageRequest, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview, type MessageRequest } from "../lib/api";
+import { apiFetch, apiGetConversations, apiGetMessages, apiMarkMessagesRead, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiUpdateChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadFileXHR, apiUploadVoice, apiDeleteConversation, apiDeleteMessage, apiGetLinkPreview, apiGetMessagingSettings, apiUpdateMessagingSettings, apiGetMessageRequests, apiUpdateMessageRequest, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview, type MessageRequest } from "../lib/api";
 import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignaling";
 
 void ({} as ApiChatGroup);
@@ -430,6 +430,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [bcConvs, setBcConvs]                 = useState<{ id: number; recipients: number[]; msgs: {id:number;text:string;time:string;mine:boolean}[] }[]>([]);
   const [activeBcId, setActiveBcId]           = useState<number|null>(null);
   const [bcInput, setBcInput]                 = useState("");
+  const [apiBcLists, setApiBcLists]           = useState<{ id: number; name: string; emoji: string; color: string; recipientCount: number; updatedAt: string }[]>([]);
   const [fabOpen, setFabOpen]   = useState(false);
   const [inboxTab, setInboxTab] = useState<"all" | "unread" | "groups">("all");
   const [showInboxSearch, setShowInboxSearch] = useState(false);
@@ -1230,6 +1231,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const filteredConvs   = convList.filter(c => c.user.name.toLowerCase().includes(search.toLowerCase()));
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [currentMessages]);
+
+  useEffect(() => {
+    apiFetch("/broadcast").then(r => r.json()).then(setApiBcLists).catch(() => {});
+  }, []);
 
   useEffect(() => {
     Promise.all([apiGetConversations(), apiGetUsers()])
@@ -5735,15 +5740,27 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       });
     };
 
-    const handleValidate = () => {
+    const handleValidate = async () => {
       if (bcSelected.size === 0) return;
-      const newBc = { id: Date.now(), recipients: [...bcSelected], msgs: [] };
-      setBcConvs(prev => [...prev, newBc]);
-      setActiveBcId(newBc.id);
-      setBcSelected(new Set());
-      setBcSearch("");
-      setBcSearchMode(false);
-      setShowBroadcast(false);
+      try {
+        const r = await apiFetch("/broadcast", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: "Nouvelle diffusion" }),
+        });
+        const bc = await r.json() as { id: number };
+        await Promise.allSettled([...bcSelected].map(uid =>
+          apiFetch(`/broadcast/${bc.id}/members`, {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId: uid }),
+          })
+        ));
+        setBcSelected(new Set()); setBcSearch(""); setBcSearchMode(false); setShowBroadcast(false);
+        navigate(`/broadcast/${bc.id}`);
+      } catch {
+        const newBc = { id: Date.now(), recipients: [...bcSelected], msgs: [] };
+        setBcConvs(prev => [...prev, newBc]); setActiveBcId(newBc.id);
+        setBcSelected(new Set()); setBcSearch(""); setBcSearchMode(false); setShowBroadcast(false);
+      }
     };
 
     return createPortal(
@@ -5960,6 +5977,41 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 </div>
                 );
               })}
+            </div>
+          </div>
+        )}
+
+        {/* ── Listes de diffusion (API persistantes) ── */}
+        {!search && apiBcLists.length > 0 && (
+          <div style={{ background: "white", borderBottom: "1px solid #F3F4F6", padding: "10px 16px 8px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+              <span style={{ fontSize: 13, fontWeight: 700, color: "#22C55E", letterSpacing: 0.5, fontFamily: "Inter, sans-serif" }}>LISTES DE DIFFUSION</span>
+              <button onClick={() => { setShowBroadcast(true); setBcSelected(new Set()); setBcSearch(""); setBcSearchMode(false); setFabOpen(false); }}
+                style={{ background: "none", border: "none", cursor: "pointer", fontSize: 13, fontWeight: 600, color: "#22C55E", fontFamily: "Inter, sans-serif" }}>
+                + Nouvelle
+              </button>
+            </div>
+            <div style={{ display: "flex", gap: 10, overflowX: "auto", scrollbarWidth: "none" }}>
+              {apiBcLists.map(bc => (
+                <div key={bc.id} onClick={() => navigate(`/broadcast/${bc.id}`)} style={{
+                  flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 5, cursor: "pointer", width: 64,
+                }}>
+                  <div style={{
+                    width: 50, height: 50, borderRadius: "50%", background: bc.color ?? "#22C55E",
+                    display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22,
+                    boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+                  }}>
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                      <path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
+                    </svg>
+                  </div>
+                  <span style={{ fontSize: 10.5, color: "#374151", fontWeight: 500, maxWidth: 60, textAlign: "center", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontFamily: "Inter, sans-serif" }}>
+                    {bc.name}
+                  </span>
+                  <span style={{ fontSize: 10, color: "#94A3B8", fontFamily: "Inter, sans-serif" }}>{bc.recipientCount} dest.</span>
+                </div>
+              ))}
             </div>
           </div>
         )}

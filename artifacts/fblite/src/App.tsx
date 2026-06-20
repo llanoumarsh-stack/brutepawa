@@ -60,6 +60,7 @@ import MediaQualityPage from "./pages/MediaQualityPage";
 import ChatBackupPage from "./pages/ChatBackupPage";
 import AdvancedSettingsPage from "./pages/AdvancedSettingsPage";
 import AboutPage from "./pages/AboutPage";
+import BroadcastListPage from "./pages/BroadcastListPage";
 
 import { ADMIN_SECRET_PATH } from "./lib/admin";
 import { Post } from "./lib/store";
@@ -345,6 +346,7 @@ function AppContent() {
   const groupMatch = matchDynamic("/groups/:id", path);
   const chatGroupMatch = matchDynamic("/chat-groups/:id", path);
   const tontineDetailMatch = matchDynamic("/tontines/:id", path);
+  const broadcastMatch = matchDynamic("/broadcast/:id", path);
 
   if (path === "/marketplace/create") {
     return (
@@ -464,6 +466,13 @@ function AppContent() {
           <Messages initialGroupId={cgid} />
         </Layout>
       );
+    }
+  }
+
+  if (broadcastMatch) {
+    const bid = parseInt(broadcastMatch.id, 10);
+    if (!isNaN(bid)) {
+      return <BroadcastListPage broadcastId={bid} />;
     }
   }
 
