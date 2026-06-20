@@ -5,8 +5,9 @@ import { useR2Upload } from "../hooks/useR2Upload";
 import { storyDraftStore } from "../lib/storyDraft";
 import {
   Type, Smile, Music2, Sparkles, PenLine, UserPlus, Link2, Crop,
-  ChevronDown, X, Settings, ArrowRight, Pause, Globe, ImageIcon,
+  ChevronDown, X, Settings, ArrowRight, Globe, ImageIcon,
 } from "lucide-react";
+import MusicLibraryPage, { type MusicTrack } from "./MusicLibraryPage";
 
 const BG_OPTIONS = [
   { id: "blue",    value: "#1877F2" },
@@ -53,6 +54,10 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
   const [activeTool, setActiveTool] = useState<ActiveTool>(null);
   const [draftText, setDraftText] = useState("");
   const [toolbarExpanded, setToolbarExpanded] = useState(false);
+  const [showMusicLibrary, setShowMusicLibrary] = useState(false);
+  const [selectedMusic, setSelectedMusic] = useState<MusicTrack | null>(null);
+  const [musicCardVisible, setMusicCardVisible] = useState(false);
+  const [showMusicOptions, setShowMusicOptions] = useState(false);
 
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
@@ -124,7 +129,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
     } else if (toolId === "effects") {
       setActiveTool(activeTool === "effects" ? null : "effects");
     } else if (toolId === "music") {
-      setActiveTool(activeTool === "music" ? null : "music");
+      setShowMusicLibrary(true);
     } else {
       setActiveTool(null);
     }
@@ -134,6 +139,19 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
     setText(draftText);
     setActiveTool(null);
     if (draftText.trim()) setMode("text");
+  };
+
+  const handleMusicSelect = (track: MusicTrack) => {
+    setSelectedMusic(track);
+    setShowMusicLibrary(false);
+    setMusicCardVisible(false);
+    requestAnimationFrame(() => setTimeout(() => setMusicCardVisible(true), 50));
+  };
+
+  const handleRemoveMusic = () => {
+    setMusicCardVisible(false);
+    setTimeout(() => setSelectedMusic(null), 300);
+    setShowMusicOptions(false);
   };
 
   const canPublish = mode === "photo"
@@ -634,56 +652,104 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
           </button>
         </div>
 
-        {/* MUSIC CARD */}
-        <div style={{
-          margin: "0 14px 14px",
-          background: "rgba(255,255,255,0.04)",
-          backdropFilter: "blur(30px)",
-          border: "1px solid rgba(255,255,255,0.08)",
-          borderRadius: 28,
-          padding: "12px 14px",
-          display: "flex", alignItems: "center", gap: 12,
-          boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
-        }}>
-          {/* Album art */}
-          <div style={{
-            width: 44, height: 44, borderRadius: 12, overflow: "hidden",
-            flexShrink: 0, background: "linear-gradient(135deg, #22C55E, #053322)",
-          }}>
-            <img src="/logo.png" alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-          </div>
-
-          {/* Info */}
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ color: "#fff", fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-              Ça Va Aller (It's Gonna Be Okay)
+        {/* DYNAMIC MUSIC CARD — Instagram/TikTok style */}
+        {selectedMusic && (
+          <div
+            onClick={() => setShowMusicOptions(v => !v)}
+            style={{
+              margin: "0 14px 14px",
+              background: "rgba(255,255,255,0.92)",
+              backdropFilter: "blur(20px)",
+              borderRadius: 20,
+              padding: "11px 14px",
+              display: "flex", alignItems: "center", gap: 12,
+              boxShadow: "0 8px 32px rgba(0,0,0,0.28), 0 2px 8px rgba(0,0,0,0.15)",
+              cursor: "pointer",
+              opacity: musicCardVisible ? 1 : 0,
+              transform: musicCardVisible ? "translateY(0)" : "translateY(16px)",
+              transition: "opacity 300ms ease, transform 300ms cubic-bezier(0.34,1.56,0.64,1)",
+            }}
+          >
+            {/* Album art */}
+            <div style={{
+              width: 42, height: 42, borderRadius: 11, flexShrink: 0,
+              background: selectedMusic.coverColor,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 20,
+              boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+            }}>
+              {selectedMusic.coverEmoji}
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
-              <Music2 size={10} color="#9CA3AF" strokeWidth={2} />
-              <span style={{ color: "#9CA3AF", fontSize: 11 }}>Afro Sound Machine</span>
-            </div>
-          </div>
 
-          {/* Controls */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
-            <Pause size={18} color="#D1D5DB" strokeWidth={2} />
-            {/* Audio waveform bars */}
-            <div style={{ display: "flex", gap: 2, alignItems: "flex-end", height: 20 }}>
-              {[14, 20, 10, 18, 12, 20, 8].map((h, i) => (
-                <div
-                  key={i}
-                  style={{
-                    width: 3, height: h, borderRadius: 2,
-                    background: "#22C55E",
-                    opacity: 0.85,
-                    animation: `bpWave 0.8s ease-in-out infinite alternate`,
-                    animationDelay: `${i * 0.1}s`,
-                  }}
-                />
+            {/* Info */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ color: "#0F172A", fontSize: 13, fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {selectedMusic.title}
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+                <Music2 size={10} color="#64748B" strokeWidth={2} />
+                <span style={{ color: "#64748B", fontSize: 11, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  {selectedMusic.artist}
+                </span>
+              </div>
+            </div>
+
+            {/* Animated equalizer */}
+            <div style={{ display: "flex", gap: 2.5, alignItems: "flex-end", height: 22, flexShrink: 0 }}>
+              {[10, 18, 12, 20, 8, 16, 10].map((h, i) => (
+                <div key={i} style={{
+                  width: 3, borderRadius: 2,
+                  background: "linear-gradient(180deg,#22C55E,#16A34A)",
+                  animation: `bpWave 0.75s ease-in-out infinite alternate`,
+                  animationDelay: `${i * 0.09}s`,
+                  height: h,
+                }} />
               ))}
             </div>
           </div>
-        </div>
+        )}
+
+        {/* Music options popup */}
+        {showMusicOptions && selectedMusic && (
+          <div style={{
+            position: "absolute", bottom: 80, left: 14, right: 14, zIndex: 55,
+            background: "rgba(3,26,16,0.97)",
+            backdropFilter: "blur(30px)",
+            borderRadius: 20,
+            border: "1px solid rgba(255,255,255,0.1)",
+            overflow: "hidden",
+            boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+            animation: "bpSlideUp 200ms cubic-bezier(0.34,1.56,0.64,1)",
+          }}>
+            <button
+              onClick={() => { setShowMusicOptions(false); setShowMusicLibrary(true); }}
+              style={{
+                width: "100%", padding: "15px 18px", background: "none", border: "none",
+                color: "#F1F5F9", fontSize: 15, fontWeight: 600, cursor: "pointer",
+                display: "flex", alignItems: "center", gap: 12, textAlign: "left",
+                borderBottom: "1px solid rgba(255,255,255,0.06)",
+              }}
+            >
+              <div style={{ width:36,height:36,borderRadius:"50%",background:"rgba(34,197,94,0.15)",display:"flex",alignItems:"center",justifyContent:"center" }}>
+                <Music2 size={16} color="#22C55E" strokeWidth={2}/>
+              </div>
+              Changer la musique
+            </button>
+            <button
+              onClick={handleRemoveMusic}
+              style={{
+                width: "100%", padding: "15px 18px", background: "none", border: "none",
+                color: "#EF4444", fontSize: 15, fontWeight: 600, cursor: "pointer",
+                display: "flex", alignItems: "center", gap: 12, textAlign: "left",
+              }}
+            >
+              <div style={{ width:36,height:36,borderRadius:"50%",background:"rgba(239,68,68,0.12)",display:"flex",alignItems:"center",justifyContent:"center" }}>
+                <X size={16} color="#EF4444" strokeWidth={2.5}/>
+              </div>
+              Supprimer la musique
+            </button>
+          </div>
+        )}
       </div>
 
       {/* ── TOOL OVERLAYS ── */}
@@ -909,7 +975,20 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
           50%  { opacity: 1;   transform: scale(1.15) translate(6px, -8px); }
           100% { opacity: 0.7; transform: scale(0.95) translate(-4px, 6px); }
         }
+        @keyframes bpSlideUp {
+          from { opacity: 0; transform: translateY(12px) scale(0.97); }
+          to   { opacity: 1; transform: translateY(0)    scale(1); }
+        }
       `}</style>
+
+      {/* MUSIC LIBRARY FULL-PAGE OVERLAY */}
+      {showMusicLibrary && (
+        <MusicLibraryPage
+          onSelect={handleMusicSelect}
+          onClose={() => setShowMusicLibrary(false)}
+          initialTrack={selectedMusic}
+        />
+      )}
     </div>
   );
 }
