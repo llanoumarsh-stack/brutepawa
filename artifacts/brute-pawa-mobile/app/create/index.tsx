@@ -4,299 +4,286 @@ import React, { useEffect, useRef } from "react";
 import {
   Animated,
   Dimensions,
-  Image,
-  Modal,
-  Platform,
   PanResponder,
+  Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const { height: SCREEN_H } = Dimensions.get("window");
-const SHEET_H = SCREEN_H * 0.88;
+const { height: SCREEN_H, width: SCREEN_W } = Dimensions.get("window");
+const SHEET_H = SCREEN_H * 0.87;
+const DISMISS_THRESHOLD = 100;
+const SPRING_CONFIG = { tension: 68, friction: 12, useNativeDriver: true };
 
-// ─── Design tokens ───────────────────────────────────────────────
-const T = {
-  bg: "#F8FAFC",
-  card: "#FFFFFF",
-  primary: "#22C55E",
-  primaryDark: "#16A34A",
-  text: "#111827",
-  textSec: "#6B7280",
-  border: "#E5E7EB",
-  radius: 28,
-};
-
-// ─── Create items ─────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────
+// DATA — exact maquette reproduction
+// ─────────────────────────────────────────────────────────────────
 const ITEMS = [
   {
     key: "post",
     title: "Publier un post",
     desc: "Partagez vos idées, actualités et\nmoments avec la communauté.",
-    icon: "document-text",
-    iconColor: "#22C55E",
+    icon: "document-text-outline" as const,
+    iconColor: "#16A34A",
     iconBg: "#DCFCE7",
     arrowBg: "#22C55E",
-    badge: { label: "Populaire", emoji: "🔥", color: "#22C55E", bg: "#F0FDF4", border: "#BBF7D0" },
+    badge: { label: "Populaire", emoji: "🔥", textColor: "#16A34A", bg: "#DCFCE7", border: "#86EFAC" },
     cardBg: "#F0FDF4",
-    cardBorder: "#BBF7D0",
+    cardBorderColor: "#86EFAC",
     route: "/create/post",
   },
   {
     key: "product",
     title: "Vendre un produit",
     desc: "Proposez vos produits à des millions\nd'utilisateurs.",
-    icon: "bag-handle",
-    iconColor: "#F97316",
+    icon: "bag-handle-outline" as const,
+    iconColor: "#EA580C",
     iconBg: "#FFEDD5",
     arrowBg: "#F97316",
-    badge: { label: "Recommandé", emoji: "⭐", color: "#F97316", bg: "#FFF7ED", border: "#FED7AA" },
+    badge: { label: "Recommandé", emoji: "⭐", textColor: "#EA580C", bg: "#FEF3C7", border: "#FCD34D" },
     cardBg: "#FFFFFF",
-    cardBorder: "#E5E7EB",
+    cardBorderColor: "#F1F5F9",
     route: "/create/product",
   },
   {
     key: "service",
     title: "Publier un service",
     desc: "Faites connaître vos services et\ndéveloppez votre activité.",
-    icon: "construct",
-    iconColor: "#3B82F6",
+    icon: "construct-outline" as const,
+    iconColor: "#2563EB",
     iconBg: "#DBEAFE",
     arrowBg: "#3B82F6",
     badge: null,
     cardBg: "#FFFFFF",
-    cardBorder: "#E5E7EB",
+    cardBorderColor: "#F1F5F9",
     route: "/create/service",
   },
   {
     key: "group",
     title: "Créer un groupe",
     desc: "Rassemblez des personnes autour\nd'intérêts communs.",
-    icon: "people",
-    iconColor: "#06B6D4",
+    icon: "people-outline" as const,
+    iconColor: "#0891B2",
     iconBg: "#CFFAFE",
     arrowBg: "#06B6D4",
     badge: null,
     cardBg: "#FFFFFF",
-    cardBorder: "#E5E7EB",
+    cardBorderColor: "#F1F5F9",
     route: "/create/group",
   },
   {
     key: "job",
     title: "Publier une offre d'emploi",
     desc: "Trouvez les meilleurs talents pour\nvotre entreprise.",
-    icon: "briefcase",
-    iconColor: "#8B5CF6",
+    icon: "briefcase-outline" as const,
+    iconColor: "#7C3AED",
     iconBg: "#EDE9FE",
     arrowBg: "#8B5CF6",
     badge: null,
     cardBg: "#FFFFFF",
-    cardBorder: "#E5E7EB",
+    cardBorderColor: "#F1F5F9",
     route: "/create/job",
   },
   {
     key: "course",
     title: "Créer une formation",
     desc: "Partagez votre savoir et formez des\napprenants.",
-    icon: "school",
-    iconColor: "#F59E0B",
+    icon: "school-outline" as const,
+    iconColor: "#D97706",
     iconBg: "#FEF3C7",
     arrowBg: "#F59E0B",
     badge: null,
     cardBg: "#FFFFFF",
-    cardBorder: "#E5E7EB",
+    cardBorderColor: "#F1F5F9",
     route: "/create/course",
   },
-];
+] as const;
 
-// ─── Sparkle component ────────────────────────────────────────────
-function Sparkle({ x, y, size = 8 }: { x: number; y: number; size?: number }) {
-  const opacity = useRef(new Animated.Value(1)).current;
+// ─────────────────────────────────────────────────────────────────
+// Sparkle — pulsing star around the header icon
+// ─────────────────────────────────────────────────────────────────
+function Sparkle({ x, y, size }: { x: number; y: number; size: number }) {
+  const anim = useRef(new Animated.Value(0.4)).current;
   useEffect(() => {
     Animated.loop(
       Animated.sequence([
-        Animated.timing(opacity, { toValue: 0.3, duration: 900, useNativeDriver: true }),
-        Animated.timing(opacity, { toValue: 1, duration: 900, useNativeDriver: true }),
+        Animated.timing(anim, { toValue: 1, duration: 750 + size * 50, useNativeDriver: true }),
+        Animated.timing(anim, { toValue: 0.3, duration: 750 + size * 50, useNativeDriver: true }),
       ])
     ).start();
   }, []);
   return (
-    <Animated.Text
-      style={{
-        position: "absolute", left: x, top: y,
-        fontSize: size, color: "#22C55E", opacity,
-      }}
-    >✦</Animated.Text>
+    <Animated.Text style={{ position: "absolute", left: x, top: y, fontSize: size, color: "#22C55E", opacity: anim }}>
+      ✦
+    </Animated.Text>
   );
 }
 
-// ─── Main screen ──────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────
+// Main screen
+// ─────────────────────────────────────────────────────────────────
 export default function CreateScreen() {
   const insets = useSafeAreaInsets();
-  const translateY = useRef(new Animated.Value(SHEET_H)).current;
-  const overlayOpacity = useRef(new Animated.Value(0)).current;
+  const slideY = useRef(new Animated.Value(SHEET_H)).current;
+  const overlayOp = useRef(new Animated.Value(0)).current;
+  const dragY = useRef(new Animated.Value(0)).current;
+  const combined = Animated.add(slideY, dragY);
 
-  // Slide-up on mount
+  /* ── mount ── */
   useEffect(() => {
     Animated.parallel([
-      Animated.spring(translateY, {
-        toValue: 0,
-        tension: 65,
-        friction: 11,
-        useNativeDriver: true,
-      }),
-      Animated.timing(overlayOpacity, {
-        toValue: 1,
-        duration: 250,
-        useNativeDriver: true,
-      }),
+      Animated.spring(slideY, { toValue: 0, ...SPRING_CONFIG }),
+      Animated.timing(overlayOp, { toValue: 1, duration: 260, useNativeDriver: true }),
     ]).start();
   }, []);
 
-  const dismiss = () => {
+  const dismissSheet = () => {
     Animated.parallel([
-      Animated.timing(translateY, {
-        toValue: SHEET_H,
-        duration: 280,
-        useNativeDriver: true,
-      }),
-      Animated.timing(overlayOpacity, {
-        toValue: 0,
-        duration: 250,
-        useNativeDriver: true,
-      }),
+      Animated.timing(slideY, { toValue: SHEET_H, duration: 280, useNativeDriver: true }),
+      Animated.timing(overlayOp, { toValue: 0, duration: 260, useNativeDriver: true }),
     ]).start(() => router.back());
   };
 
-  // Drag-to-dismiss
-  const panResponder = useRef(
+  /* ── drag-to-dismiss ── */
+  const pan = useRef(
     PanResponder.create({
-      onMoveShouldSetPanResponder: (_, g) => g.dy > 8,
-      onPanResponderMove: (_, g) => {
-        if (g.dy > 0) translateY.setValue(g.dy);
-      },
+      onMoveShouldSetPanResponder: (_, g) => g.dy > 6 && Math.abs(g.dy) > Math.abs(g.dx),
+      onPanResponderMove: (_, g) => { if (g.dy > 0) dragY.setValue(g.dy); },
       onPanResponderRelease: (_, g) => {
-        if (g.dy > 120) {
-          dismiss();
+        if (g.dy > DISMISS_THRESHOLD) {
+          dismissSheet();
         } else {
-          Animated.spring(translateY, {
-            toValue: 0, tension: 60, friction: 10, useNativeDriver: true,
-          }).start();
+          Animated.spring(dragY, { toValue: 0, ...SPRING_CONFIG }).start();
         }
       },
     })
   ).current;
 
   const navigate = (route: string) => {
-    dismiss();
+    dismissSheet();
     setTimeout(() => router.push(route as any), 300);
   };
 
   return (
     <View style={s.root}>
-      {/* Overlay */}
-      <TouchableWithoutFeedback onPress={dismiss}>
-        <Animated.View style={[s.overlay, { opacity: overlayOpacity }]} />
-      </TouchableWithoutFeedback>
+      {/* ── Dimmed overlay ── */}
+      <Pressable style={StyleSheet.absoluteFill} onPress={dismissSheet}>
+        <Animated.View style={[s.overlay, { opacity: overlayOp }]} />
+      </Pressable>
 
-      {/* Sheet */}
+      {/* ── Sheet ── */}
       <Animated.View
-        style={[s.sheet, { transform: [{ translateY }], paddingBottom: insets.bottom + 16 }]}
+        style={[
+          s.sheet,
+          { paddingBottom: insets.bottom + 12, transform: [{ translateY: combined }] },
+        ]}
       >
-        {/* Drag handle */}
-        <View {...panResponder.panHandlers} style={s.dragArea}>
+        {/* Drag handle area */}
+        <View {...pan.panHandlers} style={s.handleArea}>
           <View style={s.handle} />
         </View>
 
         {/* Header */}
         <View style={s.header}>
-          <View style={s.headerLeft}>
-            <View style={s.headerIconWrap}>
-              {/* Gradient circle with "+" */}
-              <View style={s.headerIcon}>
-                <Ionicons name="add" size={28} color="#FFFFFF" />
-              </View>
-              <Sparkle x={-4} y={-4} size={9} />
-              <Sparkle x={36} y={2} size={6} />
-              <Sparkle x={-2} y={36} size={7} />
+          {/* Green gradient icon with sparkles */}
+          <View style={s.iconOuter}>
+            <View style={s.iconCircle}>
+              <Ionicons name="add" size={30} color="#FFFFFF" />
             </View>
-            <View>
-              <Text style={s.headerTitle}>Créer</Text>
-              <Text style={s.headerSub}>Choisissez ce que vous voulez créer</Text>
-            </View>
+            <Sparkle x={-6}  y={-6}  size={10} />
+            <Sparkle x={42}  y={-2}  size={7}  />
+            <Sparkle x={-4}  y={42}  size={8}  />
+            <Sparkle x={38}  y={44}  size={6}  />
           </View>
-          <TouchableOpacity style={s.closeBtn} onPress={dismiss} activeOpacity={0.7}>
-            <Ionicons name="close" size={20} color="#6B7280" />
+          <View style={s.headerText}>
+            <Text style={s.headerTitle}>Créer</Text>
+            <Text style={s.headerSub}>Choisissez ce que vous voulez créer</Text>
+          </View>
+          <TouchableOpacity style={s.closeBtn} onPress={dismissSheet} hitSlop={8} activeOpacity={0.7}>
+            <Ionicons name="close" size={22} color="#6B7280" />
           </TouchableOpacity>
         </View>
 
+        {/* Cards */}
         <ScrollView
-          contentContainerStyle={s.scroll}
+          contentContainerStyle={s.list}
           showsVerticalScrollIndicator={false}
           bounces={false}
         >
-          {/* Cards */}
-          {ITEMS.map((item, idx) => (
+          {ITEMS.map((item) => (
             <TouchableOpacity
               key={item.key}
               style={[
                 s.card,
-                { backgroundColor: item.cardBg, borderColor: item.cardBorder },
+                {
+                  backgroundColor: item.cardBg,
+                  borderColor: item.cardBorderColor,
+                  borderWidth: item.key === "post" ? 1.5 : 1,
+                },
               ]}
               onPress={() => navigate(item.route)}
-              activeOpacity={0.8}
+              activeOpacity={0.75}
             >
-              {/* Icon */}
-              <View style={[s.iconWrap, { backgroundColor: item.iconBg }]}>
-                <Ionicons name={item.icon as any} size={28} color={item.iconColor} />
+              {/* ── Icon square ── */}
+              <View style={[s.iconBox, { backgroundColor: item.iconBg }]}>
+                <Ionicons name={item.icon} size={28} color={item.iconColor} />
               </View>
 
-              {/* Text block */}
+              {/* ── Body ── */}
               <View style={s.cardBody}>
-                {/* Badge */}
-                {item.badge && (
-                  <View style={[s.badge, { backgroundColor: item.badge.bg, borderColor: item.badge.border }]}>
-                    <Text style={s.badgeEmoji}>{item.badge.emoji}</Text>
-                    <Text style={[s.badgeText, { color: item.badge.color }]}>{item.badge.label}</Text>
-                  </View>
-                )}
                 <Text style={s.cardTitle}>{item.title}</Text>
                 <Text style={s.cardDesc}>{item.desc}</Text>
               </View>
 
-              {/* Arrow */}
-              <View style={[s.arrow, { backgroundColor: item.arrowBg }]}>
-                <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
+              {/* ── Arrow circle ── */}
+              <View style={[s.arrowCircle, { backgroundColor: item.arrowBg }]}>
+                <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
               </View>
+
+              {/* ── Badge (absolute top-right) ── */}
+              {item.badge && (
+                <View
+                  style={[
+                    s.badge,
+                    { backgroundColor: item.badge.bg, borderColor: item.badge.border },
+                  ]}
+                >
+                  <Text style={s.badgeEmoji}>{item.badge.emoji}</Text>
+                  <Text style={[s.badgeLabel, { color: item.badge.textColor }]}>
+                    {item.badge.label}
+                  </Text>
+                </View>
+              )}
             </TouchableOpacity>
           ))}
 
-          {/* Security footer */}
-          <View style={s.securityCard}>
-            {/* Shield icon */}
-            <View style={s.securityIcon}>
-              <Ionicons name="shield-checkmark" size={36} color="#22C55E" />
+          {/* ── Security footer ── */}
+          <View style={s.secRow}>
+            {/* Shield */}
+            <View style={s.shieldWrap}>
+              <Ionicons name="shield-checkmark" size={40} color="#22C55E" />
             </View>
-            <View style={s.securityText}>
-              <View style={s.securityTitleRow}>
-                <Text style={s.securityTitle}>100% sécurisé</Text>
-                <Ionicons name="checkmark-circle" size={16} color="#22C55E" style={{ marginLeft: 4 }} />
+            {/* Text */}
+            <View style={s.secText}>
+              <View style={s.secTitleRow}>
+                <Text style={s.secTitle}>100% sécurisé</Text>
+                <Ionicons name="checkmark-circle" size={15} color="#16A34A" style={{ marginLeft: 4 }} />
               </View>
-              <Text style={s.securityDesc}>
+              <Text style={s.secDesc}>
                 Vos données sont protégées{"\n"}avec le plus haut niveau de sécurité.
               </Text>
             </View>
-            {/* Decorative lock illustration */}
-            <View style={s.lockIllustration}>
-              <View style={s.lockBody}>
-                <Ionicons name="lock-closed" size={32} color="#22C55E" />
-              </View>
+            {/* Lock illustration */}
+            <View style={s.lockWrap}>
               <View style={s.lockGlow} />
+              <View style={s.lockBody}>
+                <Ionicons name="lock-closed" size={28} color="#22C55E" />
+              </View>
             </View>
           </View>
         </ScrollView>
@@ -305,6 +292,9 @@ export default function CreateScreen() {
   );
 }
 
+// ─────────────────────────────────────────────────────────────────
+// Styles
+// ─────────────────────────────────────────────────────────────────
 const s = StyleSheet.create({
   root: {
     flex: 1,
@@ -312,107 +302,122 @@ const s = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.45)",
+    backgroundColor: "rgba(0,0,0,0.50)",
   },
+
+  /* Sheet */
   sheet: {
     height: SHEET_H,
     backgroundColor: "#FFFFFF",
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: -8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 24,
-    elevation: 24,
+    shadowOffset: { width: 0, height: -10 },
+    shadowOpacity: 0.18,
+    shadowRadius: 28,
+    elevation: 28,
+    overflow: "hidden",
   },
-  dragArea: {
+
+  /* Drag handle */
+  handleArea: {
     alignItems: "center",
-    paddingTop: 10,
-    paddingBottom: 4,
+    paddingTop: 12,
+    paddingBottom: 6,
   },
   handle: {
-    width: 40,
-    height: 4,
-    borderRadius: 2,
+    width: 44,
+    height: 5,
+    borderRadius: 3,
     backgroundColor: "#D1D5DB",
   },
 
-  // Header
+  /* Header */
   header: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingTop: 8,
-    paddingBottom: 16,
-  },
-  headerLeft: {
-    flexDirection: "row",
-    alignItems: "center",
+    paddingHorizontal: 18,
+    paddingTop: 4,
+    paddingBottom: 14,
     gap: 14,
-    flex: 1,
   },
-  headerIconWrap: {
-    width: 52,
-    height: 52,
+  iconOuter: {
+    width: 58,
+    height: 58,
     position: "relative",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  headerIcon: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+  iconCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     backgroundColor: "#22C55E",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#22C55E",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 10,
-    elevation: 6,
+    // iOS shadow
+    shadowColor: "#16A34A",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.45,
+    shadowRadius: 12,
+    // Android elevation
+    elevation: 8,
+  },
+  headerText: {
+    flex: 1,
   },
   headerTitle: {
-    fontSize: 22,
-    fontWeight: "700",
+    fontSize: 24,
+    fontWeight: "800",
     color: "#111827",
     fontFamily: "Inter_700Bold",
-    lineHeight: 28,
+    lineHeight: 30,
   },
   headerSub: {
     fontSize: 13,
     color: "#6B7280",
     fontFamily: "Inter_400Regular",
     marginTop: 2,
+    lineHeight: 18,
   },
   closeBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: "#F1F5F9",
     alignItems: "center",
     justifyContent: "center",
+    // Android shadow
+    elevation: 1,
   },
 
-  // Cards list
-  scroll: {
-    paddingHorizontal: 16,
-    gap: 10,
+  /* Cards list */
+  list: {
+    paddingHorizontal: 14,
     paddingBottom: 8,
+    gap: 10,
   },
+
+  /* Card */
   card: {
     flexDirection: "row",
     alignItems: "center",
     borderRadius: 20,
-    padding: 14,
+    paddingVertical: 14,
+    paddingHorizontal: 14,
     gap: 14,
-    borderWidth: 1,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 1,
     minHeight: 88,
+    // shadow
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
+    // Badge positioning anchor
+    position: "relative",
+    overflow: "visible",
   },
-  iconWrap: {
+  iconBox: {
     width: 56,
     height: 56,
     borderRadius: 16,
@@ -423,27 +428,8 @@ const s = StyleSheet.create({
   cardBody: {
     flex: 1,
   },
-  badge: {
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "flex-start",
-    borderRadius: 20,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderWidth: 1,
-    marginBottom: 4,
-    gap: 3,
-  },
-  badgeEmoji: {
-    fontSize: 10,
-  },
-  badgeText: {
-    fontSize: 11,
-    fontWeight: "600",
-    fontFamily: "Inter_600SemiBold",
-  },
   cardTitle: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: "700",
     color: "#111827",
     fontFamily: "Inter_700Bold",
@@ -456,84 +442,108 @@ const s = StyleSheet.create({
     lineHeight: 18,
     marginTop: 3,
   },
-  arrow: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+
+  /* Arrow circle */
+  arrowCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
 
-  // Security footer
-  securityCard: {
+  /* Badge — absolute top-right */
+  badge: {
+    position: "absolute",
+    top: -1,
+    right: 62,   // sits just left of the arrow circle
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    borderRadius: 20,
+    borderWidth: 1,
+  },
+  badgeEmoji: {
+    fontSize: 11,
+  },
+  badgeLabel: {
+    fontSize: 11,
+    fontWeight: "700",
+    fontFamily: "Inter_700Bold",
+  },
+
+  /* Security footer */
+  secRow: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#F0FDF4",
     borderRadius: 20,
     padding: 16,
     gap: 12,
+    marginTop: 2,
     overflow: "hidden",
-    marginTop: 4,
   },
-  securityIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+  shieldWrap: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     backgroundColor: "#DCFCE7",
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
   },
-  securityText: {
+  secText: {
     flex: 1,
   },
-  securityTitleRow: {
+  secTitleRow: {
     flexDirection: "row",
     alignItems: "center",
   },
-  securityTitle: {
+  secTitle: {
     fontSize: 14,
     fontWeight: "700",
     color: "#16A34A",
     fontFamily: "Inter_700Bold",
   },
-  securityDesc: {
+  secDesc: {
     fontSize: 12,
     color: "#6B7280",
     fontFamily: "Inter_400Regular",
     lineHeight: 17,
     marginTop: 2,
   },
-  lockIllustration: {
-    width: 56,
-    height: 56,
+  lockWrap: {
+    width: 52,
+    height: 52,
     alignItems: "center",
     justifyContent: "center",
-    position: "relative",
     flexShrink: 0,
-  },
-  lockBody: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    backgroundColor: "#DCFCE7",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 1,
+    position: "relative",
   },
   lockGlow: {
     position: "absolute",
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
     backgroundColor: "#22C55E",
-    opacity: 0.12,
-    transform: [{ scale: 1.4 }],
+    opacity: 0.15,
+  },
+  lockBody: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: "#DCFCE7",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    borderColor: "#86EFAC",
   },
 });
