@@ -79,6 +79,33 @@ router.get("/groups", requireAuth, async (req, res): Promise<void> => {
   res.json(rows.map(r => ({ ...r, isMember: memberSet.has(r.id) })));
 });
 
+router.post("/groups", requireAuth, async (req, res): Promise<void> => {
+  const userId = req.userId!;
+  const { name, description, category, emoji, isPrivate } = req.body as {
+    name?: string; description?: string; category?: string;
+    emoji?: string; isPrivate?: boolean;
+  };
+  if (!name?.trim()) { res.status(400).json({ error: "name required" }); return; }
+
+  const [group] = await db.insert(groupsTable).values({
+    name: name.trim(),
+    description: description?.trim() ?? null,
+    category: category ?? null,
+    emoji: emoji ?? "👥",
+    privacy: isPrivate ? "private" : "public",
+    createdById: userId,
+    membersCount: 1,
+  }).returning();
+
+  await db.insert(groupMembersTable).values({
+    groupId: group.id,
+    userId,
+    role: "admin",
+  });
+
+  res.status(201).json({ ...group, isMember: true });
+});
+
 router.get("/groups/:id", requireAuth, async (req, res): Promise<void> => {
   const userId = req.userId!;
   const groupId = parseInt(req.params.id, 10);

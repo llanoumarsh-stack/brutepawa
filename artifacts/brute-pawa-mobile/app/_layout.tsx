@@ -97,6 +97,37 @@ function RootLayoutNav() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="login" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+
+      {/* ── Create bottom sheet ─────────────────────────────────── */}
+      <Stack.Screen
+        name="create/index"
+        options={{ headerShown: false, presentation: "transparentModal", animation: "none" }}
+      />
+      <Stack.Screen
+        name="create/post"
+        options={{ headerShown: false, presentation: "modal" }}
+      />
+      <Stack.Screen
+        name="create/product"
+        options={{ headerShown: false, presentation: "modal" }}
+      />
+      <Stack.Screen
+        name="create/service"
+        options={{ headerShown: false, presentation: "modal" }}
+      />
+      <Stack.Screen
+        name="create/group"
+        options={{ headerShown: false, presentation: "modal" }}
+      />
+      <Stack.Screen
+        name="create/job"
+        options={{ headerShown: false, presentation: "modal" }}
+      />
+      <Stack.Screen
+        name="create/course"
+        options={{ headerShown: false, presentation: "modal" }}
+      />
+
       <Stack.Screen
         name="chat/[userId]"
         options={{ headerShown: false, presentation: "card" }}

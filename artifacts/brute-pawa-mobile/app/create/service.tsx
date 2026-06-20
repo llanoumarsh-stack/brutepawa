@@ -26,10 +26,10 @@ export default function CreateServiceScreen() {
     if (!title.trim()) { Alert.alert("Erreur", "Titre requis."); return; }
     setSaving(true);
     try {
-      await fetch(`${API_BASE_URL}/api/services`, {
+      await fetch(`${API_BASE_URL}/api/marketplace/services`, {
         method: "POST",
         headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-        body: JSON.stringify({ title: title.trim(), price: price ? parseFloat(price) : null, description: desc, category, delivery }),
+        body: JSON.stringify({ title: title.trim(), price: price ? parseFloat(price) : null, description: desc, category, deliveryDays: delivery }),
       });
       router.back();
     } catch { Alert.alert("Erreur", "Impossible de créer le service."); }

@@ -64,6 +64,28 @@ router.post("/courses/:id/enroll", requireAuth, async (req, res): Promise<void> 
   res.status(201).json(enrollment);
 });
 
+router.post("/courses", requireAuth, async (req, res): Promise<void> => {
+  const userId = req.userId!;
+  const { title, description, price, level, category } = req.body as {
+    title?: string; description?: string; price?: number;
+    level?: string; category?: string;
+  };
+  if (!title?.trim()) { res.status(400).json({ error: "title required" }); return; }
+
+  const [course] = await db.insert(coursesTable).values({
+    title: title.trim(),
+    description: description?.trim() ?? null,
+    price: price != null ? String(price) : null,
+    isFree: !price || price === 0,
+    level: (level as any) ?? "beginner",
+    category: category ?? "general",
+    instructorId: userId,
+    duration: 0,
+  }).returning();
+
+  res.status(201).json(fmtCourse(course));
+});
+
 router.get("/enrollments", requireAuth, async (req, res): Promise<void> => {
   const enrollments = await db.select().from(enrollmentsTable)
     .where(eq(enrollmentsTable.userId, req.userId!))

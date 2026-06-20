@@ -173,9 +173,18 @@ export default function FeedScreen() {
             colors={[colors.primary]}
           />
         }
-        contentContainerStyle={posts.length === 0 ? styles.emptyContent : undefined}
+        contentContainerStyle={posts.length === 0 ? styles.emptyContent : { paddingBottom: 96 }}
         showsVerticalScrollIndicator={false}
       />
+
+      {/* ── FAB Créer ───────────────────────────────────────────── */}
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => router.push("/create" as any)}
+        activeOpacity={0.85}
+      >
+        <Ionicons name="add" size={28} color="#FFFFFF" />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -230,6 +239,22 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   emptyContent: { flexGrow: 1 },
+  fab: {
+    position: "absolute",
+    bottom: 28,
+    right: 20,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: "#22C55E",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#22C55E",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 14,
+    elevation: 10,
+  },
   badge: {
     position: "absolute",
     top: -4,
