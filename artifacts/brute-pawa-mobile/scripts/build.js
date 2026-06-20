@@ -282,6 +282,29 @@ async function downloadManifest(platform) {
   }
 }
 
+async function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function downloadBundleWithRetry(platform, timestamp, maxRetries = 3) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      if (attempt > 1) {
+        const delayMs = attempt * 8000;
+        console.log(`Retrying ${platform} bundle (attempt ${attempt}/${maxRetries}) after ${delayMs / 1000}s...`);
+        await sleep(delayMs);
+      }
+      await downloadBundle(platform, timestamp);
+      return;
+    } catch (error) {
+      if (attempt === maxRetries) {
+        throw error;
+      }
+      console.warn(`${platform} bundle attempt ${attempt} failed: ${error.message}`);
+    }
+  }
+}
+
 async function downloadBundlesAndManifests(timestamp) {
   console.log("Downloading bundles and manifests...");
   console.log("This may take several minutes for production builds...");
@@ -289,8 +312,10 @@ async function downloadBundlesAndManifests(timestamp) {
   try {
     // Bundles are sequential — Metro can't handle both platforms simultaneously
     // without stalling. Manifests are cheap and run in parallel after.
-    await downloadBundle("ios", timestamp);
-    await downloadBundle("android", timestamp);
+    await downloadBundleWithRetry("ios", timestamp);
+    // Give Metro a moment to recover before the Android bundle
+    await sleep(3000);
+    await downloadBundleWithRetry("android", timestamp);
 
     const [iosManifest, androidManifest] = await Promise.all([
       downloadManifest("ios"),
