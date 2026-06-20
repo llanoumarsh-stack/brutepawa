@@ -13,7 +13,7 @@ import { useColors } from "@/hooks/useColors";
 import { useAuth } from "@/context/AuthContext";
 import { API_BASE_URL } from "@/constants/api";
 
-function useUnreadNotifCount(token: string | null) {
+function useUnreadCount(token: string | null) {
   return useQuery<number>({
     queryKey: ["notif-unread-count"],
     queryFn: async () => {
@@ -30,43 +30,7 @@ function useUnreadNotifCount(token: string | null) {
   });
 }
 
-interface TabLayoutProps {
-  unreadCount: number;
-}
-
-function NativeTabLayout({ unreadCount }: TabLayoutProps) {
-  const badgeValue = unreadCount > 0
-    ? (unreadCount > 99 ? "99+" : String(unreadCount))
-    : undefined;
-
-  return (
-    <NativeTabs>
-      <NativeTabs.Trigger name="index">
-        <Icon sf={{ default: "house", selected: "house.fill" }} />
-        <Label>Accueil</Label>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="marketplace">
-        <Icon sf={{ default: "storefront", selected: "storefront.fill" }} />
-        <Label>Marché</Label>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="messages">
-        <Icon sf={{ default: "bubble.left", selected: "bubble.left.fill" }} />
-        <Label>Messages</Label>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="notifications">
-        <Icon sf={{ default: "bell", selected: "bell.fill" }} />
-        <Label>Alertes</Label>
-        {badgeValue !== undefined && <Badge>{badgeValue}</Badge>}
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="profile">
-        <Icon sf={{ default: "person", selected: "person.fill" }} />
-        <Label>Profil</Label>
-      </NativeTabs.Trigger>
-    </NativeTabs>
-  );
-}
-
-function ClassicTabLayout({ unreadCount }: TabLayoutProps) {
+function ClassicTabLayout({ unreadCount }: { unreadCount: number }) {
   const colors = useColors();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
@@ -74,20 +38,24 @@ function ClassicTabLayout({ unreadCount }: TabLayoutProps) {
   const isWeb = Platform.OS === "web";
   const insets = useSafeAreaInsets();
 
+  const badgeValue = unreadCount > 0
+    ? (unreadCount > 99 ? "99+" : unreadCount)
+    : undefined;
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.mutedForeground,
+        tabBarActiveTintColor: "#22C55E",
+        tabBarInactiveTintColor: "#9CA3AF",
         tabBarStyle: {
           position: "absolute",
-          backgroundColor: isIOS ? "transparent" : colors.background,
-          borderTopWidth: isWeb ? 1 : StyleSheet.hairlineWidth,
-          borderTopColor: colors.border,
+          backgroundColor: isIOS ? "transparent" : "#FFFFFF",
+          borderTopWidth: StyleSheet.hairlineWidth,
+          borderTopColor: "#E5E7EB",
           elevation: 0,
           paddingBottom: isWeb ? 0 : insets.bottom,
-          ...(isWeb ? { height: 84 } : {}),
+          ...(isWeb ? { height: 64 } : {}),
         },
         tabBarBackground: () =>
           isIOS ? (
@@ -96,9 +64,10 @@ function ClassicTabLayout({ unreadCount }: TabLayoutProps) {
               tint={isDark ? "dark" : "light"}
               style={StyleSheet.absoluteFill}
             />
-          ) : isWeb ? (
-            <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.background }]} />
-          ) : null,
+          ) : (
+            <View style={[StyleSheet.absoluteFill, { backgroundColor: "#FFFFFF" }]} />
+          ),
+        tabBarLabelStyle: { fontSize: 11, fontFamily: "Inter_500Medium" },
       }}
     >
       <Tabs.Screen
@@ -114,61 +83,94 @@ function ClassicTabLayout({ unreadCount }: TabLayoutProps) {
         }}
       />
       <Tabs.Screen
-        name="marketplace"
-        options={{
-          title: "Marché",
-          tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <SymbolView name="storefront" tintColor={color} size={24} />
-            ) : (
-              <Ionicons name="storefront-outline" size={22} color={color} />
-            ),
-        }}
-      />
-      <Tabs.Screen
         name="messages"
         options={{
-          title: "Messages",
+          title: "Discussions",
+          tabBarBadge: badgeValue,
           tabBarIcon: ({ color }) =>
             isIOS ? (
               <SymbolView name="bubble.left" tintColor={color} size={24} />
             ) : (
-              <Feather name="message-circle" size={22} color={color} />
+              <Ionicons name="chatbubble-outline" size={22} color={color} />
+            ),
+        }}
+      />
+      <Tabs.Screen
+        name="diffusions"
+        options={{
+          title: "Diffusions",
+          tabBarIcon: ({ color, focused }) =>
+            isIOS ? (
+              <SymbolView name="megaphone" tintColor={focused ? "#22C55E" : color} size={24} />
+            ) : (
+              <Ionicons name="megaphone-outline" size={22} color={focused ? "#22C55E" : color} />
             ),
         }}
       />
       <Tabs.Screen
         name="notifications"
         options={{
-          title: "Alertes",
-          tabBarBadge: unreadCount > 0 ? (unreadCount > 99 ? "99+" : unreadCount) : undefined,
+          title: "Appels",
           tabBarIcon: ({ color }) =>
             isIOS ? (
-              <SymbolView name="bell" tintColor={color} size={24} />
+              <SymbolView name="phone" tintColor={color} size={24} />
             ) : (
-              <Ionicons name="notifications-outline" size={22} color={color} />
+              <Feather name="phone" size={22} color={color} />
             ),
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: "Profil",
+          title: "Paramètres",
           tabBarIcon: ({ color }) =>
             isIOS ? (
-              <SymbolView name="person" tintColor={color} size={24} />
+              <SymbolView name="gearshape" tintColor={color} size={24} />
             ) : (
-              <Feather name="user" size={22} color={color} />
+              <Ionicons name="settings-outline" size={22} color={color} />
             ),
         }}
       />
+      <Tabs.Screen name="marketplace" options={{ href: null }} />
     </Tabs>
+  );
+}
+
+function NativeTabLayout({ unreadCount }: { unreadCount: number }) {
+  const badgeValue = unreadCount > 0
+    ? (unreadCount > 99 ? "99+" : String(unreadCount))
+    : undefined;
+
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <Icon sf={{ default: "house", selected: "house.fill" }} />
+        <Label>Accueil</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="messages">
+        <Icon sf={{ default: "bubble.left", selected: "bubble.left.fill" }} />
+        <Label>Discussions</Label>
+        {badgeValue !== undefined && <Badge>{badgeValue}</Badge>}
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="diffusions">
+        <Icon sf={{ default: "megaphone", selected: "megaphone.fill" }} />
+        <Label>Diffusions</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="notifications">
+        <Icon sf={{ default: "phone", selected: "phone.fill" }} />
+        <Label>Appels</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="profile">
+        <Icon sf={{ default: "gearshape", selected: "gearshape.fill" }} />
+        <Label>Paramètres</Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
   );
 }
 
 export default function TabLayout() {
   const { token } = useAuth();
-  const unreadCountQuery = useUnreadNotifCount(token);
+  const unreadCountQuery = useUnreadCount(token);
   const unreadCount = unreadCountQuery.data ?? 0;
 
   if (isLiquidGlassAvailable()) {
