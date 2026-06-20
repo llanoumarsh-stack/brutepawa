@@ -470,8 +470,8 @@ export default function Profile() {
                 {/* Name + badges */}
                 <div style={{ display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap" }}>
                   <span className="profile-name">{localUser.name}</span>
-                  {/* Verified blue badge — Pat Pat only */}
-                  {localUser.id === 13 && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 22, height: 22, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />}
+                  {/* Verified blue badge — premium users */}
+                  {[13, 26, 40].includes(localUser.id) && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 22, height: 22, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />}
                   {/* Medal badge — argent, SVG custom */}
                   <svg width="20" height="22" viewBox="0 0 20 22" fill="none" style={{ flexShrink: 0 }}>
                     {/* Ribbon */}

@@ -493,7 +493,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
         <div style={{ background: "#fff", paddingTop: 58, paddingBottom: 18, paddingLeft: 12, paddingRight: 12, borderBottom: "1px solid #F1F5F9" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 7, flexWrap: "wrap", marginBottom: 5 }}>
             <span style={{ fontWeight: 900, fontSize: 22, color: "#0D1B2A", letterSpacing: -0.3 }}>{name}</span>
-            {userId === 13 && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 20, height: 20, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />}
+            {[13, 26, 40].includes(userId) && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 20, height: 20, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 18 }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -778,7 +778,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
               <div style={{ textAlign: "center" }}>
                 <div style={{ fontWeight: 900, fontSize: 20, color: "#0D1B2A", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
                   {name}
-                  {userId === 13 && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 20, height: 20, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />}
+                  {[13, 26, 40].includes(userId) && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 20, height: 20, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />}
                 </div>
                 <div style={{ fontSize: 13, color: "#8896A6", marginTop: 4 }}>@{name.toLowerCase().replace(/\s+/g, "_")}</div>
               </div>
@@ -968,7 +968,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
           {/* Name */}
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
             <span style={{ fontWeight: 900, fontSize: 23, color: "#0D1B2A", lineHeight: 1.2 }}>{name}</span>
-            {userId === 13 && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 22, height: 22, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />}
+            {[13, 26, 40].includes(userId) && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 22, height: 22, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />}
             {(user as any).role === "creator" && (
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
                 <path d="M12 2L14.09 8.26L21 9.27L16.5 13.97L17.64 21L12 17.77L6.36 21L7.5 13.97L3 9.27L9.91 8.26L12 2Z" fill="#22C55E"/>

@@ -2893,7 +2893,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           {/* name + verified badge */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, marginBottom: 6 }}>
             <span style={{ fontWeight: 900, fontSize: 22, color: "#0D1B2A", letterSpacing: -0.3 }}>{activeUser.name}</span>
-            {activeConv === 13 && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 22, height: 22, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />}
+            {[13, 26, 40].includes(activeConv) && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 22, height: 22, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />}
           </div>
 
           {/* presence text */}
@@ -3346,7 +3346,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             <div style={{ flex:1, minWidth:0, cursor:"pointer" }} onClick={() => setOverlay("info")}>
               <div style={{ display:"flex", alignItems:"center", gap:4 }}>
                 <span style={{ fontWeight:700, fontSize:15.5, color:"#0F172A", lineHeight:1.2, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{activeUser.name}</span>
-                {activeConv === 13 && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width:15, height:15, objectFit:"cover", borderRadius:"50%", flexShrink:0 }} />}
+                {[13, 26, 40].includes(activeConv) && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width:15, height:15, objectFit:"cover", borderRadius:"50%", flexShrink:0 }} />}
               </div>
               <div style={{ fontSize:11.5, fontWeight: (presence.online || peerTyping.typing) ? 500 : 400, color: peerTyping.typing ? "#22C55E" : presence.online ? "#22C55E" : "#9CA3AF", lineHeight:1.3 }}>
                 {peerTyping.typing
@@ -5999,9 +5999,12 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             <div style={{ flex:1, minWidth:0 }}>
               {/* Row 1: name + (checkmark for mine + time) */}
               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:2 }}>
-                <span style={{ fontWeight: item.unread > 0 ? 700 : 600, fontSize:15.5, color:"#0F172A", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", flex:1, minWidth:0, marginRight:6 }}>
-                  {item.name}
-                </span>
+                <div style={{ display:"flex", alignItems:"center", gap:4, flex:1, minWidth:0, marginRight:6, overflow:"hidden" }}>
+                  <span style={{ fontWeight: item.unread > 0 ? 700 : 600, fontSize:15.5, color:"#0F172A", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+                    {item.name}
+                  </span>
+                  {item.type === "conv" && [13, 26, 40].includes(item.id) && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width:14, height:14, objectFit:"cover", borderRadius:"50%", flexShrink:0 }} />}
+                </div>
                 <div style={{ display:"flex", alignItems:"center", gap:3, flexShrink:0 }}>
                   {/* Telegram-style checkmarks — only for mine, only in DM conv */}
                   {item.type === "conv" && item.lastMsgMine && (() => {
