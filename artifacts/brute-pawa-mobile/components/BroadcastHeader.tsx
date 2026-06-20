@@ -36,7 +36,7 @@ export default function BroadcastHeader({
         <Ionicons name="chevron-back" size={26} color="#111827" />
       </TouchableOpacity>
 
-      <View style={s.avatar}>
+      <View style={[s.avatar, { backgroundColor: color }]}>
         <Text style={s.avatarText}>{emoji}</Text>
       </View>
 
@@ -75,7 +75,6 @@ const s = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#22C55E",
     alignItems: "center",
     justifyContent: "center",
   },

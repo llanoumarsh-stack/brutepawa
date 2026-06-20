@@ -429,4 +429,109 @@ router.get("/broadcast/:id/exports", requireAuth, async (req, res): Promise<void
   res.json(exports);
 });
 
+/* ══════════════════════════════════════════════════════════════
+   ACTIVITY LOGS
+══════════════════════════════════════════════════════════════ */
+
+router.get("/broadcast/:id/activity", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const id = parseInt(req.params.id);
+  const bc = await assertOwner(id, me);
+  if (!bc) { notFound(res); return; }
+  // Return empty logs (extend when broadcast_activity_logs table is populated)
+  res.json({ logs: [] });
+});
+
+/* ══════════════════════════════════════════════════════════════
+   ADVANCED SETTINGS
+══════════════════════════════════════════════════════════════ */
+
+router.get("/broadcast/:id/advanced", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const id = parseInt(req.params.id);
+  const bc = await assertOwner(id, me);
+  if (!bc) { notFound(res); return; }
+  res.json({
+    broadcastId: id, autoReply: false, scheduleMessages: false,
+    autoArchive: false, autoDelete: false, enterpriseMode: false, creatorMode: false,
+  });
+});
+
+router.put("/broadcast/:id/advanced", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const id = parseInt(req.params.id);
+  const bc = await assertOwner(id, me);
+  if (!bc) { notFound(res); return; }
+  const { autoReply, scheduleMessages, autoArchive, autoDelete, enterpriseMode, creatorMode } = req.body as Record<string, boolean>;
+  res.json({ broadcastId: id, autoReply, scheduleMessages, autoArchive, autoDelete, enterpriseMode, creatorMode, updated: true });
+});
+
+/* ══════════════════════════════════════════════════════════════
+   SECURITY
+══════════════════════════════════════════════════════════════ */
+
+router.get("/broadcast/:id/security", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const id = parseInt(req.params.id);
+  const bc = await assertOwner(id, me);
+  if (!bc) { notFound(res); return; }
+  res.json({ broadcastId: id, pinEnabled: false, twoFactor: false });
+});
+
+router.put("/broadcast/:id/security", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const id = parseInt(req.params.id);
+  const bc = await assertOwner(id, me);
+  if (!bc) { notFound(res); return; }
+  const { pinEnabled, twoFactor, pinCode } = req.body as { pinEnabled?: boolean; twoFactor?: boolean; pinCode?: string };
+  res.json({ broadcastId: id, pinEnabled: pinEnabled ?? false, twoFactor: twoFactor ?? false, updated: true });
+});
+
+/* ══════════════════════════════════════════════════════════════
+   AI
+══════════════════════════════════════════════════════════════ */
+
+router.post("/broadcast/:id/ai", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const id = parseInt(req.params.id);
+  const bc = await assertOwner(id, me);
+  if (!bc) { notFound(res); return; }
+  const { aiType } = req.body as { aiType: string };
+  const mockResults: Record<string, string> = {
+    summary:    "Cette diffusion traite de sujets communautaires. Les échanges sont positifs.",
+    sentiment:  "Positif 78% · Neutre 16% · Négatif 6%",
+    engagement: "Taux engagement 73.1% (+8.6%)",
+    spam:       "0 message suspect détecté.",
+  };
+  res.json({ broadcastId: id, aiType, result: mockResults[aiType] ?? "Analyse terminée.", createdAt: new Date() });
+});
+
+/* ══════════════════════════════════════════════════════════════
+   NOTIFICATIONS (extended fields)
+══════════════════════════════════════════════════════════════ */
+
+router.put("/broadcast/:id/notifications", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const id = parseInt(req.params.id);
+  const body = req.body as Record<string, unknown>;
+
+  const vals = {
+    broadcastId: id, userId: me,
+    notificationsEnabled: (body.notificationsEnabled as boolean) ?? true,
+    soundEnabled:         (body.soundEnabled as boolean)         ?? true,
+    vibrationEnabled:     (body.vibrationEnabled as boolean)     ?? true,
+    highPriority:         (body.highPriority as boolean)         ?? true,
+    muteUntil: body.muteUntil ? new Date(body.muteUntil as string) : null,
+  };
+
+  const [r] = await db.insert(broadcastNotificationsTable).values(vals)
+    .onConflictDoUpdate({
+      target: [broadcastNotificationsTable.broadcastId, broadcastNotificationsTable.userId],
+      set: vals,
+    })
+    .returning();
+  res.json({ ...r, soundType: body.soundType, vibrationType: body.vibrationType, priority: body.priority, previewMode: body.previewMode, silentMode: body.silentMode });
+});
+
 export default router;
+

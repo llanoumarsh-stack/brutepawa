@@ -113,6 +113,114 @@ function RootLayoutNav() {
         name="groups/new"
         options={{ headerShown: false, presentation: "card" }}
       />
+      <Stack.Screen
+        name="broadcast/new"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/index"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/rename"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/members"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/confirm-clear"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/filters"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/notifications"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/date-search"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/import-phone"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/ringtone"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/vibration"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/priority"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/preview-mode"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/media"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/stats"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/advanced"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/export"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/export-history"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/security"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/ai"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/activity-log"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/import-file"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/sync-contacts"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/cloud-backup"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/cover"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/color"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="broadcast/[id]/author-search"
+        options={{ headerShown: false, presentation: "card" }}
+      />
     </Stack>
   );
 }
