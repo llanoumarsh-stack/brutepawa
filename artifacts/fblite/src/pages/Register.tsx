@@ -394,7 +394,7 @@ export default function Register() {
     const dob   = `${year}-${String(month).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
     setLoading(true); setError("");
     try {
-      const { token, user } = await apiRegister({ firstName, lastName, email, password, phone, countryCode, gender, dateOfBirth: dob, username });
+      const { token, user } = await apiRegister({ firstName, lastName, email, password, phone, country: countryCode });
       setBpToken(token); saveFbUser(user);
       next();
     } catch (e: unknown) {
