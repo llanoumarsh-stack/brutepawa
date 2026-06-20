@@ -4920,19 +4920,19 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           </div>
         )}
 
+        {/* Hidden file inputs — PERMANENTS, hors portal pour survivre à la fermeture de la sheet */}
+        <input ref={galleryInputRef} type="file" accept="image/*" style={{ display:"none" }}
+          onChange={e => { const f=e.target.files?.[0]; if(f) handleFileInput(f,"image"); e.target.value=""; }} />
+        <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" style={{ display:"none" }}
+          onChange={e => { const f=e.target.files?.[0]; if(f) handleFileInput(f,"image"); e.target.value=""; }} />
+        <input ref={docInputRef} type="file" accept=".pdf,.doc,.docx,.txt,.xls,.xlsx,.ppt,.pptx,.csv,.zip" style={{ display:"none" }}
+          onChange={e => { const f=e.target.files?.[0]; if(f) handleFileInput(f,"doc"); e.target.value=""; }} />
+
         {/* ── ATTACHMENT SHEET ── */}
         {attachSheet && createPortal(
           <div style={{ position:"fixed", inset:0, zIndex:10002, display:"flex", flexDirection:"column", justifyContent:"flex-end" }}>
             <div style={{ background:"rgba(0,0,0,0.45)", position:"absolute", inset:0 }} onClick={() => { setAttachSheet(false); setAttachPage("none"); }} />
             <div style={{ background:"#fff", borderRadius:"22px 22px 0 0", position:"relative", zIndex:1, animation:"fbl-sheet-up 0.22s cubic-bezier(.2,.8,.2,1)", boxShadow:"0 -2px 20px rgba(0,0,0,0.08)", maxHeight:"90dvh", overflowY:"auto" }}>
-
-              {/* Hidden file inputs */}
-              <input ref={galleryInputRef} type="file" accept="image/*" style={{ display:"none" }}
-                onChange={e => { const f=e.target.files?.[0]; if(f) handleFileInput(f,"image"); e.target.value=""; }} />
-              <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" style={{ display:"none" }}
-                onChange={e => { const f=e.target.files?.[0]; if(f) handleFileInput(f,"image"); e.target.value=""; }} />
-              <input ref={docInputRef} type="file" accept=".pdf,.doc,.docx,.txt,.xls,.xlsx,.ppt,.pptx,.csv,.zip" style={{ display:"none" }}
-                onChange={e => { const f=e.target.files?.[0]; if(f) handleFileInput(f,"doc"); e.target.value=""; }} />
 
               {/* MAIN ICONS — Telegram Premium single row */}
               {attachPage === "none" && (
