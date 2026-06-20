@@ -327,7 +327,6 @@ export default function Register() {
   const [regionFlag, setRegionFlag] = useState<string>(_fast.countryFlag || "🌍");
   const [regionName, setRegionName] = useState<string>(_fast.countryName || "");
   const [showLang, setShowLang] = useState(false);
-  const [countdown, setCountdown] = useState(5);
   const [showConfetti, setShowConfetti] = useState(false);
   const [smsCountdown, setSmsCountdown] = useState(60);
 
