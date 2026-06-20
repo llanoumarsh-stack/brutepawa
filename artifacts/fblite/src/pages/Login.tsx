@@ -6,10 +6,12 @@ import { getPopularLanguages, searchLanguages, type Language } from "../services
 import { detectRegion, getLanguageForRegion } from "../services/regionService";
 
 /* ─── Language Bottom Sheet ─────────────────────────────────── */
-function LanguageSheet({ current, onSelect, onClose }: {
+function LanguageSheet({ current, onSelect, onClose, regionFlag, regionName }: {
   current: Language;
   onSelect: (l: Language) => void;
   onClose: () => void;
+  regionFlag?: string;
+  regionName?: string;
 }) {
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -75,15 +77,20 @@ function LanguageSheet({ current, onSelect, onClose }: {
             <div style={{ textAlign: "center", padding: "28px 0", color: "#6B7280", fontSize: 14 }}>Aucune langue trouvée</div>
           )}
         </div>
-        <div style={{ padding: "12px 20px 28px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "11px 14px", background: "rgba(255,255,255,0.03)" }}>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M8 1.5C5.79 1.5 4 3.29 4 5.5c0 3.25 4 9 4 9s4-5.75 4-9c0-2.21-1.79-4-4-4z" stroke="#9CA3AF" strokeWidth="1.3"/>
-              <circle cx="8" cy="5.5" r="1.3" stroke="#9CA3AF" strokeWidth="1.3"/>
-            </svg>
-            <span style={{ flex: 1, fontSize: 13, color: "#9CA3AF", fontWeight: 500 }}>Région de l'application</span>
+        {(regionFlag || regionName) && (
+          <div style={{ padding: "10px 20px 28px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, border: "1px solid rgba(34,197,94,0.15)", borderRadius: 12, padding: "11px 14px", background: "rgba(34,197,94,0.06)" }}>
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                <path d="M7.5 1.5C5.57 1.5 4 3.07 4 5s3.5 8 3.5 8 3.5-5.93 3.5-8c0-1.93-1.57-3.5-3.5-3.5z" stroke="#22C55E" strokeWidth="1.3"/>
+                <circle cx="7.5" cy="5" r="1.2" stroke="#22C55E" strokeWidth="1.2"/>
+              </svg>
+              <span style={{ fontSize: 12, color: "#6B7280", fontWeight: 500 }}>📍 Pays détecté automatiquement</span>
+              <span style={{ marginLeft: "auto", fontSize: 14, fontWeight: 700, color: "#22C55E", display: "flex", alignItems: "center", gap: 5 }}>
+                {regionFlag} {regionName}
+              </span>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </>,
     document.body
@@ -161,18 +168,18 @@ export default function Login() {
   const [loading, setLoading]   = useState(false);
   const [showLangSheet, setShowLangSheet] = useState(false);
   const [lang, setLang]         = useState<Language>(getPopularLanguages()[0]);
-  const [regionLabel, setRegionLabel] = useState<string>("");
+  const [regionFlag, setRegionFlag] = useState<string>("");
+  const [regionName, setRegionName] = useState<string>("");
   const navigate = useNavigate();
 
-  /* Auto-detect region on mount */
+  /* Auto-detect region on mount — always fresh (skipCache=true) */
   useEffect(() => {
-    detectRegion().then(region => {
+    detectRegion(true).then(region => {
       const l = getLanguageForRegion(region);
       setLang(l);
-      if (region.detected && region.countryName) {
-        setRegionLabel(`${region.countryFlag} ${region.countryName}`);
-      }
-    }).catch(() => {});
+      setRegionFlag(region.countryFlag || "🌍");
+      setRegionName(region.countryName || "Monde");
+    }).catch(() => { setRegionFlag("🌍"); setRegionName("Monde"); });
   }, []);
 
   const handleLogin = useCallback(async (e: React.FormEvent) => {
@@ -405,16 +412,16 @@ export default function Login() {
             <path d="M3 5l4 4 4-4" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </button>
-        {regionLabel && (
-          <div style={{ textAlign: "center", marginTop: 6, fontSize: 11, color: "rgba(255,255,255,0.3)", letterSpacing: "0.02em" }}>
-            🌍 {regionLabel}
+        {regionName && (
+          <div style={{ textAlign: "center", marginTop: 5, fontSize: 11, color: "rgba(255,255,255,0.35)", letterSpacing: "0.02em", animation: "fadeIn .4s ease" }}>
+            📍 {regionFlag} {regionName}
           </div>
         )}
       </div>
 
       {/* Language sheet */}
       {showLangSheet && (
-        <LanguageSheet current={lang} onSelect={setLang} onClose={() => setShowLangSheet(false)} />
+        <LanguageSheet current={lang} onSelect={setLang} onClose={() => setShowLangSheet(false)} regionFlag={regionFlag} regionName={regionName} />
       )}
     </div>
   );

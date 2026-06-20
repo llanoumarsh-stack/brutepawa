@@ -22,6 +22,7 @@ import storageRouter from "./storage";
 import eventsRouter from "./events";
 import chatGroupsRouter from "./chatGroups";
 import messagingRouter from "./messaging";
+import regionRouter from "./region";
 
 const router: IRouter = Router();
 
@@ -48,5 +49,6 @@ router.use(storageRouter);
 router.use(eventsRouter);
 router.use(chatGroupsRouter);
 router.use(messagingRouter);
+router.use(regionRouter);
 
 export default router;
