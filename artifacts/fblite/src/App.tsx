@@ -61,6 +61,7 @@ import ChatBackupPage from "./pages/ChatBackupPage";
 import AdvancedSettingsPage from "./pages/AdvancedSettingsPage";
 import AboutPage from "./pages/AboutPage";
 import BroadcastListPage from "./pages/BroadcastListPage";
+import PeoplePage from "./pages/PeoplePage";
 
 import { ADMIN_SECRET_PATH } from "./lib/admin";
 import { Post } from "./lib/store";
@@ -408,6 +409,10 @@ function AppContent() {
   if (userAliasMatch) {
     const uid = parseInt(userAliasMatch.id, 10);
     if (!isNaN(uid)) return <UserProfilePage userId={uid} />;
+  }
+
+  if (path === "/people") {
+    return <PeoplePage />;
   }
 
   if (path === "/profile") {

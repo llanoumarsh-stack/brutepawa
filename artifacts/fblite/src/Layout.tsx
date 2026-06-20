@@ -422,10 +422,10 @@ export default function Layout({ children, onNewPost }: Props) {
         })()}
         {/* Amis */}
         {(() => {
-          const active = path === "/community";
+          const active = path === "/people" || path === "/community";
           const c = active ? "#22C55E" : "#64748B";
           return (
-            <button onClick={() => navigate("/community")} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", gap: 3, borderTop: active ? "3px solid #22C55E" : "3px solid transparent", height: "100%", padding: 0, position: "relative" }}>
+            <button onClick={() => navigate("/people")} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", gap: 3, borderTop: active ? "3px solid #22C55E" : "3px solid transparent", height: "100%", padding: 0, position: "relative" }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="3.5" stroke={c} strokeWidth="1.8"/><circle cx="17" cy="8" r="2.5" stroke={c} strokeWidth="1.8"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6" stroke={c} strokeWidth="1.8" strokeLinecap="round"/><path d="M19 14c2.5.5 4 2 4 4.5" stroke={c} strokeWidth="1.8" strokeLinecap="round"/></svg>
               <span style={{ fontSize: 10, fontWeight: active ? 700 : 500, color: c }}>Amis</span>
               {pendingRequests > 0 && <span style={{ position:"absolute", top:6, right:"22%", background:"#E41E3F", color:"#fff", borderRadius:10, minWidth:14, height:14, fontSize:9, fontWeight:800, display:"flex", alignItems:"center", justifyContent:"center", padding:"0 3px", border:"1.5px solid #fff" }}>{pendingRequests > 9 ? "9+" : pendingRequests}</span>}

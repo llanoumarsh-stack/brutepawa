@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, bigint, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, timestamp, bigint, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -17,6 +17,11 @@ export const usersTable = pgTable("users", {
   status: text("status").notNull().default("active"),
   totalStorageBytes: bigint("total_storage_bytes", { mode: "number" }).notNull().default(0),
   profileLocked: boolean("profile_locked").notNull().default(false),
+  verified:        boolean("verified").notNull().default(false),
+  score:           integer("score").notNull().default(0),
+  followersCount:  integer("followers_count").notNull().default(0),
+  followingCount:  integer("following_count").notNull().default(0),
+  friendsCount:    integer("friends_count").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });

@@ -9,3 +9,4 @@ export * from "./community";
 export * from "./gifts";
 export * from "./storage";
 export * from "./broadcast";
+export * from "./people";
