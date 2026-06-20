@@ -27,20 +27,20 @@ function timeAgo(iso: string) {
 }
 
 /* ─── SVG Icons ────────────────────────────────────────────── */
-const IcoSearch = () => <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>;
+const IcoSearch = () => <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>;
 const IcoFilter = () => <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>;
-const IcoHeart = ({ on }: { on: boolean }) => <svg viewBox="0 0 24 24" width="15" height="15" fill={on?"#F43F5E":"none"} stroke={on?"#F43F5E":"#94A3B8"} strokeWidth="2" strokeLinecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>;
-const IcoPin = () => <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>;
-const IcoEye = () => <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>;
+const IcoHeart = ({ on }: { on: boolean }) => <svg viewBox="0 0 24 24" width="15" height="15" fill={on?"#F43F5E":"none"} stroke={on?"#F43F5E":"#9CA3AF"} strokeWidth="2" strokeLinecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>;
+const IcoPin = () => <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>;
+const IcoEye = () => <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>;
 const IcoStar = () => <svg viewBox="0 0 24 24" width="12" height="12" fill="#FBBF24" stroke="#FBBF24" strokeWidth="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>;
 const IcoCheck = () => <svg viewBox="0 0 20 20" width="13" height="13" fill={G}><path d="M10 0C4.477 0 0 4.477 0 10s4.477 10 10 10 10-4.477 10-10S15.523 0 10 0zm-1 14.414L4.293 9.707l1.414-1.414L9 12.586l5.293-5.293 1.414 1.414L9 14.414z"/></svg>;
-const IcoBookmark = () => <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>;
+const IcoBookmark = () => <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>;
 const IcoBag = () => <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>;
 const IcoTag = () => <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>;
 const IcoWrench = () => <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>;
 const IcoBriefcase = () => <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>;
 const IcoPlus = () => <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>;
-const IcoCamera = () => <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>;
+const IcoCamera = () => <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>;
 const IcoPhone = () => <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6.07 6.07l.98-.98a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>;
 
 /* ─── Mock fallback data ────────────────────────────────────── */
@@ -246,7 +246,7 @@ export default function MarketplacePage() {
             flex: "0 0 auto", display: "flex", alignItems: "center", gap: 5, padding: "12px 12px",
             background: "none", border: "none", cursor: "pointer", whiteSpace: "nowrap",
             borderBottom: activeTab === tab.id ? `2.5px solid ${G}` : "2.5px solid transparent",
-            color: activeTab === tab.id ? G : "#6B7280",
+            color: activeTab === tab.id ? G : "#64748B",
             fontWeight: activeTab === tab.id ? 700 : 500, fontSize: 13,
             fontFamily: "inherit", transition: "color .15s",
           }}>
@@ -276,7 +276,7 @@ export default function MarketplacePage() {
             display: "flex", alignItems: "center", gap: 6,
             background: "#fff", border: "1px solid #E5E7EB", borderRadius: 24,
             padding: "0 16px", height: 44,
-            color: "#374151", fontWeight: 600, fontSize: 13, cursor: "pointer",
+            color: "#64748B", fontWeight: 600, fontSize: 13, cursor: "pointer",
             whiteSpace: "nowrap", boxShadow: "0 1px 3px rgba(0,0,0,0.05)", fontFamily: "inherit",
           }}>
             <IcoFilter />
@@ -293,7 +293,7 @@ export default function MarketplacePage() {
                 border: "1.5px solid",
                 borderColor: activeCategory === cat ? G : "#E5E7EB",
                 background: activeCategory === cat ? G : "#fff",
-                color: activeCategory === cat ? "#fff" : "#374151",
+                color: activeCategory === cat ? "#fff" : "#64748B",
                 fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit",
                 transition: "all .15s",
               }}>
@@ -328,7 +328,7 @@ export default function MarketplacePage() {
                   {[0,1,2].map(i => (
                     <div key={i} style={{
                       width: i === dotIdx ? 18 : 7, height: 7, borderRadius: 4,
-                      background: i === dotIdx ? G : "#D1D5DB",
+                      background: i === dotIdx ? G : "#E5E7EB",
                       transition: "all .4s ease",
                     }} />
                   ))}
@@ -369,7 +369,7 @@ export default function MarketplacePage() {
               Déposer une annonce
             </button>
 
-            <div style={{ fontWeight: 700, fontSize: 14, color: "#374151", marginBottom: 12 }}>
+            <div style={{ fontWeight: 700, fontSize: 14, color: "#64748B", marginBottom: 12 }}>
               {filteredProducts.length} article{filteredProducts.length !== 1 ? "s" : ""} disponible{filteredProducts.length !== 1 ? "s" : ""}
             </div>
 
@@ -464,7 +464,7 @@ export default function MarketplacePage() {
                   flex: 1, padding: "8px 0", border: "1.5px solid", borderRadius: 12,
                   borderColor: createType === t ? G : "#E5E7EB",
                   background: createType === t ? `${G}12` : "#fff",
-                  color: createType === t ? G : "#6B7280",
+                  color: createType === t ? G : "#64748B",
                   fontWeight: createType === t ? 700 : 500, fontSize: 13, cursor: "pointer",
                   fontFamily: "inherit", textTransform: "capitalize",
                 }}>
@@ -539,7 +539,7 @@ export default function MarketplacePage() {
                 onClick={handlePublish}
                 disabled={submitting}
                 style={{
-                  background: submitting ? "#D1D5DB" : G, color: "#fff", border: "none",
+                  background: submitting ? "#E5E7EB" : G, color: "#fff", border: "none",
                   borderRadius: 14, padding: "14px 0", fontWeight: 700, fontSize: 15,
                   cursor: submitting ? "not-allowed" : "pointer", fontFamily: "inherit",
                   boxShadow: submitting ? "none" : `0 4px 14px ${G}50`,
@@ -548,7 +548,7 @@ export default function MarketplacePage() {
                 {submitting ? "Publication..." : "Publier"}
               </button>
               <button onClick={() => setShowCreate(false)} style={{
-                background: "#F1F5F9", color: "#6B7280", border: "none", borderRadius: 14,
+                background: "#F1F5F9", color: "#64748B", border: "none", borderRadius: 14,
                 padding: "13px 0", fontWeight: 600, fontSize: 14, cursor: "pointer", fontFamily: "inherit",
               }}>
                 Annuler
@@ -695,7 +695,7 @@ function ServiceCard({ service }: { service: ApiMarketplaceService }) {
       {/* Text */}
       <div style={{ textAlign: "center", width: "100%" }}>
         <div style={{ fontWeight: 700, fontSize: 12, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{service.name}</div>
-        <div style={{ fontSize: 10.5, color: "#6B7280", marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{service.profession}</div>
+        <div style={{ fontSize: 10.5, color: "#64748B", marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{service.profession}</div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, marginTop: 5 }}>
           <IcoStar />
           <span style={{ fontWeight: 700, fontSize: 11, color: "#111827" }}>{service.rating.toFixed(1)}</span>
@@ -735,7 +735,7 @@ function ServiceCardGrid({ service }: { service: ApiMarketplaceService }) {
       </div>
       <div style={{ textAlign: "center" }}>
         <div style={{ fontWeight: 700, fontSize: 14, color: "#111827" }}>{service.name}</div>
-        <div style={{ fontSize: 12, color: "#6B7280", marginTop: 1 }}>{service.profession}</div>
+        <div style={{ fontSize: 12, color: "#64748B", marginTop: 1 }}>{service.profession}</div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, marginTop: 6 }}>
           <IcoStar />
           <span style={{ fontWeight: 700, fontSize: 13, color: "#111827" }}>{service.rating.toFixed(1)}</span>
@@ -765,7 +765,7 @@ function JobCard({ job }: {
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontWeight: 700, fontSize: 14, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{job.title}</div>
         <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 2 }}>
-          <span style={{ fontSize: 12, color: "#374151", fontWeight: 500 }}>{job.company}</span>
+          <span style={{ fontSize: 12, color: "#64748B", fontWeight: 500 }}>{job.company}</span>
           {job.verified && (
             <svg viewBox="0 0 16 16" width="14" height="14" fill={G}>
               <circle cx="8" cy="8" r="8"/>
@@ -801,7 +801,7 @@ function ProdSkeleton() {
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 28 }}>
       {[1,2,3,4].map(i => (
         <div key={i} style={{ background: "#fff", borderRadius: 16, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
-          <div style={{ height: 136, background: "linear-gradient(90deg,#F1F5F9 25%,#E2E8F0 50%,#F1F5F9 75%)", backgroundSize: "200% 100%", animation: "shimmer 1.4s infinite" }} />
+          <div style={{ height: 136, background: "linear-gradient(90deg,#F1F5F9 25%,#E5E7EB 50%,#F1F5F9 75%)", backgroundSize: "200% 100%", animation: "shimmer 1.4s infinite" }} />
           <div style={{ padding: "10px 11px 12px" }}>
             <div style={{ height: 12, background: "#F1F5F9", borderRadius: 6, marginBottom: 8 }} />
             <div style={{ height: 14, background: "#F1F5F9", borderRadius: 6, width: "60%" }} />

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "../router";
 import { apiFetch, getBpToken } from "../lib/api";
 
-const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"#22C55E",text:"#0F172A",secondary:"#64748B",muted:"#94A3B8",border:"#E2E8F0",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"#22C55E",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
 
 const Footer = () => (
   <div style={{ textAlign:"center",padding:"20px 0 32px" }}>
@@ -51,7 +51,7 @@ export default function MediaQualityPage() {
           ] as const).map(([q,title,sub,icon],i,arr)=>(
             <button key={q} onClick={()=>handleChange(q)}
               style={{ display:"flex",alignItems:"center",gap:14,padding:"18px 18px",background:"none",border:"none",cursor:"pointer",width:"100%",textAlign:"left",borderBottom:i<arr.length-1?"1px solid #F8FAFC":"none",transition:"background 150ms" }}
-              onPointerDown={e=>(e.currentTarget.style.background="#F8FAFB")} onPointerUp={e=>(e.currentTarget.style.background="none")} onPointerLeave={e=>(e.currentTarget.style.background="none")}>
+              onPointerDown={e=>(e.currentTarget.style.background="#F8FAFC")} onPointerUp={e=>(e.currentTarget.style.background="none")} onPointerLeave={e=>(e.currentTarget.style.background="none")}>
               <div style={{ width:48,height:48,borderRadius:"50%",background:quality===q?"linear-gradient(135deg,#DCFCE7,#BBF7D0)":"#F8FAFC",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,transition:"background 250ms",border:quality===q?"2px solid "+C.primary:"2px solid transparent" }}>
                 {icon && <span style={{ color:quality===q?C.primary:C.muted }}>{icon}</span>}
               </div>

@@ -23,7 +23,7 @@ function timeAgo(iso: string) {
 }
 
 const AVATAR_COLORS = [
-  "#1877F2","#E91E8C","#7B1FA2","#F57C00","#388E3C","#00838F","#C62828",
+  "#22C55E","#EC4899","#8B5CF6","#D97706","#388E3C","#00838F","#EF4444",
 ];
 
 export default function ReviewTagsModal({ onClose }: Props) {
@@ -93,7 +93,7 @@ export default function ReviewTagsModal({ onClose }: Props) {
         <div style={{ paddingTop: 10, paddingBottom: 4, display: "flex", justifyContent: "center" }}>
           <div style={{
             width: 40, height: 4, borderRadius: 4,
-            background: "#ccd0d5",
+            background: "#E5E7EB",
           }} />
         </div>
 
@@ -104,17 +104,17 @@ export default function ReviewTagsModal({ onClose }: Props) {
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ fontSize: 20 }}>👁️</span>
-            <span style={{ fontWeight: 800, fontSize: 18, color: "#050505" }}>
+            <span style={{ fontWeight: 800, fontSize: 18, color: "#111827" }}>
               Examiner les identifications
             </span>
           </div>
           <button
             onClick={onClose}
             style={{
-              background: "#f0f2f5", border: "none", borderRadius: "50%",
+              background: "#F1F5F9", border: "none", borderRadius: "50%",
               width: 32, height: 32, cursor: "pointer",
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 16, color: "#050505", fontWeight: 700, flexShrink: 0,
+              fontSize: 16, color: "#111827", fontWeight: 700, flexShrink: 0,
             }}
           >
             ✕
@@ -124,7 +124,7 @@ export default function ReviewTagsModal({ onClose }: Props) {
         {/* description */}
         <p style={{
           margin: 0, padding: "0 16px 14px",
-          fontSize: 13, color: "#65676b", lineHeight: 1.45,
+          fontSize: 13, color: "#64748B", lineHeight: 1.45,
         }}>
           Gérez les publications dans lesquelles vous avez été identifié(e) avant
           qu'elles apparaissent sur votre profil.
@@ -133,7 +133,7 @@ export default function ReviewTagsModal({ onClose }: Props) {
         {/* tabs */}
         <div style={{
           display: "flex",
-          borderBottom: "1px solid #e4e6eb",
+          borderBottom: "1px solid #E5E7EB",
           padding: "0 4px",
         }}>
           {([
@@ -149,8 +149,8 @@ export default function ReviewTagsModal({ onClose }: Props) {
                 padding: "12px 8px",
                 fontWeight: tab === id ? 700 : 500,
                 fontSize: 14,
-                color: tab === id ? "#1877F2" : "#65676b",
-                borderBottom: tab === id ? "3px solid #1877F2" : "3px solid transparent",
+                color: tab === id ? "#22C55E" : "#64748B",
+                borderBottom: tab === id ? "3px solid #22C55E" : "3px solid transparent",
                 cursor: "pointer",
                 transition: "color .15s",
               }}
@@ -164,10 +164,10 @@ export default function ReviewTagsModal({ onClose }: Props) {
         <div style={{ flex: 1, overflowY: "auto", padding: "12px 12px 24px" }}>
           {/* loading */}
           {loading && (
-            <div style={{ textAlign: "center", padding: 40, color: "#65676b" }}>
+            <div style={{ textAlign: "center", padding: 40, color: "#64748B" }}>
               <div style={{
-                width: 28, height: 28, border: "3px solid #e4e6eb",
-                borderTopColor: "#1877F2", borderRadius: "50%",
+                width: 28, height: 28, border: "3px solid #E5E7EB",
+                borderTopColor: "#22C55E", borderRadius: "50%",
                 animation: "rt-spin .7s linear infinite",
                 margin: "0 auto 10px",
               }} />
@@ -179,21 +179,21 @@ export default function ReviewTagsModal({ onClose }: Props) {
           {!loading && displayed.length === 0 && (
             <div style={{
               textAlign: "center", padding: "36px 16px",
-              color: "#65676b",
+              color: "#64748B",
             }}>
               <svg width="64" height="64" viewBox="0 0 64 64" fill="none"
                 style={{ display: "block", margin: "0 auto 12px" }}>
                 {tab === "pending" ? (
                   <path
                     d="M42 10H22a5 5 0 0 0-5 5v22a5 5 0 0 0 1.5 3.5l18 18a5 5 0 0 0 7 0l16-16a5 5 0 0 0 0-7L41.5 11.5A5 5 0 0 0 42 10z"
-                    stroke="#bcc0c4" strokeWidth="3" fill="none"
+                    stroke="#CBD5E1" strokeWidth="3" fill="none"
                   />
                 ) : (
-                  <path d="M20 32l10 10 14-20" stroke="#bcc0c4"
+                  <path d="M20 32l10 10 14-20" stroke="#CBD5E1"
                     strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
                 )}
               </svg>
-              <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 4, color: "#050505" }}>
+              <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 4, color: "#111827" }}>
                 {tab === "pending"
                   ? "Aucune identification en attente"
                   : "Aucune identification examinée"}
@@ -217,7 +217,7 @@ export default function ReviewTagsModal({ onClose }: Props) {
                 style={{
                   background: "#fff",
                   borderRadius: 12,
-                  border: "1px solid #e4e6eb",
+                  border: "1px solid #E5E7EB",
                   padding: "14px 14px 12px",
                   marginBottom: 10,
                 }}
@@ -240,10 +240,10 @@ export default function ReviewTagsModal({ onClose }: Props) {
                     </div>
                   )}
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 700, fontSize: 14, color: "#050505" }}>
+                    <div style={{ fontWeight: 700, fontSize: 14, color: "#111827" }}>
                       {post.authorName}
                     </div>
-                    <div style={{ fontSize: 12, color: "#65676b", marginTop: 1 }}>
+                    <div style={{ fontSize: 12, color: "#64748B", marginTop: 1 }}>
                       vous a identifié(e) · {timeAgo(post.createdAt)}
                     </div>
                   </div>
@@ -251,8 +251,8 @@ export default function ReviewTagsModal({ onClose }: Props) {
                     <span style={{
                       fontSize: 11, fontWeight: 700, padding: "3px 9px",
                       borderRadius: 20, flexShrink: 0,
-                      background: status === "approved" ? "#e6f4ea" : "#fce8e6",
-                      color: status === "approved" ? "#1e7e34" : "#c62828",
+                      background: status === "approved" ? "#F0FDF4" : "#FEE2E2",
+                      color: status === "approved" ? "#1e7e34" : "#EF4444",
                     }}>
                       {status === "approved" ? "✅ Approuvé" : "❌ Refusé"}
                     </span>
@@ -261,7 +261,7 @@ export default function ReviewTagsModal({ onClose }: Props) {
 
                 {/* post content */}
                 <div style={{
-                  fontSize: 14, color: "#050505", marginBottom: 12,
+                  fontSize: 14, color: "#111827", marginBottom: 12,
                   lineHeight: 1.45,
                 }}>
                   {post.content}
@@ -285,8 +285,8 @@ export default function ReviewTagsModal({ onClose }: Props) {
                     <button
                       onClick={() => handleAction(post.id, "approved")}
                       style={{
-                        flex: 1, background: "#e7f3ff",
-                        color: "#1877F2", border: "1px solid #cfe2ff",
+                        flex: 1, background: "#DCFCE7",
+                        color: "#22C55E", border: "1px solid #DCFCE7",
                         borderRadius: 8, padding: "9px 0",
                         fontWeight: 700, fontSize: 13, cursor: "pointer",
                       }}
@@ -296,8 +296,8 @@ export default function ReviewTagsModal({ onClose }: Props) {
                     <button
                       onClick={() => handleAction(post.id, "rejected")}
                       style={{
-                        flex: 1, background: "#fff0f0",
-                        color: "#c62828", border: "1px solid #fdd",
+                        flex: 1, background: "#FEE2E2",
+                        color: "#EF4444", border: "1px solid #fdd",
                         borderRadius: 8, padding: "9px 0",
                         fontWeight: 700, fontSize: 13, cursor: "pointer",
                       }}

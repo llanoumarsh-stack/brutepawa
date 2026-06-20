@@ -43,7 +43,7 @@ export default function LockProfileModal({ onClose, currentlyLocked, onToggle }:
         >
           {/* Handle */}
           <div style={{ display: "flex", justifyContent: "center", padding: "14px 0 0" }}>
-            <div style={{ width: 44, height: 5, background: "#E2E8F0", borderRadius: 99 }} />
+            <div style={{ width: 44, height: 5, background: "#E5E7EB", borderRadius: 99 }} />
           </div>
 
           {/* Header */}
@@ -58,14 +58,14 @@ export default function LockProfileModal({ onClose, currentlyLocked, onToggle }:
                 </svg>
               ) : (
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-                  <rect x="3" y="11" width="18" height="11" rx="3" stroke="#94A3B8" strokeWidth="2"/>
-                  <path d="M7 11V7a5 5 0 019.9-1" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"/>
-                  <circle cx="12" cy="16.5" r="1.5" fill="#94A3B8"/>
+                  <rect x="3" y="11" width="18" height="11" rx="3" stroke="#9CA3AF" strokeWidth="2"/>
+                  <path d="M7 11V7a5 5 0 019.9-1" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"/>
+                  <circle cx="12" cy="16.5" r="1.5" fill="#9CA3AF"/>
                 </svg>
               )}
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 800, fontSize: 18, color: "#0F172A" }}>Verrouiller le profil</div>
+              <div style={{ fontWeight: 800, fontSize: 18, color: "#111827" }}>Verrouiller le profil</div>
               <div style={{ fontSize: 13, color: "#64748B", marginTop: 2 }}>Contrôlez qui peut voir votre contenu</div>
             </div>
             <button onClick={onClose} style={{ width: 36, height: 36, borderRadius: "50%", background: "#F1F5F9", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -82,7 +82,7 @@ export default function LockProfileModal({ onClose, currentlyLocked, onToggle }:
                     : <svg width="34" height="34" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="3" stroke="#64748B" strokeWidth="2"/><path d="M7 11V7a5 5 0 019.9-1" stroke="#64748B" strokeWidth="2" strokeLinecap="round"/><circle cx="12" cy="16.5" r="1.5" fill="#64748B"/></svg>
                   }
                 </div>
-                <div style={{ fontWeight: 800, fontSize: 18, color: "#0F172A", marginBottom: 8 }}>
+                <div style={{ fontWeight: 800, fontSize: 18, color: "#111827", marginBottom: 8 }}>
                   {locked ? "Profil verrouillé !" : "Profil déverrouillé !"}
                 </div>
                 <div style={{ fontSize: 14, color: "#64748B", lineHeight: 1.6 }}>
@@ -101,7 +101,7 @@ export default function LockProfileModal({ onClose, currentlyLocked, onToggle }:
                   ].map((item, i, arr) => (
                     <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "12px 16px", borderBottom: i < arr.length - 1 ? "1px solid #F1F5F9" : "none" }}>
                       <span style={{ fontSize: 18, flexShrink: 0, marginTop: 1 }}>{item.icon}</span>
-                      <span style={{ fontSize: 13.5, color: "#374151", lineHeight: 1.5 }}>{item.text}</span>
+                      <span style={{ fontSize: 13.5, color: "#64748B", lineHeight: 1.5 }}>{item.text}</span>
                     </div>
                   ))}
                 </div>
@@ -109,10 +109,10 @@ export default function LockProfileModal({ onClose, currentlyLocked, onToggle }:
                 {/* Toggle row */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 16px", background: locked ? "#F0FDF4" : "#F8FAFC", borderRadius: 16, marginBottom: 20, border: locked ? "1.5px solid #DCFCE7" : "1.5px solid #F1F5F9", transition: "all 0.25s" }}>
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: 15, color: locked ? "#16A34A" : "#374151" }}>
+                    <div style={{ fontWeight: 700, fontSize: 15, color: locked ? "#16A34A" : "#64748B" }}>
                       {locked ? "Profil verrouillé" : "Profil non verrouillé"}
                     </div>
-                    <div style={{ fontSize: 12.5, color: locked ? "#22C55E" : "#94A3B8", marginTop: 2 }}>
+                    <div style={{ fontSize: 12.5, color: locked ? "#22C55E" : "#9CA3AF", marginTop: 2 }}>
                       {locked ? "Restriction active" : "Cliquer pour activer"}
                     </div>
                   </div>
@@ -120,7 +120,7 @@ export default function LockProfileModal({ onClose, currentlyLocked, onToggle }:
                     onClick={() => setLocked(l => !l)}
                     style={{
                       width: 54, height: 30, borderRadius: 15, border: "none", cursor: "pointer",
-                      background: locked ? "#22C55E" : "#CBD5E1",
+                      background: locked ? "#22C55E" : "#E5E7EB",
                       position: "relative", transition: "background 0.25s",
                       boxShadow: locked ? "0 2px 8px rgba(34,197,94,0.35)" : "none",
                       flexShrink: 0,
@@ -137,7 +137,7 @@ export default function LockProfileModal({ onClose, currentlyLocked, onToggle }:
                 </div>
 
                 {error && (
-                  <div style={{ marginBottom: 14, padding: "10px 14px", background: "#FFF5F5", border: "1px solid #FCA5A5", borderRadius: 12, fontSize: 13, color: "#EF4444", fontWeight: 600 }}>
+                  <div style={{ marginBottom: 14, padding: "10px 14px", background: "#FEE2E2", border: "1px solid #FCA5A5", borderRadius: 12, fontSize: 13, color: "#EF4444", fontWeight: 600 }}>
                     {error}
                   </div>
                 )}
@@ -145,8 +145,8 @@ export default function LockProfileModal({ onClose, currentlyLocked, onToggle }:
                 {/* Buttons */}
                 <div style={{ display: "flex", gap: 10 }}>
                   <button onClick={onClose}
-                    style={{ flex: 1, background: "#F1F5F9", border: "none", borderRadius: 14, padding: 14, fontWeight: 700, fontSize: 15, cursor: "pointer", color: "#374151", transition: "background 0.15s" }}
-                    onPointerDown={e => (e.currentTarget.style.background = "#E2E8F0")}
+                    style={{ flex: 1, background: "#F1F5F9", border: "none", borderRadius: 14, padding: 14, fontWeight: 700, fontSize: 15, cursor: "pointer", color: "#64748B", transition: "background 0.15s" }}
+                    onPointerDown={e => (e.currentTarget.style.background = "#E5E7EB")}
                     onPointerUp={e => (e.currentTarget.style.background = "#F1F5F9")}
                     onPointerLeave={e => (e.currentTarget.style.background = "#F1F5F9")}
                   >
@@ -157,8 +157,8 @@ export default function LockProfileModal({ onClose, currentlyLocked, onToggle }:
                     disabled={saving || locked === currentlyLocked}
                     style={{
                       flex: 1.8,
-                      background: locked === currentlyLocked ? "#E2E8F0" : "linear-gradient(135deg, #22C55E, #16A34A)",
-                      color: locked === currentlyLocked ? "#94A3B8" : "#fff",
+                      background: locked === currentlyLocked ? "#E5E7EB" : "linear-gradient(135deg, #22C55E, #16A34A)",
+                      color: locked === currentlyLocked ? "#9CA3AF" : "#fff",
                       border: "none", borderRadius: 14, padding: 14,
                       fontWeight: 700, fontSize: 15,
                       cursor: locked === currentlyLocked ? "not-allowed" : "pointer",

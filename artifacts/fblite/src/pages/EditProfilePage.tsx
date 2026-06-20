@@ -647,7 +647,7 @@ export default function EditProfilePage() {
           <button
             onClick={saveView}
             disabled={!canSave || saving}
-            style={{ width: "100%", marginTop: 20, padding: "13px", borderRadius: 10, border: "none", fontWeight: 800, fontSize: 15, cursor: canSave ? "pointer" : "not-allowed", background: canSave ? "var(--fb-blue)" : "var(--fb-bg)", color: canSave ? "#fff" : "var(--fb-text-secondary)", transition: "all 0.2s" }}
+            style={{ width: "100%", marginTop: 20, padding: "13px", borderRadius: 10, border: "none", fontWeight: 800, fontSize: 15, cursor: canSave ? "pointer" : "not-allowed", background: canSave ? "var(--bp-primary)" : "var(--fb-bg)", color: canSave ? "#fff" : "var(--fb-text-secondary)", transition: "all 0.2s" }}
           >
             {saving ? "Enregistrement..." : "Enregistrer"}
           </button>
@@ -692,8 +692,8 @@ export default function EditProfilePage() {
           <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10 }}>Genre</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
             {GENDERS.map(g => (
-              <label key={g} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 10, background: tmp === g ? "var(--fb-blue-light)" : "var(--fb-bg)", border: tmp === g ? "2px solid var(--fb-blue)" : "2px solid transparent", cursor: "pointer" }}>
-                <input type="radio" name="gender" value={g} checked={tmp === g} onChange={() => setTmp(g)} style={{ accentColor: "var(--fb-blue)" }} />
+              <label key={g} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 10, background: tmp === g ? "var(--fb-blue-light)" : "var(--fb-bg)", border: tmp === g ? "2px solid var(--bp-primary)" : "2px solid transparent", cursor: "pointer" }}>
+                <input type="radio" name="gender" value={g} checked={tmp === g} onChange={() => setTmp(g)} style={{ accentColor: "var(--bp-primary)" }} />
                 <span style={{ fontWeight: tmp === g ? 700 : 400 }}>{g}</span>
               </label>
             ))}
@@ -723,12 +723,12 @@ export default function EditProfilePage() {
               />
               {tmpPhones.length > 1 && (
                 <button onClick={() => setTmpPhones(prev => prev.filter((_, j) => j !== i))}
-                  style={{ background: "#FFEBEE", border: "none", color: "#c62828", borderRadius: 8, padding: "0 12px", cursor: "pointer", fontSize: 16 }}>✕</button>
+                  style={{ background: "#FEE2E2", border: "none", color: "#EF4444", borderRadius: 8, padding: "0 12px", cursor: "pointer", fontSize: 16 }}>✕</button>
               )}
             </div>
           ))}
           <button onClick={() => setTmpPhones(p => [...p, ""])}
-            style={{ background: "none", border: "1px dashed var(--fb-divider)", borderRadius: 10, padding: "10px 16px", cursor: "pointer", color: "var(--fb-blue)", fontWeight: 700, width: "100%", marginBottom: 20 }}>
+            style={{ background: "none", border: "1px dashed var(--fb-divider)", borderRadius: 10, padding: "10px 16px", cursor: "pointer", color: "var(--bp-primary)", fontWeight: 700, width: "100%", marginBottom: 20 }}>
             + Ajouter un numéro
           </button>
           <button onClick={saveView} disabled={saving} style={saveBtnStyle}>
@@ -788,7 +788,7 @@ export default function EditProfilePage() {
                   {f.avatarUrl ? (
                     <img src={f.avatarUrl} alt="" style={{ width: 44, height: 44, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
                   ) : (
-                    <div style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--fb-blue)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 16, fontWeight: 800, flexShrink: 0 }}>
+                    <div style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--bp-primary)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 16, fontWeight: 800, flexShrink: 0 }}>
                       {initials}
                     </div>
                   )}
@@ -817,7 +817,7 @@ export default function EditProfilePage() {
           {f.avatarUrl ? (
             <img src={f.avatarUrl} alt="" style={{ width: 48, height: 48, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
           ) : (
-            <div style={{ width: 48, height: 48, borderRadius: "50%", background: "var(--fb-blue)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 18, fontWeight: 800, flexShrink: 0 }}>
+            <div style={{ width: 48, height: 48, borderRadius: "50%", background: "var(--bp-primary)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 18, fontWeight: 800, flexShrink: 0 }}>
               {initials}
             </div>
           )}
@@ -938,12 +938,12 @@ export default function EditProfilePage() {
   const C_CIRC = 2 * Math.PI * 20;
 
   return (
-    <div style={{ background: "#f3f6f3", minHeight: "100vh", maxWidth: 480, margin: "0 auto", paddingBottom: 108, fontFamily: "system-ui,-apple-system,sans-serif" }}>
+    <div style={{ background: "#F8FAFC", minHeight: "100vh", maxWidth: 480, margin: "0 auto", paddingBottom: 108, fontFamily: "system-ui,-apple-system,sans-serif" }}>
 
       {/* ── HEADER ── */}
-      <div style={{ position: "sticky", top: 0, zIndex: 20, background: "#fff", borderBottom: "1px solid #f0f0f0", padding: "14px 20px" }}>
+      <div style={{ position: "sticky", top: 0, zIndex: 20, background: "#fff", borderBottom: "1px solid #F1F5F9", padding: "14px 20px" }}>
         <div style={{ display: "flex", alignItems: "center" }}>
-          <button onClick={() => navigate("/profile")} style={{ background: "#f4f4f4", border: "none", width: 36, height: 36, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <button onClick={() => navigate("/profile")} style={{ background: "#F1F5F9", border: "none", width: 36, height: 36, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M11 4L6 9l5 5" stroke="#111827" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </button>
           <div style={{ flex: 1, textAlign: "center" }}>
@@ -957,12 +957,12 @@ export default function EditProfilePage() {
       <div style={{ padding: "14px 14px 0" }}>
 
         {/* ── PROFIL CARD ── */}
-        <div style={{ background: "linear-gradient(135deg, #166534 0%, #22c55e 100%)", borderRadius: 24, padding: "20px 20px 22px", marginBottom: 12, position: "relative", overflow: "hidden", cursor: "pointer" }}>
+        <div style={{ background: "linear-gradient(135deg, #16A34A 0%, #22c55e 100%)", borderRadius: 24, padding: "20px 20px 22px", marginBottom: 12, position: "relative", overflow: "hidden", cursor: "pointer" }}>
           <div style={{ position: "absolute", top: -24, right: -24, width: 110, height: 110, borderRadius: "50%", background: "rgba(255,255,255,0.06)" }} />
           <div style={{ position: "absolute", bottom: -28, left: 40, width: 90, height: 90, borderRadius: "50%", background: "rgba(255,255,255,0.04)" }} />
           <div style={{ display: "flex", alignItems: "center", gap: 16, position: "relative" }}>
             <div style={{ position: "relative", flexShrink: 0 }}>
-              <div style={{ width: 72, height: 72, borderRadius: "50%", background: "linear-gradient(135deg, #0f4d28, #166534)", border: "3px solid rgba(255,255,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ width: 72, height: 72, borderRadius: "50%", background: "linear-gradient(135deg, #052e16, #16A34A)", border: "3px solid rgba(255,255,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <span style={{ color: "#fff", fontWeight: 900, fontSize: 22, letterSpacing: -1 }}>bp</span>
               </div>
               <div style={{ position: "absolute", bottom: 0, left: 0, width: 26, height: 26, borderRadius: "50%", background: "#fff", border: "2px solid #22c55e", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
@@ -1036,9 +1036,9 @@ export default function EditProfilePage() {
                   { icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2C8.5.5 11 3 7 6 3 3 5.5.5 7 2z" fill="#22c55e"/><path d="M3.5 8c-1.5.5-2.5 1.7-2.5 3.5h12c0-1.8-1-3-2.5-3.5" stroke="#22c55e" strokeWidth="1.2" strokeLinecap="round"/></svg>, label: ext.family || "Famille", sub: "Non renseigné", onClick: () => openView("family") },
                   { icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#22c55e" strokeWidth="1.2"/><path d="M5 5.5s.5-1.5 2-1.5 2 1 2 1.5-1 1.5-2 2v1M7 10.5v.5" stroke="#22c55e" strokeWidth="1.1" strokeLinecap="round"/></svg>, label: ext.gender || "Genre", sub: ext.gender ? PRIVACY_LABEL[ext.genderPrivacy] : "Non renseigné", onClick: () => openView("gender") },
                 ] as { icon: React.ReactNode; label: string; sub: string; onClick: () => void }[]).map((item, i) => (
-                  <div key={i} onClick={item.onClick} style={{ background: "#f9fafb", borderRadius: 12, padding: "10px 11px", cursor: "pointer", border: "1px solid #f0f0f0" }}>
+                  <div key={i} onClick={item.onClick} style={{ background: "#F8FAFC", borderRadius: 12, padding: "10px 11px", cursor: "pointer", border: "1px solid #F1F5F9" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-                      <div style={{ width: 26, height: 26, borderRadius: 8, background: "#f0fdf4", border: "1px solid #d1fae5", display: "flex", alignItems: "center", justifyContent: "center" }}>{item.icon}</div>
+                      <div style={{ width: 26, height: 26, borderRadius: 8, background: "#f0fdf4", border: "1px solid #DCFCE7", display: "flex", alignItems: "center", justifyContent: "center" }}>{item.icon}</div>
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 4.5l2 3 2-3" stroke="#22c55e" strokeWidth="1.2" strokeLinecap="round"/></svg>
                     </div>
                     <div style={{ fontSize: 12.5, fontWeight: 700, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.label}</div>
@@ -1046,8 +1046,8 @@ export default function EditProfilePage() {
                   </div>
                 ))}
               </div>
-              <div onClick={() => openView("languages")} style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 8, padding: "10px 11px", background: "#f9fafb", borderRadius: 12, cursor: "pointer", border: "1px solid #f0f0f0" }}>
-                <div style={{ width: 30, height: 30, borderRadius: 9, background: "#f0fdf4", border: "1px solid #d1fae5", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <div onClick={() => openView("languages")} style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 8, padding: "10px 11px", background: "#F8FAFC", borderRadius: 12, cursor: "pointer", border: "1px solid #F1F5F9" }}>
+                <div style={{ width: 30, height: 30, borderRadius: 9, background: "#f0fdf4", border: "1px solid #DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#22c55e" strokeWidth="1.2"/><path d="M8 1.5C8 1.5 5 4.5 5 8s3 6.5 3 6.5M8 1.5c0 0 3 3 3 6.5s-3 6.5-3 6.5M1.5 8h13" stroke="#22c55e" strokeWidth="1.1" strokeLinecap="round"/></svg>
                 </div>
                 <div style={{ flex: 1 }}>
@@ -1206,8 +1206,8 @@ export default function EditProfilePage() {
           {open.coords && (
             <div style={{ padding: "0 0 4px" }}>
               {/* Réseaux sociaux */}
-              <div onClick={() => openView("social")} style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 16px", borderBottom: "1px solid #f5f5f5", cursor: "pointer" }}>
-                <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#f0fdf4", border: "1px solid #d1fae5", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <div onClick={() => openView("social")} style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 16px", borderBottom: "1px solid #F1F5F9", cursor: "pointer" }}>
+                <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#f0fdf4", border: "1px solid #DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M12 2.5a2 2 0 100 4 2 2 0 000-4zM5 7.5a2 2 0 100 4 2 2 0 000-4zM12 12.5a2 2 0 100 4 2 2 0 000-4z" stroke="#22c55e" strokeWidth="1.3"/><path d="M7 8.7l3.5-2.2M7 10.2l3.5 2" stroke="#22c55e" strokeWidth="1.3" strokeLinecap="round"/></svg>
                 </div>
                 <div style={{ flex: 1 }}>
@@ -1217,8 +1217,8 @@ export default function EditProfilePage() {
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#22c55e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </div>
               {/* Téléphone */}
-              <div onClick={() => openView("phone")} style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 16px", borderBottom: "1px solid #f5f5f5", cursor: "pointer" }}>
-                <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#f0fdf4", border: "1px solid #d1fae5", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <div onClick={() => openView("phone")} style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 16px", borderBottom: "1px solid #F1F5F9", cursor: "pointer" }}>
+                <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#f0fdf4", border: "1px solid #DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3.5 2.5h3l1.5 3.5-2 1.5a8 8 0 003.5 3.5l1.5-2 3.5 1.5v3c0 .8-.7 1.5-1.5 1.5C5.5 15.5 1.5 11.5 1.5 4c0-.8.7-1.5 1.5-1.5z" stroke="#22c55e" strokeWidth="1.3" strokeLinejoin="round"/></svg>
                 </div>
                 <div style={{ flex: 1 }}>
@@ -1234,7 +1234,7 @@ export default function EditProfilePage() {
               </div>
               {/* Email */}
               <div onClick={() => openView("email")} style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 16px", cursor: "pointer" }}>
-                <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#f0fdf4", border: "1px solid #d1fae5", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#f0fdf4", border: "1px solid #DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="5" width="14" height="9" rx="2" stroke="#22c55e" strokeWidth="1.3"/><path d="M2 7.5l7 4.5 7-4.5" stroke="#22c55e" strokeWidth="1.3" strokeLinecap="round"/></svg>
                 </div>
                 <div style={{ flex: 1 }}>
@@ -1256,7 +1256,7 @@ export default function EditProfilePage() {
         <PCard>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 16px 12px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <div style={{ width: 42, height: 42, borderRadius: 12, background: "#f0fdf4", border: "1.5px solid #d1fae5", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ width: 42, height: 42, borderRadius: 12, background: "#f0fdf4", border: "1.5px solid #DCFCE7", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2L3 5.5v5c0 5 3.5 9.5 8 10 4.5-.5 8-5 8-10V5.5L11 2z" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.4"/><path d="M7 11l3 3 5.5-5" stroke="#22c55e" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </div>
               <div>
@@ -1264,7 +1264,7 @@ export default function EditProfilePage() {
                 <div style={{ fontSize: 11.5, color: "#9ca3af" }}>Votre espace de stockage Brutepawa</div>
               </div>
             </div>
-            <span style={{ background: "#f0fdf4", border: "1px solid #86efac", borderRadius: 20, padding: "4px 12px", fontSize: 12, fontWeight: 700, color: "#16a34a" }}>Gratuit</span>
+            <span style={{ background: "#f0fdf4", border: "1px solid #BBF7D0", borderRadius: 20, padding: "4px 12px", fontSize: 12, fontWeight: 700, color: "#16a34a" }}>Gratuit</span>
           </div>
           <div style={{ padding: "0 16px 16px", display: "flex", alignItems: "center", gap: 16 }}>
             <div style={{ position: "relative", width: 76, height: 76, flexShrink: 0 }}>
@@ -1282,7 +1282,7 @@ export default function EditProfilePage() {
             </div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 15, fontWeight: 700, color: "#111827" }}>0 Go utilisés</div>
-              <div style={{ fontSize: 12.5, color: "#6b7280" }}>1.00 Go au total</div>
+              <div style={{ fontSize: 12.5, color: "#64748B" }}>1.00 Go au total</div>
               <div style={{ height: 5, background: "#e5e7eb", borderRadius: 3, margin: "8px 0" }}>
                 <div style={{ height: "100%", width: "1%", background: "linear-gradient(90deg, #22c55e, #16a34a)", borderRadius: 3 }} />
               </div>
@@ -1292,15 +1292,15 @@ export default function EditProfilePage() {
               </div>
             </div>
           </div>
-          <div style={{ margin: "0 14px 14px", background: "linear-gradient(135deg, #fffbeb, #fef9e7)", border: "1px solid #fde68a", borderRadius: 14, padding: "13px 14px", display: "flex", alignItems: "center", gap: 12 }}>
-            <div style={{ width: 38, height: 38, borderRadius: 11, background: "#fef3c7", border: "1px solid #fde68a", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <div style={{ margin: "0 14px 14px", background: "linear-gradient(135deg, #FEF3C7, #FEF3C7)", border: "1px solid #FEF3C7", borderRadius: 14, padding: "13px 14px", display: "flex", alignItems: "center", gap: 12 }}>
+            <div style={{ width: 38, height: 38, borderRadius: 11, background: "#fef3c7", border: "1px solid #FEF3C7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 15L5 5l5 6 4-8 2 12H2z" fill="#f59e0b" stroke="none"/></svg>
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 13.5, fontWeight: 800, color: "#92400e" }}>Passez à Brutepawa Premium</div>
-              <div style={{ fontSize: 11.5, color: "#b45309", marginTop: 1 }}>Plus d'espace, plus de fonctionnalités.</div>
+              <div style={{ fontSize: 13.5, fontWeight: 800, color: "#D97706" }}>Passez à Brutepawa Premium</div>
+              <div style={{ fontSize: 11.5, color: "#D97706", marginTop: 1 }}>Plus d'espace, plus de fonctionnalités.</div>
             </div>
-            <button style={{ background: "#fff", border: "1px solid #fde68a", borderRadius: 10, padding: "8px 12px", fontSize: 12.5, fontWeight: 700, color: "#d97706", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, whiteSpace: "nowrap", fontFamily: "inherit" }}>
+            <button style={{ background: "#fff", border: "1px solid #FEF3C7", borderRadius: 10, padding: "8px 12px", fontSize: 12.5, fontWeight: 700, color: "#d97706", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, whiteSpace: "nowrap", fontFamily: "inherit" }}>
               Découvrir
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2l4 4-4 4" stroke="#d97706" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
@@ -1311,7 +1311,7 @@ export default function EditProfilePage() {
 
       {/* ── BOTTOM BAR (fixe) ── */}
       <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 480, zIndex: 30, padding: "0 14px 18px", boxSizing: "border-box" }}>
-        <div style={{ background: "linear-gradient(135deg, #15803d, #22c55e)", borderRadius: 20, padding: "14px 18px", display: "flex", alignItems: "center", gap: 12, boxShadow: "0 8px 32px rgba(34,197,94,0.3)" }}>
+        <div style={{ background: "linear-gradient(135deg, #16A34A, #22c55e)", borderRadius: 20, padding: "14px 18px", display: "flex", alignItems: "center", gap: 12, boxShadow: "0 8px 32px rgba(34,197,94,0.3)" }}>
           <div style={{ width: 42, height: 42, borderRadius: 13, background: "rgba(255,255,255,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2L3 6v5c0 5 3.5 9.5 8 10 4.5-.5 8-5 8-10V6L11 2z" fill="rgba(255,255,255,0.15)" stroke="white" strokeWidth="1.6"/><path d="M7.5 11l2.5 3L15 8" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </div>
@@ -1351,7 +1351,7 @@ function SubPage({ title, onClose, onBack, backLabel, children }: {
     <div style={{ position: "fixed", inset: 0, background: "var(--fb-white)", zIndex: 50, display: "flex", flexDirection: "column" }}>
       <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", borderBottom: "1px solid var(--fb-divider)", gap: 6 }}>
         {onBack ? (
-          <button onClick={onBack} style={{ background: "none", border: "none", fontSize: 14, fontWeight: 700, cursor: "pointer", color: "var(--fb-blue)", padding: "4px 8px 4px 0", whiteSpace: "nowrap" }}>
+          <button onClick={onBack} style={{ background: "none", border: "none", fontSize: 14, fontWeight: 700, cursor: "pointer", color: "var(--bp-primary)", padding: "4px 8px 4px 0", whiteSpace: "nowrap" }}>
             {backLabel ?? "‹ Retour"}
           </button>
         ) : (
@@ -1379,19 +1379,19 @@ function PSectionHeader({ icon, title, badge, badgeGreen, open, onToggle }: {
   icon: React.ReactNode; title: string; badge?: string; badgeGreen?: boolean; open: boolean; onToggle: () => void;
 }) {
   return (
-    <div onClick={onToggle} style={{ display: "flex", alignItems: "center", gap: 12, padding: "15px 16px", cursor: "pointer", borderBottom: open && badge !== undefined ? "1px solid #f5f5f5" : "none" }}>
-      <div style={{ width: 40, height: 40, borderRadius: 13, background: "#f0fdf4", border: "1.5px solid #d1fae5", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+    <div onClick={onToggle} style={{ display: "flex", alignItems: "center", gap: 12, padding: "15px 16px", cursor: "pointer", borderBottom: open && badge !== undefined ? "1px solid #F1F5F9" : "none" }}>
+      <div style={{ width: 40, height: 40, borderRadius: 13, background: "#f0fdf4", border: "1.5px solid #DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
         {icon}
       </div>
       <div style={{ flex: 1 }}>
         <div style={{ fontSize: 15, fontWeight: 800, color: "#111827" }}>{title}</div>
       </div>
       {badge && (
-        <span style={{ background: badgeGreen ? "#f0fdf4" : "#f9fafb", border: `1px solid ${badgeGreen ? "#86efac" : "#e5e7eb"}`, borderRadius: 20, padding: "4px 10px", fontSize: 11.5, fontWeight: 700, color: badgeGreen ? "#16a34a" : "#6b7280", whiteSpace: "nowrap" }}>
+        <span style={{ background: badgeGreen ? "#f0fdf4" : "#F8FAFC", border: `1px solid ${badgeGreen ? "#BBF7D0" : "#e5e7eb"}`, borderRadius: 20, padding: "4px 10px", fontSize: 11.5, fontWeight: 700, color: badgeGreen ? "#16a34a" : "#64748B", whiteSpace: "nowrap" }}>
           {badge}
         </span>
       )}
-      <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#f9fafb", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+      <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#F8FAFC", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ transition: "transform 0.2s", transform: open ? "rotate(180deg)" : "none" }}>
           <path d="M3 5l4 4 4-4" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
@@ -1405,8 +1405,8 @@ function PRow({ icon, label, sub, onClick, showArrow, showEdit, last }: {
   showArrow?: boolean; showEdit?: boolean; last?: boolean;
 }) {
   return (
-    <div onClick={onClick} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", borderBottom: last ? "none" : "1px solid #f5f5f5", cursor: "pointer" }}>
-      <div style={{ width: 34, height: 34, borderRadius: 10, background: "#f0fdf4", border: "1px solid #d1fae5", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+    <div onClick={onClick} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", borderBottom: last ? "none" : "1px solid #F1F5F9", cursor: "pointer" }}>
+      <div style={{ width: 34, height: 34, borderRadius: 10, background: "#f0fdf4", border: "1px solid #DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
         {icon}
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
@@ -1428,8 +1428,8 @@ function PRow({ icon, label, sub, onClick, showArrow, showEdit, last }: {
 function PAddRow({ icon, label, sub, onClick }: { icon: React.ReactNode; label: string; sub: string; onClick: () => void }) {
   return (
     <div style={{ padding: "10px 14px 14px" }}>
-      <div onClick={onClick} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 14, border: "1.5px dashed #d1fae5", cursor: "pointer", background: "#fafffe" }}>
-        <div style={{ width: 36, height: 36, borderRadius: 11, background: "#f0fdf4", border: "1px solid #d1fae5", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+      <div onClick={onClick} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 14, border: "1.5px dashed #DCFCE7", cursor: "pointer", background: "#F8FAFC" }}>
+        <div style={{ width: 36, height: 36, borderRadius: 11, background: "#f0fdf4", border: "1px solid #DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
           {icon}
         </div>
         <div style={{ flex: 1 }}>
@@ -1448,8 +1448,8 @@ function PrivacyPicker({ value, onChange }: { value: "public"|"friends"|"only_me
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
       {PRIVACY_OPTS.map(opt => (
-        <label key={opt} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 10, background: value === opt ? "var(--fb-blue-light)" : "var(--fb-bg)", border: value === opt ? "2px solid var(--fb-blue)" : "2px solid transparent", cursor: "pointer" }}>
-          <input type="radio" name="privacy" value={opt} checked={value === opt} onChange={() => onChange(opt)} style={{ accentColor: "var(--fb-blue)" }} />
+        <label key={opt} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 10, background: value === opt ? "var(--fb-blue-light)" : "var(--fb-bg)", border: value === opt ? "2px solid var(--bp-primary)" : "2px solid transparent", cursor: "pointer" }}>
+          <input type="radio" name="privacy" value={opt} checked={value === opt} onChange={() => onChange(opt)} style={{ accentColor: "var(--bp-primary)" }} />
           <span>{PRIVACY_ICON[opt]}</span>
           <span style={{ fontWeight: value === opt ? 700 : 400 }}>{PRIVACY_LABEL[opt]}</span>
         </label>
@@ -1467,7 +1467,7 @@ const inputStyle: React.CSSProperties = {
 const saveBtnStyle: React.CSSProperties = {
   width: "100%", marginTop: 24, padding: "13px", borderRadius: 10, border: "none",
   fontWeight: 800, fontSize: 15, cursor: "pointer",
-  background: "var(--fb-blue)", color: "#fff",
+  background: "var(--bp-primary)", color: "#fff",
 };
 
 function SuggestionChips({ items, value, multi, onSelect }: {
@@ -1498,7 +1498,7 @@ function SuggestionChips({ items, value, multi, onSelect }: {
 
   return (
     <div style={{ marginTop: 12 }}>
-      <div style={{ fontSize: 12, color: isSearching ? "var(--fb-blue)" : "var(--fb-text-secondary)", marginBottom: 8, fontWeight: 600 }}>
+      <div style={{ fontSize: 12, color: isSearching ? "var(--bp-primary)" : "var(--fb-text-secondary)", marginBottom: 8, fontWeight: 600 }}>
         {isSearching ? `${visible.length} résultat${visible.length > 1 ? "s" : ""}` : "Suggestions"}
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
@@ -1508,11 +1508,11 @@ function SuggestionChips({ items, value, multi, onSelect }: {
             type="button"
             onMouseDown={e => { e.preventDefault(); onSelect(item); }}
             style={{
-              background: isSearching ? "var(--fb-blue-light, #e7f0fd)" : "var(--fb-bg)",
-              border: `1.5px solid ${isSearching ? "var(--fb-blue)" : "var(--fb-divider)"}`,
+              background: isSearching ? "var(--fb-blue-light, #DCFCE7)" : "var(--fb-bg)",
+              border: `1.5px solid ${isSearching ? "var(--bp-primary)" : "var(--fb-divider)"}`,
               borderRadius: 20, padding: "6px 14px", fontSize: 14,
               cursor: "pointer",
-              color: isSearching ? "var(--fb-blue)" : "var(--fb-text)",
+              color: isSearching ? "var(--bp-primary)" : "var(--fb-text)",
               whiteSpace: "nowrap", fontWeight: isSearching ? 700 : 500,
               transition: "border-color 0.15s, background 0.15s",
             }}

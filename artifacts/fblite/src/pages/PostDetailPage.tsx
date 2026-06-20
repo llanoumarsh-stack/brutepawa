@@ -18,7 +18,7 @@ const REACTIONS = [
   {
     id: "like", label: "J'aime", color: "#22C55E",
     icon: (active: boolean) => (
-      <svg viewBox="0 0 24 24" width="20" height="20" fill={active ? "#22C55E" : "none"} stroke={active ? "#22C55E" : "#4B5563"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill={active ? "#22C55E" : "none"} stroke={active ? "#22C55E" : "#64748B"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
         <path d="M7 10v12M15 5.88L14 10h5.83A2 2 0 0 1 21.83 12.49L19.04 19.5A2 2 0 0 1 17.12 21H7a2 2 0 0 1-2-2v-8.5a2 2 0 0 1 .586-1.414L10 5H13a2 2 0 0 1 2 2v-.12z"/>
       </svg>
     ),
@@ -27,7 +27,7 @@ const REACTIONS = [
   {
     id: "love", label: "J'adore", color: "#F43F5E",
     icon: (active: boolean) => (
-      <svg viewBox="0 0 24 24" width="20" height="20" fill={active ? "#F43F5E" : "none"} stroke={active ? "#F43F5E" : "#4B5563"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill={active ? "#F43F5E" : "none"} stroke={active ? "#F43F5E" : "#64748B"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
       </svg>
     ),
@@ -36,25 +36,25 @@ const REACTIONS = [
   {
     id: "fire", label: "Top", color: "#F97316",
     icon: (active: boolean) => (
-      <svg viewBox="0 0 24 24" width="20" height="20" fill={active ? "#F97316" : "none"} stroke={active ? "#F97316" : "#4B5563"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill={active ? "#F97316" : "none"} stroke={active ? "#F97316" : "#64748B"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
         <path d="M12 2c0 0-6 6-6 11a6 6 0 0 0 12 0c0-5-6-11-6-11z"/><path d="M12 12c0 0-3 2-3 4a3 3 0 0 0 6 0c0-2-3-4-3-4z" strokeWidth="1.5"/>
       </svg>
     ),
     badge: <svg viewBox="0 0 24 24" width="14" height="14" fill="#F97316"><path d="M12 2c0 0-6 6-6 11a6 6 0 0 0 12 0c0-5-6-11-6-11z"/></svg>,
   },
   {
-    id: "clap", label: "Bravo", color: "#A855F7",
+    id: "clap", label: "Bravo", color: "#8B5CF6",
     icon: (active: boolean) => (
-      <svg viewBox="0 0 24 24" width="20" height="20" fill={active ? "#A855F7" : "none"} stroke={active ? "#A855F7" : "#4B5563"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill={active ? "#8B5CF6" : "none"} stroke={active ? "#8B5CF6" : "#64748B"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
         <path d="M8.5 14.5l-2-2a2 2 0 0 0-2.828 2.828L8 19.657A8 8 0 0 0 20 12c0-4.418-3.582-8-8-8a8 8 0 0 0-3.5.804"/>
         <path d="M7.5 10.5l4 4M10.5 7.5l4 4M13.5 4.5l4 4" strokeWidth="1.7"/>
       </svg>
     ),
-    badge: <svg viewBox="0 0 24 24" width="14" height="14" fill="#A855F7"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>,
+    badge: <svg viewBox="0 0 24 24" width="14" height="14" fill="#8B5CF6"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>,
   },
 ];
 
-const AVATAR_COLORS = ["#16A34A","#0284C7","#9333EA","#EA580C","#DC2626","#0891B2","#059669","#4F46E5"];
+const AVATAR_COLORS = ["#16A34A","#0EA5E9","#8B5CF6","#D97706","#EF4444","#0EA5E9","#22C55E","#6366F1"];
 function getInitials(name?: string) {
   if (!name) return "?";
   return name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
@@ -86,7 +86,7 @@ function Avatar({ url, name, size = 48, borderWidth = 3, online = false }: {
   const inner    = size - borderWidth * 2;
   return (
     <div style={{ position:"relative", flexShrink:0, width:size, height:size }}>
-      <div style={{ width:size, height:size, borderRadius:"50%", background:"linear-gradient(135deg,#22C55E 0%,#16A34A 50%,#86EFAC 100%)", padding:borderWidth, boxSizing:"border-box" }}>
+      <div style={{ width:size, height:size, borderRadius:"50%", background:"linear-gradient(135deg,#22C55E 0%,#16A34A 50%,#BBF7D0 100%)", padding:borderWidth, boxSizing:"border-box" }}>
         <div style={{ width:inner, height:inner, borderRadius:"50%", overflow:"hidden", background:color, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:800, fontSize:Math.round(inner * 0.33) }}>
           {url
             ? <img src={url} alt={initials} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
@@ -144,14 +144,14 @@ function MusicPlayer({ trackName, artist, artworkUrl, url, duration }: {
   const total = duration ?? "0:00";
 
   return (
-    <div style={{ margin:"0 14px 14px", background:"#fff", borderRadius:20, padding:"12px 14px", display:"flex", alignItems:"center", gap:12, border:"1px solid #E2E8F0", boxShadow:"0 2px 12px rgba(0,0,0,0.06)" }}>
+    <div style={{ margin:"0 14px 14px", background:"#fff", borderRadius:20, padding:"12px 14px", display:"flex", alignItems:"center", gap:12, border:"1px solid #E5E7EB", boxShadow:"0 2px 12px rgba(0,0,0,0.06)" }}>
       {/* Album art */}
       <div style={{ width:56, height:56, borderRadius:12, overflow:"hidden", background:"#F1F5F9", flexShrink:0, position:"relative" }}>
         {artworkUrl
           ? <img src={artworkUrl} alt={trackName} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
           : (
-            <div style={{ width:"100%", height:"100%", display:"flex", alignItems:"center", justifyContent:"center", background:"#E2E8F0" }}>
-              <svg viewBox="0 0 24 24" width="26" height="26" fill="#94A3B8"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+            <div style={{ width:"100%", height:"100%", display:"flex", alignItems:"center", justifyContent:"center", background:"#E5E7EB" }}>
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="#9CA3AF"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
             </div>
           )}
       </div>
@@ -163,15 +163,15 @@ function MusicPlayer({ trackName, artist, artworkUrl, url, duration }: {
           <div style={{ width:17, height:17, borderRadius:"50%", background:"#22C55E", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
             <svg viewBox="0 0 24 24" width="10" height="10" fill="#fff"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
           </div>
-          <span style={{ fontSize:13, fontWeight:800, color:"#0F172A", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{trackName}</span>
+          <span style={{ fontSize:13, fontWeight:800, color:"#111827", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{trackName}</span>
         </div>
-        <div style={{ fontSize:11.5, color:"#94A3B8", marginBottom:8, paddingLeft:23, fontWeight:500 }}>{artist}</div>
+        <div style={{ fontSize:11.5, color:"#9CA3AF", marginBottom:8, paddingLeft:23, fontWeight:500 }}>{artist}</div>
 
         {/* Progress row */}
         <div style={{ display:"flex", alignItems:"center", gap:7 }}>
-          <span style={{ fontSize:10, color:"#94A3B8", flexShrink:0, minWidth:26, fontWeight:600 }}>{current}</span>
+          <span style={{ fontSize:10, color:"#9CA3AF", flexShrink:0, minWidth:26, fontWeight:600 }}>{current}</span>
           <div
-            style={{ flex:1, height:4, background:"#E2E8F0", borderRadius:4, position:"relative", cursor:"pointer" }}
+            style={{ flex:1, height:4, background:"#E5E7EB", borderRadius:4, position:"relative", cursor:"pointer" }}
             onClick={e => {
               if (!audioRef.current?.duration) return;
               const rect = e.currentTarget.getBoundingClientRect();
@@ -182,14 +182,14 @@ function MusicPlayer({ trackName, artist, artworkUrl, url, duration }: {
               <div style={{ position:"absolute", right:-5, top:"50%", transform:"translateY(-50%)", width:11, height:11, borderRadius:"50%", background:"#22C55E", boxShadow:"0 0 6px rgba(34,197,94,0.5)" }} />
             </div>
           </div>
-          <span style={{ fontSize:10, color:"#94A3B8", flexShrink:0, minWidth:26, textAlign:"right", fontWeight:600 }}>{total}</span>
+          <span style={{ fontSize:10, color:"#9CA3AF", flexShrink:0, minWidth:26, textAlign:"right", fontWeight:600 }}>{total}</span>
         </div>
       </div>
 
       {/* Play / Pause button */}
       <button
         onClick={toggle}
-        style={{ width:40, height:40, borderRadius:"50%", background:"#0F172A", border:"none", cursor: url ? "pointer" : "default", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, opacity: url ? 1 : 0.35, boxShadow:"0 2px 8px rgba(0,0,0,0.18)" }}
+        style={{ width:40, height:40, borderRadius:"50%", background:"#111827", border:"none", cursor: url ? "pointer" : "default", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, opacity: url ? 1 : 0.35, boxShadow:"0 2px 8px rgba(0,0,0,0.18)" }}
       >
         {playing
           ? <svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
@@ -312,7 +312,7 @@ export default function PostDetailPage({ postId }: Props) {
   const activeReaction = REACTIONS.find(r => r.id === reaction) ?? REACTIONS[0];
 
   if (loading) return (
-    <div style={{ background:"#F7F9FB", minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center" }}>
+    <div style={{ background:"#F8FAFC", minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center" }}>
       <style>{`@keyframes bp-spin{to{transform:rotate(360deg)}}`}</style>
       <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:14 }}>
         <div style={{ width:40, height:40, border:"3px solid #DCFCE7", borderTopColor:"#22C55E", borderRadius:"50%", animation:"bp-spin .7s linear infinite" }} />
@@ -322,11 +322,11 @@ export default function PostDetailPage({ postId }: Props) {
   );
 
   if (error || !post) return (
-    <div style={{ background:"#F7F9FB", minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:16, padding:24 }}>
-      <div style={{ width:64, height:64, borderRadius:20, background:"#FEF2F2", display:"flex", alignItems:"center", justifyContent:"center" }}>
+    <div style={{ background:"#F8FAFC", minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:16, padding:24 }}>
+      <div style={{ width:64, height:64, borderRadius:20, background:"#FEE2E2", display:"flex", alignItems:"center", justifyContent:"center" }}>
         <svg viewBox="0 0 24 24" width="32" height="32" fill="none"><circle cx="12" cy="12" r="10" stroke="#EF4444" strokeWidth="2"/><path d="M12 8v4M12 16h.01" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"/></svg>
       </div>
-      <p style={{ color:"#6B7280", fontSize:15, textAlign:"center", margin:0 }}>{error ?? "Publication introuvable."}</p>
+      <p style={{ color:"#64748B", fontSize:15, textAlign:"center", margin:0 }}>{error ?? "Publication introuvable."}</p>
       <button onClick={() => navigate(-1 as unknown as string)} style={{ background:"linear-gradient(135deg,#22C55E,#16A34A)", color:"#fff", border:"none", borderRadius:16, padding:"12px 28px", cursor:"pointer", fontWeight:700, fontSize:14, boxShadow:"0 4px 16px rgba(34,197,94,0.35)" }}>Retour</button>
     </div>
   );
@@ -334,7 +334,7 @@ export default function PostDetailPage({ postId }: Props) {
   const authorName = post.authorFirstName ?? post.authorName.split(" ")[0];
 
   return (
-    <div style={{ background:"#F7F9FB", minHeight:"100vh", display:"flex", flexDirection:"column", paddingBottom: voiceMode ? 224 : 84 }}>
+    <div style={{ background:"#F8FAFC", minHeight:"100vh", display:"flex", flexDirection:"column", paddingBottom: voiceMode ? 224 : 84 }}>
       <style>{`
         @keyframes bp-spin  { to { transform: rotate(360deg) } }
         @keyframes bp-pop   { 0% { transform:scale(.7) translateY(8px);opacity:0 } 100% { transform:scale(1) translateY(0);opacity:1 } }
@@ -342,7 +342,7 @@ export default function PostDetailPage({ postId }: Props) {
         @keyframes bp-item  { from { opacity:0;transform:translateY(6px) } to { opacity:1;transform:translateY(0) } }
         @keyframes bp-bar   { 0% { opacity:.6 } 100% { opacity:1 } }
         .bp-cmnt-like { background:none;border:none;cursor:pointer;font-size:12px;font-weight:700;transition:color .12s;padding:0 }
-        .bp-action    { flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 4px;background:none;border:none;cursor:pointer;font-size:13px;font-weight:700;color:#374151;transition:color .13s,background .13s;white-space:nowrap;min-width:0 }
+        .bp-action    { flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 4px;background:none;border:none;cursor:pointer;font-size:13px;font-weight:700;color:#64748B;transition:color .13s,background .13s;white-space:nowrap;min-width:0 }
         .bp-action:active { background:#F8FAFC }
         .bp-action-active { color:#22C55E!important }
         .bp-input-wrap:focus-within { border-color:#22C55E!important;box-shadow:none!important }
@@ -354,10 +354,10 @@ export default function PostDetailPage({ postId }: Props) {
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M20 12H4M10 6l-6 6 6 6" stroke="#111" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
         </button>
         <div style={{ flex:1 }}>
-          <div style={{ fontWeight:900, fontSize:17, color:"#0F172A" }}>Publication de {authorName}</div>
+          <div style={{ fontWeight:900, fontSize:17, color:"#111827" }}>Publication de {authorName}</div>
         </div>
         <button style={{ width:40, height:40, borderRadius:12, background:"#fff", border:"1px solid rgba(0,0,0,0.07)", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 1px 4px rgba(0,0,0,0.06)" }}>
-          <svg viewBox="0 0 24 24" width="19" height="19" fill="none"><circle cx="11" cy="11" r="8" stroke="#374151" strokeWidth="2"/><path d="M21 21l-4.35-4.35" stroke="#374151" strokeWidth="2" strokeLinecap="round"/></svg>
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none"><circle cx="11" cy="11" r="8" stroke="#64748B" strokeWidth="2"/><path d="M21 21l-4.35-4.35" stroke="#64748B" strokeWidth="2" strokeLinecap="round"/></svg>
         </button>
       </div>
 
@@ -369,19 +369,19 @@ export default function PostDetailPage({ postId }: Props) {
           <Avatar url={post.authorAvatarUrl} name={post.authorName} size={52} borderWidth={3} online />
           <div style={{ flex:1, minWidth:0 }}>
             <div style={{ display:"flex", alignItems:"center", gap:6, flexWrap:"wrap" }}>
-              <span style={{ fontWeight:900, fontSize:16.5, color:"#0F172A" }}>{post.authorName}</span>
+              <span style={{ fontWeight:900, fontSize:16.5, color:"#111827" }}>{post.authorName}</span>
               <div style={{ width:18, height:18, borderRadius:"50%", background:"linear-gradient(135deg,#22C55E,#16A34A)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                 <svg viewBox="0 0 12 12" width="10" height="10" fill="none"><path d="M2 6l2.5 2.5L10 3.5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </div>
             </div>
             <div style={{ display:"flex", alignItems:"center", gap:5, marginTop:3 }}>
-              <span style={{ fontSize:12, color:"#94A3B8", fontWeight:500 }}>{timeAgo(post.createdAt)}</span>
-              <span style={{ color:"#CBD5E1", fontSize:10 }}>·</span>
-              <svg viewBox="0 0 24 24" width="13" height="13" fill="#94A3B8"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+              <span style={{ fontSize:12, color:"#9CA3AF", fontWeight:500 }}>{timeAgo(post.createdAt)}</span>
+              <span style={{ color:"#E5E7EB", fontSize:10 }}>·</span>
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="#9CA3AF"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
             </div>
           </div>
           <button style={{ width:36, height:36, borderRadius:10, background:"#F8FAFC", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="#94A3B8"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="#9CA3AF"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
           </button>
         </div>
 
@@ -420,7 +420,7 @@ export default function PostDetailPage({ postId }: Props) {
         {post.imageUrl && (
           <div style={{ margin:"0 14px 14px", borderRadius:20, overflow:"hidden", boxShadow:"0 2px 12px rgba(0,0,0,0.08)" }}>
             {isVideo(post.imageUrl)
-              ? <video src={post.imageUrl} poster={post.thumbnailUrl ?? undefined} controls style={{ width:"100%", maxHeight:420, objectFit:"cover", display:"block", background:"#0F172A" }} />
+              ? <video src={post.imageUrl} poster={post.thumbnailUrl ?? undefined} controls style={{ width:"100%", maxHeight:420, objectFit:"cover", display:"block", background:"#111827" }} />
               : <img src={post.imageUrl} alt="" onClick={() => openImageViewer(post.imageUrl!)}
                   style={{ width:"100%", maxHeight:480, objectFit:"cover", display:"block", cursor:"zoom-in" }} />
             }
@@ -459,7 +459,7 @@ export default function PostDetailPage({ postId }: Props) {
                     );
                   })}
                 </div>
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#94A3B8" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#9CA3AF" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
               </div>
             )}
           </div>
@@ -490,7 +490,7 @@ export default function PostDetailPage({ postId }: Props) {
           {/* J'aime */}
           <button
             className={`bp-action${liked ? " bp-action-active" : ""}`}
-            style={{ color: liked ? activeReaction.color : "#374151", animation: liked ? "bp-like .3s ease" : undefined, borderRadius:"0 0 0 24px" }}
+            style={{ color: liked ? activeReaction.color : "#64748B", animation: liked ? "bp-like .3s ease" : undefined, borderRadius:"0 0 0 24px" }}
             onClick={() => { cancelReactionTimer(); toggleLike(); }}
             onMouseDown={startReactionTimer} onMouseUp={cancelReactionTimer}
             onTouchStart={startReactionTimer} onTouchEnd={cancelReactionTimer}
@@ -506,7 +506,7 @@ export default function PostDetailPage({ postId }: Props) {
 
           {/* Commenter */}
           <button className="bp-action" onClick={() => inputRef.current?.focus()}>
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#374151" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#64748B" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             <span>Commenter</span>
           </button>
 
@@ -514,7 +514,7 @@ export default function PostDetailPage({ postId }: Props) {
 
           {/* Partager */}
           <button className="bp-action">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#374151" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#64748B" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
             <span>Partager</span>
           </button>
 
@@ -522,7 +522,7 @@ export default function PostDetailPage({ postId }: Props) {
 
           {/* Enregistrer */}
           <button className={`bp-action${saved ? " bp-action-active" : ""}`} onClick={() => setSaved(s => !s)} style={{ borderRadius:"0 0 24px 0" }}>
-            <svg viewBox="0 0 24 24" width="18" height="18" fill={saved ? "#22C55E" : "none"} stroke={saved ? "#22C55E" : "#374151"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill={saved ? "#22C55E" : "none"} stroke={saved ? "#22C55E" : "#64748B"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
             <span>Enregistrer</span>
           </button>
         </div>
@@ -532,9 +532,9 @@ export default function PostDetailPage({ postId }: Props) {
       <div style={{ background:"#fff", margin:"12px 14px", borderRadius:24, boxShadow:"0 4px 24px rgba(0,0,0,0.07)", overflow:"hidden", padding:"4px 0 16px" }}>
         {topLevel.length > 1 && (
           <div style={{ display:"flex", justifyContent:"flex-end", padding:"10px 16px 4px" }}>
-            <button style={{ background:"none", border:"none", cursor:"pointer", fontSize:12, fontWeight:800, color:"#374151", display:"flex", alignItems:"center", gap:4 }}>
+            <button style={{ background:"none", border:"none", cursor:"pointer", fontSize:12, fontWeight:800, color:"#64748B", display:"flex", alignItems:"center", gap:4 }}>
               Plus pertinents
-              <svg viewBox="0 0 24 24" width="13" height="13" fill="#374151"><path d="M7 10l5 5 5-5z"/></svg>
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="#64748B"><path d="M7 10l5 5 5-5z"/></svg>
             </button>
           </div>
         )}
@@ -550,10 +550,10 @@ export default function PostDetailPage({ postId }: Props) {
                   <div style={{ flex:1 }}>
                     <div style={{ position:"relative", display:"inline-block", maxWidth:"100%" }}>
                       <div style={{ background:"#F8FAFC", borderRadius:18, padding:"10px 14px", border:"1px solid rgba(0,0,0,0.04)" }}>
-                        <div style={{ fontWeight:800, fontSize:13, color:"#0F172A", marginBottom:3 }}>{cName}</div>
+                        <div style={{ fontWeight:800, fontSize:13, color:"#111827", marginBottom:3 }}>{cName}</div>
                         {c.audioUrl
                           ? <VoicePlayer url={c.audioUrl} duration={c.audioDuration} />
-                          : <div style={{ fontSize:14, color:"#334155", lineHeight:1.55 }}>{c.content}</div>
+                          : <div style={{ fontSize:14, color:"#111827", lineHeight:1.55 }}>{c.content}</div>
                         }
                       </div>
                       {c.likesCount > 0 && (
@@ -564,9 +564,9 @@ export default function PostDetailPage({ postId }: Props) {
                       )}
                     </div>
                     <div style={{ display:"flex", gap:14, paddingLeft:6, marginTop:9, fontSize:12, alignItems:"center" }}>
-                      <span style={{ color:"#CBD5E1", fontWeight:500 }}>{timeAgo(c.createdAt)}</span>
-                      <button className="bp-cmnt-like" onClick={() => toggleCommentLike(c.id)} style={{ color: c.likedByMe ? "#22C55E" : "#94A3B8" }}>J'aime</button>
-                      <button className="bp-cmnt-like" onClick={() => replyingTo === c.id ? cancelReply() : startReply(c)} style={{ color: replyingTo === c.id ? "#22C55E" : "#94A3B8" }}>
+                      <span style={{ color:"#E5E7EB", fontWeight:500 }}>{timeAgo(c.createdAt)}</span>
+                      <button className="bp-cmnt-like" onClick={() => toggleCommentLike(c.id)} style={{ color: c.likedByMe ? "#22C55E" : "#9CA3AF" }}>J'aime</button>
+                      <button className="bp-cmnt-like" onClick={() => replyingTo === c.id ? cancelReply() : startReply(c)} style={{ color: replyingTo === c.id ? "#22C55E" : "#9CA3AF" }}>
                         {replyingTo === c.id ? "Annuler" : "Répondre"}
                       </button>
                     </div>
@@ -582,12 +582,12 @@ export default function PostDetailPage({ postId }: Props) {
                           <Avatar url={r.authorAvatarUrl} name={rName} size={30} borderWidth={2} />
                           <div style={{ flex:1 }}>
                             <div style={{ display:"inline-block", background:"#F8FAFC", borderRadius:14, padding:"8px 12px", border:"1px solid rgba(0,0,0,0.04)", maxWidth:"100%" }}>
-                              <div style={{ fontWeight:800, fontSize:12, color:"#0F172A", marginBottom:2 }}>{rName}</div>
-                              <div style={{ fontSize:13, color:"#334155" }}>{r.content}</div>
+                              <div style={{ fontWeight:800, fontSize:12, color:"#111827", marginBottom:2 }}>{rName}</div>
+                              <div style={{ fontSize:13, color:"#111827" }}>{r.content}</div>
                             </div>
                             <div style={{ display:"flex", gap:10, paddingLeft:4, marginTop:5, fontSize:11 }}>
-                              <span style={{ color:"#CBD5E1" }}>{timeAgo(r.createdAt)}</span>
-                              <button className="bp-cmnt-like" onClick={() => toggleCommentLike(r.id)} style={{ color: r.likedByMe ? "#22C55E" : "#94A3B8" }}>J'aime</button>
+                              <span style={{ color:"#E5E7EB" }}>{timeAgo(r.createdAt)}</span>
+                              <button className="bp-cmnt-like" onClick={() => toggleCommentLike(r.id)} style={{ color: r.likedByMe ? "#22C55E" : "#9CA3AF" }}>J'aime</button>
                             </div>
                           </div>
                         </div>
@@ -602,9 +602,9 @@ export default function PostDetailPage({ postId }: Props) {
           {topLevel.length === 0 && !loading && (
             <div style={{ textAlign:"center", padding:"24px 0 12px" }}>
               <div style={{ width:44, height:44, borderRadius:"50%", background:"#F0FDF4", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 10px" }}>
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#86EFAC" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#BBF7D0" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               </div>
-              <p style={{ color:"#CBD5E1", fontSize:13, margin:0 }}>Soyez le premier à commenter</p>
+              <p style={{ color:"#E5E7EB", fontSize:13, margin:0 }}>Soyez le premier à commenter</p>
             </div>
           )}
         </div>
@@ -616,10 +616,10 @@ export default function PostDetailPage({ postId }: Props) {
         {replyingTo !== null && (
           <div style={{ display:"flex", alignItems:"center", gap:8, padding:"8px 16px 4px", fontSize:12 }}>
             <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round"><path d="M9 15L3 9l6-6M3 9h12a6 6 0 0 1 0 12h-3"/></svg>
-            <span style={{ color:"#94A3B8" }}>Répondre à</span>
+            <span style={{ color:"#9CA3AF" }}>Répondre à</span>
             <span style={{ fontWeight:800, color:"#22C55E" }}>{replyName}</span>
             <button onClick={cancelReply} style={{ background:"none", border:"none", cursor:"pointer", marginLeft:"auto", display:"flex", padding:2 }}>
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#CBD5E1" strokeWidth="2.2" strokeLinecap="round"/></svg>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#E5E7EB" strokeWidth="2.2" strokeLinecap="round"/></svg>
             </button>
           </div>
         )}
@@ -633,7 +633,7 @@ export default function PostDetailPage({ postId }: Props) {
           ) : (
             <div
               className="bp-input-wrap"
-              style={{ flex:1, background:"#fff", borderRadius:24, display:"flex", alignItems:"center", padding:"0 8px 0 16px", gap:2, border:"1.5px solid #E2E8F0", transition:"border-color .15s,box-shadow .15s" }}
+              style={{ flex:1, background:"#fff", borderRadius:24, display:"flex", alignItems:"center", padding:"0 8px 0 16px", gap:2, border:"1.5px solid #E5E7EB", transition:"border-color .15s,box-shadow .15s" }}
             >
               <input
                 ref={inputRef}
@@ -648,19 +648,19 @@ export default function PostDetailPage({ postId }: Props) {
                 <div style={{ display:"flex", gap:0, flexShrink:0, alignItems:"center" }}>
                   {/* Emoji */}
                   <button style={{ background:"none", border:"none", padding:"7px 7px", cursor:"pointer", display:"flex", alignItems:"center" }}>
-                    <svg viewBox="0 0 24 24" width="21" height="21" fill="none"><circle cx="12" cy="12" r="10" stroke="#CBD5E1" strokeWidth="1.8"/><path d="M8.5 11a1 1 0 1 1 0-2 1 1 0 0 1 0 2zM15.5 11a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" fill="#CBD5E1"/><path d="M8 15c.667 1.333 2 2 4 2s3.333-.667 4-2" stroke="#CBD5E1" strokeWidth="1.7" strokeLinecap="round"/></svg>
+                    <svg viewBox="0 0 24 24" width="21" height="21" fill="none"><circle cx="12" cy="12" r="10" stroke="#E5E7EB" strokeWidth="1.8"/><path d="M8.5 11a1 1 0 1 1 0-2 1 1 0 0 1 0 2zM15.5 11a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" fill="#E5E7EB"/><path d="M8 15c.667 1.333 2 2 4 2s3.333-.667 4-2" stroke="#E5E7EB" strokeWidth="1.7" strokeLinecap="round"/></svg>
                   </button>
                   {/* GIF */}
                   <button style={{ background:"none", border:"none", padding:"7px 5px", cursor:"pointer", display:"flex", alignItems:"center" }}>
-                    <div style={{ background:"#F1F5F9", borderRadius:5, padding:"2px 5px", fontSize:10, fontWeight:900, color:"#94A3B8", letterSpacing:0.5 }}>GIF</div>
+                    <div style={{ background:"#F1F5F9", borderRadius:5, padding:"2px 5px", fontSize:10, fontWeight:900, color:"#9CA3AF", letterSpacing:0.5 }}>GIF</div>
                   </button>
                   {/* Mic */}
                   <button onClick={() => setVoiceMode(true)} style={{ background:"none", border:"none", padding:"7px 7px", cursor:"pointer", display:"flex", alignItems:"center" }}>
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#CBD5E1" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#E5E7EB" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
                   </button>
                   {/* Photo */}
                   <button style={{ background:"none", border:"none", padding:"7px 7px", cursor:"pointer", display:"flex", alignItems:"center" }}>
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#CBD5E1" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#E5E7EB" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
                   </button>
                 </div>
               ) : (

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#0F172A", secondary:"#64748B", muted:"#94A3B8", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#111827", secondary:"#64748B", muted:"#9CA3AF", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
 type Theme = "clair"|"sombre"|"systeme";
 type Size  = "petite"|"moyenne"|"grande";
 
@@ -20,9 +20,9 @@ function SubHeader({ title, onBack }:{title:string;onBack:()=>void}) {
 }
 
 const THEMES: { key:Theme; label:string; bg:string; accent:string; textC:string }[] = [
-  { key:"clair",   label:"Clair",   bg:"#F8FAFC", accent:"#22C55E", textC:"#0F172A" },
-  { key:"sombre",  label:"Sombre",  bg:"#0F172A", accent:"#22C55E", textC:"#F8FAFC" },
-  { key:"systeme", label:"Système", bg:"linear-gradient(135deg,#F8FAFC 50%,#0F172A 50%)", accent:"#22C55E", textC:"#64748B" },
+  { key:"clair",   label:"Clair",   bg:"#F8FAFC", accent:"#22C55E", textC:"#111827" },
+  { key:"sombre",  label:"Sombre",  bg:"#111827", accent:"#22C55E", textC:"#F8FAFC" },
+  { key:"systeme", label:"Système", bg:"linear-gradient(135deg,#F8FAFC 50%,#111827 50%)", accent:"#22C55E", textC:"#64748B" },
 ];
 
 const COLORS = [
@@ -75,9 +75,9 @@ export default function AppearancePage() {
           <div style={{ fontWeight:700,fontSize:14,color:C.text,marginBottom:14 }}>Thème</div>
           <div style={{ display:"flex",gap:10 }}>
             {THEMES.map(t=>(
-              <button key={t.key} onClick={()=>setTheme(t.key)} style={{ flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:10,padding:"14px 8px",borderRadius:18,border:theme===t.key?"2px solid "+color:"1.5px solid #E2E8F0",background:theme===t.key?"#F0FDF4":"#F8FAFC",cursor:"pointer",transition:"all 250ms" }}>
+              <button key={t.key} onClick={()=>setTheme(t.key)} style={{ flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:10,padding:"14px 8px",borderRadius:18,border:theme===t.key?"2px solid "+color:"1.5px solid #E5E7EB",background:theme===t.key?"#F0FDF4":"#F8FAFC",cursor:"pointer",transition:"all 250ms" }}>
                 {/* Mini phone preview */}
-                <div style={{ width:48,height:64,borderRadius:10,background:t.bg,border:"1.5px solid #E2E8F0",overflow:"hidden",position:"relative",boxShadow:"0 2px 8px rgba(0,0,0,0.06)" }}>
+                <div style={{ width:48,height:64,borderRadius:10,background:t.bg,border:"1.5px solid #E5E7EB",overflow:"hidden",position:"relative",boxShadow:"0 2px 8px rgba(0,0,0,0.06)" }}>
                   <div style={{ height:10,background:color,opacity:.9 }}/>
                   <div style={{ margin:"6px 5px 0",height:5,background:t.textC,borderRadius:3,opacity:.15 }}/>
                   <div style={{ margin:"4px 5px 0",height:5,background:t.textC,borderRadius:3,opacity:.1,width:"60%" }}/>
@@ -112,7 +112,7 @@ export default function AppearancePage() {
           <div style={{ display:"flex",gap:8 }}>
             {SIZES.map(s=>(
               <button key={s.key} onClick={()=>setSize(s.key)}
-                style={{ flex:1,padding:"12px 6px",borderRadius:14,border:size===s.key?"2px solid "+color:"1.5px solid #E2E8F0",background:size===s.key?"#F0FDF4":"#F8FAFC",cursor:"pointer",textAlign:"center",transition:"all 200ms" }}>
+                style={{ flex:1,padding:"12px 6px",borderRadius:14,border:size===s.key?"2px solid "+color:"1.5px solid #E5E7EB",background:size===s.key?"#F0FDF4":"#F8FAFC",cursor:"pointer",textAlign:"center",transition:"all 200ms" }}>
                 <div style={{ fontSize:s.size,fontWeight:700,color:size===s.key?color:C.secondary,transition:"font-size 200ms" }}>Aa</div>
                 <div style={{ fontSize:11,color:size===s.key?color:C.muted,fontWeight:size===s.key?700:400,marginTop:4 }}>{s.label}</div>
               </button>

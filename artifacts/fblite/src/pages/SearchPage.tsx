@@ -14,7 +14,7 @@ import {
   type ApiGroup,
 } from "../lib/api";
 
-const AVATAR_COLORS = ["#1877F2","#E91E63","#9C27B0","#F57C00","#388E3C","#D32F2F","#00838F","#5D4037"];
+const AVATAR_COLORS = ["#22C55E","#E91E63","#9C27B0","#D97706","#388E3C","#D32F2F","#00838F","#5D4037"];
 
 function colorForId(id: number) {
   return AVATAR_COLORS[id % AVATAR_COLORS.length];
@@ -141,7 +141,7 @@ export default function SearchPage({ q }: Props) {
     cursor: "pointer",
     fontWeight: 600,
     fontSize: 13,
-    background: activeTab === tab ? "var(--fb-blue)" : "var(--fb-bg)",
+    background: activeTab === tab ? "var(--bp-primary)" : "var(--fb-bg)",
     color: activeTab === tab ? "#fff" : "var(--fb-text)",
     transition: "background 0.15s, color 0.15s",
     whiteSpace: "nowrap" as const,
@@ -150,9 +150,9 @@ export default function SearchPage({ q }: Props) {
   const chipStyle = (active: boolean) => ({
     padding: "5px 13px",
     borderRadius: 16,
-    border: `1.5px solid ${active ? "var(--fb-blue)" : "var(--fb-divider)"}`,
-    background: active ? "#e7f0fd" : "var(--fb-white)",
-    color: active ? "var(--fb-blue)" : "var(--fb-text)",
+    border: `1.5px solid ${active ? "var(--bp-primary)" : "var(--fb-divider)"}`,
+    background: active ? "#DCFCE7" : "var(--fb-white)",
+    color: active ? "var(--bp-primary)" : "var(--fb-text)",
     cursor: "pointer",
     fontSize: 12,
     fontWeight: active ? 700 : 500,
@@ -189,7 +189,7 @@ export default function SearchPage({ q }: Props) {
               {t.count > 0 && (
                 <span style={{
                   marginLeft: 6,
-                  background: activeTab === t.id ? "rgba(255,255,255,0.3)" : "#e4e6e9",
+                  background: activeTab === t.id ? "rgba(255,255,255,0.3)" : "#F1F5F9",
                   color: activeTab === t.id ? "#fff" : "var(--fb-text-secondary)",
                   borderRadius: 10,
                   padding: "1px 7px",
@@ -281,7 +281,7 @@ export default function SearchPage({ q }: Props) {
         <div style={{ background: "var(--fb-white)", borderRadius: 10, border: "1px solid var(--fb-divider)", overflow: "hidden" }}>
           <div style={{ padding: "12px 16px", borderBottom: "1px solid var(--fb-divider)", fontWeight: 700, fontSize: 16 }}>
             👥 Personnes
-            {filterCountry && <span style={{ marginLeft: 8, fontSize: 13, fontWeight: 500, color: "var(--fb-blue)" }}>· {filterCountry.name}</span>}
+            {filterCountry && <span style={{ marginLeft: 8, fontSize: 13, fontWeight: 500, color: "var(--bp-primary)" }}>· {filterCountry.name}</span>}
           </div>
 
           {users.length === 0 && (
@@ -342,7 +342,7 @@ export default function SearchPage({ q }: Props) {
                   <button
                     onClick={() => navigate(`/profile/${user.id}`)}
                     style={{ padding: "8px 14px", borderRadius: 6, background: "var(--fb-bg)", border: "1px solid var(--fb-divider)", fontWeight: 600, fontSize: 13, cursor: "pointer", color: "var(--fb-text)", transition: "background 0.15s" }}
-                    onMouseEnter={e => (e.currentTarget.style.background = "#e4e6e9")}
+                    onMouseEnter={e => (e.currentTarget.style.background = "#F1F5F9")}
                     onMouseLeave={e => (e.currentTarget.style.background = "var(--fb-bg)")}
                   >
                     Voir profil
@@ -350,8 +350,8 @@ export default function SearchPage({ q }: Props) {
 
                   <button
                     onClick={() => navigate(`/messages?userId=${user.id}`)}
-                    style={{ padding: "8px 14px", borderRadius: 6, background: "var(--fb-bg)", border: "1px solid var(--fb-divider)", fontWeight: 600, fontSize: 13, cursor: "pointer", color: "var(--fb-blue)", transition: "background 0.15s" }}
-                    onMouseEnter={e => (e.currentTarget.style.background = "#e4e6e9")}
+                    style={{ padding: "8px 14px", borderRadius: 6, background: "var(--fb-bg)", border: "1px solid var(--fb-divider)", fontWeight: 600, fontSize: 13, cursor: "pointer", color: "var(--bp-primary)", transition: "background 0.15s" }}
+                    onMouseEnter={e => (e.currentTarget.style.background = "#F1F5F9")}
                     onMouseLeave={e => (e.currentTarget.style.background = "var(--fb-bg)")}
                     title="Envoyer un message"
                   >
@@ -359,7 +359,7 @@ export default function SearchPage({ q }: Props) {
                   </button>
 
                   {state === "friends" && (
-                    <button disabled style={{ padding: "8px 14px", borderRadius: 6, background: "#e7f3e8", border: "none", fontWeight: 600, fontSize: 13, cursor: "default", color: "#2e7d32" }}>
+                    <button disabled style={{ padding: "8px 14px", borderRadius: 6, background: "#DCFCE7", border: "none", fontWeight: 600, fontSize: 13, cursor: "default", color: "#16A34A" }}>
                       ✓ Amis
                     </button>
                   )}
@@ -371,9 +371,9 @@ export default function SearchPage({ q }: Props) {
                   {state === "none" && (
                     <button
                       onClick={() => handleAddFriend(user.id)}
-                      style={{ padding: "8px 14px", borderRadius: 6, background: "var(--fb-blue)", border: "none", fontWeight: 600, fontSize: 13, cursor: "pointer", color: "#fff", transition: "background 0.15s, transform 0.1s" }}
+                      style={{ padding: "8px 14px", borderRadius: 6, background: "var(--bp-primary)", border: "none", fontWeight: 600, fontSize: 13, cursor: "pointer", color: "#fff", transition: "background 0.15s, transform 0.1s" }}
                       onMouseEnter={e => (e.currentTarget.style.background = "var(--fb-blue-dark)")}
-                      onMouseLeave={e => (e.currentTarget.style.background = "var(--fb-blue)")}
+                      onMouseLeave={e => (e.currentTarget.style.background = "var(--bp-primary)")}
                       onMouseDown={e => (e.currentTarget.style.transform = "scale(0.97)")}
                       onMouseUp={e => (e.currentTarget.style.transform = "")}
                     >
@@ -381,7 +381,7 @@ export default function SearchPage({ q }: Props) {
                     </button>
                   )}
                   {state === "sending" && (
-                    <button disabled style={{ padding: "8px 14px", borderRadius: 6, background: "var(--fb-blue)", border: "none", fontWeight: 600, fontSize: 13, cursor: "default", color: "#fff", opacity: 0.7 }}>
+                    <button disabled style={{ padding: "8px 14px", borderRadius: 6, background: "var(--bp-primary)", border: "none", fontWeight: 600, fontSize: 13, cursor: "default", color: "#fff", opacity: 0.7 }}>
                       ...
                     </button>
                   )}
@@ -423,7 +423,7 @@ export default function SearchPage({ q }: Props) {
                 {post.authorAvatarUrl
                   ? <img src={post.authorAvatarUrl} alt="" style={{ width: 36, height: 36, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
                   : (
-                    <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#E8F5E9", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>
+                    <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>
                       📝
                     </div>
                   )
@@ -458,7 +458,7 @@ export default function SearchPage({ q }: Props) {
           <div style={{ padding: "12px 16px", borderBottom: "1px solid var(--fb-divider)", fontWeight: 700, fontSize: 16 }}>
             🏘️ Groupes / Communautés
             {(filterCountry || filterCategory) && (
-              <span style={{ marginLeft: 8, fontSize: 13, fontWeight: 500, color: "var(--fb-blue)" }}>
+              <span style={{ marginLeft: 8, fontSize: 13, fontWeight: 500, color: "var(--bp-primary)" }}>
                 {[filterCategory, filterCountry?.name].filter(Boolean).map(v => `· ${v}`).join(" ")}
               </span>
             )}
@@ -488,7 +488,7 @@ export default function SearchPage({ q }: Props) {
               onMouseEnter={e => (e.currentTarget.style.background = "var(--fb-bg)")}
               onMouseLeave={e => (e.currentTarget.style.background = "")}
             >
-              <div style={{ width: 52, height: 52, borderRadius: 10, background: "#F3E5F5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, flexShrink: 0 }}>
+              <div style={{ width: 52, height: 52, borderRadius: 10, background: "#EDE9FE", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, flexShrink: 0 }}>
                 {group.emoji}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -517,7 +517,7 @@ export default function SearchPage({ q }: Props) {
           <div style={{ padding: "12px 16px", borderBottom: "1px solid var(--fb-divider)", fontWeight: 700, fontSize: 16 }}>
             🛍️ Articles à vendre
             {(filterCountry || filterCategory) && (
-              <span style={{ marginLeft: 8, fontSize: 13, fontWeight: 500, color: "var(--fb-blue)" }}>
+              <span style={{ marginLeft: 8, fontSize: 13, fontWeight: 500, color: "var(--bp-primary)" }}>
                 {[filterCategory, filterCountry?.name].filter(Boolean).map(v => `· ${v}`).join(" ")}
               </span>
             )}
@@ -547,7 +547,7 @@ export default function SearchPage({ q }: Props) {
               onMouseEnter={e => (e.currentTarget.style.background = "var(--fb-bg)")}
               onMouseLeave={e => (e.currentTarget.style.background = "")}
             >
-              <div style={{ width: 52, height: 52, borderRadius: 8, background: "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", flexShrink: 0 }}>
+              <div style={{ width: 52, height: 52, borderRadius: 8, background: "#F1F5F9", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", flexShrink: 0 }}>
                 {product.imageUrl
                   ? <img src={product.imageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   : <span style={{ fontSize: 22 }}>🛍️</span>
@@ -557,7 +557,7 @@ export default function SearchPage({ q }: Props) {
                 <div style={{ fontWeight: 700, fontSize: 15, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                   {product.title}
                 </div>
-                <div style={{ fontSize: 13, color: "var(--fb-blue)", fontWeight: 600, marginTop: 2 }}>
+                <div style={{ fontSize: 13, color: "var(--bp-primary)", fontWeight: 600, marginTop: 2 }}>
                   {product.price.toLocaleString("fr-FR")} {product.currency}
                 </div>
                 {product.location && (
@@ -574,7 +574,7 @@ export default function SearchPage({ q }: Props) {
         <div style={{ background: "var(--fb-white)", borderRadius: 10, border: "1px solid var(--fb-divider)", overflow: "hidden" }}>
           <div style={{ padding: "12px 16px", borderBottom: "1px solid var(--fb-divider)", fontWeight: 700, fontSize: 16 }}>
             💼 Offres d'emploi
-            {filterCountry && <span style={{ marginLeft: 8, fontSize: 13, fontWeight: 500, color: "var(--fb-blue)" }}>· {filterCountry.name}</span>}
+            {filterCountry && <span style={{ marginLeft: 8, fontSize: 13, fontWeight: 500, color: "var(--bp-primary)" }}>· {filterCountry.name}</span>}
           </div>
 
           {jobs.length === 0 && (
@@ -601,7 +601,7 @@ export default function SearchPage({ q }: Props) {
               onMouseEnter={e => (e.currentTarget.style.background = "var(--fb-bg)")}
               onMouseLeave={e => (e.currentTarget.style.background = "")}
             >
-              <div style={{ width: 52, height: 52, borderRadius: 10, background: "#E3F2FD", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, flexShrink: 0 }}>
+              <div style={{ width: 52, height: 52, borderRadius: 10, background: "#DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, flexShrink: 0 }}>
                 💼
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>

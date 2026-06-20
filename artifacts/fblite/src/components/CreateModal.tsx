@@ -27,8 +27,8 @@ const OPTIONS = [
     label: "Marketplace",
     desc: "Proposez vos produits à des millions d'utilisateurs.",
     color: "#F97316",
-    bg: "#FFF7ED",
-    badge: { text: "Recommandé", icon: "⭐", textColor: "#EA6C0A", bgColor: "#FFEDD5" },
+    bg: "#FEF3C7",
+    badge: { text: "Recommandé", icon: "⭐", textColor: "#D97706", bgColor: "#FEF3C7" },
     icon: (
       <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
         <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" stroke="#F97316" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
@@ -41,14 +41,14 @@ const OPTIONS = [
     type: "service",
     label: "Publier un service",
     desc: "Faites connaître vos services et développez votre activité.",
-    color: "#3B82F6",
-    bg: "#EFF6FF",
+    color: "#0EA5E9",
+    bg: "#DCFCE7",
     badge: null,
     icon: (
       <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
-        <rect x="2" y="7" width="20" height="14" rx="2" stroke="#3B82F6" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" stroke="#3B82F6" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-        <circle cx="12" cy="14" r="2" stroke="#3B82F6" strokeWidth="1.8"/>
+        <rect x="2" y="7" width="20" height="14" rx="2" stroke="#0EA5E9" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" stroke="#0EA5E9" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+        <circle cx="12" cy="14" r="2" stroke="#0EA5E9" strokeWidth="1.8"/>
       </svg>
     ),
   },
@@ -56,14 +56,14 @@ const OPTIONS = [
     type: "group",
     label: "Créer un groupe",
     desc: "Rassemblez des personnes autour d'intérêts communs.",
-    color: "#06B6D4",
+    color: "#0EA5E9",
     bg: "#ECFEFF",
     badge: null,
     icon: (
       <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="#06B6D4" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-        <circle cx="9" cy="7" r="4" stroke="#06B6D4" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="#06B6D4" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="#0EA5E9" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+        <circle cx="9" cy="7" r="4" stroke="#0EA5E9" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="#0EA5E9" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     ),
   },
@@ -72,7 +72,7 @@ const OPTIONS = [
     label: "Offre d'emploi",
     desc: "Trouvez les meilleurs talents pour votre entreprise.",
     color: "#8B5CF6",
-    bg: "#F5F3FF",
+    bg: "#EDE9FE",
     badge: null,
     icon: (
       <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
@@ -87,7 +87,7 @@ const OPTIONS = [
     label: "Formation",
     desc: "Partagez votre savoir et formez des apprenants.",
     color: "#F59E0B",
-    bg: "#FFFBEB",
+    bg: "#FEF3C7",
     badge: null,
     icon: (
       <svg viewBox="0 0 24 24" width="28" height="28" fill="none">
@@ -150,7 +150,7 @@ export default function CreateModal({ onClose, onSelect }: Props) {
       >
         {/* Drag handle */}
         <div style={{ display: "flex", justifyContent: "center", paddingTop: 12, paddingBottom: 4 }}>
-          <div style={{ width: 36, height: 4, borderRadius: 2, background: "#D1D5DB" }}/>
+          <div style={{ width: 36, height: 4, borderRadius: 2, background: "#E5E7EB" }}/>
         </div>
 
         {/* Header */}
@@ -161,7 +161,7 @@ export default function CreateModal({ onClose, onSelect }: Props) {
           {/* Big circular "+" icon */}
           <div style={{
             width: 56, height: 56, borderRadius: "50%",
-            background: "linear-gradient(135deg, #4ADE80 0%, #22C55E 60%, #16A34A 100%)",
+            background: "linear-gradient(135deg, #22C55E 0%, #22C55E 60%, #16A34A 100%)",
             display: "flex", alignItems: "center", justifyContent: "center",
             flexShrink: 0,
             boxShadow: "0 0 0 4px #DCFCE7, 0 4px 16px rgba(34,197,94,0.35)",
@@ -176,14 +176,14 @@ export default function CreateModal({ onClose, onSelect }: Props) {
               width: 12, height: 12,
             }}>
               <svg viewBox="0 0 12 12" width="12" height="12">
-                <path d="M6 0 L7 5 L12 6 L7 7 L6 12 L5 7 L0 6 L5 5 Z" fill="#FCD34D"/>
+                <path d="M6 0 L7 5 L12 6 L7 7 L6 12 L5 7 L0 6 L5 5 Z" fill="#FBBF24"/>
               </svg>
             </div>
           </div>
 
           {/* Title */}
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontWeight: 900, fontSize: 22, color: "#0F172A", lineHeight: 1.15, fontFamily: "Inter, sans-serif" }}>
+            <div style={{ fontWeight: 900, fontSize: 22, color: "#111827", lineHeight: 1.15, fontFamily: "Inter, sans-serif" }}>
               Créer
             </div>
             <div style={{ fontSize: 13, color: "#64748B", marginTop: 2, lineHeight: 1.3, fontFamily: "Inter, sans-serif" }}>
@@ -205,7 +205,7 @@ export default function CreateModal({ onClose, onSelect }: Props) {
             }}
           >
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
-              <path d="M18 6L6 18M6 6l12 12" stroke="#374151" strokeWidth="2.2" strokeLinecap="round"/>
+              <path d="M18 6L6 18M6 6l12 12" stroke="#64748B" strokeWidth="2.2" strokeLinecap="round"/>
             </svg>
           </button>
         </div>
@@ -241,7 +241,7 @@ export default function CreateModal({ onClose, onSelect }: Props) {
               <div style={{ flex: 1, minWidth: 0 }}>
                 {/* Title + badge inline */}
                 <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 3 }}>
-                  <span style={{ fontWeight: 800, fontSize: 15.5, color: "#0F172A", fontFamily: "Inter, sans-serif", lineHeight: 1.2 }}>
+                  <span style={{ fontWeight: 800, fontSize: 15.5, color: "#111827", fontFamily: "Inter, sans-serif", lineHeight: 1.2 }}>
                     {opt.label}
                   </span>
                   {opt.badge && (

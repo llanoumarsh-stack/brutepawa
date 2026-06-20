@@ -15,8 +15,8 @@ const POPULAR_MUSIC = [
 ];
 
 const GENRE_COLORS: Record<string, string> = {
-  Highlife: "#7B1FA2", Afrobeats: "#F57C00", Afropop: "#E91E63",
-  Bongo: "#388E3C", Dancehall: "#1877F2",
+  Highlife: "#8B5CF6", Afrobeats: "#D97706", Afropop: "#E91E63",
+  Bongo: "#388E3C", Dancehall: "#22C55E",
 };
 
 export default function CreateReelPage() {
@@ -71,7 +71,7 @@ export default function CreateReelPage() {
         <button
           onClick={handlePublish}
           disabled={!videoUrl || submitting}
-          style={{ background: videoUrl && !submitting ? "#1877F2" : "rgba(255,255,255,0.15)", border: "none", color: "#fff", borderRadius: 20, padding: "8px 18px", fontSize: 14, fontWeight: 700, cursor: videoUrl && !submitting ? "pointer" : "not-allowed" }}
+          style={{ background: videoUrl && !submitting ? "#22C55E" : "rgba(255,255,255,0.15)", border: "none", color: "#fff", borderRadius: 20, padding: "8px 18px", fontSize: 14, fontWeight: 700, cursor: videoUrl && !submitting ? "pointer" : "not-allowed" }}
         >
           {submitting ? "Envoi…" : "Publier"}
         </button>
@@ -87,7 +87,7 @@ export default function CreateReelPage() {
             <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 16, textAlign: "center" }}>Sélectionne une vidéo pour créer ton reel</div>
             <button
               onClick={() => fileRef.current?.click()}
-              style={{ background: "#1877F2", border: "none", color: "#fff", borderRadius: 24, padding: "14px 32px", fontSize: 16, fontWeight: 700, cursor: "pointer" }}
+              style={{ background: "#22C55E", border: "none", color: "#fff", borderRadius: 24, padding: "14px 32px", fontSize: 16, fontWeight: 700, cursor: "pointer" }}
             >
               📱 Choisir une vidéo
             </button>
@@ -98,7 +98,7 @@ export default function CreateReelPage() {
         {uploadStatus === "uploading" && (
           <div style={{ position: "absolute", bottom: 0, left: 0, right: 0 }}>
             <div style={{ height: 3, background: "rgba(255,255,255,0.3)" }}>
-              <div style={{ height: "100%", width: `${progress}%`, background: "#1877F2", transition: "width 0.2s" }} />
+              <div style={{ height: "100%", width: `${progress}%`, background: "#22C55E", transition: "width 0.2s" }} />
             </div>
           </div>
         )}
@@ -110,7 +110,7 @@ export default function CreateReelPage() {
             background: "rgba(0,0,0,0.65)", borderRadius: 12, padding: "10px 14px",
             display: "flex", alignItems: "center", gap: 10,
           }}>
-            <div style={{ width: 36, height: 36, borderRadius: 8, background: GENRE_COLORS[selectedMusic.genre] ?? "#1877F2", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🎵</div>
+            <div style={{ width: 36, height: 36, borderRadius: 8, background: GENRE_COLORS[selectedMusic.genre] ?? "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>🎵</div>
             <div>
               <div style={{ color: "#fff", fontWeight: 700, fontSize: 13 }}>{selectedMusic.title}</div>
               <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 11 }}>{selectedMusic.artist}</div>
@@ -132,7 +132,7 @@ export default function CreateReelPage() {
                 flex: 1, background: "none", border: "none", padding: "14px", cursor: "pointer",
                 color: tab === t ? "#fff" : "rgba(255,255,255,0.4)",
                 fontWeight: 700, fontSize: 14,
-                borderBottom: tab === t ? "2px solid #1877F2" : "2px solid transparent",
+                borderBottom: tab === t ? "2px solid #22C55E" : "2px solid transparent",
               }}
             >
               {t === "gallery" ? "📷 Galerie" : "🎵 Musique"}
@@ -169,7 +169,7 @@ export default function CreateReelPage() {
                   onClick={() => setSelectedMusic(selectedMusic?.id === track.id ? null : track)}
                   style={{
                     background: selectedMusic?.id === track.id ? "rgba(24,119,242,0.15)" : "rgba(255,255,255,0.05)",
-                    border: selectedMusic?.id === track.id ? "1.5px solid #1877F2" : "1.5px solid transparent",
+                    border: selectedMusic?.id === track.id ? "1.5px solid #22C55E" : "1.5px solid transparent",
                     borderRadius: 10, padding: "10px 14px",
                     display: "flex", alignItems: "center", gap: 12, cursor: "pointer", textAlign: "left",
                   }}
@@ -179,7 +179,7 @@ export default function CreateReelPage() {
                     <div style={{ color: "#fff", fontWeight: 700, fontSize: 14, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{track.title}</div>
                     <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>{track.artist} · {track.genre}</div>
                   </div>
-                  {selectedMusic?.id === track.id && <span style={{ color: "#1877F2", fontSize: 18 }}>✓</span>}
+                  {selectedMusic?.id === track.id && <span style={{ color: "#22C55E", fontSize: 18 }}>✓</span>}
                 </button>
               ))}
             </div>

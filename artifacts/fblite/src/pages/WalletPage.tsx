@@ -5,7 +5,7 @@ import {
   type ApiTx, type PublicUser, type ApiTokenPurchase, type ApiGiftHistoryItem,
 } from "../lib/api";
 
-const BP_GREEN   = "#16C24A";
+const BP_GREEN   = "#22C55E";
 const USD_RATE   = 600; // 1 USD = 600 FCFA
 
 type Modal = "depot" | "retirer" | "envoyer" | "recevoir" | "jetons" | "historique" | "cadeaux" | null;
@@ -43,12 +43,12 @@ const I = {
   check: <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
   arrowR: <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>,
   x: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
-  star: <svg viewBox="0 0 24 24" width="13" height="13" fill="#FFD700" stroke="#FFD700" strokeWidth="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
+  star: <svg viewBox="0 0 24 24" width="13" height="13" fill="#FBBF24" stroke="#FBBF24" strokeWidth="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
   lock: <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke={BP_GREEN} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
   rocket: <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke={BP_GREEN} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg>,
   tag: <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke={BP_GREEN} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>,
   crown: <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke={BP_GREEN} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 20h18"/><path d="M5 20V8l7-5 7 5v12"/><path d="M5 14h14"/></svg>,
-  chartLine: <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>,
+  chartLine: <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>,
 };
 
 /* ─── Operator logo cells ──────────────────────────────────── */
@@ -56,8 +56,8 @@ const OPS = [
   { name: "MTN Mobile",   color: "#FFC107", text: "#000", abbr: "MTN",    avail: true  },
   { name: "Orange Money", color: "#FF6D00", text: "#fff", abbr: "Orange", avail: true  },
   { name: "Moov Money",   color: "#1565C0", text: "#fff", abbr: "Moov",   avail: true  },
-  { name: "Wave",         color: "#1a237e", text: "#fff", abbr: "Wave",   avail: true  },
-  { name: "Airtel Money", color: "#d50000", text: "#fff", abbr: "Airtel", avail: true  },
+  { name: "Wave",         color: "#111827", text: "#fff", abbr: "Wave",   avail: true  },
+  { name: "Airtel Money", color: "#EF4444", text: "#fff", abbr: "Airtel", avail: true  },
   { name: "Free Money",   color: "#E91E63", text: "#fff", abbr: "Free",   avail: false },
 ];
 
@@ -213,7 +213,7 @@ export default function WalletPage() {
     };
   });
 
-  const txColor: Record<string,string> = { depot:"#16C24A", envoi:"#EF4444", reception:"#16C24A", paiement:"#F97316" };
+  const txColor: Record<string,string> = { depot:"#22C55E", envoi:"#EF4444", reception:"#22C55E", paiement:"#F97316" };
 
   /* ── stat computations ── */
   const now = new Date();
@@ -242,7 +242,7 @@ export default function WalletPage() {
 
   /* ── action tile config ── */
   const ACTIONS = [
-    { id:"depot" as Modal,     label:"Déposer",          icon: I.download, color:"#16C24A" },
+    { id:"depot" as Modal,     label:"Déposer",          icon: I.download, color:"#22C55E" },
     { id:"retirer" as Modal,   label:"Retirer",          icon: I.upload,   color:"#EF4444" },
     { id:"envoyer" as Modal,   label:"Envoyer",          icon: I.send,     color:"#6366F1" },
     { id:"recevoir" as Modal,  label:"Recevoir",         icon: I.receive,  color:"#F97316" },
@@ -256,7 +256,7 @@ export default function WalletPage() {
 
       {/* ══ 1. HERO WALLET CARD ══════════════════════════════ */}
       <div style={{
-        background:"linear-gradient(135deg, #0a8f32 0%, #16C24A 55%, #1ad459 100%)",
+        background:"linear-gradient(135deg, #0a8f32 0%, #22C55E 55%, #22C55E 100%)",
         borderRadius:"0 0 28px 28px", padding:"24px 20px 32px", position:"relative", overflow:"hidden",
       }}>
         {/* decorative circles */}
@@ -318,7 +318,7 @@ export default function WalletPage() {
 
       {/* ══ 2. QUICK ACTIONS ════════════════════════════════ */}
       <div style={{ background:"#fff", margin:"12px 12px 0", borderRadius:20, padding:"16px 12px", boxShadow:"0 2px 12px rgba(0,0,0,0.06)" }}>
-        <div style={{ fontWeight:700, fontSize:14, color:"#0F172A", marginBottom:14 }}>Actions rapides</div>
+        <div style={{ fontWeight:700, fontSize:14, color:"#111827", marginBottom:14 }}>Actions rapides</div>
         <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:8 }}>
           {ACTIONS.map(a => (
             <button key={a.id} onClick={()=>setModal(a.id)}
@@ -329,7 +329,7 @@ export default function WalletPage() {
               <div style={{ width:48, height:48, borderRadius:16, background:`${a.color}15`, display:"flex", alignItems:"center", justifyContent:"center", color:a.color }}>
                 {a.icon}
               </div>
-              <div style={{ fontSize:12, fontWeight:600, color:"#334155", textAlign:"center", lineHeight:1.2 }}>{a.label}</div>
+              <div style={{ fontSize:12, fontWeight:600, color:"#64748B", textAlign:"center", lineHeight:1.2 }}>{a.label}</div>
             </button>
           ))}
         </div>
@@ -345,12 +345,12 @@ export default function WalletPage() {
         ].map((s,i) => (
           <div key={i} style={{ background:"#fff", borderRadius:16, padding:"14px 14px 12px", boxShadow:"0 2px 8px rgba(0,0,0,0.05)" }}>
             <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:6 }}>
-              <span style={{ fontSize:11.5, color:"#94A3B8", fontWeight:500, lineHeight:1.3 }}>{s.label}</span>
+              <span style={{ fontSize:11.5, color:"#9CA3AF", fontWeight:500, lineHeight:1.3 }}>{s.label}</span>
               <div style={{ width:28, height:28, borderRadius:10, background:`${s.color}15`, display:"flex", alignItems:"center", justifyContent:"center", color:s.color }}>
                 {s.icon}
               </div>
             </div>
-            <div style={{ fontWeight:800, fontSize:17, color:"#0F172A" }}>{s.val}</div>
+            <div style={{ fontWeight:800, fontSize:17, color:"#111827" }}>{s.val}</div>
             <div style={{ display:"flex", alignItems:"center", gap:4, marginTop:4 }}>
               <div style={{ width:16, height:16, borderRadius:"50%", background:`${s.color}20`, display:"flex", alignItems:"center", justifyContent:"center" }}>
                 <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke={s.color} strokeWidth="2.5" strokeLinecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
@@ -367,7 +367,7 @@ export default function WalletPage() {
         {/* Operators */}
         <div style={{ background:"#fff", borderRadius:20, padding:"14px 12px", boxShadow:"0 2px 8px rgba(0,0,0,0.05)" }}>
           <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:10 }}>
-            <span style={{ fontWeight:700, fontSize:13, color:"#0F172A" }}>Opérateurs</span>
+            <span style={{ fontWeight:700, fontSize:13, color:"#111827" }}>Opérateurs</span>
             <button style={{ background:"none", border:"none", color:BP_GREEN, fontSize:11, fontWeight:700, cursor:"pointer" }}>Voir tout</button>
           </div>
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:6 }}>
@@ -376,8 +376,8 @@ export default function WalletPage() {
                 <div style={{ width:36, height:36, borderRadius:12, background:op.color, display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 4px" }}>
                   <span style={{ color:op.text, fontWeight:900, fontSize:8.5, lineHeight:1 }}>{op.abbr}</span>
                 </div>
-                <div style={{ fontSize:9, fontWeight:600, color:"#475569", marginBottom:2, lineHeight:1.1 }}>{op.name}</div>
-                <div style={{ fontSize:8.5, fontWeight:700, color: op.avail ? BP_GREEN : "#94A3B8", background: op.avail ? `${BP_GREEN}15` : "#F1F5F9", borderRadius:10, padding:"1px 4px", display:"inline-block" }}>
+                <div style={{ fontSize:9, fontWeight:600, color:"#64748B", marginBottom:2, lineHeight:1.1 }}>{op.name}</div>
+                <div style={{ fontSize:8.5, fontWeight:700, color: op.avail ? BP_GREEN : "#9CA3AF", background: op.avail ? `${BP_GREEN}15` : "#F1F5F9", borderRadius:10, padding:"1px 4px", display:"inline-block" }}>
                   {op.avail ? "Disponible" : "Bientôt"}
                 </div>
               </div>
@@ -387,11 +387,11 @@ export default function WalletPage() {
 
         {/* Chart */}
         <div style={{ background:"#fff", borderRadius:20, padding:"14px 12px", boxShadow:"0 2px 8px rgba(0,0,0,0.05)" }}>
-          <div style={{ fontWeight:700, fontSize:13, color:"#0F172A", marginBottom:8 }}>Évolution du solde</div>
+          <div style={{ fontWeight:700, fontSize:13, color:"#111827", marginBottom:8 }}>Évolution du solde</div>
           {/* range buttons */}
           <div style={{ display:"flex", gap:4, marginBottom:8 }}>
             {(["7J","30J","3M","1A"] as const).map(r => (
-              <button key={r} onClick={()=>setChartRange(r)} style={{ padding:"2px 8px", borderRadius:10, border:"none", background: chartRange===r ? BP_GREEN : "#F1F5F9", color: chartRange===r ? "#fff" : "#94A3B8", fontSize:10, fontWeight:700, cursor:"pointer" }}>{r}</button>
+              <button key={r} onClick={()=>setChartRange(r)} style={{ padding:"2px 8px", borderRadius:10, border:"none", background: chartRange===r ? BP_GREEN : "#F1F5F9", color: chartRange===r ? "#fff" : "#9CA3AF", fontSize:10, fontWeight:700, cursor:"pointer" }}>{r}</button>
             ))}
           </div>
           <svg viewBox={`0 0 ${chart.W} ${chart.H}`} width="100%" style={{ overflow:"visible" }}>
@@ -414,7 +414,7 @@ export default function WalletPage() {
           </svg>
           <div style={{ display:"flex", justifyContent:"space-between", marginTop:4 }}>
             {["12","13","14","15","16","17","18"].map(d=>(
-              <span key={d} style={{ fontSize:8, color:"#CBD5E1" }}>{d}</span>
+              <span key={d} style={{ fontSize:8, color:"#E5E7EB" }}>{d}</span>
             ))}
           </div>
         </div>
@@ -423,25 +423,25 @@ export default function WalletPage() {
       {/* ══ 5. TRANSACTIONS RÉCENTES ════════════════════════ */}
       <div style={{ background:"#fff", margin:"10px 12px 0", borderRadius:20, boxShadow:"0 2px 8px rgba(0,0,0,0.05)", overflow:"hidden" }}>
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 16px 10px" }}>
-          <span style={{ fontWeight:700, fontSize:14, color:"#0F172A" }}>Transactions récentes</span>
+          <span style={{ fontWeight:700, fontSize:14, color:"#111827" }}>Transactions récentes</span>
           <button onClick={()=>setModal("historique")} style={{ background:"none", border:"none", color:BP_GREEN, fontWeight:700, fontSize:12.5, cursor:"pointer" }}>Voir tout</button>
         </div>
         {normTxs.length===0 && (
-          <div style={{ padding:"24px 16px", textAlign:"center", color:"#94A3B8", fontSize:13 }}>
+          <div style={{ padding:"24px 16px", textAlign:"center", color:"#9CA3AF", fontSize:13 }}>
             Aucune transaction pour l'instant. Faites votre premier dépôt !
           </div>
         )}
         {normTxs.slice(0,5).map(tx => {
           const isIn = tx.txType==="depot"||tx.txType==="reception";
-          const color = txColor[tx.txType]??"#94A3B8";
+          const color = txColor[tx.txType]??"#9CA3AF";
           return (
             <div key={tx.id} style={{ display:"flex", alignItems:"center", gap:12, padding:"11px 16px", borderTop:"1px solid #F8FAFC" }}>
               <div style={{ width:42, height:42, borderRadius:14, background:`${color}18`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, color }}>
                 {isIn ? I.download : I.upload}
               </div>
               <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ fontWeight:700, fontSize:13.5, color:"#0F172A", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{tx.label}</div>
-                <div style={{ fontSize:11.5, color:"#94A3B8", marginTop:1 }}>{tx.date}, {tx.time}</div>
+                <div style={{ fontWeight:700, fontSize:13.5, color:"#111827", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{tx.label}</div>
+                <div style={{ fontSize:11.5, color:"#9CA3AF", marginTop:1 }}>{tx.date}, {tx.time}</div>
               </div>
               <div style={{ textAlign:"right", flexShrink:0 }}>
                 <div style={{ fontWeight:800, fontSize:14, color }}>{isIn?"+":"-"}{fmtNum(tx.amount)} FCFA</div>
@@ -460,12 +460,12 @@ export default function WalletPage() {
 
         {/* Programme jetons */}
         <div style={{ background:"#fff", borderRadius:20, padding:"14px 12px", boxShadow:"0 2px 8px rgba(0,0,0,0.05)" }}>
-          <div style={{ fontWeight:700, fontSize:13, color:"#0F172A", marginBottom:8 }}>Programme Jetons</div>
+          <div style={{ fontWeight:700, fontSize:13, color:"#111827", marginBottom:8 }}>Programme Jetons</div>
           <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:10 }}>
             <div style={{ width:38, height:38, borderRadius:12, background:"#EC489915", display:"flex", alignItems:"center", justifyContent:"center", color:"#EC4899" }}>{I.coins}</div>
             <div>
-              <div style={{ fontSize:10.5, color:"#94A3B8" }}>Jetons disponibles</div>
-              <div style={{ fontWeight:800, fontSize:15, color:"#0F172A" }}>{fmtNum(tokenBalance)} Jeton{tokenBalance!==1?"s":""}</div>
+              <div style={{ fontSize:10.5, color:"#9CA3AF" }}>Jetons disponibles</div>
+              <div style={{ fontWeight:800, fontSize:15, color:"#111827" }}>{fmtNum(tokenBalance)} Jeton{tokenBalance!==1?"s":""}</div>
             </div>
           </div>
           {[
@@ -476,7 +476,7 @@ export default function WalletPage() {
           ].map((item, i)=>(
             <div key={i} style={{ display:"flex", alignItems:"center", gap:7, marginBottom:5 }}>
               <span>{item.icon}</span>
-              <span style={{ fontSize:11, color:"#475569" }}>{item.label}</span>
+              <span style={{ fontSize:11, color:"#64748B" }}>{item.label}</span>
             </div>
           ))}
           <button onClick={()=>setModal("jetons")} style={{ width:"100%", marginTop:10, background:BP_GREEN, color:"#fff", border:"none", borderRadius:12, padding:"9px 0", fontWeight:700, fontSize:12.5, cursor:"pointer", boxShadow:`0 3px 12px ${BP_GREEN}40` }}>
@@ -486,7 +486,7 @@ export default function WalletPage() {
 
         {/* Sécurité */}
         <div style={{ background:"#fff", borderRadius:20, padding:"14px 12px", boxShadow:"0 2px 8px rgba(0,0,0,0.05)", display:"flex", flexDirection:"column", gap:0 }}>
-          <div style={{ fontWeight:700, fontSize:13, color:"#0F172A", marginBottom:10 }}>Votre compte est sécurisé</div>
+          <div style={{ fontWeight:700, fontSize:13, color:"#111827", marginBottom:10 }}>Votre compte est sécurisé</div>
           <div style={{ display:"flex", alignItems:"center", justifyContent:"center", marginBottom:12 }}>
             <div style={{ width:54, height:54, borderRadius:18, background:`${BP_GREEN}15`, display:"flex", alignItems:"center", justifyContent:"center" }}>
               <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke={BP_GREEN} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
@@ -502,7 +502,7 @@ export default function WalletPage() {
               <div style={{ width:16, height:16, borderRadius:"50%", background:BP_GREEN, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                 {I.check}
               </div>
-              <span style={{ fontSize:10.5, color:"#475569", fontWeight:500 }}>{item}</span>
+              <span style={{ fontSize:10.5, color:"#64748B", fontWeight:500 }}>{item}</span>
             </div>
           ))}
         </div>
@@ -517,10 +517,10 @@ export default function WalletPage() {
           <div style={{ background:"#fff", borderRadius:"24px 24px 0 0", maxHeight:"88vh", overflow:"auto", padding:"0 0 32px" }}>
             {/* drag handle */}
             <div style={{ padding:"12px 20px 0", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-              <div style={{ width:36, height:4, borderRadius:2, background:"#E2E8F0", margin:"0 auto" }} />
+              <div style={{ width:36, height:4, borderRadius:2, background:"#E5E7EB", margin:"0 auto" }} />
             </div>
             <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"12px 20px 16px", borderBottom:"1px solid #F1F5F9" }}>
-              <span style={{ fontWeight:800, fontSize:17, color:"#0F172A" }}>
+              <span style={{ fontWeight:800, fontSize:17, color:"#111827" }}>
                 {modal==="depot" && "Déposer de l'argent"}
                 {modal==="retirer" && "Retirer de l'argent"}
                 {modal==="envoyer" && "Envoyer de l'argent"}
@@ -529,21 +529,21 @@ export default function WalletPage() {
                 {modal==="historique" && "Toutes les transactions"}
                 {modal==="cadeaux" && "Cadeaux envoyés"}
               </span>
-              <button onClick={closeModal} style={{ width:32, height:32, borderRadius:"50%", background:"#F1F5F9", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", color:"#475569" }}>
+              <button onClick={closeModal} style={{ width:32, height:32, borderRadius:"50%", background:"#F1F5F9", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", color:"#64748B" }}>
                 {I.x}
               </button>
             </div>
 
             <div style={{ padding:"16px 20px" }}>
-              {success && <div style={{ background:"#DCFCE7", color:"#166534", borderRadius:12, padding:"12px 16px", fontWeight:700, marginBottom:12, textAlign:"center" }}>{success}</div>}
-              {txError && <div style={{ background:"#FEF2F2", color:"#991B1B", borderRadius:12, padding:"12px 16px", fontWeight:700, marginBottom:12 }}>{txError}</div>}
+              {success && <div style={{ background:"#DCFCE7", color:"#16A34A", borderRadius:12, padding:"12px 16px", fontWeight:700, marginBottom:12, textAlign:"center" }}>{success}</div>}
+              {txError && <div style={{ background:"#FEE2E2", color:"#EF4444", borderRadius:12, padding:"12px 16px", fontWeight:700, marginBottom:12 }}>{txError}</div>}
 
               {/* ── DEPOT ── */}
               {modal==="depot" && (
                 <div>
                   <div style={{ display:"flex", gap:8, marginBottom:16 }}>
                     {(Object.entries(METHOD_INFO) as [DepotMethod, typeof METHOD_INFO[DepotMethod]][]).map(([k,m])=>(
-                      <button key={k} onClick={()=>setDepotMethod(k)} style={{ flex:1, padding:"12px 0", borderRadius:14, cursor:"pointer", fontWeight:700, fontSize:12, border:`2px solid ${depotMethod===k ? m.color : "#E2E8F0"}`, background: depotMethod===k ? `${m.color}15` : "#fff" }}>
+                      <button key={k} onClick={()=>setDepotMethod(k)} style={{ flex:1, padding:"12px 0", borderRadius:14, cursor:"pointer", fontWeight:700, fontSize:12, border:`2px solid ${depotMethod===k ? m.color : "#E5E7EB"}`, background: depotMethod===k ? `${m.color}15` : "#fff" }}>
                         <div style={{ width:28, height:28, borderRadius:10, background:m.color, color: k==="mtn"?"#000":"#fff", fontSize:10, fontWeight:900, display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 6px" }}>{m.abbr}</div>
                         <div>{m.abbr}</div>
                       </button>
@@ -555,7 +555,7 @@ export default function WalletPage() {
                   <input value={depotAmount} onChange={e=>setDepotAmount(e.target.value)} type="number" placeholder="Ex : 50 000" style={{ ...ipt, fontSize:22, fontWeight:800 }} />
                   <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:16 }}>
                     {[5000,10000,25000,50000,100000].map(a=>(
-                      <button key={a} onClick={()=>setDepotAmount(String(a))} style={{ padding:"6px 14px", borderRadius:20, border:`1px solid ${depotAmount===String(a)?BP_GREEN:"#E2E8F0"}`, background: depotAmount===String(a)?BP_GREEN:"#fff", color: depotAmount===String(a)?"#fff":"#475569", fontWeight:700, cursor:"pointer", fontSize:13 }}>{fmtNum(a)}</button>
+                      <button key={a} onClick={()=>setDepotAmount(String(a))} style={{ padding:"6px 14px", borderRadius:20, border:`1px solid ${depotAmount===String(a)?BP_GREEN:"#E5E7EB"}`, background: depotAmount===String(a)?BP_GREEN:"#fff", color: depotAmount===String(a)?"#fff":"#64748B", fontWeight:700, cursor:"pointer", fontSize:13 }}>{fmtNum(a)}</button>
                     ))}
                   </div>
                   <button onClick={handleDeposit} disabled={processing||!depotAmount||!depotPhone} style={btnGreen(processing||!depotAmount||!depotPhone)}>
@@ -567,8 +567,8 @@ export default function WalletPage() {
               {/* ── RETIRER (placeholder) ── */}
               {modal==="retirer" && (
                 <div style={{ textAlign:"center", padding:"32px 16px" }}>
-                  <div style={{ width:64, height:64, borderRadius:20, background:"#F1F5F9", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 16px", color:"#94A3B8" }}>{I.upload}</div>
-                  <div style={{ fontWeight:700, fontSize:16, color:"#0F172A", marginBottom:8 }}>Retrait Mobile Money</div>
+                  <div style={{ width:64, height:64, borderRadius:20, background:"#F1F5F9", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 16px", color:"#9CA3AF" }}>{I.upload}</div>
+                  <div style={{ fontWeight:700, fontSize:16, color:"#111827", marginBottom:8 }}>Retrait Mobile Money</div>
                   <div style={{ fontSize:14, color:"#64748B", lineHeight:1.6 }}>Le retrait vers votre compte Mobile Money sera disponible prochainement.</div>
                 </div>
               )}
@@ -582,7 +582,7 @@ export default function WalletPage() {
                     <div style={{ display:"flex", gap:10, overflowX:"auto", scrollbarWidth:"none", marginBottom:16, paddingBottom:4 }}>
                       {users.slice(0,8).map(u=>{
                         const name=`${u.firstName} ${u.lastName}`;
-                        const colors=["#1877F2","#E91E8C","#7B1FA2","#F57C00",BP_GREEN];
+                        const colors=["#22C55E","#EC4899","#8B5CF6","#D97706",BP_GREEN];
                         const color=colors[u.id%colors.length];
                         const inits=name.split(" ").map((w:string)=>w[0]).join("").slice(0,2).toUpperCase();
                         const sel=sendToId===u.id;
@@ -591,7 +591,7 @@ export default function WalletPage() {
                             <div style={{ width:44, height:44, borderRadius:"50%", background:color, color:"#fff", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:800, fontSize:14, border:`3px solid ${sel?BP_GREEN:"transparent"}`, margin:"0 auto 4px", overflow:"hidden" }}>
                               {u.avatarUrl?<img src={u.avatarUrl} alt={name} style={{ width:"100%", height:"100%", objectFit:"cover" }} />:inits}
                             </div>
-                            <div style={{ fontSize:10, fontWeight:600, color:"#475569" }}>{u.firstName}</div>
+                            <div style={{ fontSize:10, fontWeight:600, color:"#64748B" }}>{u.firstName}</div>
                           </div>
                         );
                       })}
@@ -602,7 +602,7 @@ export default function WalletPage() {
                   {sendAmount && parseInt(sendAmount)>balance && <div style={{ color:"#EF4444", fontSize:13, fontWeight:700, marginBottom:8 }}>Solde insuffisant ({fmtNum(balance)} FCFA disponibles)</div>}
                   <div style={{ display:"flex", gap:8, flexWrap:"wrap", marginBottom:16 }}>
                     {[5000,10000,25000,50000].map(a=>(
-                      <button key={a} onClick={()=>setSendAmount(String(a))} style={{ padding:"6px 14px", borderRadius:20, border:`1px solid ${sendAmount===String(a)?BP_GREEN:"#E2E8F0"}`, background: sendAmount===String(a)?BP_GREEN:"#fff", color: sendAmount===String(a)?"#fff":"#475569", fontWeight:700, cursor:"pointer", fontSize:13 }}>{fmtNum(a)}</button>
+                      <button key={a} onClick={()=>setSendAmount(String(a))} style={{ padding:"6px 14px", borderRadius:20, border:`1px solid ${sendAmount===String(a)?BP_GREEN:"#E5E7EB"}`, background: sendAmount===String(a)?BP_GREEN:"#fff", color: sendAmount===String(a)?"#fff":"#64748B", fontWeight:700, cursor:"pointer", fontSize:13 }}>{fmtNum(a)}</button>
                     ))}
                   </div>
                   <button onClick={handleSend} disabled={processing||!sendAmount||!sendToId||parseInt(sendAmount)>balance} style={btnGreen(processing||!sendAmount||!sendToId||parseInt(sendAmount||"0")>balance)}>
@@ -614,12 +614,12 @@ export default function WalletPage() {
               {/* ── RECEVOIR ── */}
               {modal==="recevoir" && (
                 <div style={{ textAlign:"center", padding:"20px 0" }}>
-                  <div style={{ fontWeight:700, fontSize:15, color:"#0F172A", marginBottom:6 }}>Partagez votre identifiant</div>
+                  <div style={{ fontWeight:700, fontSize:15, color:"#111827", marginBottom:6 }}>Partagez votre identifiant</div>
                   <div style={{ fontSize:13, color:"#64748B", marginBottom:20 }}>Demandez à votre contact de vous envoyer de l'argent avec cet identifiant.</div>
-                  <div style={{ background:"#F8FAFC", border:"2px solid #E2E8F0", borderRadius:16, padding:"16px 20px", fontFamily:"monospace", fontSize:16, fontWeight:800, color:"#0F172A", letterSpacing:1, marginBottom:16 }}>
+                  <div style={{ background:"#F8FAFC", border:"2px solid #E5E7EB", borderRadius:16, padding:"16px 20px", fontFamily:"monospace", fontSize:16, fontWeight:800, color:"#111827", letterSpacing:1, marginBottom:16 }}>
                     BP-{String(meId).padStart(6,"0")}
                   </div>
-                  <div style={{ fontSize:12, color:"#94A3B8" }}>ID BrutePawa unique</div>
+                  <div style={{ fontSize:12, color:"#9CA3AF" }}>ID BrutePawa unique</div>
                 </div>
               )}
 
@@ -628,14 +628,14 @@ export default function WalletPage() {
                 <div>
                   {!tokenResult ? (
                     <>
-                      <div style={{ background:"linear-gradient(135deg, #EC4899, #9333EA)", borderRadius:16, padding:"14px 16px", marginBottom:16, color:"#fff" }}>
+                      <div style={{ background:"linear-gradient(135deg, #EC4899, #8B5CF6)", borderRadius:16, padding:"14px 16px", marginBottom:16, color:"#fff" }}>
                         <div style={{ fontSize:12, opacity:0.8 }}>Solde jetons</div>
                         <div style={{ fontSize:30, fontWeight:900, margin:"2px 0" }}>{fmtNum(tokenBalance)} jetons</div>
                         <div style={{ fontSize:12, opacity:0.7 }}>1 jeton = 5 XOF</div>
                       </div>
                       <div style={{ fontWeight:700, fontSize:14, marginBottom:10 }}>Choisir un pack</div>
                       {TOKEN_PACKS.map(p=>(
-                        <button key={p.id} onClick={()=>setTokenPack(p)} style={{ width:"100%", display:"flex", alignItems:"center", gap:14, padding:"14px 16px", borderRadius:14, border:`2px solid ${tokenPack?.id===p.id?"#EC4899":"#E2E8F0"}`, background: tokenPack?.id===p.id?"#fdf2f8":"#fff", cursor:"pointer", textAlign:"left", marginBottom:8 }}>
+                        <button key={p.id} onClick={()=>setTokenPack(p)} style={{ width:"100%", display:"flex", alignItems:"center", gap:14, padding:"14px 16px", borderRadius:14, border:`2px solid ${tokenPack?.id===p.id?"#EC4899":"#E5E7EB"}`, background: tokenPack?.id===p.id?"#FEE2E2":"#fff", cursor:"pointer", textAlign:"left", marginBottom:8 }}>
                           <div style={{ width:40, height:40, borderRadius:12, background:"#EC489915", display:"flex", alignItems:"center", justifyContent:"center", color:"#EC4899", flexShrink:0 }}>{I.coins}</div>
                           <div style={{ flex:1 }}>
                             <div style={{ fontWeight:800, fontSize:14 }}>{p.label}</div>
@@ -649,7 +649,7 @@ export default function WalletPage() {
                           <div style={{ fontWeight:700, fontSize:14, margin:"14px 0 8px" }}>Opérateur Mobile Money</div>
                           <div style={{ display:"flex", gap:8, marginBottom:14 }}>
                             {TOKEN_OPERATORS.map(op=>(
-                              <button key={op.id} onClick={()=>setTokenOp(op.id)} style={{ flex:1, padding:"10px 0", borderRadius:12, cursor:"pointer", fontWeight:700, fontSize:12, border:`2px solid ${tokenOp===op.id?"#EC4899":"#E2E8F0"}`, background: tokenOp===op.id?"#fdf2f8":"#fff" }}>
+                              <button key={op.id} onClick={()=>setTokenOp(op.id)} style={{ flex:1, padding:"10px 0", borderRadius:12, cursor:"pointer", fontWeight:700, fontSize:12, border:`2px solid ${tokenOp===op.id?"#EC4899":"#E5E7EB"}`, background: tokenOp===op.id?"#FEE2E2":"#fff" }}>
                                 <div style={{ width:26, height:26, borderRadius:8, background:op.color, margin:"0 auto 5px", fontSize:9, fontWeight:900, color:"#fff", display:"flex", alignItems:"center", justifyContent:"center" }}>{op.id.toUpperCase()}</div>
                                 <div>{op.label.split(" ")[0]}</div>
                               </button>
@@ -657,7 +657,7 @@ export default function WalletPage() {
                           </div>
                           <label style={lbl}>Numéro de téléphone</label>
                           <input value={tokenPhone} onChange={e=>setTokenPhone(e.target.value)} placeholder="+225 07 XX XX XX XX" style={ipt} />
-                          {tokenError && <div style={{ background:"#FEF2F2", color:"#991B1B", borderRadius:10, padding:"10px 14px", marginBottom:12, fontSize:13 }}>{tokenError}</div>}
+                          {tokenError && <div style={{ background:"#FEE2E2", color:"#EF4444", borderRadius:10, padding:"10px 14px", marginBottom:12, fontSize:13 }}>{tokenError}</div>}
                           <button onClick={handleTokenPurchase} disabled={tokenLoading||!tokenPhone} style={btnPink(tokenLoading||!tokenPhone)}>
                             {tokenLoading?"Traitement…":`Acheter ${fmtNum(tokenPack.tokens)} jetons — ${fmtNum(tokenPack.xof)} XOF`}
                           </button>
@@ -678,14 +678,14 @@ export default function WalletPage() {
                       <div style={{ textAlign:"center", marginBottom:16 }}>
                         <div style={{ fontWeight:800, fontSize:17 }}>Paiement en attente</div>
                         <div style={{ fontSize:13, color:"#64748B", marginTop:4 }}>Effectuez le paiement selon les instructions</div>
-                        <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:6, marginTop:8, fontSize:12, color:"#94A3B8" }}>
+                        <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:6, marginTop:8, fontSize:12, color:"#9CA3AF" }}>
                           <span style={{ width:8, height:8, borderRadius:"50%", background:BP_GREEN, display:"inline-block", animation:"pulse 1.2s infinite" }} />
                           Vérification automatique en cours…
                         </div>
                       </div>
                       <div style={{ background:"#F8FAFC", borderRadius:12, padding:16, marginBottom:12, fontSize:14, lineHeight:1.7 }}>{tokenResult.instructions.message}</div>
                       <div style={{ fontWeight:700, fontSize:13, marginBottom:6 }}>Référence</div>
-                      <div style={{ fontFamily:"monospace", background:"#EFF6FF", borderRadius:8, padding:"10px 14px", fontSize:14, fontWeight:700, marginBottom:14, wordBreak:"break-all" }}>{tokenResult.paymentRef}</div>
+                      <div style={{ fontFamily:"monospace", background:"#F0FDF4", borderRadius:8, padding:"10px 14px", fontSize:14, fontWeight:700, marginBottom:14, wordBreak:"break-all" }}>{tokenResult.paymentRef}</div>
                       <button onClick={()=>{ setTokenResult(null); setTokenPack(null); setTokenPhone(""); }} style={btnPink(false)}>Annuler / Nouveau achat</button>
                     </div>
                   )}
@@ -695,18 +695,18 @@ export default function WalletPage() {
               {/* ── HISTORIQUE ── */}
               {modal==="historique" && (
                 <div>
-                  {normTxs.length===0 && <div style={{ textAlign:"center", padding:"32px 0", color:"#94A3B8", fontSize:14 }}>Aucune transaction pour l'instant</div>}
+                  {normTxs.length===0 && <div style={{ textAlign:"center", padding:"32px 0", color:"#9CA3AF", fontSize:14 }}>Aucune transaction pour l'instant</div>}
                   {normTxs.map(tx=>{
                     const isIn=tx.txType==="depot"||tx.txType==="reception";
-                    const color=txColor[tx.txType]??"#94A3B8";
+                    const color=txColor[tx.txType]??"#9CA3AF";
                     return (
                       <div key={tx.id} style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 0", borderBottom:"1px solid #F8FAFC" }}>
                         <div style={{ width:44, height:44, borderRadius:14, background:`${color}18`, display:"flex", alignItems:"center", justifyContent:"center", color, flexShrink:0 }}>
                           {isIn?I.download:I.upload}
                         </div>
                         <div style={{ flex:1, minWidth:0 }}>
-                          <div style={{ fontWeight:700, fontSize:13.5, color:"#0F172A", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{tx.label}</div>
-                          <div style={{ fontSize:11.5, color:"#94A3B8" }}>{tx.date}</div>
+                          <div style={{ fontWeight:700, fontSize:13.5, color:"#111827", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{tx.label}</div>
+                          <div style={{ fontSize:11.5, color:"#9CA3AF" }}>{tx.date}</div>
                           <div style={{ fontSize:11, fontWeight:700, color: tx.status==="completed"?BP_GREEN:"#F97316", display:"flex", alignItems:"center", gap:4, marginTop:1 }}>
                             <span style={{ width:6, height:6, borderRadius:"50%", background: tx.status==="completed"?BP_GREEN:"#F97316", display:"inline-block" }} />
                             {tx.status==="completed"?"Réussi":tx.status==="pending"?"En attente":"Échoué"}
@@ -722,12 +722,12 @@ export default function WalletPage() {
               {/* ── CADEAUX ── */}
               {modal==="cadeaux" && (
                 <div>
-                  {giftLoading && giftHistory.length===0 && <div style={{ textAlign:"center", padding:"32px 0", color:"#94A3B8" }}>Chargement…</div>}
+                  {giftLoading && giftHistory.length===0 && <div style={{ textAlign:"center", padding:"32px 0", color:"#9CA3AF" }}>Chargement…</div>}
                   {!giftLoading && giftHistory.length===0 && (
                     <div style={{ textAlign:"center", padding:"32px 0" }}>
-                      <div style={{ width:56, height:56, borderRadius:18, background:"#FDF2F8", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 12px", color:"#EC4899" }}>{I.gift}</div>
+                      <div style={{ width:56, height:56, borderRadius:18, background:"#FEE2E2", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 12px", color:"#EC4899" }}>{I.gift}</div>
                       <div style={{ fontWeight:700, fontSize:15, marginBottom:6 }}>Aucun cadeau envoyé</div>
-                      <div style={{ fontSize:13, color:"#94A3B8" }}>Rejoignez un live et envoyez des cadeaux !</div>
+                      <div style={{ fontSize:13, color:"#9CA3AF" }}>Rejoignez un live et envoyez des cadeaux !</div>
                     </div>
                   )}
                   {giftHistory.map(gift=>{
@@ -735,22 +735,22 @@ export default function WalletPage() {
                     const recipient=gift.receiverName?.trim()||`Utilisateur #${gift.receiverId}`;
                     return (
                       <div key={gift.id} style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 0", borderBottom:"1px solid #F8FAFC" }}>
-                        <div style={{ width:46, height:46, borderRadius:14, background:"linear-gradient(135deg, #fce4ec, #f8bbd0)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, flexShrink:0 }}>
+                        <div style={{ width:46, height:46, borderRadius:14, background:"linear-gradient(135deg, #FEE2E2, #FEE2E2)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, flexShrink:0 }}>
                           {gift.giftEmoji||"🎁"}
                         </div>
                         <div style={{ flex:1, minWidth:0 }}>
                           <div style={{ fontWeight:800, fontSize:13.5 }}>{gift.giftName}</div>
-                          <div style={{ fontSize:12, color:"#94A3B8", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+                          <div style={{ fontSize:12, color:"#9CA3AF", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
                             À {recipient} · #{gift.contextId}
                           </div>
-                          <div style={{ fontSize:11, color:"#94A3B8" }}>{date}</div>
+                          <div style={{ fontSize:11, color:"#9CA3AF" }}>{date}</div>
                         </div>
                         <div style={{ fontWeight:900, fontSize:14, color:"#EC4899", flexShrink:0 }}>-{fmtNum(gift.tokenAmount)} j.</div>
                       </div>
                     );
                   })}
                   {giftHasMore && (
-                    <button onClick={loadMoreGifts} disabled={giftLoading} style={{ width:"100%", marginTop:12, background:"none", border:"2px solid #E2E8F0", borderRadius:12, padding:"11px 0", fontWeight:700, color:"#475569", cursor:"pointer", fontSize:14 }}>
+                    <button onClick={loadMoreGifts} disabled={giftLoading} style={{ width:"100%", marginTop:12, background:"none", border:"2px solid #E5E7EB", borderRadius:12, padding:"11px 0", fontWeight:700, color:"#64748B", cursor:"pointer", fontSize:14 }}>
                       {giftLoading?"Chargement…":"Voir plus"}
                     </button>
                   )}
@@ -767,15 +767,15 @@ export default function WalletPage() {
 }
 
 /* ── shared input/button styles ────────────────────────────── */
-const lbl: React.CSSProperties = { display:"block", fontSize:13, fontWeight:700, color:"#475569", marginBottom:6 };
-const ipt: React.CSSProperties = { width:"100%", background:"#F8FAFC", border:"1.5px solid #E2E8F0", borderRadius:12, padding:"12px 14px", fontSize:15, marginBottom:14, boxSizing:"border-box", fontFamily:"inherit", outline:"none", color:"#0F172A" };
+const lbl: React.CSSProperties = { display:"block", fontSize:13, fontWeight:700, color:"#64748B", marginBottom:6 };
+const ipt: React.CSSProperties = { width:"100%", background:"#F8FAFC", border:"1.5px solid #E5E7EB", borderRadius:12, padding:"12px 14px", fontSize:15, marginBottom:14, boxSizing:"border-box", fontFamily:"inherit", outline:"none", color:"#111827" };
 const btnGreen = (disabled: boolean): React.CSSProperties => ({
-  width:"100%", background: disabled?"#CBD5E1":"linear-gradient(135deg, #16C24A, #0EA046)", color:"#fff", border:"none",
+  width:"100%", background: disabled?"#E5E7EB":"linear-gradient(135deg, #22C55E, #22C55E)", color:"#fff", border:"none",
   borderRadius:14, padding:"15px 0", fontWeight:800, fontSize:16, cursor: disabled?"default":"pointer",
   boxShadow: disabled?"none":"0 6px 20px rgba(22,194,74,0.4)", opacity: disabled ? 0.7 : 1,
 });
 const btnPink = (disabled: boolean): React.CSSProperties => ({
-  width:"100%", background: disabled?"#CBD5E1":"linear-gradient(135deg, #EC4899, #9333EA)", color:"#fff", border:"none",
+  width:"100%", background: disabled?"#E5E7EB":"linear-gradient(135deg, #EC4899, #8B5CF6)", color:"#fff", border:"none",
   borderRadius:14, padding:"15px 0", fontWeight:800, fontSize:16, cursor: disabled?"default":"pointer",
   boxShadow: disabled?"none":"0 6px 20px rgba(236,72,153,0.4)", opacity: disabled ? 0.7 : 1,
 });

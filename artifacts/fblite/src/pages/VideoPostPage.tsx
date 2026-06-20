@@ -213,7 +213,7 @@ export default function VideoPostPage({ postId }: Props) {
 
   if (loading) return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", background: "#000", color: "#fff" }}>
-      <div style={{ width: 36, height: 36, border: "3px solid rgba(255,255,255,0.15)", borderTopColor: "#16C24A", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+      <div style={{ width: 36, height: 36, border: "3px solid rgba(255,255,255,0.15)", borderTopColor: "#22C55E", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
@@ -221,7 +221,7 @@ export default function VideoPostPage({ postId }: Props) {
   if (error || !post) return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh", background: "#000", gap: 16 }}>
       <p style={{ color: "rgba(255,255,255,0.6)" }}>{error ?? "Publication introuvable."}</p>
-      <button onClick={() => navigate("/")} style={{ padding: "10px 24px", borderRadius: 24, background: "#16C24A", color: "#fff", border: "none", cursor: "pointer", fontWeight: 700 }}>Retour</button>
+      <button onClick={() => navigate("/")} style={{ padding: "10px 24px", borderRadius: 24, background: "#22C55E", color: "#fff", border: "none", cursor: "pointer", fontWeight: 700 }}>Retour</button>
     </div>
   );
 
@@ -236,7 +236,7 @@ export default function VideoPostPage({ postId }: Props) {
           <svg viewBox="0 0 24 24" width="20" height="20" fill="#fff"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
         </button>
         <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#1877F2", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700 }}>
+          <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700 }}>
             {post.authorName.slice(0,2).toUpperCase()}
           </div>
           <div>
@@ -246,8 +246,8 @@ export default function VideoPostPage({ postId }: Props) {
         </div>
         {/* Token badge */}
         <div style={{ display: "flex", alignItems: "center", gap: 5, background: "rgba(0,0,0,0.4)", backdropFilter: "blur(6px)", borderRadius: 20, padding: "5px 10px 5px 8px" }}>
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="#FFD700"><circle cx="12" cy="12" r="10"/><text x="12" y="16" textAnchor="middle" fontSize="11" fill="#000" fontWeight="bold">J</text></svg>
-          <span style={{ fontWeight: 800, fontSize: 13, color: "#FFD700" }}>{tokenBalance.toLocaleString()}</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="#FBBF24"><circle cx="12" cy="12" r="10"/><text x="12" y="16" textAnchor="middle" fontSize="11" fill="#000" fontWeight="bold">J</text></svg>
+          <span style={{ fontWeight: 800, fontSize: 13, color: "#FBBF24" }}>{tokenBalance.toLocaleString()}</span>
           <span style={{ fontSize: 11, color: "rgba(255,255,255,0.6)" }}>jetons</span>
         </div>
         <button style={{ padding: "4px", background: "none", border: "none", cursor: "pointer" }}>
@@ -316,9 +316,9 @@ export default function VideoPostPage({ postId }: Props) {
           {/* Like */}
           <button onClick={handleLike} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
             <div style={{ width: 46, height: 46, borderRadius: "50%", background: "rgba(0,0,0,0.5)", backdropFilter: "blur(6px)", display: "flex", alignItems: "center", justifyContent: "center", transition: "transform 0.15s" }}>
-              <svg viewBox="0 0 24 24" width="26" height="26" fill={liked ? "#E91E8C" : "#fff"}><path d={liked ? "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" : "M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"}/></svg>
+              <svg viewBox="0 0 24 24" width="26" height="26" fill={liked ? "#EC4899" : "#fff"}><path d={liked ? "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" : "M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"}/></svg>
             </div>
-            <span style={{ fontSize: 11, fontWeight: 700, color: liked ? "#E91E8C" : "#fff", textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>{fmtCount(likesCount)}</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: liked ? "#EC4899" : "#fff", textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>{fmtCount(likesCount)}</span>
           </button>
           {/* Comment */}
           <button onClick={() => setShowComments(v => !v)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
@@ -336,18 +336,18 @@ export default function VideoPostPage({ postId }: Props) {
           </button>
           {/* Gift */}
           <button onClick={() => setShowGiftPicker(true)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
-            <div style={{ width: 46, height: 46, borderRadius: "50%", background: "linear-gradient(135deg,#16C24A,#0DA63E)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 18px rgba(22,194,74,0.5)" }}>
+            <div style={{ width: 46, height: 46, borderRadius: "50%", background: "linear-gradient(135deg,#22C55E,#22C55E)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 18px rgba(22,194,74,0.5)" }}>
               <svg viewBox="0 0 24 24" width="26" height="26" fill="#fff"><path d="M20 6h-2.18c.07-.31.18-.59.18-.9C18 3.4 16.6 2 14.9 2c-.92 0-1.73.42-2.3 1.08L12 3.7l-.6-.62C10.83 2.42 10.02 2 9.1 2 7.4 2 6 3.4 6 5.1c0 .31.11.59.18.9H4c-1.11 0-2 .89-2 2v13c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2z"/></svg>
             </div>
-            <span style={{ fontSize: 11, fontWeight: 700, color: "#16C24A", textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>{fmtCount(0)}</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: "#22C55E", textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>{fmtCount(0)}</span>
           </button>
           {/* Donors toggle */}
           {topDonors.length > 0 && (
             <button onClick={() => setShowDonors(v => !v)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
               <div style={{ width: 46, height: 46, borderRadius: "50%", background: showDonors ? "rgba(255,215,0,0.3)" : "rgba(0,0,0,0.5)", backdropFilter: "blur(6px)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <svg viewBox="0 0 24 24" width="26" height="26" fill="#FFD700"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0 0 11 15.9V18H9v2h6v-2h-2v-2.1a5.01 5.01 0 0 0 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.86 10.4 5 9.3 5 8zm14 0c0 1.3-.86 2.4-2 2.82V7h2v1z"/></svg>
+                <svg viewBox="0 0 24 24" width="26" height="26" fill="#FBBF24"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0 0 11 15.9V18H9v2h6v-2h-2v-2.1a5.01 5.01 0 0 0 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.86 10.4 5 9.3 5 8zm14 0c0 1.3-.86 2.4-2 2.82V7h2v1z"/></svg>
               </div>
-              <span style={{ fontSize: 9, fontWeight: 700, color: "#FFD700", textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>Top</span>
+              <span style={{ fontSize: 9, fontWeight: 700, color: "#FBBF24", textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}>Top</span>
             </button>
           )}
         </div>
@@ -380,9 +380,9 @@ export default function VideoPostPage({ postId }: Props) {
 
       {/* ── Top donors panel (slide in) ── */}
       {showDonors && topDonors.length > 0 && (
-        <div style={{ background: "linear-gradient(135deg,#0F0F1A,#14142B)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "14px 16px" }}>
-          <div style={{ fontWeight: 800, fontSize: 13, color: "#FFD700", marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="#FFD700"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0 0 11 15.9V18H9v2h6v-2h-2v-2.1a5.01 5.01 0 0 0 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.86 10.4 5 9.3 5 8zm14 0c0 1.3-.86 2.4-2 2.82V7h2v1z"/></svg>
+        <div style={{ background: "linear-gradient(135deg,#1e1e2e,#1E293B)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "14px 16px" }}>
+          <div style={{ fontWeight: 800, fontSize: 13, color: "#FBBF24", marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="#FBBF24"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0 0 11 15.9V18H9v2h6v-2h-2v-2.1a5.01 5.01 0 0 0 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.86 10.4 5 9.3 5 8zm14 0c0 1.3-.86 2.4-2 2.82V7h2v1z"/></svg>
             Top Donateurs
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -390,7 +390,7 @@ export default function VideoPostPage({ postId }: Props) {
               <div key={d.senderId} style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <span style={{ fontSize: 20 }}>{i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉"}</span>
                 <span style={{ flex: 1, fontWeight: 600, fontSize: 13 }}>{d.senderName || "Anonyme"}</span>
-                <span style={{ fontSize: 12, color: "#FFD700", fontWeight: 700 }}>🪙 {d.totalTokens.toLocaleString()}</span>
+                <span style={{ fontSize: 12, color: "#FBBF24", fontWeight: 700 }}>🪙 {d.totalTokens.toLocaleString()}</span>
               </div>
             ))}
           </div>
@@ -400,9 +400,9 @@ export default function VideoPostPage({ postId }: Props) {
       {/* ── Gift banner ── */}
       <div
         onClick={() => setShowGiftPicker(true)}
-        style={{ background: "linear-gradient(135deg,#1a0a2e,#2d1060)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer" }}
+        style={{ background: "linear-gradient(135deg,#1e1e2e,#1e1e2e)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer" }}
       >
-        <div style={{ width: 44, height: 44, borderRadius: 14, background: "linear-gradient(135deg,#16C24A,#0DA63E)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 18px rgba(22,194,74,0.5)", flexShrink: 0 }}>
+        <div style={{ width: 44, height: 44, borderRadius: 14, background: "linear-gradient(135deg,#22C55E,#22C55E)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 18px rgba(22,194,74,0.5)", flexShrink: 0 }}>
           <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M20 6h-2.18c.07-.31.18-.59.18-.9C18 3.4 16.6 2 14.9 2c-.92 0-1.73.42-2.3 1.08L12 3.7l-.6-.62C10.83 2.42 10.02 2 9.1 2 7.4 2 6 3.4 6 5.1c0 .31.11.59.18.9H4c-1.11 0-2 .89-2 2v13c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2z"/></svg>
         </div>
         <div style={{ flex: 1 }}>
@@ -412,8 +412,8 @@ export default function VideoPostPage({ postId }: Props) {
         <div style={{ display: "flex", flex: "column", alignItems: "center", gap: 2 }}>
           <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", textAlign: "right" }}>Solde disponible</div>
           <div style={{ display: "flex", alignItems: "center", gap: 4, justifyContent: "flex-end" }}>
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="#FFD700"><circle cx="12" cy="12" r="10"/></svg>
-            <span style={{ fontWeight: 800, fontSize: 13, color: "#FFD700" }}>{tokenBalance} jeton{tokenBalance !== 1 ? "s" : ""}</span>
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="#FBBF24"><circle cx="12" cy="12" r="10"/></svg>
+            <span style={{ fontWeight: 800, fontSize: 13, color: "#FBBF24" }}>{tokenBalance} jeton{tokenBalance !== 1 ? "s" : ""}</span>
           </div>
         </div>
         <svg viewBox="0 0 24 24" width="18" height="18" fill="rgba(255,255,255,0.3)"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
@@ -438,7 +438,7 @@ export default function VideoPostPage({ postId }: Props) {
             <button
               onClick={sendComment}
               disabled={!commentText.trim() || sendingComment}
-              style={{ background: commentText.trim() ? "#16C24A" : "rgba(255,255,255,0.1)", border: "none", borderRadius: "50%", width: 38, height: 38, display: "flex", alignItems: "center", justifyContent: "center", cursor: commentText.trim() ? "pointer" : "default", flexShrink: 0 }}
+              style={{ background: commentText.trim() ? "#22C55E" : "rgba(255,255,255,0.1)", border: "none", borderRadius: "50%", width: 38, height: 38, display: "flex", alignItems: "center", justifyContent: "center", cursor: commentText.trim() ? "pointer" : "default", flexShrink: 0 }}
             >
               <svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
             </button>
@@ -447,7 +447,7 @@ export default function VideoPostPage({ postId }: Props) {
           <div style={{ maxHeight: 260, overflowY: "auto", scrollbarWidth: "none" }}>
             {comments.slice(0, 20).map(c => (
               <div key={c.id} style={{ display: "flex", gap: 10, padding: "8px 16px", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-                <div style={{ width: 34, height: 34, borderRadius: "50%", background: "#1877F2", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>
+                <div style={{ width: 34, height: 34, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>
                   {c.authorName.slice(0,2).toUpperCase()}
                 </div>
                 <div style={{ flex: 1 }}>

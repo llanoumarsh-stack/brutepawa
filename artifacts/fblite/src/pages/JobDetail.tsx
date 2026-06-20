@@ -38,7 +38,7 @@ export default function JobDetail({ id }: Props) {
     }).finally(() => setLoading(false));
   }, [id]);
 
-  const typeColor: Record<string, string> = { CDI: "#4CAF50", CDD: "#FF9800", Freelance: "#9C27B0" };
+  const typeColor: Record<string, string> = { CDI: "#22C55E", CDD: "#FF9800", Freelance: "#9C27B0" };
 
   const handleApply = async () => {
     if (!job) return;
@@ -62,7 +62,7 @@ export default function JobDetail({ id }: Props) {
     <div style={{ maxWidth: 600, margin: "0 auto", textAlign: "center", padding: 60 }}>
       <div style={{ fontSize: 40 }}>❌</div>
       <div style={{ marginTop: 12, fontWeight: 700 }}>Offre introuvable</div>
-      <button onClick={() => navigate("/jobs")} style={{ marginTop: 16, background: "var(--fb-blue)", color: "#fff", border: "none", borderRadius: 20, padding: "10px 24px", cursor: "pointer", fontWeight: 700 }}>← Retour</button>
+      <button onClick={() => navigate("/jobs")} style={{ marginTop: 16, background: "var(--bp-primary)", color: "#fff", border: "none", borderRadius: 20, padding: "10px 24px", cursor: "pointer", fontWeight: 700 }}>← Retour</button>
     </div>
   );
 
@@ -84,7 +84,7 @@ export default function JobDetail({ id }: Props) {
             <h1 style={{ margin: "0 0 4px", fontSize: 19, fontWeight: 900 }}>{job.title}</h1>
             <div style={{ fontSize: 14, color: "var(--fb-text-secondary)", marginBottom: 6 }}>🏢 {job.company}</div>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              <span style={{ background: (typeColor[job.type] ?? "#9E9E9E") + "20", color: typeColor[job.type] ?? "#9E9E9E", fontWeight: 700, fontSize: 12, padding: "3px 12px", borderRadius: 12 }}>
+              <span style={{ background: (typeColor[job.type] ?? "#9CA3AF") + "20", color: typeColor[job.type] ?? "#9CA3AF", fontWeight: 700, fontSize: 12, padding: "3px 12px", borderRadius: 12 }}>
                 {job.type}
               </span>
               <span style={{ background: "var(--fb-bg)", fontSize: 12, padding: "3px 12px", borderRadius: 12, fontWeight: 600 }}>
@@ -98,7 +98,7 @@ export default function JobDetail({ id }: Props) {
         </div>
 
         {/* Salary highlight */}
-        <div style={{ background: "linear-gradient(135deg, var(--fb-blue), #1a5cf8)", color: "#fff", borderRadius: 12, padding: "14px 16px", marginBottom: 16 }}>
+        <div style={{ background: "linear-gradient(135deg, var(--bp-primary), #0EA5E9)", color: "#fff", borderRadius: 12, padding: "14px 16px", marginBottom: 16 }}>
           <div style={{ fontSize: 12, opacity: 0.85, marginBottom: 2 }}>💰 Rémunération</div>
           <div style={{ fontSize: 20, fontWeight: 900 }}>
             {job.salary ? `${job.salary.toLocaleString()} ${job.currency}` : "Non spécifié"}
@@ -107,12 +107,12 @@ export default function JobDetail({ id }: Props) {
 
         {/* Apply button */}
         {applied ? (
-          <div style={{ background: "#E8F5E9", color: "#2E7D32", borderRadius: 12, padding: "14px", textAlign: "center", fontWeight: 800, fontSize: 15, marginBottom: 10 }}>
+          <div style={{ background: "#DCFCE7", color: "#16A34A", borderRadius: 12, padding: "14px", textAlign: "center", fontWeight: 800, fontSize: 15, marginBottom: 10 }}>
             ✅ Vous avez postulé à cette offre
           </div>
         ) : (
           <button onClick={() => setShowForm(true)} style={{
-            width: "100%", background: "var(--fb-blue)", color: "#fff", border: "none",
+            width: "100%", background: "var(--bp-primary)", color: "#fff", border: "none",
             borderRadius: 12, padding: "14px", fontWeight: 800, fontSize: 16, cursor: "pointer", marginBottom: 10
           }}>
             📨 Postuler maintenant
@@ -123,7 +123,7 @@ export default function JobDetail({ id }: Props) {
             const enc = job ? encodeURIComponent(job.title + " — " + job.company) : "";
             navigate(`/jobs/inbox${job ? `?jobTitle=${enc}` : ""}`);
           }}
-          style={{ width: "100%", background: "#fff", color: "#1877F2", border: "2px solid #1877F2", borderRadius: 12, padding: "12px", fontWeight: 700, fontSize: 15, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
+          style={{ width: "100%", background: "#fff", color: "#22C55E", border: "2px solid #22C55E", borderRadius: 12, padding: "12px", fontWeight: 700, fontSize: 15, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
         >
           💬 Contacter le recruteur
         </button>
@@ -145,7 +145,7 @@ export default function JobDetail({ id }: Props) {
           "Participer aux réunions hebdomadaires et rapports",
           "Proposer des améliorations continues du processus"].map((m, i) => (
           <div key={i} style={{ display: "flex", gap: 8, marginBottom: 8, fontSize: 14 }}>
-            <span style={{ color: "var(--fb-blue)", fontWeight: 700, flexShrink: 0 }}>✓</span>
+            <span style={{ color: "var(--bp-primary)", fontWeight: 700, flexShrink: 0 }}>✓</span>
             <span>{m}</span>
           </div>
         ))}
@@ -157,7 +157,7 @@ export default function JobDetail({ id }: Props) {
           "Esprit d'initiative et sens des responsabilités",
           job.type === "Freelance" ? "Disponibilité immédiate" : "2+ ans d'expérience minimum"].map((r, i) => (
           <div key={i} style={{ display: "flex", gap: 8, marginBottom: 8, fontSize: 14 }}>
-            <span style={{ color: "#4CAF50", fontWeight: 700, flexShrink: 0 }}>•</span>
+            <span style={{ color: "#22C55E", fontWeight: 700, flexShrink: 0 }}>•</span>
             <span>{r}</span>
           </div>
         ))}
@@ -193,11 +193,11 @@ export default function JobDetail({ id }: Props) {
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 700, fontSize: 14 }}>{j.title}</div>
                 <div style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>{j.company} · {j.location}</div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "var(--fb-blue)" }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "var(--bp-primary)" }}>
                   {j.salary ? `${j.salary.toLocaleString()} ${j.currency}` : "—"}
                 </div>
               </div>
-              <span style={{ background: (typeColor[j.type] ?? "#9E9E9E") + "20", color: typeColor[j.type] ?? "#9E9E9E", fontWeight: 700, fontSize: 11, padding: "2px 10px", borderRadius: 12, height: "fit-content" }}>
+              <span style={{ background: (typeColor[j.type] ?? "#9CA3AF") + "20", color: typeColor[j.type] ?? "#9CA3AF", fontWeight: 700, fontSize: 11, padding: "2px 10px", borderRadius: 12, height: "fit-content" }}>
                 {j.type}
               </span>
             </div>
@@ -214,7 +214,7 @@ export default function JobDetail({ id }: Props) {
               <button onClick={() => setShowForm(false)} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer" }}>✕</button>
             </div>
             {done ? (
-              <div style={{ textAlign: "center", padding: "24px 0", color: "#4CAF50" }}>
+              <div style={{ textAlign: "center", padding: "24px 0", color: "#22C55E" }}>
                 <div style={{ fontSize: 48 }}>✅</div>
                 <div style={{ fontWeight: 800, fontSize: 17, marginTop: 10 }}>Candidature envoyée !</div>
                 <div style={{ fontSize: 14, color: "var(--fb-text-secondary)", marginTop: 6 }}>
@@ -234,7 +234,7 @@ export default function JobDetail({ id }: Props) {
                   padding: "11px 14px", fontSize: 13, lineHeight: 1.6, resize: "none", marginBottom: 16, boxSizing: "border-box"
                 }} />
                 <button onClick={handleApply} disabled={sending} style={{
-                  width: "100%", background: sending ? "#ccc" : "var(--fb-blue)", color: "#fff",
+                  width: "100%", background: sending ? "#ccc" : "var(--bp-primary)", color: "#fff",
                   border: "none", borderRadius: 12, padding: "14px", fontWeight: 800, fontSize: 15, cursor: "pointer"
                 }}>
                   {sending ? "Envoi en cours..." : "Envoyer ma candidature"}

@@ -78,7 +78,7 @@ function FeedMusicCard({ trackName, artist, artworkUrl, url, duration, onClick }
         {artworkUrl
           ? <img src={artworkUrl} alt={trackName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg viewBox="0 0 24 24" width="36" height="36" fill="#4B5563"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+              <svg viewBox="0 0 24 24" width="36" height="36" fill="#64748B"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
             </div>
         }
       </div>
@@ -88,7 +88,7 @@ function FeedMusicCard({ trackName, artist, artworkUrl, url, duration, onClick }
         <div style={{ fontSize: 16, fontWeight: 700, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", lineHeight: 1.2, marginBottom: 3 }}>
           {trackName}
         </div>
-        <div style={{ fontSize: 13, fontWeight: 500, color: "#6B7280", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 8 }}>
+        <div style={{ fontSize: 13, fontWeight: 500, color: "#64748B", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 8 }}>
           {artist}
         </div>
 
@@ -101,7 +101,7 @@ function FeedMusicCard({ trackName, artist, artworkUrl, url, duration, onClick }
             return (
               <div key={i} style={{
                 width: 2.5, borderRadius: 2, flexShrink: 0,
-                background: filled ? "#22C55E" : "#D1FAE5",
+                background: filled ? "#22C55E" : "#DCFCE7",
                 height: h,
                 transition: playing ? `height 0.12s ease` : "height 0.3s ease",
               }} />
@@ -111,7 +111,7 @@ function FeedMusicCard({ trackName, artist, artworkUrl, url, duration, onClick }
 
         {/* Seek bar + times */}
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ fontSize: 12, color: "#6B7280", fontWeight: 600, flexShrink: 0, minWidth: 32 }}>{current}</span>
+          <span style={{ fontSize: 12, color: "#64748B", fontWeight: 600, flexShrink: 0, minWidth: 32 }}>{current}</span>
           <div
             onClick={handleSeek}
             style={{ flex: 1, height: 4, background: "#E5E7EB", borderRadius: 4, position: "relative", cursor: "pointer" }}
@@ -122,7 +122,7 @@ function FeedMusicCard({ trackName, artist, artworkUrl, url, duration, onClick }
               )}
             </div>
           </div>
-          <span style={{ fontSize: 12, color: "#6B7280", fontWeight: 600, flexShrink: 0, minWidth: 32, textAlign: "right" }}>{duration ?? "0:00"}</span>
+          <span style={{ fontSize: 12, color: "#64748B", fontWeight: 600, flexShrink: 0, minWidth: 32, textAlign: "right" }}>{duration ?? "0:00"}</span>
         </div>
       </div>
 
@@ -156,7 +156,7 @@ const COUNTRY_FLAGS: Record<string, string> = {
   ML: "🇲🇱", GN: "🇬🇳", CM: "🇨🇲", TD: "🇹🇩", GA: "🇬🇦", CG: "🇨🇬",
   CD: "🇨🇩", CF: "🇨🇫", GH: "🇬🇭",
 };
-const AVATAR_COLORS = ["#1877F2","#E91E63","#9C27B0","#F57C00","#388E3C","#212121","#D32F2F","#00838F"];
+const AVATAR_COLORS = ["#22C55E","#E91E63","#9C27B0","#D97706","#388E3C","#212121","#D32F2F","#00838F"];
 
 function getInitials(name: string) { return name.slice(0, 2).toUpperCase(); }
 function formatNumber(n: number): string {
@@ -177,24 +177,24 @@ function timeAgo(iso: string): string {
 /* ── SVG tab icons (filled = active, outline = inactive) ── */
 function IconHome({ active }: { active: boolean }) {
   return active
-    ? <svg width="24" height="24" viewBox="0 0 24 24" fill="#1877F2"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-    : <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#65676b" strokeWidth="2" strokeLinejoin="round"><path d="M3 12L12 3l9 9M5 10v9a1 1 0 0 0 1 1h4v-5h4v5h4a1 1 0 0 0 1-1v-9"/></svg>;
+    ? <svg width="24" height="24" viewBox="0 0 24 24" fill="#22C55E"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    : <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinejoin="round"><path d="M3 12L12 3l9 9M5 10v9a1 1 0 0 0 1 1h4v-5h4v5h4a1 1 0 0 0 1-1v-9"/></svg>;
 }
 function IconFriends({ active }: { active: boolean }) {
-  const c = active ? "#1877F2" : "#65676b";
-  return <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="3.5" stroke={c} strokeWidth={active?2:1.8} fill={active?"#1877F2":"none"} fillOpacity={active?.15:0}/><circle cx="17" cy="8" r="2.5" stroke={c} strokeWidth={active?2:1.8} fill="none"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6" stroke={c} strokeWidth={active?2:1.8} strokeLinecap="round" fill="none"/><path d="M19 14c2.5.5 4 2 4 4.5" stroke={c} strokeWidth={active?2:1.8} strokeLinecap="round" fill="none"/></svg>;
+  const c = active ? "#22C55E" : "#64748B";
+  return <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="3.5" stroke={c} strokeWidth={active?2:1.8} fill={active?"#22C55E":"none"} fillOpacity={active?.15:0}/><circle cx="17" cy="8" r="2.5" stroke={c} strokeWidth={active?2:1.8} fill="none"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6" stroke={c} strokeWidth={active?2:1.8} strokeLinecap="round" fill="none"/><path d="M19 14c2.5.5 4 2 4 4.5" stroke={c} strokeWidth={active?2:1.8} strokeLinecap="round" fill="none"/></svg>;
 }
 function IconMessenger({ active }: { active: boolean }) {
-  const c = active ? "#1877F2" : "#65676b";
-  return <svg width="24" height="24" viewBox="0 0 24 24" fill={active?"#1877F2":"none"}><path d="M12 2C6.48 2 2 6.2 2 11.4c0 2.77 1.26 5.26 3.28 6.99V22l3.56-1.96c.95.26 1.96.4 3.16.4 5.52 0 10-4.2 10-9.4S17.52 2 12 2z" stroke={c} strokeWidth="1.8" fill={active?"#1877F2":"none"} fillOpacity={active?1:0}/><path d="M7 13l2.5-2.5 2.5 2.5 4-5" stroke={active?"#fff":"#65676b"} strokeWidth={active?2:1.8} strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>;
+  const c = active ? "#22C55E" : "#64748B";
+  return <svg width="24" height="24" viewBox="0 0 24 24" fill={active?"#22C55E":"none"}><path d="M12 2C6.48 2 2 6.2 2 11.4c0 2.77 1.26 5.26 3.28 6.99V22l3.56-1.96c.95.26 1.96.4 3.16.4 5.52 0 10-4.2 10-9.4S17.52 2 12 2z" stroke={c} strokeWidth="1.8" fill={active?"#22C55E":"none"} fillOpacity={active?1:0}/><path d="M7 13l2.5-2.5 2.5 2.5 4-5" stroke={active?"#fff":"#64748B"} strokeWidth={active?2:1.8} strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>;
 }
 function IconBell({ active }: { active: boolean }) {
-  const c = active ? "#1877F2" : "#65676b";
-  return <svg width="24" height="24" viewBox="0 0 24 24" fill={active?"#1877F2":"none"}><path d="M18 8a6 6 0 0 0-12 0c0 4-2 5-2 5h16s-2-1-2-5" stroke={c} strokeWidth="1.8" strokeLinecap="round" fill={active?"#1877F2":"none"}/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke={c} strokeWidth="1.8" strokeLinecap="round" fill="none"/></svg>;
+  const c = active ? "#22C55E" : "#64748B";
+  return <svg width="24" height="24" viewBox="0 0 24 24" fill={active?"#22C55E":"none"}><path d="M18 8a6 6 0 0 0-12 0c0 4-2 5-2 5h16s-2-1-2-5" stroke={c} strokeWidth="1.8" strokeLinecap="round" fill={active?"#22C55E":"none"}/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke={c} strokeWidth="1.8" strokeLinecap="round" fill="none"/></svg>;
 }
 function IconShop({ active }: { active: boolean }) {
-  const c = active ? "#1877F2" : "#65676b";
-  return <svg width="24" height="24" viewBox="0 0 24 24" fill={active?"#1877F2":"none"}><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" stroke={c} strokeWidth="1.8" fill={active?"#1877F2":"none"} fillOpacity={active?.15:0}/><line x1="3" y1="6" x2="21" y2="6" stroke={c} strokeWidth="1.8"/><path d="M16 10a4 4 0 0 1-8 0" stroke={c} strokeWidth="1.8" fill="none"/></svg>;
+  const c = active ? "#22C55E" : "#64748B";
+  return <svg width="24" height="24" viewBox="0 0 24 24" fill={active?"#22C55E":"none"}><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" stroke={c} strokeWidth="1.8" fill={active?"#22C55E":"none"} fillOpacity={active?.15:0}/><line x1="3" y1="6" x2="21" y2="6" stroke={c} strokeWidth="1.8"/><path d="M16 10a4 4 0 0 1-8 0" stroke={c} strokeWidth="1.8" fill="none"/></svg>;
 }
 
 export default function Feed() {
@@ -336,7 +336,7 @@ export default function Feed() {
   ];
 
   return (
-    <div style={{ background: "#f0f2f5", minHeight: "100vh", paddingBottom: 20 }}>
+    <div style={{ background: "#F1F5F9", minHeight: "100vh", paddingBottom: 20 }}>
       {viewerOpen && storyGroups.length > 0 && (
         <StoryViewer
           groups={storyGroups}
@@ -357,21 +357,21 @@ export default function Feed() {
         {/* Row 1 — Mode payant */}
         <div style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
-          padding: "7px 14px", borderBottom: "1px solid #f0f2f5",
+          padding: "7px 14px", borderBottom: "1px solid #F1F5F9",
           background: "#fff",
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontWeight: 600, fontSize: 13.5, color: "#050505" }}>Mode payant</span>
+            <span style={{ fontWeight: 600, fontSize: 13.5, color: "#111827" }}>Mode payant</span>
             <div style={{
-              width: 17, height: 17, borderRadius: "50%", background: "#ccd0d5",
+              width: 17, height: 17, borderRadius: "50%", background: "#E5E7EB",
               display: "flex", alignItems: "center", justifyContent: "center",
               fontSize: 10, fontWeight: 800, color: "#fff", lineHeight: 1,
             }}>?</div>
           </div>
           <button style={{
-            background: "#e4e6eb", border: "none", borderRadius: 6,
+            background: "#E5E7EB", border: "none", borderRadius: 6,
             padding: "6px 13px", fontWeight: 600, fontSize: 13, cursor: "pointer",
-            color: "#050505",
+            color: "#111827",
           }}>
             Changer de mode
           </button>
@@ -398,11 +398,11 @@ export default function Feed() {
                 onClick={btn.action}
                 style={{
                   width: 40, height: 40, borderRadius: "50%",
-                  background: "#e4e6eb", border: "none",
+                  background: "#E5E7EB", border: "none",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: btn.label === "+" ? 22 : 18,
                   fontWeight: btn.label === "+" ? 700 : 400,
-                  color: "#050505", cursor: "pointer", flexShrink: 0,
+                  color: "#111827", cursor: "pointer", flexShrink: 0,
                   lineHeight: 1,
                 }}
               >
@@ -415,7 +415,7 @@ export default function Feed() {
         {/* Row 3 — Tab bar */}
         <div style={{
           display: "flex",
-          borderTop: "1px solid #e4e6eb",
+          borderTop: "1px solid #E5E7EB",
         }}>
           {TABS.map(({ id, Icon }) => (
             <button
@@ -425,7 +425,7 @@ export default function Feed() {
                 flex: 1, background: "none", border: "none",
                 padding: "10px 0 8px",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                borderBottom: activeTab === id ? "3px solid #1877F2" : "3px solid transparent",
+                borderBottom: activeTab === id ? "3px solid #22C55E" : "3px solid transparent",
                 cursor: "pointer",
                 transition: "border-color .15s",
               }}
@@ -456,12 +456,12 @@ export default function Feed() {
             >
               <div style={{
                 width: 96, height: 144, borderRadius: 10, overflow: "hidden",
-                position: "relative", border: "1px solid #e4e6eb",
+                position: "relative", border: "1px solid #E5E7EB",
               }}>
-                <div style={{ width: "100%", height: "100%", background: "#e4e6eb", overflow: "hidden" }}>
+                <div style={{ width: "100%", height: "100%", background: "#E5E7EB", overflow: "hidden" }}>
                   {user.avatarUrl
                     ? <img src={user.avatarUrl} alt="moi" style={{ width: "100%", height: "75%", objectFit: "cover", display: "block" }} />
-                    : <div style={{ width: "100%", height: "75%", background: "#42B72A", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 26 }}>{userInitials}</div>
+                    : <div style={{ width: "100%", height: "75%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 26 }}>{userInitials}</div>
                   }
                   <div style={{ height: "25%", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }} />
                 </div>
@@ -470,7 +470,7 @@ export default function Feed() {
                   position: "absolute", bottom: "23%", left: "50%",
                   transform: "translate(-50%, 50%)",
                   width: 32, height: 32, borderRadius: "50%",
-                  background: "#1877F2", border: "3px solid #fff",
+                  background: "#22C55E", border: "3px solid #fff",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   color: "#fff", fontSize: 20, fontWeight: 900, lineHeight: 1,
                   zIndex: 2,
@@ -478,7 +478,7 @@ export default function Feed() {
               </div>
               <div style={{
                 textAlign: "center", fontSize: 12, fontWeight: 700,
-                color: "#050505", marginTop: 6, lineHeight: 1.3,
+                color: "#111827", marginTop: 6, lineHeight: 1.3,
                 padding: "0 2px",
               }}>Créer une story</div>
             </div>
@@ -514,7 +514,7 @@ export default function Feed() {
                     <div style={{
                       position: "absolute", top: 8, left: 8,
                       width: 36, height: 36, borderRadius: "50%",
-                      border: "3px solid #1877F2",
+                      border: "3px solid #22C55E",
                       background: avatarBg,
                       overflow: "hidden", flexShrink: 0,
                     }}>
@@ -527,7 +527,7 @@ export default function Feed() {
                     {group.storiesCount > 1 && (
                       <div style={{
                         position: "absolute", top: 6, right: 6,
-                        background: "#1877F2", color: "#fff",
+                        background: "#22C55E", color: "#fff",
                         borderRadius: 10, minWidth: 20, height: 20,
                         display: "flex", alignItems: "center", justifyContent: "center",
                         fontSize: 11, fontWeight: 700, padding: "0 4px",
@@ -557,16 +557,16 @@ export default function Feed() {
             {/* Avatar */}
             {user.avatarUrl
               ? <img src={user.avatarUrl} alt="moi" onClick={() => navigate("/profile")} style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer" }} />
-              : <div onClick={() => navigate("/profile")} style={{ width: 40, height: 40, borderRadius: "50%", background: "#42B72A", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15, flexShrink: 0, cursor: "pointer" }}>{userInitials}</div>
+              : <div onClick={() => navigate("/profile")} style={{ width: 40, height: 40, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15, flexShrink: 0, cursor: "pointer" }}>{userInitials}</div>
             }
             {/* Fake input */}
             <div
               onClick={() => navigate("/create-post")}
               style={{
-                flex: 1, background: "#f0f2f5", borderRadius: 22,
+                flex: 1, background: "#F1F5F9", borderRadius: 22,
                 padding: "9px 14px", fontSize: 16,
-                color: "#65676b", cursor: "pointer",
-                border: "1px solid #ccd0d5",
+                color: "#64748B", cursor: "pointer",
+                border: "1px solid #E5E7EB",
                 userSelect: "none",
               }}
             >
@@ -582,16 +582,16 @@ export default function Feed() {
             >
               <div style={{
                 width: 38, height: 38, borderRadius: 8,
-                background: "#e6f4ea", border: "1px solid #c8e6c9",
+                background: "#F0FDF4", border: "1px solid #DCFCE7",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: 20,
               }}>📷</div>
-              <span style={{ fontSize: 11, fontWeight: 600, color: "#65676b" }}>Photo</span>
+              <span style={{ fontSize: 11, fontWeight: 600, color: "#64748B" }}>Photo</span>
             </div>
           </div>
 
           {/* Divider */}
-          <div style={{ borderTop: "1px solid #e4e6eb" }} />
+          <div style={{ borderTop: "1px solid #E5E7EB" }} />
 
           {/* Quick action row */}
           <div style={{ display: "flex" }}>
@@ -607,8 +607,8 @@ export default function Feed() {
                   flex: 1, background: "none", border: "none",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   gap: 5, padding: "10px 4px", cursor: "pointer",
-                  borderLeft: i > 0 ? "1px solid #e4e6eb" : "none",
-                  fontSize: 13, fontWeight: 600, color: "#65676b",
+                  borderLeft: i > 0 ? "1px solid #E5E7EB" : "none",
+                  fontSize: 13, fontWeight: 600, color: "#64748B",
                 }}
               >
                 <span style={{ fontSize: 18 }}>{btn.emoji}</span>
@@ -620,10 +620,10 @@ export default function Feed() {
 
         {/* ── Loading ── */}
         {loading && (
-          <div style={{ textAlign: "center", padding: 32, background: "#fff", color: "#65676b" }}>
+          <div style={{ textAlign: "center", padding: 32, background: "#fff", color: "#64748B" }}>
             <div style={{
-              width: 28, height: 28, border: "3px solid #e4e6eb",
-              borderTopColor: "#1877F2", borderRadius: "50%",
+              width: 28, height: 28, border: "3px solid #E5E7EB",
+              borderTopColor: "#22C55E", borderRadius: "50%",
               animation: "fb-spin .7s linear infinite",
               margin: "0 auto 10px",
             }} />
@@ -633,9 +633,9 @@ export default function Feed() {
 
         {/* ── Empty state ── */}
         {!loading && posts.length === 0 && (
-          <div style={{ textAlign: "center", padding: 40, background: "#fff", color: "#65676b" }}>
+          <div style={{ textAlign: "center", padding: 40, background: "#fff", color: "#64748B" }}>
             <div style={{ fontSize: 40, marginBottom: 8 }}>📭</div>
-            <div style={{ fontWeight: 700, color: "#050505" }}>Aucune publication pour l'instant</div>
+            <div style={{ fontWeight: 700, color: "#111827" }}>Aucune publication pour l'instant</div>
             <div style={{ fontSize: 13, marginTop: 4 }}>Soyez le premier à publier quelque chose !</div>
           </div>
         )}
@@ -659,7 +659,7 @@ export default function Feed() {
                 }
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap" }}>
-                    <span style={{ fontWeight: 700, fontSize: 14.5, color: "#050505", cursor: "pointer" }}
+                    <span style={{ fontWeight: 700, fontSize: 14.5, color: "#111827", cursor: "pointer" }}
                       onClick={() => navigate(`/user/${post.authorId}`)}>
                       {post.authorName}
                     </span>
@@ -667,22 +667,22 @@ export default function Feed() {
                     {followedIds.has(post.authorId)
                       ? <span
                           onClick={(e) => handleFollow(post.authorId, e)}
-                          style={{ fontSize: 13, fontWeight: 600, color: "#65676b", cursor: "pointer" }}>· Suivi</span>
+                          style={{ fontSize: 13, fontWeight: 600, color: "#64748B", cursor: "pointer" }}>· Suivi</span>
                       : <span
                           onClick={(e) => handleFollow(post.authorId, e)}
-                          style={{ fontSize: 13, fontWeight: 600, color: "#1877F2", cursor: "pointer" }}>· Suivre</span>
+                          style={{ fontSize: 13, fontWeight: 600, color: "#22C55E", cursor: "pointer" }}>· Suivre</span>
                     }
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#65676b", marginTop: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#64748B", marginTop: 1 }}>
                     <span>{timeAgo(post.createdAt)}</span>
                     <span>·</span>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="#65676b"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6l5 3-1 1.73-6-3.5V7z"/></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="#64748B"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6l5 3-1 1.73-6-3.5V7z"/></svg>
                   </div>
                 </div>
                 {/* ··· */}
                 <button
                   onClick={(e) => { e.stopPropagation(); const r = e.currentTarget.getBoundingClientRect(); setMenuPos({ top: r.bottom + 6, right: window.innerWidth - r.right }); setPostMenuId(post.id); }}
-                  style={{ width: 32, height: 32, borderRadius: "50%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#65676b", fontSize: 20, fontWeight: 700, lineHeight: 1, flexShrink: 0 }}>
+                  style={{ width: 32, height: 32, borderRadius: "50%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#64748B", fontSize: 20, fontWeight: 700, lineHeight: 1, flexShrink: 0 }}>
                   ···
                 </button>
               </div>
@@ -713,19 +713,19 @@ export default function Feed() {
                   <>
                     {/* Pure music tag — don't show as text */}
                     {post.content && !isMusicContent && !post.musicTrackName && !parsedLine && (
-                      <div style={{ padding: "0 14px 10px", fontSize: 15, color: "#050505", lineHeight: 1.5 }}>
+                      <div style={{ padding: "0 14px 10px", fontSize: 15, color: "#111827", lineHeight: 1.5 }}>
                         {post.content}
                       </div>
                     )}
                     {/* Caption from DB musicTrackName posts */}
                     {post.content && post.musicTrackName && (
-                      <div style={{ padding: "0 14px 10px", fontSize: 15, color: "#050505", lineHeight: 1.5 }}>
+                      <div style={{ padding: "0 14px 10px", fontSize: 15, color: "#111827", lineHeight: 1.5 }}>
                         {post.content}
                       </div>
                     )}
                     {/* Caption when music tag is the last line */}
                     {captionLines && (
-                      <div style={{ padding: "0 14px 10px", fontSize: 15, color: "#050505", lineHeight: 1.5 }}>
+                      <div style={{ padding: "0 14px 10px", fontSize: 15, color: "#111827", lineHeight: 1.5 }}>
                         {captionLines}
                       </div>
                     )}
@@ -755,14 +755,14 @@ export default function Feed() {
 
               {/* Stats bar — Facebook Premium */}
               {(post.likesCount > 0 || post.commentsCount > 0) && (
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 14px 5px", fontSize: 13, color: "#65676b" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 14px 5px", fontSize: 13, color: "#64748B" }}>
                   {/* Left: reaction emoji circles + count */}
                   {post.likesCount > 0 ? (
                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                       {/* Stacked reaction circles */}
                       <div style={{ display: "flex" }}>
                         {/* 👍 Like — always shown */}
-                        <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#1877F2", border: "1.5px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, zIndex: 3 }}>👍</div>
+                        <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#22C55E", border: "1.5px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, zIndex: 3 }}>👍</div>
                         {post.likesCount >= 3 && (
                           <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#F43F5E", border: "1.5px solid #fff", marginLeft: -6, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, zIndex: 2 }}>❤️</div>
                         )}
@@ -770,7 +770,7 @@ export default function Feed() {
                           <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#F59E0B", border: "1.5px solid #fff", marginLeft: -6, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, zIndex: 1 }}>😂</div>
                         )}
                       </div>
-                      <span style={{ color: "#65676b", fontSize: 13 }}>{formatNumber(post.likesCount)} réaction{post.likesCount > 1 ? "s" : ""}</span>
+                      <span style={{ color: "#64748B", fontSize: 13 }}>{formatNumber(post.likesCount)} réaction{post.likesCount > 1 ? "s" : ""}</span>
                     </div>
                   ) : <div />}
 
@@ -791,11 +791,11 @@ export default function Feed() {
                             position: "relative",
                           }} />
                         ))}
-                        <span style={{ marginLeft: 4, color: "#65676b", fontSize: 14, fontWeight: 600 }}>›</span>
+                        <span style={{ marginLeft: 4, color: "#64748B", fontSize: 14, fontWeight: 600 }}>›</span>
                       </div>
                     )}
                     {post.commentsCount > 0 && (
-                      <span style={{ cursor: "pointer", color: "#65676b", fontSize: 13 }} onClick={() => navigate(`/post/${post.id}`)}>
+                      <span style={{ cursor: "pointer", color: "#64748B", fontSize: 13 }} onClick={() => navigate(`/post/${post.id}`)}>
                         {formatNumber(post.commentsCount)} commentaire{post.commentsCount > 1 ? "s" : ""}
                       </span>
                     )}
@@ -804,42 +804,42 @@ export default function Feed() {
               )}
 
               {/* Divider */}
-              <div style={{ height: 1, background: "#e4e6eb", margin: "0 14px" }} />
+              <div style={{ height: 1, background: "#E5E7EB", margin: "0 14px" }} />
 
               {/* Action bar — SVG icons, no emoji */}
               <div style={{ display: "flex", padding: "2px 0" }}>
                 {/* J'aime */}
                 <button
                   onClick={() => toggleLike(post.id)}
-                  style={{ flex: 1, background: "none", border: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "9px 4px", fontSize: 13.5, fontWeight: 700, color: post.liked ? "#22C55E" : "#65676b", cursor: "pointer", transition: "color .13s" }}
+                  style={{ flex: 1, background: "none", border: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "9px 4px", fontSize: 13.5, fontWeight: 700, color: post.liked ? "#22C55E" : "#64748B", cursor: "pointer", transition: "color .13s" }}
                 >
-                  <svg viewBox="0 0 24 24" width="19" height="19" fill={post.liked ? "#22C55E" : "none"} stroke={post.liked ? "#22C55E" : "#65676b"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M7 10v12M15 5.88L14 10h5.83A2 2 0 0 1 21.83 12.49L19.04 19.5A2 2 0 0 1 17.12 21H7a2 2 0 0 1-2-2v-8.5a2 2 0 0 1 .586-1.414L10 5H13a2 2 0 0 1 2 2v-.12z"/></svg>
+                  <svg viewBox="0 0 24 24" width="19" height="19" fill={post.liked ? "#22C55E" : "none"} stroke={post.liked ? "#22C55E" : "#64748B"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M7 10v12M15 5.88L14 10h5.83A2 2 0 0 1 21.83 12.49L19.04 19.5A2 2 0 0 1 17.12 21H7a2 2 0 0 1-2-2v-8.5a2 2 0 0 1 .586-1.414L10 5H13a2 2 0 0 1 2 2v-.12z"/></svg>
                   <span>J'aime</span>
                 </button>
-                <div style={{ width: 1, background: "#e4e6eb", alignSelf: "stretch", margin: "6px 0" }} />
+                <div style={{ width: 1, background: "#E5E7EB", alignSelf: "stretch", margin: "6px 0" }} />
                 {/* Commenter */}
                 <button
                   onClick={() => navigate(`/post/${post.id}`)}
-                  style={{ flex: 1, background: "none", border: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "9px 4px", fontSize: 13.5, fontWeight: 700, color: "#65676b", cursor: "pointer" }}
+                  style={{ flex: 1, background: "none", border: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "9px 4px", fontSize: 13.5, fontWeight: 700, color: "#64748B", cursor: "pointer" }}
                 >
-                  <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#65676b" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#64748B" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                   <span>Commenter</span>
                 </button>
-                <div style={{ width: 1, background: "#e4e6eb", alignSelf: "stretch", margin: "6px 0" }} />
+                <div style={{ width: 1, background: "#E5E7EB", alignSelf: "stretch", margin: "6px 0" }} />
                 {/* Partager */}
                 <button
-                  style={{ flex: 1, background: "none", border: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "9px 4px", fontSize: 13.5, fontWeight: 700, color: "#65676b", cursor: "pointer" }}
+                  style={{ flex: 1, background: "none", border: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "9px 4px", fontSize: 13.5, fontWeight: 700, color: "#64748B", cursor: "pointer" }}
                 >
-                  <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#65676b" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+                  <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#64748B" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
                   <span>Partager</span>
                 </button>
-                <div style={{ width: 1, background: "#e4e6eb", alignSelf: "stretch", margin: "6px 0" }} />
+                <div style={{ width: 1, background: "#E5E7EB", alignSelf: "stretch", margin: "6px 0" }} />
                 {/* Enregistrer */}
                 <button
                   onClick={() => toggleSave(post.id)}
-                  style={{ flex: 1, background: "none", border: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "9px 4px", fontSize: 13.5, fontWeight: 700, color: savedSet.has(post.id) ? "#22C55E" : "#65676b", cursor: "pointer", transition: "color .13s" }}
+                  style={{ flex: 1, background: "none", border: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "9px 4px", fontSize: 13.5, fontWeight: 700, color: savedSet.has(post.id) ? "#22C55E" : "#64748B", cursor: "pointer", transition: "color .13s" }}
                 >
-                  <svg viewBox="0 0 24 24" width="19" height="19" fill={savedSet.has(post.id) ? "#22C55E" : "none"} stroke={savedSet.has(post.id) ? "#22C55E" : "#65676b"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                  <svg viewBox="0 0 24 24" width="19" height="19" fill={savedSet.has(post.id) ? "#22C55E" : "none"} stroke={savedSet.has(post.id) ? "#22C55E" : "#64748B"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
                   <span>Enregistrer</span>
                 </button>
               </div>
@@ -849,7 +849,7 @@ export default function Feed() {
 
         {/* End of feed */}
         {!loading && posts.length > 0 && (
-          <div style={{ textAlign: "center", padding: "20px 0", color: "#65676b", fontSize: 13 }}>
+          <div style={{ textAlign: "center", padding: "20px 0", color: "#64748B", fontSize: 13 }}>
             Vous avez tout vu
           </div>
         )}
@@ -940,23 +940,23 @@ export default function Feed() {
             style={{ background: "#fff", borderRadius: 10, width: "100%", maxWidth: 500, overflow: "hidden" }}
             onClick={e => e.stopPropagation()}
           >
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 14px", borderBottom: "1px solid #e4e6eb" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 14px", borderBottom: "1px solid #E5E7EB" }}>
               <span style={{ fontWeight: 700, fontSize: 17 }}>Créer une publication</span>
-              <button onClick={() => setShowModal(false)} style={{ background: "#e4e6eb", border: "none", borderRadius: "50%", width: 32, height: 32, cursor: "pointer", fontSize: 16, fontWeight: 700 }}>✕</button>
+              <button onClick={() => setShowModal(false)} style={{ background: "#E5E7EB", border: "none", borderRadius: "50%", width: 32, height: 32, cursor: "pointer", fontSize: 16, fontWeight: 700 }}>✕</button>
             </div>
             <div style={{ padding: 14 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
                 {user.avatarUrl
                   ? <img src={user.avatarUrl} alt="Avatar" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover" }} />
-                  : <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#42B72A", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15 }}>{userInitials}</div>
+                  : <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15 }}>{userInitials}</div>
                 }
                 <div>
                   <div style={{ fontWeight: 700, fontSize: 15 }}>{user.name}</div>
-                  <div style={{ fontSize: 12, color: "#65676b" }}>🌐 Public</div>
+                  <div style={{ fontSize: 12, color: "#64748B" }}>🌐 Public</div>
                 </div>
               </div>
               <textarea
-                style={{ width: "100%", border: "none", outline: "none", resize: "none", fontSize: 18, minHeight: 120, color: "#050505", fontFamily: "inherit", lineHeight: 1.5, background: "transparent" }}
+                style={{ width: "100%", border: "none", outline: "none", resize: "none", fontSize: 18, minHeight: 120, color: "#111827", fontFamily: "inherit", lineHeight: 1.5, background: "transparent" }}
                 placeholder={`Quoi de neuf, ${user.name.split(" ")[0]} ?`}
                 value={newPost}
                 onChange={e => setNewPost(e.target.value)}
@@ -968,7 +968,7 @@ export default function Feed() {
                 onClick={submitPost}
                 disabled={submitting || !newPost.trim()}
                 style={{
-                  width: "100%", background: !newPost.trim() ? "#bec3c9" : "#1877F2",
+                  width: "100%", background: !newPost.trim() ? "#bec3c9" : "#22C55E",
                   color: "#fff", border: "none", borderRadius: 6,
                   padding: "10px", fontWeight: 700, fontSize: 16,
                   cursor: !newPost.trim() ? "not-allowed" : "pointer",

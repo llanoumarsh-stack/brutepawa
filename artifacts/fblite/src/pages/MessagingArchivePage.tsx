@@ -1,6 +1,6 @@
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"#22C55E",text:"#0F172A",secondary:"#64748B",muted:"#94A3B8",border:"#E2E8F0",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"#22C55E",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
 
 const Footer = () => (
   <div style={{ textAlign:"center",padding:"20px 0 32px" }}>
@@ -15,21 +15,21 @@ const Footer = () => (
 function ArchiveIllustration() {
   return (
     <svg width="160" height="140" viewBox="0 0 160 140" fill="none">
-      <ellipse cx="80" cy="132" rx="52" ry="7" fill="#0F172A" opacity=".05"/>
+      <ellipse cx="80" cy="132" rx="52" ry="7" fill="#111827" opacity=".05"/>
       {/* Back folder */}
       <path d="M20 42a6 6 0 016-6h40l9 11h59a6 6 0 016 6v57a6 6 0 01-6 6H26a6 6 0 01-6-6V42z" fill="#BBF7D0"/>
       {/* Front folder */}
       <path d="M16 54a6 6 0 016-6h42l9 11h63a6 6 0 016 6v55a6 6 0 01-6 6H22a6 6 0 01-6-6V54z" fill="#22C55E"/>
-      <path d="M16 54a6 6 0 016-6h42l9 11h63a6 6 0 016 6v12H16V54z" fill="#4ADE80" opacity=".4"/>
+      <path d="M16 54a6 6 0 016-6h42l9 11h63a6 6 0 016 6v12H16V54z" fill="#22C55E" opacity=".4"/>
       {/* Documents */}
       <rect x="48" y="72" width="40" height="50" rx="5" fill="#fff" transform="rotate(-7 48 72)"/>
-      <line x1="56" y1="90" x2="80" y2="87" stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round"/>
-      <line x1="56" y1="97" x2="76" y2="95" stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round"/>
+      <line x1="56" y1="90" x2="80" y2="87" stroke="#E5E7EB" strokeWidth="2.5" strokeLinecap="round"/>
+      <line x1="56" y1="97" x2="76" y2="95" stroke="#E5E7EB" strokeWidth="2.5" strokeLinecap="round"/>
       <rect x="70" y="68" width="40" height="50" rx="5" fill="#fff" transform="rotate(6 70 68)"/>
-      <line x1="78" y1="86" x2="102" y2="87" stroke="#E2E8F0" strokeWidth="2.5" strokeLinecap="round"/>
+      <line x1="78" y1="86" x2="102" y2="87" stroke="#E5E7EB" strokeWidth="2.5" strokeLinecap="round"/>
       {/* Download arrow badge */}
       <circle cx="118" cy="38" r="18" fill="#DCFCE7" stroke="#22C55E" strokeWidth="2"/>
-      <path d="M118 32v8m0 0l-4-4m4 4l4-4M114 44h8" stroke="#15803D" strokeWidth="2" strokeLinecap="round"/>
+      <path d="M118 32v8m0 0l-4-4m4 4l4-4M114 44h8" stroke="#16A34A" strokeWidth="2" strokeLinecap="round"/>
     </svg>
   );
 }

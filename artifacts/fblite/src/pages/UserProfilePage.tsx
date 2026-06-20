@@ -11,7 +11,7 @@ import {
   type PublicUser, type PublicUserWithStatus, type FriendRequest, type FeedPost,
 } from "../lib/api";
 
-const AVATAR_COLORS = ["#1877F2","#E91E63","#9C27B0","#FF9800","#4CAF50","#00BCD4","#F44336","#3F51B5"];
+const AVATAR_COLORS = ["#22C55E","#E91E63","#9C27B0","#FF9800","#22C55E","#0EA5E9","#EF4444","#6366F1"];
 function avatarColor(id: number) { return AVATAR_COLORS[id % AVATAR_COLORS.length]; }
 function fullName(u: { firstName: string; lastName: string }) { return `${u.firstName} ${u.lastName}`.trim(); }
 function initials(u: { firstName: string; lastName: string }) {
@@ -41,47 +41,47 @@ type MenuPanel = null | "menu" | "report" | "block" | "share" | "public_info" | 
 
 /* ── SVG ICONS ─────────────────────────────────────────── */
 const IcoBack = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0D1B2A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111827" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M19 12H5M12 5l-7 7 7 7"/>
   </svg>
 );
 const IcoChevron = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C0C9D4" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M9 18l6-6-6-6"/>
   </svg>
 );
 const IcoDots = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="#374151">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="#64748B">
     <circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/>
   </svg>
 );
 const IcoShare = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
     <polyline points="16 6 12 2 8 6"/>
     <line x1="12" y1="2" x2="12" y2="15"/>
   </svg>
 );
 const IcoLink = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
     <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
   </svg>
 );
 const IcoEye = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
     <circle cx="12" cy="12" r="3"/>
   </svg>
 );
 const IcoEyeOff = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
     <line x1="1" y1="1" x2="23" y2="23"/>
   </svg>
 );
 const IcoSlash = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="10"/>
     <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
   </svg>
@@ -114,14 +114,14 @@ const IcoUserCheck = ({ color = "#EF4444" }: { color?: string }) => (
   </svg>
 );
 const IcoInfo = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="10"/>
     <line x1="12" y1="8" x2="12" y2="12"/>
     <line x1="12" y1="16" x2="12.01" y2="16"/>
   </svg>
 );
 const IcoPeople = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
     <circle cx="9" cy="7" r="4"/>
     <path d="M23 21v-2a4 4 0 00-3-3.87"/>
@@ -129,7 +129,7 @@ const IcoPeople = () => (
   </svg>
 );
 const IcoGroup = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
   </svg>
 );
@@ -140,37 +140,37 @@ const IcoUnlock = () => (
   </svg>
 );
 const IcoGlobe = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8896A6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="10"/>
     <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
   </svg>
 );
 const IcoLike = ({ active }: { active?: boolean }) => (
-  <svg width="17" height="17" viewBox="0 0 24 24" fill={active ? "#22C55E" : "none"} stroke={active ? "#22C55E" : "#8896A6"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="17" height="17" viewBox="0 0 24 24" fill={active ? "#22C55E" : "none"} stroke={active ? "#22C55E" : "#94A3B8"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3z"/>
     <path d="M7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"/>
   </svg>
 );
 const IcoComment = () => (
-  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8896A6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
   </svg>
 );
 const IcoShareFeed = () => (
-  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8896A6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
     <polyline points="16 6 12 2 8 6"/>
     <line x1="12" y1="2" x2="12" y2="15"/>
   </svg>
 );
 const IcoBriefcase = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8896A6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
     <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>
   </svg>
 );
 const IcoMapPin = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="#8896A6">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="#94A3B8">
     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/>
   </svg>
 );
@@ -180,18 +180,18 @@ const IcoCheck = ({ size = 15, color = "#fff" }: { size?: number; color?: string
   </svg>
 );
 const IcoClock = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8896A6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
   </svg>
 );
 const IcoSend = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <line x1="22" y1="2" x2="11" y2="13"/>
     <polygon points="22 2 15 22 11 13 2 9 22 2"/>
   </svg>
 );
 const IcoCopy = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
     <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
   </svg>
@@ -203,9 +203,9 @@ const EmptyPostsIllustration = () => (
     <rect x="18" y="22" width="84" height="76" rx="10" fill="#DCFCE7"/>
     <rect x="26" y="34" width="68" height="42" rx="7" fill="#F0FDF4" stroke="#22C55E" strokeWidth="1.5"/>
     <circle cx="38" cy="47" r="6" fill="#BBF7D0"/>
-    <path d="M26 76l16-14 10 10 14-18 22 22H26z" fill="#86EFAC" opacity="0.7"/>
-    <rect x="32" y="84" width="56" height="6" rx="3" fill="#A7F3D0"/>
-    <rect x="42" y="94" width="36" height="4" rx="2" fill="#D1FAE5"/>
+    <path d="M26 76l16-14 10 10 14-18 22 22H26z" fill="#BBF7D0" opacity="0.7"/>
+    <rect x="32" y="84" width="56" height="6" rx="3" fill="#DCFCE7"/>
+    <rect x="42" y="94" width="36" height="4" rx="2" fill="#DCFCE7"/>
     <circle cx="88" cy="84" r="14" fill="#22C55E"/>
     <path d="M82 84h12M88 78v12" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"/>
   </svg>
@@ -215,14 +215,14 @@ const EmptyPhotosIllustration = () => (
     <rect x="10" y="20" width="90" height="70" rx="10" fill="#DCFCE7"/>
     <rect x="18" y="28" width="74" height="54" rx="7" fill="#F0FDF4" stroke="#22C55E" strokeWidth="1.5"/>
     <circle cx="36" cy="42" r="7" fill="#BBF7D0"/>
-    <path d="M18 72l20-18 14 12 18-22 28 28H18z" fill="#86EFAC" opacity="0.6"/>
+    <path d="M18 72l20-18 14 12 18-22 28 28H18z" fill="#BBF7D0" opacity="0.6"/>
   </svg>
 );
 const EmptyMutualIllustration = () => (
   <svg width="90" height="90" viewBox="0 0 90 90" fill="none">
     <circle cx="45" cy="45" r="38" fill="#F0FDF4"/>
     <circle cx="35" cy="38" r="10" fill="#BBF7D0"/>
-    <circle cx="55" cy="38" r="10" fill="#86EFAC"/>
+    <circle cx="55" cy="38" r="10" fill="#BBF7D0"/>
     <path d="M20 65c0-8 7-14 15-14s15 6 15 14" fill="#DCFCE7"/>
     <path d="M40 65c0-8 7-14 15-14s15 6 15 14" fill="#DCFCE7"/>
   </svg>
@@ -411,8 +411,8 @@ export default function UserProfilePage({ userId }: { userId: number }) {
           <path d="M35 62c4-6 26-6 30 0" stroke="#22C55E" strokeWidth="3" strokeLinecap="round" fill="none"/>
           <path d="M20 20l60 60M80 20L20 80" stroke="#EF4444" strokeWidth="3" strokeLinecap="round" opacity="0.25"/>
         </svg>
-        <div style={{ fontWeight: 900, fontSize: 20, color: "#0D1B2A" }}>Profil introuvable</div>
-        <div style={{ fontSize: 14, color: "#8896A6", textAlign: "center" }}>Ce profil n'existe pas ou a été supprimé.</div>
+        <div style={{ fontWeight: 900, fontSize: 20, color: "#111827" }}>Profil introuvable</div>
+        <div style={{ fontSize: 14, color: "#94A3B8", textAlign: "center" }}>Ce profil n'existe pas ou a été supprimé.</div>
         <button onClick={() => window.history.back()} style={{ background: "linear-gradient(135deg, #22C55E, #16A34A)", color: "#fff", border: "none", borderRadius: 14, padding: "13px 32px", fontWeight: 700, fontSize: 15, cursor: "pointer", boxShadow: "0 4px 16px rgba(34,197,94,0.35)" }}>
           Retour
         </button>
@@ -461,17 +461,17 @@ export default function UserProfilePage({ userId }: { userId: number }) {
   /* ── LOCKED PROFILE VIEW ─────────────────────────── */
   if (user.profileLocked && user.friendshipStatus !== "friends" && !isOwner) {
     return (
-      <div style={{ minHeight: "100vh", background: "#F5F6F7", maxWidth: 480, margin: "0 auto", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" }}>
+      <div style={{ minHeight: "100vh", background: "#F8FAFC", maxWidth: 480, margin: "0 auto", fontFamily: "-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" }}>
         <StickyHeader locked />
 
-        <div style={{ height: 190, position: "relative", background: "#1A2E1A" }}>
+        <div style={{ height: 190, position: "relative", background: "#052e16" }}>
           <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
             {user.coverUrl
               ? <img ref={coverImgRef} src={user.coverUrl} alt="cover" loading="lazy" style={{ width: "100%", height: "115%", objectFit: "cover", display: "block", transformOrigin: "top center", willChange: "transform" }} />
-              : <div style={{ width: "100%", height: "100%", background: "linear-gradient(135deg,#0D2318 0%,#1A4D2E 40%,#22C55E44 80%,#0D2318 100%)" }}>
+              : <div style={{ width: "100%", height: "100%", background: "linear-gradient(135deg,#052e16 0%,#052e16 40%,#22C55E44 80%,#052e16 100%)" }}>
                   <svg viewBox="0 0 480 190" width="100%" height="100%" style={{ position: "absolute", inset: 0 }}>
                     <defs><radialGradient id="glw" cx="60%" cy="40%" r="60%"><stop offset="0%" stopColor="#22C55E" stopOpacity="0.35"/><stop offset="100%" stopColor="#22C55E" stopOpacity="0"/></radialGradient></defs>
-                    <rect width="480" height="190" fill="#0D2318"/>
+                    <rect width="480" height="190" fill="#052e16"/>
                     <ellipse cx="290" cy="80" rx="200" ry="130" fill="url(#glw)"/>
                   </svg>
                 </div>
@@ -492,12 +492,12 @@ export default function UserProfilePage({ userId }: { userId: number }) {
 
         <div style={{ background: "#fff", paddingTop: 58, paddingBottom: 18, paddingLeft: 12, paddingRight: 12, borderBottom: "1px solid #F1F5F9" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 7, flexWrap: "wrap", marginBottom: 5 }}>
-            <span style={{ fontWeight: 900, fontSize: 22, color: "#0D1B2A", letterSpacing: -0.3 }}>{name}</span>
+            <span style={{ fontWeight: 900, fontSize: 22, color: "#111827", letterSpacing: -0.3 }}>{name}</span>
             {[13, 26, 40].includes(userId) && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 20, height: 20, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 18 }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            <span style={{ fontSize: 13, color: "#6B7280", fontWeight: 500 }}>Membre BrutePawa depuis {joinYear}</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span style={{ fontSize: 13, color: "#64748B", fontWeight: 500 }}>Membre BrutePawa depuis {joinYear}</span>
           </div>
           <div style={{ display: "flex", gap: 6, alignItems: "stretch" }}>
             {(user.friendshipStatus === "none" && !pendingRequest) ? (
@@ -506,7 +506,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                 {actionLoading ? "…" : "Ajouter comme ami"}
               </button>
             ) : (user.friendshipStatus === "pending_sent") ? (
-              <button disabled={actionLoading} onClick={handleCancel} style={{ flex: "1 1 0", minWidth: 0, padding: "11px 5px", background: "#F1F5F9", color: "#374151", border: "none", borderRadius: 12, fontWeight: 700, fontSize: 12.5, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, whiteSpace: "nowrap", overflow: "hidden" }}>
+              <button disabled={actionLoading} onClick={handleCancel} style={{ flex: "1 1 0", minWidth: 0, padding: "11px 5px", background: "#F1F5F9", color: "#64748B", border: "none", borderRadius: 12, fontWeight: 700, fontSize: 12.5, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, whiteSpace: "nowrap", overflow: "hidden" }}>
                 <IcoClock />{actionLoading ? "…" : "Demande envoyée"}
               </button>
             ) : (user.friendshipStatus === "pending_received" || pendingRequest) ? (
@@ -514,8 +514,8 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                 <IcoCheck />{actionLoading ? "…" : "Confirmer"}
               </button>
             ) : null}
-            <button onClick={() => navigate(`/messages?userId=${user.id}`)} style={{ flex: "1 1 0", minWidth: 0, padding: "11px 5px", background: "#F5F6F7", color: "#374151", border: "1.5px solid #E5E7EB", borderRadius: 12, fontWeight: 600, fontSize: 12.5, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, whiteSpace: "nowrap", overflow: "hidden" }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+            <button onClick={() => navigate(`/messages?userId=${user.id}`)} style={{ flex: "1 1 0", minWidth: 0, padding: "11px 5px", background: "#F8FAFC", color: "#64748B", border: "1.5px solid #E5E7EB", borderRadius: 12, fontWeight: 600, fontSize: 12.5, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, whiteSpace: "nowrap", overflow: "hidden" }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
               Envoyer un message
             </button>
           </div>
@@ -526,7 +526,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
             <svg width="76" height="86" viewBox="0 0 90 100" fill="none">
               <path d="M45 8L12 20v24c0 22 14.4 40.6 33 47 18.6-6.4 33-25 33-47V20L45 8z" fill="#16A34A" opacity="0.45"/>
               <path d="M45 4L10 17v25c0 23 15.3 42.2 35 48.5C64.7 84.2 80 65 80 42V17L45 4z" fill="url(#shG2)"/>
-              <defs><linearGradient id="shG2" x1="10" y1="4" x2="80" y2="95" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#4ADE80"/><stop offset="50%" stopColor="#22C55E"/><stop offset="100%" stopColor="#15803D"/></linearGradient></defs>
+              <defs><linearGradient id="shG2" x1="10" y1="4" x2="80" y2="95" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#22C55E"/><stop offset="50%" stopColor="#22C55E"/><stop offset="100%" stopColor="#16A34A"/></linearGradient></defs>
               <path d="M45 10L16 21v23c0 5 1.2 10 3.2 14.5L45 10z" fill="rgba(255,255,255,0.15)"/>
               <rect x="31" y="47" width="28" height="22" rx="5" fill="#fff"/>
               <path d="M35.5 47V40a9.5 9.5 0 0119 0v7" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" fill="none"/>
@@ -537,7 +537,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
           <div style={{ flex: 1, paddingRight: 16, minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 7 }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2.5" fill="#22C55E"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round"/></svg>
-              <span style={{ fontWeight: 800, fontSize: 16, color: "#0D1B2A" }}>Profil verrouillé</span>
+              <span style={{ fontWeight: 800, fontSize: 16, color: "#111827" }}>Profil verrouillé</span>
             </div>
             <div style={{ fontSize: 13, color: "#64748B", lineHeight: 1.65 }}>Ce profil est protégé. Seuls ses amis peuvent voir ses publications, photos et informations.</div>
           </div>
@@ -548,7 +548,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           </div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 700, fontSize: 14.5, color: "#0D1B2A", marginBottom: 7 }}>Pourquoi ce profil est-il verrouillé ?</div>
+            <div style={{ fontWeight: 700, fontSize: 14.5, color: "#111827", marginBottom: 7 }}>Pourquoi ce profil est-il verrouillé ?</div>
             <div style={{ fontSize: 13, color: "#64748B", lineHeight: 1.7 }}>Le propriétaire a choisi de restreindre l'accès à son contenu. Ajoutez-le comme ami pour voir ses publications et interagir avec lui sur BrutePawa.</div>
           </div>
         </div>
@@ -580,7 +580,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
               onClick={e => e.stopPropagation()}>
               {/* Drag handle */}
               <div style={{ padding: "14px 0 6px", display: "flex", justifyContent: "center" }}>
-                <div style={{ width: 40, height: 4, background: "#E2E8F0", borderRadius: 2 }} />
+                <div style={{ width: 40, height: 4, background: "#E5E7EB", borderRadius: 2 }} />
               </div>
               {/* Profile mini */}
               <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 20px 14px", borderBottom: "1px solid #F1F5F9" }}>
@@ -589,8 +589,8 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                   : <div style={{ width: 46, height: 46, borderRadius: "50%", background: color, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 16, border: "2px solid #DCFCE7", flexShrink: 0 }}>{initials(user)}</div>
                 }
                 <div>
-                  <div style={{ fontWeight: 800, fontSize: 15, color: "#0D1B2A" }}>{name}</div>
-                  <div style={{ fontSize: 12, color: "#8896A6", marginTop: 2 }}>@{name.toLowerCase().replace(/\s+/g, "_")}</div>
+                  <div style={{ fontWeight: 800, fontSize: 15, color: "#111827" }}>{name}</div>
+                  <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 2 }}>@{name.toLowerCase().replace(/\s+/g, "_")}</div>
                 </div>
               </div>
 
@@ -647,19 +647,19 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                 <div style={{ width: 80, height: 80, borderRadius: "50%", background: "#DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
                   <IcoCheck size={38} color="#22C55E" />
                 </div>
-                <div style={{ fontWeight: 900, fontSize: 20, color: "#0D1B2A", marginBottom: 10 }}>Signalement envoyé</div>
-                <div style={{ fontSize: 14, color: "#8896A6", lineHeight: 1.7, marginBottom: 32 }}>Notre équipe examinera ce profil dans les meilleurs délais. Merci de contribuer à la sécurité de la communauté.</div>
+                <div style={{ fontWeight: 900, fontSize: 20, color: "#111827", marginBottom: 10 }}>Signalement envoyé</div>
+                <div style={{ fontSize: 14, color: "#94A3B8", lineHeight: 1.7, marginBottom: 32 }}>Notre équipe examinera ce profil dans les meilleurs délais. Merci de contribuer à la sécurité de la communauté.</div>
                 <button onClick={closeAll} style={{ width: "100%", padding: "15px 0", background: "linear-gradient(135deg,#22C55E,#16A34A)", color: "#fff", border: "none", borderRadius: 16, fontWeight: 700, fontSize: 15, cursor: "pointer" }}>Fermer</button>
               </div>
             ) : (
               <>
-                <div style={{ padding: "4px 0 16px", fontSize: 13, color: "#8896A6", lineHeight: 1.6 }}>
+                <div style={{ padding: "4px 0 16px", fontSize: 13, color: "#94A3B8", lineHeight: 1.6 }}>
                   Sélectionnez le motif de votre signalement. Nous gardons cela confidentiel.
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 18 }}>
                   {["Spam ou faux compte", "Harcèlement ou intimidation", "Contenu inapproprié", "Usurpation d'identité", "Violence ou menaces", "Autre"].map(r => (
-                    <button key={r} onClick={() => setReportReason(r)} style={{ padding: "14px 16px", borderRadius: 14, border: `2px solid ${reportReason === r ? "#22C55E" : "#E2E8F0"}`, background: reportReason === r ? "#F0FDF4" : "#fff", cursor: "pointer", textAlign: "left", fontSize: 14, fontWeight: 600, color: reportReason === r ? "#16A34A" : "#374151", display: "flex", alignItems: "center", gap: 12, transition: "all 0.15s" }}>
-                      <div style={{ width: 20, height: 20, borderRadius: "50%", border: `2px solid ${reportReason === r ? "#22C55E" : "#D1D5DB"}`, background: reportReason === r ? "#22C55E" : "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.15s" }}>
+                    <button key={r} onClick={() => setReportReason(r)} style={{ padding: "14px 16px", borderRadius: 14, border: `2px solid ${reportReason === r ? "#22C55E" : "#E5E7EB"}`, background: reportReason === r ? "#F0FDF4" : "#fff", cursor: "pointer", textAlign: "left", fontSize: 14, fontWeight: 600, color: reportReason === r ? "#16A34A" : "#64748B", display: "flex", alignItems: "center", gap: 12, transition: "all 0.15s" }}>
+                      <div style={{ width: 20, height: 20, borderRadius: "50%", border: `2px solid ${reportReason === r ? "#22C55E" : "#E5E7EB"}`, background: reportReason === r ? "#22C55E" : "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.15s" }}>
                         {reportReason === r && <IcoCheck size={11} />}
                       </div>
                       {r}
@@ -667,22 +667,22 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                   ))}
                 </div>
                 <div style={{ marginBottom: 22 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 8 }}>Informations supplémentaires (optionnel)</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#64748B", marginBottom: 8 }}>Informations supplémentaires (optionnel)</div>
                   <textarea
                     value={reportDescription}
                     onChange={e => setReportDescription(e.target.value)}
                     placeholder="Décrivez ce qui s'est passé…"
                     maxLength={500}
                     rows={3}
-                    style={{ width: "100%", padding: "12px 14px", borderRadius: 14, border: "2px solid #E2E8F0", fontSize: 14, color: "#374151", resize: "none", fontFamily: "inherit", outline: "none", boxSizing: "border-box", transition: "border-color 0.15s" }}
+                    style={{ width: "100%", padding: "12px 14px", borderRadius: 14, border: "2px solid #E5E7EB", fontSize: 14, color: "#64748B", resize: "none", fontFamily: "inherit", outline: "none", boxSizing: "border-box", transition: "border-color 0.15s" }}
                     onFocus={e => (e.target.style.borderColor = "#22C55E")}
-                    onBlur={e => (e.target.style.borderColor = "#E2E8F0")}
+                    onBlur={e => (e.target.style.borderColor = "#E5E7EB")}
                   />
-                  <div style={{ textAlign: "right", fontSize: 11, color: "#8896A6", marginTop: 4 }}>{reportDescription.length}/500</div>
+                  <div style={{ textAlign: "right", fontSize: 11, color: "#94A3B8", marginTop: 4 }}>{reportDescription.length}/500</div>
                 </div>
                 <div style={{ display: "flex", gap: 10 }}>
-                  <button onClick={closeAll} style={{ flex: 1, padding: 15, background: "#F1F5F9", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: "pointer", color: "#374151" }}>Annuler</button>
-                  <button onClick={handleReport} disabled={!reportReason.trim() || reportLoading} style={{ flex: 2, padding: 15, background: !reportReason.trim() ? "#E2E8F0" : "linear-gradient(135deg,#22C55E,#16A34A)", color: !reportReason.trim() ? "#8896A6" : "#fff", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: !reportReason.trim() ? "default" : "pointer", transition: "all 0.2s" }}>
+                  <button onClick={closeAll} style={{ flex: 1, padding: 15, background: "#F1F5F9", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: "pointer", color: "#64748B" }}>Annuler</button>
+                  <button onClick={handleReport} disabled={!reportReason.trim() || reportLoading} style={{ flex: 2, padding: 15, background: !reportReason.trim() ? "#E5E7EB" : "linear-gradient(135deg,#22C55E,#16A34A)", color: !reportReason.trim() ? "#94A3B8" : "#fff", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: !reportReason.trim() ? "default" : "pointer", transition: "all 0.2s" }}>
                     {reportLoading ? "Envoi…" : "Envoyer"}
                   </button>
                 </div>
@@ -699,16 +699,16 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                 ? <img src={user.avatarUrl} alt="" style={{ width: 80, height: 80, borderRadius: "50%", objectFit: "cover", border: "4px solid #FEE2E2", margin: "0 auto 16px", display: "block" }} />
                 : <div style={{ width: 80, height: 80, borderRadius: "50%", background: color, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 900, fontSize: 26, border: "4px solid #FEE2E2", margin: "0 auto 16px" }}>{initials(user)}</div>
               }
-              <div style={{ fontWeight: 800, fontSize: 18, color: "#0D1B2A", marginBottom: 6 }}>Bloquer {name} ?</div>
+              <div style={{ fontWeight: 800, fontSize: 18, color: "#111827", marginBottom: 6 }}>Bloquer {name} ?</div>
             </div>
-            <div style={{ background: "#FFF5F5", borderRadius: 16, padding: "16px 18px", marginBottom: 24, display: "flex", flexDirection: "column", gap: 10 }}>
+            <div style={{ background: "#FEE2E2", borderRadius: 16, padding: "16px 18px", marginBottom: 24, display: "flex", flexDirection: "column", gap: 10 }}>
               {[
                 "Il ne pourra plus vous envoyer de messages",
                 "Il ne verra plus vos publications",
                 "Vous ne verrez plus son profil ni ses contenus",
                 "Il ne sera pas notifié du blocage",
               ].map((t, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 13.5, color: "#374151" }}>
+                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 13.5, color: "#64748B" }}>
                   <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#FEE2E2", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
                     <IcoCheck size={10} color="#EF4444" />
                   </div>
@@ -717,7 +717,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
               ))}
             </div>
             <div style={{ display: "flex", gap: 10 }}>
-              <button onClick={closeAll} style={{ flex: 1, padding: 15, background: "#F1F5F9", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: "pointer", color: "#374151" }}>Annuler</button>
+              <button onClick={closeAll} style={{ flex: 1, padding: 15, background: "#F1F5F9", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: "pointer", color: "#64748B" }}>Annuler</button>
               <button onClick={handleBlockConfirm} disabled={blockLoading} style={{ flex: 2, padding: 15, background: "#EF4444", color: "#fff", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: "pointer", boxShadow: "0 4px 14px rgba(239,68,68,0.35)" }}>
                 {blockLoading ? "…" : `Bloquer ${user.firstName}`}
               </button>
@@ -736,29 +736,29 @@ export default function UserProfilePage({ userId }: { userId: number }) {
           ];
           return (
             <SubPage title="Partager le profil" onBack={closeAll}>
-              <div style={{ padding: "4px 0 20px", fontSize: 13, color: "#8896A6" }}>Choisissez comment partager ce profil.</div>
+              <div style={{ padding: "4px 0 20px", fontSize: 13, color: "#94A3B8" }}>Choisissez comment partager ce profil.</div>
               {/* Copy link big card */}
-              <button onClick={handleCopyLink} style={{ width: "100%", padding: "16px 18px", background: copyDone ? "#F0FDF4" : "#F8FAFC", border: `2px solid ${copyDone ? "#22C55E" : "#E2E8F0"}`, borderRadius: 18, cursor: "pointer", display: "flex", alignItems: "center", gap: 14, marginBottom: 12, transition: "all 0.2s", textAlign: "left" }}>
+              <button onClick={handleCopyLink} style={{ width: "100%", padding: "16px 18px", background: copyDone ? "#F0FDF4" : "#F8FAFC", border: `2px solid ${copyDone ? "#22C55E" : "#E5E7EB"}`, borderRadius: 18, cursor: "pointer", display: "flex", alignItems: "center", gap: 14, marginBottom: 12, transition: "all 0.2s", textAlign: "left" }}>
                 <div style={{ width: 50, height: 50, borderRadius: 16, background: copyDone ? "#DCFCE7" : "#F1F5F9", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 22 }}>
                   {copyDone ? "✅" : "🔗"}
                 </div>
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: 15, color: copyDone ? "#16A34A" : "#0D1B2A" }}>{copyDone ? "Lien copié !" : "Copier le lien"}</div>
-                  <div style={{ fontSize: 12, color: "#8896A6", marginTop: 2 }}>{profileUrl.replace("https://","").substring(0,40)}{profileUrl.length > 44 ? "…" : ""}</div>
+                  <div style={{ fontWeight: 700, fontSize: 15, color: copyDone ? "#16A34A" : "#111827" }}>{copyDone ? "Lien copié !" : "Copier le lien"}</div>
+                  <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 2 }}>{profileUrl.replace("https://","").substring(0,40)}{profileUrl.length > 44 ? "…" : ""}</div>
                 </div>
               </button>
               {/* Other share options */}
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {shareItems.map((item, i) => (
-                  <button key={i} onClick={item.onClick} style={{ width: "100%", padding: "14px 18px", background: "#F8FAFC", border: "2px solid #E2E8F0", borderRadius: 16, cursor: "pointer", display: "flex", alignItems: "center", gap: 14, textAlign: "left", transition: "all 0.15s" }}
+                  <button key={i} onClick={item.onClick} style={{ width: "100%", padding: "14px 18px", background: "#F8FAFC", border: "2px solid #E5E7EB", borderRadius: 16, cursor: "pointer", display: "flex", alignItems: "center", gap: 14, textAlign: "left", transition: "all 0.15s" }}
                     onPointerDown={e => (e.currentTarget.style.background = "#F0FDF4")}
                     onPointerUp={e => (e.currentTarget.style.background = "#F8FAFC")}
                     onPointerLeave={e => (e.currentTarget.style.background = "#F8FAFC")}
                   >
-                    <div style={{ width: 46, height: 46, borderRadius: 14, background: "#fff", border: "1.5px solid #E2E8F0", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 22 }}>{item.icon}</div>
+                    <div style={{ width: 46, height: 46, borderRadius: 14, background: "#fff", border: "1.5px solid #E5E7EB", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 22 }}>{item.icon}</div>
                     <div>
-                      <div style={{ fontWeight: 700, fontSize: 14, color: "#0D1B2A" }}>{item.label}</div>
-                      {item.sublabel && <div style={{ fontSize: 12, color: "#8896A6", marginTop: 2 }}>{item.sublabel}</div>}
+                      <div style={{ fontWeight: 700, fontSize: 14, color: "#111827" }}>{item.label}</div>
+                      {item.sublabel && <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 2 }}>{item.sublabel}</div>}
                     </div>
                   </button>
                 ))}
@@ -776,13 +776,13 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                 : <div style={{ width: 90, height: 90, borderRadius: "50%", background: color, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 900, fontSize: 28, border: "4px solid #fff", boxShadow: "0 4px 16px rgba(0,0,0,0.12)" }}>{initials(user)}</div>
               }
               <div style={{ textAlign: "center" }}>
-                <div style={{ fontWeight: 900, fontSize: 20, color: "#0D1B2A", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                <div style={{ fontWeight: 900, fontSize: 20, color: "#111827", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
                   {name}
                   {[13, 26, 40].includes(userId) && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 20, height: 20, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />}
                 </div>
-                <div style={{ fontSize: 13, color: "#8896A6", marginTop: 4 }}>@{name.toLowerCase().replace(/\s+/g, "_")}</div>
+                <div style={{ fontSize: 13, color: "#94A3B8", marginTop: 4 }}>@{name.toLowerCase().replace(/\s+/g, "_")}</div>
               </div>
-              {user.bio && <div style={{ fontSize: 14, color: "#374151", textAlign: "center", lineHeight: 1.6 }}>{user.bio}</div>}
+              {user.bio && <div style={{ fontSize: 14, color: "#64748B", textAlign: "center", lineHeight: 1.6 }}>{user.bio}</div>}
             </div>
             {/* Info rows */}
             {[
@@ -794,8 +794,8 @@ export default function UserProfilePage({ userId }: { userId: number }) {
               <div key={i} style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", background: "#fff", borderRadius: 14, marginBottom: 8, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
                 <div style={{ width: 42, height: 42, borderRadius: 12, background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>{row.icon}</div>
                 <div>
-                  <div style={{ fontSize: 12, color: "#8896A6", fontWeight: 500 }}>{row.label}</div>
-                  <div style={{ fontSize: 15, color: "#0D1B2A", fontWeight: 700, marginTop: 2 }}>{row.value}</div>
+                  <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 500 }}>{row.label}</div>
+                  <div style={{ fontSize: 15, color: "#111827", fontWeight: 700, marginTop: 2 }}>{row.value}</div>
                 </div>
               </div>
             ))}
@@ -808,17 +808,17 @@ export default function UserProfilePage({ userId }: { userId: number }) {
             {mutualFriendsLoading ? (
               <div style={{ textAlign: "center", padding: "60px 0" }}>
                 <div style={{ width: 40, height: 40, border: "4px solid #DCFCE7", borderTop: "4px solid #22C55E", borderRadius: "50%", margin: "0 auto 14px", animation: "spin 0.8s linear infinite" }} />
-                <div style={{ color: "#8896A6", fontSize: 14 }}>Chargement…</div>
+                <div style={{ color: "#94A3B8", fontSize: 14 }}>Chargement…</div>
               </div>
             ) : mutualFriends.length === 0 ? (
               <div style={{ textAlign: "center", padding: "40px 0" }}>
                 <EmptyMutualIllustration />
-                <div style={{ fontWeight: 800, fontSize: 17, color: "#0D1B2A", marginTop: 16, marginBottom: 8 }}>Aucun ami en commun</div>
-                <div style={{ fontSize: 13, color: "#8896A6" }}>Vous n'avez pas encore d'amis en commun avec {user.firstName}.</div>
+                <div style={{ fontWeight: 800, fontSize: 17, color: "#111827", marginTop: 16, marginBottom: 8 }}>Aucun ami en commun</div>
+                <div style={{ fontSize: 13, color: "#94A3B8" }}>Vous n'avez pas encore d'amis en commun avec {user.firstName}.</div>
               </div>
             ) : (
               <>
-                <div style={{ fontSize: 13, color: "#8896A6", marginBottom: 14, fontWeight: 500 }}>{mutualFriends.length} ami{mutualFriends.length > 1 ? "s" : ""} en commun</div>
+                <div style={{ fontSize: 13, color: "#94A3B8", marginBottom: 14, fontWeight: 500 }}>{mutualFriends.length} ami{mutualFriends.length > 1 ? "s" : ""} en commun</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {mutualFriends.map(f => {
                     const fc = avatarColor(f.id);
@@ -829,8 +829,8 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                           : <div style={{ width: 50, height: 50, borderRadius: "50%", background: fc, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 17, border: "2px solid #DCFCE7", flexShrink: 0 }}>{initials(f)}</div>
                         }
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontWeight: 700, fontSize: 14, color: "#0D1B2A", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{fullName(f)}</div>
-                          {f.country && <div style={{ fontSize: 12, color: "#8896A6", marginTop: 2 }}>{COUNTRY_FLAGS[f.country] ?? "🌍"} {f.country}</div>}
+                          <div style={{ fontWeight: 700, fontSize: 14, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{fullName(f)}</div>
+                          {f.country && <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 2 }}>{COUNTRY_FLAGS[f.country] ?? "🌍"} {f.country}</div>}
                         </div>
                         <button onClick={() => { closeAll(); navigate(`/profile?id=${f.id}`); }} style={{ background: "#F0FDF4", border: "1.5px solid #DCFCE7", borderRadius: 10, padding: "7px 12px", fontSize: 12.5, fontWeight: 700, color: "#16A34A", cursor: "pointer", flexShrink: 0 }}>
                           Voir
@@ -850,17 +850,17 @@ export default function UserProfilePage({ userId }: { userId: number }) {
             {mutualGroupsLoading ? (
               <div style={{ textAlign: "center", padding: "60px 0" }}>
                 <div style={{ width: 40, height: 40, border: "4px solid #DCFCE7", borderTop: "4px solid #22C55E", borderRadius: "50%", margin: "0 auto 14px", animation: "spin 0.8s linear infinite" }} />
-                <div style={{ color: "#8896A6", fontSize: 14 }}>Chargement…</div>
+                <div style={{ color: "#94A3B8", fontSize: 14 }}>Chargement…</div>
               </div>
             ) : mutualGroups.length === 0 ? (
               <div style={{ textAlign: "center", padding: "40px 0" }}>
                 <EmptyMutualIllustration />
-                <div style={{ fontWeight: 800, fontSize: 17, color: "#0D1B2A", marginTop: 16, marginBottom: 8 }}>Aucun groupe en commun</div>
-                <div style={{ fontSize: 13, color: "#8896A6" }}>Vous n'avez pas de groupes en commun avec {user.firstName}.</div>
+                <div style={{ fontWeight: 800, fontSize: 17, color: "#111827", marginTop: 16, marginBottom: 8 }}>Aucun groupe en commun</div>
+                <div style={{ fontSize: 13, color: "#94A3B8" }}>Vous n'avez pas de groupes en commun avec {user.firstName}.</div>
               </div>
             ) : (
               <>
-                <div style={{ fontSize: 13, color: "#8896A6", marginBottom: 14, fontWeight: 500 }}>{mutualGroups.length} groupe{mutualGroups.length > 1 ? "s" : ""} en commun</div>
+                <div style={{ fontSize: 13, color: "#94A3B8", marginBottom: 14, fontWeight: 500 }}>{mutualGroups.length} groupe{mutualGroups.length > 1 ? "s" : ""} en commun</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {mutualGroups.map(g => (
                     <div key={g.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", background: "#F8FAFC", borderRadius: 16 }}>
@@ -871,8 +871,8 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                           </div>
                       }
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontWeight: 700, fontSize: 14, color: "#0D1B2A", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{g.name}</div>
-                        <div style={{ fontSize: 12, color: "#8896A6", marginTop: 2 }}>{g.type === "channel" ? "Canal" : "Groupe"}</div>
+                        <div style={{ fontWeight: 700, fontSize: 14, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{g.name}</div>
+                        <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 2 }}>{g.type === "channel" ? "Canal" : "Groupe"}</div>
                       </div>
                     </div>
                   ))}
@@ -889,7 +889,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
   function MenuSection({ label, children, last }: { label: string; children: React.ReactNode; last?: boolean }) {
     return (
       <div style={{ borderBottom: last ? "none" : "1px solid #F1F5F9" }}>
-        <div style={{ padding: "10px 20px 4px", fontSize: 11, fontWeight: 800, color: "#8896A6", letterSpacing: 0.8, textTransform: "uppercase" }}>{label}</div>
+        <div style={{ padding: "10px 20px 4px", fontSize: 11, fontWeight: 800, color: "#94A3B8", letterSpacing: 0.8, textTransform: "uppercase" }}>{label}</div>
         {children}
       </div>
     );
@@ -904,10 +904,10 @@ export default function UserProfilePage({ userId }: { userId: number }) {
         onPointerUp={e => (e.currentTarget.style.background = "none")}
         onPointerLeave={e => (e.currentTarget.style.background = "none")}
       >
-        <div style={{ width: 40, height: 40, borderRadius: 12, background: labelColor ? `${labelColor}15` : "#F5F6F7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{icon}</div>
+        <div style={{ width: 40, height: 40, borderRadius: 12, background: labelColor ? `${labelColor}15` : "#F8FAFC", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{icon}</div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 14.5, fontWeight: 700, color: labelColor ?? "#0D1B2A", lineHeight: 1.3 }}>{label}</div>
-          {sublabel && <div style={{ fontSize: 12, color: sublabelGreen ? "#16A34A" : "#8896A6", marginTop: 2 }}>{sublabel}</div>}
+          <div style={{ fontSize: 14.5, fontWeight: 700, color: labelColor ?? "#111827", lineHeight: 1.3 }}>{label}</div>
+          {sublabel && <div style={{ fontSize: 12, color: sublabelGreen ? "#16A34A" : "#94A3B8", marginTop: 2 }}>{sublabel}</div>}
         </div>
         {itemLoading && <div style={{ width: 18, height: 18, border: "2.5px solid #22C55E", borderTop: "2.5px solid transparent", borderRadius: "50%", animation: "spin 0.7s linear infinite", flexShrink: 0 }} />}
         {arrow && !itemLoading && <IcoChevron />}
@@ -922,13 +922,13 @@ export default function UserProfilePage({ userId }: { userId: number }) {
           {/* Header */}
           <div style={{ background: "#fff", borderBottom: "1px solid #F1F5F9", padding: "0 16px", height: 58, display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
             <button onClick={onBack} style={{ background: "#F1F5F9", border: "none", width: 40, height: 40, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
-              onPointerDown={e => (e.currentTarget.style.background = "#E2E8F0")}
+              onPointerDown={e => (e.currentTarget.style.background = "#E5E7EB")}
               onPointerUp={e => (e.currentTarget.style.background = "#F1F5F9")}
               onPointerLeave={e => (e.currentTarget.style.background = "#F1F5F9")}
             >
               <IcoBack />
             </button>
-            <span style={{ fontWeight: 900, fontSize: 17, color: "#0D1B2A", flex: 1 }}>{title}</span>
+            <span style={{ fontWeight: 900, fontSize: 17, color: "#111827", flex: 1 }}>{title}</span>
           </div>
           {/* Content */}
           <div style={{ flex: 1, overflowY: "auto", padding: "20px 20px 80px" }}>
@@ -967,7 +967,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
         <div style={{ padding: "0 20px 18px" }}>
           {/* Name */}
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-            <span style={{ fontWeight: 900, fontSize: 23, color: "#0D1B2A", lineHeight: 1.2 }}>{name}</span>
+            <span style={{ fontWeight: 900, fontSize: 23, color: "#111827", lineHeight: 1.2 }}>{name}</span>
             {[13, 26, 40].includes(userId) && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 22, height: 22, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />}
             {(user as any).role === "creator" && (
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -976,11 +976,11 @@ export default function UserProfilePage({ userId }: { userId: number }) {
               </svg>
             )}
           </div>
-          <div style={{ fontSize: 13, color: "#8896A6", marginTop: 3 }}>@{name.toLowerCase().replace(/\s+/g, "_")}</div>
-          {user.bio && <div style={{ fontSize: 14, color: "#374151", marginTop: 9, lineHeight: 1.6 }}>{user.bio}</div>}
+          <div style={{ fontSize: 13, color: "#94A3B8", marginTop: 3 }}>@{name.toLowerCase().replace(/\s+/g, "_")}</div>
+          {user.bio && <div style={{ fontSize: 14, color: "#64748B", marginTop: 9, lineHeight: 1.6 }}>{user.bio}</div>}
           {user.country && (
             <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 8 }}>
-              <IcoMapPin /><span style={{ fontSize: 13, color: "#8896A6" }}>{user.country}</span>
+              <IcoMapPin /><span style={{ fontSize: 13, color: "#94A3B8" }}>{user.country}</span>
             </div>
           )}
 
@@ -992,8 +992,8 @@ export default function UserProfilePage({ userId }: { userId: number }) {
               { value: stats ? fmtCount(stats.followingCount) : "—", label: "Abonnements" },
             ].map((stat, i) => (
               <div key={i} style={{ flex: 1, textAlign: "center", borderRight: i < 2 ? "1px solid #F1F5F9" : "none", padding: "2px 4px" }}>
-                <div style={{ fontWeight: 900, fontSize: 19, color: "#0D1B2A", lineHeight: 1.2 }}>{stat.value}</div>
-                <div style={{ fontSize: 11, color: "#8896A6", marginTop: 3, fontWeight: 500 }}>{stat.label}</div>
+                <div style={{ fontWeight: 900, fontSize: 19, color: "#111827", lineHeight: 1.2 }}>{stat.value}</div>
+                <div style={{ fontSize: 11, color: "#94A3B8", marginTop: 3, fontWeight: 500 }}>{stat.label}</div>
               </div>
             ))}
           </div>
@@ -1011,7 +1011,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
               </button>
             )}
             {user.friendshipStatus === "pending_sent" && (
-              <button disabled={actionLoading} onClick={handleCancel} style={{ flex: 1, padding: "12px 8px", background: "#F1F5F9", color: "#374151", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+              <button disabled={actionLoading} onClick={handleCancel} style={{ flex: 1, padding: "12px 8px", background: "#F1F5F9", color: "#64748B", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
                 <IcoClock />{actionLoading ? "…" : "Demande envoyée"}
               </button>
             )}
@@ -1020,7 +1020,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                 <button disabled={actionLoading} onClick={handleAccept} style={{ flex: 1, padding: "12px 8px", background: "linear-gradient(135deg,#22C55E,#16A34A)", color: "#fff", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, boxShadow: "0 4px 14px rgba(34,197,94,0.3)" }}>
                   <IcoCheck />{actionLoading ? "…" : "Confirmer"}
                 </button>
-                <button disabled={actionLoading} onClick={handleReject} style={{ flex: 1, padding: "12px 8px", background: "#F1F5F9", color: "#374151", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>Supprimer</button>
+                <button disabled={actionLoading} onClick={handleReject} style={{ flex: 1, padding: "12px 8px", background: "#F1F5F9", color: "#64748B", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>Supprimer</button>
               </>
             )}
             {user.friendshipStatus === "friends" && (
@@ -1028,22 +1028,22 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                 <IcoCheck size={16} color="#16A34A" />Ami(e)s
               </button>
             )}
-            <button onClick={() => navigate(`/messages?userId=${user.id}`)} style={{ flex: 1, padding: "12px 8px", background: "#EFF6FF", color: "#1E88E5", border: "1.5px solid #DBEAFE", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, transition: "transform 0.15s" }}
+            <button onClick={() => navigate(`/messages?userId=${user.id}`)} style={{ flex: 1, padding: "12px 8px", background: "#DCFCE7", color: "#0EA5E9", border: "1.5px solid #DCFCE7", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, transition: "transform 0.15s" }}
               onPointerDown={e => (e.currentTarget.style.transform = "scale(0.97)")}
               onPointerUp={e => (e.currentTarget.style.transform = "scale(1)")}
               onPointerLeave={e => (e.currentTarget.style.transform = "scale(1)")}
             >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1E88E5" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
               Message
             </button>
           </div>
 
           {/* Blocked banner */}
           {isBlocked && (
-            <div style={{ marginTop: 14, padding: "11px 16px", background: "#FFF3E0", borderRadius: 12, fontSize: 13, color: "#C2410C", fontWeight: 600, display: "flex", alignItems: "center", gap: 10, border: "1px solid #FED7AA" }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#C2410C" strokeWidth="2"/><path d="M6.34 17.66L17.66 6.34" stroke="#C2410C" strokeWidth="2" strokeLinecap="round"/></svg>
+            <div style={{ marginTop: 14, padding: "11px 16px", background: "#FEF3C7", borderRadius: 12, fontSize: 13, color: "#D97706", fontWeight: 600, display: "flex", alignItems: "center", gap: 10, border: "1px solid #FEF3C7" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#D97706" strokeWidth="2"/><path d="M6.34 17.66L17.66 6.34" stroke="#D97706" strokeWidth="2" strokeLinecap="round"/></svg>
               <span>Vous avez bloqué cet utilisateur.</span>
-              <button onClick={handleUnblock} style={{ marginLeft: "auto", background: "none", border: "none", cursor: "pointer", fontSize: 12, fontWeight: 700, color: "#C2410C", textDecoration: "underline", padding: 0 }}>Débloquer</button>
+              <button onClick={handleUnblock} style={{ marginLeft: "auto", background: "none", border: "none", cursor: "pointer", fontSize: 12, fontWeight: 700, color: "#D97706", textDecoration: "underline", padding: 0 }}>Débloquer</button>
             </div>
           )}
         </div>
@@ -1055,7 +1055,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
             { id: "about" as ProfileTab, label: "À propos" },
             { id: "photos" as ProfileTab, label: "Photos" },
           ]).map(tab => (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{ flex: 1, padding: "14px 8px", background: "none", border: "none", cursor: "pointer", fontSize: 13, fontWeight: activeTab === tab.id ? 800 : 500, color: activeTab === tab.id ? "#22C55E" : "#8896A6", borderBottom: `2.5px solid ${activeTab === tab.id ? "#22C55E" : "transparent"}`, transition: "color 0.15s" }}>
+            <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{ flex: 1, padding: "14px 8px", background: "none", border: "none", cursor: "pointer", fontSize: 13, fontWeight: activeTab === tab.id ? 800 : 500, color: activeTab === tab.id ? "#22C55E" : "#94A3B8", borderBottom: `2.5px solid ${activeTab === tab.id ? "#22C55E" : "transparent"}`, transition: "color 0.15s" }}>
               {tab.label}
             </button>
           ))}
@@ -1071,8 +1071,8 @@ export default function UserProfilePage({ userId }: { userId: number }) {
             {posts.length === 0 ? (
               <div style={{ textAlign: "center", padding: "52px 20px 48px", background: "#fff", borderRadius: 22, boxShadow: "0 2px 12px rgba(0,0,0,0.05)", border: "1px solid rgba(34,197,94,0.07)" }}>
                 <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}><EmptyPostsIllustration /></div>
-                <div style={{ fontWeight: 800, fontSize: 17, color: "#0D1B2A", marginBottom: 8 }}>Aucune publication</div>
-                <div style={{ fontSize: 13, color: "#8896A6", lineHeight: 1.6 }}>Cet utilisateur n'a pas encore partagé de contenu.</div>
+                <div style={{ fontWeight: 800, fontSize: 17, color: "#111827", marginBottom: 8 }}>Aucune publication</div>
+                <div style={{ fontSize: 13, color: "#94A3B8", lineHeight: 1.6 }}>Cet utilisateur n'a pas encore partagé de contenu.</div>
               </div>
             ) : posts.map(post => (
               <div key={post.id} style={{ background: "#fff", borderRadius: 20, padding: "16px 16px 12px", boxShadow: "0 2px 12px rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.04)" }}>
@@ -1082,17 +1082,17 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                     : <div style={{ width: 44, height: 44, borderRadius: "50%", background: color, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 15, border: "2px solid #DCFCE7", flexShrink: 0 }}>{initials(user)}</div>
                   }
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 700, fontSize: 14, color: "#0D1B2A" }}>{name}</div>
-                    <div style={{ fontSize: 12, color: "#8896A6", marginTop: 2, display: "flex", alignItems: "center", gap: 4 }}>
+                    <div style={{ fontWeight: 700, fontSize: 14, color: "#111827" }}>{name}</div>
+                    <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 2, display: "flex", alignItems: "center", gap: 4 }}>
                       <IcoGlobe />{relTime(post.createdAt)}
                     </div>
                   </div>
                   <button onClick={(e) => { e.stopPropagation(); setPostMenu(post.id); }}
-                    style={{ background: "none", border: "none", cursor: "pointer", padding: "4px 8px", borderRadius: 20, color: "#8896A6", fontSize: 20, fontWeight: 700, lineHeight: 1, flexShrink: 0 }}>
+                    style={{ background: "none", border: "none", cursor: "pointer", padding: "4px 8px", borderRadius: 20, color: "#94A3B8", fontSize: 20, fontWeight: 700, lineHeight: 1, flexShrink: 0 }}>
                     ···
                   </button>
                 </div>
-                <div style={{ fontSize: 14.5, color: "#374151", lineHeight: 1.65 }}>{post.content}</div>
+                <div style={{ fontSize: 14.5, color: "#64748B", lineHeight: 1.65 }}>{post.content}</div>
                 {post.imageUrl && <img src={post.imageUrl} alt="" onClick={() => openImageViewer(post.imageUrl!)} style={{ width: "100%", maxHeight: 320, objectFit: "cover", borderRadius: 14, marginTop: 12, cursor: "zoom-in" }} />}
                 <div style={{ display: "flex", gap: 2, marginTop: 12, paddingTop: 10, borderTop: "1px solid #F8FAFC" }}>
                   {[
@@ -1117,17 +1117,17 @@ export default function UserProfilePage({ userId }: { userId: number }) {
         {/* À PROPOS */}
         {activeTab === "about" && (
           <div style={{ background: "#fff", borderRadius: 20, padding: "18px 20px", boxShadow: "0 2px 12px rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.04)" }}>
-            <div style={{ fontWeight: 800, fontSize: 16, color: "#0D1B2A", marginBottom: 16 }}>Informations</div>
+            <div style={{ fontWeight: 800, fontSize: 16, color: "#111827", marginBottom: 16 }}>Informations</div>
             {(() => {
               const rows = [
                 user.bio && { icon: <IcoBriefcase />, label: user.bio },
                 user.country && { icon: <IcoMapPin />, label: `Habite en ${user.country}` },
               ].filter(Boolean) as { icon: React.ReactNode; label: string }[];
-              if (rows.length === 0) return <div style={{ color: "#8896A6", fontSize: 14, textAlign: "center", padding: "20px 0" }}>Aucune information publique disponible.</div>;
+              if (rows.length === 0) return <div style={{ color: "#94A3B8", fontSize: 14, textAlign: "center", padding: "20px 0" }}>Aucune information publique disponible.</div>;
               return rows.map((info, i) => (
                 <div key={i} style={{ display: "flex", gap: 14, alignItems: "flex-start", paddingTop: i > 0 ? 14 : 0, paddingBottom: i < rows.length - 1 ? 14 : 0, borderTop: i > 0 ? "1px solid #F1F5F9" : "none" }}>
                   <div style={{ width: 36, height: 36, borderRadius: 10, background: "#F8FAFC", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{info.icon}</div>
-                  <span style={{ fontSize: 14, color: "#374151", lineHeight: 1.6, paddingTop: 8 }}>{info.label}</span>
+                  <span style={{ fontSize: 14, color: "#64748B", lineHeight: 1.6, paddingTop: 8 }}>{info.label}</span>
                 </div>
               ));
             })()}
@@ -1137,12 +1137,12 @@ export default function UserProfilePage({ userId }: { userId: number }) {
         {/* PHOTOS */}
         {activeTab === "photos" && (
           <div>
-            <div style={{ fontWeight: 800, fontSize: 15, color: "#0D1B2A", marginBottom: 12, paddingLeft: 4 }}>Photos ({photoCount})</div>
+            <div style={{ fontWeight: 800, fontSize: 15, color: "#111827", marginBottom: 12, paddingLeft: 4 }}>Photos ({photoCount})</div>
             {photoCount === 0 ? (
               <div style={{ textAlign: "center", padding: "48px 20px 44px", background: "#fff", borderRadius: 22, boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}>
                 <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}><EmptyPhotosIllustration /></div>
-                <div style={{ fontWeight: 800, fontSize: 17, color: "#0D1B2A", marginBottom: 8 }}>Aucune photo</div>
-                <div style={{ fontSize: 13, color: "#8896A6" }}>Aucune photo partagée pour l'instant.</div>
+                <div style={{ fontWeight: 800, fontSize: 17, color: "#111827", marginBottom: 8 }}>Aucune photo</div>
+                <div style={{ fontSize: 13, color: "#94A3B8" }}>Aucune photo partagée pour l'instant.</div>
               </div>
             ) : (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 5 }}>
@@ -1167,7 +1167,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
         <>
           <div onClick={() => setPostMenu(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 9990 }} />
           <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#fff", borderRadius: "24px 24px 0 0", zIndex: 9991, paddingBottom: "env(safe-area-inset-bottom,12px)" }}>
-            <div style={{ width: 40, height: 4, background: "#E2E8F0", borderRadius: 2, margin: "10px auto 6px" }} />
+            <div style={{ width: 40, height: 4, background: "#E5E7EB", borderRadius: 2, margin: "10px auto 6px" }} />
             {([
               {
                 icon: savedPostIds.has(postMenu)
@@ -1219,7 +1219,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
             ] as { icon: React.ReactNode; label: string; action: () => void; red?: boolean }[]).map((item, i) => (
               <button key={i} onClick={item.action} style={{ width: "100%", background: "none", border: "none", borderTop: i === 0 ? "none" : "1px solid #F8FAFC", cursor: "pointer", display: "flex", alignItems: "center", gap: 14, padding: "0 20px", height: 56, textAlign: "left" }}>
                 <div style={{ width: 38, height: 38, borderRadius: 12, background: item.red ? "rgba(239,68,68,0.08)" : "rgba(34,197,94,0.08)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.icon}</div>
-                <span style={{ flex: 1, fontSize: 15, fontWeight: 600, color: item.red ? "#EF4444" : "#0D1B2A" }}>{item.label}</span>
+                <span style={{ flex: 1, fontSize: 15, fontWeight: 600, color: item.red ? "#EF4444" : "#111827" }}>{item.label}</span>
               </button>
             ))}
           </div>
@@ -1232,12 +1232,12 @@ export default function UserProfilePage({ userId }: { userId: number }) {
         <>
           <div onClick={() => setPostReportSheet(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 9992 }} />
           <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#fff", borderRadius: "24px 24px 0 0", zIndex: 9993, padding: "24px 20px calc(24px + env(safe-area-inset-bottom,0px))" }}>
-            <div style={{ width: 40, height: 4, background: "#E2E8F0", borderRadius: 2, margin: "0 auto 20px" }} />
-            <div style={{ fontWeight: 800, fontSize: 17, color: "#0D1B2A", marginBottom: 16 }}>Signaler ce post</div>
+            <div style={{ width: 40, height: 4, background: "#E5E7EB", borderRadius: 2, margin: "0 auto 20px" }} />
+            <div style={{ fontWeight: 800, fontSize: 17, color: "#111827", marginBottom: 16 }}>Signaler ce post</div>
             {["Spam ou publicité", "Contenu inapproprié", "Harcèlement ou intimidation", "Fausses informations", "Contenu haineux", "Violence ou contenu choquant", "Autre raison"].map(reason => (
               <button key={reason} onClick={() => setPostReportReason(reason)}
-                style={{ width: "100%", background: postReportReason === reason ? "rgba(34,197,94,0.06)" : "none", border: postReportReason === reason ? "1.5px solid #22C55E" : "1.5px solid #F1F5F9", borderRadius: 14, padding: "12px 16px", marginBottom: 8, cursor: "pointer", textAlign: "left", fontSize: 14, fontWeight: 600, color: "#374151", display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ width: 18, height: 18, borderRadius: "50%", border: `2px solid ${postReportReason === reason ? "#22C55E" : "#CBD5E1"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                style={{ width: "100%", background: postReportReason === reason ? "rgba(34,197,94,0.06)" : "none", border: postReportReason === reason ? "1.5px solid #22C55E" : "1.5px solid #F1F5F9", borderRadius: 14, padding: "12px 16px", marginBottom: 8, cursor: "pointer", textAlign: "left", fontSize: 14, fontWeight: 600, color: "#64748B", display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ width: 18, height: 18, borderRadius: "50%", border: `2px solid ${postReportReason === reason ? "#22C55E" : "#E5E7EB"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   {postReportReason === reason && <div style={{ width: 9, height: 9, borderRadius: "50%", background: "#22C55E" }} />}
                 </div>
                 {reason}
@@ -1248,7 +1248,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
               const id = postReportSheet; setPostReportSheet(null);
               try { await apiReportPost(id, postReportReason); } catch { /* ignore */ }
             }} disabled={!postReportReason}
-              style={{ width: "100%", height: 52, background: postReportReason ? "#EF4444" : "#F1F5F9", border: "none", borderRadius: 16, color: postReportReason ? "#fff" : "#94A3B8", fontWeight: 700, fontSize: 15, cursor: postReportReason ? "pointer" : "default", marginTop: 4 }}>
+              style={{ width: "100%", height: 52, background: postReportReason ? "#EF4444" : "#F1F5F9", border: "none", borderRadius: 16, color: postReportReason ? "#fff" : "#9CA3AF", fontWeight: 700, fontSize: 15, cursor: postReportReason ? "pointer" : "default", marginTop: 4 }}>
               Signaler
             </button>
           </div>

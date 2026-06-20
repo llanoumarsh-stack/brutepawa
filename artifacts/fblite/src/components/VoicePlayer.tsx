@@ -93,9 +93,9 @@ export default function VoicePlayer({ url, duration }: Props) {
 
       {/* Main player bubble */}
       <div style={{
-        background: "linear-gradient(135deg, #f0faf0 0%, #e8f5e9 100%)",
+        background: "linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%)",
         borderRadius: 18, padding: "10px 12px",
-        border: "1px solid #c8e6c9",
+        border: "1px solid #DCFCE7",
         boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
         display: "flex", flexDirection: "column", gap: 8,
       }}>
@@ -103,7 +103,7 @@ export default function VoicePlayer({ url, duration }: Props) {
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <button onClick={togglePlay}
             style={{
-              background: playing ? "#36A420" : "#42B72A",
+              background: playing ? "#36A420" : "#22C55E",
               border: "none", borderRadius: "50%",
               width: 38, height: 38, cursor: "pointer",
               color: "#fff", fontSize: 14,
@@ -128,7 +128,7 @@ export default function VoicePlayer({ url, duration }: Props) {
                 <div key={i} style={{
                   flex: 1,
                   height: active ? h : Math.max(3, h * 0.45),
-                  background: active ? "#42B72A" : "#b0bec5",
+                  background: active ? "#22C55E" : "#94A3B8",
                   borderRadius: 2,
                   transition: "height 0.12s ease, background 0.12s ease",
                   animation: atCursor && playing ? "voicePulse 0.6s infinite" : "none",
@@ -137,7 +137,7 @@ export default function VoicePlayer({ url, duration }: Props) {
             })}
           </div>
 
-          <span style={{ fontSize: 11, color: "#65676b", minWidth: 34, textAlign: "right", flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>
+          <span style={{ fontSize: 11, color: "#64748B", minWidth: 34, textAlign: "right", flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>
             {playing ? `-${fmtTime(remaining)}` : fmtTime(totalDur)}
           </span>
         </div>
@@ -146,7 +146,7 @@ export default function VoicePlayer({ url, duration }: Props) {
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <span style={{ fontSize: 12, color: "#888" }}>🎤</span>
           <button onClick={cycleSpeed}
-            style={{ background: "rgba(66,183,42,0.1)", border: "none", borderRadius: 12, padding: "2px 8px", cursor: "pointer", fontSize: 10, fontWeight: 800, color: "#42B72A" }}>
+            style={{ background: "rgba(66,183,42,0.1)", border: "none", borderRadius: 12, padding: "2px 8px", cursor: "pointer", fontSize: 10, fontWeight: 800, color: "#22C55E" }}>
             {speed === 1 ? "1×" : speed === 1.5 ? "1.5×" : "2×"}
           </button>
           <div style={{ flex: 1 }} />
@@ -155,7 +155,7 @@ export default function VoicePlayer({ url, duration }: Props) {
               {Object.entries(reactCount).filter(([, c]) => c > 0).map(([em, c]) => (
                 <span key={em} style={{ fontSize: 12 }}>{em}</span>
               ))}
-              <span style={{ fontSize: 11, color: "#65676b" }}>{totalReacts}</span>
+              <span style={{ fontSize: 11, color: "#64748B" }}>{totalReacts}</span>
             </div>
           )}
         </div>
@@ -165,7 +165,7 @@ export default function VoicePlayer({ url, duration }: Props) {
       <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
         {/* Reaction picker toggle */}
         <button onClick={() => setShowReact(!showReact)}
-          style={{ background: "none", border: "none", cursor: "pointer", fontSize: 12, color: "#65676b", padding: "2px 4px", borderRadius: 8, fontWeight: 600, display: "flex", alignItems: "center", gap: 3 }}>
+          style={{ background: "none", border: "none", cursor: "pointer", fontSize: 12, color: "#64748B", padding: "2px 4px", borderRadius: 8, fontWeight: 600, display: "flex", alignItems: "center", gap: 3 }}>
           {myReaction ?? "😊"} <span style={{ fontSize: 10 }}>▾</span>
         </button>
 

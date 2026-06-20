@@ -72,7 +72,7 @@ export default function TontinesPage({ initialTontineId }: { initialTontineId?: 
     const isPaid = paid.includes(selected.id);
     return (
       <div style={{ maxWidth: 600, margin: "0 auto" }}>
-        <div style={{ background: "var(--fb-blue)", color: "#fff", padding: "12px 16px", display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ background: "var(--bp-primary)", color: "#fff", padding: "12px 16px", display: "flex", alignItems: "center", gap: 12 }}>
           <button onClick={() => setSelectedId(null)} style={{ background: "none", border: "none", color: "#fff", fontSize: 22, cursor: "pointer" }}>←</button>
           <div>
             <div style={{ fontWeight: 900, fontSize: 17 }}>{tontineEmoji(selected)} {selected.name}</div>
@@ -82,10 +82,10 @@ export default function TontinesPage({ initialTontineId }: { initialTontineId?: 
 
         <div style={{ padding: "16px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           {[
-            { label: "Cotisation", value: `${selected.contributionAmount.toLocaleString()} FCFA`, icon: "📅", color: "var(--fb-blue)" },
+            { label: "Cotisation", value: `${selected.contributionAmount.toLocaleString()} FCFA`, icon: "📅", color: "var(--bp-primary)" },
             { label: "Membres", value: `${selected.membersCount} personnes`, icon: "👥", color: "#FF9800" },
             { label: "Prochain tour", value: fmtDate(selected.nextContributionDate), icon: "📆", color: "#9C27B0" },
-            { label: "Statut", value: selected.status === "active" ? "Actif ✅" : selected.status, icon: "✅", color: "#4CAF50" },
+            { label: "Statut", value: selected.status === "active" ? "Actif ✅" : selected.status, icon: "✅", color: "#22C55E" },
           ].map(card => (
             <div key={card.label} style={{ background: "var(--fb-white)", borderRadius: 12, padding: 14, border: "1px solid var(--fb-divider)" }}>
               <div style={{ fontSize: 22, marginBottom: 6 }}>{card.icon}</div>
@@ -98,11 +98,11 @@ export default function TontinesPage({ initialTontineId }: { initialTontineId?: 
         <div style={{ margin: "0 16px 16px" }}>
           {!isPaid ? (
             <button onClick={() => handlePay(selected.id, selected.contributionAmount)} style={{
-              width: "100%", background: "#4CAF50", color: "#fff", border: "none",
+              width: "100%", background: "#22C55E", color: "#fff", border: "none",
               borderRadius: 10, padding: "12px", fontWeight: 800, fontSize: 15, cursor: "pointer"
             }}>💳 Payer la cotisation — {selected.contributionAmount.toLocaleString()} FCFA</button>
           ) : (
-            <div style={{ background: "#E8F5E9", borderRadius: 12, padding: 14, textAlign: "center", color: "#4CAF50", fontWeight: 800 }}>
+            <div style={{ background: "#DCFCE7", borderRadius: 12, padding: 14, textAlign: "center", color: "#22C55E", fontWeight: 800 }}>
               ✅ Cotisation payée pour ce mois !
             </div>
           )}
@@ -126,13 +126,13 @@ export default function TontinesPage({ initialTontineId }: { initialTontineId?: 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <h2 style={{ margin: 0, fontSize: 18, fontWeight: 900 }}>💰 Mes Tontines</h2>
           <button onClick={() => setShowCreate(true)} style={{
-            background: "var(--fb-blue)", color: "#fff", border: "none", borderRadius: 20,
+            background: "var(--bp-primary)", color: "#fff", border: "none", borderRadius: 20,
             padding: "7px 14px", fontWeight: 700, fontSize: 13, cursor: "pointer"
           }}>+ Créer une tontine</button>
         </div>
       </div>
 
-      <div style={{ background: "linear-gradient(135deg, var(--fb-blue), #1a5cf8)", color: "#fff", padding: "16px" }}>
+      <div style={{ background: "linear-gradient(135deg, var(--bp-primary), #0EA5E9)", color: "#fff", padding: "16px" }}>
         <div style={{ fontSize: 13, opacity: 0.9, marginBottom: 4 }}>Total des cotisations mensuelles</div>
         <div style={{ fontSize: 28, fontWeight: 900 }}>
           {tontines.reduce((s, t) => s + t.contributionAmount, 0).toLocaleString()} FCFA
@@ -177,7 +177,7 @@ export default function TontinesPage({ initialTontineId }: { initialTontineId?: 
                   </div>
                 </div>
                 <div style={{ textAlign: "right" }}>
-                  {isPaid && <div style={{ color: "#4CAF50", fontWeight: 700, fontSize: 12 }}>✓ Payé</div>}
+                  {isPaid && <div style={{ color: "#22C55E", fontWeight: 700, fontSize: 12 }}>✓ Payé</div>}
                   <div style={{ fontSize: 11, color: "var(--fb-text-secondary)" }}>
                     Prochain : {t.nextContributionDate
                       ? new Date(t.nextContributionDate).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })
@@ -209,7 +209,7 @@ export default function TontinesPage({ initialTontineId }: { initialTontineId?: 
             <button
               onClick={() => handleJoin(t.id)}
               disabled={joining === t.id}
-              style={{ background: joining === t.id ? "#ccc" : "var(--fb-blue)", color: "#fff", border: "none", borderRadius: 16, padding: "6px 14px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
+              style={{ background: joining === t.id ? "#ccc" : "var(--bp-primary)", color: "#fff", border: "none", borderRadius: 16, padding: "6px 14px", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
               {joining === t.id ? "..." : "Rejoindre"}
             </button>
           </div>
@@ -227,7 +227,7 @@ export default function TontinesPage({ initialTontineId }: { initialTontineId?: 
             <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
               {emojis.map(e => (
                 <button key={e} onClick={() => setForm(f => ({ ...f, emoji: e }))} style={{
-                  width: 40, height: 40, fontSize: 22, border: `2px solid ${form.emoji === e ? "var(--fb-blue)" : "var(--fb-divider)"}`,
+                  width: 40, height: 40, fontSize: 22, border: `2px solid ${form.emoji === e ? "var(--bp-primary)" : "var(--fb-divider)"}`,
                   borderRadius: 10, background: form.emoji === e ? "var(--fb-blue-light)" : "var(--fb-bg)", cursor: "pointer"
                 }}>{e}</button>
               ))}
@@ -240,7 +240,7 @@ export default function TontinesPage({ initialTontineId }: { initialTontineId?: 
             </select>
 
             <button onClick={handleCreate} disabled={creating} style={{
-              width: "100%", background: creating ? "#ccc" : "var(--fb-blue)", color: "#fff", border: "none",
+              width: "100%", background: creating ? "#ccc" : "var(--bp-primary)", color: "#fff", border: "none",
               borderRadius: 12, padding: "14px", fontWeight: 800, fontSize: 15, cursor: "pointer"
             }}>
               {creating ? "Création en cours..." : "Créer la tontine"}

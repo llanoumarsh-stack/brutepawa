@@ -278,7 +278,7 @@ export default function VoiceRecorder({ onSend, onCancel, disabled }: VoiceRecor
         {isLocked && (
           <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "2px 6px" }}>
             <span style={{ fontSize: 14 }}>🔒</span>
-            <span style={{ fontSize: 12, fontWeight: 700, color: "#1877F2" }}>Verrouillé — Appuyez ■ pour terminer</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: "#22C55E" }}>Verrouillé — Appuyez ■ pour terminer</span>
           </div>
         )}
 
@@ -286,7 +286,7 @@ export default function VoiceRecorder({ onSend, onCancel, disabled }: VoiceRecor
         {!isLocked && slideUp && !slideLeft && (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, animation: "voiceFadeIn 0.2s ease" }}>
             <span style={{ fontSize: 16, animation: lockHint ? "voiceBounce 0.5s infinite" : "none" }}>🔒</span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: lockHint ? "#1877F2" : "#888" }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: lockHint ? "#22C55E" : "#888" }}>
               {lockHint ? "Relâchez pour verrouiller" : "↑ Glisser pour verrouiller"}
             </span>
           </div>
@@ -305,17 +305,17 @@ export default function VoiceRecorder({ onSend, onCancel, disabled }: VoiceRecor
           }}
         >
           {/* Pulsing red dot */}
-          <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#e53935", flexShrink: 0, animation: "voicePulse 1s ease-in-out infinite" }} />
+          <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#EF4444", flexShrink: 0, animation: "voicePulse 1s ease-in-out infinite" }} />
 
           {/* Timer */}
-          <span style={{ fontWeight: 700, fontSize: 14, color: "#e53935", minWidth: 38, flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>
+          <span style={{ fontWeight: 700, fontSize: 14, color: "#EF4444", minWidth: 38, flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>
             {fmtTime(elapsed)}
           </span>
 
           {/* Live waveform or cancel text */}
           {slideLeft && !isLocked ? (
             <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <span style={{ fontSize: 12, fontWeight: 700, color: cancelHint ? "#e53935" : "#888" }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: cancelHint ? "#EF4444" : "#888" }}>
                 {cancelHint ? "🗑 Relâchez pour annuler" : "← Glisser pour annuler"}
               </span>
             </div>
@@ -327,7 +327,7 @@ export default function VoiceRecorder({ onSend, onCancel, disabled }: VoiceRecor
                   height: h,
                   minHeight: 4,
                   maxHeight: 36,
-                  background: "#e53935",
+                  background: "#EF4444",
                   borderRadius: 2,
                   transition: "height 0.08s ease",
                   opacity: 0.55 + Math.min(0.45, (h / 36) * 0.45),
@@ -340,34 +340,34 @@ export default function VoiceRecorder({ onSend, onCancel, disabled }: VoiceRecor
           {!isLocked && (
             <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
               <button onClick={doCancel} title="Annuler"
-                style={{ background: "#f0f2f5", border: "none", borderRadius: "50%", width: 32, height: 32, cursor: "pointer", fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", color: "#65676b" }}>✕</button>
+                style={{ background: "#F1F5F9", border: "none", borderRadius: "50%", width: 32, height: 32, cursor: "pointer", fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", color: "#64748B" }}>✕</button>
               <button onClick={() => setState("locked")} title="Verrouiller"
-                style={{ background: "#f0f2f5", border: "none", borderRadius: "50%", width: 32, height: 32, cursor: "pointer", fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", color: "#1877F2" }}>🔒</button>
+                style={{ background: "#F1F5F9", border: "none", borderRadius: "50%", width: 32, height: 32, cursor: "pointer", fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", color: "#22C55E" }}>🔒</button>
               <button onClick={doStop} title="Arrêter et prévisualiser"
-                style={{ background: "#e53935", border: "none", borderRadius: "50%", width: 38, height: 38, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", boxShadow: "0 2px 10px rgba(229,57,53,0.45)", animation: "voiceGlow 2s ease-in-out infinite" }}>■</button>
+                style={{ background: "#EF4444", border: "none", borderRadius: "50%", width: 38, height: 38, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", boxShadow: "0 2px 10px rgba(229,57,53,0.45)", animation: "voiceGlow 2s ease-in-out infinite" }}>■</button>
             </div>
           )}
 
           {/* Just stop in locked mode */}
           {isLocked && (
             <button onClick={doStop} title="Terminer et prévisualiser"
-              style={{ background: "#e53935", border: "none", borderRadius: "50%", width: 42, height: 42, cursor: "pointer", fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", boxShadow: "0 2px 10px rgba(229,57,53,0.45)", animation: "voiceGlow 2s ease-in-out infinite", flexShrink: 0 }}>■</button>
+              style={{ background: "#EF4444", border: "none", borderRadius: "50%", width: 42, height: 42, cursor: "pointer", fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", boxShadow: "0 2px 10px rgba(229,57,53,0.45)", animation: "voiceGlow 2s ease-in-out infinite", flexShrink: 0 }}>■</button>
           )}
         </div>
 
         {/* Progress bar */}
-        <div style={{ height: 3, background: "#f0f2f5", borderRadius: 3, overflow: "hidden" }}>
-          <div style={{ height: "100%", width: `${pct}%`, background: "#e53935", borderRadius: 3, transition: "width 0.1s linear" }} />
+        <div style={{ height: 3, background: "#F1F5F9", borderRadius: 3, overflow: "hidden" }}>
+          <div style={{ height: "100%", width: `${pct}%`, background: "#EF4444", borderRadius: 3, transition: "width 0.1s linear" }} />
         </div>
 
         {/* Countdown near end */}
         {nearEnd && (
-          <div style={{ textAlign: "right", fontSize: 11, fontWeight: 800, color: "#e53935", animation: "voicePulse 0.8s infinite" }}>
+          <div style={{ textAlign: "right", fontSize: 11, fontWeight: 800, color: "#EF4444", animation: "voicePulse 0.8s infinite" }}>
             {MAX_DURATION - elapsed}s
           </div>
         )}
 
-        {error && <div style={{ fontSize: 12, color: "#e53935" }}>{error}</div>}
+        {error && <div style={{ fontSize: 12, color: "#EF4444" }}>{error}</div>}
       </div>
     );
   }
@@ -380,21 +380,21 @@ export default function VoiceRecorder({ onSend, onCancel, disabled }: VoiceRecor
 
       {/* Preview card */}
       <div style={{
-        background: "linear-gradient(135deg, #f5fbff 0%, #f0faf0 100%)",
-        borderRadius: 18, padding: "12px 14px", border: "1px solid #c8e6c9",
+        background: "linear-gradient(135deg, #F8FAFC 0%, #F0FDF4 100%)",
+        borderRadius: 18, padding: "12px 14px", border: "1px solid #DCFCE7",
         boxShadow: "0 2px 12px rgba(66,183,42,0.12)",
       }}>
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-          <div style={{ width: 30, height: 30, borderRadius: "50%", background: "#42B72A", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>🎤</div>
-          <span style={{ fontWeight: 700, fontSize: 13, color: "#1C1E21", flex: 1 }}>Vocal enregistré</span>
-          <span style={{ fontSize: 12, color: "#65676b", fontVariantNumeric: "tabular-nums" }}>{fmtTime(previewDur)}</span>
+          <div style={{ width: 30, height: 30, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>🎤</div>
+          <span style={{ fontWeight: 700, fontSize: 13, color: "#1E293B", flex: 1 }}>Vocal enregistré</span>
+          <span style={{ fontSize: 12, color: "#64748B", fontVariantNumeric: "tabular-nums" }}>{fmtTime(previewDur)}</span>
         </div>
 
         {/* Player row */}
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <button onClick={togglePlay}
-            style={{ background: "#42B72A", border: "none", borderRadius: "50%", width: 40, height: 40, cursor: "pointer", color: "#fff", fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 2px 8px rgba(66,183,42,0.45)", transition: "transform 0.1s", }}
+            style={{ background: "#22C55E", border: "none", borderRadius: "50%", width: 40, height: 40, cursor: "pointer", color: "#fff", fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 2px 8px rgba(66,183,42,0.45)", transition: "transform 0.1s", }}
             onMouseDown={e => (e.currentTarget.style.transform = "scale(0.9)")}
             onMouseUp={e => (e.currentTarget.style.transform = "scale(1)")}
           >
@@ -412,7 +412,7 @@ export default function VoiceRecorder({ onSend, onCancel, disabled }: VoiceRecor
                 <div key={i} style={{
                   flex: 1,
                   height: active ? h : Math.max(4, h * 0.5),
-                  background: active ? "#42B72A" : "#d0d2d8",
+                  background: active ? "#22C55E" : "#CBD5E1",
                   borderRadius: 3,
                   transition: "height 0.15s ease, background 0.15s ease",
                   animation: playing_and_near ? "voicePulse 0.5s infinite" : "none",
@@ -421,25 +421,25 @@ export default function VoiceRecorder({ onSend, onCancel, disabled }: VoiceRecor
             })}
           </div>
 
-          <span style={{ fontSize: 12, color: "#65676b", minWidth: 36, textAlign: "right", fontVariantNumeric: "tabular-nums", flexShrink: 0 }}>
+          <span style={{ fontSize: 12, color: "#64748B", minWidth: 36, textAlign: "right", fontVariantNumeric: "tabular-nums", flexShrink: 0 }}>
             {playing ? `-${fmtTime(remaining)}` : fmtTime(previewDur)}
           </span>
         </div>
 
-        {error && <div style={{ fontSize: 12, color: "#e53935", marginTop: 6 }}>{error}</div>}
+        {error && <div style={{ fontSize: 12, color: "#EF4444", marginTop: 6 }}>{error}</div>}
       </div>
 
       {/* Actions */}
       <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
         <button onClick={discard}
-          style={{ background: "#f0f2f5", border: "none", borderRadius: 24, padding: "8px 16px", cursor: "pointer", fontSize: 13, fontWeight: 600, color: "#65676b", display: "flex", alignItems: "center", gap: 5, transition: "background 0.15s" }}
-          onMouseEnter={e => (e.currentTarget.style.background = "#e4e6eb")}
-          onMouseLeave={e => (e.currentTarget.style.background = "#f0f2f5")}
+          style={{ background: "#F1F5F9", border: "none", borderRadius: 24, padding: "8px 16px", cursor: "pointer", fontSize: 13, fontWeight: 600, color: "#64748B", display: "flex", alignItems: "center", gap: 5, transition: "background 0.15s" }}
+          onMouseEnter={e => (e.currentTarget.style.background = "#E5E7EB")}
+          onMouseLeave={e => (e.currentTarget.style.background = "#F1F5F9")}
         >
           🗑 Supprimer
         </button>
         <button onClick={handleSend} disabled={sending}
-          style={{ background: sending ? "#a5d6a7" : "#42B72A", border: "none", borderRadius: 24, padding: "8px 20px", cursor: sending ? "not-allowed" : "pointer", fontSize: 13, fontWeight: 700, color: "#fff", display: "flex", alignItems: "center", gap: 5, boxShadow: sending ? "none" : "0 2px 10px rgba(66,183,42,0.4)", transition: "transform 0.1s, box-shadow 0.1s" }}
+          style={{ background: sending ? "#a5d6a7" : "#22C55E", border: "none", borderRadius: 24, padding: "8px 20px", cursor: sending ? "not-allowed" : "pointer", fontSize: 13, fontWeight: 700, color: "#fff", display: "flex", alignItems: "center", gap: 5, boxShadow: sending ? "none" : "0 2px 10px rgba(66,183,42,0.4)", transition: "transform 0.1s, box-shadow 0.1s" }}
           onMouseDown={e => { if (!sending) e.currentTarget.style.transform = "scale(0.96)"; }}
           onMouseUp={e => { e.currentTarget.style.transform = "scale(1)"; }}
         >

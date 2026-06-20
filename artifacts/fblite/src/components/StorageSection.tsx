@@ -11,16 +11,16 @@ function fmtBytes(b: number): string {
 }
 
 function barColor(pct: number): string {
-  if (pct >= 90) return "#e53935"; // rouge
+  if (pct >= 90) return "#EF4444"; // rouge
   if (pct >= 70) return "#f59e0b"; // orange
-  return "var(--fb-blue)";         // bleu normal
+  return "var(--bp-primary)";         // bleu normal
 }
 
 const PLAN_BADGE: Record<string, { bg: string; text: string; label: string }> = {
-  user:     { bg: "#e8f0fe", text: "#1877f2", label: "Gratuit" },
-  verified: { bg: "#e8f5e9", text: "#388e3c", label: "Vérifié" },
-  premium:  { bg: "#fff8e1", text: "#f9a825", label: "Premium" },
-  admin:    { bg: "#f3e5f5", text: "#7b1fa2", label: "Admin" },
+  user:     { bg: "#DCFCE7", text: "#1877f2", label: "Gratuit" },
+  verified: { bg: "#DCFCE7", text: "#388e3c", label: "Vérifié" },
+  premium:  { bg: "#FEF3C7", text: "#F59E0B", label: "Premium" },
+  admin:    { bg: "#EDE9FE", text: "#8B5CF6", label: "Admin" },
 };
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -65,7 +65,7 @@ export default function StorageSection() {
 
       {/* Progress bar */}
       <div style={{
-        background: "var(--fb-bg, #f0f2f5)", borderRadius: 99,
+        background: "var(--fb-bg, #F1F5F9)", borderRadius: 99,
         height: 10, overflow: "hidden", marginBottom: 10,
       }}>
         <div style={{
@@ -94,9 +94,9 @@ export default function StorageSection() {
       {/* Remaining */}
       <div style={{
         marginTop: 12, padding: "10px 14px",
-        background: stats.percent >= 90 ? "#fff3f3" : "var(--fb-bg, #f0f2f5)",
+        background: stats.percent >= 90 ? "#FEE2E2" : "var(--fb-bg, #F1F5F9)",
         borderRadius: 10, fontSize: 13,
-        color: stats.percent >= 90 ? "#e53935" : "var(--fb-text-secondary)",
+        color: stats.percent >= 90 ? "#EF4444" : "var(--fb-text-secondary)",
       }}>
         {stats.percent >= 90
           ? `⚠️ Espace presque plein — il te reste ${fmtBytes(stats.remaining)}`
@@ -108,8 +108,8 @@ export default function StorageSection() {
       {stats.plan === "user" && stats.percent >= 50 && (
         <div style={{
           marginTop: 10, padding: "10px 14px",
-          background: "#e8f0fe", borderRadius: 10,
-          fontSize: 12, color: "var(--fb-blue)",
+          background: "#DCFCE7", borderRadius: 10,
+          fontSize: 12, color: "var(--bp-primary)",
         }}>
           💡 Passe en <strong>Premium</strong> pour obtenir jusqu'à 10 Go de stockage.
         </div>

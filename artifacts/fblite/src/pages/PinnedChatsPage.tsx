@@ -1,6 +1,6 @@
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"#22C55E",text:"#0F172A",secondary:"#64748B",muted:"#94A3B8",border:"#E2E8F0",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"#22C55E",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
 
 const Footer = () => (
   <div style={{ textAlign:"center",padding:"20px 0 32px" }}>
@@ -15,7 +15,7 @@ const Footer = () => (
 function PinIllustration() {
   return (
     <svg width="160" height="150" viewBox="0 0 160 150" fill="none">
-      <ellipse cx="80" cy="140" rx="48" ry="6" fill="#0F172A" opacity=".05"/>
+      <ellipse cx="80" cy="140" rx="48" ry="6" fill="#111827" opacity=".05"/>
       {/* Chat bubbles background */}
       <rect x="14" y="55" width="80" height="48" rx="12" fill="#F0FDF4"/>
       <rect x="66" y="30" width="70" height="48" rx="12" fill="#DCFCE7"/>

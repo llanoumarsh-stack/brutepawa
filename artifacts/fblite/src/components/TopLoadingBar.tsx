@@ -50,7 +50,7 @@ export default function TopLoadingBar() {
         left:       0,
         width:      `${progress}%`,
         height:     3,
-        background: "#1877F2",
+        background: "#22C55E",
         zIndex:     99999,
         transition: progress === 100 ? "width 0.2s ease-out, opacity 0.2s ease-out" : "width 0.4s ease-out",
         boxShadow:  "0 0 6px rgba(24,119,242,0.6)",

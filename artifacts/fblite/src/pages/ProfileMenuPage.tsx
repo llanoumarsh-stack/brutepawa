@@ -4,20 +4,20 @@ import { apiGetUserStats } from "../lib/api";
 
 const C = {
   bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A",
-  text:"#0F172A", secondary:"#64748B", muted:"#94A3B8",
+  text:"#111827", secondary:"#64748B", muted:"#9CA3AF",
   border:"#F1F5F9", danger:"#EF4444", premium:"#F4C542",
   shadow:"0 8px 30px rgba(0,0,0,0.05)", shadowMd:"0 4px 16px rgba(0,0,0,0.08)",
 };
 
 const Chevron = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-    <path d="M9 18l6-6-6-6" stroke="#C4C9D4" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M9 18l6-6-6-6" stroke="#CBD5E1" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
 const BlueBadge = ({ size=18 }:{size?:number}) => (
   <svg width={size} height={size} viewBox="0 0 24 24">
-    <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" fill="#3B82F6"/>
+    <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" fill="#0EA5E9"/>
     <path d="M9 12l2 2 4-4" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
@@ -25,7 +25,7 @@ const BlueBadge = ({ size=18 }:{size?:number}) => (
 const Toggle = ({ on, onChange }:{on:boolean;onChange:(v:boolean)=>void}) => (
   <div onClick={e=>{e.stopPropagation();onChange(!on);}} style={{
     width:52, height:30, borderRadius:15,
-    background: on ? C.primary : "#E2E8F0",
+    background: on ? C.primary : "#E5E7EB",
     position:"relative", cursor:"pointer",
     transition:"background 250ms ease", flexShrink:0,
     boxShadow: on ? "0 2px 10px rgba(34,197,94,0.4)" : "inset 0 1px 3px rgba(0,0,0,0.08)",
@@ -50,7 +50,7 @@ function Row({ bg, icon, title, sub, right, last=false, onClick }:{
       onPointerDown={()=>setPressed(true)} onPointerUp={()=>setPressed(false)} onPointerLeave={()=>setPressed(false)}
       style={{
         display:"flex", alignItems:"center", gap:14, padding:"14px 18px",
-        background: pressed?"#F8FAFB":"transparent",
+        background: pressed?"#F8FAFC":"transparent",
         border:"none", cursor:"pointer", width:"100%", textAlign:"left",
         borderBottom: last?"none":"1px solid #F1F5F9",
         transition:"background 150ms",
@@ -100,7 +100,7 @@ export default function ProfileMenuPage() {
       {/* ═══════════════════════════════════════
           PREMIUM GRADIENT HEADER
       ═══════════════════════════════════════ */}
-      <div style={{ background:"linear-gradient(135deg,#15803D 0%,#16A34A 35%,#22C55E 70%,#4ADE80 100%)", position:"relative", overflow:"hidden" }}>
+      <div style={{ background:"linear-gradient(135deg,#16A34A 0%,#16A34A 35%,#22C55E 70%,#22C55E 100%)", position:"relative", overflow:"hidden" }}>
         {/* Geometric decorations */}
         <div style={{ position:"absolute", top:-90, right:-90, width:240, height:240, borderRadius:"50%", background:"rgba(255,255,255,0.07)", pointerEvents:"none" }}/>
         <div style={{ position:"absolute", top:10, right:20, width:110, height:110, borderRadius:"50%", background:"rgba(255,255,255,0.05)", pointerEvents:"none" }}/>
@@ -141,7 +141,7 @@ export default function ProfileMenuPage() {
               {user.avatarUrl ? (
                 <img src={user.avatarUrl} alt="" style={{ width:72, height:72, borderRadius:"50%", objectFit:"cover", border:"3px solid #fff", boxShadow:"0 4px 16px rgba(0,0,0,0.15)" }}/>
               ) : (
-                <div style={{ width:72, height:72, borderRadius:"50%", background:"linear-gradient(135deg,#22C55E,#15803D)", display:"flex", alignItems:"center", justifyContent:"center", border:"3px solid #fff", boxShadow:"0 4px 16px rgba(34,197,94,0.35)" }}>
+                <div style={{ width:72, height:72, borderRadius:"50%", background:"linear-gradient(135deg,#22C55E,#16A34A)", display:"flex", alignItems:"center", justifyContent:"center", border:"3px solid #fff", boxShadow:"0 4px 16px rgba(34,197,94,0.35)" }}>
                   <span style={{ fontSize:28, fontWeight:800, color:"#fff" }}>{name.charAt(0).toUpperCase()}</span>
                 </div>
               )}
@@ -167,21 +167,21 @@ export default function ProfileMenuPage() {
 
         {/* ── Messagerie card ── */}
         <div style={{ margin:"0 14px 12px", background:C.card, borderRadius:24, boxShadow:C.shadow, overflow:"hidden" }}>
-          <Row bg="linear-gradient(135deg,#0E7490,#06B6D4)"
+          <Row bg="linear-gradient(135deg,#0EA5E9,#06B6D4)"
             icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>}
             title="Messagerie" sub="Notifications, archive, confidentialité…" onClick={()=>navigate("/settings/messaging")} last/>
         </div>
 
         {/* ── Main settings card ── */}
         <div style={{ margin:"0 14px 12px", background:C.card, borderRadius:24, boxShadow:C.shadow, overflow:"hidden" }}>
-          <Row bg="linear-gradient(135deg,#15803D,#22C55E)" icon={I.lock} title="Confidentialité" sub="Gérer qui voit vos informations" onClick={()=>navigate("/settings/privacy")}/>
-          <Row bg="linear-gradient(135deg,#B45309,#F59E0B)" icon={I.bell} title="Notifications" sub="Personnaliser vos alertes" onClick={()=>navigate("/settings/notifications")} right={<div style={{ width:9,height:9,borderRadius:"50%",background:C.danger,marginRight:6,boxShadow:"0 0 0 3px rgba(239,68,68,0.15)" }}/>}/>
-          <Row bg="linear-gradient(135deg,#0E7490,#06B6D4)" icon={I.globe} title="Langue & région" sub="Français · ML" onClick={()=>navigate("/settings/language")}/>
-          <Row bg="linear-gradient(135deg,#15803D,#22C55E)" icon={I.signal} title="Mode données" sub={`Économiseur : ${dataSaver?"Activé":"Désactivé"}`} onClick={()=>navigate("/settings/data")} right={<Toggle on={dataSaver} onChange={setDataSaver}/>}/>
-          <Row bg="linear-gradient(135deg,#92400E,#F59E0B)" icon={I.sun} title="Apparence" sub="Thème clair" onClick={()=>navigate("/settings/appearance")}/>
-          <Row bg="linear-gradient(135deg,#1D4ED8,#60A5FA)" icon={I.shield} title="Vérification du compte" sub="Ajouter votre numéro de téléphone" onClick={()=>navigate("/settings/verify")}/>
-          <Row bg="linear-gradient(135deg,#1E40AF,#3B82F6)" icon={I.badge} title="Badge vérifié" sub="Vérification identité · 2 500 FCFA" onClick={()=>navigate("/settings/badge")} last
-            right={<span style={{ background:"linear-gradient(135deg,#DCFCE7,#BBF7D0)", color:"#15803D", fontSize:11, fontWeight:700, padding:"4px 11px", borderRadius:20, marginRight:4, whiteSpace:"nowrap", boxShadow:"0 1px 4px rgba(34,197,94,0.2)" }}>Vérifié</span>}/>
+          <Row bg="linear-gradient(135deg,#16A34A,#22C55E)" icon={I.lock} title="Confidentialité" sub="Gérer qui voit vos informations" onClick={()=>navigate("/settings/privacy")}/>
+          <Row bg="linear-gradient(135deg,#D97706,#F59E0B)" icon={I.bell} title="Notifications" sub="Personnaliser vos alertes" onClick={()=>navigate("/settings/notifications")} right={<div style={{ width:9,height:9,borderRadius:"50%",background:C.danger,marginRight:6,boxShadow:"0 0 0 3px rgba(239,68,68,0.15)" }}/>}/>
+          <Row bg="linear-gradient(135deg,#0EA5E9,#06B6D4)" icon={I.globe} title="Langue & région" sub="Français · ML" onClick={()=>navigate("/settings/language")}/>
+          <Row bg="linear-gradient(135deg,#16A34A,#22C55E)" icon={I.signal} title="Mode données" sub={`Économiseur : ${dataSaver?"Activé":"Désactivé"}`} onClick={()=>navigate("/settings/data")} right={<Toggle on={dataSaver} onChange={setDataSaver}/>}/>
+          <Row bg="linear-gradient(135deg,#D97706,#F59E0B)" icon={I.sun} title="Apparence" sub="Thème clair" onClick={()=>navigate("/settings/appearance")}/>
+          <Row bg="linear-gradient(135deg,#0EA5E9,#0EA5E9)" icon={I.shield} title="Vérification du compte" sub="Ajouter votre numéro de téléphone" onClick={()=>navigate("/settings/verify")}/>
+          <Row bg="linear-gradient(135deg,#0EA5E9,#3B82F6)" icon={I.badge} title="Badge vérifié" sub="Vérification identité · 2 500 FCFA" onClick={()=>navigate("/settings/badge")} last
+            right={<span style={{ background:"linear-gradient(135deg,#DCFCE7,#BBF7D0)", color:"#16A34A", fontSize:11, fontWeight:700, padding:"4px 11px", borderRadius:20, marginRight:4, whiteSpace:"nowrap", boxShadow:"0 1px 4px rgba(34,197,94,0.2)" }}>Vérifié</span>}/>
         </div>
 
         {/* ── Premium card ── */}
@@ -214,7 +214,7 @@ export default function ProfileMenuPage() {
               </div>
               <span style={{ fontSize:14, fontWeight:700, color:C.primary }}>{pct}%</span>
             </div>
-            <div style={{ height:8, background:"#E2E8F0", borderRadius:999, overflow:"hidden" }}>
+            <div style={{ height:8, background:"#E5E7EB", borderRadius:999, overflow:"hidden" }}>
               <div style={{ height:"100%", width:`${pct}%`, background:"linear-gradient(90deg,#22C55E,#16A34A)", borderRadius:999, transition:"width 1.2s ease", boxShadow:"0 0 8px rgba(34,197,94,0.4)" }}/>
             </div>
           </div>
@@ -231,7 +231,7 @@ export default function ProfileMenuPage() {
           </div>
           <div style={{ fontSize:12, color:C.secondary }}>Connecter · Partager · Gagner</div>
           <div style={{ fontSize:11, color:C.muted, marginTop:2 }}>Réseau social panafricain 🌍</div>
-          <div style={{ fontSize:10, color:"#CBD5E1", marginTop:8 }}>Version 2.0.0 · © 2026 BrutePawa</div>
+          <div style={{ fontSize:10, color:"#E5E7EB", marginTop:8 }}>Version 2.0.0 · © 2026 BrutePawa</div>
         </div>
       </div>
     </div>

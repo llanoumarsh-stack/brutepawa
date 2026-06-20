@@ -9,7 +9,7 @@ import VoiceRecorder from "../components/VoiceRecorder";
 import VoicePlayer from "../components/VoicePlayer";
 import { storyDraftStore } from "../lib/storyDraft";
 
-const AVATAR_COLORS = ["#42B72A","#E91E63","#9C27B0","#F57C00","#388E3C","#212121","#D32F2F","#00838F"];
+const AVATAR_COLORS = ["#22C55E","#E91E63","#9C27B0","#D97706","#388E3C","#212121","#D32F2F","#00838F"];
 
 function getInitials(name?: string) {
   if (!name) return "??";
@@ -17,7 +17,7 @@ function getInitials(name?: string) {
 }
 
 const REACTIONS = [
-  { id: "like",  label: "J'aime",    emoji: "👍", color: "#1877F2" },
+  { id: "like",  label: "J'aime",    emoji: "👍", color: "#22C55E" },
   { id: "love",  label: "J'adore",   emoji: "❤️", color: "#F33E58" },
   { id: "care",  label: "Solidaire", emoji: "🫂", color: "#F7B125" },
   { id: "haha",  label: "Haha",      emoji: "😆", color: "#F7B125" },
@@ -404,46 +404,46 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
       )}
 
       {/* ─── Create post card ─── */}
-      <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e4e6eb", boxShadow: "0 1px 4px rgba(0,0,0,0.06)", overflow: "hidden" }}>
+      <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #E5E7EB", boxShadow: "0 1px 4px rgba(0,0,0,0.06)", overflow: "hidden" }}>
         {/* Top row: avatar + input + icons */}
         <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 14px 10px" }}>
           {user.avatarUrl
             ? <img src={user.avatarUrl} alt="Avatar" onClick={() => navigate("/profile")} style={{ width: 44, height: 44, borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer" }} />
-            : <div onClick={() => navigate("/profile")} style={{ width: 44, height: 44, borderRadius: "50%", background: "#42B72A", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 16, flexShrink: 0, cursor: "pointer" }}>{userInitials}</div>
+            : <div onClick={() => navigate("/profile")} style={{ width: 44, height: 44, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 16, flexShrink: 0, cursor: "pointer" }}>{userInitials}</div>
           }
           <div
             onClick={() => navigate("/create-post")}
-            style={{ flex: 1, background: "#f0f2f5", borderRadius: 30, padding: "11px 16px", fontSize: 15, color: "#8a8d91", cursor: "pointer", fontWeight: 400, lineHeight: 1 }}
+            style={{ flex: 1, background: "#F1F5F9", borderRadius: 30, padding: "11px 16px", fontSize: 15, color: "#9CA3AF", cursor: "pointer", fontWeight: 400, lineHeight: 1 }}
           >
             Quoi de neuf, {user.name.split(" ")[0]} ?
           </div>
           {/* Photo icon */}
           <button onClick={() => navigate("/create-post")} style={{ background: "none", border: "none", cursor: "pointer", padding: 6, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="16" rx="3" stroke="#65676b" strokeWidth="1.8"/><circle cx="9" cy="12" r="3" stroke="#65676b" strokeWidth="1.8"/><path d="M2 9l5-5 3 4" stroke="#65676b" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><circle cx="17" cy="8" r="1.5" fill="#65676b"/></svg>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="16" rx="3" stroke="#64748B" strokeWidth="1.8"/><circle cx="9" cy="12" r="3" stroke="#64748B" strokeWidth="1.8"/><path d="M2 9l5-5 3 4" stroke="#64748B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><circle cx="17" cy="8" r="1.5" fill="#64748B"/></svg>
           </button>
           {/* Mic icon */}
           <button onClick={() => navigate("/create-post")} style={{ background: "none", border: "none", cursor: "pointer", padding: 6, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="12" rx="3" stroke="#42B72A" strokeWidth="1.8"/><path d="M5 11a7 7 0 0 0 14 0" stroke="#42B72A" strokeWidth="1.8" strokeLinecap="round"/><path d="M12 18v4M9 22h6" stroke="#42B72A" strokeWidth="1.8" strokeLinecap="round"/></svg>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="12" rx="3" stroke="#22C55E" strokeWidth="1.8"/><path d="M5 11a7 7 0 0 0 14 0" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"/><path d="M12 18v4M9 22h6" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"/></svg>
           </button>
         </div>
 
         {/* Divider */}
-        <div style={{ height: 1, background: "#e4e6eb", margin: "0 14px" }} />
+        <div style={{ height: 1, background: "#E5E7EB", margin: "0 14px" }} />
 
         {/* Action buttons row */}
         <div style={{ display: "flex", overflowX: "auto", scrollbarWidth: "none" as const }}>
           {[
-            { label: "Photo",       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="3" fill="#45BD62"/><circle cx="12" cy="12" r="4" fill="#fff" fillOpacity=".9"/><circle cx="9" cy="7" r="1.5" fill="#fff" fillOpacity=".7"/></svg>, action: "/create-post" },
+            { label: "Photo",       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="3" fill="#22C55E"/><circle cx="12" cy="12" r="4" fill="#fff" fillOpacity=".9"/><circle cx="9" cy="7" r="1.5" fill="#fff" fillOpacity=".7"/></svg>, action: "/create-post" },
             { label: "Vocal",       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="8" y="2" width="8" height="12" rx="4" fill="#E91E63"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/></svg>, action: "/create-post" },
-            { label: "Vidéo",       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="14" height="12" rx="2" fill="#E53935"/><path d="M16 9l5-3v12l-5-3V9z" fill="#E53935"/></svg>, action: "/create-post" },
+            { label: "Vidéo",       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="14" height="12" rx="2" fill="#EF4444"/><path d="M16 9l5-3v12l-5-3V9z" fill="#EF4444"/></svg>, action: "/create-post" },
             { label: "Localisation", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#E91E63"/><circle cx="12" cy="9" r="2.5" fill="#fff"/></svg>, action: "/create-post" },
             { label: "Humeur",      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#FFC107"/><path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/><circle cx="9" cy="10" r="1.5" fill="#fff"/><circle cx="15" cy="10" r="1.5" fill="#fff"/></svg>, action: "/create-post" },
-            { label: "Sondage",     icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="15" width="4" height="6" rx="1" fill="#1877F2"/><rect x="10" y="10" width="4" height="11" rx="1" fill="#1877F2"/><rect x="16" y="5" width="4" height="16" rx="1" fill="#1877F2"/></svg>, action: "/create-post" },
+            { label: "Sondage",     icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="15" width="4" height="6" rx="1" fill="#22C55E"/><rect x="10" y="10" width="4" height="11" rx="1" fill="#22C55E"/><rect x="16" y="5" width="4" height="16" rx="1" fill="#22C55E"/></svg>, action: "/create-post" },
           ].map((btn, i, arr) => (
             <button
               key={btn.label}
               onClick={() => navigate(btn.action)}
-              style={{ flex: "0 0 auto", display: "flex", flexDirection: "column" as const, alignItems: "center" as const, justifyContent: "center" as const, gap: 4, padding: "10px 14px 12px", background: "none", border: "none", cursor: "pointer", borderRight: i < arr.length - 1 ? "1px solid #e4e6eb" : "none", minWidth: 80 }}
+              style={{ flex: "0 0 auto", display: "flex", flexDirection: "column" as const, alignItems: "center" as const, justifyContent: "center" as const, gap: 4, padding: "10px 14px 12px", background: "none", border: "none", cursor: "pointer", borderRight: i < arr.length - 1 ? "1px solid #E5E7EB" : "none", minWidth: 80 }}
             >
               {btn.icon}
               <span style={{ fontSize: 12, fontWeight: 600, color: "#444", whiteSpace: "nowrap" as const }}>{btn.label}</span>
@@ -454,25 +454,25 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
 
       {/* ─── Stories Row ─── */}
       <input ref={storyFileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleStoryFileSelect} />
-      <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #e4e6eb", boxShadow: "0 1px 4px rgba(0,0,0,0.06)", padding: "12px 10px 10px" }}>
+      <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #E5E7EB", boxShadow: "0 1px 4px rgba(0,0,0,0.06)", padding: "12px 10px 10px" }}>
         <div style={{ display: "flex", gap: 10, overflowX: "auto", scrollbarWidth: "none" as const, alignItems: "flex-start" }}>
 
           {/* ── Créer une story — rectangle vert ── */}
           <div onClick={() => storyFileRef.current?.click()} style={{ flex: "0 0 auto", cursor: "pointer", display: "flex", flexDirection: "column" as const, alignItems: "center" as const }}>
             <div style={{
               width: 92, height: 130, borderRadius: 12, overflow: "hidden", position: "relative",
-              background: "linear-gradient(175deg, #42B72A 0%, #2a7d18 100%)",
+              background: "linear-gradient(175deg, #22C55E 0%, #16A34A 100%)",
               display: "flex", flexDirection: "column" as const, alignItems: "center" as const, justifyContent: "center",
             }}>
               {user.avatarUrl && <img src={user.avatarUrl} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.25 }} />}
               <div style={{ position: "relative", zIndex: 1, color: "#fff", fontWeight: 900, fontSize: 28, lineHeight: 1, marginBottom: 12 }}>{userInitials}</div>
-              <div style={{ position: "relative", zIndex: 1, width: 30, height: 30, borderRadius: "50%", background: "#42B72A", border: "2.5px solid #fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ position: "relative", zIndex: 1, width: 30, height: 30, borderRadius: "50%", background: "#22C55E", border: "2.5px solid #fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
               </div>
             </div>
             <div style={{ marginTop: 5, textAlign: "center" as const }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#050505", lineHeight: 1.3 }}>Créer</div>
-              <div style={{ fontSize: 11, color: "#65676b", lineHeight: 1.3 }}>une story</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#111827", lineHeight: 1.3 }}>Créer</div>
+              <div style={{ fontSize: 11, color: "#64748B", lineHeight: 1.3 }}>une story</div>
             </div>
           </div>
 
@@ -481,7 +481,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
             const initials = group.authorName.slice(0, 2).toUpperCase();
             const avatarBg = AVATAR_COLORS[group.authorId % AVATAR_COLORS.length];
             const preview = group.stories[0];
-            const ringColors = ["#42B72A","#1877F2","#E91E63","#FF9800","#9C27B0","#E53935"];
+            const ringColors = ["#22C55E","#22C55E","#E91E63","#FF9800","#9C27B0","#EF4444"];
             const ring = ringColors[group.authorId % ringColors.length];
             return (
               <div key={group.authorId} onClick={() => { setViewerGroupIdx(idx); setViewerOpen(true); }}
@@ -497,7 +497,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                     }
                   </div>
                 </div>
-                <div style={{ marginTop: 6, fontSize: 11, fontWeight: 600, color: "#050505", textAlign: "center" as const, maxWidth: 76, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>
+                <div style={{ marginTop: 6, fontSize: 11, fontWeight: 600, color: "#111827", textAlign: "center" as const, maxWidth: 76, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>
                   {group.authorName.split(" ")[0]}
                 </div>
               </div>
@@ -507,15 +507,15 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
           {/* ── Voir plus ── */}
           {storyGroups.length >= 3 && (
             <div style={{ flex: "0 0 auto", cursor: "pointer", display: "flex", flexDirection: "column" as const, alignItems: "center" as const }}>
-              <div style={{ width: 76, height: 76, borderRadius: "50%", background: "#f0f2f5", border: "1px solid #e4e6eb", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="5" cy="12" r="1.8" fill="#65676b"/><circle cx="12" cy="12" r="1.8" fill="#65676b"/><circle cx="19" cy="12" r="1.8" fill="#65676b"/></svg>
+              <div style={{ width: 76, height: 76, borderRadius: "50%", background: "#F1F5F9", border: "1px solid #E5E7EB", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="5" cy="12" r="1.8" fill="#64748B"/><circle cx="12" cy="12" r="1.8" fill="#64748B"/><circle cx="19" cy="12" r="1.8" fill="#64748B"/></svg>
               </div>
-              <div style={{ marginTop: 6, fontSize: 11, fontWeight: 600, color: "#65676b", textAlign: "center" as const }}>Voir plus</div>
+              <div style={{ marginTop: 6, fontSize: 11, fontWeight: 600, color: "#64748B", textAlign: "center" as const }}>Voir plus</div>
             </div>
           )}
 
           {storyGroups.length === 0 && (
-            <div style={{ display: "flex", alignItems: "center", height: 76, padding: "0 8px", color: "#65676b", fontSize: 12, fontStyle: "italic" }}>
+            <div style={{ display: "flex", alignItems: "center", height: 76, padding: "0 8px", color: "#64748B", fontSize: 12, fontStyle: "italic" }}>
               Sois le premier à publier une story !
             </div>
           )}
@@ -526,7 +526,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
       {postsLoading && (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {[0, 1, 2].map(i => (
-            <div key={i} style={{ background: "#fff", borderRadius: 10, border: "1px solid #e4e6eb", overflow: "hidden", padding: "14px 16px" }}>
+            <div key={i} style={{ background: "#fff", borderRadius: 10, border: "1px solid #E5E7EB", overflow: "hidden", padding: "14px 16px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
                 <span className="bp-skeleton" style={{ width: 42, height: 42, borderRadius: "50%", flexShrink: 0 }} />
                 <div style={{ flex: 1 }}>
@@ -546,7 +546,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
       {!postsLoading && visiblePosts.map(post => {
         const displayName = post.authorName ?? "Utilisateur";
         const displayInitials = getInitials(displayName);
-        const displayColor = post.authorAvatarUrl ? undefined : "#42B72A";
+        const displayColor = post.authorAvatarUrl ? undefined : "#22C55E";
         const postComments = comments[post.id] ?? [];
         return (
           <div key={post.id} className="post-card">
@@ -576,7 +576,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                     onClick={() => navigate(post.userId === user.id ? "/profile" : `/user/${post.userId}`)}
                   >{displayName}</div>
                   {!post.sponsored && (
-                    <span style={{ color: "#42B72A", fontSize: 12, fontWeight: 700, cursor: "pointer", marginLeft: 2 }}>
+                    <span style={{ color: "#22C55E", fontSize: 12, fontWeight: 700, cursor: "pointer", marginLeft: 2 }}>
                       · Suivre
                     </span>
                   )}
@@ -636,7 +636,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
             })()}
             {/* ── Stats bar ── */}
             {(post.likes > 0 || (post.comments + postComments.length) > 0 || post.shares > 0) && (
-              <div style={{ padding: "6px 14px 4px", display: "flex", alignItems: "center", gap: 12, fontSize: 13.5, color: "#65676b" }}>
+              <div style={{ padding: "6px 14px 4px", display: "flex", alignItems: "center", gap: 12, fontSize: 13.5, color: "#64748B" }}>
                 {post.likes > 0 && (
                   <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                     <span style={{ display: "inline-flex", position: "relative", width: post.likes > 5 ? 36 : 22, height: 22, flexShrink: 0 }}>
@@ -662,7 +662,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
             )}
 
             {/* ── Action bar ── */}
-            <div style={{ display: "flex", borderTop: "1px solid #e4e6eb", borderBottom: "1px solid #e4e6eb", position: "relative" }}>
+            <div style={{ display: "flex", borderTop: "1px solid #E5E7EB", borderBottom: "1px solid #E5E7EB", position: "relative" }}>
               {/* Reaction picker backdrop */}
               {showReactionPicker === post.id && (
                 <div style={{ position: "fixed", inset: 0, zIndex: 98 }} onClick={() => setShowReactionPicker(null)} />
@@ -699,7 +699,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 return (
                   <button
                     className="post-btn"
-                    style={{ flex: 1, borderRight: "1px solid #e4e6eb", color: liked ? rx.color : "#65676b", fontWeight: liked ? 700 : 500, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+                    style={{ flex: 1, borderRight: "1px solid #E5E7EB", color: liked ? rx.color : "#64748B", fontWeight: liked ? 700 : 500, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
                     onClick={() => quickLike(post.id, liked)}
                     onMouseDown={() => startReactionTimer(post.id)}
                     onMouseUp={cancelReactionTimer}
@@ -718,7 +718,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
               })()}
 
               {/* Commenter */}
-              <button className="post-btn" style={{ flex: 1, borderRight: "1px solid #e4e6eb", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }} onClick={() => navigate(`/post/${post.id}`)}>
+              <button className="post-btn" style={{ flex: 1, borderRight: "1px solid #E5E7EB", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }} onClick={() => navigate(`/post/${post.id}`)}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 Commenter
               </button>
@@ -739,7 +739,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                   {/* Sort selector */}
                   {topLevel.length > 1 && (
                     <div style={{ padding: "8px 14px 2px" }}>
-                      <button style={{ background: "none", border: "none", fontSize: 13, fontWeight: 700, color: "#050505", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
+                      <button style={{ background: "none", border: "none", fontSize: 13, fontWeight: 700, color: "#111827", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", gap: 4 }}>
                         Plus pertinents <span style={{ fontSize: 10 }}>▼</span>
                       </button>
                     </div>
@@ -747,7 +747,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
 
                   {/* Empty state */}
                   {topLevel.length === 0 && (
-                    <div style={{ textAlign: "center", padding: "14px 14px 6px", color: "#65676b", fontSize: 13 }}>
+                    <div style={{ textAlign: "center", padding: "14px 14px 6px", color: "#64748B", fontSize: 13 }}>
                       Soyez le premier à commenter 💬
                     </div>
                   )}
@@ -766,30 +766,30 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                           }
                           <div style={{ flex: 1, minWidth: 0 }}>
                             {/* Bubble */}
-                            <div style={{ display: "inline-block", background: "#f0f2f5", borderRadius: 18, padding: "8px 12px", maxWidth: "calc(100% - 32px)" }}>
-                              <div style={{ fontWeight: 700, fontSize: 13, color: "#050505", marginBottom: 2 }}>{c.authorFirstName} {c.authorLastName}</div>
+                            <div style={{ display: "inline-block", background: "#F1F5F9", borderRadius: 18, padding: "8px 12px", maxWidth: "calc(100% - 32px)" }}>
+                              <div style={{ fontWeight: 700, fontSize: 13, color: "#111827", marginBottom: 2 }}>{c.authorFirstName} {c.authorLastName}</div>
                               {c.audioUrl
                                 ? <VoicePlayer url={c.audioUrl} duration={c.audioDuration} />
-                                : <div style={{ fontSize: 14, color: "#050505", lineHeight: 1.4 }}>{c.content}</div>
+                                : <div style={{ fontSize: 14, color: "#111827", lineHeight: 1.4 }}>{c.content}</div>
                               }
                             </div>
                             {/* Like count badge */}
                             {c.likesCount > 0 && (
                               <span style={{ display: "inline-flex", alignItems: "center", gap: 2, background: "#fff", borderRadius: 10, padding: "1px 5px 1px 3px", boxShadow: "0 1px 3px rgba(0,0,0,0.18)", fontSize: 12, marginLeft: 4, verticalAlign: "middle" }}>
-                                <span>❤️</span><span style={{ color: "#65676b", fontWeight: 600 }}>{c.likesCount}</span>
+                                <span>❤️</span><span style={{ color: "#64748B", fontWeight: 600 }}>{c.likesCount}</span>
                               </span>
                             )}
                             {/* Time · J'aime · Répondre · Supprimer */}
-                            <div style={{ display: "flex", gap: 12, paddingLeft: 4, marginTop: 3, fontSize: 12, fontWeight: 600, color: "#65676b", alignItems: "center" }}>
+                            <div style={{ display: "flex", gap: 12, paddingLeft: 4, marginTop: 3, fontSize: 12, fontWeight: 600, color: "#64748B", alignItems: "center" }}>
                               <span style={{ color: "#aaa", fontWeight: 400 }}>{timeAgo(c.createdAt)}</span>
-                              <button onClick={() => toggleCommentLike(post.id, c.id)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 12, fontWeight: 700, color: c.likedByMe ? "#1877F2" : "#65676b" }}>
+                              <button onClick={() => toggleCommentLike(post.id, c.id)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 12, fontWeight: 700, color: c.likedByMe ? "#22C55E" : "#64748B" }}>
                                 J'aime
                               </button>
-                              <button onClick={() => replyingTo === c.id ? cancelReply() : startReply(c, post.id)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 12, fontWeight: 700, color: replyingTo === c.id ? "#1877F2" : "#65676b" }}>
+                              <button onClick={() => replyingTo === c.id ? cancelReply() : startReply(c, post.id)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 12, fontWeight: 700, color: replyingTo === c.id ? "#22C55E" : "#64748B" }}>
                                 {replyingTo === c.id ? "Annuler" : "Répondre"}
                               </button>
                               {c.authorId === user.id && (
-                                <button onClick={() => deleteComment(post.id, c.id)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 12, fontWeight: 700, color: "#e53935" }}>
+                                <button onClick={() => deleteComment(post.id, c.id)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 12, fontWeight: 700, color: "#EF4444" }}>
                                   Supprimer
                                 </button>
                               )}
@@ -809,18 +809,18 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                                     : <div className="avatar xs" style={{ width: 26, height: 26, fontSize: 9, flexShrink: 0 }}>{rInitials}</div>
                                   }
                                   <div style={{ flex: 1 }}>
-                                    <div style={{ display: "inline-block", background: "#f0f2f5", borderRadius: 14, padding: "6px 10px", maxWidth: "100%" }}>
-                                      <div style={{ fontWeight: 700, fontSize: 12, color: "#050505", marginBottom: 1 }}>{r.authorFirstName} {r.authorLastName}</div>
-                                      <div style={{ fontSize: 13, color: "#050505" }}>{r.content}</div>
+                                    <div style={{ display: "inline-block", background: "#F1F5F9", borderRadius: 14, padding: "6px 10px", maxWidth: "100%" }}>
+                                      <div style={{ fontWeight: 700, fontSize: 12, color: "#111827", marginBottom: 1 }}>{r.authorFirstName} {r.authorLastName}</div>
+                                      <div style={{ fontSize: 13, color: "#111827" }}>{r.content}</div>
                                     </div>
                                     {r.likesCount > 0 && (
                                       <span style={{ display: "inline-flex", alignItems: "center", gap: 1, background: "#fff", borderRadius: 10, padding: "1px 4px 1px 2px", boxShadow: "0 1px 3px rgba(0,0,0,0.15)", fontSize: 11, marginLeft: 3, verticalAlign: "middle" }}>
-                                        <span>❤️</span><span style={{ color: "#65676b" }}>{r.likesCount}</span>
+                                        <span>❤️</span><span style={{ color: "#64748B" }}>{r.likesCount}</span>
                                       </span>
                                     )}
-                                    <div style={{ display: "flex", gap: 10, paddingLeft: 4, marginTop: 2, fontSize: 11, fontWeight: 600, color: "#65676b" }}>
+                                    <div style={{ display: "flex", gap: 10, paddingLeft: 4, marginTop: 2, fontSize: 11, fontWeight: 600, color: "#64748B" }}>
                                       <span style={{ color: "#aaa", fontWeight: 400 }}>{timeAgo(r.createdAt)}</span>
-                                      <button onClick={() => toggleCommentLike(post.id, r.id)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 11, fontWeight: 700, color: r.likedByMe ? "#1877F2" : "#65676b" }}>J'aime</button>
+                                      <button onClick={() => toggleCommentLike(post.id, r.id)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 11, fontWeight: 700, color: r.likedByMe ? "#22C55E" : "#64748B" }}>J'aime</button>
                                     </div>
                                   </div>
                                 </div>
@@ -835,9 +835,9 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
 
                   {/* ── Reply chip ── */}
                   {replyContextPostId === post.id && replyingTo !== null && (
-                    <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px 2px", fontSize: 12, color: "#65676b" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px 2px", fontSize: 12, color: "#64748B" }}>
                       <span>↩️ Répondre à</span>
-                      <span style={{ fontWeight: 700, color: "#1877F2" }}>{replyContextName}</span>
+                      <span style={{ fontWeight: 700, color: "#22C55E" }}>{replyContextName}</span>
                       <button
                         onClick={cancelReply}
                         style={{ background: "none", border: "none", cursor: "pointer", color: "#aaa", fontSize: 15, padding: "0 0 0 4px", lineHeight: 1, marginLeft: "auto" }}
@@ -847,11 +847,11 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                   )}
 
                   {/* ── Bottom comment input bar (Facebook style) ── */}
-                  <div style={{ display: "flex", alignItems: voiceMode === post.id ? "flex-start" : "center", gap: 8, padding: "8px 12px 12px", borderTop: topLevel.length > 0 ? "1px solid #e4e6eb" : "none", marginTop: 6 }}>
+                  <div style={{ display: "flex", alignItems: voiceMode === post.id ? "flex-start" : "center", gap: 8, padding: "8px 12px 12px", borderTop: topLevel.length > 0 ? "1px solid #E5E7EB" : "none", marginTop: 6 }}>
                     {voiceMode !== post.id && (
                       user.avatarUrl
                         ? <img src={user.avatarUrl} alt="moi" style={{ width: 34, height: 34, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
-                        : <div className="avatar xs" style={{ width: 34, height: 34, fontSize: 12, flexShrink: 0, background: "#42B72A" }}>{userInitials}</div>
+                        : <div className="avatar xs" style={{ width: 34, height: 34, fontSize: 12, flexShrink: 0, background: "#22C55E" }}>{userInitials}</div>
                     )}
 
                     {voiceMode === post.id ? (
@@ -861,10 +861,10 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                         disabled={submittingComment === post.id}
                       />
                     ) : (
-                      <div style={{ flex: 1, background: "#f0f2f5", borderRadius: 22, display: "flex", alignItems: "center", padding: "0 6px 0 14px", gap: 4 }}>
+                      <div style={{ flex: 1, background: "#F1F5F9", borderRadius: 22, display: "flex", alignItems: "center", padding: "0 6px 0 14px", gap: 4 }}>
                         <input
                           ref={el => { commentInputRef.current[post.id] = el; }}
-                          style={{ flex: 1, background: "transparent", border: "none", padding: "9px 0", fontSize: 14, outline: "none", color: "#050505", minWidth: 0 }}
+                          style={{ flex: 1, background: "transparent", border: "none", padding: "9px 0", fontSize: 14, outline: "none", color: "#111827", minWidth: 0 }}
                           placeholder={replyContextPostId === post.id && replyingTo != null ? `Répondre à ${replyContextName.split(" ")[0]}…` : `Commenter en tant que ${user.name.split(" ")[0]}…`}
                           value={newComment[post.id] ?? ""}
                           onChange={e => setNewComment(prev => ({ ...prev, [post.id]: e.target.value }))}
@@ -874,7 +874,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                         {!(newComment[post.id] ?? "").trim() ? (
                           <div style={{ display: "flex", gap: 0, flexShrink: 0 }}>
                             {[{ icon: "🙂", key: "emoji" }, { icon: "GIF", key: "gif" }, { icon: "😊", key: "sticker" }].map(b => (
-                              <button key={b.key} style={{ background: "none", border: "none", padding: "6px 6px", cursor: "pointer", fontSize: b.key === "gif" ? 10 : 16, fontWeight: b.key === "gif" ? 700 : 400, color: "#65676b" }}>{b.icon}</button>
+                              <button key={b.key} style={{ background: "none", border: "none", padding: "6px 6px", cursor: "pointer", fontSize: b.key === "gif" ? 10 : 16, fontWeight: b.key === "gif" ? 700 : 400, color: "#64748B" }}>{b.icon}</button>
                             ))}
                             <VoiceRecorder
                               onSend={(blob, dur) => submitVoiceComment(post.id, blob, dur)}
@@ -886,7 +886,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                           <button
                             onClick={() => submitComment(post.id)}
                             disabled={submittingComment === post.id}
-                            style={{ background: "none", border: "none", padding: "6px 8px", cursor: "pointer", color: "#1877F2", fontSize: 18, opacity: submittingComment === post.id ? 0.6 : 1, flexShrink: 0 }}
+                            style={{ background: "none", border: "none", padding: "6px 8px", cursor: "pointer", color: "#22C55E", fontSize: 18, opacity: submittingComment === post.id ? 0.6 : 1, flexShrink: 0 }}
                           >➤</button>
                         )}
                       </div>
@@ -919,15 +919,15 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
           <div onClick={closeMenu} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", backdropFilter:"blur(4px)", WebkitBackdropFilter:"blur(4px)", zIndex:9000 }} />
           <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:9001, background:"#fff", borderRadius:"24px 24px 0 0", boxShadow:"0 -8px 40px rgba(0,0,0,0.18)", maxHeight:"90vh", overflowY:"auto", animation:"slideUpSheet 0.28s cubic-bezier(0.32,0.72,0,1)" }}>
             <div style={{ display:"flex", justifyContent:"center", paddingTop:10, paddingBottom:6 }}>
-              <div style={{ width:40, height:4, background:"#E2E8F0", borderRadius:99 }} />
+              <div style={{ width:40, height:4, background:"#E5E7EB", borderRadius:99 }} />
             </div>
             <div style={{ display:"flex", alignItems:"center", gap:10, padding:"4px 18px 14px" }}>
               <div style={{ width:38, height:38, borderRadius:"50%", background:"#22C55E", display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:700, color:"#fff", flexShrink:0 }}>
                 {openMenu.authorName.slice(0,2).toUpperCase()}
               </div>
               <div>
-                <div style={{ fontWeight:700, fontSize:14.5, color:"#0F172A" }}>{openMenu.authorName}</div>
-                <div style={{ fontSize:12, color:"#94A3B8" }}>{openMenu.isOwn ? "Votre publication" : "Publication"}</div>
+                <div style={{ fontWeight:700, fontSize:14.5, color:"#111827" }}>{openMenu.authorName}</div>
+                <div style={{ fontSize:12, color:"#9CA3AF" }}>{openMenu.isOwn ? "Votre publication" : "Publication"}</div>
               </div>
             </div>
             <div style={{ padding:"0 12px 34px", display:"flex", flexDirection:"column", gap:8 }}>
@@ -940,44 +940,44 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                   ] as const).map((item,i,arr)=>(
                     <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom:i<arr.length-1?"1px solid #F1F5F9":"none", textAlign:"left" }}>
                       <div style={{ width:42, height:42, borderRadius:"50%", background:item.iconBg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{item.svg}</div>
-                      <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#0F172A" }}>{item.label}</div><div style={{ fontSize:12.5, color:"#94A3B8", marginTop:2 }}>{item.desc}</div></div>
-                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                      <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#111827" }}>{item.label}</div><div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:2 }}>{item.desc}</div></div>
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#E5E7EB" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
                     </button>
                   ))}
                 </div>
                 {/* OWN: share/stats/audience */}
                 <div style={{ background:"#F8FAFC", borderRadius:18, overflow:"hidden" }}>
                   {([
-                    { iconBg:"#DBEAFE", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3B82F6" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>, label:"Partager", desc:"Envoyez cette publication à vos amis.", action:()=>handleShare(openMenu.postId) },
-                    { iconBg:"#DBEAFE", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3B82F6" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>, label:"Copier le lien", desc:"Copiez le lien de cette publication.", action:()=>handleCopyLink(openMenu.postId) },
+                    { iconBg:"#DCFCE7", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0EA5E9" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>, label:"Partager", desc:"Envoyez cette publication à vos amis.", action:()=>handleShare(openMenu.postId) },
+                    { iconBg:"#DCFCE7", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0EA5E9" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>, label:"Copier le lien", desc:"Copiez le lien de cette publication.", action:()=>handleCopyLink(openMenu.postId) },
                     { iconBg:"#F0FDF4", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>, label:"Voir les statistiques", desc:"Vues, likes, portée et engagement.", action:()=>handleViewStats(openMenu.postId) },
-                    { iconBg:"#F0F9FF", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0EA5E9" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>, label:"Modifier l'audience", desc:`Actuellement : ${openMenu.audience==="public"?"🌐 Public":openMenu.audience==="friends"?"👥 Amis":"🔒 Privé"}`, action:()=>{ setAudienceSheet({postId:openMenu.postId,current:openMenu.audience}); closeMenu(); } },
+                    { iconBg:"#DCFCE7", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0EA5E9" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>, label:"Modifier l'audience", desc:`Actuellement : ${openMenu.audience==="public"?"🌐 Public":openMenu.audience==="friends"?"👥 Amis":"🔒 Privé"}`, action:()=>{ setAudienceSheet({postId:openMenu.postId,current:openMenu.audience}); closeMenu(); } },
                   ] as const).map((item,i,arr)=>(
                     <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom:i<arr.length-1?"1px solid #F1F5F9":"none", textAlign:"left" }}>
                       <div style={{ width:42, height:42, borderRadius:"50%", background:item.iconBg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{item.svg}</div>
-                      <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#0F172A" }}>{item.label}</div><div style={{ fontSize:12.5, color:"#94A3B8", marginTop:2 }}>{item.desc}</div></div>
-                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                      <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#111827" }}>{item.label}</div><div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:2 }}>{item.desc}</div></div>
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#E5E7EB" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
                     </button>
                   ))}
                 </div>
                 {/* OWN: comments/archive */}
                 <div style={{ background:"#F8FAFC", borderRadius:18, overflow:"hidden" }}>
                   {([
-                    { iconBg:"#F1F5F9", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke={openMenu.commentsDisabled?"#22C55E":"#475569"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>, label: openMenu.commentsDisabled?"Activer les commentaires":"Désactiver les commentaires", desc: openMenu.commentsDisabled?"Permettre à nouveau les commentaires.":"Empêcher les commentaires sur ce post.", action:()=>handleToggleComments(openMenu.postId, openMenu.commentsDisabled) },
-                    { iconBg:"#F1F5F9", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#475569" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>, label:"Archiver la publication", desc:"Masquer sans supprimer définitivement.", action:()=>handleArchivePost(openMenu.postId) },
+                    { iconBg:"#F1F5F9", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke={openMenu.commentsDisabled?"#22C55E":"#64748B"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>, label: openMenu.commentsDisabled?"Activer les commentaires":"Désactiver les commentaires", desc: openMenu.commentsDisabled?"Permettre à nouveau les commentaires.":"Empêcher les commentaires sur ce post.", action:()=>handleToggleComments(openMenu.postId, openMenu.commentsDisabled) },
+                    { iconBg:"#F1F5F9", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#64748B" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>, label:"Archiver la publication", desc:"Masquer sans supprimer définitivement.", action:()=>handleArchivePost(openMenu.postId) },
                   ] as const).map((item,i,arr)=>(
                     <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom:i<arr.length-1?"1px solid #F1F5F9":"none", textAlign:"left" }}>
                       <div style={{ width:42, height:42, borderRadius:"50%", background:item.iconBg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{item.svg}</div>
-                      <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#0F172A" }}>{item.label}</div><div style={{ fontSize:12.5, color:"#94A3B8", marginTop:2 }}>{item.desc}</div></div>
-                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                      <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#111827" }}>{item.label}</div><div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:2 }}>{item.desc}</div></div>
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#E5E7EB" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
                     </button>
                   ))}
                 </div>
                 {/* OWN: delete danger */}
-                <div style={{ background:"#FFF5F5", borderRadius:18, overflow:"hidden" }}>
+                <div style={{ background:"#FEE2E2", borderRadius:18, overflow:"hidden" }}>
                   <button onClick={()=>{ closeMenu(); setTimeout(()=>setConfirmAction({type:"delete",postId:openMenu.postId}),80); }} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", textAlign:"left" }}>
                     <div style={{ width:42, height:42, borderRadius:"50%", background:"#FEE2E2", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#EF4444" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></div>
-                    <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#EF4444" }}>Supprimer la publication</div><div style={{ fontSize:12.5, color:"#94A3B8", marginTop:2 }}>Cette action est irréversible.</div></div>
+                    <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#EF4444" }}>Supprimer la publication</div><div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:2 }}>Cette action est irréversible.</div></div>
                     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#FCA5A5" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
                   </button>
                 </div>
@@ -990,52 +990,52 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                   ] as const).map((item,i,arr)=>(
                     <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom:i<arr.length-1?"1px solid #F1F5F9":"none", textAlign:"left" }}>
                       <div style={{ width:42, height:42, borderRadius:"50%", background:item.iconBg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{item.svg}</div>
-                      <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#0F172A" }}>{item.label}</div><div style={{ fontSize:12.5, color:"#94A3B8", marginTop:2 }}>{item.desc}</div></div>
-                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                      <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#111827" }}>{item.label}</div><div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:2 }}>{item.desc}</div></div>
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#E5E7EB" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
                     </button>
                   ))}
                 </div>
                 {/* OTHER: share/copy */}
                 <div style={{ background:"#F8FAFC", borderRadius:18, overflow:"hidden" }}>
                   {([
-                    { iconBg:"#DBEAFE", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3B82F6" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>, label:"Partager la publication", desc:"Envoyez cette publication à vos amis.", action:()=>handleShare(openMenu.postId) },
-                    { iconBg:"#DBEAFE", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3B82F6" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>, label:"Copier le lien", desc:"Copiez le lien de cette publication.", action:()=>handleCopyLink(openMenu.postId) },
+                    { iconBg:"#DCFCE7", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0EA5E9" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>, label:"Partager la publication", desc:"Envoyez cette publication à vos amis.", action:()=>handleShare(openMenu.postId) },
+                    { iconBg:"#DCFCE7", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0EA5E9" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>, label:"Copier le lien", desc:"Copiez le lien de cette publication.", action:()=>handleCopyLink(openMenu.postId) },
                   ] as const).map((item,i,arr)=>(
                     <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom:i<arr.length-1?"1px solid #F1F5F9":"none", textAlign:"left" }}>
                       <div style={{ width:42, height:42, borderRadius:"50%", background:item.iconBg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{item.svg}</div>
-                      <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#0F172A" }}>{item.label}</div><div style={{ fontSize:12.5, color:"#94A3B8", marginTop:2 }}>{item.desc}</div></div>
-                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                      <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#111827" }}>{item.label}</div><div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:2 }}>{item.desc}</div></div>
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#E5E7EB" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
                     </button>
                   ))}
                 </div>
                 {/* OTHER: hide/unfollow */}
                 <div style={{ background:"#F8FAFC", borderRadius:18, overflow:"hidden" }}>
                   {([
-                    { iconBg:"#F1F5F9", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#475569" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>, label:"Masquer cette publication", desc:"Moins de publications comme celle-ci.", action:()=>{ handleHide(openMenu.postId); apiHidePost(openMenu.postId).catch(()=>{}); } },
-                    { iconBg:"#F1F5F9", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#475569" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h0"/><line x1="17" y1="17" x2="17" y2="23"/><line x1="14" y1="20" x2="20" y2="20"/></svg>, label:`Ne plus suivre ${openMenu.authorName}`, desc:"Arrêter de voir ses publications.", action:()=>handleUnfollow(openMenu.authorId, openMenu.authorName) },
+                    { iconBg:"#F1F5F9", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#64748B" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>, label:"Masquer cette publication", desc:"Moins de publications comme celle-ci.", action:()=>{ handleHide(openMenu.postId); apiHidePost(openMenu.postId).catch(()=>{}); } },
+                    { iconBg:"#F1F5F9", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#64748B" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h0"/><line x1="17" y1="17" x2="17" y2="23"/><line x1="14" y1="20" x2="20" y2="20"/></svg>, label:`Ne plus suivre ${openMenu.authorName}`, desc:"Arrêter de voir ses publications.", action:()=>handleUnfollow(openMenu.authorId, openMenu.authorName) },
                   ] as const).map((item,i,arr)=>(
                     <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom:i<arr.length-1?"1px solid #F1F5F9":"none", textAlign:"left" }}>
                       <div style={{ width:42, height:42, borderRadius:"50%", background:item.iconBg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{item.svg}</div>
-                      <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#0F172A" }}>{item.label}</div><div style={{ fontSize:12.5, color:"#94A3B8", marginTop:2 }}>{item.desc}</div></div>
-                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                      <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#111827" }}>{item.label}</div><div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:2 }}>{item.desc}</div></div>
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#E5E7EB" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
                     </button>
                   ))}
                 </div>
                 {/* OTHER: report/block danger */}
-                <div style={{ background:"#FFF5F5", borderRadius:18, overflow:"hidden" }}>
+                <div style={{ background:"#FEE2E2", borderRadius:18, overflow:"hidden" }}>
                   {([
                     { label:"Signaler la publication", desc:`${openMenu.authorName} ne saura pas qui l'a signalé(e).`, svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="#EF4444"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15" stroke="#EF4444" strokeWidth="2"/></svg>, action:()=>{ closeMenu(); setTimeout(()=>setReportSheet({postId:openMenu.postId,authorName:openMenu.authorName}),80); } },
                     { label:`Bloquer ${openMenu.authorName}`, desc:"Vous ne verrez plus ses publications.", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#EF4444" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>, action:()=>{ closeMenu(); setTimeout(()=>setConfirmAction({type:"block",authorId:openMenu.authorId,authorName:openMenu.authorName}),80); } },
                   ] as const).map((item,i,arr)=>(
                     <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom:i<arr.length-1?"1px solid #FEE2E2":"none", textAlign:"left" }}>
                       <div style={{ width:42, height:42, borderRadius:"50%", background:"#FEE2E2", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{item.svg}</div>
-                      <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#EF4444" }}>{item.label}</div><div style={{ fontSize:12.5, color:"#94A3B8", marginTop:2 }}>{item.desc}</div></div>
+                      <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#EF4444" }}>{item.label}</div><div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:2 }}>{item.desc}</div></div>
                       <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#FCA5A5" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
                     </button>
                   ))}
                 </div>
               </>)}
-              <button onClick={closeMenu} style={{ width:"100%", background:"#F8FAFC", border:"none", borderRadius:18, padding:"15px", fontWeight:700, fontSize:16, color:"#475569", cursor:"pointer" }}>Annuler</button>
+              <button onClick={closeMenu} style={{ width:"100%", background:"#F8FAFC", border:"none", borderRadius:18, padding:"15px", fontWeight:700, fontSize:16, color:"#64748B", cursor:"pointer" }}>Annuler</button>
             </div>
           </div>
         </>,
@@ -1055,7 +1055,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 }
               </div>
             </div>
-            <div style={{ fontWeight:800, fontSize:18, color:"#0F172A", textAlign:"center", marginBottom:8 }}>
+            <div style={{ fontWeight:800, fontSize:18, color:"#111827", textAlign:"center", marginBottom:8 }}>
               {confirmAction.type==="delete" ? "Supprimer la publication ?" : `Bloquer ${confirmAction.authorName} ?`}
             </div>
             <div style={{ fontSize:14, color:"#64748B", textAlign:"center", marginBottom:24, lineHeight:1.5 }}>
@@ -1076,7 +1076,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
             }} style={{ width:"100%", background:"#EF4444", color:"#fff", border:"none", borderRadius:14, padding:"15px", fontWeight:700, fontSize:16, cursor:"pointer", marginBottom:10 }}>
               {confirmAction.type==="delete" ? "Supprimer" : "Bloquer"}
             </button>
-            <button onClick={()=>setConfirmAction(null)} style={{ width:"100%", background:"#F1F5F9", color:"#475569", border:"none", borderRadius:14, padding:"14px", fontWeight:700, fontSize:15, cursor:"pointer" }}>
+            <button onClick={()=>setConfirmAction(null)} style={{ width:"100%", background:"#F1F5F9", color:"#64748B", border:"none", borderRadius:14, padding:"14px", fontWeight:700, fontSize:15, cursor:"pointer" }}>
               Annuler
             </button>
           </div>
@@ -1089,9 +1089,9 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
         <>
           <div onClick={()=>setReportSheet(null)} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", backdropFilter:"blur(4px)", zIndex:9200 }} />
           <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:9201, background:"#fff", borderRadius:"24px 24px 0 0", padding:"14px 14px 34px", animation:"slideUpSheet 0.22s cubic-bezier(0.32,0.72,0,1)" }}>
-            <div style={{ display:"flex", justifyContent:"center", paddingBottom:12 }}><div style={{ width:40, height:4, background:"#E2E8F0", borderRadius:99 }} /></div>
-            <div style={{ fontWeight:800, fontSize:17, color:"#0F172A", marginBottom:4, paddingLeft:4 }}>Signaler la publication</div>
-            <div style={{ fontSize:13, color:"#94A3B8", marginBottom:14, paddingLeft:4 }}>Pourquoi signalez-vous cette publication ?</div>
+            <div style={{ display:"flex", justifyContent:"center", paddingBottom:12 }}><div style={{ width:40, height:4, background:"#E5E7EB", borderRadius:99 }} /></div>
+            <div style={{ fontWeight:800, fontSize:17, color:"#111827", marginBottom:4, paddingLeft:4 }}>Signaler la publication</div>
+            <div style={{ fontSize:13, color:"#9CA3AF", marginBottom:14, paddingLeft:4 }}>Pourquoi signalez-vous cette publication ?</div>
             <div style={{ background:"#F8FAFC", borderRadius:18, overflow:"hidden", marginBottom:12 }}>
               {["Spam ou publicité","Arnaque ou escroquerie","Harcèlement ou intimidation","Contenu inapproprié","Fausse information","Violence ou danger","Autre"].map((reason,i,arr)=>(
                 <button key={i} onClick={()=>{
@@ -1099,12 +1099,12 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                   showToast("🚩 Signalement envoyé — merci !");
                   setReportSheet(null);
                 }} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", textAlign:"left", padding:"14px 16px", borderBottom:i<arr.length-1?"1px solid #F1F5F9":"none", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-                  <span style={{ fontSize:15, fontWeight:500, color:"#0F172A" }}>{reason}</span>
-                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  <span style={{ fontSize:15, fontWeight:500, color:"#111827" }}>{reason}</span>
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#E5E7EB" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
                 </button>
               ))}
             </div>
-            <button onClick={()=>setReportSheet(null)} style={{ width:"100%", background:"#F8FAFC", border:"none", borderRadius:14, padding:"14px", fontWeight:700, fontSize:15, color:"#475569", cursor:"pointer" }}>Annuler</button>
+            <button onClick={()=>setReportSheet(null)} style={{ width:"100%", background:"#F8FAFC", border:"none", borderRadius:14, padding:"14px", fontWeight:700, fontSize:15, color:"#64748B", cursor:"pointer" }}>Annuler</button>
           </div>
         </>,
         document.body
@@ -1115,8 +1115,8 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
         <>
           <div onClick={()=>setStatsModal(null)} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", backdropFilter:"blur(4px)", zIndex:9300 }} />
           <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:9301, background:"#fff", borderRadius:"24px 24px 0 0", padding:"14px 14px 34px", animation:"slideUpSheet 0.22s cubic-bezier(0.32,0.72,0,1)" }}>
-            <div style={{ display:"flex", justifyContent:"center", paddingBottom:12 }}><div style={{ width:40, height:4, background:"#E2E8F0", borderRadius:99 }} /></div>
-            <div style={{ fontWeight:800, fontSize:17, color:"#0F172A", marginBottom:16, paddingLeft:4 }}>📊 Statistiques</div>
+            <div style={{ display:"flex", justifyContent:"center", paddingBottom:12 }}><div style={{ width:40, height:4, background:"#E5E7EB", borderRadius:99 }} /></div>
+            <div style={{ fontWeight:800, fontSize:17, color:"#111827", marginBottom:16, paddingLeft:4 }}>📊 Statistiques</div>
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10, marginBottom:12 }}>
               {([
                 {label:"Vues",value:statsModal.stats.views,icon:"👁️"},
@@ -1128,19 +1128,19 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
               ] as const).map(s=>(
                 <div key={s.label} style={{ background:"#F8FAFC", borderRadius:14, padding:"12px 8px", textAlign:"center" }}>
                   <div style={{ fontSize:18, marginBottom:4 }}>{s.icon}</div>
-                  <div style={{ fontWeight:800, fontSize:17, color:"#0F172A" }}>{typeof s.value==="number"?(s.value as number).toLocaleString("fr"):String(s.value??0)}</div>
-                  <div style={{ fontSize:11, color:"#94A3B8", marginTop:2 }}>{s.label}</div>
+                  <div style={{ fontWeight:800, fontSize:17, color:"#111827" }}>{typeof s.value==="number"?(s.value as number).toLocaleString("fr"):String(s.value??0)}</div>
+                  <div style={{ fontSize:11, color:"#9CA3AF", marginTop:2 }}>{s.label}</div>
                 </div>
               ))}
             </div>
             <div style={{ background:"#F0FDF4", borderRadius:14, padding:"12px 14px", marginBottom:14, display:"flex", alignItems:"center", gap:10 }}>
               <span style={{ fontSize:22 }}>📈</span>
               <div>
-                <div style={{ fontWeight:700, fontSize:13, color:"#166534" }}>Taux d'engagement</div>
+                <div style={{ fontWeight:700, fontSize:13, color:"#16A34A" }}>Taux d'engagement</div>
                 <div style={{ fontSize:16, fontWeight:800, color:"#22C55E" }}>{String(statsModal.stats.engagement??"0%")}</div>
               </div>
             </div>
-            <button onClick={()=>setStatsModal(null)} style={{ width:"100%", background:"#F8FAFC", border:"none", borderRadius:14, padding:"14px", fontWeight:700, fontSize:15, color:"#475569", cursor:"pointer" }}>Fermer</button>
+            <button onClick={()=>setStatsModal(null)} style={{ width:"100%", background:"#F8FAFC", border:"none", borderRadius:14, padding:"14px", fontWeight:700, fontSize:15, color:"#64748B", cursor:"pointer" }}>Fermer</button>
           </div>
         </>,
         document.body
@@ -1151,9 +1151,9 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
         <>
           <div onClick={()=>setAudienceSheet(null)} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", backdropFilter:"blur(4px)", zIndex:9400 }} />
           <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:9401, background:"#fff", borderRadius:"24px 24px 0 0", padding:"14px 14px 34px", animation:"slideUpSheet 0.22s cubic-bezier(0.32,0.72,0,1)" }}>
-            <div style={{ display:"flex", justifyContent:"center", paddingBottom:12 }}><div style={{ width:40, height:4, background:"#E2E8F0", borderRadius:99 }} /></div>
-            <div style={{ fontWeight:800, fontSize:17, color:"#0F172A", marginBottom:4, paddingLeft:4 }}>Modifier l'audience</div>
-            <div style={{ fontSize:13, color:"#94A3B8", marginBottom:14, paddingLeft:4 }}>Qui peut voir cette publication ?</div>
+            <div style={{ display:"flex", justifyContent:"center", paddingBottom:12 }}><div style={{ width:40, height:4, background:"#E5E7EB", borderRadius:99 }} /></div>
+            <div style={{ fontWeight:800, fontSize:17, color:"#111827", marginBottom:4, paddingLeft:4 }}>Modifier l'audience</div>
+            <div style={{ fontSize:13, color:"#9CA3AF", marginBottom:14, paddingLeft:4 }}>Qui peut voir cette publication ?</div>
             <div style={{ background:"#F8FAFC", borderRadius:18, overflow:"hidden", marginBottom:14 }}>
               {([
                 {value:"public",icon:"🌐",label:"Public",desc:"Tout le monde peut voir cette publication"},
@@ -1162,12 +1162,12 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
               ] as const).map((opt,i,arr)=>(
                 <button key={opt.value} onClick={()=>handleAudienceChange(audienceSheet.postId, opt.value)} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"14px 16px", borderBottom:i<arr.length-1?"1px solid #F1F5F9":"none", textAlign:"left" }}>
                   <div style={{ width:42, height:42, borderRadius:"50%", background:audienceSheet.current===opt.value?"#DCFCE7":"#F1F5F9", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, flexShrink:0 }}>{opt.icon}</div>
-                  <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#0F172A" }}>{opt.label}</div><div style={{ fontSize:12.5, color:"#94A3B8", marginTop:2 }}>{opt.desc}</div></div>
+                  <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#111827" }}>{opt.label}</div><div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:2 }}>{opt.desc}</div></div>
                   {audienceSheet.current===opt.value && <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
                 </button>
               ))}
             </div>
-            <button onClick={()=>setAudienceSheet(null)} style={{ width:"100%", background:"#F8FAFC", border:"none", borderRadius:14, padding:"14px", fontWeight:700, fontSize:15, color:"#475569", cursor:"pointer" }}>Annuler</button>
+            <button onClick={()=>setAudienceSheet(null)} style={{ width:"100%", background:"#F8FAFC", border:"none", borderRadius:14, padding:"14px", fontWeight:700, fontSize:15, color:"#64748B", cursor:"pointer" }}>Annuler</button>
           </div>
         </>,
         document.body

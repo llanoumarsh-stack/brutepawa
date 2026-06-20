@@ -10,7 +10,7 @@ interface Props {
 }
 
 const STORY_DURATION = 5000;
-const BG_COLORS = ["#22C55E","#E91E63","#9C27B0","#F57C00","#388E3C","#212121","#D32F2F","#00838F"];
+const BG_COLORS = ["#22C55E","#E91E63","#9C27B0","#D97706","#388E3C","#212121","#D32F2F","#00838F"];
 
 function getInitials(name: string) {
   const parts = name.trim().split(" ");
@@ -313,7 +313,7 @@ export default function StoryViewer({ groups, initialGroupIndex, onClose, onAuth
               {group.authorName}
             </span>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink:0 }}>
-              <circle cx="8" cy="8" r="8" fill="#1877F2"/>
+              <circle cx="8" cy="8" r="8" fill="#22C55E"/>
               <path d="M4.5 8.5l2.2 2.2 4.5-5" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>

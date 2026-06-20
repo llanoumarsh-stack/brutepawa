@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "../router";
 import { apiFetch, getBpToken } from "../lib/api";
 
-const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"#22C55E",text:"#0F172A",secondary:"#64748B",muted:"#94A3B8",border:"#E2E8F0",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"#22C55E",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
 
 const Toggle = ({ on,onChange }:{on:boolean;onChange:(v:boolean)=>void}) => (
-  <div onClick={()=>onChange(!on)} style={{ width:52,height:30,borderRadius:15,background:on?C.primary:"#E2E8F0",position:"relative",cursor:"pointer",transition:"background 250ms",flexShrink:0,boxShadow:on?"0 2px 10px rgba(34,197,94,0.35)":"inset 0 1px 3px rgba(0,0,0,0.08)" }}>
+  <div onClick={()=>onChange(!on)} style={{ width:52,height:30,borderRadius:15,background:on?C.primary:"#E5E7EB",position:"relative",cursor:"pointer",transition:"background 250ms",flexShrink:0,boxShadow:on?"0 2px 10px rgba(34,197,94,0.35)":"inset 0 1px 3px rgba(0,0,0,0.08)" }}>
     <div style={{ position:"absolute",top:3,left:on?"calc(100% - 27px)":3,width:24,height:24,borderRadius:"50%",background:"#fff",boxShadow:"0 2px 6px rgba(0,0,0,0.2)",transition:"left 250ms cubic-bezier(0.34,1.56,0.64,1)" }}/>
   </div>
 );
@@ -33,7 +33,7 @@ const NRow = ({ icon,label,sub,value,last=false }:{icon:React.ReactNode;label:st
       {sub && <div style={{ fontSize:12,color:C.muted,marginTop:1 }}>{sub}</div>}
     </div>
     {value && <span style={{ fontSize:13,color:C.secondary,marginRight:4 }}>{value}</span>}
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="#C4C9D4" strokeWidth="2.2" strokeLinecap="round"/></svg>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="#CBD5E1" strokeWidth="2.2" strokeLinecap="round"/></svg>
   </button>
 );
 
@@ -123,7 +123,7 @@ export default function MessagingNotifPage() {
       <div style={{ padding:"0 14px 32px" }}>
         <div style={{ background:C.card,borderRadius:24,boxShadow:C.shadow,marginTop:16,overflow:"hidden" }}>
           <div style={{ display:"flex",alignItems:"center",gap:14,padding:"16px 18px" }}>
-            <div style={{ width:44,height:44,borderRadius:"50%",background:"linear-gradient(135deg,#B45309,#F59E0B)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 2px 8px rgba(245,158,11,0.3)" }}>
+            <div style={{ width:44,height:44,borderRadius:"50%",background:"linear-gradient(135deg,#D97706,#F59E0B)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 2px 8px rgba(245,158,11,0.3)" }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
             </div>
             <div style={{ flex:1 }}><div style={{ fontWeight:600,fontSize:15,color:C.text }}>Activer les notifications</div></div>

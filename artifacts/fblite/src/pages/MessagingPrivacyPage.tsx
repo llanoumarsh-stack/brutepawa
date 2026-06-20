@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "../router";
 import { apiFetch, getBpToken } from "../lib/api";
 
-const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"#22C55E",text:"#0F172A",secondary:"#64748B",muted:"#94A3B8",border:"#E2E8F0",shadow:"0 2px 16px rgba(0,0,0,0.05)",danger:"#EF4444" };
+const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"#22C55E",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)",danger:"#EF4444" };
 
 const Toggle = ({ on,onChange }:{on:boolean;onChange:(v:boolean)=>void}) => (
-  <div onClick={()=>onChange(!on)} style={{ width:52,height:30,borderRadius:15,background:on?C.primary:"#E2E8F0",position:"relative",cursor:"pointer",transition:"background 250ms ease",flexShrink:0,boxShadow:on?"0 2px 10px rgba(34,197,94,0.35)":"inset 0 1px 3px rgba(0,0,0,0.08)" }}>
+  <div onClick={()=>onChange(!on)} style={{ width:52,height:30,borderRadius:15,background:on?C.primary:"#E5E7EB",position:"relative",cursor:"pointer",transition:"background 250ms ease",flexShrink:0,boxShadow:on?"0 2px 10px rgba(34,197,94,0.35)":"inset 0 1px 3px rgba(0,0,0,0.08)" }}>
     <div style={{ position:"absolute",top:3,left:on?"calc(100% - 27px)":3,width:24,height:24,borderRadius:"50%",background:"#fff",boxShadow:"0 2px 6px rgba(0,0,0,0.2)",transition:"left 250ms cubic-bezier(0.34,1.56,0.64,1)" }}/>
   </div>
 );
@@ -18,14 +18,14 @@ function NavRow({ icon,title,sub,value,danger=false,last=false,onClick }:{icon:R
   const [p,setP]=useState(false);
   return (
     <button onClick={onClick} onPointerDown={()=>setP(true)} onPointerUp={()=>setP(false)} onPointerLeave={()=>setP(false)}
-      style={{ display:"flex",alignItems:"center",gap:14,padding:"14px 18px",background:p?"#F8FAFB":"none",border:"none",cursor:"pointer",width:"100%",textAlign:"left",borderBottom:last?"none":"1px solid #F8FAFC",transition:"background 150ms" }}>
-      <div style={{ width:44,height:44,borderRadius:"50%",background:danger?"linear-gradient(135deg,#FEE2E2,#FECACA)":"linear-gradient(135deg,#F0FDF4,#DCFCE7)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>{icon}</div>
+      style={{ display:"flex",alignItems:"center",gap:14,padding:"14px 18px",background:p?"#F8FAFC":"none",border:"none",cursor:"pointer",width:"100%",textAlign:"left",borderBottom:last?"none":"1px solid #F8FAFC",transition:"background 150ms" }}>
+      <div style={{ width:44,height:44,borderRadius:"50%",background:danger?"linear-gradient(135deg,#FEE2E2,#FCA5A5)":"linear-gradient(135deg,#F0FDF4,#DCFCE7)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>{icon}</div>
       <div style={{ flex:1 }}>
         <div style={{ fontWeight:500,fontSize:15,color:danger?C.danger:C.text }}>{title}</div>
         {sub && <div style={{ fontSize:12,color:C.muted,marginTop:1 }}>{sub}</div>}
       </div>
       {value && <span style={{ fontSize:13,color:C.secondary,fontWeight:500,marginRight:4 }}>{value}</span>}
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="#C4C9D4" strokeWidth="2.2" strokeLinecap="round"/></svg>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="#CBD5E1" strokeWidth="2.2" strokeLinecap="round"/></svg>
     </button>
   );
 }
@@ -101,7 +101,7 @@ export default function MessagingPrivacyPage() {
     alert: <svg width="18" height="18" viewBox="0 0 24 24" stroke="#F59E0B" {...sv}><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
     v2fa:  <svg width="18" height="18" viewBox="0 0 24 24" stroke="#8B5CF6" {...sv}><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>,
     sess:  <svg width="18" height="18" viewBox="0 0 24 24" stroke="#3B82F6" {...sv}><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>,
-    enc:   <svg width="18" height="18" viewBox="0 0 24 24" stroke="#15803D" {...sv}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>,
+    enc:   <svg width="18" height="18" viewBox="0 0 24 24" stroke="#16A34A" {...sv}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>,
   };
 
   return (

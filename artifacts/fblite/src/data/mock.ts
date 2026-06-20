@@ -20,7 +20,7 @@ export function getCountry(code: string) {
 }
 
 export const USERS = [
-  { id: 1, name: "Kofi Asante", initials: "KA", color: "#1877F2", city: "Accra", country: "Ghana", countryCode: "CI", flag: "🇨🇮", role: "Entrepreneur · Tech", verified: true, friends: 342, followers: 1240, score: "elite", badge: "⭐" },
+  { id: 1, name: "Kofi Asante", initials: "KA", color: "#22C55E", city: "Accra", country: "Ghana", countryCode: "CI", flag: "🇨🇮", role: "Entrepreneur · Tech", verified: true, friends: 342, followers: 1240, score: "elite", badge: "⭐" },
   { id: 2, name: "Aminata Diallo", initials: "AM", color: "#E91E63", city: "Dakar", country: "Sénégal", countryCode: "SN", flag: "🇸🇳", role: "Marchande · Mode africaine", verified: true, friends: 218, followers: 876, score: "platine", badge: "💎" },
   { id: 3, name: "Yao Kouassi", initials: "YK", color: "#9C27B0", city: "Abidjan", country: "Côte d'Ivoire", countryCode: "CI", flag: "🇨🇮", role: "Développeur Web · Freelance", verified: false, friends: 156, followers: 423, score: "or", badge: "🏅" },
   { id: 4, name: "Fatou Diop", initials: "FD", color: "#FF9800", city: "Bamako", country: "Mali", countryCode: "ML", flag: "🇲🇱", role: "Créatrice · Mode africaine", verified: true, friends: 289, followers: 1102, score: "platine", badge: "💎" },
@@ -116,10 +116,10 @@ export const NOTIFICATIONS = [
   { id: 2, type: "friend", user: "Moussa Coulibaly", initials: "MC", color: "#4CAF50", action: "vous a envoyé une demande d'ami", detail: "", time: "Il y a 10 min", read: false },
   { id: 3, type: "comment", user: "Yao Kouassi", initials: "YK", color: "#9C27B0", action: "a commenté votre publication", detail: "\"Super initiative ! 🙌\"", time: "Il y a 30 min", read: false },
   { id: 4, type: "message", user: "Fatou Diop", initials: "FD", color: "#FF9800", action: "vous a envoyé un message", detail: "Bonjour, êtes-vous disponible ?", time: "Il y a 1 h", read: true },
-  { id: 5, type: "job", user: "Système", initials: "🔔", color: "#1877F2", action: "Nouvelle offre correspondant à votre profil", detail: "Développeur React.js – Brute Pawa Tech", time: "Il y a 2 h", read: true },
+  { id: 5, type: "job", user: "Système", initials: "🔔", color: "#22C55E", action: "Nouvelle offre correspondant à votre profil", detail: "Développeur React.js – Brute Pawa Tech", time: "Il y a 2 h", read: true },
   { id: 6, type: "tontine", user: "Système", initials: "💰", color: "#F44336", action: "Rappel : cotisation tontine à payer", detail: "Tontine Famille – Échéance demain", time: "Il y a 3 h", read: true },
   { id: 7, type: "verified", user: "Brute Pawa", initials: "⭐", color: "#FFD700", action: "Votre compte a été vérifié", detail: "Badge de vérification ✅ activé", time: "Il y a 5 h", read: true },
-  { id: 8, type: "group", user: "Entrepreneurs Africains", initials: "💼", color: "#1877F2", action: "nouvelle publication dans le groupe", detail: "\"5 conseils pour développer son business en Afrique\"", time: "Il y a 6 h", read: true },
+  { id: 8, type: "group", user: "Entrepreneurs Africains", initials: "💼", color: "#22C55E", action: "nouvelle publication dans le groupe", detail: "\"5 conseils pour développer son business en Afrique\"", time: "Il y a 6 h", read: true },
   { id: 9, type: "premium", user: "Brute Pawa", initials: "💳", color: "#9C27B0", action: "Votre période Premium se termine dans 3 jours", detail: "Renouvelez pour garder vos avantages", time: "Il y a 1 j", read: true },
 ];
 

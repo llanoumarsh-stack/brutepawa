@@ -28,22 +28,22 @@ const BENEFITS = [
   {
     label: "Connectez-vous avec vos amis",
     sub: "Trouvez et ajoutez des amis facilement.",
-    svg: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="8" cy="7" r="3.5" stroke="#00FF7A" strokeWidth="1.6"/><path d="M2 18c0-3.31 2.69-5 6-5s6 1.69 6 5" stroke="#00FF7A" strokeWidth="1.6" strokeLinecap="round"/><circle cx="16" cy="7" r="2.5" stroke="#00FF7A" strokeWidth="1.4"/><path d="M18 18c0-2.21-1.34-4-4-4" stroke="#00FF7A" strokeWidth="1.4" strokeLinecap="round"/></svg>,
+    svg: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="8" cy="7" r="3.5" stroke="#22C55E" strokeWidth="1.6"/><path d="M2 18c0-3.31 2.69-5 6-5s6 1.69 6 5" stroke="#22C55E" strokeWidth="1.6" strokeLinecap="round"/><circle cx="16" cy="7" r="2.5" stroke="#22C55E" strokeWidth="1.4"/><path d="M18 18c0-2.21-1.34-4-4-4" stroke="#22C55E" strokeWidth="1.4" strokeLinecap="round"/></svg>,
   },
   {
     label: "Partagez vos idées",
     sub: "Publiez du contenu et inspirez les autres.",
-    svg: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 14H2a1 1 0 01-1-1V8a1 1 0 011-1h2l5-4v15l-5-4z" stroke="#00FF7A" strokeWidth="1.6" strokeLinejoin="round"/><path d="M15.5 8.5C16.5 9.5 17 10.5 17 11s-.5 1.5-1.5 2.5M18 6c2 1.5 3 3.3 3 5s-1 3.5-3 5" stroke="#00FF7A" strokeWidth="1.6" strokeLinecap="round"/></svg>,
+    svg: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 14H2a1 1 0 01-1-1V8a1 1 0 011-1h2l5-4v15l-5-4z" stroke="#22C55E" strokeWidth="1.6" strokeLinejoin="round"/><path d="M15.5 8.5C16.5 9.5 17 10.5 17 11s-.5 1.5-1.5 2.5M18 6c2 1.5 3 3.3 3 5s-1 3.5-3 5" stroke="#22C55E" strokeWidth="1.6" strokeLinecap="round"/></svg>,
   },
   {
     label: "Développez votre réseau",
     sub: "Élargissez votre réseau professionnel.",
-    svg: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="12" width="5" height="8" rx="1.5" stroke="#00FF7A" strokeWidth="1.6"/><rect x="8.5" y="7" width="5" height="13" rx="1.5" stroke="#00FF7A" strokeWidth="1.6"/><rect x="15" y="3" width="5" height="17" rx="1.5" stroke="#00FF7A" strokeWidth="1.6"/></svg>,
+    svg: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="12" width="5" height="8" rx="1.5" stroke="#22C55E" strokeWidth="1.6"/><rect x="8.5" y="7" width="5" height="13" rx="1.5" stroke="#22C55E" strokeWidth="1.6"/><rect x="15" y="3" width="5" height="17" rx="1.5" stroke="#22C55E" strokeWidth="1.6"/></svg>,
   },
   {
     label: "Découvrez du contenu inspirant",
     sub: "Explorez du contenu qui vous passionne.",
-    svg: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8.5" stroke="#00FF7A" strokeWidth="1.6"/><ellipse cx="11" cy="11" rx="3.5" ry="8.5" stroke="#00FF7A" strokeWidth="1.4"/><path d="M2.5 8.5h17M2.5 13.5h17" stroke="#00FF7A" strokeWidth="1.4" strokeLinecap="round"/></svg>,
+    svg: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8.5" stroke="#22C55E" strokeWidth="1.6"/><ellipse cx="11" cy="11" rx="3.5" ry="8.5" stroke="#22C55E" strokeWidth="1.4"/><path d="M2.5 8.5h17M2.5 13.5h17" stroke="#22C55E" strokeWidth="1.4" strokeLinecap="round"/></svg>,
   },
 ];
 
@@ -71,7 +71,7 @@ const CSS = `
     font-family:inherit; outline:none;
     transition:border-color .2s,box-shadow .2s;
   }
-  .rg-field::placeholder { color:#6B7280; }
+  .rg-field::placeholder { color:#64748B; }
   .rg-field:focus { border-color:rgba(0,255,122,.6); box-shadow:0 0 0 3px rgba(0,255,122,.12); }
 
   .rg-select {
@@ -87,19 +87,19 @@ const CSS = `
     transition:border-color .2s,box-shadow .2s;
   }
   .rg-select:focus { border-color:rgba(0,255,122,.6); box-shadow:0 0 0 3px rgba(0,255,122,.12); }
-  .rg-select option { background:#07120F; color:#fff; }
+  .rg-select option { background:#052e16; color:#fff; }
 
   .rg-btn {
     width:100%; height:56px; border:none; border-radius:50px; cursor:pointer;
-    background:linear-gradient(135deg,#00FF7A 0%,#00D16A 100%);
-    color:#030A08; font-size:16px; font-weight:700; font-family:inherit;
+    background:linear-gradient(135deg,#00FF7A 0%,#22C55E 100%);
+    color:#111827; font-size:16px; font-weight:700; font-family:inherit;
     display:flex; align-items:center; justify-content:center; gap:10px;
     box-shadow:0 0 28px rgba(0,255,122,.45), 0 4px 16px rgba(0,0,0,.35);
     transition:transform .2s,box-shadow .2s,filter .2s;
   }
   .rg-btn:hover:not(:disabled) { transform:translateY(-2px) scale(1.02); box-shadow:0 0 40px rgba(0,255,122,.6),0 6px 20px rgba(0,0,0,.4); filter:brightness(1.06); }
   .rg-btn:active:not(:disabled) { transform:scale(.97); }
-  .rg-btn:disabled { background:linear-gradient(135deg,#0a4a28,#073a1e); color:#4ade80; box-shadow:none; cursor:not-allowed; }
+  .rg-btn:disabled { background:linear-gradient(135deg,#052e16,#052e16); color:#22C55E; box-shadow:none; cursor:not-allowed; }
 
   .rg-btn-outline {
     width:100%; height:56px; border:1px solid #1C2A22; border-radius:50px; cursor:pointer;
@@ -137,7 +137,7 @@ function RegBackground() {
       <div style={{ position:"fixed", top:"28%", left:"-5%", width:"45%", height:1.5, background:"linear-gradient(90deg,transparent,rgba(0,255,122,.3),transparent)", borderRadius:2, transform:"rotate(22deg)", animation:"arcMove 9s ease-in-out infinite reverse", pointerEvents:"none", zIndex:0 }} />
       {/* Floating particles */}
       {[[8,22,1.8],[90,38,1.3],[16,60,2.0],[76,26,1.5],[52,12,1.1],[34,76,1.6],[68,50,1.2],[22,88,1.4]].map(([x,y,s],i) => (
-        <div key={i} style={{ position:"fixed", left:`${x}%`, top:`${y}%`, width:s, height:s, borderRadius:"50%", background:"#00FF7A", boxShadow:`0 0 ${s*4}px rgba(0,255,122,.9)`, animation:`floatPt ${3.5+i*.45}s ease-in-out infinite`, animationDelay:`${i*.38}s`, pointerEvents:"none", zIndex:0 }} />
+        <div key={i} style={{ position:"fixed", left:`${x}%`, top:`${y}%`, width:s, height:s, borderRadius:"50%", background:"#22C55E", boxShadow:`0 0 ${s*4}px rgba(0,255,122,.9)`, animation:`floatPt ${3.5+i*.45}s ease-in-out infinite`, animationDelay:`${i*.38}s`, pointerEvents:"none", zIndex:0 }} />
       ))}
       {/* Digital globe at bottom */}
       <div style={{ position:"fixed", bottom:-20, left:"50%", transform:"translateX(-50%)", width:"120%", zIndex:0, pointerEvents:"none", opacity:0.9 }}>
@@ -145,9 +145,9 @@ function RegBackground() {
           <ellipse cx="200" cy="310" rx="190" ry="190" stroke="rgba(0,255,122,.2)" strokeWidth="1"/>
           {[258,292,328,364].map((y,i) => { const r=Math.sqrt(Math.max(0,190*190-(y-310)*(y-310))); return r>0?<ellipse key={i} cx="200" cy={y} rx={r} ry={r*.27} stroke="rgba(0,255,122,.14)" strokeWidth=".8"/>:null; })}
           {[-70,-35,0,35,70].map((a,i) => <ellipse key={i} cx="200" cy="310" rx={190*Math.abs(Math.cos(a*Math.PI/180))+1} ry="190" stroke="rgba(0,255,122,.11)" strokeWidth=".7" style={{ transform:`rotate(${a}deg)`, transformOrigin:"200px 310px" }}/>)}
-          {[[80,262],[130,248],[175,238],[225,238],[270,245],[310,258],[60,285],[110,272],[160,262],[200,258],[250,262],[300,273],[100,300],[155,285],[200,280],[248,286],[295,300],[150,305],[200,302],[245,306]].map(([x,y],i) => <circle key={i} cx={x} cy={y} r="2.5" fill="#00FF7A" fillOpacity={.7-i*.02}/>)}
-          {[[80,262,130,248],[130,248,175,238],[175,238,225,238],[225,238,270,245],[270,245,310,258],[60,285,110,272],[110,272,160,262],[160,262,200,258],[200,258,250,262],[250,262,300,273],[100,300,155,285],[155,285,200,280],[200,280,248,286],[130,248,110,272],[175,238,160,262],[225,238,200,258],[200,258,200,280]].map(([x1,y1,x2,y2],i) => <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#00FF7A" strokeOpacity=".25" strokeWidth=".8"/>)}
-          {[[175,238],[200,258]].map(([x,y],i) => <circle key={i} cx={x} cy={y} r="5" fill="none" stroke="#00FF7A" strokeOpacity=".45" strokeWidth="1"><animate attributeName="r" values="3;9;3" dur={`${2.2+i*.8}s`} repeatCount="indefinite"/><animate attributeName="stroke-opacity" values=".5;0;.5" dur={`${2.2+i*.8}s`} repeatCount="indefinite"/></circle>)}
+          {[[80,262],[130,248],[175,238],[225,238],[270,245],[310,258],[60,285],[110,272],[160,262],[200,258],[250,262],[300,273],[100,300],[155,285],[200,280],[248,286],[295,300],[150,305],[200,302],[245,306]].map(([x,y],i) => <circle key={i} cx={x} cy={y} r="2.5" fill="#22C55E" fillOpacity={.7-i*.02}/>)}
+          {[[80,262,130,248],[130,248,175,238],[175,238,225,238],[225,238,270,245],[270,245,310,258],[60,285,110,272],[110,272,160,262],[160,262,200,258],[200,258,250,262],[250,262,300,273],[100,300,155,285],[155,285,200,280],[200,280,248,286],[130,248,110,272],[175,238,160,262],[225,238,200,258],[200,258,200,280]].map(([x1,y1,x2,y2],i) => <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#22C55E" strokeOpacity=".25" strokeWidth=".8"/>)}
+          {[[175,238],[200,258]].map(([x,y],i) => <circle key={i} cx={x} cy={y} r="5" fill="none" stroke="#22C55E" strokeOpacity=".45" strokeWidth="1"><animate attributeName="r" values="3;9;3" dur={`${2.2+i*.8}s`} repeatCount="indefinite"/><animate attributeName="stroke-opacity" values=".5;0;.5" dur={`${2.2+i*.8}s`} repeatCount="indefinite"/></circle>)}
         </svg>
       </div>
     </>
@@ -163,7 +163,7 @@ function ProgressDots({ step }: { step: number }) {
         <div key={i} style={{
           height:6, borderRadius:3,
           transition:"all .5s cubic-bezier(.16,1,.3,1)",
-          background: i < step ? "#00FF7A" : "#1C2A22",
+          background: i < step ? "#22C55E" : "#064E3B",
           width: i === step-1 ? 28 : 24,
           boxShadow: i < step ? "0 0 6px rgba(0,255,122,.5)" : "none",
         }} />
@@ -177,7 +177,7 @@ function Card({ children, style }: { children: React.ReactNode; style?: React.CS
   return (
     <div style={{
       width:"92%", maxWidth:361, borderRadius:20,
-      background:"#0F1A14", backdropFilter:"blur(20px)", WebkitBackdropFilter:"blur(20px)",
+      background:"#052e16", backdropFilter:"blur(20px)", WebkitBackdropFilter:"blur(20px)",
       border:"1px solid #1C2A22",
       boxShadow:"0 0 48px rgba(0,255,122,.06), 0 8px 32px rgba(0,0,0,.6)",
       padding:"24px 24px 24px",
@@ -231,12 +231,12 @@ function LangSheet({ current, onSelect, onClose, regionFlag, regionName }: {
   return createPortal(
     <>
       <div onClick={onClose} style={{ position:"fixed", inset:0, zIndex:9000, background:"rgba(0,0,0,.7)", backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)" }} />
-      <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:9001, background:"#0D1A12", border:"1px solid rgba(34,197,94,.15)", borderRadius:"28px 28px 0 0", maxHeight:"75vh", display:"flex", flexDirection:"column", animation:"slideUpSheet .3s cubic-bezier(.32,.72,0,1)" }}>
+      <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:9001, background:"#052e16", border:"1px solid rgba(34,197,94,.15)", borderRadius:"28px 28px 0 0", maxHeight:"75vh", display:"flex", flexDirection:"column", animation:"slideUpSheet .3s cubic-bezier(.32,.72,0,1)" }}>
         <div style={{ display:"flex", justifyContent:"center", padding:"12px 0 0" }}><div style={{ width:40, height:4, background:"rgba(255,255,255,.15)", borderRadius:99 }} /></div>
         <div style={{ padding:"12px 18px 8px", fontSize:16, fontWeight:700, color:"#fff" }}>Choisir une langue</div>
         <div style={{ padding:"0 14px 10px" }}>
           <div style={{ display:"flex", alignItems:"center", gap:8, background:"rgba(255,255,255,.06)", borderRadius:12, padding:"0 14px", height:40, border:"1px solid rgba(255,255,255,.08)" }}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#6B7280" strokeWidth="1.5"/><path d="M10 10l3 3" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round"/></svg>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#64748B" strokeWidth="1.5"/><path d="M10 10l3 3" stroke="#64748B" strokeWidth="1.5" strokeLinecap="round"/></svg>
             <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Rechercher..." style={{ flex:1, background:"none", border:"none", outline:"none", fontSize:14, color:"#fff", fontFamily:"inherit" }}/>
           </div>
         </div>
@@ -256,7 +256,7 @@ function LangSheet({ current, onSelect, onClose, regionFlag, regionName }: {
                 <path d="M7 1.3C5.12 1.3 3.6 2.82 3.6 4.7c0 2.84 3.4 7.6 3.4 7.6s3.4-4.76 3.4-7.6C10.4 2.82 8.88 1.3 7 1.3z" stroke="#22C55E" strokeWidth="1.2"/>
                 <circle cx="7" cy="4.7" r="1.1" stroke="#22C55E" strokeWidth="1.2"/>
               </svg>
-              <span style={{ fontSize:12, color:"#6B7280", fontWeight:500 }}>Pays détecté</span>
+              <span style={{ fontSize:12, color:"#64748B", fontWeight:500 }}>Pays détecté</span>
               <span style={{ marginLeft:"auto", fontSize:14, fontWeight:700, color:"#22C55E" }}>{regionFlag} {regionName}</span>
             </div>
           </div>
@@ -273,7 +273,7 @@ function Confetti() {
     x: Math.random()*100,
     delay: Math.random()*1.8,
     dur: 2.2+Math.random()*2.5,
-    color: i%4===0?"#00FF7A":i%4===1?"#FFFFFF":i%4===2?"#00D16A":"#AFFFCE",
+    color: i%4===0?"#22C55E":i%4===1?"#FFFFFF":i%4===2?"#22C55E":"#DCFCE7",
     size: 5+Math.random()*7,
     shape: i%3===0?"rect":i%3===1?"circle":"pill",
     rotate: Math.random()*360,
@@ -290,7 +290,7 @@ function Confetti() {
           opacity:0,
           transform:`rotate(${c.rotate}deg)`,
           animation:`confettiDrop ${c.dur}s ${c.delay}s ease-in forwards`,
-          boxShadow: c.color==="#00FF7A"?`0 0 4px rgba(0,255,122,.6)`:"none",
+          boxShadow: c.color==="#22C55E"?`0 0 4px rgba(0,255,122,.6)`:"none",
         }} />
       ))}
     </div>
@@ -375,7 +375,7 @@ export default function Register() {
 
   const pwScore = PW_CHECKS.filter(c => c.test(password)).length;
   const pwStrength = pwScore <= 1 ? "Faible" : pwScore <= 2 ? "Moyen" : pwScore <= 3 ? "Bon" : "Fort";
-  const pwColor    = pwScore <= 1 ? "#ef4444" : pwScore <= 2 ? "#f97316" : pwScore <= 3 ? "#eab308" : "#22C55E";
+  const pwColor    = pwScore <= 1 ? "#ef4444" : pwScore <= 2 ? "#f97316" : pwScore <= 3 ? "#F59E0B" : "#22C55E";
 
   const next = () => { setError(""); setStep(s => s+1); };
   const back = () => { setError(""); setStep(s => s-1); };
@@ -456,14 +456,14 @@ export default function Register() {
 
           <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:16 }}>
             <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="#22C55E" strokeWidth="1.2"/><path d="M5 6.5l1.5 1.5 2.5-3" stroke="#22C55E" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            <span style={{ fontSize:12, color:"#6B7280" }}>Nous détectons automatiquement votre région.</span>
+            <span style={{ fontSize:12, color:"#64748B" }}>Nous détectons automatiquement votre région.</span>
           </div>
 
           <button className="rg-btn" onClick={() => { if (!phone.trim()) return setError("Veuillez entrer votre numéro."); next(); }}>
             Continuer <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9h10M9 4l5 5-5 5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </button>
 
-          <p style={{ margin:"12px 0 0", fontSize:12, color:"#6B7280", textAlign:"center" }}>Nous ne partagerons jamais votre numéro.</p>
+          <p style={{ margin:"12px 0 0", fontSize:12, color:"#64748B", textAlign:"center" }}>Nous ne partagerons jamais votre numéro.</p>
         </Card>
       </div>
     );
@@ -475,7 +475,7 @@ export default function Register() {
           <BackBtn onClick={back} />
           <ProgressDots step={step} />
           <StepIcon>
-            <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="3" y="7" width="22" height="14" rx="3" stroke="#22C55E" strokeWidth="1.8"/><path d="M8 13h3M13 13h7" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"/><circle cx="21" cy="21" r="5" fill="#0D1A12" stroke="#22C55E" strokeWidth="1.5"/><path d="M21 19.5v2l1 1" stroke="#22C55E" strokeWidth="1.3" strokeLinecap="round"/></svg>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="3" y="7" width="22" height="14" rx="3" stroke="#22C55E" strokeWidth="1.8"/><path d="M8 13h3M13 13h7" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"/><circle cx="21" cy="21" r="5" fill="#052e16" stroke="#22C55E" strokeWidth="1.5"/><path d="M21 19.5v2l1 1" stroke="#22C55E" strokeWidth="1.3" strokeLinecap="round"/></svg>
           </StepIcon>
           <h2 style={{ margin:"0 0 4px", color:"#fff", fontSize:"clamp(20px,5vw,24px)", fontWeight:800, textAlign:"center" }}>Vérifiez votre numéro</h2>
           <p style={{ margin:"0 0 4px", color:"#9CA3AF", fontSize:14, textAlign:"center" }}>Nous avons envoyé un code de vérification par SMS au numéro</p>
@@ -499,7 +499,7 @@ export default function Register() {
 
           <div style={{ textAlign:"center", marginTop:14 }}>
             {smsCountdown > 0
-              ? <span style={{ fontSize:13, color:"#6B7280" }}>Renvoyer le code dans <span style={{ color:"#22C55E", fontWeight:600 }}>{smsCountdown}s</span></span>
+              ? <span style={{ fontSize:13, color:"#64748B" }}>Renvoyer le code dans <span style={{ color:"#22C55E", fontWeight:600 }}>{smsCountdown}s</span></span>
               : <button onClick={() => setSmsCountdown(60)} style={{ background:"none", border:"none", cursor:"pointer", fontSize:14, fontWeight:700, color:"#22C55E", fontFamily:"inherit" }}>Renvoyer par SMS</button>
             }
           </div>
@@ -600,7 +600,7 @@ export default function Register() {
 
           {/* Suggestions */}
           <div style={{ marginBottom:16 }}>
-            <p style={{ margin:"0 0 8px", fontSize:12, color:"#6B7280" }}>Suggestions :</p>
+            <p style={{ margin:"0 0 8px", fontSize:12, color:"#64748B" }}>Suggestions :</p>
             <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
               {USERNAME_SUGGESTIONS(phone).map((s,i) => (
                 <button key={i} onClick={() => setUsername(s.replace("@",""))} style={{ padding:"6px 12px", background:"rgba(34,197,94,.08)", border:"1px solid rgba(34,197,94,.2)", borderRadius:20, color:"#22C55E", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>{s}</button>
@@ -636,8 +636,8 @@ export default function Register() {
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3.5" y="8" width="11" height="8" rx="2" stroke="#22C55E" strokeWidth="1.4"/><path d="M6 8V6a3 3 0 016 0v2" stroke="#22C55E" strokeWidth="1.4" strokeLinecap="round"/></svg>
               </div>
               <input className="rg-field" type={showPw?"text":"password"} placeholder="Mot de passe" value={password} onChange={e => setPw(e.target.value)} style={{ paddingRight:44 }}/>
-              <button type="button" onClick={() => setShowPw(v=>!v)} style={{ position:"absolute", right:12, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", cursor:"pointer", color:"#6B7280", padding:4 }}>
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">{showPw?<><path d="M1.5 9s3-5.5 7.5-5.5S16.5 9 16.5 9s-3 5.5-7.5 5.5S1.5 9 1.5 9z" stroke="#6B7280" strokeWidth="1.3"/><circle cx="9" cy="9" r="2" stroke="#6B7280" strokeWidth="1.3"/><path d="M2 2l14 14" stroke="#6B7280" strokeWidth="1.3" strokeLinecap="round"/></>:<><path d="M1.5 9s3-5.5 7.5-5.5S16.5 9 16.5 9s-3 5.5-7.5 5.5S1.5 9 1.5 9z" stroke="#6B7280" strokeWidth="1.3"/><circle cx="9" cy="9" r="2" stroke="#6B7280" strokeWidth="1.3"/></>}</svg>
+              <button type="button" onClick={() => setShowPw(v=>!v)} style={{ position:"absolute", right:12, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", cursor:"pointer", color:"#64748B", padding:4 }}>
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">{showPw?<><path d="M1.5 9s3-5.5 7.5-5.5S16.5 9 16.5 9s-3 5.5-7.5 5.5S1.5 9 1.5 9z" stroke="#64748B" strokeWidth="1.3"/><circle cx="9" cy="9" r="2" stroke="#64748B" strokeWidth="1.3"/><path d="M2 2l14 14" stroke="#64748B" strokeWidth="1.3" strokeLinecap="round"/></>:<><path d="M1.5 9s3-5.5 7.5-5.5S16.5 9 16.5 9s-3 5.5-7.5 5.5S1.5 9 1.5 9z" stroke="#64748B" strokeWidth="1.3"/><circle cx="9" cy="9" r="2" stroke="#64748B" strokeWidth="1.3"/></>}</svg>
               </button>
             </div>
 
@@ -645,7 +645,7 @@ export default function Register() {
             {password.length > 0 && (
               <div>
                 <div style={{ display:"flex", justifyContent:"space-between", marginBottom:5 }}>
-                  <span style={{ fontSize:12, color:"#6B7280" }}>Force du mot de passe</span>
+                  <span style={{ fontSize:12, color:"#64748B" }}>Force du mot de passe</span>
                   <span style={{ fontSize:12, fontWeight:700, color:pwColor }}>{pwStrength}</span>
                 </div>
                 <div style={{ height:4, borderRadius:2, background:"rgba(255,255,255,.08)", overflow:"hidden" }}>
@@ -658,7 +658,7 @@ export default function Register() {
                         <circle cx="6.5" cy="6.5" r="5.5" stroke={c.test(password)?"#22C55E":"rgba(255,255,255,.2)"} strokeWidth="1.2"/>
                         {c.test(password) && <path d="M4.5 6.5l1.5 1.5 2.5-2.5" stroke="#22C55E" strokeWidth="1.2" strokeLinecap="round"/>}
                       </svg>
-                      <span style={{ fontSize:12, color:c.test(password)?"#22C55E":"#6B7280" }}>{c.label}</span>
+                      <span style={{ fontSize:12, color:c.test(password)?"#22C55E":"#64748B" }}>{c.label}</span>
                     </div>
                   ))}
                 </div>
@@ -671,8 +671,8 @@ export default function Register() {
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3.5" y="8" width="11" height="8" rx="2" stroke="#22C55E" strokeWidth="1.4"/><path d="M6 8V6a3 3 0 016 0v2" stroke="#22C55E" strokeWidth="1.4" strokeLinecap="round"/></svg>
               </div>
               <input className="rg-field" type={showPwC?"text":"password"} placeholder="Confirmer le mot de passe" value={pwConfirm} onChange={e => setPwC(e.target.value)} style={{ paddingRight:44 }}/>
-              <button type="button" onClick={() => setShowPwC(v=>!v)} style={{ position:"absolute", right:12, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", cursor:"pointer", color:"#6B7280", padding:4 }}>
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">{showPwC?<><path d="M1.5 9s3-5.5 7.5-5.5S16.5 9 16.5 9s-3 5.5-7.5 5.5S1.5 9 1.5 9z" stroke="#6B7280" strokeWidth="1.3"/><circle cx="9" cy="9" r="2" stroke="#6B7280" strokeWidth="1.3"/><path d="M2 2l14 14" stroke="#6B7280" strokeWidth="1.3" strokeLinecap="round"/></>:<><path d="M1.5 9s3-5.5 7.5-5.5S16.5 9 16.5 9s-3 5.5-7.5 5.5S1.5 9 1.5 9z" stroke="#6B7280" strokeWidth="1.3"/><circle cx="9" cy="9" r="2" stroke="#6B7280" strokeWidth="1.3"/></>}</svg>
+              <button type="button" onClick={() => setShowPwC(v=>!v)} style={{ position:"absolute", right:12, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", cursor:"pointer", color:"#64748B", padding:4 }}>
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">{showPwC?<><path d="M1.5 9s3-5.5 7.5-5.5S16.5 9 16.5 9s-3 5.5-7.5 5.5S1.5 9 1.5 9z" stroke="#64748B" strokeWidth="1.3"/><circle cx="9" cy="9" r="2" stroke="#64748B" strokeWidth="1.3"/><path d="M2 2l14 14" stroke="#64748B" strokeWidth="1.3" strokeLinecap="round"/></>:<><path d="M1.5 9s3-5.5 7.5-5.5S16.5 9 16.5 9s-3 5.5-7.5 5.5S1.5 9 1.5 9z" stroke="#64748B" strokeWidth="1.3"/><circle cx="9" cy="9" r="2" stroke="#64748B" strokeWidth="1.3"/></>}</svg>
               </button>
             </div>
 
@@ -719,8 +719,8 @@ export default function Register() {
               <button onClick={() => fileRef.current?.click()} style={{
                 position:"absolute", bottom:2, right:2,
                 width:36, height:36, borderRadius:"50%",
-                background:"#00FF7A",
-                border:"3px solid #07120F",
+                background:"#22C55E",
+                border:"3px solid #052e16",
                 display:"flex", alignItems:"center", justifyContent:"center",
                 cursor:"pointer",
                 boxShadow:"0 2px 8px rgba(0,0,0,.5)",
@@ -730,11 +730,11 @@ export default function Register() {
                 onMouseLeave={e => e.currentTarget.style.transform="scale(1)"}
               >
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <rect x="1" y="4" width="14" height="10" rx="2" fill="#030A08"/>
-                  <circle cx="8" cy="9" r="2.8" fill="#030A08" stroke="#030A08" strokeWidth=".5"/>
-                  <circle cx="8" cy="9" r="2" fill="#00FF7A"/>
-                  <path d="M5.5 4L6.5 2h3l1 2" fill="#030A08"/>
-                  <circle cx="12.5" cy="6.5" r=".8" fill="#00FF7A"/>
+                  <rect x="1" y="4" width="14" height="10" rx="2" fill="#111827"/>
+                  <circle cx="8" cy="9" r="2.8" fill="#111827" stroke="#111827" strokeWidth=".5"/>
+                  <circle cx="8" cy="9" r="2" fill="#22C55E"/>
+                  <path d="M5.5 4L6.5 2h3l1 2" fill="#111827"/>
+                  <circle cx="12.5" cy="6.5" r=".8" fill="#22C55E"/>
                 </svg>
               </button>
             </div>
@@ -742,9 +742,9 @@ export default function Register() {
 
           {/* Title */}
           <h2 style={{ margin:"0 0 6px", color:"#fff", fontSize:22, fontWeight:700, textAlign:"center", lineHeight:1.25 }}>
-            Ajoutez une <span style={{ color:"#00FF7A", fontWeight:800 }}>photo</span><br/>de profil
+            Ajoutez une <span style={{ color:"#22C55E", fontWeight:800 }}>photo</span><br/>de profil
           </h2>
-          <p style={{ margin:"0 0 20px", color:"#A8B3B0", fontSize:14, textAlign:"center", lineHeight:"22px" }}>
+          <p style={{ margin:"0 0 20px", color:"#94A3B8", fontSize:14, textAlign:"center", lineHeight:"22px" }}>
             Une photo de profil vous aidera<br/>à vous faire connaître.
           </p>
 
@@ -759,8 +759,8 @@ export default function Register() {
               background:"rgba(0,255,122,.06)",
               animation:"benefitSlide .35s ease",
             }}>
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2l1.8 3.6L15 6.5l-3 2.9.7 4.1L9 11.5l-3.7 2 .7-4.1-3-2.9 4.2-.9L9 2z" stroke="#00FF7A" strokeWidth="1.4" strokeLinejoin="round"/></svg>
-              <span style={{ fontSize:13, color:"#A8B3B0", lineHeight:1.4 }}>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2l1.8 3.6L15 6.5l-3 2.9.7 4.1L9 11.5l-3.7 2 .7-4.1-3-2.9 4.2-.9L9 2z" stroke="#22C55E" strokeWidth="1.4" strokeLinejoin="round"/></svg>
+              <span style={{ fontSize:13, color:"#94A3B8", lineHeight:1.4 }}>
                 Les profils avec photo reçoivent <span style={{ color:"#fff", fontWeight:700 }}>3x plus</span> d'interactions
               </span>
             </div>
@@ -772,7 +772,7 @@ export default function Register() {
               /* AFTER photo: "✓ Continuer immédiatement" + "Changer la photo" */
               <>
                 <button className="rg-btn" onClick={() => handleSubmit()}>
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9l4 4 6-7" stroke="#030A08" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9l4 4 6-7" stroke="#111827" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   Continuer immédiatement
                 </button>
                 <button className="rg-btn-outline" onClick={() => fileRef.current?.click()}>
@@ -784,7 +784,7 @@ export default function Register() {
               /* BEFORE photo: "Choisir" + "Prendre" */
               <>
                 <button className="rg-btn" onClick={() => fileRef.current?.click()}>
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3v9M5.5 6.5L9 3l3.5 3.5" stroke="#030A08" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 15h12" stroke="#030A08" strokeWidth="2" strokeLinecap="round"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 3v9M5.5 6.5L9 3l3.5 3.5" stroke="#111827" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 15h12" stroke="#111827" strokeWidth="2" strokeLinecap="round"/></svg>
                   Choisir une photo
                 </button>
                 <button className="rg-btn-outline" onClick={() => fileRef.current?.click()}>
@@ -810,19 +810,19 @@ export default function Register() {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 16V8M8 12l4-4 4 4" stroke="rgba(255,255,255,.35)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="rgba(255,255,255,.35)" strokeWidth="1.5" strokeLinecap="round"/></svg>
             <span style={{ fontSize:13, color:"rgba(255,255,255,.4)", lineHeight:1.4 }}>
               Glisser-déposer une photo ici<br/>
-              ou <span style={{ color:"#00FF7A" }}>cliquer pour parcourir</span>
+              ou <span style={{ color:"#22C55E" }}>cliquer pour parcourir</span>
             </span>
           </div>
 
           {/* Skip link */}
           <button onClick={() => handleSubmit()} style={{
             background:"none", border:"none", cursor:"pointer",
-            color:"#6B746F", fontSize:14, marginTop:12,
+            color:"#64748B", fontSize:14, marginTop:12,
             fontFamily:"inherit", width:"100%", textAlign:"center",
             transition:"color .15s",
           }}
-            onMouseEnter={e => (e.currentTarget.style.color="#A8B3B0")}
-            onMouseLeave={e => (e.currentTarget.style.color="#6B746F")}
+            onMouseEnter={e => (e.currentTarget.style.color="#94A3B8")}
+            onMouseLeave={e => (e.currentTarget.style.color="#64748B")}
           >
             Ignorer pour plus tard
           </button>
@@ -847,18 +847,18 @@ export default function Register() {
               boxShadow:"0 0 0 8px rgba(0,255,122,.08), 0 0 40px rgba(0,255,122,.3)",
             }}>
               <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                <path d="M9 20l7.5 8L31 11" stroke="#00FF7A" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M9 20l7.5 8L31 11" stroke="#22C55E" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
           </div>
 
           {/* "— COMPTE CRÉÉ AVEC SUCCÈS —" */}
           <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8, marginBottom:14 }}>
-            <div style={{ height:1, width:24, background:"#00FF7A", opacity:.6 }} />
-            <span style={{ fontSize:11, fontWeight:700, color:"#00FF7A", letterSpacing:"0.14em", textTransform:"uppercase", whiteSpace:"nowrap" }}>
+            <div style={{ height:1, width:24, background:"#22C55E", opacity:.6 }} />
+            <span style={{ fontSize:11, fontWeight:700, color:"#22C55E", letterSpacing:"0.14em", textTransform:"uppercase", whiteSpace:"nowrap" }}>
               COMPTE CRÉÉ AVEC SUCCÈS
             </span>
-            <div style={{ height:1, width:24, background:"#00FF7A", opacity:.6 }} />
+            <div style={{ height:1, width:24, background:"#22C55E", opacity:.6 }} />
           </div>
 
           {/* BrutePawa logo */}
@@ -867,9 +867,9 @@ export default function Register() {
           </div>
 
           <h2 style={{ margin:"0 0 10px", color:"#fff", fontSize:22, fontWeight:700, lineHeight:1.25 }}>
-            Bienvenue sur <span style={{ color:"#00FF7A", fontWeight:800 }}>BrutePawa</span> !
+            Bienvenue sur <span style={{ color:"#22C55E", fontWeight:800 }}>BrutePawa</span> !
           </h2>
-          <p style={{ margin:"0 0 20px", color:"#A8B3B0", fontSize:13, lineHeight:1.65 }}>
+          <p style={{ margin:"0 0 20px", color:"#94A3B8", fontSize:13, lineHeight:1.65 }}>
             Votre compte est prêt. Connectez-vous,<br/>développez votre réseau, partagez vos idées<br/>et créez des opportunités partout dans le monde.
           </p>
 
@@ -896,7 +896,7 @@ export default function Register() {
                 </div>
                 <div style={{ textAlign:"center" }}>
                   <div style={{ fontSize:13, fontWeight:700, color:"#fff", lineHeight:1.3, marginBottom:4 }}>{b.label}</div>
-                  <div style={{ fontSize:11, color:"#A8B3B0", lineHeight:1.4 }}>{b.sub}</div>
+                  <div style={{ fontSize:11, color:"#94A3B8", lineHeight:1.4 }}>{b.sub}</div>
                 </div>
               </div>
             ))}
@@ -905,7 +905,7 @@ export default function Register() {
           {/* ── CTA — ONLY way to enter app, NO auto-redirect ── */}
           <button className="rg-btn" onClick={() => navigate("/")} disabled={loading}>
             Commencer maintenant
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9h10M9 4l5 5-5 5" stroke="#030A08" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9h10M9 4l5 5-5 5" stroke="#111827" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </button>
         </Card>
       </div>
@@ -916,7 +916,7 @@ export default function Register() {
 
   return (
     <div style={{
-      minHeight:"100dvh", background:"#030A08",
+      minHeight:"100dvh", background:"#111827",
       display:"flex", flexDirection:"column", alignItems:"center",
       fontFamily:"'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif",
       position:"relative", overflowX:"hidden", overflowY:"auto",

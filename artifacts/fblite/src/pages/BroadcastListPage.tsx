@@ -55,17 +55,17 @@ const IcExport     = () => <svg width="22" height="22" viewBox="0 0 24 24" fill=
 const IcTrashRed   = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>;
 const IcTrashRedFill = () => <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>;
 const IcMic        = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>;
-const IcSmile      = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>;
-const IcPaperclip  = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>;
+const IcSmile      = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>;
+const IcPaperclip  = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>;
 const IcBroadcast  = () => <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>;
 const IcBroadcastLg = () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>;
 const IcCheck      = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>;
-const IcChevronR   = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>;
+const IcChevronR   = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>;
 const IcPdf        = () => <svg width="28" height="28" viewBox="0 0 24 24" fill="#EF4444"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><path d="M14 2v6h6" fill="#EF4444" stroke="#fff" strokeWidth="0"/><text x="6" y="19" fontSize="6" fill="white" fontWeight="bold">PDF</text></svg>;
 const IcXls        = () => <svg width="28" height="28" viewBox="0 0 24 24" fill="#22C55E"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><text x="5.5" y="19" fontSize="5" fill="white" fontWeight="bold">XLS</text></svg>;
-const IcCsv        = () => <svg width="28" height="28" viewBox="0 0 24 24" fill="#3B82F6"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><text x="5.5" y="19" fontSize="5.5" fill="white" fontWeight="bold">CSV</text></svg>;
+const IcCsv        = () => <svg width="28" height="28" viewBox="0 0 24 24" fill="#0EA5E9"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><text x="5.5" y="19" fontSize="5.5" fill="white" fontWeight="bold">CSV</text></svg>;
 const IcCloud      = () => <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg>;
-const IcBroom      = () => <svg width="80" height="80" viewBox="0 0 100 100" fill="none"><rect x="40" y="10" width="8" height="50" rx="4" fill="#22C55E"/><ellipse cx="44" cy="70" rx="20" ry="14" fill="#4ADE80"/><path d="M24 75 Q44 85 64 75" stroke="#16A34A" strokeWidth="3" fill="none"/><rect x="38" y="8" width="12" height="8" rx="3" fill="#16A34A"/></svg>;
+const IcBroom      = () => <svg width="80" height="80" viewBox="0 0 100 100" fill="none"><rect x="40" y="10" width="8" height="50" rx="4" fill="#22C55E"/><ellipse cx="44" cy="70" rx="20" ry="14" fill="#22C55E"/><path d="M24 75 Q44 85 64 75" stroke="#16A34A" strokeWidth="3" fill="none"/><rect x="38" y="8" width="12" height="8" rx="3" fill="#16A34A"/></svg>;
 const IcCamera     = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>;
 const IcPhone      = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>;
 const IcFile       = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>;
@@ -78,7 +78,7 @@ const IcShield     = () => <svg width="18" height="18" viewBox="0 0 24 24" fill=
 const WallpaperBg = () => (
   <div style={{
     position: "absolute", inset: 0, overflow: "hidden", zIndex: 0,
-    background: "#E8F5E9",
+    background: "#DCFCE7",
   }}>
     {/* Pattern of faint icons like WhatsApp chat bg */}
     <svg width="100%" height="100%" style={{ position: "absolute", inset: 0, opacity: 0.18 }}>
@@ -214,7 +214,7 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
   return (
     <div onClick={() => onChange(!checked)} style={{
       width: 48, height: 26, borderRadius: 13, cursor: "pointer",
-      background: checked ? "#22C55E" : "#D1D5DB",
+      background: checked ? "#22C55E" : "#E5E7EB",
       transition: "background 0.2s", position: "relative", flexShrink: 0,
     }}>
       <div style={{
@@ -378,7 +378,7 @@ function ModifierPage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
       <SubPageHeader title="Modifier les destinataires" onBack={onBack} />
       {/* Search */}
       <div style={{ background: "white", padding: "10px 16px", borderBottom: "1px solid #F3F4F6" }}>
-        <div style={{ display: "flex", alignItems: "center", background: "#F3F4F6", borderRadius: 24, padding: "8px 14px", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", background: "#F1F5F9", borderRadius: 24, padding: "8px 14px", gap: 8 }}>
           <IcSearch />
           <input value={q} onChange={e => { setQ(e.target.value); load(e.target.value); }} placeholder="Rechercher un contact"
             style={{ flex: 1, border: "none", background: "none", fontSize: 14, outline: "none", fontFamily: "Inter, sans-serif", color: "#111827" }}
@@ -401,12 +401,12 @@ function ModifierPage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
         ) : members.map((m, i) => (
           <div key={m.userId} onClick={() => selecting && toggleSelect(m.userId)} style={{
             display: "flex", alignItems: "center", padding: "10px 16px", gap: 12,
-            borderTop: i > 0 ? "1px solid #F9FAFB" : "none",
+            borderTop: i > 0 ? "1px solid #F8FAFC" : "none",
             cursor: selecting ? "pointer" : "default",
           }}>
             {selecting && (
               <div style={{
-                width: 22, height: 22, borderRadius: "50%", border: `2px solid ${selected.has(m.userId) ? "#22C55E" : "#D1D5DB"}`,
+                width: 22, height: 22, borderRadius: "50%", border: `2px solid ${selected.has(m.userId) ? "#22C55E" : "#E5E7EB"}`,
                 background: selected.has(m.userId) ? "#22C55E" : "white",
                 display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
               }}>
@@ -486,7 +486,7 @@ function AjouterPage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
       <SubPageHeader title="Ajouter des destinataires" onBack={onBack} />
       {/* Search */}
       <div style={{ background: "white", padding: "10px 16px", borderBottom: "1px solid #F3F4F6" }}>
-        <div style={{ display: "flex", alignItems: "center", background: "#F3F4F6", borderRadius: 24, padding: "8px 14px", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", background: "#F1F5F9", borderRadius: 24, padding: "8px 14px", gap: 8 }}>
           <IcSearch />
           <input value={q} onChange={e => setQ(e.target.value)} placeholder="Rechercher un contact"
             style={{ flex: 1, border: "none", background: "none", fontSize: 14, outline: "none", fontFamily: "Inter, sans-serif", color: "#111827" }}
@@ -526,7 +526,7 @@ function AjouterPage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
           {filtered.map((u, i) => (
             <div key={u.id} style={{
               display: "flex", alignItems: "center", padding: "10px 16px", gap: 12,
-              borderTop: i > 0 ? "1px solid #F9FAFB" : "none",
+              borderTop: i > 0 ? "1px solid #F8FAFC" : "none",
             }}>
               <Avatar url={u.avatarUrl} name={`${u.firstName} ${u.lastName}`} size={44}/>
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -581,7 +581,7 @@ function MediasPage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
         {TABS.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)} style={{
             padding: "6px 14px", borderRadius: 20, border: "none", cursor: "pointer",
-            background: tab === t.key ? "#22C55E" : "#F3F4F6",
+            background: tab === t.key ? "#22C55E" : "#F1F5F9",
             color: tab === t.key ? "white" : "#64748B",
             fontSize: 13, fontWeight: 600, fontFamily: "Inter, sans-serif", whiteSpace: "nowrap",
           }}>{t.label}</button>
@@ -637,7 +637,7 @@ function MediasPage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
       </div>
       {/* Search bar */}
       <div style={{ background: "white", padding: "10px 16px", borderTop: "1px solid #F3F4F6", display: "flex", alignItems: "center", gap: 8 }}>
-        <div style={{ display: "flex", alignItems: "center", background: "#F3F4F6", borderRadius: 24, padding: "8px 14px", gap: 8, flex: 1 }}>
+        <div style={{ display: "flex", alignItems: "center", background: "#F1F5F9", borderRadius: 24, padding: "8px 14px", gap: 8, flex: 1 }}>
           <IcSearch />
           <input value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder="Rechercher un média"
             style={{ flex: 1, border: "none", background: "none", fontSize: 14, outline: "none", fontFamily: "Inter, sans-serif", color: "#111827" }}
@@ -679,13 +679,13 @@ function NotifPage({ bcId, onBack, onSubPage }: { bcId: number; onBack: () => vo
         <div style={{ height: 12 }}/>
         <div style={{ background: "white", borderRadius: 0 }}>
           <SettingRow label="Notifications activées" rightSlot={<Toggle checked={settings.notificationsEnabled} onChange={v => save({ notificationsEnabled: v })}/>}/>
-          <div style={{ height: 1, background: "#F3F4F6", margin: "0 20px" }}/>
+          <div style={{ height: 1, background: "#F1F5F9", margin: "0 20px" }}/>
           <SettingRow label="Sonnerie" value="BrutePawa Notification" onClick={() => onSubPage("sonnerie")}/>
-          <div style={{ height: 1, background: "#F3F4F6", margin: "0 20px" }}/>
+          <div style={{ height: 1, background: "#F1F5F9", margin: "0 20px" }}/>
           <SettingRow label="Vibration" value="Par défaut" onClick={() => onSubPage("vibration")}/>
-          <div style={{ height: 1, background: "#F3F4F6", margin: "0 20px" }}/>
+          <div style={{ height: 1, background: "#F1F5F9", margin: "0 20px" }}/>
           <SettingRow label="Priorité" value="Haute priorité" onClick={() => onSubPage("priorite")}/>
-          <div style={{ height: 1, background: "#F3F4F6", margin: "0 20px" }}/>
+          <div style={{ height: 1, background: "#F1F5F9", margin: "0 20px" }}/>
           <SettingRow label="Aperçu des messages" value="Toujours afficher" onClick={() => onSubPage("apercu")}/>
         </div>
         <div style={{ height: 12 }}/>
@@ -823,7 +823,7 @@ function EffacerPage({ bcId, onBack, onCleared }: { bcId: number; onBack: () => 
           {loading ? "Effacement…" : "Effacer la conversation"}
         </button>
         <button onClick={onBack} style={{
-          background: "#F3F4F6", color: "#64748B", border: "none", borderRadius: 14,
+          background: "#F1F5F9", color: "#64748B", border: "none", borderRadius: 14,
           padding: "15px 20px", fontSize: 15, fontWeight: 500, cursor: "pointer", fontFamily: "Inter, sans-serif",
         }}>Annuler</button>
       </div>
@@ -853,7 +853,7 @@ function SupprimerPage({ bcId, memberCount, onBack, onDeleted }: { bcId: number;
       <div style={{ flex: 1, overflowY: "auto" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "36px 28px 20px", gap: 16 }}>
           <div style={{
-            width: 80, height: 80, borderRadius: "50%", background: "#FEF2F2",
+            width: 80, height: 80, borderRadius: "50%", background: "#FEE2E2",
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>
             <IcTrashRedFill />
@@ -865,7 +865,7 @@ function SupprimerPage({ bcId, memberCount, onBack, onDeleted }: { bcId: number;
             </div>
           </div>
         </div>
-        <div style={{ margin: "0 20px", padding: "14px 16px", background: "#FEF2F2", borderRadius: 12, display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ margin: "0 20px", padding: "14px 16px", background: "#FEE2E2", borderRadius: 12, display: "flex", alignItems: "center", gap: 10 }}>
           <IcTrashRed />
           <span style={{ fontSize: 14, color: "#EF4444", fontFamily: "Inter, sans-serif" }}>
             <strong>{memberCount}</strong> destinataires seront supprimés de cette liste.
@@ -937,7 +937,7 @@ function RecherchePage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
     <SubPage visible>
       <SubPageHeader title="Rechercher dans la conversation" onBack={onBack} />
       <div style={{ background: "white", padding: "10px 16px", borderBottom: "1px solid #F3F4F6" }}>
-        <div style={{ display: "flex", alignItems: "center", background: "#F3F4F6", borderRadius: 24, padding: "8px 14px", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", background: "#F1F5F9", borderRadius: 24, padding: "8px 14px", gap: 8 }}>
           <IcSearch />
           <input value={q} onChange={e => setQ(e.target.value)} placeholder="Rechercher un mot, un contact..."
             style={{ flex: 1, border: "none", background: "none", fontSize: 14, outline: "none", fontFamily: "Inter, sans-serif", color: "#111827" }}
@@ -954,7 +954,7 @@ function RecherchePage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
               <button key={f.key} onClick={() => setTypeF(typeF === f.key ? null : f.key)} style={{
                 display: "flex", alignItems: "center", gap: 6,
                 padding: "6px 12px", borderRadius: 20,
-                background: typeF === f.key ? "#F0FDF4" : "#F3F4F6",
+                background: typeF === f.key ? "#F0FDF4" : "#F1F5F9",
                 border: `1.5px solid ${typeF === f.key ? "#22C55E" : "transparent"}`,
                 color: typeF === f.key ? "#22C55E" : "#64748B",
                 fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "Inter, sans-serif",
@@ -996,7 +996,7 @@ function RecherchePage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
               {results.map((r, i) => (
                 <div key={r.id} style={{
                   display: "flex", alignItems: "center", padding: "10px 16px", gap: 12,
-                  borderTop: i > 0 ? "1px solid #F9FAFB" : "none",
+                  borderTop: i > 0 ? "1px solid #F8FAFC" : "none",
                 }}>
                   <div style={{ width: 40, height: 40, borderRadius: 10, background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     {typeIcon[r.messageType] ?? typeIcon.text}
@@ -1009,7 +1009,7 @@ function RecherchePage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
                       {r.messageType.charAt(0).toUpperCase() + r.messageType.slice(1)}
                     </div>
                   </div>
-                  <span style={{ fontSize: 12, color: "#94A3B8", flexShrink: 0, fontFamily: "Inter, sans-serif" }}>{fmtRelative(r.createdAt)}</span>
+                  <span style={{ fontSize: 12, color: "#9CA3AF", flexShrink: 0, fontFamily: "Inter, sans-serif" }}>{fmtRelative(r.createdAt)}</span>
                 </div>
               ))}
             </div>
@@ -1030,7 +1030,7 @@ function RecherchePage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
 /* ═══════════════════════════════════════════════════════════════
    ── SUB-PAGE 10 : RENOMMER LA LISTE ──
 ═══════════════════════════════════════════════════════════════ */
-const COLORS = ["#22C55E", "#8B5CF6", "#A3E0F4", "#F97316", "#EF4444", "#9F1239", "#1E3A5F"];
+const COLORS = ["#22C55E", "#8B5CF6", "#DCFCE7", "#F97316", "#EF4444", "#EF4444", "#1E293B"];
 const EMOJIS = ["📢", "👥", "🎯", "⭐", "🚀", "💎", "🌍"];
 
 function RenommerPage({ bcId, list, onBack, onRenamed }: { bcId: number; list: BroadcastList; onBack: () => void; onRenamed: (updated: Partial<BroadcastList>) => void }) {
@@ -1161,7 +1161,7 @@ function SonneriePage({ onBack }: { onBack: () => void }) {
             }}>
               <div style={{
                 width: 22, height: 22, borderRadius: "50%", flexShrink: 0,
-                border: `2px solid ${selected === s.key ? "#22C55E" : "#D1D5DB"}`,
+                border: `2px solid ${selected === s.key ? "#22C55E" : "#E5E7EB"}`,
                 background: selected === s.key ? "#22C55E" : "white",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}>
@@ -1184,7 +1184,7 @@ function SonneriePage({ onBack }: { onBack: () => void }) {
               }}/>
             ))}
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#94A3B8", fontFamily: "Inter, sans-serif", marginBottom: 12 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#9CA3AF", fontFamily: "Inter, sans-serif", marginBottom: 12 }}>
             <span>0:00</span><span>0:30</span>
           </div>
           {/* Volume */}
@@ -1233,7 +1233,7 @@ function VibrationPage({ onBack }: { onBack: () => void }) {
             }}>
               <div style={{
                 width: 22, height: 22, borderRadius: "50%", flexShrink: 0,
-                border: `2px solid ${selected === v.key ? "#22C55E" : "#D1D5DB"}`,
+                border: `2px solid ${selected === v.key ? "#22C55E" : "#E5E7EB"}`,
                 background: selected === v.key ? "#22C55E" : "white",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}>
@@ -1261,8 +1261,8 @@ function VibrationPage({ onBack }: { onBack: () => void }) {
 function PrioritePage({ onBack }: { onBack: () => void }) {
   const [selected, setSelected] = useState("haute");
   const PRIOS = [
-    { key: "faible",     label: "Faible",      desc: "Vous ne recevez pas de son.", color: "#94A3B8" },
-    { key: "normale",    label: "Normale",     desc: "Vous recevez les notifications standard.", color: "#3B82F6" },
+    { key: "faible",     label: "Faible",      desc: "Vous ne recevez pas de son.", color: "#9CA3AF" },
+    { key: "normale",    label: "Normale",     desc: "Vous recevez les notifications standard.", color: "#0EA5E9" },
     { key: "haute",      label: "Haute",       desc: "Vous recevez toutes les notifications prioritaires.", color: "#22C55E" },
     { key: "urgente",    label: "Urgente",     desc: "Vous recevez toutes les notifications immédiatement.", color: "#F97316" },
     { key: "silencieuse",label: "Silencieuse", desc: "Aucune notification sonore.", color: "#8B5CF6" },
@@ -1280,7 +1280,7 @@ function PrioritePage({ onBack }: { onBack: () => void }) {
             }}>
               <div style={{
                 width: 22, height: 22, borderRadius: "50%", flexShrink: 0,
-                border: `2px solid ${selected === p.key ? p.color : "#D1D5DB"}`,
+                border: `2px solid ${selected === p.key ? p.color : "#E5E7EB"}`,
                 background: selected === p.key ? p.color : "white",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}>
@@ -1415,7 +1415,7 @@ function ImporterTelephonePage({ onBack }: { onBack: () => void }) {
     <SubPage visible>
       <SubPageHeader title="Importer depuis téléphone" onBack={onBack} />
       <div style={{ background: "white", padding: "10px 16px", borderBottom: "1px solid #F3F4F6" }}>
-        <div style={{ display: "flex", alignItems: "center", background: "#F3F4F6", borderRadius: 24, padding: "8px 14px", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", background: "#F1F5F9", borderRadius: 24, padding: "8px 14px", gap: 8 }}>
           <IcSearch />
           <input value={q} onChange={e => setQ(e.target.value)} placeholder="Rechercher un contact"
             style={{ flex: 1, border: "none", background: "none", fontSize: 14, outline: "none", fontFamily: "Inter, sans-serif", color: "#111827" }}
@@ -1523,11 +1523,11 @@ function DropdownMenu({ onSelect, onClose }: { onSelect: (id: SubPageId) => void
       }}>
         {items.map((item, i) => (
           <div key={item.id}>
-            {i > 0 && <div style={{ height: 1, background: "#F3F4F6", margin: "0 16px" }}/>}
+            {i > 0 && <div style={{ height: 1, background: "#F1F5F9", margin: "0 16px" }}/>}
             <div onClick={() => { onSelect(item.id); onClose(); }} style={{
               display: "flex", alignItems: "center", padding: "14px 16px", gap: 14, cursor: "pointer",
             }}
-              onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = "#F9FAFB"}
+              onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = "#F8FAFC"}
               onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = "white"}
             >
               <div style={{ flexShrink: 0 }}>{item.icon}</div>
@@ -1595,7 +1595,7 @@ export default function BroadcastListPage({ broadcastId }: { broadcastId: number
   if (!list) return null;
 
   return (
-    <div style={{ position: "relative", height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden", background: "#E8F5E9", fontFamily: "Inter, sans-serif" }}>
+    <div style={{ position: "relative", height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden", background: "#DCFCE7", fontFamily: "Inter, sans-serif" }}>
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes dropIn { from { opacity:0; transform:scale(0.95) translateY(-8px); } to { opacity:1; transform:scale(1) translateY(0); } }
@@ -1669,7 +1669,7 @@ export default function BroadcastListPage({ broadcastId }: { broadcastId: number
                 padding: "9px 13px", boxShadow: "0 1px 2px rgba(0,0,0,0.08)",
               }}>
                 <div style={{ fontSize: 14, color: "#111827", lineHeight: "1.45" }}>{m.content}</div>
-                <div style={{ fontSize: 11, color: "#94A3B8", textAlign: "right", marginTop: 3 }}>
+                <div style={{ fontSize: 11, color: "#9CA3AF", textAlign: "right", marginTop: 3 }}>
                   {new Date(m.createdAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
                   <span style={{ marginLeft: 5 }}>✓✓</span>
                 </div>
@@ -1681,7 +1681,7 @@ export default function BroadcastListPage({ broadcastId }: { broadcastId: number
 
         {/* ── INPUT BAR ── */}
         <div style={{
-          background: "#F0F0F0", padding: "8px 10px",
+          background: "#F1F5F9", padding: "8px 10px",
           display: "flex", alignItems: "center", gap: 8, flexShrink: 0,
           position: "relative", zIndex: 1,
         }}>

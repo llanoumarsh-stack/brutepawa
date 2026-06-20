@@ -32,7 +32,7 @@ export default function ScorePage() {
         display: "flex", alignItems: "center", gap: 10,
         position: "sticky", top: 0, zIndex: 10,
       }}>
-        <button onClick={() => navigate(-1 as unknown as string)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "var(--fb-blue)" }}>←</button>
+        <button onClick={() => navigate(-1 as unknown as string)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "var(--bp-primary)" }}>←</button>
         <span style={{ fontWeight: 700, fontSize: 17 }}>Score de confiance</span>
       </div>
 

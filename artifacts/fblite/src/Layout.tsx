@@ -184,13 +184,13 @@ export default function Layout({ children, onNewPost }: Props) {
     {
       id: "home", label: "Accueil", path: "/",
       Icon: () => activeTab === "home"
-        ? <svg width="24" height="24" viewBox="0 0 24 24" fill="#42B72A"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-        : <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#65676b" strokeWidth="2" strokeLinejoin="round"><path d="M3 12L12 3l9 9M5 10v9a1 1 0 0 0 1 1h4v-5h4v5h4a1 1 0 0 0 1-1v-9"/></svg>,
+        ? <svg width="24" height="24" viewBox="0 0 24 24" fill="#22C55E"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        : <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinejoin="round"><path d="M3 12L12 3l9 9M5 10v9a1 1 0 0 0 1 1h4v-5h4v5h4a1 1 0 0 0 1-1v-9"/></svg>,
     },
     {
       id: "community", label: "Amis", path: "/community", badge: pendingRequests || undefined,
       Icon: () => {
-        const c = activeTab === "community" ? "#42B72A" : "#65676b";
+        const c = activeTab === "community" ? "#22C55E" : "#64748B";
         return <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="3.5" stroke={c} strokeWidth="1.8"/><circle cx="17" cy="8" r="2.5" stroke={c} strokeWidth="1.8"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6" stroke={c} strokeWidth="1.8" strokeLinecap="round"/><path d="M19 14c2.5.5 4 2 4 4.5" stroke={c} strokeWidth="1.8" strokeLinecap="round"/></svg>;
       },
     },
@@ -198,23 +198,23 @@ export default function Layout({ children, onNewPost }: Props) {
       id: "notifications" as Tab, label: "Messages", path: "/messages",
       Icon: () => {
         const isMsg = path === "/messages" || activeTab === "notifications";
-        const c = isMsg ? "#42B72A" : "#65676b";
-        return <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke={c} strokeWidth="1.8" strokeLinejoin="round" fill={isMsg ? "#42B72A" : "none"} fillOpacity={isMsg ? .15 : 0}/></svg>;
+        const c = isMsg ? "#22C55E" : "#64748B";
+        return <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke={c} strokeWidth="1.8" strokeLinejoin="round" fill={isMsg ? "#22C55E" : "none"} fillOpacity={isMsg ? .15 : 0}/></svg>;
       },
     },
     {
       id: "marketplace", label: "Notifications", path: "/notifications", badge: unreadNotifs || undefined,
       Icon: () => {
         const active = activeTab === "marketplace" || path === "/notifications";
-        const c = active ? "#42B72A" : "#65676b";
-        return <svg width="24" height="24" viewBox="0 0 24 24" fill={active ? "#42B72A" : "none"}><path d="M18 8a6 6 0 0 0-12 0c0 4-2 5-2 5h16s-2-1-2-5" stroke={c} strokeWidth="1.8" strokeLinecap="round"/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke={c} strokeWidth="1.8" strokeLinecap="round"/></svg>;
+        const c = active ? "#22C55E" : "#64748B";
+        return <svg width="24" height="24" viewBox="0 0 24 24" fill={active ? "#22C55E" : "none"}><path d="M18 8a6 6 0 0 0-12 0c0 4-2 5-2 5h16s-2-1-2-5" stroke={c} strokeWidth="1.8" strokeLinecap="round"/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke={c} strokeWidth="1.8" strokeLinecap="round"/></svg>;
       },
     },
     {
       id: "menu", label: "Portefeuille", path: "/wallet",
       Icon: () => {
         const active = activeTab === "menu" || path === "/wallet";
-        const c = active ? "#42B72A" : "#65676b";
+        const c = active ? "#22C55E" : "#64748B";
         return <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="2" y="7" width="20" height="14" rx="2" stroke={c} strokeWidth="1.8"/><path d="M16 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" fill={c}/><path d="M2 10V7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3" stroke={c} strokeWidth="1.8"/></svg>;
       },
     },
@@ -228,15 +228,15 @@ export default function Layout({ children, onNewPost }: Props) {
           FACEBOOK LITE STICKY HEADER — 3 rows
           Hidden on fullscreen-managed pages
       ══════════════════════════════════════════════════ */}
-      <div ref={headerRef} style={{ position: "sticky", top: 0, zIndex: 100, background: "#fff", boxShadow: "0 1px 0 #e4e6eb", display: isFullscreen ? "none" : undefined }}>
+      <div ref={headerRef} style={{ position: "sticky", top: 0, zIndex: 100, background: "#fff", boxShadow: "0 1px 0 #E5E7EB", display: isFullscreen ? "none" : undefined }}>
 
         {/* Row 1 — Mode payant */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "7px 14px", borderBottom: "1px solid #f0f2f5" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "7px 14px", borderBottom: "1px solid #F1F5F9" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontWeight: 600, fontSize: 13.5, color: "#050505" }}>Mode payant</span>
-            <div style={{ width: 17, height: 17, borderRadius: "50%", background: "#ccd0d5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: "#fff", lineHeight: 1 }}>?</div>
+            <span style={{ fontWeight: 600, fontSize: 13.5, color: "#111827" }}>Mode payant</span>
+            <div style={{ width: 17, height: 17, borderRadius: "50%", background: "#E5E7EB", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: "#fff", lineHeight: 1 }}>?</div>
           </div>
-          <button style={{ background: "#e4e6eb", border: "none", borderRadius: 6, padding: "6px 13px", fontWeight: 600, fontSize: 13, cursor: "pointer", color: "#050505" }}>
+          <button style={{ background: "#E5E7EB", border: "none", borderRadius: 6, padding: "6px 13px", fontWeight: 600, fontSize: 13, cursor: "pointer", color: "#111827" }}>
             Changer de mode
           </button>
         </div>
@@ -249,38 +249,38 @@ export default function Layout({ children, onNewPost }: Props) {
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             {/* Search */}
             <button onClick={() => setShowSearchOverlay(true)} title="Rechercher"
-              style={{ width: 40, height: 40, borderRadius: "50%", background: "#f0f2f5", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#050505" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              style={{ width: 40, height: 40, borderRadius: "50%", background: "#F1F5F9", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111827" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
             </button>
             {/* Create — green circle */}
             <button onClick={() => setShowCreate(true)} title="Créer"
-              style={{ width: 40, height: 40, borderRadius: "50%", background: "#42B72A", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+              style={{ width: 40, height: 40, borderRadius: "50%", background: "#22C55E", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
             </button>
             {/* Notifications bell */}
-            <button onClick={() => navigate("/notifications")} title="Notifications" style={{ position: "relative", width: 40, height: 40, borderRadius: "50%", background: "#f0f2f5", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#050505" strokeWidth="2" strokeLinecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 4-2 5-2 5h16s-2-1-2-5"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-              {unreadNotifs > 0 && <span style={{ position:"absolute", top:5, right:5, width:8, height:8, background:"#E41E3F", borderRadius:"50%", border:"1.5px solid #fff" }} />}
+            <button onClick={() => navigate("/notifications")} title="Notifications" style={{ position: "relative", width: 40, height: 40, borderRadius: "50%", background: "#F1F5F9", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111827" strokeWidth="2" strokeLinecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 4-2 5-2 5h16s-2-1-2-5"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              {unreadNotifs > 0 && <span style={{ position:"absolute", top:5, right:5, width:8, height:8, background:"#EF4444", borderRadius:"50%", border:"1.5px solid #fff" }} />}
             </button>
             {/* Menu */}
             <button onClick={() => navigate("/menu")} title="Menu"
-              style={{ width: 40, height: 40, borderRadius: "50%", background: "#f0f2f5", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#050505" strokeWidth="2.2" strokeLinecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+              style={{ width: 40, height: 40, borderRadius: "50%", background: "#F1F5F9", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111827" strokeWidth="2.2" strokeLinecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
             </button>
           </div>
         </div>
 
         {/* Row 3 — 5 tab icons + labels */}
-        <div style={{ display: "flex", borderTop: "1px solid #e4e6eb" }}>
+        <div style={{ display: "flex", borderTop: "1px solid #E5E7EB" }}>
           {FB_TABS.map(({ id, label, path: tabPath, badge, Icon }) => {
             const isActive = activeTab === id || (id === "marketplace" && path === "/notifications") || (id === "menu" && path === "/wallet");
             return (
               <button key={id} onClick={() => navigate(tabPath)}
-                style={{ flex: 1, background: "none", border: "none", padding: "8px 0 6px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, position: "relative", borderBottom: isActive ? "3px solid #42B72A" : "3px solid transparent", cursor: "pointer" }}>
+                style={{ flex: 1, background: "none", border: "none", padding: "8px 0 6px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, position: "relative", borderBottom: isActive ? "3px solid #22C55E" : "3px solid transparent", cursor: "pointer" }}>
                 <Icon />
-                <span style={{ fontSize: 10, fontWeight: isActive ? 700 : 500, color: isActive ? "#42B72A" : "#65676b", lineHeight: 1 }}>{label}</span>
+                <span style={{ fontSize: 10, fontWeight: isActive ? 700 : 500, color: isActive ? "#22C55E" : "#64748B", lineHeight: 1 }}>{label}</span>
                 {badge && badge > 0 && (
-                  <span style={{ position: "absolute", top: 4, right: "18%", background: "#E41E3F", color: "#fff", borderRadius: 10, minWidth: 16, height: 16, fontSize: 10, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 3px", border: "1.5px solid #fff" }}>
+                  <span style={{ position: "absolute", top: 4, right: "18%", background: "#EF4444", color: "#fff", borderRadius: 10, minWidth: 16, height: 16, fontSize: 10, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 3px", border: "1.5px solid #fff" }}>
                     {badge > 9 ? "9+" : badge}
                   </span>
                 )}
@@ -298,7 +298,7 @@ export default function Layout({ children, onNewPost }: Props) {
 
           {/* User card */}
           <div className="sidebar-user-card" onClick={() => navigate("/profile")}>
-            <div style={{ width: 40, height: 40, borderRadius: "50%", flexShrink: 0, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--fb-blue)" }}>
+            <div style={{ width: 40, height: 40, borderRadius: "50%", flexShrink: 0, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg,#22C55E,#16A34A)" }}>
               {user.avatarUrl
                 ? <img src={user.avatarUrl} alt="" style={{ width: 40, height: 40, objectFit: "cover" }} />
                 : <span style={{ color: "#fff", fontWeight: 700, fontSize: 16 }}>{userInitials}</span>
@@ -323,12 +323,12 @@ export default function Layout({ children, onNewPost }: Props) {
                 <span className="sidebar-nav-icon">{tab.icon}</span>
                 <span>{tab.label}</span>
                 {tab.id === "community" && pendingRequests > 0 && (
-                  <span style={{ marginLeft: "auto", background: "#E41E3F", color: "#fff", borderRadius: 10, minWidth: 18, height: 18, padding: "0 5px", fontSize: 11, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <span style={{ marginLeft: "auto", background: "#EF4444", color: "#fff", borderRadius: 10, minWidth: 18, height: 18, padding: "0 5px", fontSize: 11, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center" }}>
                     {pendingRequests > 9 ? "9+" : pendingRequests}
                   </span>
                 )}
                 {tab.id === "notifications" && unreadNotifs > 0 && (
-                  <span style={{ marginLeft: "auto", background: "#F44336", color: "#fff", borderRadius: 10, minWidth: 18, height: 18, padding: "0 5px", fontSize: 11, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <span style={{ marginLeft: "auto", background: "#EF4444", color: "#fff", borderRadius: 10, minWidth: 18, height: 18, padding: "0 5px", fontSize: 11, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center" }}>
                     {unreadNotifs}
                   </span>
                 )}
@@ -428,7 +428,7 @@ export default function Layout({ children, onNewPost }: Props) {
             <button onClick={() => navigate("/people")} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", gap: 3, borderTop: active ? "3px solid #22C55E" : "3px solid transparent", height: "100%", padding: 0, position: "relative" }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="3.5" stroke={c} strokeWidth="1.8"/><circle cx="17" cy="8" r="2.5" stroke={c} strokeWidth="1.8"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6" stroke={c} strokeWidth="1.8" strokeLinecap="round"/><path d="M19 14c2.5.5 4 2 4 4.5" stroke={c} strokeWidth="1.8" strokeLinecap="round"/></svg>
               <span style={{ fontSize: 10, fontWeight: active ? 700 : 500, color: c }}>Amis</span>
-              {pendingRequests > 0 && <span style={{ position:"absolute", top:6, right:"22%", background:"#E41E3F", color:"#fff", borderRadius:10, minWidth:14, height:14, fontSize:9, fontWeight:800, display:"flex", alignItems:"center", justifyContent:"center", padding:"0 3px", border:"1.5px solid #fff" }}>{pendingRequests > 9 ? "9+" : pendingRequests}</span>}
+              {pendingRequests > 0 && <span style={{ position:"absolute", top:6, right:"22%", background:"#EF4444", color:"#fff", borderRadius:10, minWidth:14, height:14, fontSize:9, fontWeight:800, display:"flex", alignItems:"center", justifyContent:"center", padding:"0 3px", border:"1.5px solid #fff" }}>{pendingRequests > 9 ? "9+" : pendingRequests}</span>}
             </button>
           );
         })()}

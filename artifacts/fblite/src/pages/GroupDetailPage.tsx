@@ -13,7 +13,7 @@ import GroupBotsPanel from "../components/GroupBotsPanel";
 
 const GROUP_CATEGORIES = ["general", "Agriculture", "Technologie", "Commerce", "Éducation", "Sport", "Santé", "Culture", "Religion"];
 
-const AVATAR_COLORS = ["#1877F2", "#E91E63", "#9C27B0", "#FF9800", "#4CAF50", "#00BCD4", "#F44336", "#3F51B5"];
+const AVATAR_COLORS = ["#22C55E", "#E91E63", "#9C27B0", "#FF9800", "#22C55E", "#0EA5E9", "#EF4444", "#6366F1"];
 function avatarColor(id: number) { return AVATAR_COLORS[id % AVATAR_COLORS.length]; }
 function initials(firstName: string, lastName: string) {
   return ((firstName?.[0] ?? "") + (lastName?.[0] ?? "")).toUpperCase() || "??";
@@ -45,7 +45,7 @@ function UserAvatar({ id, firstName, lastName, avatarUrl, size = 40 }: {
 }
 
 function roleLabel(role: string) {
-  if (role === "admin") return { text: "Admin", color: "#1877F2" };
+  if (role === "admin") return { text: "Admin", color: "#22C55E" };
   if (role === "moderator") return { text: "Modérateur", color: "#9C27B0" };
   return null;
 }
@@ -346,7 +346,7 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
         <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 8 }}>{error ?? "Groupe introuvable"}</div>
         <button
           onClick={() => navigate("/community")}
-          style={{ padding: "10px 20px", borderRadius: 8, border: "none", background: "var(--fb-blue)", color: "#fff", fontWeight: 700, cursor: "pointer" }}
+          style={{ padding: "10px 20px", borderRadius: 8, border: "none", background: "var(--bp-primary)", color: "#fff", fontWeight: 700, cursor: "pointer" }}
         >
           ← Retour aux groupes
         </button>
@@ -359,7 +359,7 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
   return (
     <div style={{ maxWidth: 600, margin: "0 auto" }}>
       {/* Cover / header */}
-      <div style={{ position: "relative", background: group.coverUrl ? undefined : "linear-gradient(135deg, #1877F2 0%, #42A5F5 100%)", height: 180, overflow: "hidden" }}>
+      <div style={{ position: "relative", background: group.coverUrl ? undefined : "linear-gradient(135deg, #22C55E 0%, #0EA5E9 100%)", height: 180, overflow: "hidden" }}>
         {group.coverUrl && (
           <img src={group.coverUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         )}
@@ -425,7 +425,7 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
           )}
           {group.isMember ? (
             <div style={{ display: "flex", gap: 10 }}>
-              <div style={{ flex: 1, padding: "11px 0", textAlign: "center", background: "var(--fb-divider)", borderRadius: 8, fontWeight: 700, fontSize: 14, color: "var(--fb-blue)" }}>
+              <div style={{ flex: 1, padding: "11px 0", textAlign: "center", background: "var(--fb-divider)", borderRadius: 8, fontWeight: 700, fontSize: 14, color: "var(--bp-primary)" }}>
                 ✓ Membre
               </div>
               <button
@@ -443,7 +443,7 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
                 ⏳ Demande envoyée — en attente d'approbation
               </div>
             ) : group.joinRequestStatus === "rejected" ? (
-              <div style={{ padding: "12px 0", textAlign: "center", background: "#FFF0F0", borderRadius: 8, fontWeight: 700, fontSize: 14, color: "#D32F2F" }}>
+              <div style={{ padding: "12px 0", textAlign: "center", background: "#FEE2E2", borderRadius: 8, fontWeight: 700, fontSize: 14, color: "#D32F2F" }}>
                 ✗ Demande refusée
               </div>
             ) : (
@@ -478,8 +478,8 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
               onClick={() => setTab(t)}
               style={{
                 flex: 1, padding: "12px 0", border: "none", background: "none", fontWeight: tab === t ? 700 : 500,
-                fontSize: 13, cursor: "pointer", color: tab === t ? "var(--fb-blue)" : "var(--fb-text-secondary)",
-                borderBottom: tab === t ? "3px solid var(--fb-blue)" : "3px solid transparent",
+                fontSize: 13, cursor: "pointer", color: tab === t ? "var(--bp-primary)" : "var(--fb-text-secondary)",
+                borderBottom: tab === t ? "3px solid var(--bp-primary)" : "3px solid transparent",
                 position: "relative",
               }}
             >
@@ -489,7 +489,7 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
                 <>
                   Demandes
                   {pendingRequestCount > 0 && (
-                    <span style={{ position: "absolute", top: 8, right: "calc(50% - 28px)", background: "#E41E3F", color: "#fff", borderRadius: "50%", width: 18, height: 18, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800 }}>
+                    <span style={{ position: "absolute", top: 8, right: "calc(50% - 28px)", background: "#EF4444", color: "#fff", borderRadius: "50%", width: 18, height: 18, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800 }}>
                       {pendingRequestCount > 9 ? "9+" : pendingRequestCount}
                     </span>
                   )}
@@ -536,7 +536,7 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
               )}
 
               {postError && (
-                <div style={{ fontSize: 12, color: "var(--fb-red, #E41E3F)", marginTop: 4 }}>{postError}</div>
+                <div style={{ fontSize: 12, color: "var(--fb-red, #EF4444)", marginTop: 4 }}>{postError}</div>
               )}
 
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10 }}>
@@ -680,8 +680,8 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
                             }
                           }}
                           style={{
-                            padding: "6px 11px", borderRadius: 8, border: "1px solid #E41E3F",
-                            background: "#FFF0F0", color: "#D32F2F", fontWeight: 600, fontSize: 12, cursor: "pointer",
+                            padding: "6px 11px", borderRadius: 8, border: "1px solid #EF4444",
+                            background: "#FEE2E2", color: "#D32F2F", fontWeight: 600, fontSize: 12, cursor: "pointer",
                           }}
                           title="Retirer du groupe"
                         >
@@ -697,8 +697,8 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
                           }
                         }}
                         style={{
-                          padding: "6px 11px", borderRadius: 8, border: "1px solid #E41E3F",
-                          background: "#FFF0F0", color: "#D32F2F", fontWeight: 600, fontSize: 12, cursor: "pointer", flexShrink: 0,
+                          padding: "6px 11px", borderRadius: 8, border: "1px solid #EF4444",
+                          background: "#FEE2E2", color: "#D32F2F", fontWeight: 600, fontSize: 12, cursor: "pointer", flexShrink: 0,
                         }}
                       >
                         Retirer
@@ -731,7 +731,7 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
                 style={{
                   height: 120, borderRadius: 10, overflow: "hidden", background: (editCoverPreview || editCoverUrl)
                     ? undefined
-                    : "linear-gradient(135deg, #1877F2 0%, #42A5F5 100%)",
+                    : "linear-gradient(135deg, #22C55E 0%, #0EA5E9 100%)",
                   display: "flex", alignItems: "center", justifyContent: "center", position: "relative", cursor: "pointer", border: "1px solid var(--fb-border)",
                 }}
                 onClick={() => editCoverInputRef.current?.click()}
@@ -802,8 +802,8 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
                 <button
                   onClick={() => setEditPrivacy("public")}
                   style={{
-                    flex: 1, padding: "12px 0", borderRadius: 10, border: `2px solid ${editPrivacy === "public" ? "var(--fb-blue)" : "var(--fb-border)"}`,
-                    background: editPrivacy === "public" ? "var(--fb-blue)10" : "var(--fb-bg)", color: editPrivacy === "public" ? "var(--fb-blue)" : "var(--fb-text)",
+                    flex: 1, padding: "12px 0", borderRadius: 10, border: `2px solid ${editPrivacy === "public" ? "var(--bp-primary)" : "var(--fb-border)"}`,
+                    background: editPrivacy === "public" ? "var(--bp-primary)10" : "var(--fb-bg)", color: editPrivacy === "public" ? "var(--bp-primary)" : "var(--fb-text)",
                     fontWeight: 700, fontSize: 14, cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
                   }}
                 >
@@ -814,8 +814,8 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
                 <button
                   onClick={() => setEditPrivacy("private")}
                   style={{
-                    flex: 1, padding: "12px 0", borderRadius: 10, border: `2px solid ${editPrivacy === "private" ? "var(--fb-blue)" : "var(--fb-border)"}`,
-                    background: editPrivacy === "private" ? "var(--fb-blue)10" : "var(--fb-bg)", color: editPrivacy === "private" ? "var(--fb-blue)" : "var(--fb-text)",
+                    flex: 1, padding: "12px 0", borderRadius: 10, border: `2px solid ${editPrivacy === "private" ? "var(--bp-primary)" : "var(--fb-border)"}`,
+                    background: editPrivacy === "private" ? "var(--bp-primary)10" : "var(--fb-bg)", color: editPrivacy === "private" ? "var(--bp-primary)" : "var(--fb-text)",
                     fontWeight: 700, fontSize: 14, cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
                   }}
                 >
@@ -825,14 +825,14 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
                 </button>
               </div>
               {editPrivacy === "private" && group.privacy === "public" && (
-                <div style={{ marginTop: 8, padding: "10px 12px", background: "#FFF8E1", borderRadius: 8, border: "1px solid #FFD54F", fontSize: 13, color: "#795548" }}>
+                <div style={{ marginTop: 8, padding: "10px 12px", background: "#FEF3C7", borderRadius: 8, border: "1px solid #FFD54F", fontSize: 13, color: "#795548" }}>
                   ⚠️ Passer en privé empêchera les nouveaux membres de rejoindre directement. Une confirmation sera demandée à l'enregistrement.
                 </div>
               )}
             </div>
 
             {editError && (
-              <div style={{ marginBottom: 12, padding: "10px 12px", background: "#FFF0F0", borderRadius: 8, color: "#D32F2F", fontSize: 13 }}>{editError}</div>
+              <div style={{ marginBottom: 12, padding: "10px 12px", background: "#FEE2E2", borderRadius: 8, color: "#D32F2F", fontSize: 13 }}>{editError}</div>
             )}
 
             <button
@@ -858,7 +858,7 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
           <div style={{ fontWeight: 800, fontSize: 17, marginBottom: 12 }}>
             Demandes d'adhésion
             {pendingRequestCount > 0 && (
-              <span style={{ marginLeft: 8, fontSize: 14, background: "#E41E3F", color: "#fff", borderRadius: 20, padding: "2px 10px", fontWeight: 700 }}>
+              <span style={{ marginLeft: 8, fontSize: 14, background: "#EF4444", color: "#fff", borderRadius: 20, padding: "2px 10px", fontWeight: 700 }}>
                 {pendingRequestCount}
               </span>
             )}
@@ -896,7 +896,7 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
                       onClick={() => handleJoinRequest(req.requestId, "approve")}
                       style={{
                         padding: "7px 13px", borderRadius: 8, border: "none",
-                        background: "var(--fb-blue)", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer",
+                        background: "var(--bp-primary)", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer",
                       }}
                     >
                       ✓ Accepter

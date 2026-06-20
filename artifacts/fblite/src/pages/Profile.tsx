@@ -235,11 +235,11 @@ export default function Profile() {
 
       {/* Back button */}
       <div style={{ background: "var(--fb-white)", padding: "10px 16px", borderBottom: "1px solid var(--fb-divider)", display: "flex", alignItems: "center", gap: 10 }}>
-        <button onClick={() => navigate("/")} style={{ background: "none", border: "none", cursor: "pointer", color: "#050505", display: "flex", alignItems: "center", padding: "4px 6px", borderRadius: 8 }}>
+        <button onClick={() => navigate("/")} style={{ background: "none", border: "none", cursor: "pointer", color: "#111827", display: "flex", alignItems: "center", padding: "4px 6px", borderRadius: 8 }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
         </button>
         <span style={{ fontWeight: 700, fontSize: 17, flex: 1 }}>Profil</span>
-        <button onClick={() => setShowProfileMenu(true)} style={{ background: "none", border: "none", cursor: "pointer", color: "#050505", padding: "6px 8px", borderRadius: 8, fontSize: 20, letterSpacing: 2, lineHeight: 1 }}>···</button>
+        <button onClick={() => setShowProfileMenu(true)} style={{ background: "none", border: "none", cursor: "pointer", color: "#111827", padding: "6px 8px", borderRadius: 8, fontSize: 20, letterSpacing: 2, lineHeight: 1 }}>···</button>
       </div>
 
       {/* Profile options bottom sheet — premium design */}
@@ -252,7 +252,7 @@ export default function Profile() {
 
             {/* Handle */}
             <div style={{ display: "flex", justifyContent: "center", padding: "12px 0 0" }}>
-              <div style={{ width: 44, height: 5, background: "#E2E8F0", borderRadius: 99 }} />
+              <div style={{ width: 44, height: 5, background: "#E5E7EB", borderRadius: 99 }} />
             </div>
 
             {/* ─ Header ─ */}
@@ -260,20 +260,20 @@ export default function Profile() {
               <div style={{ position: "relative", flexShrink: 0 }}>
                 {avatarUrl
                   ? <img src={avatarUrl} alt="avatar" style={{ width: 52, height: 52, borderRadius: "50%", objectFit: "cover" }} />
-                  : <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#16C24A", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 18 }}>{userInitials}</div>
+                  : <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 18 }}>{userInitials}</div>
                 }
-                <div style={{ position: "absolute", bottom: 1, right: 1, width: 13, height: 13, borderRadius: "50%", background: "#16C24A", border: "2.5px solid #fff" }} />
+                <div style={{ position: "absolute", bottom: 1, right: 1, width: 13, height: 13, borderRadius: "50%", background: "#22C55E", border: "2.5px solid #fff" }} />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontWeight: 800, fontSize: 16, color: "#0F172A" }}>{localUser.name} {localUser.flag ?? "🌍"}</div>
+                <div style={{ fontWeight: 800, fontSize: 16, color: "#111827" }}>{localUser.name} {localUser.flag ?? "🌍"}</div>
                 <button onClick={() => { setShowProfileMenu(false); document.documentElement.style.overflow = ""; document.body.style.overflow = ""; navigate(`/profile/${localUser.id}`); }} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
-                  <span style={{ fontSize: 13, color: "#16C24A", fontWeight: 600 }}>Voir votre profil</span>
-                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#16C24A" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  <span style={{ fontSize: 13, color: "#22C55E", fontWeight: 600 }}>Voir votre profil</span>
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
                 </button>
                 {isPro && (
                   <div style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "#DCFCE7", borderRadius: 99, padding: "3px 10px", marginTop: 5 }}>
-                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#16C24A" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span style={{ fontSize: 11.5, fontWeight: 700, color: "#16C24A" }}>Mode Pro activé</span>
+                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span style={{ fontSize: 11.5, fontWeight: 700, color: "#22C55E" }}>Mode Pro activé</span>
                   </div>
                 )}
               </div>
@@ -286,17 +286,17 @@ export default function Profile() {
 
               {/* ─ Section Profil ─ */}
               <div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#16C24A", textTransform: "uppercase", letterSpacing: 0.8, padding: "0 4px 8px" }}>Profil</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#22C55E", textTransform: "uppercase", letterSpacing: 0.8, padding: "0 4px 8px" }}>Profil</div>
                 <div style={{ background: "#F8FAFC", borderRadius: 20, overflow: "hidden" }}>
                   {([
-                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#16C24A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 8 0v2"/><circle cx="18" cy="18" r="3"/><line x1="18" y1="15" x2="18" y2="18"/><line x1="18" y1="18" x2="21" y2="18"/></svg>, bg: "#DCFCE7", label: "Statut du profil", desc: "Définissez votre statut actuel", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; setShowProfileStatus(true); } },
-                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#16C24A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>, bg: "#DCFCE7", label: "Voir en tant que visiteur", desc: "Découvrez votre profil comme les autres", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; setShowVoirEnTantQue(true); } },
-                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#16C24A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>, bg: "#DCFCE7", label: "Copier le lien du profil", desc: "Partagez votre profil facilement", action: () => { copyProfileLink(); document.documentElement.style.overflow=""; document.body.style.overflow=""; } },
+                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 8 0v2"/><circle cx="18" cy="18" r="3"/><line x1="18" y1="15" x2="18" y2="18"/><line x1="18" y1="18" x2="21" y2="18"/></svg>, bg: "#DCFCE7", label: "Statut du profil", desc: "Définissez votre statut actuel", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; setShowProfileStatus(true); } },
+                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>, bg: "#DCFCE7", label: "Voir en tant que visiteur", desc: "Découvrez votre profil comme les autres", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; setShowVoirEnTantQue(true); } },
+                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>, bg: "#DCFCE7", label: "Copier le lien du profil", desc: "Partagez votre profil facilement", action: () => { copyProfileLink(); document.documentElement.style.overflow=""; document.body.style.overflow=""; } },
                   ] as {svg:React.ReactNode;bg:string;label:string;desc:string;action:()=>void}[]).map((item, i, arr) => (
                     <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom: i < arr.length-1 ? "1px solid #F1F5F9" : "none", textAlign:"left" }}>
                       <div style={{ width:40, height:40, borderRadius:12, background:item.bg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{item.svg}</div>
-                      <div style={{ flex:1 }}><div style={{ fontWeight:700, fontSize:14.5, color:"#0F172A" }}>{item.label}</div><div style={{ fontSize:12, color:"#94A3B8", marginTop:1 }}>{item.desc}</div></div>
-                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                      <div style={{ flex:1 }}><div style={{ fontWeight:700, fontSize:14.5, color:"#111827" }}>{item.label}</div><div style={{ fontSize:12, color:"#9CA3AF", marginTop:1 }}>{item.desc}</div></div>
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#E5E7EB" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
                     </button>
                   ))}
                 </div>
@@ -304,18 +304,18 @@ export default function Profile() {
 
               {/* ─ Section Gestion du contenu ─ */}
               <div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#2563EB", textTransform: "uppercase", letterSpacing: 0.8, padding: "0 4px 8px" }}>Gestion du contenu</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#22C55E", textTransform: "uppercase", letterSpacing: 0.8, padding: "0 4px 8px" }}>Gestion du contenu</div>
                 <div style={{ background: "#F8FAFC", borderRadius: 20, overflow: "hidden" }}>
                   {([
-                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>, bg: "#DBEAFE", label: "Archive", desc: "Gérez vos publications archivées", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; setShowArchive(true); } },
+                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>, bg: "#DCFCE7", label: "Archive", desc: "Gérez vos publications archivées", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; setShowArchive(true); } },
                     { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.27"/></svg>, bg: "#EDE9FE", label: "Historique d'activité", desc: "Consultez vos actions récentes", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; setShowActivityHistory(true); } },
                     { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>, bg: "#FEF3C7", label: "Examiner les publications", desc: "Gérez et contrôlez vos publications", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; setShowTagReviewSettings(true); } },
                     { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="#F59E0B"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>, bg: "#FEF3C7", label: "Éléments à la une", desc: "Mettez en avant vos meilleurs contenus", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; setShowFeaturedContent(true); } },
                   ] as {svg:React.ReactNode;bg:string;label:string;desc:string;action:()=>void}[]).map((item, i, arr) => (
                     <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom: i < arr.length-1 ? "1px solid #F1F5F9" : "none", textAlign:"left" }}>
                       <div style={{ width:40, height:40, borderRadius:12, background:item.bg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{item.svg}</div>
-                      <div style={{ flex:1 }}><div style={{ fontWeight:700, fontSize:14.5, color:"#0F172A" }}>{item.label}</div><div style={{ fontSize:12, color:"#94A3B8", marginTop:1 }}>{item.desc}</div></div>
-                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                      <div style={{ flex:1 }}><div style={{ fontWeight:700, fontSize:14.5, color:"#111827" }}>{item.label}</div><div style={{ fontSize:12, color:"#9CA3AF", marginTop:1 }}>{item.desc}</div></div>
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#E5E7EB" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
                     </button>
                   ))}
                 </div>
@@ -328,14 +328,14 @@ export default function Profile() {
                   {([
                     { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="#F59E0B"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>, bg: "#FEF3C7", label: isPro ? "Mode Pro activé" : "Activer le mode Pro", desc: "Profitez des outils professionnels", badge: isPro ? "Actif" : null, action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; isPro ? setShowDeactivatePro(true) : setShowProMode(true); } },
                     { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>, bg: "#EDE9FE", label: "Statistiques du profil", desc: "Analysez vos performances", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; } },
-                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, bg: "#DBEAFE", label: "Audience", desc: "Découvrez votre communauté", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; } },
-                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#16C24A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>, bg: "#DCFCE7", label: "Performances", desc: "Suivez l'évolution de votre profil", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; } },
+                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, bg: "#DCFCE7", label: "Audience", desc: "Découvrez votre communauté", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; } },
+                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>, bg: "#DCFCE7", label: "Performances", desc: "Suivez l'évolution de votre profil", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; } },
                   ] as {svg:React.ReactNode;bg:string;label:string;desc:string;badge?:string|null;action:()=>void}[]).map((item, i, arr) => (
                     <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom: i < arr.length-1 ? "1px solid #F1F5F9" : "none", textAlign:"left" }}>
                       <div style={{ width:40, height:40, borderRadius:12, background:item.bg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{item.svg}</div>
-                      <div style={{ flex:1 }}><div style={{ fontWeight:700, fontSize:14.5, color:"#0F172A" }}>{item.label}</div><div style={{ fontSize:12, color:"#94A3B8", marginTop:1 }}>{item.desc}</div></div>
-                      {item.badge && <div style={{ background:"#DCFCE7", color:"#16C24A", fontSize:11, fontWeight:800, borderRadius:99, padding:"3px 9px", flexShrink:0 }}>{item.badge}</div>}
-                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                      <div style={{ flex:1 }}><div style={{ fontWeight:700, fontSize:14.5, color:"#111827" }}>{item.label}</div><div style={{ fontSize:12, color:"#9CA3AF", marginTop:1 }}>{item.desc}</div></div>
+                      {item.badge && <div style={{ background:"#DCFCE7", color:"#22C55E", fontSize:11, fontWeight:800, borderRadius:99, padding:"3px 9px", flexShrink:0 }}>{item.badge}</div>}
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#E5E7EB" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
                     </button>
                   ))}
                 </div>
@@ -346,15 +346,15 @@ export default function Profile() {
                 <div style={{ fontSize: 12, fontWeight: 700, color: "#F59E0B", textTransform: "uppercase", letterSpacing: 0.8, padding: "0 4px 8px" }}>Confidentialité</div>
                 <div style={{ background: "#F8FAFC", borderRadius: 20, overflow: "hidden" }}>
                   {([
-                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke={isProfileLocked?"#F59E0B":"#475569"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{isProfileLocked ? <><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></> : <><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></>}</svg>, bg: isProfileLocked ? "#FEF3C7" : "#F1F5F9", label: isProfileLocked ? "Déverrouiller le profil" : "Verrouiller le profil", desc: "Contrôlez qui peut voir votre contenu", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; setShowLockProfile(true); } },
-                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>, bg: "#DBEAFE", label: "Paramètres de visibilité", desc: "Gérez la visibilité de votre profil", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; navigate("/menu"); } },
+                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke={isProfileLocked?"#F59E0B":"#64748B"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{isProfileLocked ? <><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></> : <><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></>}</svg>, bg: isProfileLocked ? "#FEF3C7" : "#F1F5F9", label: isProfileLocked ? "Déverrouiller le profil" : "Verrouiller le profil", desc: "Contrôlez qui peut voir votre contenu", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; setShowLockProfile(true); } },
+                    { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>, bg: "#DCFCE7", label: "Paramètres de visibilité", desc: "Gérez la visibilité de votre profil", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; navigate("/menu"); } },
                     { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/></svg>, bg: "#EDE9FE", label: "Gestion des abonnés", desc: "Gérez votre liste d'abonnés", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; navigate("/community"); } },
                     { svg: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>, bg: "#FEE2E2", label: "Blocages", desc: "Gérez les utilisateurs bloqués", action: () => { setShowProfileMenu(false); document.documentElement.style.overflow=""; document.body.style.overflow=""; navigate("/menu"); } },
                   ] as {svg:React.ReactNode;bg:string;label:string;desc:string;action:()=>void}[]).map((item, i, arr) => (
                     <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom: i < arr.length-1 ? "1px solid #F1F5F9" : "none", textAlign:"left" }}>
                       <div style={{ width:40, height:40, borderRadius:12, background:item.bg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{item.svg}</div>
-                      <div style={{ flex:1 }}><div style={{ fontWeight:700, fontSize:14.5, color:"#0F172A" }}>{item.label}</div><div style={{ fontSize:12, color:"#94A3B8", marginTop:1 }}>{item.desc}</div></div>
-                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                      <div style={{ flex:1 }}><div style={{ fontWeight:700, fontSize:14.5, color:"#111827" }}>{item.label}</div><div style={{ fontSize:12, color:"#9CA3AF", marginTop:1 }}>{item.desc}</div></div>
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#E5E7EB" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
                     </button>
                   ))}
                 </div>
@@ -367,7 +367,7 @@ export default function Profile() {
       )}
 
       {displayError && (
-        <div style={{ background: "#ffebee", color: "#b00020", padding: "8px 16px", fontSize: 13, textAlign: "center" }}>
+        <div style={{ background: "#FEE2E2", color: "#EF4444", padding: "8px 16px", fontSize: 13, textAlign: "center" }}>
           {displayError.includes("401") || displayError.includes("Erreur 401")
             ? "Session expirée — reconnecte-toi pour uploader des photos"
             : displayError}
@@ -479,13 +479,13 @@ export default function Profile() {
                     <rect x="7" y="0" width="6" height="9" rx="1.5" fill="url(#rg)"/>
                     <defs>
                       <linearGradient id="rg" x1="7" y1="0" x2="13" y2="9" gradientUnits="userSpaceOnUse">
-                        <stop stopColor="#d0d0d0"/>
+                        <stop stopColor="#CBD5E1"/>
                         <stop offset="1" stopColor="#888"/>
                       </linearGradient>
                     </defs>
                     {/* Circle */}
-                    <circle cx="10" cy="15" r="6.5" fill="#C8C8C8" stroke="#aaa" strokeWidth="1"/>
-                    <circle cx="10" cy="15" r="4.5" fill="#e0e0e0"/>
+                    <circle cx="10" cy="15" r="6.5" fill="#94A3B8" stroke="#aaa" strokeWidth="1"/>
+                    <circle cx="10" cy="15" r="4.5" fill="#CBD5E1"/>
                     {/* Number 2 */}
                     <text x="10" y="19" textAnchor="middle" fontSize="6" fontWeight="800" fill="#666">2</text>
                   </svg>
@@ -497,8 +497,8 @@ export default function Profile() {
 
                 {/* Location */}
                 {(localUser.countryCode || localUser.country) && (
-                  <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 3, color: "#65676b", fontSize: 13 }}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#65676b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 3, color: "#64748B", fontSize: 13 }}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                     {localUser.countryCode || localUser.country}
                   </div>
                 )}
@@ -509,14 +509,14 @@ export default function Profile() {
                   style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "#fff", border: "1px solid #E5E7EB", borderRadius: 99, padding: "5px 13px", marginTop: 9, cursor: "pointer", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
                 >
                   <span style={{ fontSize: 14 }}>🥈</span>
-                  <span style={{ fontSize: 12.5, fontWeight: 700, color: "#374151" }}>Niveau {score.label} · {score.pct}%</span>
+                  <span style={{ fontSize: 12.5, fontWeight: 700, color: "#64748B" }}>Niveau {score.label} · {score.pct}%</span>
                 </button>
               </div>
 
               {/* Modifier button */}
               <button
                 onClick={() => navigate("/edit-profile")}
-                style={{ display: "flex", alignItems: "center", gap: 5, background: "#fff", border: "1.5px solid #ccc", borderRadius: 8, padding: "7px 13px", fontSize: 13, fontWeight: 600, color: "#050505", cursor: "pointer", flexShrink: 0, marginTop: 4 }}
+                style={{ display: "flex", alignItems: "center", gap: 5, background: "#fff", border: "1.5px solid #ccc", borderRadius: 8, padding: "7px 13px", fontSize: 13, fontWeight: 600, color: "#111827", cursor: "pointer", flexShrink: 0, marginTop: 4 }}
               >
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                 Modifier
@@ -538,7 +538,7 @@ export default function Profile() {
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 600, fontSize: 13.5, color: "#111827" }}>Profil verrouillé</div>
-                  <div style={{ fontSize: 12, color: "#6B7280", marginTop: 1 }}>Seuls vos amis voient votre contenu</div>
+                  <div style={{ fontSize: 12, color: "#64748B", marginTop: 1 }}>Seuls vos amis voient votre contenu</div>
                 </div>
                 <span style={{ fontSize: 12, fontWeight: 600, color: "#22C55E", flexShrink: 0 }}>Gérer</span>
                 <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#9CA3AF" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
@@ -546,15 +546,15 @@ export default function Profile() {
             )}
 
             {/* Stats — Facebook-style card with vertical dividers */}
-            <div style={{ display: "flex", marginTop: 16, marginBottom: 4, border: "1px solid #F0F2F5", borderRadius: 12, overflow: "hidden", background: "#FAFAFA" }}>
+            <div style={{ display: "flex", marginTop: 16, marginBottom: 4, border: "1px solid #F1F5F9", borderRadius: 12, overflow: "hidden", background: "#F8FAFC" }}>
               {[
                 { label: "Amis",         value: String(friends.length) },
                 { label: "Abonnés",      value: "0" },
                 { label: "Publications", value: String(myPosts.length) },
               ].map((s, i) => (
-                <div key={s.label} style={{ flex: 1, textAlign: "center", padding: "12px 4px", borderRight: i < 2 ? "1px solid #F0F2F5" : "none" }}>
+                <div key={s.label} style={{ flex: 1, textAlign: "center", padding: "12px 4px", borderRight: i < 2 ? "1px solid #F1F5F9" : "none" }}>
                   <div style={{ fontWeight: 900, fontSize: 22, color: "#111827", lineHeight: 1 }}>{s.value}</div>
-                  <div style={{ fontSize: 11.5, color: "#6B7280", marginTop: 3, fontWeight: 500 }}>{s.label}</div>
+                  <div style={{ fontSize: 11.5, color: "#64748B", marginTop: 3, fontWeight: 500 }}>{s.label}</div>
                 </div>
               ))}
             </div>
@@ -569,7 +569,7 @@ export default function Profile() {
               </button>
               <button
                 onClick={() => navigate("/edit-profile")}
-                style={{ flex: 1, padding: "8px 8px", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontSize: 14, fontWeight: 700, borderRadius: 10, background: "#F3F4F6", border: "none", color: "#111827", cursor: "pointer" }}
+                style={{ flex: 1, padding: "8px 8px", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontSize: 14, fontWeight: 700, borderRadius: 10, background: "#F1F5F9", border: "none", color: "#111827", cursor: "pointer" }}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                 Modifier le profil
@@ -609,7 +609,7 @@ export default function Profile() {
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     {avatarUrl
                       ? <img src={avatarUrl} alt="Avatar" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
-                      : <div className="avatar" style={{ background: "#1877F2" }}>{userInitials}</div>
+                      : <div className="avatar" style={{ background: "#22C55E" }}>{userInitials}</div>
                     }
                     <div className="post-meta">
                       <div className="post-author">
@@ -620,7 +620,7 @@ export default function Profile() {
                     </div>
                   </div>
                   <button onClick={(e) => { e.stopPropagation(); setOpenMenu({ id: post.id, isPinned: post.isPinned ?? false, commentsDisabled: post.commentsDisabled ?? false, audience: post.audience ?? "public" }); }}
-                    style={{ background: "none", border: "none", cursor: "pointer", padding: "4px 8px", borderRadius: 20, color: "#65676b", fontSize: 20, fontWeight: 700, lineHeight: 1, flexShrink: 0 }}>
+                    style={{ background: "none", border: "none", cursor: "pointer", padding: "4px 8px", borderRadius: 20, color: "#64748B", fontSize: 20, fontWeight: 700, lineHeight: 1, flexShrink: 0 }}>
                     ···
                   </button>
                 </div>
@@ -647,7 +647,7 @@ export default function Profile() {
           <>
             <div onClick={closeMenu} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 9990 }} />
             <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#fff", borderRadius: "24px 24px 0 0", zIndex: 9991, paddingBottom: "env(safe-area-inset-bottom,12px)", maxHeight: "80vh", overflowY: "auto" }}>
-              <div style={{ width: 40, height: 4, background: "#E2E8F0", borderRadius: 2, margin: "10px auto 6px" }} />
+              <div style={{ width: 40, height: 4, background: "#E5E7EB", borderRadius: 2, margin: "10px auto 6px" }} />
               {([
                 { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>, label: "Modifier le post", action: closeMenu },
                 { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1v3.76z"/></svg>, label: openMenu.isPinned ? "Désépingler le post" : "Épingler le post", action: () => pinPost(openMenu.id, openMenu.isPinned) },
@@ -659,7 +659,7 @@ export default function Profile() {
               ].map((item, i) => (
                 <button key={i} onClick={item.action} style={{ width: "100%", background: "none", border: "none", borderTop: i === 0 ? "none" : "1px solid #F8FAFC", cursor: "pointer", display: "flex", alignItems: "center", gap: 14, padding: "0 20px", height: 56, textAlign: "left" }}>
                   <div style={{ width: 38, height: 38, borderRadius: 12, background: "rgba(34,197,94,0.08)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.icon}</div>
-                  <span style={{ flex: 1, fontSize: 15, fontWeight: 600, color: "#0D1B2A" }}>{item.label}</span>
+                  <span style={{ flex: 1, fontSize: 15, fontWeight: 600, color: "#111827" }}>{item.label}</span>
                 </button>
               )))}
               <button onClick={() => { setConfirmDeleteId(openMenu.id); closeMenu(); }} style={{ width: "100%", background: "none", border: "none", borderTop: "1px solid #F8FAFC", cursor: "pointer", display: "flex", alignItems: "center", gap: 14, padding: "0 20px", height: 56, textAlign: "left" }}>
@@ -678,8 +678,8 @@ export default function Profile() {
           <>
             <div onClick={() => setConfirmDeleteId(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 9995 }} />
             <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#fff", borderRadius: "24px 24px 0 0", zIndex: 9996, padding: "24px 20px calc(24px + env(safe-area-inset-bottom,0px))" }}>
-              <div style={{ width: 40, height: 4, background: "#E2E8F0", borderRadius: 2, margin: "0 auto 20px" }} />
-              <div style={{ fontWeight: 800, fontSize: 17, color: "#0D1B2A", textAlign: "center", marginBottom: 8 }}>Supprimer ce post ?</div>
+              <div style={{ width: 40, height: 4, background: "#E5E7EB", borderRadius: 2, margin: "0 auto 20px" }} />
+              <div style={{ fontWeight: 800, fontSize: 17, color: "#111827", textAlign: "center", marginBottom: 8 }}>Supprimer ce post ?</div>
               <div style={{ fontSize: 14, color: "#64748B", textAlign: "center", marginBottom: 24 }}>Cette action est irréversible.</div>
               <button onClick={() => deletePost(confirmDeleteId)} style={{ width: "100%", height: 52, background: "#EF4444", border: "none", borderRadius: 16, color: "#fff", fontWeight: 700, fontSize: 15, cursor: "pointer", marginBottom: 10 }}>Supprimer</button>
               <button onClick={() => setConfirmDeleteId(null)} style={{ width: "100%", height: 52, background: "#F1F5F9", border: "none", borderRadius: 16, color: "#64748B", fontWeight: 600, fontSize: 15, cursor: "pointer" }}>Annuler</button>
@@ -693,8 +693,8 @@ export default function Profile() {
           <>
             <div onClick={() => setStatsModal(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 9995 }} />
             <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#fff", borderRadius: "24px 24px 0 0", zIndex: 9996, padding: "24px 20px calc(24px + env(safe-area-inset-bottom,0px))" }}>
-              <div style={{ width: 40, height: 4, background: "#E2E8F0", borderRadius: 2, margin: "0 auto 20px" }} />
-              <div style={{ fontWeight: 800, fontSize: 17, color: "#0D1B2A", marginBottom: 20 }}>Statistiques</div>
+              <div style={{ width: 40, height: 4, background: "#E5E7EB", borderRadius: 2, margin: "0 auto 20px" }} />
+              <div style={{ fontWeight: 800, fontSize: 17, color: "#111827", marginBottom: 20 }}>Statistiques</div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 12 }}>
                 {[
                   { label: "Vues", value: statsModal.views },
@@ -724,8 +724,8 @@ export default function Profile() {
           <>
             <div onClick={() => setAudienceSheet(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 9995 }} />
             <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#fff", borderRadius: "24px 24px 0 0", zIndex: 9996, padding: "24px 20px calc(24px + env(safe-area-inset-bottom,0px))" }}>
-              <div style={{ width: 40, height: 4, background: "#E2E8F0", borderRadius: 2, margin: "0 auto 20px" }} />
-              <div style={{ fontWeight: 800, fontSize: 17, color: "#0D1B2A", marginBottom: 20 }}>Qui peut voir ce post ?</div>
+              <div style={{ width: 40, height: 4, background: "#E5E7EB", borderRadius: 2, margin: "0 auto 20px" }} />
+              <div style={{ fontWeight: 800, fontSize: 17, color: "#111827", marginBottom: 20 }}>Qui peut voir ce post ?</div>
               {[
                 { value: "public", label: "Public", desc: "Tout le monde peut voir ce post" },
                 { value: "friends", label: "Amis seulement", desc: "Seuls vos amis peuvent voir ce post" },
@@ -736,11 +736,11 @@ export default function Profile() {
                 return (
                   <button key={opt.value} onClick={() => setAudience(audienceSheet, opt.value)}
                     style={{ width: "100%", background: selected ? "rgba(34,197,94,0.06)" : "none", border: selected ? "1.5px solid #22C55E" : "1.5px solid #F1F5F9", borderRadius: 16, padding: "14px 16px", marginBottom: 10, cursor: "pointer", textAlign: "left", display: "flex", alignItems: "center", gap: 12 }}>
-                    <div style={{ width: 20, height: 20, borderRadius: "50%", border: `2px solid ${selected ? "#22C55E" : "#CBD5E1"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <div style={{ width: 20, height: 20, borderRadius: "50%", border: `2px solid ${selected ? "#22C55E" : "#E5E7EB"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                       {selected && <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#22C55E" }} />}
                     </div>
                     <div>
-                      <div style={{ fontWeight: 700, fontSize: 14, color: "#0D1B2A" }}>{opt.label}</div>
+                      <div style={{ fontWeight: 700, fontSize: 14, color: "#111827" }}>{opt.label}</div>
                       <div style={{ fontSize: 12, color: "#64748B", marginTop: 2 }}>{opt.desc}</div>
                     </div>
                   </button>
@@ -758,23 +758,23 @@ export default function Profile() {
 
           const infoRows = [
             {
-              icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2ECC40" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>,
+              icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>,
               label: bio,
             },
             {
-              icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2ECC40" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>,
+              icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>,
               label: `Habite à ${localUser.country || localUser.countryCode || "TG"}`,
             },
             {
-              icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2ECC40" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.16 6.16l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>,
+              icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.16 6.16l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>,
               label: localUser.phone || "Téléphone non spécifié",
             },
             {
-              icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2ECC40" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>,
+              icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>,
               label: localUser.email || "Email non spécifié",
             },
             {
-              icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2ECC40" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
+              icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
               label: `Membre depuis ${extData.joinDate || "mai 2024"}`,
             },
           ];
@@ -784,22 +784,22 @@ export default function Profile() {
 
               {/* ── Informations card ── */}
               <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 1px 6px rgba(0,0,0,0.07)", overflow: "hidden" }}>
-                <div style={{ padding: "16px 16px 10px", fontWeight: 800, fontSize: 16, color: "#050505" }}>Informations</div>
+                <div style={{ padding: "16px 16px 10px", fontWeight: 800, fontSize: 16, color: "#111827" }}>Informations</div>
                 {infoRows.map((row, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 16px", borderTop: i === 0 ? "none" : "1px solid #f0f0f0" }}>
-                    <div style={{ width: 36, height: 36, borderRadius: 10, background: "#f0faf0", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 16px", borderTop: i === 0 ? "none" : "1px solid #F1F5F9" }}>
+                    <div style={{ width: 36, height: 36, borderRadius: 10, background: "#DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                       {row.icon}
                     </div>
-                    <span style={{ flex: 1, fontSize: 14, color: "#050505", lineHeight: 1.4 }}>{row.label}</span>
+                    <span style={{ flex: 1, fontSize: 14, color: "#111827", lineHeight: 1.4 }}>{row.label}</span>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ccc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                   </div>
                 ))}
                 {/* Profil vérifié row */}
-                <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 16px", borderTop: "1px solid #f0f0f0" }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 10, background: "#f0faf0", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2ECC40" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 16px", borderTop: "1px solid #F1F5F9" }}>
+                  <div style={{ width: 36, height: 36, borderRadius: 10, background: "#DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
                   </div>
-                  <span style={{ flex: 1, fontSize: 14, color: "#2ECC40", fontWeight: 700 }}>Profil vérifié</span>
+                  <span style={{ flex: 1, fontSize: 14, color: "#22C55E", fontWeight: 700 }}>Profil vérifié</span>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ccc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                 </div>
               </div>
@@ -809,7 +809,7 @@ export default function Profile() {
                 onClick={() => navigate("/score")}
                 style={{ background: "#fff", borderRadius: 16, boxShadow: "0 1px 6px rgba(0,0,0,0.07)", padding: "16px", cursor: "pointer" }}
               >
-                <div style={{ fontWeight: 800, fontSize: 16, color: "#050505", marginBottom: 14, display: "flex", alignItems: "center", gap: 6 }}>
+                <div style={{ fontWeight: 800, fontSize: 16, color: "#111827", marginBottom: 14, display: "flex", alignItems: "center", gap: 6 }}>
                   Score de confiance
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                 </div>
@@ -819,11 +819,11 @@ export default function Profile() {
                     <defs>
                       <linearGradient id="medal-ribbon" x1="0" y1="0" x2="1" y2="1">
                         <stop stopColor="#6366f1"/>
-                        <stop offset="1" stopColor="#3730a3"/>
+                        <stop offset="1" stopColor="#6366F1"/>
                       </linearGradient>
                       <linearGradient id="medal-body" x1="0" y1="0" x2="1" y2="1">
-                        <stop stopColor="#e2e8f0"/>
-                        <stop offset="1" stopColor="#94a3b8"/>
+                        <stop stopColor="#E5E7EB"/>
+                        <stop offset="1" stopColor="#9CA3AF"/>
                       </linearGradient>
                       <linearGradient id="medal-inner" x1="0" y1="0" x2="1" y2="1">
                         <stop stopColor="#f8fafc"/>
@@ -835,22 +835,22 @@ export default function Profile() {
                     {/* Ribbon right */}
                     <rect x="28" y="2" width="9" height="22" rx="3" fill="url(#medal-ribbon)" transform="rotate(15 32.5 13)"/>
                     {/* Outer circle */}
-                    <circle cx="26" cy="42" r="17" fill="url(#medal-body)" stroke="#b0bec5" strokeWidth="1.5"/>
+                    <circle cx="26" cy="42" r="17" fill="url(#medal-body)" stroke="#94A3B8" strokeWidth="1.5"/>
                     {/* Inner circle */}
                     <circle cx="26" cy="42" r="12" fill="url(#medal-inner)"/>
                     {/* Number 2 */}
-                    <text x="26" y="48" textAnchor="middle" fontSize="14" fontWeight="900" fill="#475569">2</text>
+                    <text x="26" y="48" textAnchor="middle" fontSize="14" fontWeight="900" fill="#64748B">2</text>
                   </svg>
 
                   {/* Score details */}
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 800, fontSize: 15, color: "#050505" }}>Niveau {score.label}</div>
-                    <div style={{ fontSize: 13, color: "#65676b", marginTop: 2 }}>
-                      Progression : <span style={{ color: "#2ECC40", fontWeight: 700 }}>{score.pct}%</span>
+                    <div style={{ fontWeight: 800, fontSize: 15, color: "#111827" }}>Niveau {score.label}</div>
+                    <div style={{ fontSize: 13, color: "#64748B", marginTop: 2 }}>
+                      Progression : <span style={{ color: "#22C55E", fontWeight: 700 }}>{score.pct}%</span>
                     </div>
                     {/* Progress bar */}
-                    <div style={{ background: "#f0f0f0", borderRadius: 6, height: 7, marginTop: 7, overflow: "hidden" }}>
-                      <div style={{ height: "100%", width: `${score.pct}%`, background: "linear-gradient(90deg,#2ECC40,#27AE60)", borderRadius: 6, transition: "width 0.6s ease" }} />
+                    <div style={{ background: "#E5E7EB", borderRadius: 6, height: 7, marginTop: 7, overflow: "hidden" }}>
+                      <div style={{ height: "100%", width: `${score.pct}%`, background: "linear-gradient(90deg,#22C55E,#27AE60)", borderRadius: 6, transition: "width 0.6s ease" }} />
                     </div>
                     {score.nextLevel && score.pointsToNext !== null && (
                       <div style={{ fontSize: 11.5, color: "#888", marginTop: 5 }}>
@@ -860,7 +860,7 @@ export default function Profile() {
                   </div>
 
                   {/* Points badge */}
-                  <div style={{ flexShrink: 0, background: "linear-gradient(135deg,#2ECC40,#1a9e2f)", borderRadius: 14, padding: "10px 14px", display: "flex", flexDirection: "column", alignItems: "center", gap: 3, boxShadow: "0 3px 10px rgba(46,204,64,0.3)" }}>
+                  <div style={{ flexShrink: 0, background: "linear-gradient(135deg,#22C55E,#1a9e2f)", borderRadius: 14, padding: "10px 14px", display: "flex", flexDirection: "column", alignItems: "center", gap: 3, boxShadow: "0 3px 10px rgba(46,204,64,0.3)" }}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
                     <span style={{ fontSize: 18, fontWeight: 900, color: "#fff", lineHeight: 1 }}>{score.points}</span>
                     <span style={{ fontSize: 10, color: "rgba(255,255,255,0.85)", fontWeight: 600 }}>Points</span>
@@ -877,10 +877,10 @@ export default function Profile() {
                 } catch { /* ignore */ }
                 return hobbies.length > 0 ? (
                   <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 1px 6px rgba(0,0,0,0.07)", padding: 16 }}>
-                    <div style={{ fontWeight: 800, fontSize: 16, color: "#050505", marginBottom: 12 }}>Centres d'intérêt</div>
+                    <div style={{ fontWeight: 800, fontSize: 16, color: "#111827", marginBottom: 12 }}>Centres d'intérêt</div>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                       {hobbies.map(h => (
-                        <span key={h} style={{ background: "#f0faf0", color: "#2ECC40", padding: "6px 14px", borderRadius: 20, fontSize: 13, fontWeight: 600, border: "1px solid #c3eacc" }}>{h}</span>
+                        <span key={h} style={{ background: "#DCFCE7", color: "#22C55E", padding: "6px 14px", borderRadius: 20, fontSize: 13, fontWeight: 600, border: "1px solid #DCFCE7" }}>{h}</span>
                       ))}
                     </div>
                   </div>
@@ -904,7 +904,7 @@ export default function Profile() {
               {friends.slice(0, 6).map(u => {
                 const name = `${u.firstName} ${u.lastName}`;
                 const inits = name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
-                const COLORS = ["#1877F2","#E91E8C","#7B1FA2","#F57C00","#388E3C","#00838F"];
+                const COLORS = ["#22C55E","#EC4899","#8B5CF6","#D97706","#388E3C","#00838F"];
                 const color = COLORS[u.id % COLORS.length];
                 const FLAGS: Record<string,string> = { CI:"🇨🇮", SN:"🇸🇳", BJ:"🇧🇯", TG:"🇹🇬", BF:"🇧🇫", GH:"🇬🇭", ML:"🇲🇱" };
                 const flag = u.country ? (FLAGS[u.country] ?? "🌍") : "🌍";
@@ -933,7 +933,7 @@ export default function Profile() {
             <div style={{ fontWeight: 700, marginBottom: 12, fontSize: 15 }}>Photos</div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 3 }}>
               {avatarUrl && (
-                <div style={{ aspectRatio: "1", borderRadius: 4, overflow: "hidden", border: "2px solid var(--fb-blue)" }}>
+                <div style={{ aspectRatio: "1", borderRadius: 4, overflow: "hidden", border: "2px solid var(--bp-primary)" }}>
                   <img src={avatarUrl} alt="Photo de profil" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 </div>
               )}

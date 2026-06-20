@@ -50,7 +50,7 @@ export default function ProductDetail({ id }: Props) {
     <div style={{ maxWidth: 600, margin: "0 auto", textAlign: "center", padding: 60 }}>
       <div style={{ fontSize: 40 }}>❌</div>
       <div style={{ marginTop: 12, fontWeight: 700 }}>Produit introuvable</div>
-      <button onClick={() => navigate("/marketplace")} style={{ marginTop: 16, background: "var(--fb-blue)", color: "#fff", border: "none", borderRadius: 20, padding: "10px 24px", cursor: "pointer", fontWeight: 700 }}>← Retour</button>
+      <button onClick={() => navigate("/marketplace")} style={{ marginTop: 16, background: "var(--bp-primary)", color: "#fff", border: "none", borderRadius: 20, padding: "10px 24px", cursor: "pointer", fontWeight: 700 }}>← Retour</button>
     </div>
   );
 
@@ -78,11 +78,11 @@ export default function ProductDetail({ id }: Props) {
       <div style={{ background: "var(--fb-white)", padding: "16px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
           <h1 style={{ margin: 0, fontSize: 20, fontWeight: 900, flex: 1 }}>{product.title}</h1>
-          <span style={{ background: "#E3F2FD", color: "var(--fb-blue)", fontWeight: 700, fontSize: 12, padding: "3px 10px", borderRadius: 12, flexShrink: 0 }}>
+          <span style={{ background: "#DCFCE7", color: "var(--bp-primary)", fontWeight: 700, fontSize: 12, padding: "3px 10px", borderRadius: 12, flexShrink: 0 }}>
             {product.category}
           </span>
         </div>
-        <div style={{ fontSize: 28, fontWeight: 900, color: "var(--fb-blue)", marginBottom: 8 }}>
+        <div style={{ fontSize: 28, fontWeight: 900, color: "var(--bp-primary)", marginBottom: 8 }}>
           {product.price.toLocaleString()} {product.currency}
         </div>
         <div style={{ display: "flex", gap: 12, fontSize: 13, color: "var(--fb-text-secondary)", marginBottom: 12 }}>
@@ -100,11 +100,11 @@ export default function ProductDetail({ id }: Props) {
         {/* Action buttons */}
         <div style={{ display: "flex", gap: 10 }}>
           <button onClick={() => setShowContact(true)} style={{
-            flex: 2, background: "var(--fb-blue)", color: "#fff", border: "none",
+            flex: 2, background: "var(--bp-primary)", color: "#fff", border: "none",
             borderRadius: 12, padding: "14px", fontWeight: 800, fontSize: 15, cursor: "pointer"
           }}>💬 Contacter le vendeur</button>
           <button onClick={handleToggleFav} style={{
-            flex: 1, background: isFav ? "#FFEBEE" : "var(--fb-bg)", color: isFav ? "#F44336" : "var(--fb-text)",
+            flex: 1, background: isFav ? "#FEE2E2" : "var(--fb-bg)", color: isFav ? "#EF4444" : "var(--fb-text)",
             border: "none", borderRadius: 12, padding: "14px", fontWeight: 700, fontSize: 15, cursor: "pointer"
           }}>{isFav ? "❤️ Favori" : "🤍 Sauver"}</button>
         </div>
@@ -114,13 +114,13 @@ export default function ProductDetail({ id }: Props) {
       <div style={{ background: "var(--fb-white)", marginTop: 4, padding: "16px" }}>
         <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 12 }}>👤 Vendeur</div>
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-          <div style={{ width: 52, height: 52, borderRadius: "50%", background: "var(--fb-blue)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 18 }}>
+          <div style={{ width: 52, height: 52, borderRadius: "50%", background: "var(--bp-primary)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 18 }}>
             👤
           </div>
           <div style={{ flex: 1 }}>
             <div style={{ fontWeight: 800, fontSize: 15, display: "flex", alignItems: "center", gap: 6 }}>
               Vendeur
-              <span style={{ color: "var(--fb-blue)", fontSize: 14 }}>✔️</span>
+              <span style={{ color: "var(--bp-primary)", fontSize: 14 }}>✔️</span>
             </div>
             <div style={{ fontSize: 13, color: "var(--fb-text-secondary)" }}>{product.category}</div>
             {product.location && <div style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>📍 {product.location}</div>}
@@ -146,7 +146,7 @@ export default function ProductDetail({ id }: Props) {
                 <div style={{ fontWeight: 700, fontSize: 14 }}>{p.title}</div>
                 <div style={{ fontSize: 13, color: "var(--fb-text-secondary)" }}>📍 {p.location}</div>
               </div>
-              <div style={{ fontWeight: 800, color: "var(--fb-blue)", fontSize: 14 }}>{p.price.toLocaleString()} FCFA</div>
+              <div style={{ fontWeight: 800, color: "var(--bp-primary)", fontSize: 14 }}>{p.price.toLocaleString()} FCFA</div>
             </div>
           ))}
         </div>
@@ -161,7 +161,7 @@ export default function ProductDetail({ id }: Props) {
               <button onClick={() => setShowContact(false)} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer" }}>✕</button>
             </div>
             {msgSent ? (
-              <div style={{ textAlign: "center", padding: "20px 0", color: "#4CAF50", fontWeight: 800, fontSize: 15 }}>
+              <div style={{ textAlign: "center", padding: "20px 0", color: "#22C55E", fontWeight: 800, fontSize: 15 }}>
                 ✅ Message envoyé ! Le vendeur vous répondra bientôt.
               </div>
             ) : (
@@ -171,7 +171,7 @@ export default function ProductDetail({ id }: Props) {
                   padding: "12px 14px", fontSize: 14, resize: "none", marginBottom: 12, boxSizing: "border-box"
                 }} />
                 <button onClick={handleSendMsg} style={{
-                  width: "100%", background: "var(--fb-blue)", color: "#fff", border: "none",
+                  width: "100%", background: "var(--bp-primary)", color: "#fff", border: "none",
                   borderRadius: 12, padding: "14px", fontWeight: 800, fontSize: 15, cursor: "pointer"
                 }}>Envoyer le message</button>
               </>

@@ -28,7 +28,7 @@ function LanguageSheet({ current, onSelect, onClose, regionFlag, regionName }: {
       }} />
       <div style={{
         position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 9001,
-        background: "#0D1A12", border: "1px solid rgba(34,197,94,0.15)",
+        background: "#052e16", border: "1px solid rgba(34,197,94,0.15)",
         borderRadius: "28px 28px 0 0", maxHeight: "80vh",
         display: "flex", flexDirection: "column",
         animation: "slideUpSheet .3s cubic-bezier(.32,.72,0,1)",
@@ -47,14 +47,14 @@ function LanguageSheet({ current, onSelect, onClose, regionFlag, regionName }: {
         <div style={{ padding: "0 14px 10px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.06)", borderRadius: 12, padding: "0 14px", height: 42, border: "1px solid rgba(255,255,255,0.08)" }}>
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-              <circle cx="6.5" cy="6.5" r="5" stroke="#6B7280" strokeWidth="1.5"/>
-              <path d="M10 10l3 3" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round"/>
+              <circle cx="6.5" cy="6.5" r="5" stroke="#64748B" strokeWidth="1.5"/>
+              <path d="M10 10l3 3" stroke="#64748B" strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
             <input ref={inputRef} value={query} onChange={e => setQuery(e.target.value)}
               placeholder="Rechercher une langue"
               style={{ flex: 1, border: "none", background: "none", fontSize: 14, color: "#fff", outline: "none", fontFamily: "inherit" }}
             />
-            {query && <button onClick={() => setQuery("")} style={{ background: "none", border: "none", cursor: "pointer", color: "#6B7280", fontSize: 18, lineHeight: 1, padding: 0 }}>×</button>}
+            {query && <button onClick={() => setQuery("")} style={{ background: "none", border: "none", cursor: "pointer", color: "#64748B", fontSize: 18, lineHeight: 1, padding: 0 }}>×</button>}
           </div>
         </div>
         <div style={{ overflowY: "auto", flex: 1, padding: "0 8px" }}>
@@ -74,7 +74,7 @@ function LanguageSheet({ current, onSelect, onClose, regionFlag, regionName }: {
             </button>
           ))}
           {results.length === 0 && (
-            <div style={{ textAlign: "center", padding: "28px 0", color: "#6B7280", fontSize: 14 }}>Aucune langue trouvée</div>
+            <div style={{ textAlign: "center", padding: "28px 0", color: "#64748B", fontSize: 14 }}>Aucune langue trouvée</div>
           )}
         </div>
         {(regionFlag || regionName) && (
@@ -84,7 +84,7 @@ function LanguageSheet({ current, onSelect, onClose, regionFlag, regionName }: {
                 <path d="M7.5 1.5C5.57 1.5 4 3.07 4 5s3.5 8 3.5 8 3.5-5.93 3.5-8c0-1.93-1.57-3.5-3.5-3.5z" stroke="#22C55E" strokeWidth="1.3"/>
                 <circle cx="7.5" cy="5" r="1.2" stroke="#22C55E" strokeWidth="1.2"/>
               </svg>
-              <span style={{ fontSize: 12, color: "#6B7280", fontWeight: 500 }}>📍 Pays détecté automatiquement</span>
+              <span style={{ fontSize: 12, color: "#64748B", fontWeight: 500 }}>📍 Pays détecté automatiquement</span>
               <span style={{ marginLeft: "auto", fontSize: 14, fontWeight: 700, color: "#22C55E", display: "flex", alignItems: "center", gap: 5 }}>
                 {regionFlag} {regionName}
               </span>
@@ -107,8 +107,8 @@ function Globe() {
           <stop offset="100%" stopColor="#22C55E" stopOpacity="0"/>
         </radialGradient>
         <radialGradient id="globeCenter" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#0D4A1C" stopOpacity="0.3"/>
-          <stop offset="100%" stopColor="#030303" stopOpacity="0"/>
+          <stop offset="0%" stopColor="#052e16" stopOpacity="0.3"/>
+          <stop offset="100%" stopColor="#0F172A" stopOpacity="0"/>
         </radialGradient>
       </defs>
       {/* Outer ellipse — globe outline */}
@@ -203,7 +203,7 @@ export default function Login() {
   return (
     <div style={{
       minHeight: "100dvh", height: "100dvh",
-      background: "linear-gradient(160deg, #030303 0%, #021A0A 60%, #030303 100%)",
+      background: "linear-gradient(160deg, #0F172A 0%, #052e16 60%, #0F172A 100%)",
       display: "flex", flexDirection: "column", alignItems: "center",
       fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
       position: "relative", overflowX: "hidden", overflowY: "auto",
@@ -219,11 +219,11 @@ export default function Login() {
         .lf { display: flex; width: 100%; box-sizing: border-box; height: 56px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; align-items: center; gap: 0; transition: border-color .2s, box-shadow .2s; }
         .lf:focus-within { border-color: rgba(34,197,94,.5); box-shadow: 0 0 0 3px rgba(34,197,94,.12); }
         .lf input { flex:1; height:100%; background:none; border:none; outline:none; font-size:14px; color:#fff; font-family:inherit; padding: 0 14px 0 0; }
-        .lf input::placeholder { color:#6B7280; }
+        .lf input::placeholder { color:#64748B; }
         .btn-connect { width:100%; height:60px; background:linear-gradient(135deg,#22C55E 0%,#16A34A 100%); border:none; border-radius:30px; color:#fff; font-size:17px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 0 28px rgba(34,197,94,.45), 0 4px 16px rgba(0,0,0,.3); transition:transform .15s,box-shadow .15s; font-family:inherit; letter-spacing:.1px; }
         .btn-connect:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 0 36px rgba(34,197,94,.55),0 6px 20px rgba(0,0,0,.4); }
         .btn-connect:active:not(:disabled) { transform:scale(.97); }
-        .btn-connect:disabled { background:linear-gradient(135deg,#166534 0%,#14532d 100%); box-shadow:none; cursor:not-allowed; }
+        .btn-connect:disabled { background:linear-gradient(135deg,#16A34A 0%,#052e16 100%); box-shadow:none; cursor:not-allowed; }
         .btn-register { width:100%; height:52px; background:transparent; border:1px solid rgba(255,255,255,.12); border-radius:26px; color:rgba(255,255,255,.85); font-size:15px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:background .15s,border-color .15s; font-family:inherit; }
         .btn-register:hover { background:rgba(255,255,255,.05); border-color:rgba(34,197,94,.35); }
         .btn-register:active { transform:scale(.98); }
@@ -327,10 +327,10 @@ export default function Login() {
               </svg>
               <input type={showPw ? "text" : "password"} placeholder="Mot de passe" value={password} onChange={e => setPassword(e.target.value)} autoComplete="current-password" disabled={loading} />
               <button type="button" onClick={() => setShowPw(v => !v)} tabIndex={-1}
-                style={{ background: "none", border: "none", cursor: "pointer", padding: "0 14px", color: "#6B7280", display: "flex", alignItems: "center", height: "100%", flexShrink: 0 }}>
+                style={{ background: "none", border: "none", cursor: "pointer", padding: "0 14px", color: "#64748B", display: "flex", alignItems: "center", height: "100%", flexShrink: 0 }}>
                 {showPw
-                  ? <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M1.5 9s3-5.5 7.5-5.5S16.5 9 16.5 9s-3 5.5-7.5 5.5S1.5 9 1.5 9z" stroke="#6B7280" strokeWidth="1.3"/><circle cx="9" cy="9" r="2" stroke="#6B7280" strokeWidth="1.3"/><path d="M2 2l14 14" stroke="#6B7280" strokeWidth="1.3" strokeLinecap="round"/></svg>
-                  : <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M1.5 9s3-5.5 7.5-5.5S16.5 9 16.5 9s-3 5.5-7.5 5.5S1.5 9 1.5 9z" stroke="#6B7280" strokeWidth="1.3"/><circle cx="9" cy="9" r="2" stroke="#6B7280" strokeWidth="1.3"/></svg>
+                  ? <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M1.5 9s3-5.5 7.5-5.5S16.5 9 16.5 9s-3 5.5-7.5 5.5S1.5 9 1.5 9z" stroke="#64748B" strokeWidth="1.3"/><circle cx="9" cy="9" r="2" stroke="#64748B" strokeWidth="1.3"/><path d="M2 2l14 14" stroke="#64748B" strokeWidth="1.3" strokeLinecap="round"/></svg>
+                  : <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M1.5 9s3-5.5 7.5-5.5S16.5 9 16.5 9s-3 5.5-7.5 5.5S1.5 9 1.5 9z" stroke="#64748B" strokeWidth="1.3"/><circle cx="9" cy="9" r="2" stroke="#64748B" strokeWidth="1.3"/></svg>
                 }
               </button>
             </div>

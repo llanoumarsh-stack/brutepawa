@@ -22,7 +22,7 @@ interface Props {
   onCommitSearch?: (q: string) => void;
 }
 
-const AVATAR_COLORS = ["#1877F2","#E91E63","#9C27B0","#F57C00","#388E3C","#D32F2F","#00838F","#5D4037"];
+const AVATAR_COLORS = ["#22C55E","#E91E63","#9C27B0","#D97706","#388E3C","#D32F2F","#00838F","#5D4037"];
 function colorForId(id: number) { return AVATAR_COLORS[id % AVATAR_COLORS.length]; }
 
 function snippet(text: string, maxLen = 80): string {
@@ -184,7 +184,7 @@ export default function SearchSuggestionsDropdown({ query, onClose, navigate, re
               className="search-dropdown-item"
               onClick={goSearch}
             >
-              <div className="search-dropdown-avatar" style={{ background: "#E8F5E9" }}>
+              <div className="search-dropdown-avatar" style={{ background: "#DCFCE7" }}>
                 {p.authorAvatarUrl
                   ? <img src={p.authorAvatarUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   : <span style={{ fontSize: 18 }}>📝</span>
@@ -211,7 +211,7 @@ export default function SearchSuggestionsDropdown({ query, onClose, navigate, re
               className="search-dropdown-item"
               onClick={() => go(`/groups/${g.id}`)}
             >
-              <div className="search-dropdown-avatar" style={{ background: "#F3E5F5" }}>
+              <div className="search-dropdown-avatar" style={{ background: "#EDE9FE" }}>
                 <span style={{ fontSize: 20 }}>{g.emoji}</span>
               </div>
               <div className="search-dropdown-item-info">
@@ -236,7 +236,7 @@ export default function SearchSuggestionsDropdown({ query, onClose, navigate, re
               className="search-dropdown-item"
               onClick={() => go(`/marketplace/${p.id}`)}
             >
-              <div className="search-dropdown-avatar search-dropdown-avatar-square" style={{ background: "#f5f5f5" }}>
+              <div className="search-dropdown-avatar search-dropdown-avatar-square" style={{ background: "#F1F5F9" }}>
                 {p.imageUrl
                   ? <img src={p.imageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   : <span style={{ fontSize: 18 }}>🛍️</span>
@@ -264,7 +264,7 @@ export default function SearchSuggestionsDropdown({ query, onClose, navigate, re
               className="search-dropdown-item"
               onClick={() => go(`/jobs/${j.id}`)}
             >
-              <div className="search-dropdown-avatar" style={{ background: "#E3F2FD" }}>
+              <div className="search-dropdown-avatar" style={{ background: "#DCFCE7" }}>
                 <span style={{ fontSize: 18 }}>💼</span>
               </div>
               <div className="search-dropdown-item-info">

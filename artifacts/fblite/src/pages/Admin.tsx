@@ -117,7 +117,7 @@ export default function Admin() {
         padding: "11px 16px", border: "none", textAlign: "left",
         cursor: "pointer", borderRadius: 8,
         background: section === id ? "var(--fb-blue-light)" : "transparent",
-        color: section === id ? "var(--fb-blue)" : "var(--fb-text)",
+        color: section === id ? "var(--bp-primary)" : "var(--fb-text)",
         fontWeight: section === id ? 700 : 500, fontSize: 14,
       }}
     >
@@ -128,7 +128,7 @@ export default function Admin() {
   return (
     <div style={{ maxWidth: 600, margin: "0 auto", paddingBottom: 20 }}>
       {/* Header */}
-      <div style={{ background: "var(--fb-blue)", color: "#fff", padding: "12px 16px", display: "flex", alignItems: "center", gap: 12 }}>
+      <div style={{ background: "var(--bp-primary)", color: "#fff", padding: "12px 16px", display: "flex", alignItems: "center", gap: 12 }}>
         <button onClick={() => navigate("/")} style={{ background: "none", border: "none", color: "#fff", fontSize: 20, cursor: "pointer" }}>←</button>
         <div>
           <div style={{ fontWeight: 900, fontSize: 18 }}>🛡️ Panneau Admin</div>
@@ -151,8 +151,8 @@ export default function Admin() {
               onClick={() => setSection(id)}
               style={{
                 flex: "0 0 auto", padding: "8px 12px", background: "none", border: "none",
-                borderBottom: section === id ? "3px solid var(--fb-blue)" : "3px solid transparent",
-                color: section === id ? "var(--fb-blue)" : "var(--fb-text-secondary)",
+                borderBottom: section === id ? "3px solid var(--bp-primary)" : "3px solid transparent",
+                color: section === id ? "var(--bp-primary)" : "var(--fb-text-secondary)",
                 fontWeight: section === id ? 700 : 500, fontSize: 13, cursor: "pointer", whiteSpace: "nowrap",
               }}
             >
@@ -172,8 +172,8 @@ export default function Admin() {
             {/* KPI cards */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
               {[
-                { label: "Utilisateurs total", value: formatNumber(totalUsers), icon: "👤", color: "#1877F2" },
-                { label: "Actifs ce mois", value: formatNumber(totalActive), icon: "🟢", color: "#42B72A" },
+                { label: "Utilisateurs total", value: formatNumber(totalUsers), icon: "👤", color: "#22C55E" },
+                { label: "Actifs ce mois", value: formatNumber(totalActive), icon: "🟢", color: "#22C55E" },
                 { label: "Publications", value: formatNumber(totalPosts), icon: "📝", color: "#9C27B0" },
                 { label: "Offres d'emploi", value: formatNumber(totalJobs), icon: "💼", color: "#FF9800" },
               ].map((kpi, i) => (
@@ -187,17 +187,17 @@ export default function Admin() {
 
             {/* Pending verifications */}
             {PENDING_VERIFS.length > 0 && (
-              <div style={{ background: "#FFF8E1", border: "1px solid #FFD700", borderRadius: 10, padding: 14, marginBottom: 20 }}>
-                <div style={{ fontWeight: 700, marginBottom: 10, color: "#F57F17" }}>⏳ En attente de validation ({PENDING_VERIFS.length})</div>
+              <div style={{ background: "#FEF3C7", border: "1px solid #FBBF24", borderRadius: 10, padding: 14, marginBottom: 20 }}>
+                <div style={{ fontWeight: 700, marginBottom: 10, color: "#D97706" }}>⏳ En attente de validation ({PENDING_VERIFS.length})</div>
                 {PENDING_VERIFS.map(v => (
-                  <div key={v.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderTop: "1px solid #FFE082" }}>
+                  <div key={v.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderTop: "1px solid #FEF3C7" }}>
                     <div>
                       <div style={{ fontWeight: 600, fontSize: 14 }}>{v.name} {v.country}</div>
-                      <div style={{ fontSize: 12, color: "#F57F17" }}>{v.request} · {v.date}</div>
+                      <div style={{ fontSize: 12, color: "#D97706" }}>{v.request} · {v.date}</div>
                     </div>
                     <div style={{ display: "flex", gap: 6 }}>
-                      <button style={{ background: "#42B72A", color: "#fff", border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>✓</button>
-                      <button style={{ background: "#F44336", color: "#fff", border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>✗</button>
+                      <button style={{ background: "#22C55E", color: "#fff", border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>✓</button>
+                      <button style={{ background: "#EF4444", color: "#fff", border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>✗</button>
                     </div>
                   </div>
                 ))}
@@ -223,12 +223,12 @@ export default function Admin() {
                         </div>
                       </div>
                       <div style={{ textAlign: "right" }}>
-                        <div style={{ fontWeight: 900, color: "var(--fb-blue)", fontSize: 14 }}>{formatNumber(c.users)}</div>
+                        <div style={{ fontWeight: 900, color: "var(--bp-primary)", fontSize: 14 }}>{formatNumber(c.users)}</div>
                         <div style={{ fontSize: 11, color: "var(--fb-text-secondary)" }}>utilisateurs</div>
                       </div>
                     </div>
                     <div style={{ background: "var(--fb-bg)", borderRadius: 4, height: 5, overflow: "hidden" }}>
-                      <div style={{ background: "var(--fb-blue)", height: "100%", width: `${pct}%`, borderRadius: 4 }} />
+                      <div style={{ background: "var(--bp-primary)", height: "100%", width: `${pct}%`, borderRadius: 4 }} />
                     </div>
                   </div>
                 );
@@ -244,7 +244,7 @@ export default function Admin() {
             <input placeholder="🔍 Rechercher un utilisateur..." style={{ marginBottom: 16 }} />
             <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
               {["Tous", "Vérifiés", "Premium", "Signalés", "Suspendus"].map(f => (
-                <button key={f} style={{ padding: "5px 12px", borderRadius: 20, border: "1px solid var(--fb-border)", background: f === "Tous" ? "var(--fb-blue)" : "var(--fb-white)", color: f === "Tous" ? "#fff" : "var(--fb-text)", fontSize: 13, cursor: "pointer", fontWeight: 600 }}>{f}</button>
+                <button key={f} style={{ padding: "5px 12px", borderRadius: 20, border: "1px solid var(--fb-border)", background: f === "Tous" ? "var(--bp-primary)" : "var(--fb-white)", color: f === "Tous" ? "#fff" : "var(--fb-text)", fontSize: 13, cursor: "pointer", fontWeight: 600 }}>{f}</button>
               ))}
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -253,7 +253,7 @@ export default function Admin() {
                 const initials = (u.firstName?.[0] ?? "") + (u.lastName?.[0] ?? "") || "?";
                 return (
                 <div key={u.id} style={{ background: "var(--fb-white)", borderRadius: 10, border: "1px solid var(--fb-divider)", padding: "12px 14px", display: "flex", alignItems: "center", gap: 12 }}>
-                  <div style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--fb-blue)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 16, flexShrink: 0, overflow: "hidden" }}>
+                  <div style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--bp-primary)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 16, flexShrink: 0, overflow: "hidden" }}>
                     {u.avatarUrl ? <img src={u.avatarUrl} style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : initials.toUpperCase()}
                   </div>
                   <div style={{ flex: 1 }}>
@@ -263,8 +263,8 @@ export default function Admin() {
                     <div style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>#{u.id} · {u.bio ?? "Membre Brute Pawa"}</div>
                   </div>
                   <div style={{ display: "flex", gap: 6 }}>
-                    <button style={{ background: "var(--fb-blue-light)", color: "var(--fb-blue)", border: "none", borderRadius: 6, padding: "5px 9px", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>Voir</button>
-                    <button style={{ background: "#FFF8E1", color: "#FF9800", border: "none", borderRadius: 6, padding: "5px 9px", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>⚠️</button>
+                    <button style={{ background: "var(--fb-blue-light)", color: "var(--bp-primary)", border: "none", borderRadius: 6, padding: "5px 9px", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>Voir</button>
+                    <button style={{ background: "#FEF3C7", color: "#FF9800", border: "none", borderRadius: 6, padding: "5px 9px", fontSize: 12, cursor: "pointer", fontWeight: 600 }}>⚠️</button>
                   </div>
                 </div>
                 );
@@ -286,9 +286,9 @@ export default function Admin() {
               ].map((item, i) => (
                 <div key={i} style={{ background: "var(--fb-white)", borderRadius: 10, border: "1px solid var(--fb-divider)", padding: 14, textAlign: "center" }}>
                   <div style={{ fontSize: 28, marginBottom: 4 }}>{item.icon}</div>
-                  <div style={{ fontWeight: 900, fontSize: 20, color: "var(--fb-blue)" }}>{item.value}</div>
+                  <div style={{ fontWeight: 900, fontSize: 20, color: "var(--bp-primary)" }}>{item.value}</div>
                   <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", marginBottom: 8 }}>{item.label}</div>
-                  <button style={{ background: "var(--fb-blue-light)", color: "var(--fb-blue)", border: "none", borderRadius: 20, padding: "4px 10px", fontSize: 11, cursor: "pointer", fontWeight: 700 }}>{item.action}</button>
+                  <button style={{ background: "var(--fb-blue-light)", color: "var(--bp-primary)", border: "none", borderRadius: 20, padding: "4px 10px", fontSize: 11, cursor: "pointer", fontWeight: 700 }}>{item.action}</button>
                 </div>
               ))}
             </div>
@@ -297,8 +297,8 @@ export default function Admin() {
               <div key={i} style={{ background: "var(--fb-white)", borderRadius: 10, border: "1px solid var(--fb-divider)", padding: "12px 14px", marginBottom: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div style={{ fontSize: 14, flex: 1 }}>⚠️ {c}</div>
                 <div style={{ display: "flex", gap: 6 }}>
-                  <button style={{ background: "#42B72A", color: "#fff", border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>✓ Approuver</button>
-                  <button style={{ background: "#F44336", color: "#fff", border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>✗ Supprimer</button>
+                  <button style={{ background: "#22C55E", color: "#fff", border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>✓ Approuver</button>
+                  <button style={{ background: "#EF4444", color: "#fff", border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>✗ Supprimer</button>
                 </div>
               </div>
             ))}
@@ -318,7 +318,7 @@ export default function Admin() {
               ].map((item, i) => (
                 <div key={i} style={{ background: "var(--fb-white)", borderRadius: 10, border: "1px solid var(--fb-divider)", padding: 14, textAlign: "center" }}>
                   <div style={{ fontSize: 28, marginBottom: 4 }}>{item.icon}</div>
-                  <div style={{ fontWeight: 900, fontSize: 20, color: "var(--fb-blue)" }}>{item.value}</div>
+                  <div style={{ fontWeight: 900, fontSize: 20, color: "var(--bp-primary)" }}>{item.value}</div>
                   <div style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>{item.label}</div>
                 </div>
               ))}
@@ -334,8 +334,8 @@ export default function Admin() {
                   <div style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>{job.company} · {job.country} · {job.budget}</div>
                 </div>
                 <div style={{ display: "flex", gap: 6 }}>
-                  <button style={{ background: "#42B72A", color: "#fff", border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>Publier</button>
-                  <button style={{ background: "#F44336", color: "#fff", border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>Refuser</button>
+                  <button style={{ background: "#22C55E", color: "#fff", border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>Publier</button>
+                  <button style={{ background: "#EF4444", color: "#fff", border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>Refuser</button>
                 </div>
               </div>
             ))}
@@ -360,7 +360,7 @@ export default function Admin() {
                   onClick={() => { setRptFilter(val); setRptPage(1); }}
                   style={{
                     padding: "5px 12px", borderRadius: 20, border: "1px solid var(--fb-border)",
-                    background: rptFilter === val ? "var(--fb-blue)" : "var(--fb-white)",
+                    background: rptFilter === val ? "var(--bp-primary)" : "var(--fb-white)",
                     color: rptFilter === val ? "#fff" : "var(--fb-text)",
                     fontSize: 13, cursor: "pointer", fontWeight: 600,
                   }}
@@ -384,7 +384,7 @@ export default function Admin() {
             )}
 
             {rptError && (
-              <div style={{ background: "#ffebee", color: "#c62828", borderRadius: 8, padding: "10px 14px", marginBottom: 12, fontSize: 13, fontWeight: 600 }}>
+              <div style={{ background: "#FEE2E2", color: "#EF4444", borderRadius: 8, padding: "10px 14px", marginBottom: 12, fontSize: 13, fontWeight: 600 }}>
                 ⚠️ {rptError}
               </div>
             )}
@@ -399,9 +399,9 @@ export default function Admin() {
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {reports.map(r => {
                   const statusMeta: Record<string, { bg: string; color: string; label: string }> = {
-                    pending:   { bg: "#ffebee", color: "#F44336", label: "En attente" },
-                    reviewed:  { bg: "#E8F5E9", color: "#2E7D32", label: "Examiné" },
-                    dismissed: { bg: "#F5F5F5", color: "#757575", label: "Ignoré" },
+                    pending:   { bg: "#FEE2E2", color: "#EF4444", label: "En attente" },
+                    reviewed:  { bg: "#DCFCE7", color: "#16A34A", label: "Examiné" },
+                    dismissed: { bg: "#F1F5F9", color: "#9CA3AF", label: "Ignoré" },
                   };
                   const sm = statusMeta[r.status] ?? statusMeta.pending;
                   const reporterName = `${r.reporter.firstName} ${r.reporter.lastName}`.trim();
@@ -430,14 +430,14 @@ export default function Admin() {
                           <button
                             onClick={() => handleReportAction(r.id, "reviewed")}
                             disabled={isBusy}
-                            style={{ flex: 1, background: "#42B72A", color: "#fff", border: "none", borderRadius: 6, padding: "7px", fontSize: 13, cursor: isBusy ? "not-allowed" : "pointer", fontWeight: 700, opacity: isBusy ? 0.6 : 1 }}
+                            style={{ flex: 1, background: "#22C55E", color: "#fff", border: "none", borderRadius: 6, padding: "7px", fontSize: 13, cursor: isBusy ? "not-allowed" : "pointer", fontWeight: 700, opacity: isBusy ? 0.6 : 1 }}
                           >
                             ✓ Marquer examiné
                           </button>
                           <button
                             onClick={() => handleReportAction(r.id, "dismissed")}
                             disabled={isBusy}
-                            style={{ flex: 1, background: "#9E9E9E", color: "#fff", border: "none", borderRadius: 6, padding: "7px", fontSize: 13, cursor: isBusy ? "not-allowed" : "pointer", fontWeight: 700, opacity: isBusy ? 0.6 : 1 }}
+                            style={{ flex: 1, background: "#9CA3AF", color: "#fff", border: "none", borderRadius: 6, padding: "7px", fontSize: 13, cursor: isBusy ? "not-allowed" : "pointer", fontWeight: 700, opacity: isBusy ? 0.6 : 1 }}
                           >
                             ✗ Ignorer
                           </button>
@@ -474,7 +474,7 @@ export default function Admin() {
         {section === "monetization" && (
           <>
             <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 16 }}>💳 Revenus & Monétisation</div>
-            <div style={{ background: "linear-gradient(135deg, #1877F2, #9C27B0)", borderRadius: 16, padding: "20px", color: "#fff", marginBottom: 20, textAlign: "center" }}>
+            <div style={{ background: "linear-gradient(135deg, #22C55E, #9C27B0)", borderRadius: 16, padding: "20px", color: "#fff", marginBottom: 20, textAlign: "center" }}>
               <div style={{ fontSize: 13, opacity: 0.85 }}>Revenus du mois (juin 2026)</div>
               <div style={{ fontSize: 40, fontWeight: 900, margin: "8px 0" }}>18 240 000 <span style={{ fontSize: 20 }}>FCFA</span></div>
               <div style={{ display: "flex", justifyContent: "center", gap: 24, marginTop: 12, fontSize: 13 }}>
@@ -496,7 +496,7 @@ export default function Admin() {
                   <div style={{ fontWeight: 700, fontSize: 14 }}>{item.label}</div>
                   <div style={{ fontSize: 13, color: "var(--fb-text-secondary)" }}>{item.value} actifs</div>
                 </div>
-                <div style={{ fontWeight: 900, color: "#42B72A", fontSize: 14, textAlign: "right" }}>{item.revenue}</div>
+                <div style={{ fontWeight: 900, color: "#22C55E", fontSize: 14, textAlign: "right" }}>{item.revenue}</div>
               </div>
             ))}
           </>
@@ -527,7 +527,7 @@ export default function Admin() {
             {/* Summary card */}
             {!wdLoading && (
               <div style={{
-                background: "linear-gradient(135deg, #1877F2 0%, #0d5fd4 100%)",
+                background: "linear-gradient(135deg, #22C55E 0%, #0EA5E9 100%)",
                 borderRadius: 14,
                 padding: "16px 18px",
                 marginBottom: 16,
@@ -566,7 +566,7 @@ export default function Admin() {
                   onClick={() => setWdFilter(val)}
                   style={{
                     padding: "5px 14px", borderRadius: 20, border: "1px solid var(--fb-border)",
-                    background: wdFilter === val ? "var(--fb-blue)" : "var(--fb-white)",
+                    background: wdFilter === val ? "var(--bp-primary)" : "var(--fb-white)",
                     color: wdFilter === val ? "#fff" : "var(--fb-text)",
                     fontSize: 13, cursor: "pointer", fontWeight: 600,
                   }}
@@ -575,7 +575,7 @@ export default function Admin() {
             </div>
 
             {wdError && (
-              <div style={{ background: "#ffebee", color: "#c62828", borderRadius: 8, padding: "10px 14px", marginBottom: 12, fontSize: 13, fontWeight: 600 }}>
+              <div style={{ background: "#FEE2E2", color: "#EF4444", borderRadius: 8, padding: "10px 14px", marginBottom: 12, fontSize: 13, fontWeight: 600 }}>
                 ⚠️ {wdError}
               </div>
             )}
@@ -588,10 +588,10 @@ export default function Admin() {
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {withdrawals.map(w => {
                   const statusColors: Record<string, { bg: string; color: string; label: string }> = {
-                    pending:   { bg: "#FFF8E1", color: "#F57F17", label: "En attente" },
-                    validated: { bg: "#E3F2FD", color: "#1565C0", label: "Validé" },
-                    paid:      { bg: "#E8F5E9", color: "#2E7D32", label: "Payé" },
-                    rejected:  { bg: "#FFEBEE", color: "#C62828", label: "Rejeté" },
+                    pending:   { bg: "#FEF3C7", color: "#D97706", label: "En attente" },
+                    validated: { bg: "#DCFCE7", color: "#1565C0", label: "Validé" },
+                    paid:      { bg: "#DCFCE7", color: "#16A34A", label: "Payé" },
+                    rejected:  { bg: "#FEE2E2", color: "#EF4444", label: "Rejeté" },
                   };
                   const sc = statusColors[w.status] ?? statusColors.pending;
                   const operatorEmoji: Record<string, string> = { orange: "🟠", mtn: "🟡", wave: "🔵" };
@@ -616,7 +616,7 @@ export default function Admin() {
                         <div style={{ background: "var(--fb-bg)", borderRadius: 8, padding: "6px 12px", fontSize: 13, fontWeight: 700 }}>
                           🪙 {w.tokensAmount.toLocaleString("fr-FR")} jetons
                         </div>
-                        <div style={{ background: "var(--fb-bg)", borderRadius: 8, padding: "6px 12px", fontSize: 13, fontWeight: 700, color: "#2E7D32" }}>
+                        <div style={{ background: "var(--fb-bg)", borderRadius: 8, padding: "6px 12px", fontSize: 13, fontWeight: 700, color: "#16A34A" }}>
                           {w.xofAmount.toLocaleString("fr-FR")} XOF
                         </div>
                         <div style={{ background: "var(--fb-bg)", borderRadius: 8, padding: "6px 12px", fontSize: 13 }}>
@@ -644,7 +644,7 @@ export default function Admin() {
                           <button
                             disabled={isBusy}
                             onClick={() => { setRejectModal({ id: w.id }); setRejectNote(""); }}
-                            style={{ flex: 1, background: "#F44336", color: "#fff", border: "none", borderRadius: 6, padding: "8px", fontSize: 13, cursor: "pointer", fontWeight: 700, opacity: isBusy ? 0.6 : 1 }}
+                            style={{ flex: 1, background: "#EF4444", color: "#fff", border: "none", borderRadius: 6, padding: "8px", fontSize: 13, cursor: "pointer", fontWeight: 700, opacity: isBusy ? 0.6 : 1 }}
                           >
                             ✗ Rejeter
                           </button>
@@ -655,14 +655,14 @@ export default function Admin() {
                           <button
                             disabled={isBusy}
                             onClick={() => handleWithdrawalAction(w.id, "paid")}
-                            style={{ flex: 1, background: "#2E7D32", color: "#fff", border: "none", borderRadius: 6, padding: "8px", fontSize: 13, cursor: "pointer", fontWeight: 700, opacity: isBusy ? 0.6 : 1 }}
+                            style={{ flex: 1, background: "#16A34A", color: "#fff", border: "none", borderRadius: 6, padding: "8px", fontSize: 13, cursor: "pointer", fontWeight: 700, opacity: isBusy ? 0.6 : 1 }}
                           >
                             💰 Marquer payé
                           </button>
                           <button
                             disabled={isBusy}
                             onClick={() => { setRejectModal({ id: w.id }); setRejectNote(""); }}
-                            style={{ flex: 1, background: "#F44336", color: "#fff", border: "none", borderRadius: 6, padding: "8px", fontSize: 13, cursor: "pointer", fontWeight: 700, opacity: isBusy ? 0.6 : 1 }}
+                            style={{ flex: 1, background: "#EF4444", color: "#fff", border: "none", borderRadius: 6, padding: "8px", fontSize: 13, cursor: "pointer", fontWeight: 700, opacity: isBusy ? 0.6 : 1 }}
                           >
                             ✗ Rejeter
                           </button>
@@ -699,7 +699,7 @@ export default function Admin() {
                         await handleWithdrawalAction(rejectModal.id, "rejected", rejectNote.trim() || undefined);
                         setRejectModal(null);
                       }}
-                      style={{ flex: 1, background: "#F44336", color: "#fff", border: "none", borderRadius: 8, padding: "10px", fontSize: 14, cursor: "pointer", fontWeight: 700 }}
+                      style={{ flex: 1, background: "#EF4444", color: "#fff", border: "none", borderRadius: 8, padding: "10px", fontSize: 14, cursor: "pointer", fontWeight: 700 }}
                     >Confirmer le rejet</button>
                   </div>
                 </div>

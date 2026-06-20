@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"#22C55E",text:"#0F172A",secondary:"#64748B",muted:"#94A3B8",border:"#E2E8F0",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"#22C55E",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
 
 const SLabel = ({ t }:{t:string}) => (
   <div style={{ fontSize:12,fontWeight:700,color:C.muted,textTransform:"uppercase",letterSpacing:"0.8px",padding:"20px 4px 10px" }}>{t}</div>
@@ -29,7 +29,7 @@ function MediaRow({ icon,label,value,onChange,last=false }:{icon:React.ReactNode
         <span style={{ flex:1,fontWeight:500,fontSize:14,color:C.text }}>{label}</span>
         <span style={{ fontSize:13,color:C.secondary,marginRight:4 }}>{value}</span>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ transform:open?"rotate(90deg)":"none",transition:"transform 200ms" }}>
-          <path d="M9 18l6-6-6-6" stroke="#C4C9D4" strokeWidth="2.2" strokeLinecap="round"/>
+          <path d="M9 18l6-6-6-6" stroke="#CBD5E1" strokeWidth="2.2" strokeLinecap="round"/>
         </svg>
       </button>
       {open && (
@@ -93,9 +93,9 @@ export default function AutoDownloadPage() {
         </div>
 
         {/* Note */}
-        <div style={{ background:"linear-gradient(135deg,#FEF9C3,#FEF08A)",borderRadius:20,padding:"14px 16px",marginTop:16,display:"flex",gap:10,border:"1px solid #FDE68A" }}>
+        <div style={{ background:"linear-gradient(135deg,#FEF9C3,#FEF08A)",borderRadius:20,padding:"14px 16px",marginTop:16,display:"flex",gap:10,border:"1px solid #FEF3C7" }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" style={{ flexShrink:0,marginTop:1 }}><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          <p style={{ fontSize:13,color:"#92400E",margin:0,lineHeight:1.6 }}><strong>Astuce :</strong> les paramètres ne s'appliquent pas aux appels.</p>
+          <p style={{ fontSize:13,color:"#D97706",margin:0,lineHeight:1.6 }}><strong>Astuce :</strong> les paramètres ne s'appliquent pas aux appels.</p>
         </div>
       </div>
       <Footer/>

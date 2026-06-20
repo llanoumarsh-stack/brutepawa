@@ -42,13 +42,13 @@ export default function MemoriesPage() {
 
   return (
     <div style={{ maxWidth: 680, margin: "0 auto", paddingBottom: 40 }}>
-      <div style={{ background: "#fff", padding: "14px 16px", borderBottom: "1px solid #e4e6eb", display: "flex", alignItems: "center", gap: 10, position: "sticky", top: 0, zIndex: 10 }}>
-        <button onClick={() => navigate("/")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#1877F2" }}>←</button>
+      <div style={{ background: "#fff", padding: "14px 16px", borderBottom: "1px solid #E5E7EB", display: "flex", alignItems: "center", gap: 10, position: "sticky", top: 0, zIndex: 10 }}>
+        <button onClick={() => navigate("/")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#22C55E" }}>←</button>
         <div style={{ fontWeight: 800, fontSize: 18, flex: 1 }}>✨ Souvenirs</div>
       </div>
 
       {/* Date banner */}
-      <div style={{ background: "linear-gradient(135deg, #1877F2, #9C27B0)", padding: "20px 16px", textAlign: "center", color: "#fff" }}>
+      <div style={{ background: "linear-gradient(135deg, #22C55E, #9C27B0)", padding: "20px 16px", textAlign: "center", color: "#fff" }}>
         <div style={{ fontSize: 14, opacity: 0.85, marginBottom: 4 }}>Aujourd'hui, c'est le</div>
         <div style={{ fontWeight: 900, fontSize: 24, textTransform: "capitalize" }}>{todayStr}</div>
         <div style={{ fontSize: 13, opacity: 0.8, marginTop: 6 }}>Voici ce que vous aviez publié par le passé</div>
@@ -56,13 +56,13 @@ export default function MemoriesPage() {
 
       <div style={{ padding: 16 }}>
         {loading && (
-          <div style={{ textAlign: "center", padding: 40, color: "#65676b" }}>
+          <div style={{ textAlign: "center", padding: 40, color: "#64748B" }}>
             <div style={{ fontSize: 32, marginBottom: 8 }}>⏳</div>Chargement des souvenirs…
           </div>
         )}
 
         {!loading && memories.length === 0 && (
-          <div style={{ textAlign: "center", padding: "60px 20px", color: "#65676b" }}>
+          <div style={{ textAlign: "center", padding: "60px 20px", color: "#64748B" }}>
             <div style={{ fontSize: 60, marginBottom: 12 }}>✨</div>
             <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 8 }}>Aucun souvenir pour aujourd'hui</div>
             <div style={{ fontSize: 14, lineHeight: 1.5 }}>
@@ -79,11 +79,11 @@ export default function MemoriesPage() {
               <div key={years} style={{ marginBottom: 28 }}>
                 {/* Year header */}
                 <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
-                  <div style={{ flex: 1, height: 1, background: "#e4e6eb" }} />
-                  <div style={{ background: "#fff", border: "2px solid #1877F2", color: "#1877F2", borderRadius: 20, padding: "4px 14px", fontWeight: 800, fontSize: 14, whiteSpace: "nowrap" }}>
+                  <div style={{ flex: 1, height: 1, background: "#E5E7EB" }} />
+                  <div style={{ background: "#fff", border: "2px solid #22C55E", color: "#22C55E", borderRadius: 20, padding: "4px 14px", fontWeight: 800, fontSize: 14, whiteSpace: "nowrap" }}>
                     🕰 Il y a {years} an{years > 1 ? "s" : ""}
                   </div>
-                  <div style={{ flex: 1, height: 1, background: "#e4e6eb" }} />
+                  <div style={{ flex: 1, height: 1, background: "#E5E7EB" }} />
                 </div>
 
                 {posts.map(post => {
@@ -91,15 +91,15 @@ export default function MemoriesPage() {
                   const dateStr = date.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
                   const isVid = post.imageUrl && /\.(mp4|mov|webm|ogg|m4v)(\?.*)?$/i.test(post.imageUrl);
                   return (
-                    <div key={post.id} style={{ background: "#fff", borderRadius: 12, border: "1px solid #e4e6eb", marginBottom: 16, overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+                    <div key={post.id} style={{ background: "#fff", borderRadius: 12, border: "1px solid #E5E7EB", marginBottom: 16, overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
                       {/* Share memory banner */}
-                      <div style={{ background: "#e7f3ff", padding: "10px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <div style={{ fontSize: 13, color: "#1877F2", fontWeight: 600 }}>
+                      <div style={{ background: "#DCFCE7", padding: "10px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div style={{ fontSize: 13, color: "#22C55E", fontWeight: 600 }}>
                           📅 {dateStr}
                         </div>
                         <button
                           onClick={() => navigate(`/post/${post.id}`)}
-                          style={{ background: "#1877F2", color: "#fff", border: "none", borderRadius: 6, padding: "5px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
+                          style={{ background: "#22C55E", color: "#fff", border: "none", borderRadius: 6, padding: "5px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>
                           Voir
                         </button>
                       </div>
@@ -108,11 +108,11 @@ export default function MemoriesPage() {
                         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
                           {avatarUrl
                             ? <img src={avatarUrl} alt="" style={{ width: 38, height: 38, borderRadius: "50%", objectFit: "cover" }} />
-                            : <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#1877F2", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 14 }}>{userInitials}</div>
+                            : <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 14 }}>{userInitials}</div>
                           }
                           <div>
                             <div style={{ fontWeight: 700, fontSize: 14 }}>{userName}</div>
-                            <div style={{ fontSize: 12, color: "#65676b" }}>{dateStr}</div>
+                            <div style={{ fontSize: 12, color: "#64748B" }}>{dateStr}</div>
                           </div>
                         </div>
                         {post.content && <div style={{ fontSize: 14, lineHeight: 1.5, marginBottom: post.imageUrl ? 10 : 0 }}>{post.content}</div>}
@@ -122,7 +122,7 @@ export default function MemoriesPage() {
                           ? <video src={post.imageUrl} poster={post.thumbnailUrl ?? undefined} controls playsInline style={{ width: "100%", maxHeight: 300, objectFit: "cover", display: "block", background: "#000" }} />
                           : <img src={post.imageUrl} alt="" style={{ width: "100%", maxHeight: 300, objectFit: "cover", display: "block" }} />
                       )}
-                      <div style={{ padding: "10px 14px", borderTop: "1px solid #e4e6eb", display: "flex", gap: 12, fontSize: 13, color: "#65676b" }}>
+                      <div style={{ padding: "10px 14px", borderTop: "1px solid #E5E7EB", display: "flex", gap: 12, fontSize: 13, color: "#64748B" }}>
                         <span>👍 {post.likesCount}</span>
                         <span>💬 {post.commentsCount}</span>
                       </div>

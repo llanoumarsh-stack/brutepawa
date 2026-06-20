@@ -8,15 +8,15 @@ import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignal
 void ({} as ApiChatGroup);
 
 const CONV_THEMES = {
-  "bp-green": { label:"BrutePawa Vert",  bg:"#F0FDF4", mine:"#DCECCB", mineText:"#111", theirs:"#fff",     theirsText:"#111", accent:"#16C24A" },
-  "ocean":    { label:"Océan Bleu",      bg:"#EFF6FF", mine:"#3B82F6", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#3B82F6" },
-  "orange":   { label:"Soleil Orange",   bg:"#FFF7ED", mine:"#F97316", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#F97316" },
-  "violet":   { label:"Violet Premium",  bg:"#FAF5FF", mine:"#8B5CF6", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#8B5CF6" },
-  "rose":     { label:"Rose Moderne",    bg:"#FFF1F2", mine:"#F43F5E", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#F43F5E" },
-  "indigo":   { label:"Indigo",          bg:"#EEF2FF", mine:"#6366F1", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#6366F1" },
-  "cyan":     { label:"Cyan",            bg:"#ECFEFF", mine:"#06B6D4", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#06B6D4" },
-  "gold":     { label:"Or",              bg:"#FEFCE8", mine:"#D97706", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#D97706" },
-  "dark":     { label:"Nuit Sombre",     bg:"#0F172A", mine:"#334155", mineText:"#CBD5E1", theirs:"#1E293B", theirsText:"#CBD5E1", accent:"#94A3B8" },
+  "bp-green": { label:"BrutePawa Vert",  bg:"#F0FDF4", mine:"#DCFCE7", mineText:"#111", theirs:"#fff",     theirsText:"#111", accent:"#22C55E" },
+  "ocean":    { label:"Océan Bleu",      bg:"#DCFCE7", mine:"#0EA5E9", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#0EA5E9" },
+  "orange":   { label:"Soleil Orange",   bg:"#FEF3C7", mine:"#F97316", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#F97316" },
+  "violet":   { label:"Violet Premium",  bg:"#EDE9FE", mine:"#8B5CF6", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#8B5CF6" },
+  "rose":     { label:"Rose Moderne",    bg:"#FEE2E2", mine:"#F43F5E", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#F43F5E" },
+  "indigo":   { label:"Indigo",          bg:"#EDE9FE", mine:"#6366F1", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#6366F1" },
+  "cyan":     { label:"Cyan",            bg:"#DCFCE7", mine:"#0EA5E9", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#0EA5E9" },
+  "gold":     { label:"Or",              bg:"#FEF3C7", mine:"#D97706", mineText:"#fff", theirs:"#fff",     theirsText:"#111", accent:"#D97706" },
+  "dark":     { label:"Nuit Sombre",     bg:"#111827", mine:"#1E293B", mineText:"#E5E7EB", theirs:"#1E293B", theirsText:"#E5E7EB", accent:"#9CA3AF" },
 } as const;
 type ThemeKey = keyof typeof CONV_THEMES;
 
@@ -111,7 +111,7 @@ interface GroupMsg {
   type: "text" | "system";
 }
 
-const CONV_COLORS = ["#1877F2","#E91E8C","#7B1FA2","#F57C00","#388E3C","#00838F","#D32F2F"];
+const CONV_COLORS = ["#22C55E","#EC4899","#8B5CF6","#D97706","#388E3C","#00838F","#D32F2F"];
 const mkInitials = (name: string) =>
   name.split(" ").filter(Boolean).map(w => w[0]).join("").slice(0, 2).toUpperCase() || "?";
 
@@ -124,8 +124,8 @@ function normalizeUrl(raw: string): string {
 
 function MsgStatus({ status, dark }: { status?: string; dark: boolean }) {
   const color = dark ? "rgba(255,255,255,0.65)" : "#9CA3AF";
-  const blue  = dark ? "#93C5FD" : "#3B82F6";
-  const green = dark ? "#86EFAC" : "#16C24A";
+  const blue  = dark ? "#0EA5E9" : "#0EA5E9";
+  const green = dark ? "#BBF7D0" : "#22C55E";
   if (status === "pending") return (
     <svg viewBox="0 0 16 16" width="14" height="14" fill="none" strokeWidth="1.6" strokeLinecap="round">
       <circle cx="8" cy="8" r="6" stroke={color} strokeOpacity="0.3"/>
@@ -163,7 +163,7 @@ function renderText(text: string, textColor: string) {
     const href = normalizeUrl(raw);
     parts.push(
       <a key={m.index} href={href} target="_blank" rel="noreferrer noopener"
-        style={{ color: textColor === "#fff" || textColor.startsWith("rgba(255") ? "#A5F3C0" : "#1877F2", textDecoration:"underline", wordBreak:"break-all" }}
+        style={{ color: textColor === "#fff" || textColor.startsWith("rgba(255") ? "#BBF7D0" : "#22C55E", textDecoration:"underline", wordBreak:"break-all" }}
         onClick={e => e.stopPropagation()}>
         {raw}
       </a>
@@ -238,12 +238,12 @@ function MapThumbnail({ lat, lng }: { lat: number; lng: number }) {
   const sub = (x: number, y: number) => ["a","b","c"][(x + y) % 3];
 
   return (
-    <div style={{ position:"relative", width:"100%", height:140, overflow:"hidden", background:"#dde8d8" }}>
+    <div style={{ position:"relative", width:"100%", height:140, overflow:"hidden", background:"#DCFCE7" }}>
 
       {/* ── Shimmer skeleton ── */}
       {!allLoaded && !allError && (
         <div style={{ position:"absolute", inset:0,
-          background:"linear-gradient(90deg,#d8e8d3 25%,#c4d9bf 50%,#d8e8d3 75%)",
+          background:"linear-gradient(90deg,#DCFCE7 25%,#DCFCE7 50%,#DCFCE7 75%)",
           backgroundSize:"200% 100%",
           animation:"map-shimmer 1.6s ease-in-out infinite" }}/>
       )}
@@ -276,16 +276,16 @@ function MapThumbnail({ lat, lng }: { lat: number; lng: number }) {
       {/* ── Error fallback ── */}
       {allError && (
         <div style={{ position:"absolute", inset:0,
-          background:"linear-gradient(160deg,#1a3a2a,#2d6a4f)",
+          background:"linear-gradient(160deg,#052e16,#16A34A)",
           display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:6 }}>
           <svg viewBox="0 0 64 64" width="56" height="56" opacity={0.55}>
-            <line x1="0" y1="32" x2="64" y2="32" stroke="#4ade80" strokeWidth="3" opacity={0.6}/>
-            <line x1="32" y1="0" x2="32" y2="64" stroke="#4ade80" strokeWidth="2" opacity={0.4}/>
-            <line x1="0" y1="18" x2="64" y2="46" stroke="#4ade80" strokeWidth="1.5" opacity={0.3}/>
-            <rect x="8"  y="8"  width="16" height="12" rx="2" fill="#86efac" opacity={0.4}/>
-            <rect x="40" y="14" width="14" height="10" rx="2" fill="#86efac" opacity={0.3}/>
-            <rect x="10" y="40" width="18" height="14" rx="2" fill="#86efac" opacity={0.35}/>
-            <rect x="38" y="42" width="12" height="12" rx="2" fill="#86efac" opacity={0.3}/>
+            <line x1="0" y1="32" x2="64" y2="32" stroke="#22C55E" strokeWidth="3" opacity={0.6}/>
+            <line x1="32" y1="0" x2="32" y2="64" stroke="#22C55E" strokeWidth="2" opacity={0.4}/>
+            <line x1="0" y1="18" x2="64" y2="46" stroke="#22C55E" strokeWidth="1.5" opacity={0.3}/>
+            <rect x="8"  y="8"  width="16" height="12" rx="2" fill="#BBF7D0" opacity={0.4}/>
+            <rect x="40" y="14" width="14" height="10" rx="2" fill="#BBF7D0" opacity={0.3}/>
+            <rect x="10" y="40" width="18" height="14" rx="2" fill="#BBF7D0" opacity={0.35}/>
+            <rect x="38" y="42" width="12" height="12" rx="2" fill="#BBF7D0" opacity={0.3}/>
           </svg>
           <span style={{ color:"rgba(255,255,255,0.72)", fontSize:11, fontWeight:600 }}>
             Carte non disponible
@@ -1637,7 +1637,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       return COUNTRY_MAP[c] ?? { name: code, flag: "🌍" };
     };
 
-    const WIZ_AVATAR_COLORS = ["#EC4899","#8B5CF6","#F97316","#22C55E","#14B8A6","#EF4444","#3B82F6","#F59E0B","#6366F1","#D946EF"];
+    const WIZ_AVATAR_COLORS = ["#EC4899","#8B5CF6","#F97316","#22C55E","#0EA5E9","#EF4444","#0EA5E9","#F59E0B","#6366F1","#8B5CF6"];
     const wizColor = (id: number) => WIZ_AVATAR_COLORS[id % WIZ_AVATAR_COLORS.length];
 
     const VISIBLE = 4;
@@ -1651,7 +1651,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           @keyframes wiz-in { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
           @keyframes autoDelIn { from{opacity:0;transform:scale(0.85)} to{opacity:1;transform:scale(1)} }
           @keyframes wiz-check { from{transform:scale(0.4)} to{transform:scale(1)} }
-          .wiz-row:active { background: #f5f5f5 !important; }
+          .wiz-row:active { background: #F1F5F9 !important; }
         `}</style>
 
         {/* ── HEADER — white, Telegram style ── */}
@@ -1666,7 +1666,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               {groupWizard === "members" ? `Nouveau ${isChannel ? "canal" : "groupe"}` : `Nommer le ${isChannel ? "canal" : "groupe"}`}
             </div>
             {groupWizard === "members" && (
-              <div style={{ fontSize: 13, color: "#6B7280", marginTop: 1 }}>
+              <div style={{ fontSize: 13, color: "#64748B", marginTop: 1 }}>
                 {wizardMembers.size} sur 200000 sélectionné{wizardMembers.size > 1 ? "s" : ""}
               </div>
             )}
@@ -1691,7 +1691,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                             ? <img src={u.avatarUrl} style={{ width: 52, height: 52, borderRadius: "50%", objectFit: "cover", display: "block", margin: "0 auto" }} alt={name} />
                             : <div style={{ width: 52, height: 52, borderRadius: "50%", background: wizColor(uid), display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 17, margin: "0 auto" }}>{mkInitials(name)}</div>
                           }
-                          <div style={{ position: "absolute", top: -1, right: 2, width: 18, height: 18, background: "#8E8E93", borderRadius: "50%", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <div style={{ position: "absolute", top: -1, right: 2, width: 18, height: 18, background: "#9CA3AF", borderRadius: "50%", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
                             <svg viewBox="0 0 24 24" width="8" height="8" stroke="#fff" strokeWidth="3" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                           </div>
                         </div>
@@ -1706,12 +1706,12 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             {/* ── SEARCH BAR — bp-search ── */}
             <div style={{ padding: "10px 16px 6px", flexShrink: 0 }}>
               <div className="bp-search">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 <input value={wizardSearch} onChange={e => setWizardSearch(e.target.value)}
                   placeholder="Rechercher un ami..." />
                 {wizardSearch && (
                   <div onClick={() => setWizardSearch("")}
-                    style={{ width: 20, height: 20, borderRadius: "50%", background: "#94A3B8", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
+                    style={{ width: 20, height: 20, borderRadius: "50%", background: "#9CA3AF", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
                     <svg viewBox="0 0 24 24" width="10" height="10" stroke="#fff" strokeWidth="3" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                   </div>
                 )}
@@ -1739,19 +1739,19 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontWeight: 600, fontSize: 16, color: "#000", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{name}</div>
                       {country
-                        ? <div style={{ fontSize: 13, color: "#6B7280", marginTop: 1 }}>{country.flag} {country.name}</div>
-                        : <div style={{ fontSize: 13, color: "#6B7280", marginTop: 1 }}>en ligne récemment</div>
+                        ? <div style={{ fontSize: 13, color: "#64748B", marginTop: 1 }}>{country.flag} {country.name}</div>
+                        : <div style={{ fontSize: 13, color: "#64748B", marginTop: 1 }}>en ligne récemment</div>
                       }
                     </div>
                     {/* Circle checkbox — Telegram style */}
-                    <div style={{ width: 24, height: 24, borderRadius: "50%", border: selected ? "none" : "2px solid #C7C7CC", background: selected ? "#22C55E" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.15s" }}>
+                    <div style={{ width: 24, height: 24, borderRadius: "50%", border: selected ? "none" : "2px solid #CBD5E1", background: selected ? "#22C55E" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.15s" }}>
                       {selected && <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ animation: "wiz-check 0.15s ease" }}><polyline points="20 6 9 17 4 12"/></svg>}
                     </div>
                   </div>
                 );
               })}
               {filteredUsers.length === 0 && (
-                <div style={{ padding: "52px 24px", textAlign: "center", color: "#6B7280", fontSize: 15 }}>
+                <div style={{ padding: "52px 24px", textAlign: "center", color: "#64748B", fontSize: 15 }}>
                   Aucun contact trouvé
                 </div>
               )}
@@ -1770,7 +1770,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           </div>
         ) : (
           /* ── Step 2: Nom du groupe — Telegram exact ── */
-          <div style={{ flex: 1, overflowY: "auto", background: "#F2F2F7", position: "relative" }}
+          <div style={{ flex: 1, overflowY: "auto", background: "#F8FAFC", position: "relative" }}
             onClick={() => { if (showAutoDeletePopup) setShowAutoDeletePopup(false); }}>
 
             {/* ── PHOTO + NOM (same row, Telegram layout) ── */}
@@ -1797,7 +1797,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   autoFocus
                   style={{ flex: 1, border: "none", padding: "4px 0", fontSize: 17, outline: "none", color: "#000", background: "transparent" }}
                 />
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8E8E93" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, cursor: "pointer" }}>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, cursor: "pointer" }}>
                   <circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
                 </svg>
               </div>
@@ -1818,13 +1818,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 </div>
                 <span style={{ flex: 1, fontSize: 16, color: "#000" }}>Autosuppression</span>
-                <span style={{ fontSize: 15, color: "#8E8E93" }}>{autoDeleteOption}</span>
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#C7C7CC" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                <span style={{ fontSize: 15, color: "#9CA3AF" }}>{autoDeleteOption}</span>
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#CBD5E1" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
               </div>
             </div>
 
             {/* ── Description ── */}
-            <div style={{ padding: "10px 16px 0", color: "#8E8E93", fontSize: 13, lineHeight: 1.5 }}>
+            <div style={{ padding: "10px 16px 0", color: "#9CA3AF", fontSize: 13, lineHeight: 1.5 }}>
               Les nouveaux messages de ce groupe seront automatiquement supprimés pour tous les membres après une certaine durée.
             </div>
 
@@ -1836,7 +1836,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               {[meId, ...selectedArr].map((uid, idx) => {
                 const u = uid === meId ? null : allUsers.find(x => x.id === uid);
                 const isMe = uid === meId;
-                const WIZ_COLORS = ["#EC4899","#8B5CF6","#F97316","#22C55E","#14B8A6","#EF4444","#3B82F6","#F59E0B","#6366F1","#D946EF"];
+                const WIZ_COLORS = ["#EC4899","#8B5CF6","#F97316","#22C55E","#0EA5E9","#EF4444","#0EA5E9","#F59E0B","#6366F1","#8B5CF6"];
                 const col = WIZ_COLORS[uid % WIZ_COLORS.length];
                 const displayName = isMe ? ((() => { try { const s = JSON.parse(localStorage.getItem("fb_user")??"{}"); return s.firstName && s.lastName ? `${s.firstName} ${s.lastName}` : "Vous"; } catch { return "Vous"; } })()) : (u ? `${u.firstName} ${u.lastName}` : `Utilisateur #${uid}`);
                 const initials = displayName.split(" ").map((w: string) => w[0]).join("").toUpperCase().slice(0, 2);
@@ -1851,7 +1851,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontWeight: 600, fontSize: 15, color: "#000", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{displayName}</div>
-                      <div style={{ fontSize: 13, color: "#8E8E93", marginTop: 1 }}>{isMe ? "Administrateur" : "en ligne récemment"}</div>
+                      <div style={{ fontSize: 13, color: "#9CA3AF", marginTop: 1 }}>{isMe ? "Administrateur" : "en ligne récemment"}</div>
                     </div>
                   </div>
                 );
@@ -1862,7 +1862,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
             {/* ── FAB ✓ ── */}
             <button onClick={createGroup} disabled={!wizardGroupName.trim() || wizardCreating}
-              style={{ position: "fixed", bottom: 24, right: 20, width: 56, height: 56, borderRadius: "50%", background: wizardGroupName.trim() ? "#22C55E" : "#C7C7CC", border: "none", cursor: wizardGroupName.trim() ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 14px rgba(0,0,0,0.25)", zIndex: 20, transition: "all 0.15s" }}>
+              style={{ position: "fixed", bottom: 24, right: 20, width: 56, height: 56, borderRadius: "50%", background: wizardGroupName.trim() ? "#22C55E" : "#CBD5E1", border: "none", cursor: wizardGroupName.trim() ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 14px rgba(0,0,0,0.25)", zIndex: 20, transition: "all 0.15s" }}>
               {wizardCreating
                 ? <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
                 : <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
@@ -1885,7 +1885,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     return (
                       <div key={label}
                         onClick={() => { setAutoDeleteOption(label === "Définir un délai" ? "Désactivée" : label); setShowAutoDeletePopup(false); }}
-                        style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 18px", cursor: "pointer", borderBottom: i < arr.length - 1 ? "1px solid rgba(0,0,0,0.06)" : "none", background: chosen ? "#F2FDF5" : "#fff" }}>
+                        style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 18px", cursor: "pointer", borderBottom: i < arr.length - 1 ? "1px solid rgba(0,0,0,0.06)" : "none", background: chosen ? "#F0FDF4" : "#fff" }}>
                         <div style={{ color: chosen ? "#22C55E" : "#000", flexShrink: 0 }}>{icon}</div>
                         <span style={{ fontSize: 16, color: chosen ? "#22C55E" : "#000" }}>{label}</span>
                       </div>
@@ -1912,7 +1912,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     const isVideo     = sig.incomingCall.callType === "video";
 
     return createPortal(
-      <div style={{ position:"fixed", inset:0, zIndex:10000, overflow:"hidden", display:"flex", flexDirection:"column", background:"#040f07" }}>
+      <div style={{ position:"fixed", inset:0, zIndex:10000, overflow:"hidden", display:"flex", flexDirection:"column", background:"#052e16" }}>
         <style>{`
           @keyframes bp-ring-pulse{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.18);opacity:0}}
           @keyframes bp-ring-pulse2{0%,100%{transform:scale(1);opacity:.35}50%{transform:scale(1.32);opacity:0}}
@@ -1920,21 +1920,21 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           @keyframes bp-aurora{0%,100%{opacity:.7;transform:scale(1) rotate(0deg)}50%{opacity:1;transform:scale(1.08) rotate(3deg)}}
           @keyframes bp-accept-glow{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.7),0 8px 32px rgba(34,197,94,.45)}50%{box-shadow:0 0 0 14px rgba(34,197,94,.0),0 8px 32px rgba(34,197,94,.45)}}
           @keyframes bp-wave{0%,100%{height:8px}50%{height:22px}}
-          .bp-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#4ade80;margin:0 3px;animation:bp-dots 1.5s infinite ease-in-out both}
+          .bp-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#22C55E;margin:0 3px;animation:bp-dots 1.5s infinite ease-in-out both}
           .bp-dot:nth-child(1){animation-delay:0s}.bp-dot:nth-child(2){animation-delay:.2s}.bp-dot:nth-child(3){animation-delay:.4s}
-          .bp-wave-bar{width:3px;border-radius:2px;background:linear-gradient(to top,#22C55E,#86efac);animation:bp-wave 1s ease-in-out infinite}
+          .bp-wave-bar{width:3px;border-radius:2px;background:linear-gradient(to top,#22C55E,#BBF7D0);animation:bp-wave 1s ease-in-out infinite}
         `}</style>
 
         {/* Aurora background */}
-        <div style={{ position:"absolute", inset:0, background:"linear-gradient(180deg, #071a0e 0%, #0a2e16 35%, #061208 70%, #020a04 100%)", zIndex:0 }} />
+        <div style={{ position:"absolute", inset:0, background:"linear-gradient(180deg, #052e16 0%, #052e16 35%, #052e16 70%, #052e16 100%)", zIndex:0 }} />
         <div style={{ position:"absolute", top:"-10%", left:"10%", width:"80%", height:"55%", borderRadius:"50%", background:"radial-gradient(ellipse, rgba(34,197,94,0.22) 0%, rgba(16,122,56,0.10) 40%, transparent 70%)", animation:"bp-aurora 6s ease-in-out infinite", zIndex:1, pointerEvents:"none" }} />
         <div style={{ position:"absolute", top:"5%", right:"-10%", width:"50%", height:"40%", borderRadius:"50%", background:"radial-gradient(ellipse, rgba(74,222,128,0.10) 0%, transparent 65%)", animation:"bp-aurora 8s ease-in-out infinite reverse", zIndex:1, pointerEvents:"none" }} />
 
         {/* Incoming label */}
         <div style={{ position:"relative", zIndex:10, display:"flex", justifyContent:"center", alignItems:"center", padding:"56px 20px 0" }}>
           <div style={{ background:"rgba(34,197,94,0.15)", backdropFilter:"blur(10px)", border:"1px solid rgba(34,197,94,0.3)", borderRadius:20, padding:"6px 18px", display:"flex", alignItems:"center", gap:8 }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="#4ade80"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.24 1.01L6.6 10.8z"/></svg>
-            <span style={{ color:"#4ade80", fontSize:13, fontWeight:700 }}>{isVideo ? "Appel vidéo entrant" : "Appel audio entrant"}</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#22C55E"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.24 1.01L6.6 10.8z"/></svg>
+            <span style={{ color:"#22C55E", fontSize:13, fontWeight:700 }}>{isVideo ? "Appel vidéo entrant" : "Appel audio entrant"}</span>
           </div>
         </div>
 
@@ -1952,7 +1952,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 : mkInitials(callerName)
               }
             </div>
-            <div style={{ position:"absolute", bottom:8, right:8, width:22, height:22, borderRadius:"50%", background:"#22C55E", border:"3px solid #040f07", boxShadow:"0 0 10px #22C55E" }} />
+            <div style={{ position:"absolute", bottom:8, right:8, width:22, height:22, borderRadius:"50%", background:"#22C55E", border:"3px solid #052e16", boxShadow:"0 0 10px #22C55E" }} />
           </div>
 
           <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:8, justifyContent:"center", padding:"0 28px" }}>
@@ -1973,13 +1973,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         {/* Bottom — accept / reject */}
         <div style={{ position:"relative", zIndex:10, padding:"0 40px 56px", display:"flex", justifyContent:"space-around", alignItems:"flex-start" }}>
           <div style={{ textAlign:"center", cursor:"pointer" }} onClick={() => sig.rejectCall()}>
-            <div style={{ width:72, height:72, borderRadius:"50%", background:"linear-gradient(145deg,#ef4444,#b91c1c)", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 10px", boxShadow:"0 6px 28px rgba(239,68,68,.55), inset 0 1px 0 rgba(255,255,255,.2)" }}>
+            <div style={{ width:72, height:72, borderRadius:"50%", background:"linear-gradient(145deg,#ef4444,#EF4444)", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 10px", boxShadow:"0 6px 28px rgba(239,68,68,.55), inset 0 1px 0 rgba(255,255,255,.2)" }}>
               <svg viewBox="0 0 24 24" width="30" height="30" fill="#fff"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.12-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
             </div>
             <div style={{ color:"rgba(255,255,255,.75)", fontSize:13, fontWeight:600 }}>Refuser</div>
           </div>
           <div style={{ textAlign:"center", cursor:"pointer" }} onClick={() => sig.acceptCall()}>
-            <div style={{ width:72, height:72, borderRadius:"50%", background:"linear-gradient(145deg,#22c55e,#15803d)", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 10px", animation:"bp-accept-glow 2s ease-in-out infinite", boxShadow:"0 6px 28px rgba(34,197,94,.55), inset 0 1px 0 rgba(255,255,255,.2)" }}>
+            <div style={{ width:72, height:72, borderRadius:"50%", background:"linear-gradient(145deg,#22c55e,#16A34A)", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 10px", animation:"bp-accept-glow 2s ease-in-out infinite", boxShadow:"0 6px 28px rgba(34,197,94,.55), inset 0 1px 0 rgba(255,255,255,.2)" }}>
               <svg viewBox="0 0 24 24" width="30" height="30" fill="#fff"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.24 1.01L6.6 10.8z"/></svg>
             </div>
             <div style={{ color:"rgba(255,255,255,.75)", fontSize:13, fontWeight:600 }}>Accepter</div>
@@ -2017,7 +2017,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               @keyframes bpv-end-glow{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.7),0 8px 28px rgba(239,68,68,.5)}50%{box-shadow:0 0 0 12px rgba(239,68,68,0),0 8px 28px rgba(239,68,68,.5)}}
               @keyframes bpv-secure-pulse{0%,100%{opacity:.85}50%{opacity:1}}
               @keyframes bpv-local-glow{0%,100%{box-shadow:0 0 0 2px rgba(34,197,94,0.7),0 4px 20px rgba(0,0,0,.55)}50%{box-shadow:0 0 0 3px rgba(74,222,128,1),0 4px 24px rgba(0,0,0,.6)}}
-              .bpv-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#4ade80;animation:bpv-dots 1.5s ease-in-out infinite}
+              .bpv-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#22C55E;animation:bpv-dots 1.5s ease-in-out infinite}
               .bpv-dot:nth-child(1){animation-delay:0s}.bpv-dot:nth-child(2){animation-delay:.2s}.bpv-dot:nth-child(3){animation-delay:.4s}
               .bpv-btn{display:flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:50%;border:none;cursor:pointer;transition:transform .12s,filter .12s;background:rgba(34,197,94,0.18);backdrop-filter:blur(8px);border:1px solid rgba(34,197,94,0.3)}
               .bpv-btn:active{transform:scale(.88)!important}
@@ -2025,7 +2025,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             `}</style>
 
             {/* Remote video — full screen (audio routed via <audio> element, video only here) */}
-            <video ref={remoteVideoRef} autoPlay playsInline muted style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover", background:"linear-gradient(180deg,#071d0c,#020b05)" }} />
+            <video ref={remoteVideoRef} autoPlay playsInline muted style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover", background:"linear-gradient(180deg,#052e16,#052e16)" }} />
 
             {/* Top gradient overlay */}
             <div style={{ position:"absolute", top:0, left:0, right:0, height:"38%", background:"linear-gradient(180deg,rgba(0,0,0,0.82) 0%,rgba(0,0,0,0.35) 60%,transparent 100%)", zIndex:10, pointerEvents:"none" }} />
@@ -2052,7 +2052,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     </div>
                     <div style={{ display:"flex", alignItems:"center", gap:4, marginTop:3 }}>
                       {sig.callState === "active"
-                        ? <span style={{ color:"#4ade80", fontSize:13, fontWeight:700 }}>● {fmtTime(sig.callDuration)}</span>
+                        ? <span style={{ color:"#22C55E", fontSize:13, fontWeight:700 }}>● {fmtTime(sig.callDuration)}</span>
                         : <>
                             <span style={{ color:"rgba(255,255,255,.75)", fontSize:13 }}>Connexion en cours</span>
                             <span className="bpv-dot" style={{ marginLeft:2 }} /><span className="bpv-dot" /><span className="bpv-dot" />
@@ -2068,7 +2068,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 {/* Speaker button */}
                 <button onClick={() => sig.toggleSpeaker(remoteAudioRef.current)}
                   style={{ width:44, height:44, borderRadius:"50%", background:sig.isSpeaker ? "rgba(34,197,94,0.35)" : "rgba(255,255,255,0.12)", border:`1.5px solid ${sig.isSpeaker ? "rgba(34,197,94,0.65)" : "rgba(255,255,255,0.22)"}`, backdropFilter:"blur(12px)", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 4px 14px rgba(0,0,0,0.4)", flexShrink:0 }}>
-                  <svg viewBox="0 0 24 24" width="20" height="20" fill={sig.isSpeaker ? "#4ade80" : "rgba(255,255,255,.8)"}><path d={sig.isSpeaker ? "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" : "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"}/></svg>
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill={sig.isSpeaker ? "#22C55E" : "rgba(255,255,255,.8)"}><path d={sig.isSpeaker ? "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" : "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"}/></svg>
                 </button>
               </div>
             </div>
@@ -2091,10 +2091,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               <div style={{ position:"absolute", bottom:175, left:"50%", transform:"translateX(-50%)", zIndex:20, animation:"bpv-secure-pulse 3s ease-in-out infinite" }}>
                 <div style={{ background:"rgba(34,197,94,0.18)", backdropFilter:"blur(14px)", border:"1px solid rgba(34,197,94,0.35)", borderRadius:24, padding:"7px 18px", display:"flex", alignItems:"center", gap:7, whiteSpace:"nowrap" }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                    <rect x="2" y="18" width="3" height="4" rx="1" fill="#4ade80"/>
-                    <rect x="7" y="13" width="3" height="9" rx="1" fill="#4ade80"/>
-                    <rect x="12" y="8" width="3" height="14" rx="1" fill="#4ade80"/>
-                    <rect x="17" y="3" width="3" height="19" rx="1" fill="#4ade80"/>
+                    <rect x="2" y="18" width="3" height="4" rx="1" fill="#22C55E"/>
+                    <rect x="7" y="13" width="3" height="9" rx="1" fill="#22C55E"/>
+                    <rect x="12" y="8" width="3" height="14" rx="1" fill="#22C55E"/>
+                    <rect x="17" y="3" width="3" height="19" rx="1" fill="#22C55E"/>
                   </svg>
                   <span style={{ color:"rgba(255,255,255,.88)", fontSize:12, fontWeight:700, letterSpacing:0.2 }}>Connexion sécurisée</span>
                 </div>
@@ -2108,17 +2108,17 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   {([
                     {
                       label: sig.isVideoEnabled ? "Désactiver\nvidéo" : "Activer\nvidéo",
-                      icon:<svg viewBox="0 0 24 24" width="24" height="24" fill={sig.isVideoEnabled ? "rgba(255,255,255,.9)" : "#022c0f"}>{sig.isVideoEnabled ? <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/> : <path d="M21 6.5l-4 4V7c0-.55-.45-1-1-1H9.82L21 17.18V6.5zM3.27 2L2 3.27 4.73 6H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.21 0 .39-.08.54-.18L19.73 21 21 19.73 3.27 2z"/>}</svg>,
+                      icon:<svg viewBox="0 0 24 24" width="24" height="24" fill={sig.isVideoEnabled ? "rgba(255,255,255,.9)" : "#052e16"}>{sig.isVideoEnabled ? <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/> : <path d="M21 6.5l-4 4V7c0-.55-.45-1-1-1H9.82L21 17.18V6.5zM3.27 2L2 3.27 4.73 6H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.21 0 .39-.08.54-.18L19.73 21 21 19.73 3.27 2z"/>}</svg>,
                       action:() => sig.toggleVideo(), active:!sig.isVideoEnabled,
                     },
                     {
                       label:"Muet",
-                      icon:<svg viewBox="0 0 24 24" width="24" height="24" fill={sig.isMuted ? "#022c0f" : "rgba(255,255,255,.9)"}><path d={sig.isMuted ? "M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z" : "M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28C16.28 17.23 19 14.41 19 11h-1.7z"}/></svg>,
+                      icon:<svg viewBox="0 0 24 24" width="24" height="24" fill={sig.isMuted ? "#052e16" : "rgba(255,255,255,.9)"}><path d={sig.isMuted ? "M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z" : "M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28C16.28 17.23 19 14.41 19 11h-1.7z"}/></svg>,
                       action:() => sig.toggleMute(), active:sig.isMuted,
                     },
                     {
                       label: sig.isScreenSharing ? "Arrêter\npartage" : "Partager\nécran",
-                      icon:<svg viewBox="0 0 24 24" width="24" height="24" fill={sig.isScreenSharing ? "#022c0f" : "rgba(255,255,255,.9)"}><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zm-7-3.53v-2.19c-2.78.48-4.34 1.71-5.5 3.72.14-1.39.73-4.47 3.93-5.81L9.5 8.47C11.27 7.28 13.8 6.86 16 9.5l1.5-1.5v4.47H13z"/></svg>,
+                      icon:<svg viewBox="0 0 24 24" width="24" height="24" fill={sig.isScreenSharing ? "#052e16" : "rgba(255,255,255,.9)"}><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zm-7-3.53v-2.19c-2.78.48-4.34 1.71-5.5 3.72.14-1.39.73-4.47 3.93-5.81L9.5 8.47C11.27 7.28 13.8 6.86 16 9.5l1.5-1.5v4.47H13z"/></svg>,
                       action:() => sig.toggleScreenShare(), active:sig.isScreenSharing,
                     },
                     {
@@ -2135,7 +2135,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     <div key={b.label} style={{ textAlign:"center", cursor:"pointer", minWidth:0 }} onClick={b.action}>
                       <div className={`bpv-btn${b.active ? " bpv-btn-on" : ""}`} style={
                         b.red
-                          ? { background:"linear-gradient(145deg,#ef4444,#b91c1c)", border:"none", width:64, height:64, animation:"bpv-end-glow 2.5s ease-in-out infinite", boxShadow:"0 6px 24px rgba(239,68,68,.55), inset 0 1px 0 rgba(255,255,255,.2)" }
+                          ? { background:"linear-gradient(145deg,#ef4444,#EF4444)", border:"none", width:64, height:64, animation:"bpv-end-glow 2.5s ease-in-out infinite", boxShadow:"0 6px 24px rgba(239,68,68,.55), inset 0 1px 0 rgba(255,255,255,.2)" }
                           : b.active
                             ? { background:"rgba(34,197,94,0.5)", border:"1px solid rgba(34,197,94,0.7)" }
                             : {}
@@ -2158,14 +2158,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               @keyframes bp-dot-bounce{0%,80%,100%{opacity:0;transform:translateY(0)}40%{opacity:1;transform:translateY(-5px)}}
               @keyframes bp-wv{0%,100%{height:6px;opacity:.5}50%{height:var(--h,18px);opacity:1}}
               @keyframes bp-end-glow{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.7),0 8px 28px rgba(239,68,68,.5)}50%{box-shadow:0 0 0 10px rgba(239,68,68,0),0 8px 28px rgba(239,68,68,.5)}}
-              .bpa-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#4ade80;animation:bp-dot-bounce 1.5s ease-in-out infinite}
+              .bpa-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#22C55E;animation:bp-dot-bounce 1.5s ease-in-out infinite}
               .bpa-dot:nth-child(1){animation-delay:0s}.bpa-dot:nth-child(2){animation-delay:.2s}.bpa-dot:nth-child(3){animation-delay:.4s}
               .bpa-ctrl-btn{display:flex;align-items:center;justify-content:center;width:66px;height:66px;border-radius:50%;border:none;cursor:pointer;transition:transform .12s,box-shadow .12s}
               .bpa-ctrl-btn:active{transform:scale(.91)!important}
             `}</style>
 
             {/* Deep aurora background */}
-            <div style={{ position:"absolute", inset:0, background:"linear-gradient(180deg, #071d0c 0%, #0c3318 30%, #061510 65%, #020b05 100%)", zIndex:0 }} />
+            <div style={{ position:"absolute", inset:0, background:"linear-gradient(180deg, #052e16 0%, #052e16 30%, #052e16 65%, #052e16 100%)", zIndex:0 }} />
             <div style={{ position:"absolute", top:"-15%", left:"5%", width:"90%", height:"60%", borderRadius:"50%", background:"radial-gradient(ellipse, rgba(34,197,94,0.26) 0%, rgba(21,128,61,0.10) 40%, transparent 68%)", animation:"bp-aurora-a 7s ease-in-out infinite", zIndex:1, pointerEvents:"none" }} />
             <div style={{ position:"absolute", top:"10%", right:"-15%", width:"55%", height:"45%", borderRadius:"50%", background:"radial-gradient(ellipse, rgba(74,222,128,0.12) 0%, transparent 60%)", animation:"bp-aurora-b 9s ease-in-out infinite", zIndex:1, pointerEvents:"none" }} />
             <div style={{ position:"absolute", bottom:"20%", left:"-10%", width:"45%", height:"35%", borderRadius:"50%", background:"radial-gradient(ellipse, rgba(34,197,94,0.08) 0%, transparent 60%)", zIndex:1, pointerEvents:"none" }} />
@@ -2174,7 +2174,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             <div style={{ position:"relative", zIndex:10, display:"flex", justifyContent:"flex-end", padding:"52px 20px 0", flexShrink:0 }}>
               <button onClick={() => sig.toggleSpeaker(remoteAudioRef.current)}
                 style={{ width:46, height:46, borderRadius:"50%", background:sig.isSpeaker ? "rgba(34,197,94,0.35)" : "rgba(255,255,255,0.10)", border:`1.5px solid ${sig.isSpeaker ? "rgba(34,197,94,0.6)" : "rgba(255,255,255,0.2)"}`, backdropFilter:"blur(12px)", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 4px 16px rgba(0,0,0,0.35)", transition:"all .2s" }}>
-                <svg viewBox="0 0 24 24" width="22" height="22" fill={sig.isSpeaker ? "#4ade80" : "rgba(255,255,255,.75)"}><path d={sig.isSpeaker ? "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" : "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"}/></svg>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill={sig.isSpeaker ? "#22C55E" : "rgba(255,255,255,.75)"}><path d={sig.isSpeaker ? "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" : "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"}/></svg>
               </button>
             </div>
 
@@ -2204,7 +2204,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 {/* Glassmorphism avatar — real photo or initials */}
                 <div style={{
                   width:134, height:134, borderRadius:"50%", overflow:"hidden",
-                  background:`radial-gradient(circle at 33% 30%, rgba(255,255,255,0.22), rgba(255,255,255,0.04) 60%), radial-gradient(circle at 70% 75%, ${peer?.color ?? "#166534"}cc, ${peer?.color ?? "#166534"}88)`,
+                  background:`radial-gradient(circle at 33% 30%, rgba(255,255,255,0.22), rgba(255,255,255,0.04) 60%), radial-gradient(circle at 70% 75%, ${peer?.color ?? "#16A34A"}cc, ${peer?.color ?? "#16A34A"}88)`,
                   display:"flex", alignItems:"center", justifyContent:"center",
                   fontSize:50, color:"#fff", fontWeight:900,
                   border:"2.5px solid rgba(255,255,255,0.18)",
@@ -2218,7 +2218,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   }
                 </div>
                 {/* Online dot */}
-                <div style={{ position:"absolute", bottom:10, right:10, width:22, height:22, borderRadius:"50%", background:"radial-gradient(circle, #4ade80, #22c55e)", border:"3px solid #071d0c", boxShadow:"0 0 14px rgba(74,222,128,0.8)" }} />
+                <div style={{ position:"absolute", bottom:10, right:10, width:22, height:22, borderRadius:"50%", background:"radial-gradient(circle, #22C55E, #22c55e)", border:"3px solid #052e16", boxShadow:"0 0 14px rgba(74,222,128,0.8)" }} />
               </div>
 
               {/* Name + verified (only for creators) */}
@@ -2235,7 +2235,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               {/* Status */}
               <div style={{ display:"flex", alignItems:"center", gap:4, marginBottom:20 }}>
                 {sig.callState === "active"
-                  ? <span style={{ color:"#4ade80", fontWeight:700, fontSize:16, letterSpacing:0.3 }}>● {fmtTime(sig.callDuration)}</span>
+                  ? <span style={{ color:"#22C55E", fontWeight:700, fontSize:16, letterSpacing:0.3 }}>● {fmtTime(sig.callDuration)}</span>
                   : <>
                       <span style={{ color:"rgba(255,255,255,.65)", fontSize:15 }}>Sonnerie</span>
                       <span className="bpa-dot" style={{ marginLeft:4 }} /><span className="bpa-dot" /><span className="bpa-dot" />
@@ -2246,10 +2246,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               {/* Branding capsule */}
               <div style={{ background:"rgba(34,197,94,0.12)", backdropFilter:"blur(12px)", border:"1px solid rgba(34,197,94,0.28)", borderRadius:24, padding:"7px 18px", display:"flex", alignItems:"center", gap:8 }}>
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-                  <rect x="2" y="18" width="3" height="4" rx="1" fill="#4ade80"/>
-                  <rect x="7" y="14" width="3" height="8" rx="1" fill="#4ade80"/>
-                  <rect x="12" y="9" width="3" height="13" rx="1" fill="#4ade80"/>
-                  <rect x="17" y="4" width="3" height="18" rx="1" fill="#4ade80"/>
+                  <rect x="2" y="18" width="3" height="4" rx="1" fill="#22C55E"/>
+                  <rect x="7" y="14" width="3" height="8" rx="1" fill="#22C55E"/>
+                  <rect x="12" y="9" width="3" height="13" rx="1" fill="#22C55E"/>
+                  <rect x="17" y="4" width="3" height="18" rx="1" fill="#22C55E"/>
                 </svg>
                 <span style={{ color:"rgba(255,255,255,.85)", fontSize:13, fontWeight:600, letterSpacing:0.2 }}>Appel audio Brutepawa</span>
               </div>
@@ -2262,7 +2262,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   {([
                     {
                       label:"Haut-parleur",
-                      icon:<svg viewBox="0 0 24 24" width="26" height="26" fill={sig.isSpeaker?"#022c0f":"rgba(255,255,255,.9)"}><path d={sig.isSpeaker?"M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z":"M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"}/></svg>,
+                      icon:<svg viewBox="0 0 24 24" width="26" height="26" fill={sig.isSpeaker?"#052e16":"rgba(255,255,255,.9)"}><path d={sig.isSpeaker?"M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z":"M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"}/></svg>,
                       action:() => sig.toggleSpeaker(remoteAudioRef.current),
                       active:sig.isSpeaker,
                     },
@@ -2274,7 +2274,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     },
                     {
                       label:"Muet",
-                      icon:<svg viewBox="0 0 24 24" width="26" height="26" fill={sig.isMuted?"#022c0f":"rgba(255,255,255,.9)"}><path d={sig.isMuted?"M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z":"M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28C16.28 17.23 19 14.41 19 11h-1.7z"}/></svg>,
+                      icon:<svg viewBox="0 0 24 24" width="26" height="26" fill={sig.isMuted?"#052e16":"rgba(255,255,255,.9)"}><path d={sig.isMuted?"M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z":"M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28C16.28 17.23 19 14.41 19 11h-1.7z"}/></svg>,
                       action:() => sig.toggleMute(),
                       active:sig.isMuted,
                     },
@@ -2288,7 +2288,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     <div key={b.label} style={{ textAlign:"center", cursor:"pointer" }} onClick={b.action}>
                       <div className="bpa-ctrl-btn" style={
                         b.red
-                          ? { background:"linear-gradient(145deg,#ef4444,#b91c1c)", boxShadow:"0 6px 24px rgba(239,68,68,.55), inset 0 1px 0 rgba(255,255,255,.2)", animation:"bp-end-glow 2.5s ease-in-out infinite" }
+                          ? { background:"linear-gradient(145deg,#ef4444,#EF4444)", boxShadow:"0 6px 24px rgba(239,68,68,.55), inset 0 1px 0 rgba(255,255,255,.2)", animation:"bp-end-glow 2.5s ease-in-out infinite" }
                           : b.active
                             ? { background:"linear-gradient(145deg,#22c55e,#16a34a)", boxShadow:"0 6px 20px rgba(34,197,94,.45), inset 0 1px 0 rgba(255,255,255,.25)" }
                             : { background:"rgba(255,255,255,0.10)", boxShadow:"0 4px 16px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.1)", border:"1px solid rgba(255,255,255,.12)" }
@@ -2311,7 +2311,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   if (activeGroupId !== null && showGroupInfo && showGrpEdit) {
     const grp = chatGroups.find(g => g.id === activeGroupId);
     const isChannelG = grp?.type === "channel";
-    const grpColorEdit = ["#EC4899","#8B5CF6","#F97316","#22C55E","#14B8A6","#3B82F6","#F59E0B"][activeGroupId % 7];
+    const grpColorEdit = ["#EC4899","#8B5CF6","#F97316","#22C55E","#0EA5E9","#0EA5E9","#F59E0B"][activeGroupId % 7];
     const grpInitialEdit = (grp?.name ?? "G")[0].toUpperCase();
     const memberCount = groupInfo?.members.length ?? grp?.membersCount ?? 0;
 
@@ -2330,11 +2330,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     const CARD_STYLE: React.CSSProperties = { background: "#fff", borderRadius: 14, margin: "0 16px 10px", overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.08)" };
     const ROW_STYLE: React.CSSProperties = { display: "flex", alignItems: "center", padding: "14px 16px", gap: 14, cursor: "pointer" };
     const SEP = <div style={{ height: 1, background: "rgba(0,0,0,0.07)", marginLeft: 56 }} />;
-    const Chevron = () => <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#C7C7CC" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>;
+    const Chevron = () => <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>;
     const Val = ({ v }: { v: string }) => <span style={{ fontSize: 15, color: "#22C55E", marginRight: 4, flexShrink: 0 }}>{v}</span>;
 
     return createPortal(
-      <div style={{ position: "fixed", inset: 0, background: "#F1F1F4", zIndex: 10001, display: "flex", flexDirection: "column" }}>
+      <div style={{ position: "fixed", inset: 0, background: "#F1F5F9", zIndex: 10001, display: "flex", flexDirection: "column" }}>
         <style>{`@keyframes ge-toast-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}} @keyframes spin{to{transform:rotate(360deg)}}`}</style>
 
         {/* ══ HEADER ══ */}
@@ -2343,7 +2343,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             style={{ background: "none", border: "none", cursor: "pointer", width: 48, height: 48, display: "flex", alignItems: "center", justifyContent: "center" }}>
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
           </button>
-          <span style={{ flex: 1, fontWeight: 600, fontSize: 17, color: "#1F1F1F", textAlign: "center", marginRight: 48 }}>Modifier</span>
+          <span style={{ flex: 1, fontWeight: 600, fontSize: 17, color: "#111827", textAlign: "center", marginRight: 48 }}>Modifier</span>
           <button onClick={handleSave} disabled={grpEditSaving || !grpEditName.trim()}
             style={{ position: "absolute", right: 4, background: "none", border: "none", cursor: grpEditName.trim() ? "pointer" : "default", width: 48, height: 48, display: "flex", alignItems: "center", justifyContent: "center", opacity: grpEditName.trim() ? 1 : 0.35 }}>
             <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
@@ -2363,10 +2363,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               <div style={{ flex: 1, borderBottom: "2px solid #22C55E", paddingBottom: 3 }}>
                 <input autoFocus value={grpEditName} onChange={e => setGrpEditName(e.target.value)}
                   placeholder={grp?.name ?? (isChannelG ? "Nom du canal" : "Nom du groupe")}
-                  style={{ width: "100%", border: "none", outline: "none", fontSize: 16.5, color: "#1F1F1F", background: "transparent", fontWeight: 500 }} />
+                  style={{ width: "100%", border: "none", outline: "none", fontSize: 16.5, color: "#111827", background: "transparent", fontWeight: 500 }} />
               </div>
               <button style={{ background: "none", border: "none", cursor: "pointer", padding: 4, flexShrink: 0 }}>
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8E8E93" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1.2" fill="#8E8E93"/><circle cx="15" cy="9" r="1.2" fill="#8E8E93"/></svg>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1.2" fill="#9CA3AF"/><circle cx="15" cy="9" r="1.2" fill="#9CA3AF"/></svg>
               </button>
             </div>
             {/* Row: Définir une photo */}
@@ -2380,7 +2380,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             <div style={{ padding: "12px 16px 14px" }}>
               <input value={grpEditDesc} onChange={e => setGrpEditDesc(e.target.value)}
                 placeholder="Description (facultative)"
-                style={{ width: "100%", border: "none", outline: "none", fontSize: 15, color: "#1F1F1F", background: "transparent" }} />
+                style={{ width: "100%", border: "none", outline: "none", fontSize: 15, color: "#111827", background: "transparent" }} />
             </div>
           </div>
 
@@ -2388,47 +2388,47 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           <div style={{ ...CARD_STYLE }}>
             {/* Type de groupe */}
             <div style={{ ...ROW_STYLE }}>
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8E8E93" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-              <span style={{ flex: 1, fontSize: 15.5, color: "#1F1F1F" }}>Type de groupe</span>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <span style={{ flex: 1, fontSize: 15.5, color: "#111827" }}>Type de groupe</span>
               <Val v="Privé" /><Chevron />
             </div>
             {SEP}
             {/* Historique des discussions */}
             <div style={{ ...ROW_STYLE }}>
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8E8E93" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              <span style={{ flex: 1, fontSize: 15.5, color: "#1F1F1F" }}>Historique des discussions</span>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span style={{ flex: 1, fontSize: 15.5, color: "#111827" }}>Historique des discussions</span>
               <Val v="Masqué" /><Chevron />
             </div>
             {SEP}
             {/* Sujets */}
             <div style={{ ...ROW_STYLE }}>
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8E8E93" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-              <span style={{ flex: 1, fontSize: 15.5, color: "#1F1F1F" }}>Sujets</span>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              <span style={{ flex: 1, fontSize: 15.5, color: "#111827" }}>Sujets</span>
               <span style={{ fontSize: 10.5, fontWeight: 700, color: "#fff", background: "#22C55E", borderRadius: 5, padding: "2px 6px", marginRight: 10 }}>NOUVEAU</span>
-              <div style={{ width: 44, height: 26, borderRadius: 13, background: "#E5E5EA", position: "relative", flexShrink: 0 }}>
+              <div style={{ width: 44, height: 26, borderRadius: 13, background: "#E5E7EB", position: "relative", flexShrink: 0 }}>
                 <div style={{ position: "absolute", top: 3, left: 3, width: 20, height: 20, borderRadius: "50%", background: "#fff", boxShadow: "0 1px 3px rgba(0,0,0,0.25)" }} />
               </div>
             </div>
           </div>
 
           {/* ── TEXTE EXPLICATIF ── */}
-          <p style={{ margin: "0 16px 10px", padding: "0 4px", fontSize: 13, color: "#8E8E93", lineHeight: 1.5 }}>
+          <p style={{ margin: "0 16px 10px", padding: "0 4px", fontSize: 13, color: "#9CA3AF", lineHeight: 1.5 }}>
             Les sujets divisent le groupe en sections créées par les administrateurs ou les membres.
           </p>
 
           {/* ── CARTE 3 : Options ── */}
           <div style={{ ...CARD_STYLE }}>
             {[
-              { label: "Réactions", val: "Toutes", icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8E8E93" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> },
-              { label: "Autorisations", val: "13/14", icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8E8E93" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> },
-              { label: "Liens d'invitation", val: "1", icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8E8E93" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> },
-              { label: "Administrateurs", val: "1", icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8E8E93" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> },
-              { label: "Membres", val: String(memberCount), icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8E8E93" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> },
+              { label: "Réactions", val: "Toutes", icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> },
+              { label: "Autorisations", val: "13/14", icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> },
+              { label: "Liens d'invitation", val: "1", icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> },
+              { label: "Administrateurs", val: "1", icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> },
+              { label: "Membres", val: String(memberCount), icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> },
             ].map((row, i, arr) => (
               <Fragment key={row.label}>
                 <div style={{ ...ROW_STYLE }}>
                   <span style={{ flexShrink: 0 }}>{row.icon}</span>
-                  <span style={{ flex: 1, fontSize: 15.5, color: "#1F1F1F" }}>{row.label}</span>
+                  <span style={{ flex: 1, fontSize: 15.5, color: "#111827" }}>{row.label}</span>
                   <Val v={row.val} /><Chevron />
                 </div>
                 {i < arr.length - 1 && SEP}
@@ -2439,7 +2439,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           {/* ── CARTE 4 : Supprimer ── */}
           <div style={{ ...CARD_STYLE, cursor: "pointer" }} onClick={() => setShowDeleteQuitDlg(true)}>
             <div style={{ padding: "15px 16px" }}>
-              <span style={{ fontSize: 15.5, color: "#FF3B30", fontWeight: 500 }}>Supprimer et quitter le groupe</span>
+              <span style={{ fontSize: 15.5, color: "#EF4444", fontWeight: 500 }}>Supprimer et quitter le groupe</span>
             </div>
           </div>
         </div>
@@ -2475,7 +2475,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     const isChannelG = grp?.type === "channel";
     const memberCount = gInfo?.members.length ?? grp?.membersCount ?? 0;
     const grpInitialInfo = (grp?.name ?? "G")[0].toUpperCase();
-    const grpColorInfo = ["#EC4899","#8B5CF6","#F97316","#22C55E","#14B8A6","#3B82F6","#F59E0B"][activeGroupId % 7];
+    const grpColorInfo = ["#EC4899","#8B5CF6","#F97316","#22C55E","#0EA5E9","#0EA5E9","#F59E0B"][activeGroupId % 7];
 
     const allMembers = gInfo?.members ?? [];
     const filteredMembers = grpInfoSearchQ.trim()
@@ -2584,10 +2584,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       {
         key: "quit",
         label: "Supprimer et quitter le groupe",
-        color: "#FF3B30",
+        color: "#EF4444",
         hasArrow: false,
         icon: (
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#FF3B30" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#EF4444" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
           </svg>
         ),
@@ -2596,7 +2596,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     ];
 
     return createPortal(
-      <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, background: "#F2F2F7", zIndex: 10000, overflowY: "auto" }}>
+      <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, background: "#F8FAFC", zIndex: 10000, overflowY: "auto" }}>
         <style>{`
           @keyframes gi-in  { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
           @keyframes gi-menu-in { from{opacity:0;transform:scale(0.92) translateY(-6px)} to{opacity:1;transform:scale(1) translateY(0)} }
@@ -2616,7 +2616,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 style={{ flex: 1, border: "none", outline: "none", fontSize: 16, background: "transparent", color: "#000" }} />
               {grpInfoSearchQ && (
                 <button onClick={() => setGrpInfoSearchQ("")} style={{ background:"none",border:"none",cursor:"pointer",padding:8 }}>
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#8E8E93" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
               )}
             </>
@@ -2639,7 +2639,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               <div style={{ position: "relative" }}>
                 <button onClick={() => setShowGrpInfoMenu(v => !v)}
                   style={{ background: "none", border: "none", cursor: "pointer", width: 40, height: 44, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <svg viewBox="0 0 24 24" width="22" height="22" fill="#8E8E93"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="#9CA3AF"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
                 </button>
                 {/* ── 3-DOT POPUP MENU ── */}
                 {showGrpInfoMenu && (
@@ -2649,11 +2649,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       {MENU_ITEMS.map((item, idx) => (
                         <div key={item.key}>
                           <div onClick={item.action} style={{ display: "flex", alignItems: "center", gap: 14, padding: "13px 18px", cursor: "pointer", background: "transparent" }}
-                            onMouseEnter={e => (e.currentTarget.style.background = "#F5F5F5")}
+                            onMouseEnter={e => (e.currentTarget.style.background = "#F1F5F9")}
                             onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
                             <span style={{ width: 24, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.icon}</span>
                             <span style={{ flex: 1, fontSize: 15.5, color: item.color, fontWeight: 400 }}>{item.label}</span>
-                            {item.hasArrow && <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#C7C7CC" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>}
+                            {item.hasArrow && <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>}
                           </div>
                           {idx < MENU_ITEMS.length - 1 && <div style={{ height: 1, background: "rgba(0,0,0,0.07)", margin: "0 18px" }} />}
                         </div>
@@ -2675,7 +2675,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             }
           </div>
           <div style={{ fontWeight: 700, fontSize: 22, color: "#000", marginBottom: 4 }}>{grp?.name ?? "Groupe"}</div>
-          <div style={{ fontSize: 14, color: "#8E8E93" }}>{memberCount} membre{memberCount !== 1 ? "s" : ""} · {isChannelG ? "Canal" : "Groupe"}</div>
+          <div style={{ fontSize: 14, color: "#9CA3AF" }}>{memberCount} membre{memberCount !== 1 ? "s" : ""} · {isChannelG ? "Canal" : "Groupe"}</div>
         </div>
 
         {/* ── QUICK ACTIONS ── */}
@@ -2692,16 +2692,16 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         {/* ── MEMBERS CARD ── */}
         <div style={{ background: "#fff", borderRadius: 14, margin: "0 0 10px", overflow: "hidden", boxShadow: "0 1px 2px rgba(0,0,0,0.06)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "13px 16px", cursor: "pointer", borderBottom: "1px solid rgba(0,0,0,0.07)" }}>
-            <div style={{ width: 46, height: 46, borderRadius: "50%", background: "#E8F9EE", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <div style={{ width: 46, height: 46, borderRadius: "50%", background: "#DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>
               </svg>
             </div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 16, color: "#22C55E", fontWeight: 500 }}>Ajouter des membres</div>
-              <div style={{ fontSize: 13, color: "#8E8E93", marginTop: 1 }}>Inviter des contacts dans le {isChannelG ? "canal" : "groupe"}</div>
+              <div style={{ fontSize: 13, color: "#9CA3AF", marginTop: 1 }}>Inviter des contacts dans le {isChannelG ? "canal" : "groupe"}</div>
             </div>
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#C7C7CC" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
           </div>
 
           {filteredMembers.map((m, i) => {
@@ -2728,7 +2728,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             );
           })}
           {grpInfoSearchQ.trim() && filteredMembers.length === 0 && (
-            <div style={{ textAlign: "center", color: "#8E8E93", fontSize: 14, padding: "24px 16px" }}>Aucun résultat</div>
+            <div style={{ textAlign: "center", color: "#9CA3AF", fontSize: 14, padding: "24px 16px" }}>Aucun résultat</div>
           )}
         </div>
 
@@ -2738,11 +2738,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             <div onClick={() => setShowAutoDelSubmenu(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 40 }} />
             <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#fff", borderRadius: "20px 20px 0 0", zIndex: 41, padding: "18px 0 32px", animation: "gi-dlg-in 0.2s ease", boxShadow: "0 -4px 24px rgba(0,0,0,0.12)" }}>
               <div style={{ textAlign: "center", fontWeight: 700, fontSize: 17, color: "#000", marginBottom: 6, padding: "0 20px" }}>Auto-suppression</div>
-              <div style={{ textAlign: "center", fontSize: 13.5, color: "#8E8E93", marginBottom: 14, padding: "0 20px" }}>Les messages seront supprimés automatiquement</div>
+              <div style={{ textAlign: "center", fontSize: 13.5, color: "#9CA3AF", marginBottom: 14, padding: "0 20px" }}>Les messages seront supprimés automatiquement</div>
               {AUTO_DEL_OPTS.map(opt => (
                 <div key={opt.key} onClick={() => { setAutoDelOption(opt.key); setShowAutoDelSubmenu(false); }}
                   style={{ display: "flex", alignItems: "center", gap: 14, padding: "13px 24px", cursor: "pointer" }}>
-                  <div style={{ width: 22, height: 22, borderRadius: "50%", border: `2px solid ${autoDelOption === opt.key ? "#22C55E" : "#C7C7CC"}`, background: autoDelOption === opt.key ? "#22C55E" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.15s" }}>
+                  <div style={{ width: 22, height: 22, borderRadius: "50%", border: `2px solid ${autoDelOption === opt.key ? "#22C55E" : "#CBD5E1"}`, background: autoDelOption === opt.key ? "#22C55E" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.15s" }}>
                     {autoDelOption === opt.key && <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
                   </div>
                   <span style={{ fontSize: 16, color: "#000", fontWeight: autoDelOption === opt.key ? 600 : 400 }}>{opt.label}</span>
@@ -2758,7 +2758,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             <div onClick={() => setShowAddToHomeDlg(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 40 }} />
             <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: "min(320px,90vw)", background: "#fff", borderRadius: 18, zIndex: 41, padding: "28px 24px 20px", animation: "gi-dlg-in 0.18s ease", boxShadow: "0 8px 32px rgba(0,0,0,0.18)", textAlign: "center" }}>
               <div style={{ fontWeight: 700, fontSize: 18, color: "#000", marginBottom: 8 }}>Ajouter à l'écran d'accueil</div>
-              <div style={{ fontSize: 13.5, color: "#8E8E93", marginBottom: 20 }}>Ajoutez ce groupe à l'écran d'accueil pour un accès rapide.</div>
+              <div style={{ fontSize: 13.5, color: "#9CA3AF", marginBottom: 20 }}>Ajoutez ce groupe à l'écran d'accueil pour un accès rapide.</div>
               <div style={{ width: 72, height: 72, borderRadius: "50%", background: grpColorInfo, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 28, margin: "0 auto 10px" }}>
                 {grpInitialInfo}
               </div>
@@ -2777,9 +2777,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             <div onClick={() => setShowDeleteQuitDlg(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 40 }} />
             <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: "min(320px,90vw)", background: "#fff", borderRadius: 18, zIndex: 41, padding: "28px 24px 20px", animation: "gi-dlg-in 0.18s ease", boxShadow: "0 8px 32px rgba(0,0,0,0.18)" }}>
               <div style={{ fontWeight: 700, fontSize: 18, color: "#000", marginBottom: 8 }}>Supprimer et quitter le groupe ?</div>
-              <div style={{ fontSize: 14, color: "#8E8E93", marginBottom: 20 }}>Êtes-vous sûr de vouloir quitter ce groupe ?</div>
+              <div style={{ fontSize: 14, color: "#9CA3AF", marginBottom: 20 }}>Êtes-vous sûr de vouloir quitter ce groupe ?</div>
               <div onClick={() => setDeleteQuitAll(v => !v)} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24, cursor: "pointer" }}>
-                <div style={{ width: 22, height: 22, borderRadius: 5, border: `2px solid ${deleteQuitAll ? "#22C55E" : "#C7C7CC"}`, background: deleteQuitAll ? "#22C55E" : "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.15s" }}>
+                <div style={{ width: 22, height: 22, borderRadius: 5, border: `2px solid ${deleteQuitAll ? "#22C55E" : "#CBD5E1"}`, background: deleteQuitAll ? "#22C55E" : "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.15s" }}>
                   {deleteQuitAll && <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
                 </div>
                 <span style={{ fontSize: 14.5, color: "#000" }}>Supprimer le groupe pour tous les membres</span>
@@ -2792,7 +2792,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   setChatGroups(p => p.filter(g => g.id !== activeGroupId));
                   setActiveGroupId(null);
                   setShowGroupInfo(false);
-                }} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 15, fontWeight: 600, color: "#FF3B30", padding: "8px 16px" }}>SUPPRIMER</button>
+                }} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 15, fontWeight: 600, color: "#EF4444", padding: "8px 16px" }}>SUPPRIMER</button>
               </div>
             </div>
           </>
@@ -2873,7 +2873,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               <polyline points="15 18 9 12 15 6"/>
             </svg>
           </button>
-          <div style={{ flex: 1, fontWeight: 800, fontSize: 17, color: "#0D1B2A" }}>Infos du contact</div>
+          <div style={{ flex: 1, fontWeight: 800, fontSize: 17, color: "#111827" }}>Infos du contact</div>
           <button style={{ width: 38, height: 38, borderRadius: "50%", background: "#F0FDF4", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="#22C55E">
               <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
@@ -2897,7 +2897,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
           {/* name + verified badge */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, marginBottom: 6 }}>
-            <span style={{ fontWeight: 900, fontSize: 22, color: "#0D1B2A", letterSpacing: -0.3 }}>{activeUser.name}</span>
+            <span style={{ fontWeight: 900, fontSize: 22, color: "#111827", letterSpacing: -0.3 }}>{activeUser.name}</span>
             {[13, 26, 40].includes(activeConv) && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 22, height: 22, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />}
           </div>
 
@@ -2918,7 +2918,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 <div style={{ width: 48, height: 48, borderRadius: 14, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(34,197,94,0.15)" }}>
                   {a.icon}
                 </div>
-                <span style={{ fontSize: 11.5, fontWeight: 700, color: "#374151", textAlign: "center" }}>{a.label}</span>
+                <span style={{ fontSize: 11.5, fontWeight: 700, color: "#64748B", textAlign: "center" }}>{a.label}</span>
               </div>
             ))}
           </div>
@@ -2931,7 +2931,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               <div style={{ width: 38, height: 38, borderRadius: 12, background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 {row.icon}
               </div>
-              <span style={{ flex: 1, fontSize: 14.5, color: "#0D1B2A", fontWeight: 500 }}>{row.label}</span>
+              <span style={{ flex: 1, fontSize: 14.5, color: "#111827", fontWeight: 500 }}>{row.label}</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="9 18 15 12 9 6"/>
               </svg>
@@ -2949,7 +2949,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     const grp = chatGroups.find(g => g.id === activeGroupId);
     const gmsgs = groupMsgs[activeGroupId] ?? [];
     const grpInitial = (grp?.name ?? "G")[0].toUpperCase();
-    const grpColor = ["#EC4899","#8B5CF6","#F97316","#22C55E","#14B8A6","#3B82F6","#F59E0B"][activeGroupId % 7];
+    const grpColor = ["#EC4899","#8B5CF6","#F97316","#22C55E","#0EA5E9","#0EA5E9","#F59E0B"][activeGroupId % 7];
     const isNewGroup = gmsgs.filter(m => m.type !== "system").length === 0;
     const showBanner = !dismissedAddBanner.has(activeGroupId);
     const showInfoCard = isNewGroup && !dismissedInfoPanel.has(activeGroupId);
@@ -2959,7 +2959,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         backgroundImage:`url(${import.meta.env.BASE_URL}wallpapers/bp-chat-bg.jpg)`,
         backgroundSize:"cover", backgroundRepeat:"no-repeat", backgroundPosition:"center" }}>
         <style>{`
-          .bp-msg-mine   { background:#DCECCB; color:#111; border-radius:16px 16px 4px 16px; box-shadow:0 1px 2px rgba(0,0,0,0.10); }
+          .bp-msg-mine   { background:#DCFCE7; color:#111; border-radius:16px 16px 4px 16px; box-shadow:0 1px 2px rgba(0,0,0,0.10); }
           .bp-msg-theirs { background:#fff;    color:#111; border-radius:4px 16px 16px 16px; box-shadow:0 1px 2px rgba(0,0,0,0.08); }
           textarea:focus { outline:none !important; box-shadow:none !important; border:none !important; }
           textarea { -webkit-appearance:none; scrollbar-width:none; }
@@ -2981,11 +2981,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             {(() => {
               const matches = grpSearchQ.trim() ? gmsgs.filter(m => m.type !== "system" && m.text.toLowerCase().includes(grpSearchQ.toLowerCase())) : [];
               return matches.length > 0 ? (
-                <span style={{ fontSize:13, color:"#8E8E93", whiteSpace:"nowrap", flexShrink:0 }}>
+                <span style={{ fontSize:13, color:"#9CA3AF", whiteSpace:"nowrap", flexShrink:0 }}>
                   {grpSearchIdx + 1} sur {matches.length}
                 </span>
               ) : grpSearchQ.trim() ? (
-                <span style={{ fontSize:13, color:"#8E8E93", flexShrink:0 }}>0 résultat</span>
+                <span style={{ fontSize:13, color:"#9CA3AF", flexShrink:0 }}>0 résultat</span>
               ) : null;
             })()}
             {grpSearchQ.trim() && (() => {
@@ -3006,10 +3006,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           </div>
         ) : (
           /* ── NORMAL header — Telegram compact ── */
-          <div style={{ background:"#fff", padding:"5px 4px 5px 2px", display:"flex", alignItems:"center", gap:6, flexShrink:0, borderBottom:"1px solid #EBEBEB", boxShadow:"0 1px 3px rgba(0,0,0,0.04)", position:"relative" }}>
+          <div style={{ background:"#fff", padding:"5px 4px 5px 2px", display:"flex", alignItems:"center", gap:6, flexShrink:0, borderBottom:"1px solid #E5E7EB", boxShadow:"0 1px 3px rgba(0,0,0,0.04)", position:"relative" }}>
             <button onClick={() => { setActiveGroupId(null); setShowGroupInfo(false); setShowGrpMenu(false); }}
               style={{ background:"none", border:"none", cursor:"pointer", padding:"8px 2px 8px 6px", display:"flex", alignItems:"center", flexShrink:0 }}>
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#1F2937" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#111827" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
             </button>
             <div onClick={() => setShowGroupInfo(true)}
               style={{ width:38, height:38, borderRadius:"50%", background:grpColor, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, fontSize:15, cursor:"pointer", flexShrink:0 }}>
@@ -3018,12 +3018,12 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 : grpInitial}
             </div>
             <div style={{ flex:1, minWidth:0, cursor:"pointer" }} onClick={() => setShowGroupInfo(true)}>
-              <div style={{ fontWeight:700, fontSize:15.5, color:"#0F172A", lineHeight:1.25, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{grp?.name ?? "Groupe"}</div>
+              <div style={{ fontWeight:700, fontSize:15.5, color:"#111827", lineHeight:1.25, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{grp?.name ?? "Groupe"}</div>
               <div style={{ fontSize:11.5, color:"#9CA3AF" }}>{grp?.membersCount ?? 0} membre{(grp?.membersCount ?? 0) !== 1 ? "s" : ""}</div>
             </div>
             <button onClick={() => setShowGrpMenu(m => !m)}
               style={{ background:"none", border:"none", width:40, height:40, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#374151" strokeWidth="2.1" strokeLinecap="round"><circle cx="12" cy="5" r="1.2" fill="#374151"/><circle cx="12" cy="12" r="1.2" fill="#374151"/><circle cx="12" cy="19" r="1.2" fill="#374151"/></svg>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#64748B" strokeWidth="2.1" strokeLinecap="round"><circle cx="12" cy="5" r="1.2" fill="#64748B"/><circle cx="12" cy="12" r="1.2" fill="#64748B"/><circle cx="12" cy="19" r="1.2" fill="#64748B"/></svg>
             </button>
 
             {/* ── POPUP MENU ── */}
@@ -3037,22 +3037,22 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#555" strokeWidth="1.8" strokeLinecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                     Mettre en sourdine
                   </button>
-                  <div style={{ height:1, background:"#F2F2F7" }} />
+                  <div style={{ height:1, background:"#F8FAFC" }} />
                   <button onClick={() => { setShowGrpMenu(false); setShowGrpSearch(true); setGrpSearchQ(""); setGrpSearchIdx(0); }}
                     style={{ display:"flex", alignItems:"center", gap:12, width:"100%", background:"none", border:"none", padding:"10px 16px", fontSize:14.5, color:"#111", cursor:"pointer", fontFamily:"inherit", textAlign:"left" }}>
                     <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#555" strokeWidth="1.8" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                     Rechercher
                   </button>
-                  <div style={{ height:1, background:"#F2F2F7" }} />
+                  <div style={{ height:1, background:"#F8FAFC" }} />
                   <button onClick={() => { setShowGrpMenu(false); setShowClearHist(true); }}
                     style={{ display:"flex", alignItems:"center", gap:12, width:"100%", background:"none", border:"none", padding:"10px 16px", fontSize:14.5, color:"#111", cursor:"pointer", fontFamily:"inherit", textAlign:"left" }}>
                     <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#555" strokeWidth="1.8" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
                     Effacer l'historique
                   </button>
-                  <div style={{ height:1, background:"#F2F2F7" }} />
+                  <div style={{ height:1, background:"#F8FAFC" }} />
                   <button onClick={() => { setShowGrpMenu(false); setShowLeaveGrp(true); setLeaveDeleteAll(false); }}
-                    style={{ display:"flex", alignItems:"center", gap:12, width:"100%", background:"none", border:"none", padding:"10px 16px", fontSize:14.5, color:"#E02020", cursor:"pointer", fontFamily:"inherit", textAlign:"left" }}>
-                    <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#E02020" strokeWidth="1.8" strokeLinecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    style={{ display:"flex", alignItems:"center", gap:12, width:"100%", background:"none", border:"none", padding:"10px 16px", fontSize:14.5, color:"#EF4444", cursor:"pointer", fontFamily:"inherit", textAlign:"left" }}>
+                    <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#EF4444" strokeWidth="1.8" strokeLinecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                     Quitter le groupe
                   </button>
                 </div>
@@ -3070,7 +3070,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 Add Members
               </button>
               <button onClick={() => setDismissedAddBanner(s => { const n = new Set(s); n.add(activeGroupId); return n; })}
-                style={{ position:"absolute", right:14, background:"none", border:"none", cursor:"pointer", color:"#8E8E93", fontSize:18, lineHeight:1, padding:0 }}>✕</button>
+                style={{ position:"absolute", right:14, background:"none", border:"none", cursor:"pointer", color:"#9CA3AF", fontSize:18, lineHeight:1, padding:0 }}>✕</button>
             </div>
           </div>
         )}
@@ -3114,7 +3114,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       style={{ padding:"8px 12px 6px", fontSize:14.5, lineHeight:1.45, wordBreak:"break-word",
                         ...(isCurrent ? { outline:"2.5px solid #22C55E", outlineOffset:"1px" } : isMatch ? { opacity:0.65 } : {}) }}>
                       {msg.text}
-                      <div style={{ fontSize:10, marginTop:2, color:"#888", textAlign:"right" }}>{msg.time}{msg.mine && <span style={{ marginLeft:3, color:"#66bb6a" }}>✓✓</span>}</div>
+                      <div style={{ fontSize:10, marginTop:2, color:"#888", textAlign:"right" }}>{msg.time}{msg.mine && <span style={{ marginLeft:3, color:"#22C55E" }}>✓✓</span>}</div>
                     </div>
                   </div>
                 </div>
@@ -3145,7 +3145,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           <div style={{ flex:1, display:"flex", alignItems:"center", background:"#fff", borderRadius:9999, padding:"0 6px 0 14px", minHeight:50, boxShadow:"0 1px 4px rgba(0,0,0,0.12)" }}>
             {/* Emoji */}
             <button style={{ background:"none", border:"none", cursor:"pointer", padding:0, flexShrink:0, display:"flex", alignItems:"center", marginRight:4 }}>
-              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#8E8E93" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1.2" fill="#8E8E93"/><circle cx="15" cy="9" r="1.2" fill="#8E8E93"/></svg>
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1.2" fill="#9CA3AF"/><circle cx="15" cy="9" r="1.2" fill="#9CA3AF"/></svg>
             </button>
             {/* Text */}
             <textarea ref={grpInputRef} value={groupNewMsg}
@@ -3157,7 +3157,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             {/* Attachment */}
             {!groupNewMsg.trim() && (
               <button style={{ background:"none", border:"none", cursor:"pointer", padding:0, flexShrink:0, display:"flex", alignItems:"center", marginRight:6 }}>
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#8E8E93" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
               </button>
             )}
           </div>
@@ -3229,7 +3229,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   ANNULER
                 </button>
                 <button onClick={() => { setActiveGroupId(null); setShowGroupInfo(false); setShowLeaveGrp(false); }}
-                  style={{ background:"none", border:"none", padding:"10px 16px", fontSize:14, fontWeight:700, color:"#E02020", cursor:"pointer", borderRadius:8, letterSpacing:0.3 }}>
+                  style={{ background:"none", border:"none", padding:"10px 16px", fontSize:14, fontWeight:700, color:"#EF4444", cursor:"pointer", borderRadius:8, letterSpacing:0.3 }}>
                   SUPPRIMER
                 </button>
               </div>
@@ -3255,13 +3255,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         backgroundImage: convWallpaper ? `url(${convWallpaper})` : convWpKey !== "none" && wpUrl(convWpKey) ? `url(${wpUrl(convWpKey)})` : `url(${import.meta.env.BASE_URL}wallpapers/bp-chat-bg.jpg)`,
         backgroundSize:"cover", backgroundRepeat:"no-repeat", backgroundPosition:"center" }}>
         <style>{`
-          .fbl-msg-mine   { background:#DCECCB; color:#111; border-radius:16px 16px 4px 16px; box-shadow:0 1px 2px rgba(0,0,0,0.10); }
+          .fbl-msg-mine   { background:#DCFCE7; color:#111; border-radius:16px 16px 4px 16px; box-shadow:0 1px 2px rgba(0,0,0,0.10); }
           .fbl-msg-theirs { background:#fff; color:#111; border-radius:4px 16px 16px 16px; box-shadow:0 1px 2px rgba(0,0,0,0.08); }
           textarea:focus  { outline:none !important; box-shadow:none !important; border:none !important; }
           textarea        { -webkit-appearance:none; scrollbar-width:none; }
           textarea::-webkit-scrollbar { display:none; }
           .fbl-menu-btn { display:flex; align-items:center; gap:12px; padding:10px 16px; background:none; border:none; width:100%; font-size:14.5px; color:#111; cursor:pointer; text-align:left; font-family:inherit; }
-          .fbl-menu-btn:active { background:#F0F2F5; }
+          .fbl-menu-btn:active { background:#F1F5F9; }
           .fbl-react-btn:active { transform:scale(1.35); }
           @keyframes fbl-sheet-up { from{transform:translateY(100%)} to{transform:translateY(0)} }
           @keyframes fbl-fade-in  { from{opacity:0} to{opacity:1} }
@@ -3279,8 +3279,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           .wa-typing-dot:nth-child(2) { animation-delay:0.2s; }
           .wa-typing-dot:nth-child(3) { animation-delay:0.4s; }
           .tg-attach-btn { display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer; background:none; border:none; padding:4px 6px; flex-shrink:0; }
-          .tg-attach-btn span { font-size:13px; font-weight:500; color:#2F3542; text-align:center; white-space:nowrap; }
-          .tg-attach-box { width:62px; height:62px; border-radius:18px; background:#F0F2F5; display:flex; align-items:center; justify-content:center; }
+          .tg-attach-btn span { font-size:13px; font-weight:500; color:#1E293B; text-align:center; white-space:nowrap; }
+          .tg-attach-box { width:62px; height:62px; border-radius:18px; background:#F1F5F9; display:flex; align-items:center; justify-content:center; }
         `}</style>
 
         {/* ── HEADER ── */}
@@ -3312,7 +3312,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           </div>
         ) : showChatSearch ? (
           /* SEARCH HEADER */
-          <div style={{ background:"#075E54", padding:"8px 10px", display:"flex", alignItems:"center", gap:8, flexShrink:0, boxShadow:"0 2px 4px rgba(0,0,0,0.18)" }}>
+          <div style={{ background:"#052e16", padding:"8px 10px", display:"flex", alignItems:"center", gap:8, flexShrink:0, boxShadow:"0 2px 4px rgba(0,0,0,0.18)" }}>
             <button onClick={() => { setShowChatSearch(false); setChatSearchQ(""); setChatSearchIdx(0); }}
               style={{ background:"none", border:"none", fontSize:24, cursor:"pointer", color:"#fff", padding:"2px 4px 2px 0", display:"flex", alignItems:"center", lineHeight:1 }}>‹</button>
             <div style={{ fontWeight:700, fontSize:15, color:"#fff", flex:1 }}>Rechercher</div>
@@ -3333,11 +3333,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           </div>
         ) : (
           /* NORMAL HEADER — Telegram-style compact */
-          <div style={{ background:"#fff", padding:"5px 4px 5px 2px", display:"flex", alignItems:"center", gap:6, flexShrink:0, borderBottom:"1px solid #EBEBEB", boxShadow:"0 1px 3px rgba(0,0,0,0.04)" }}>
+          <div style={{ background:"#fff", padding:"5px 4px 5px 2px", display:"flex", alignItems:"center", gap:6, flexShrink:0, borderBottom:"1px solid #E5E7EB", boxShadow:"0 1px 3px rgba(0,0,0,0.04)" }}>
             {/* Back arrow */}
             <button onClick={() => { setActiveConv(null); setOverlay("none"); setShowConvMenu(false); }}
               style={{ background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", padding:"8px 2px 8px 6px", flexShrink:0 }}>
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#1F2937" strokeWidth="2.3" strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#111827" strokeWidth="2.3" strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
             </button>
             {/* Avatar */}
             <div style={{ position:"relative", cursor:"pointer", flexShrink:0 }} onClick={() => setOverlay("info")}>
@@ -3350,7 +3350,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             {/* Name + status */}
             <div style={{ flex:1, minWidth:0, cursor:"pointer" }} onClick={() => setOverlay("info")}>
               <div style={{ display:"flex", alignItems:"center", gap:4 }}>
-                <span style={{ fontWeight:700, fontSize:15.5, color:"#0F172A", lineHeight:1.2, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{activeUser.name}</span>
+                <span style={{ fontWeight:700, fontSize:15.5, color:"#111827", lineHeight:1.2, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{activeUser.name}</span>
                 {[13, 26, 40].includes(activeConv) && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width:15, height:15, objectFit:"cover", borderRadius:"50%", flexShrink:0 }} />}
               </div>
               <div style={{ fontSize:11.5, fontWeight: (presence.online || peerTyping.typing) ? 500 : 400, color: peerTyping.typing ? "#22C55E" : presence.online ? "#22C55E" : "#9CA3AF", lineHeight:1.3 }}>
@@ -3364,17 +3364,17 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             {/* Call icons — flat, no circle */}
             <button onClick={() => sig.startCall(activeConv, "audio")}
               style={{ background:"none", border:"none", width:40, height:40, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#374151" strokeWidth="2.1" strokeLinecap="round"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.24 1.01L6.6 10.8z"/></svg>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#64748B" strokeWidth="2.1" strokeLinecap="round"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.24 1.01L6.6 10.8z"/></svg>
             </button>
             <button onClick={() => sig.startCall(activeConv, "video")}
               style={{ background:"none", border:"none", width:40, height:40, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#374151" strokeWidth="2.1" strokeLinecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#64748B" strokeWidth="2.1" strokeLinecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
             </button>
             {/* ⋮ dot menu */}
             <div style={{ position:"relative", flexShrink:0 }}>
               <button onClick={() => { setShowConvMenu(m => !m); setShowNotifSub(false); }}
                 style={{ background:"none", border:"none", width:40, height:40, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#374151" strokeWidth="2.1" strokeLinecap="round"><circle cx="12" cy="5" r="1.2" fill="#374151"/><circle cx="12" cy="12" r="1.2" fill="#374151"/><circle cx="12" cy="19" r="1.2" fill="#374151"/></svg>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#64748B" strokeWidth="2.1" strokeLinecap="round"><circle cx="12" cy="5" r="1.2" fill="#64748B"/><circle cx="12" cy="12" r="1.2" fill="#64748B"/><circle cx="12" cy="19" r="1.2" fill="#64748B"/></svg>
               </button>
             </div>
           </div>
@@ -3382,11 +3382,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
         {/* SEARCH INPUT BAR */}
         {showChatSearch && (
-          <div style={{ background:"#fff", padding:"6px 12px", borderBottom:"1px solid #E4E6EB", flexShrink:0 }}>
+          <div style={{ background:"#fff", padding:"6px 12px", borderBottom:"1px solid #E5E7EB", flexShrink:0 }}>
             <input value={chatSearchQ} onChange={e => { setChatSearchQ(e.target.value); setChatSearchIdx(0); }}
               placeholder="Rechercher dans la conversation…"
               autoFocus
-              style={{ width:"100%", background:"#F0F2F5", border:"none", borderRadius:20, padding:"8px 14px", fontSize:14, outline:"none", boxSizing:"border-box" }} />
+              style={{ width:"100%", background:"#F1F5F9", border:"none", borderRadius:20, padding:"8px 14px", fontSize:14, outline:"none", boxSizing:"border-box" }} />
           </div>
         )}
 
@@ -3442,7 +3442,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   <div style={{ position:"absolute", left:10, top:"50%", transform:"translateY(-50%)",
                     width:22, height:22, borderRadius:"50%",
                     background: isSelected ? "#22C55E" : "transparent",
-                    border: `1.5px solid ${isSelected ? "#22C55E" : "#B0B8C1"}`,
+                    border: `1.5px solid ${isSelected ? "#22C55E" : "#94A3B8"}`,
                     display:"flex", alignItems:"center", justifyContent:"center",
                     transition:"all 0.15s", flexShrink:0, zIndex:2 }}>
                     {isSelected && <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
@@ -3465,7 +3465,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       return (
                       /* ── VOICE MESSAGE BUBBLE — seekable, animated ── */
                       <div style={{
-                        background: mine ? "#DCECCB" : "#fff",
+                        background: mine ? "#DCFCE7" : "#fff",
                         borderRadius: mine ? "18px 4px 18px 18px" : "4px 18px 18px 18px",
                         padding:"7px 10px 6px",
                         minWidth:196, maxWidth:258,
@@ -3491,11 +3491,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                                   strokeWidth="2.5"/>
                                 {(vUps.network === "waiting" || vUps.network === "offline")
                                   ? <circle cx="22" cy="22" r="17" fill="none"
-                                      stroke={mine ? "#8BCB7A" : "#22C55E"} strokeWidth="2.5"
+                                      stroke={mine ? "#22C55E" : "#22C55E"} strokeWidth="2.5"
                                       strokeDasharray="20 87" strokeLinecap="round"
                                       style={{ animation:"fbl-spin 1.1s linear infinite", transformOrigin:"22px 22px" }}/>
                                   : <circle cx="22" cy="22" r="17" fill="none"
-                                      stroke={mine ? "#8BCB7A" : "#22C55E"} strokeWidth="2.5"
+                                      stroke={mine ? "#22C55E" : "#22C55E"} strokeWidth="2.5"
                                       strokeDasharray={`${2 * Math.PI * 17}`}
                                       strokeDashoffset={`${2 * Math.PI * 17 * (1 - vUps.progress / 100)}`}
                                       strokeLinecap="round"
@@ -3507,7 +3507,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                                 onClick={e => { e.stopPropagation(); cancelUploadMsg(msg.id); }}
                                 style={{
                                   position:"absolute", inset:5, borderRadius:"50%", border:"none", cursor:"pointer",
-                                  background: mine ? "#8BCB7A" : "#22C55E",
+                                  background: mine ? "#22C55E" : "#22C55E",
                                   display:"flex", alignItems:"center", justifyContent:"center",
                                   WebkitTapHighlightColor:"transparent", touchAction:"manipulation",
                                   transition:"transform 0.12s, opacity 0.12s",
@@ -3526,7 +3526,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                               onClick={() => toggleVoice(msg.id, msg.attachment!.label)}
                               style={{
                                 width:38, height:38, borderRadius:"50%", flexShrink:0, border:"none", cursor:"pointer",
-                                background: mine ? "#8BCB7A" : "#22C55E",
+                                background: mine ? "#22C55E" : "#22C55E",
                                 display:"flex", alignItems:"center", justifyContent:"center",
                                 boxShadow: mine ? "0 2px 6px rgba(139,203,122,0.30)" : "0 2px 6px rgba(34,197,94,0.28)",
                                 transition:"transform 0.11s, opacity 0.11s",
@@ -3587,8 +3587,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                                   height:`${Math.round(h * 100)}%`,
                                   minHeight:3,
                                   background: mine
-                                    ? (played ? "#8BCB7A" : "#A8D39A")
-                                    : (played ? "#22C55E" : "#BFD4E5"),
+                                    ? (played ? "#22C55E" : "#BBF7D0")
+                                    : (played ? "#22C55E" : "#DCFCE7"),
                                   transition:"background 0.06s",
                                   transformOrigin:"center",
                                   animation: anim,
@@ -3604,7 +3604,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                               style={{
                                 background: mine ? "rgba(121,176,107,0.18)" : "rgba(22,194,74,0.13)",
                                 border:"none", borderRadius:7, padding:"2px 7px", cursor:"pointer",
-                                color: mine ? "#79B06B" : "#22C55E",
+                                color: mine ? "#22C55E" : "#22C55E",
                                 fontSize:11, fontWeight:800, letterSpacing:0.3,
                                 transition:"background 0.15s",
                                 WebkitTapHighlightColor:"transparent",
@@ -3632,17 +3632,17 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:6 }}>
                           <span style={{
                             fontSize:11, fontWeight:700, letterSpacing:0.15,
-                            color: mine ? "#79B06B" : "#94A3B8",
+                            color: mine ? "#22C55E" : "#9CA3AF",
                             fontVariantNumeric:"tabular-nums",
                           }}>
                             {dispTime}
                           </span>
                           <div style={{ display:"flex", alignItems:"center", gap:4 }}>
-                            <span style={{ fontSize:11, color: mine ? "#79B06B" : "#94A3B8" }}>{msg.time}</span>
+                            <span style={{ fontSize:11, color: mine ? "#22C55E" : "#9CA3AF" }}>{msg.time}</span>
                             {mine && (vUps && vUps.network !== "error"
                               ? <svg viewBox="0 0 16 16" width="14" height="14" fill="none">
-                                  <circle cx="8" cy="8" r="5.5" stroke="#79B06B" strokeWidth="1.5"/>
-                                  <path d="M8 5.2V8l1.8 1.8" stroke="#79B06B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                  <circle cx="8" cy="8" r="5.5" stroke="#22C55E" strokeWidth="1.5"/>
+                                  <path d="M8 5.2V8l1.8 1.8" stroke="#22C55E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                                 </svg>
                               : <MsgStatus status={msg.status} dark={false} />
                             )}
@@ -3666,11 +3666,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     const counterText = ups ? `${fmtBytes(Math.round(ups.fileSize * pct / 100))} / ${fmtBytes(ups.fileSize)}` : "";
                     return (
                       <div style={{ borderRadius:18, overflow:"hidden", marginBottom:2, width:252,
-                        background: msg.mine ? "#DCECCB" : "#fff",
+                        background: msg.mine ? "#DCFCE7" : "#fff",
                         boxShadow:"0 2px 12px rgba(0,0,0,0.10)",
                         animation:"fbl-fade-in 0.28s cubic-bezier(.22,1,.36,1)" }}>
                         {/* Image area — dominant (85-95 % de la bulle) */}
-                        <div style={{ position:"relative", aspectRatio:"4/3", background:"#CBD5E1" }}>
+                        <div style={{ position:"relative", aspectRatio:"4/3", background:"#E5E7EB" }}>
                           <img key={imgUrl} src={imgUrl} alt={fname} loading="lazy" decoding="async"
                             onClick={() => { if (!ups) openImageViewer(imgUrl); }}
                             style={{ width:"100%", height:"100%", display:"block", objectFit:"cover",
@@ -3690,13 +3690,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                                 <svg width="54" height="54" viewBox="0 0 54 54"
                                   style={{ position:"absolute", inset:0, transform:"rotate(-90deg)" }}>
                                   <circle cx="27" cy="27" r={R} fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="3.5"/>
-                                  <circle cx="27" cy="27" r={R} fill="none" stroke="#34C759" strokeWidth="3.5"
+                                  <circle cx="27" cy="27" r={R} fill="none" stroke="#22C55E" strokeWidth="3.5"
                                     strokeDasharray={CIRC} strokeDashoffset={dash}
                                     strokeLinecap="round" style={{ transition:"stroke-dashoffset 0.35s ease" }}/>
                                 </svg>
                                 <button onClick={e => { e.stopPropagation(); ups.cancelFn?.(); }}
                                   style={{ position:"absolute", inset:5, display:"flex", alignItems:"center",
-                                    justifyContent:"center", background:"#8E8E93", border:"none",
+                                    justifyContent:"center", background:"#9CA3AF", border:"none",
                                     borderRadius:"50%", cursor:"pointer" }}>
                                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none"
                                     stroke="#fff" strokeWidth="2.5" strokeLinecap="round">
@@ -3750,15 +3750,15 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                         <div style={{ padding:"6px 10px 8px", display:"flex", alignItems:"center", justifyContent:"space-between", gap:4 }}>
                           <div style={{ minWidth:0 }}>
                             <div style={{ fontWeight:700, fontSize:12.5, color:"#111", lineHeight:1.2 }}>Photo</div>
-                            {captionSub && <div style={{ color:"#6B7280", fontSize:11, lineHeight:1.3 }}>{captionSub}</div>}
+                            {captionSub && <div style={{ color:"#64748B", fontSize:11, lineHeight:1.3 }}>{captionSub}</div>}
                           </div>
                           <div style={{ display:"flex", alignItems:"center", gap:3, flexShrink:0 }}>
                             {ups && (
-                              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#8E8E93" strokeWidth="2" strokeLinecap="round">
+                              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round">
                                 <circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 3"/>
                               </svg>
                             )}
-                            <span style={{ color:"#6B7280", fontSize:11 }}>{msg.time}</span>
+                            <span style={{ color:"#64748B", fontSize:11 }}>{msg.time}</span>
                             {msg.mine && !ups && <MsgStatus status={msg.status} dark={false} />}
                           </div>
                         </div>
@@ -3794,7 +3794,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                           ? <MapThumbnail lat={lat} lng={lng} />
                           : (
                             <div style={{ width:"100%", height:140,
-                              background:"linear-gradient(160deg,#1a3a2a,#2d6a4f)",
+                              background:"linear-gradient(160deg,#052e16,#16A34A)",
                               display:"flex", alignItems:"center", justifyContent:"center" }}>
                               <span style={{ fontSize:48 }}>📍</span>
                             </div>
@@ -3813,7 +3813,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                           </div>
                           {/* City */}
                           {geo?.city
-                            ? <span style={{ fontSize:12.5, color:"#374151", display:"block", lineHeight:1.4 }}>
+                            ? <span style={{ fontSize:12.5, color:"#64748B", display:"block", lineHeight:1.4 }}>
                                 {geo.city}
                               </span>
                             : hasCoords && !geo
@@ -3824,7 +3824,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                           }
                           {/* District */}
                           {geo?.district &&
-                            <span style={{ fontSize:12, color:"#6B7280", display:"block", lineHeight:1.4 }}>
+                            <span style={{ fontSize:12, color:"#64748B", display:"block", lineHeight:1.4 }}>
                               {geo.district}
                             </span>
                           }
@@ -3862,7 +3862,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     const rawUrl  = msg.attachment.label;
                     const docUrl  = rawUrl.startsWith("//") ? `https:${rawUrl}` : rawUrl;
                     const isPdf   = fname.toLowerCase().endsWith(".pdf");
-                    const iconColor = isPdf ? "#EF4444" : "#3B82F6";
+                    const iconColor = isPdf ? "#EF4444" : "#0EA5E9";
                     const iconLabel = isPdf ? "PDF" : fname.split(".").pop()?.toUpperCase()?.slice(0,4) ?? "DOC";
                     const pct     = ups?.progress ?? 0;
                     const typeSize = [iconLabel, sizeStr].filter(Boolean).join(" • ");
@@ -3876,7 +3876,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       const cntText   = ups ? `${fmtBytes(Math.round(ups.fileSize * pct / 100))} / ${fmtBytes(ups.fileSize)}` : "";
                       return (
                         <div style={{ borderRadius:18, overflow:"hidden", marginBottom:2, width:252,
-                          background: msg.mine ? "#DCECCB" : "#fff",
+                          background: msg.mine ? "#DCFCE7" : "#fff",
                           boxShadow:"0 2px 12px rgba(0,0,0,0.10)",
                           animation:"fbl-fade-in 0.28s cubic-bezier(.22,1,.36,1)" }}>
                           {/* Miniature vidéo */}
@@ -3909,13 +3909,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                                   <svg width="54" height="54" viewBox="0 0 54 54"
                                     style={{ position:"absolute", inset:0, transform:"rotate(-90deg)" }}>
                                     <circle cx="27" cy="27" r={Rv} fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="3.5"/>
-                                    <circle cx="27" cy="27" r={Rv} fill="none" stroke="#34C759" strokeWidth="3.5"
+                                    <circle cx="27" cy="27" r={Rv} fill="none" stroke="#22C55E" strokeWidth="3.5"
                                       strokeDasharray={CIRCv} strokeDashoffset={dashv}
                                       strokeLinecap="round" style={{ transition:"stroke-dashoffset 0.35s ease" }}/>
                                   </svg>
                                   <button onClick={e => { e.stopPropagation(); ups.cancelFn?.(); }}
                                     style={{ position:"absolute", inset:5, display:"flex", alignItems:"center",
-                                      justifyContent:"center", background:"#8E8E93", border:"none",
+                                      justifyContent:"center", background:"#9CA3AF", border:"none",
                                       borderRadius:"50%", cursor:"pointer" }}>
                                     <svg viewBox="0 0 24 24" width="16" height="16" fill="none"
                                       stroke="#fff" strokeWidth="2.5" strokeLinecap="round">
@@ -3959,11 +3959,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                           <div style={{ padding:"6px 10px 8px", display:"flex", alignItems:"center", justifyContent:"space-between", gap:4 }}>
                             <div style={{ minWidth:0 }}>
                               <div style={{ fontWeight:700, fontSize:12.5, color:"#111", lineHeight:1.2 }}>Vidéo</div>
-                              {vCaption && <div style={{ color:"#6B7280", fontSize:11, lineHeight:1.3 }}>{vCaption}</div>}
+                              {vCaption && <div style={{ color:"#64748B", fontSize:11, lineHeight:1.3 }}>{vCaption}</div>}
                             </div>
                             <div style={{ display:"flex", alignItems:"center", gap:3, flexShrink:0 }}>
-                              {ups && (<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#8E8E93" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 3"/></svg>)}
-                              <span style={{ color:"#6B7280", fontSize:11 }}>{msg.time}</span>
+                              {ups && (<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 3"/></svg>)}
+                              <span style={{ color:"#64748B", fontSize:11 }}>{msg.time}</span>
                               {msg.mine && !ups && <MsgStatus status={msg.status} dark={false} />}
                             </div>
                           </div>
@@ -4000,7 +4000,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                               lineHeight:1.35 }}>
                               {fname}
                             </div>
-                            <div style={{ fontSize:12, color:"#6B7280", marginTop:2 }}>{typeSize}</div>
+                            <div style={{ fontSize:12, color:"#64748B", marginTop:2 }}>{typeSize}</div>
                           </div>
                         </div>
 
@@ -4041,11 +4041,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                                 justifyContent:"space-between" }}>
                                 <span style={{ fontSize:11.5, color:"#EF4444", fontWeight:600 }}>Échec de l'envoi</span>
                                 <button onClick={() => retryUpload(msg.id)}
-                                  style={{ background:"none", border:"none", color:"#16C24A",
+                                  style={{ background:"none", border:"none", color:"#22C55E",
                                     fontSize:12, fontWeight:700, cursor:"pointer",
                                     display:"flex", alignItems:"center", gap:3, padding:0 }}>
                                   <svg viewBox="0 0 24 24" width="12" height="12" fill="none"
-                                    stroke="#16C24A" strokeWidth="2.5" strokeLinecap="round">
+                                    stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round">
                                     <path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 .49-7.6" fill="none"/>
                                   </svg>
                                   Réessayer
@@ -4061,11 +4061,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                             <a href={docUrl} target="_blank" rel="noreferrer"
                               style={{ flex:1, display:"flex", alignItems:"center",
                                 justifyContent:"center", gap:5,
-                                border:"1.5px solid #16C24A", borderRadius:20,
-                                padding:"7px 0", color:"#16C24A",
+                                border:"1.5px solid #22C55E", borderRadius:20,
+                                padding:"7px 0", color:"#22C55E",
                                 textDecoration:"none", fontSize:13, fontWeight:600 }}>
                               <svg viewBox="0 0 24 24" width="14" height="14" fill="none"
-                                stroke="#16C24A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                                 <circle cx="12" cy="12" r="3"/>
                               </svg>
@@ -4074,11 +4074,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                             <a href={docUrl} download={fname} target="_blank" rel="noreferrer"
                               style={{ flex:1, display:"flex", alignItems:"center",
                                 justifyContent:"center", gap:5,
-                                border:"1.5px solid #16C24A", borderRadius:20,
-                                padding:"7px 0", color:"#16C24A",
+                                border:"1.5px solid #22C55E", borderRadius:20,
+                                padding:"7px 0", color:"#22C55E",
                                 textDecoration:"none", fontSize:13, fontWeight:600 }}>
                               <svg viewBox="0 0 24 24" width="14" height="14" fill="none"
-                                stroke="#16C24A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                                 <polyline points="7 10 12 15 17 10"/>
                                 <line x1="12" y1="15" x2="12" y2="3"/>
@@ -4115,7 +4115,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       {preview && (
                         <a href={preview.url} target="_blank" rel="noreferrer noopener"
                           onClick={e => e.stopPropagation()}
-                          style={{ display:"block", textDecoration:"none", borderBottom:`1px solid ${isMine ? "rgba(255,255,255,0.15)" : "#E4E6EB"}` }}>
+                          style={{ display:"block", textDecoration:"none", borderBottom:`1px solid ${isMine ? "rgba(255,255,255,0.15)" : "#E5E7EB"}` }}>
                           {preview.image && (
                             <img src={preview.image} alt="" loading="lazy" decoding="async"
                               onError={e => { (e.currentTarget as HTMLImageElement).style.display="none"; }}
@@ -4128,13 +4128,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                                   onError={e => { (e.currentTarget as HTMLImageElement).style.display="none"; }}
                                   style={{ borderRadius:3, flexShrink:0 }} />
                               )}
-                              <span style={{ fontSize:10, fontWeight:700, color: isMine ? "rgba(255,255,255,0.65)" : "#94A3B8",
+                              <span style={{ fontSize:10, fontWeight:700, color: isMine ? "rgba(255,255,255,0.65)" : "#9CA3AF",
                                 textTransform:"uppercase", letterSpacing:"0.05em" }}>
                                 {preview.siteName || (() => { try { return new URL(preview.url).hostname.replace("www.",""); } catch { return preview.url; } })()}
                               </span>
                             </div>
                             {preview.title && (
-                              <div style={{ fontSize:13, fontWeight:700, color: isMine ? "#fff" : "#0F172A",
+                              <div style={{ fontSize:13, fontWeight:700, color: isMine ? "#fff" : "#111827",
                                 lineHeight:1.35, marginBottom:2, display:"-webkit-box",
                                 WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>
                                 {preview.title}
@@ -4179,121 +4179,121 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
                   {/* ── Man (left) — green hoodie ── */}
                   {/* Hoodie body */}
-                  <rect x="55" y="120" width="52" height="72" rx="12" fill="#16C24A"/>
+                  <rect x="55" y="120" width="52" height="72" rx="12" fill="#22C55E"/>
                   {/* Hood */}
-                  <path d="M55 132 Q55 120 81 118 Q107 120 107 132" fill="#0ea541"/>
+                  <path d="M55 132 Q55 120 81 118 Q107 120 107 132" fill="#22C55E"/>
                   {/* BP logo on hoodie */}
-                  <circle cx="81" cy="148" r="10" fill="#0ea541"/>
+                  <circle cx="81" cy="148" r="10" fill="#22C55E"/>
                   <text x="81" y="152" textAnchor="middle" fontSize="8" fontWeight="900" fill="#fff" fontFamily="Georgia, serif">bp</text>
                   {/* Legs */}
                   <rect x="62" y="188" width="14" height="40" rx="7" fill="#1E293B"/>
                   <rect x="83" y="188" width="14" height="40" rx="7" fill="#1E293B"/>
                   {/* Shoes */}
-                  <ellipse cx="69" cy="229" rx="11" ry="5" fill="#0F172A"/>
-                  <ellipse cx="90" cy="229" rx="11" ry="5" fill="#0F172A"/>
+                  <ellipse cx="69" cy="229" rx="11" ry="5" fill="#111827"/>
+                  <ellipse cx="90" cy="229" rx="11" ry="5" fill="#111827"/>
                   {/* Head */}
-                  <circle cx="81" cy="106" r="20" fill="#4A2C0A"/>
+                  <circle cx="81" cy="106" r="20" fill="#1C1917"/>
                   {/* Hair short */}
-                  <ellipse cx="81" cy="88" rx="20" ry="8" fill="#1A0A00"/>
+                  <ellipse cx="81" cy="88" rx="20" ry="8" fill="#1C1917"/>
                   {/* Eyes */}
                   <circle cx="75" cy="105" r="2.8" fill="#fff"/>
                   <circle cx="87" cy="105" r="2.8" fill="#fff"/>
-                  <circle cx="76" cy="105" r="1.4" fill="#1A0A00"/>
-                  <circle cx="88" cy="105" r="1.4" fill="#1A0A00"/>
+                  <circle cx="76" cy="105" r="1.4" fill="#1C1917"/>
+                  <circle cx="88" cy="105" r="1.4" fill="#1C1917"/>
                   {/* Smile */}
-                  <path d="M77 112 Q81 116 85 112" stroke="#1A0A00" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+                  <path d="M77 112 Q81 116 85 112" stroke="#1C1917" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
                   {/* Phone */}
-                  <rect x="105" y="140" width="20" height="32" rx="4" fill="#0F172A"/>
-                  <rect x="107" y="143" width="16" height="24" rx="2" fill="#A7F3D0"/>
+                  <rect x="105" y="140" width="20" height="32" rx="4" fill="#111827"/>
+                  <rect x="107" y="143" width="16" height="24" rx="2" fill="#BBF7D0"/>
                   {/* Arm */}
-                  <path d="M107 140 Q106 128 104 140" stroke="#4A2C0A" strokeWidth="8" strokeLinecap="round" fill="none"/>
+                  <path d="M107 140 Q106 128 104 140" stroke="#1C1917" strokeWidth="8" strokeLinecap="round" fill="none"/>
 
                   {/* ── Woman (right) — green BrutePawa t-shirt ── */}
                   {/* T-shirt body */}
-                  <rect x="207" y="118" width="52" height="70" rx="12" fill="#16C24A"/>
+                  <rect x="207" y="118" width="52" height="70" rx="12" fill="#22C55E"/>
                   {/* BP logo on t-shirt */}
-                  <circle cx="233" cy="148" r="10" fill="#0ea541"/>
+                  <circle cx="233" cy="148" r="10" fill="#22C55E"/>
                   <text x="233" y="152" textAnchor="middle" fontSize="8" fontWeight="900" fill="#fff" fontFamily="Georgia, serif">bp</text>
                   {/* Skirt/pants */}
                   <rect x="211" y="182" width="18" height="42" rx="8" fill="#1E293B"/>
                   <rect x="234" y="182" width="18" height="42" rx="8" fill="#1E293B"/>
-                  <ellipse cx="220" cy="225" rx="11" ry="5" fill="#0F172A"/>
-                  <ellipse cx="243" cy="225" rx="11" ry="5" fill="#0F172A"/>
+                  <ellipse cx="220" cy="225" rx="11" ry="5" fill="#111827"/>
+                  <ellipse cx="243" cy="225" rx="11" ry="5" fill="#111827"/>
                   {/* Head */}
-                  <circle cx="233" cy="104" r="20" fill="#3D1F07"/>
+                  <circle cx="233" cy="104" r="20" fill="#1C1917"/>
                   {/* Bun hair */}
-                  <ellipse cx="233" cy="87" rx="14" ry="9" fill="#1A0A00"/>
-                  <circle cx="233" cy="80" r="8" fill="#1A0A00"/>
+                  <ellipse cx="233" cy="87" rx="14" ry="9" fill="#1C1917"/>
+                  <circle cx="233" cy="80" r="8" fill="#1C1917"/>
                   {/* Earring */}
-                  <circle cx="253" cy="106" r="3" fill="#FCD34D"/>
+                  <circle cx="253" cy="106" r="3" fill="#FBBF24"/>
                   {/* Eyes */}
                   <circle cx="227" cy="103" r="2.8" fill="#fff"/>
                   <circle cx="239" cy="103" r="2.8" fill="#fff"/>
-                  <circle cx="228" cy="103" r="1.4" fill="#1A0A00"/>
-                  <circle cx="240" cy="103" r="1.4" fill="#1A0A00"/>
+                  <circle cx="228" cy="103" r="1.4" fill="#1C1917"/>
+                  <circle cx="240" cy="103" r="1.4" fill="#1C1917"/>
                   {/* Smile */}
-                  <path d="M229 110 Q233 114 237 110" stroke="#1A0A00" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+                  <path d="M229 110 Q233 114 237 110" stroke="#1C1917" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
                   {/* Phone */}
-                  <rect x="192" y="140" width="20" height="32" rx="4" fill="#0F172A"/>
+                  <rect x="192" y="140" width="20" height="32" rx="4" fill="#111827"/>
                   <rect x="194" y="143" width="16" height="24" rx="2" fill="#BBF7D0"/>
                   {/* Arm */}
-                  <path d="M207 155 Q202 148 204 140" stroke="#3D1F07" strokeWidth="8" strokeLinecap="round" fill="none"/>
+                  <path d="M207 155 Q202 148 204 140" stroke="#1C1917" strokeWidth="8" strokeLinecap="round" fill="none"/>
 
                   {/* ── Floating chat bubbles ── */}
                   {/* Top left */}
-                  <rect x="14" y="60" width="70" height="36" rx="14" fill="#16C24A"/>
-                  <path d="M25 95 L16 106 L38 95" fill="#16C24A"/>
+                  <rect x="14" y="60" width="70" height="36" rx="14" fill="#22C55E"/>
+                  <path d="M25 95 L16 106 L38 95" fill="#22C55E"/>
                   <rect x="22" y="71" width="22" height="5" rx="2.5" fill="#fff" opacity="0.9"/>
                   <rect x="22" y="80" width="52" height="5" rx="2.5" fill="#fff" opacity="0.7"/>
                   {/* Top right */}
                   <rect x="256" y="50" width="70" height="36" rx="14" fill="#fff" style={{filter:"drop-shadow(0 2px 8px rgba(0,0,0,0.10))"}}/>
                   <path d="M315 85 L326 96 L304 85" fill="#fff"/>
-                  <circle cx="274" cy="68" r="4" fill="#CBD5E1"/>
-                  <circle cx="286" cy="68" r="4" fill="#CBD5E1"/>
-                  <circle cx="298" cy="68" r="4" fill="#CBD5E1"/>
+                  <circle cx="274" cy="68" r="4" fill="#E5E7EB"/>
+                  <circle cx="286" cy="68" r="4" fill="#E5E7EB"/>
+                  <circle cx="298" cy="68" r="4" fill="#E5E7EB"/>
                   {/* Lock icon center */}
                   <rect x="149" y="82" width="42" height="42" rx="21" fill="#fff" style={{filter:"drop-shadow(0 4px 12px rgba(22,194,74,0.25))"}}/>
-                  <rect x="160" y="94" width="20" height="16" rx="3" fill="#16C24A"/>
-                  <path d="M163 94 Q163 88 170 88 Q177 88 177 94" stroke="#16C24A" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
+                  <rect x="160" y="94" width="20" height="16" rx="3" fill="#22C55E"/>
+                  <path d="M163 94 Q163 88 170 88 Q177 88 177 94" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
                   <circle cx="170" cy="101" r="2.5" fill="#fff"/>
                   {/* Small heart top right */}
-                  <path d="M302 120 C302 117 298 116 297 119 C296 116 292 117 292 120 C292 124 297 128 297 128 C297 128 302 124 302 120z" fill="#F87171"/>
+                  <path d="M302 120 C302 117 298 116 297 119 C296 116 292 117 292 120 C292 124 297 128 297 128 C297 128 302 124 302 120z" fill="#FCA5A5"/>
                   {/* Small green dot decorations */}
-                  <circle cx="145" cy="55" r="5" fill="#16C24A" opacity="0.5"/>
-                  <circle cx="200" cy="45" r="3.5" fill="#16C24A" opacity="0.4"/>
-                  <circle cx="30" cy="140" r="4" fill="#16C24A" opacity="0.35"/>
+                  <circle cx="145" cy="55" r="5" fill="#22C55E" opacity="0.5"/>
+                  <circle cx="200" cy="45" r="3.5" fill="#22C55E" opacity="0.4"/>
+                  <circle cx="30" cy="140" r="4" fill="#22C55E" opacity="0.35"/>
                 </svg>
               </div>
 
               {/* Title */}
-              <div style={{ fontWeight:800, fontSize:20, color:"#0F172A", textAlign:"center", lineHeight:1.3, margin:"4px 0 12px" }}>
+              <div style={{ fontWeight:800, fontSize:20, color:"#111827", textAlign:"center", lineHeight:1.3, margin:"4px 0 12px" }}>
                 Commencez une conversation<br/>
-                avec <span style={{ color:"#16C24A" }}>{activeUser.name}</span>
+                avec <span style={{ color:"#22C55E" }}>{activeUser.name}</span>
               </div>
 
               {/* Security card */}
-              <div style={{ display:"flex", alignItems:"center", gap:10, background:"#fff", border:"1px solid #E2E8F0", borderRadius:16, padding:"12px 16px", margin:"0 4px 16px", width:"100%", boxSizing:"border-box", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
+              <div style={{ display:"flex", alignItems:"center", gap:10, background:"#fff", border:"1px solid #E5E7EB", borderRadius:16, padding:"12px 16px", margin:"0 4px 16px", width:"100%", boxSizing:"border-box", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
                 <div style={{ width:36, height:36, borderRadius:"50%", background:"#DCFCE7", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                 </div>
-                <div style={{ fontSize:13, color:"#475569", lineHeight:1.5 }}>
-                  Vos messages sont protégés par un <span style={{ fontWeight:700, color:"#16C24A" }}>chiffrement de bout en bout.</span>
+                <div style={{ fontSize:13, color:"#64748B", lineHeight:1.5 }}>
+                  Vos messages sont protégés par un <span style={{ fontWeight:700, color:"#22C55E" }}>chiffrement de bout en bout.</span>
                 </div>
               </div>
 
               {/* Suggestions header */}
-              <div style={{ width:"100%", fontSize:14, fontWeight:700, color:"#0F172A", marginBottom:10, textAlign:"left" }}>
+              <div style={{ width:"100%", fontSize:14, fontWeight:700, color:"#111827", marginBottom:10, textAlign:"left" }}>
                 Suggestions pour démarrer
               </div>
 
               {/* Suggestion chips */}
               <div style={{ display:"flex", gap:8, width:"100%", overflowX:"auto", scrollbarWidth:"none", paddingBottom:4 }}>
                 {([
-                  { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16C24A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 11v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1h3zM20.293 8.293A1 1 0 0 0 19.586 8H17V6a4 4 0 0 0-4-4 1 1 0 0 0-1 1v.667a4 4 0 0 1-1.902 3.43l-1.547.773A1 1 0 0 0 8 8.866V19a2 2 0 0 0 2 2h6.234a2 2 0 0 0 1.994-1.832l.582-7A2 2 0 0 0 20.293 8.293z"/></svg>, label:"Dire bonjour", msg:"Bonjour ! 👋" },
-                  { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16C24A" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="#16C24A"/><circle cx="15" cy="9" r="1" fill="#16C24A"/></svg>, label:"Un emoji", msg:"😄" },
-                  { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16C24A" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>, label:"Une photo", msg:"Je voulais partager cette photo avec toi 📷" },
-                  { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16C24A" strokeWidth="2" strokeLinecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>, label:"Une musique", msg:"Tu connais cette chanson ? 🎵" },
-                  { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16C24A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>, label:"Un cadeau", msg:"J'ai quelque chose pour toi 🎁" },
+                  { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 11v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1h3zM20.293 8.293A1 1 0 0 0 19.586 8H17V6a4 4 0 0 0-4-4 1 1 0 0 0-1 1v.667a4 4 0 0 1-1.902 3.43l-1.547.773A1 1 0 0 0 8 8.866V19a2 2 0 0 0 2 2h6.234a2 2 0 0 0 1.994-1.832l.582-7A2 2 0 0 0 20.293 8.293z"/></svg>, label:"Dire bonjour", msg:"Bonjour ! 👋" },
+                  { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="#22C55E"/><circle cx="15" cy="9" r="1" fill="#22C55E"/></svg>, label:"Un emoji", msg:"😄" },
+                  { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>, label:"Une photo", msg:"Je voulais partager cette photo avec toi 📷" },
+                  { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>, label:"Une musique", msg:"Tu connais cette chanson ? 🎵" },
+                  { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>, label:"Un cadeau", msg:"J'ai quelque chose pour toi 🎁" },
                 ] as {icon:React.ReactNode; label:string; msg:string}[]).map((s, i) => (
                   <button key={i}
                     onClick={() => {
@@ -4302,23 +4302,23 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       setMessages(prev => ({ ...prev, [activeConv]: [...(prev[activeConv] ?? []), { id, text: s.msg, mine: true, time: new Date().toLocaleTimeString("fr", { hour:"2-digit", minute:"2-digit" }), status: "sent" }] }));
                       import("../lib/api").then(m => m.apiSendMessage(activeConv, s.msg).catch(() => {}));
                     }}
-                    style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:8, background:"#fff", border:"1px solid #E2E8F0", borderRadius:16, padding:"12px 14px", cursor:"pointer", flexShrink:0, minWidth:72, boxShadow:"0 1px 4px rgba(0,0,0,0.06)", transition:"all 0.15s" }}>
+                    style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:8, background:"#fff", border:"1px solid #E5E7EB", borderRadius:16, padding:"12px 14px", cursor:"pointer", flexShrink:0, minWidth:72, boxShadow:"0 1px 4px rgba(0,0,0,0.06)", transition:"all 0.15s" }}>
                     {s.icon}
-                    <span style={{ fontSize:11, color:"#475569", fontWeight:600, textAlign:"center", lineHeight:1.2 }}>{s.label}</span>
+                    <span style={{ fontSize:11, color:"#64748B", fontWeight:600, textAlign:"center", lineHeight:1.2 }}>{s.label}</span>
                   </button>
                 ))}
               </div>
 
               {/* Security guarantee card */}
-              <div style={{ display:"flex", alignItems:"center", gap:12, background:"#fff", border:"1px solid #E2E8F0", borderRadius:16, padding:"14px 16px", marginTop:14, width:"100%", boxSizing:"border-box", cursor:"pointer", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
+              <div style={{ display:"flex", alignItems:"center", gap:12, background:"#fff", border:"1px solid #E5E7EB", borderRadius:16, padding:"14px 16px", marginTop:14, width:"100%", boxSizing:"border-box", cursor:"pointer", boxShadow:"0 1px 6px rgba(0,0,0,0.06)" }}>
                 <div style={{ width:42, height:42, borderRadius:12, background:"#DCFCE7", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16C24A" strokeWidth="2.2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                 </div>
                 <div style={{ flex:1 }}>
-                  <div style={{ fontWeight:700, fontSize:14, color:"#0F172A", marginBottom:2 }}>Sécurité garantie</div>
+                  <div style={{ fontWeight:700, fontSize:14, color:"#111827", marginBottom:2 }}>Sécurité garantie</div>
                   <div style={{ fontSize:12, color:"#64748B", lineHeight:1.5 }}>Personne en dehors de cette discussion ne peut lire vos messages, pas même BrutePawa.</div>
                 </div>
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#CBD5E1" strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#E5E7EB" strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>
               </div>
 
             </div>
@@ -4328,12 +4328,12 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               {peerTyping.activity === "audio" ? (
                 <>
                   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#F59E0B" strokeWidth="2.5" strokeLinecap="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-                  <span style={{ fontSize:12, color:"#92400E", fontWeight:600 }}>En train d'envoyer un vocal...</span>
+                  <span style={{ fontSize:12, color:"#D97706", fontWeight:600 }}>En train d'envoyer un vocal...</span>
                 </>
               ) : peerTyping.activity === "video" ? (
                 <>
                   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#8B5CF6" strokeWidth="2.5" strokeLinecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
-                  <span style={{ fontSize:12, color:"#5B21B6", fontWeight:600 }}>En train d'envoyer une vidéo...</span>
+                  <span style={{ fontSize:12, color:"#7C3AED", fontWeight:600 }}>En train d'envoyer une vidéo...</span>
                 </>
               ) : (
                 <>
@@ -4353,13 +4353,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           <div style={{ background:"#fff", borderTop:"1px solid rgba(0,0,0,0.09)", padding:"10px 12px", display:"flex", gap:10, flexShrink:0 }}>
             {/* Reply */}
             <button onClick={() => { setSelectionMode(false); setSelectedMsgs(new Set()); setLongPressMsg(null); }}
-              style={{ flex:1, height:48, borderRadius:10, border:"none", background:"#F2F3F5", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:10, fontSize:15, fontWeight:600, color:"#111827" }}>
+              style={{ flex:1, height:48, borderRadius:10, border:"none", background:"#F1F5F9", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:10, fontSize:15, fontWeight:600, color:"#111827" }}>
               <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#111827" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>
               Reply
             </button>
             {/* Forward */}
             <button onClick={() => { setSelectionMode(false); setSelectedMsgs(new Set()); setLongPressMsg(null); }}
-              style={{ flex:1, height:48, borderRadius:10, border:"none", background:"#F2F3F5", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:10, fontSize:15, fontWeight:600, color:"#111827" }}>
+              style={{ flex:1, height:48, borderRadius:10, border:"none", background:"#F1F5F9", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:10, fontSize:15, fontWeight:600, color:"#111827" }}>
               Forward
               <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#111827" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 17 20 12 15 7"/><path d="M4 18v-2a4 4 0 0 1 4-4h12"/></svg>
             </button>
@@ -4379,7 +4379,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
                 {/* Trash */}
                 <button onClick={cancelVoice} style={{ width:40, height:40, borderRadius:"50%", border:"none",
-                  background:"#FEF2F2", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
+                  background:"#FEE2E2", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
                   flexShrink:0, boxShadow:"0 2px 8px rgba(0,0,0,0.08)" }}>
                   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
@@ -4398,7 +4398,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   <div style={{ flex:1, display:"flex", alignItems:"center", gap:1.5, height:34 }}>
                     {recLiveBars.map((h, i) => (
                       <div key={i} style={{ flex:1, borderRadius:2,
-                        background: recPaused ? "#CBD5E1" : "#16C24A",
+                        background: recPaused ? "#E5E7EB" : "#22C55E",
                         height: recPaused ? "30%" : `${h}%`,
                         transition: "height 0.07s ease",
                         opacity: recPaused ? 0.5 : 0.6 + Math.min(0.4, (h / 96) * 0.4) }} />
@@ -4409,11 +4409,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 {/* Pause / Resume */}
                 <button onClick={recPaused ? resumeVoice : pauseVoice}
                   style={{ width:40, height:40, borderRadius:"50%", border:"none", flexShrink:0,
-                    background: recPaused ? "#EEF2FF" : "#F8FAFC", cursor:"pointer",
+                    background: recPaused ? "#EDE9FE" : "#F8FAFC", cursor:"pointer",
                     display:"flex", alignItems:"center", justifyContent:"center",
                     boxShadow:"0 2px 8px rgba(0,0,0,0.08)" }}>
                   {recPaused ? (
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="#1877F2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="#22C55E"><polygon points="5 3 19 12 5 21 5 3"/></svg>
                   ) : (
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="#64748B"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
                   )}
@@ -4422,7 +4422,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 {/* Send */}
                 <button onClick={stopVoice}
                   style={{ width:48, height:48, borderRadius:"50%", border:"none", flexShrink:0,
-                    background:"linear-gradient(135deg,#16C24A 0%,#0ea541 100%)",
+                    background:"linear-gradient(135deg,#22C55E 0%,#22C55E 100%)",
                     display:"flex", alignItems:"center", justifyContent:"center",
                     cursor:"pointer", boxShadow:"0 4px 20px rgba(22,194,74,0.5)" }}>
                   <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -4449,7 +4449,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     <div style={{ flex:1, display:"flex", alignItems:"center", gap:2, height:30, overflow:"hidden" }}>
                       {recLiveBars.map((h, i) => (
                         <div key={i} style={{ flex:1, borderRadius:2,
-                          background: recPaused ? "#CBD5E1" : "#16C24A",
+                          background: recPaused ? "#E5E7EB" : "#22C55E",
                           height: recPaused ? "30%" : `${h}%`,
                           transition:"height 0.07s ease",
                           opacity: recPaused ? 0.5 : 0.6 + Math.min(0.4, (h / 96) * 0.4) }} />
@@ -4457,7 +4457,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     </div>
                     {recDragX < -50 && (
                       <span style={{ fontSize:12, fontWeight:700,
-                        color: recDragX < -100 ? "#EF4444" : "#94A3B8",
+                        color: recDragX < -100 ? "#EF4444" : "#9CA3AF",
                         flexShrink:0, animation:"fbl-fade-in 0.15s ease" }}>
                         {recDragX < -100 ? "Relâcher pour annuler" : "← Annuler"}
                       </span>
@@ -4468,12 +4468,12 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 {/* Emoji — hidden during recording */}
                 {!isRecording && (
                   <button style={{ background:"none", border:"none", cursor:"pointer", padding:0, flexShrink:0, display:"flex", alignItems:"center", marginRight:4 }}>
-                    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="#94A3B8"/><circle cx="15" cy="9" r="1" fill="#94A3B8"/></svg>
+                    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1" fill="#9CA3AF"/><circle cx="15" cy="9" r="1" fill="#9CA3AF"/></svg>
                   </button>
                 )}
                 {/* Text input — gray inner pill, hidden during recording */}
                 {!isRecording && (
-                  <div style={{ flex:1, background:"#F5F7FA", borderRadius:22, padding:"9px 13px", margin:"0 6px" }}>
+                  <div style={{ flex:1, background:"#F8FAFC", borderRadius:22, padding:"9px 13px", margin:"0 6px" }}>
                     <textarea ref={dmInputRef} value={newMsg}
                       rows={1}
                       onChange={e => {
@@ -4485,7 +4485,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       }}
                       onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMsg(); } }}
                       placeholder="Écrire un message..."
-                      style={{ flex:1, background:"transparent", border:"none", outline:"none", resize:"none", padding:0, fontSize:15, color:"#0F172A", minWidth:0, lineHeight:"22px", height:"22px", maxHeight:"130px", overflowY:"hidden", transition:"height 0.15s ease", display:"block", alignSelf:"center", fontFamily:"inherit", caretColor:"#22C55E", WebkitAppearance:"none" as React.CSSProperties["WebkitAppearance"] }} />
+                      style={{ flex:1, background:"transparent", border:"none", outline:"none", resize:"none", padding:0, fontSize:15, color:"#111827", minWidth:0, lineHeight:"22px", height:"22px", maxHeight:"130px", overflowY:"hidden", transition:"height 0.15s ease", display:"block", alignSelf:"center", fontFamily:"inherit", caretColor:"#22C55E", WebkitAppearance:"none" as React.CSSProperties["WebkitAppearance"] }} />
                   </div>
                 )}
 
@@ -4494,11 +4494,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   <div style={{ display:"flex", alignItems:"center", gap:2, flexShrink:0 }}>
                     <button onClick={() => { setAttachSheet(true); setAttachPage("none"); }}
                       style={{ background:"none", border:"none", cursor:"pointer", padding:"0 4px", flexShrink:0, display:"flex", alignItems:"center" }}>
-                      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
                     </button>
                     <button onClick={() => cameraInputRef.current?.click()}
                       style={{ background:"none", border:"none", cursor:"pointer", padding:"0 4px", flexShrink:0, display:"flex", alignItems:"center" }}>
-                      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                     </button>
                   </div>
                 )}
@@ -4531,7 +4531,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                           top: -(LOCK_DIST - SIZE/2 + 22),
                           left:"50%", transform:"translateX(-50%)",
                           width:44, height:44, borderRadius:"50%",
-                          background: isAtLock ? "#1877F2" : isNearLock ? "#EEF2FF" : "#fff",
+                          background: isAtLock ? "#22C55E" : isNearLock ? "#EDE9FE" : "#fff",
                           boxShadow: isAtLock
                             ? "0 0 0 8px rgba(24,119,242,0.18), 0 6px 24px rgba(24,119,242,0.45)"
                             : "0 6px 24px rgba(0,0,0,0.14)",
@@ -4549,8 +4549,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                           ) : (
                             /* Open padlock */
                             <svg viewBox="0 0 24 24" width="20" height="20">
-                              <rect x="5" y="11" width="14" height="10" rx="2" fill={isNearLock ? "#1877F2" : "#94A3B8"}/>
-                              <path d="M8 11V7a4 4 0 0 1 7-1.7" stroke={isNearLock ? "#1877F2" : "#94A3B8"} strokeWidth="2.2" fill="none" strokeLinecap="round"/>
+                              <rect x="5" y="11" width="14" height="10" rx="2" fill={isNearLock ? "#22C55E" : "#9CA3AF"}/>
+                              <path d="M8 11V7a4 4 0 0 1 7-1.7" stroke={isNearLock ? "#22C55E" : "#9CA3AF"} strokeWidth="2.2" fill="none" strokeLinecap="round"/>
                             </svg>
                           )}
                         </div>
@@ -4639,14 +4639,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 <span style={{ color:"#bbb", fontSize:16, transition:"transform 0.2s", transform: showNotifSub ? "rotate(90deg)" : "none" }}>›</span>
               </button>
               {showNotifSub && (
-                <div style={{ background:"#F8F9FA", borderTop:"1px solid #EAEAEA", borderBottom:"1px solid #EAEAEA" }}>
+                <div style={{ background:"#F8FAFC", borderTop:"1px solid #E5E7EB", borderBottom:"1px solid #E5E7EB" }}>
                   <button className="fbl-menu-btn" style={{ paddingLeft:36, fontSize:14, color:"#555" }} onClick={() => setShowNotifSub(false)}>
                     <span style={{ fontSize:14 }}>‹</span> <span>Retour</span>
                   </button>
                   <button className="fbl-menu-btn" style={{ paddingLeft:36, fontSize:14 }}>🔕 Couper le son</button>
                   <button className="fbl-menu-btn" style={{ paddingLeft:36, fontSize:14 }}>⏱ Désactiver pour…</button>
                   <button className="fbl-menu-btn" style={{ paddingLeft:36, fontSize:14 }}>⚙️ Personnaliser</button>
-                  <button className="fbl-menu-btn" style={{ paddingLeft:36, fontSize:14, color:"#E02020" }} onClick={() => setShowConvMenu(false)}>🚫 Désactiver</button>
+                  <button className="fbl-menu-btn" style={{ paddingLeft:36, fontSize:14, color:"#EF4444" }} onClick={() => setShowConvMenu(false)}>🚫 Désactiver</button>
                 </div>
               )}
               <button className="fbl-menu-btn" onClick={() => { sig.startCall(activeConv, "video"); setShowConvMenu(false); }}>
@@ -4661,7 +4661,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="#555"><path d="M21 3H3C2 3 1 4 1 5v14c0 1.1.9 2 2 2h18c1 0 2-1 2-2V5c0-1-1-2-2-2zM5 17l3.5-4.5 2.5 3.01L14.5 11l4.5 6H5z"/></svg>
                 Fond d'écran
               </button>
-              <div style={{ height:1, background:"#F0F2F5" }} />
+              <div style={{ height:1, background:"#F1F5F9" }} />
               <button className="fbl-menu-btn" onClick={async () => {
                 const id = activeConv!;
                 setMessages(prev => ({ ...prev, [id]: [] }));
@@ -4672,8 +4672,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="#555"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
                 Effacer l'historique
               </button>
-              <button className="fbl-menu-btn" style={{ color:"#E02020" }} onClick={() => { setShowDeleteConv(true); setShowConvMenu(false); }}>
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="#E02020"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 2.75c1.24 0 2.25 1.01 2.25 2.25S13.24 11.25 12 11.25 9.75 10.24 9.75 9 10.76 6.75 12 6.75zM17 17H7v-.75c0-1.67 3.33-2.5 5-2.5s5 .83 5 2.5V17z"/></svg>
+              <button className="fbl-menu-btn" style={{ color:"#EF4444" }} onClick={() => { setShowDeleteConv(true); setShowConvMenu(false); }}>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="#EF4444"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 2.75c1.24 0 2.25 1.01 2.25 2.25S13.24 11.25 12 11.25 9.75 10.24 9.75 9 10.76 6.75 12 6.75zM17 17H7v-.75c0-1.67 3.33-2.5 5-2.5s5 .83 5 2.5V17z"/></svg>
                 Supprimer l'échange
               </button>
             </div>
@@ -4691,16 +4691,16 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
               {/* Drag handle */}
               <div style={{ display:"flex", justifyContent:"center", padding:"10px 0 0" }}>
-                <div style={{ width:36, height:4, borderRadius:2, background:"#E2E8F0" }} />
+                <div style={{ width:36, height:4, borderRadius:2, background:"#E5E7EB" }} />
               </div>
 
               {/* Title */}
-              <div style={{ padding:"14px 20px 6px", fontWeight:800, fontSize:17, color:"#0F172A", textAlign:"center" }}>
+              <div style={{ padding:"14px 20px 6px", fontWeight:800, fontSize:17, color:"#111827", textAlign:"center" }}>
                 Personnaliser la conversation
               </div>
 
               {/* ── Live preview strip ── */}
-              <div style={{ margin:"8px 16px 0", borderRadius:16, overflow:"hidden", border:"1px solid #E2E8F0",
+              <div style={{ margin:"8px 16px 0", borderRadius:16, overflow:"hidden", border:"1px solid #E5E7EB",
                 ...(pendingWpKey !== "none" && wpUrl(pendingWpKey) ? { backgroundImage:`url(${wpUrl(pendingWpKey)})`, backgroundSize:"cover", backgroundPosition:"center" } : { background: CONV_THEMES[pendingThemeKey].bg }) }}>
                 <div style={{ padding:"10px 14px", display:"flex", flexDirection:"column", gap:6 }}>
                   {/* Received */}
@@ -4726,13 +4726,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
               {/* ── Couleurs de discussion ── */}
               <div style={{ padding:"18px 16px 4px" }}>
-                <div style={{ fontWeight:700, fontSize:14, color:"#0F172A", marginBottom:12 }}>Couleurs de discussion</div>
+                <div style={{ fontWeight:700, fontSize:14, color:"#111827", marginBottom:12 }}>Couleurs de discussion</div>
                 <div style={{ display:"grid", gridTemplateColumns:"repeat(5, 1fr)", gap:8 }}>
                   {(Object.entries(CONV_THEMES) as [ThemeKey, typeof CONV_THEMES[ThemeKey]][]).map(([key, t]) => {
                     const sel = pendingThemeKey === key;
                     return (
                       <div key={key} onClick={() => setPendingThemeKey(key)}
-                        style={{ cursor:"pointer", borderRadius:14, border: sel ? `2.5px solid #16C24A` : "2px solid #E2E8F0", overflow:"hidden", position:"relative", transition:"border-color 0.15s", boxShadow: sel ? "0 0 0 3px rgba(22,194,74,0.18)" : "none" }}>
+                        style={{ cursor:"pointer", borderRadius:14, border: sel ? `2.5px solid #22C55E` : "2px solid #E5E7EB", overflow:"hidden", position:"relative", transition:"border-color 0.15s", boxShadow: sel ? "0 0 0 3px rgba(22,194,74,0.18)" : "none" }}>
                         {/* Mini preview */}
                         <div style={{ background:t.bg, padding:"6px 6px 4px", display:"flex", flexDirection:"column", gap:3 }}>
                           {/* Their bubble */}
@@ -4744,11 +4744,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                         </div>
                         {/* Label */}
                         <div style={{ background:"#fff", padding:"3px 4px 5px", textAlign:"center" }}>
-                          <span style={{ fontSize:9.5, fontWeight: sel ? 700 : 500, color: sel ? "#16C24A" : "#475569", lineHeight:1.1, display:"block" }}>{t.label}</span>
+                          <span style={{ fontSize:9.5, fontWeight: sel ? 700 : 500, color: sel ? "#22C55E" : "#64748B", lineHeight:1.1, display:"block" }}>{t.label}</span>
                         </div>
                         {/* Selected badge */}
                         {sel && (
-                          <div style={{ position:"absolute", top:4, right:4, width:16, height:16, borderRadius:"50%", background:"#16C24A", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                          <div style={{ position:"absolute", top:4, right:4, width:16, height:16, borderRadius:"50%", background:"#22C55E", display:"flex", alignItems:"center", justifyContent:"center" }}>
                             <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                               <polyline points="20 6 9 17 4 12"/>
                             </svg>
@@ -4762,24 +4762,24 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
               {/* ── Fond d'écran ── */}
               <div style={{ padding:"16px 16px 4px" }}>
-                <div style={{ fontWeight:700, fontSize:14, color:"#0F172A", marginBottom:12 }}>Fond d'écran</div>
+                <div style={{ fontWeight:700, fontSize:14, color:"#111827", marginBottom:12 }}>Fond d'écran</div>
                 <div style={{ display:"flex", gap:8, overflowX:"auto", scrollbarWidth:"none", paddingBottom:4 }}>
                   {CONV_WALLPAPERS.map(w => {
                     const sel = pendingWpKey === w.key;
                     const url = wpUrl(w.key as WallpaperKey);
                     return (
                       <div key={w.key} onClick={() => setPendingWpKey(w.key as WallpaperKey)}
-                        style={{ flexShrink:0, width:72, cursor:"pointer", borderRadius:14, overflow:"hidden", border: sel ? "2.5px solid #16C24A" : "2px solid #E2E8F0", position:"relative", boxShadow: sel ? "0 0 0 3px rgba(22,194,74,0.18)" : "0 2px 8px rgba(0,0,0,0.10)", transition:"all 0.15s" }}>
+                        style={{ flexShrink:0, width:72, cursor:"pointer", borderRadius:14, overflow:"hidden", border: sel ? "2.5px solid #22C55E" : "2px solid #E5E7EB", position:"relative", boxShadow: sel ? "0 0 0 3px rgba(22,194,74,0.18)" : "0 2px 8px rgba(0,0,0,0.10)", transition:"all 0.15s" }}>
                         {url ? (
                           <img src={url} alt={w.label} style={{ width:"100%", height:72, objectFit:"cover", display:"block" }} />
                         ) : (
                           <div style={{ width:"100%", height:72, background:"#F0FDF4", display:"flex", alignItems:"center", justifyContent:"center" }}>
-                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#16C24A" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
                           </div>
                         )}
-                        <div style={{ background:"#fff", padding:"3px 2px 5px", textAlign:"center", fontSize:9.5, fontWeight: sel ? 700 : 500, color: sel ? "#16C24A" : "#475569", lineHeight:1.2 }}>{w.label}</div>
+                        <div style={{ background:"#fff", padding:"3px 2px 5px", textAlign:"center", fontSize:9.5, fontWeight: sel ? 700 : 500, color: sel ? "#22C55E" : "#64748B", lineHeight:1.2 }}>{w.label}</div>
                         {sel && (
-                          <div style={{ position:"absolute", top:4, right:4, width:18, height:18, borderRadius:"50%", background:"#16C24A", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 1px 4px rgba(0,0,0,0.3)" }}>
+                          <div style={{ position:"absolute", top:4, right:4, width:18, height:18, borderRadius:"50%", background:"#22C55E", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 1px 4px rgba(0,0,0,0.3)" }}>
                             <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                               <polyline points="20 6 9 17 4 12"/>
                             </svg>
@@ -4803,7 +4803,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     localStorage.setItem(`bp_wp_${activeConv}`, pendingWpKey);
                   }
                 }}
-                  style={{ width:"100%", background:"linear-gradient(135deg,#16C24A,#0ea541)", border:"none", borderRadius:99, padding:"15px", fontSize:16, fontWeight:800, color:"#fff", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8, boxShadow:"0 4px 18px rgba(22,194,74,0.45)", letterSpacing:0.2 }}>
+                  style={{ width:"100%", background:"linear-gradient(135deg,#22C55E,#22C55E)", border:"none", borderRadius:99, padding:"15px", fontSize:16, fontWeight:800, color:"#fff", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8, boxShadow:"0 4px 18px rgba(22,194,74,0.45)", letterSpacing:0.2 }}>
                   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
                   </svg>
@@ -4838,13 +4838,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 </div>
 
                 {/* Title */}
-                <div style={{ fontWeight:800, fontSize:20, color:"#0F172A", marginBottom:8, letterSpacing:-0.3 }}>
+                <div style={{ fontWeight:800, fontSize:20, color:"#111827", marginBottom:8, letterSpacing:-0.3 }}>
                   Supprimer la discussion
                 </div>
 
                 {/* Subtitle */}
                 <div style={{ fontSize:14, color:"#64748B", lineHeight:1.6, marginBottom:0 }}>
-                  Cette action supprimera définitivement votre conversation avec <strong style={{ color:"#0F172A" }}>{activeUser?.name ?? "cet utilisateur"}</strong>.
+                  Cette action supprimera définitivement votre conversation avec <strong style={{ color:"#111827" }}>{activeUser?.name ?? "cet utilisateur"}</strong>.
                 </div>
               </div>
 
@@ -4853,18 +4853,18 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
               {/* User card */}
               <div style={{ padding:"16px 24px", display:"flex", alignItems:"center", gap:12 }}>
-                <div style={{ width:46, height:46, borderRadius:"50%", background: activeUser?.color ?? "#16C24A", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                <div style={{ width:46, height:46, borderRadius:"50%", background: activeUser?.color ?? "#22C55E", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                   <span style={{ color:"#fff", fontWeight:800, fontSize:17 }}>{activeUser?.initials ?? "?"}</span>
                 </div>
                 <div style={{ flex:1 }}>
                   <div style={{ display:"flex", alignItems:"center", gap:5 }}>
-                    <span style={{ fontWeight:700, fontSize:15, color:"#0F172A" }}>{activeUser?.name ?? "Utilisateur"}</span>
+                    <span style={{ fontWeight:700, fontSize:15, color:"#111827" }}>{activeUser?.name ?? "Utilisateur"}</span>
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-                      <circle cx="12" cy="12" r="10" fill="#16C24A"/>
+                      <circle cx="12" cy="12" r="10" fill="#22C55E"/>
                       <polyline points="8,12 11,15 16,9" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
                     </svg>
                   </div>
-                  <div style={{ fontSize:13, color:"#94A3B8", marginTop:1 }}>Hors ligne</div>
+                  <div style={{ fontSize:13, color:"#9CA3AF", marginTop:1 }}>Hors ligne</div>
                 </div>
               </div>
 
@@ -4875,15 +4875,15 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               <label style={{ display:"flex", alignItems:"center", gap:14, padding:"16px 24px", cursor:"pointer" }}>
                 {/* Custom checkbox */}
                 <div onClick={() => setDeleteForAll(v => !v)}
-                  style={{ width:22, height:22, borderRadius:6, border: deleteForAll ? "none" : "2px solid #CBD5E1", background: deleteForAll ? "#16C24A" : "#fff", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, transition:"all 0.15s" }}>
+                  style={{ width:22, height:22, borderRadius:6, border: deleteForAll ? "none" : "2px solid #E5E7EB", background: deleteForAll ? "#22C55E" : "#fff", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, transition:"all 0.15s" }}>
                   {deleteForAll && (
                     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12"/>
                     </svg>
                   )}
                 </div>
-                <span style={{ fontSize:14, color:"#334155", fontWeight:500 }}>
-                  Supprimer également pour <strong style={{ color:"#0F172A" }}>{activeUser?.name ?? "cet utilisateur"}</strong>
+                <span style={{ fontSize:14, color:"#111827", fontWeight:500 }}>
+                  Supprimer également pour <strong style={{ color:"#111827" }}>{activeUser?.name ?? "cet utilisateur"}</strong>
                 </span>
               </label>
 
@@ -4893,7 +4893,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               {/* Action buttons */}
               <div style={{ display:"flex", gap:10, padding:"16px 20px 20px" }}>
                 <button onClick={() => setShowDeleteConv(false)}
-                  style={{ flex:1, background:"#fff", border:"1.5px solid #E2E8F0", borderRadius:50, padding:"13px", fontSize:15, fontWeight:700, color:"#16C24A", cursor:"pointer" }}>
+                  style={{ flex:1, background:"#fff", border:"1.5px solid #E5E7EB", borderRadius:50, padding:"13px", fontSize:15, fontWeight:700, color:"#22C55E", cursor:"pointer" }}>
                   Annuler
                 </button>
                 <button onClick={async () => {
@@ -4911,7 +4911,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   setShowDeleteConv(false);
                   setDeleteForAll(false);
                 }}
-                  style={{ flex:1.4, background:"linear-gradient(135deg,#EF4444,#DC2626)", border:"none", borderRadius:50, padding:"13px 18px", fontSize:15, fontWeight:700, color:"#fff", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:7, boxShadow:"0 4px 14px rgba(239,68,68,0.4)" }}>
+                  style={{ flex:1.4, background:"linear-gradient(135deg,#EF4444,#EF4444)", border:"none", borderRadius:50, padding:"13px 18px", fontSize:15, fontWeight:700, color:"#fff", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:7, boxShadow:"0 4px 14px rgba(239,68,68,0.4)" }}>
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="3 6 5 6 21 6"/>
                     <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
@@ -4942,31 +4942,31 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               {/* MAIN ICONS — Telegram Premium single row */}
               {attachPage === "none" && (
                 <>
-                  <div style={{ width:36, height:4, background:"#E0E0E0", borderRadius:2, margin:"10px auto 6px" }} />
+                  <div style={{ width:36, height:4, background:"#E5E7EB", borderRadius:2, margin:"10px auto 6px" }} />
                   <div style={{ display:"flex", flexDirection:"row", justifyContent:"space-evenly", alignItems:"center",
                     padding:"6px 4px 18px", overflowX:"auto" }}>
 
                     {/* 1 — GALERIE (actif) */}
                     <button className="tg-attach-btn" onClick={() => { galleryInputRef.current?.click(); setAttachSheet(false); }}>
-                      <div className="tg-attach-box" style={{ background:"#EAF3FF" }}>
+                      <div className="tg-attach-box" style={{ background:"#DCFCE7" }}>
                         <svg viewBox="0 0 28 28" width="28" height="28" fill="none">
-                          <rect x="3" y="6" width="22" height="16" rx="3" stroke="#3390EC" strokeWidth="1.8"/>
-                          <circle cx="9" cy="11" r="2" fill="#3390EC" opacity="0.8"/>
-                          <path d="M3 18l6-6 4.5 4.5 3-3 7.5 7.5" stroke="#3390EC" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+                          <rect x="3" y="6" width="22" height="16" rx="3" stroke="#0EA5E9" strokeWidth="1.8"/>
+                          <circle cx="9" cy="11" r="2" fill="#0EA5E9" opacity="0.8"/>
+                          <path d="M3 18l6-6 4.5 4.5 3-3 7.5 7.5" stroke="#0EA5E9" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
                       </div>
-                      <span style={{ color:"#3390EC" }}>Gallery</span>
+                      <span style={{ color:"#0EA5E9" }}>Gallery</span>
                     </button>
 
                     {/* 2 — CAMÉRA */}
                     <button className="tg-attach-btn" onClick={() => { cameraInputRef.current?.click(); setAttachSheet(false); }}>
                       <div className="tg-attach-box">
                         <svg viewBox="0 0 28 28" width="28" height="28" fill="none">
-                          <rect x="3" y="9" width="22" height="14" rx="3" stroke="#2F3542" strokeWidth="1.8"/>
-                          <path d="M10.5 9V7.5C10.5 6.95 10.95 6.5 11.5 6.5h5C17.05 6.5 17.5 6.95 17.5 7.5V9" stroke="#2F3542" strokeWidth="1.7" strokeLinecap="round"/>
-                          <circle cx="14" cy="16" r="3.8" stroke="#2F3542" strokeWidth="1.7"/>
-                          <circle cx="14" cy="16" r="1.6" fill="#2F3542"/>
-                          <circle cx="20.5" cy="11.5" r="1" fill="#2F3542"/>
+                          <rect x="3" y="9" width="22" height="14" rx="3" stroke="#1E293B" strokeWidth="1.8"/>
+                          <path d="M10.5 9V7.5C10.5 6.95 10.95 6.5 11.5 6.5h5C17.05 6.5 17.5 6.95 17.5 7.5V9" stroke="#1E293B" strokeWidth="1.7" strokeLinecap="round"/>
+                          <circle cx="14" cy="16" r="3.8" stroke="#1E293B" strokeWidth="1.7"/>
+                          <circle cx="14" cy="16" r="1.6" fill="#1E293B"/>
+                          <circle cx="20.5" cy="11.5" r="1" fill="#1E293B"/>
                         </svg>
                       </div>
                       <span>Caméra</span>
@@ -4976,11 +4976,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     <button className="tg-attach-btn" onClick={() => { docInputRef.current?.click(); setAttachSheet(false); }}>
                       <div className="tg-attach-box">
                         <svg viewBox="0 0 28 28" width="28" height="28" fill="none">
-                          <path d="M8 4h8l6 6v14H8V4z" stroke="#2F3542" strokeWidth="1.8" strokeLinejoin="round"/>
-                          <path d="M16 4v6h6" stroke="#2F3542" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
-                          <line x1="11" y1="14" x2="17" y2="14" stroke="#2F3542" strokeWidth="1.6" strokeLinecap="round"/>
-                          <line x1="11" y1="17.5" x2="17" y2="17.5" stroke="#2F3542" strokeWidth="1.6" strokeLinecap="round"/>
-                          <line x1="11" y1="21" x2="15" y2="21" stroke="#2F3542" strokeWidth="1.6" strokeLinecap="round"/>
+                          <path d="M8 4h8l6 6v14H8V4z" stroke="#1E293B" strokeWidth="1.8" strokeLinejoin="round"/>
+                          <path d="M16 4v6h6" stroke="#1E293B" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+                          <line x1="11" y1="14" x2="17" y2="14" stroke="#1E293B" strokeWidth="1.6" strokeLinecap="round"/>
+                          <line x1="11" y1="17.5" x2="17" y2="17.5" stroke="#1E293B" strokeWidth="1.6" strokeLinecap="round"/>
+                          <line x1="11" y1="21" x2="15" y2="21" stroke="#1E293B" strokeWidth="1.6" strokeLinecap="round"/>
                         </svg>
                       </div>
                       <span>File</span>
@@ -4990,8 +4990,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     <button className="tg-attach-btn" onClick={() => { handleLocation(); setAttachSheet(false); }}>
                       <div className="tg-attach-box">
                         <svg viewBox="0 0 28 28" width="28" height="28" fill="none">
-                          <path d="M14 3C10.13 3 7 6.13 7 10C7 15.25 14 25 14 25C14 25 21 15.25 21 10C21 6.13 17.87 3 14 3Z" stroke="#2F3542" strokeWidth="1.8" strokeLinejoin="round"/>
-                          <circle cx="14" cy="10" r="3" stroke="#2F3542" strokeWidth="1.6"/>
+                          <path d="M14 3C10.13 3 7 6.13 7 10C7 15.25 14 25 14 25C14 25 21 15.25 21 10C21 6.13 17.87 3 14 3Z" stroke="#1E293B" strokeWidth="1.8" strokeLinejoin="round"/>
+                          <circle cx="14" cy="10" r="3" stroke="#1E293B" strokeWidth="1.6"/>
                         </svg>
                       </div>
                       <span>Location</span>
@@ -5001,10 +5001,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     <button className="tg-attach-btn" onClick={() => setAttachPage("poll")}>
                       <div className="tg-attach-box">
                         <svg viewBox="0 0 28 28" width="28" height="28" fill="none">
-                          <rect x="5.5" y="9" width="4.5" height="13" rx="2" stroke="#2F3542" strokeWidth="1.7"/>
-                          <rect x="11.75" y="13" width="4.5" height="9" rx="2" stroke="#2F3542" strokeWidth="1.7"/>
-                          <rect x="18" y="17" width="4.5" height="5" rx="2" stroke="#2F3542" strokeWidth="1.7"/>
-                          <line x1="4" y1="22.5" x2="24" y2="22.5" stroke="#2F3542" strokeWidth="1.6" strokeLinecap="round"/>
+                          <rect x="5.5" y="9" width="4.5" height="13" rx="2" stroke="#1E293B" strokeWidth="1.7"/>
+                          <rect x="11.75" y="13" width="4.5" height="9" rx="2" stroke="#1E293B" strokeWidth="1.7"/>
+                          <rect x="18" y="17" width="4.5" height="5" rx="2" stroke="#1E293B" strokeWidth="1.7"/>
+                          <line x1="4" y1="22.5" x2="24" y2="22.5" stroke="#1E293B" strokeWidth="1.6" strokeLinecap="round"/>
                         </svg>
                       </div>
                       <span>Poll</span>
@@ -5014,8 +5014,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     <button className="tg-attach-btn" onClick={() => setAttachPage("poll")}>
                       <div className="tg-attach-box">
                         <svg viewBox="0 0 28 28" width="28" height="28" fill="none">
-                          <rect x="5" y="5" width="18" height="18" rx="4" stroke="#2F3542" strokeWidth="1.8"/>
-                          <path d="M9 14l3.5 3.5L19 10" stroke="#2F3542" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"/>
+                          <rect x="5" y="5" width="18" height="18" rx="4" stroke="#1E293B" strokeWidth="1.8"/>
+                          <path d="M9 14l3.5 3.5L19 10" stroke="#1E293B" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
                       </div>
                       <span>Checklist</span>
@@ -5025,8 +5025,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     <button className="tg-attach-btn" onClick={() => setAttachPage("contacts")}>
                       <div className="tg-attach-box">
                         <svg viewBox="0 0 28 28" width="28" height="28" fill="none">
-                          <circle cx="14" cy="10" r="5" stroke="#2F3542" strokeWidth="1.8"/>
-                          <path d="M5 26C5 20.48 9 17 14 17C19 17 23 20.48 23 26" stroke="#2F3542" strokeWidth="1.8" strokeLinecap="round"/>
+                          <circle cx="14" cy="10" r="5" stroke="#1E293B" strokeWidth="1.8"/>
+                          <path d="M5 26C5 20.48 9 17 14 17C19 17 23 20.48 23 26" stroke="#1E293B" strokeWidth="1.8" strokeLinecap="round"/>
                         </svg>
                       </div>
                       <span>Contact</span>
@@ -5044,20 +5044,20 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     <div style={{ fontWeight:800, fontSize:17 }}>Créer un sondage</div>
                   </div>
                   <input value={pollQuestion} onChange={e => setPollQuestion(e.target.value)} placeholder="Question…"
-                    style={{ width:"100%", border:"none", borderBottom:"2px solid #25D366", padding:"8px 0", fontSize:16, outline:"none", marginBottom:16, boxSizing:"border-box" }} />
+                    style={{ width:"100%", border:"none", borderBottom:"2px solid #22C55E", padding:"8px 0", fontSize:16, outline:"none", marginBottom:16, boxSizing:"border-box" }} />
                   <div style={{ fontSize:11, color:"#999", fontWeight:600, marginBottom:10, textTransform:"uppercase" as const }}>Options</div>
                   {pollOptions.map((opt, idx) => (
                     <div key={idx} style={{ display:"flex", alignItems:"center", gap:8, marginBottom:10 }}>
                       <input value={opt} onChange={e => { const o=[...pollOptions]; o[idx]=e.target.value; setPollOptions(o); }} placeholder={`Option ${idx+1}`}
-                        style={{ flex:1, border:"none", borderBottom:"1.5px solid #E4E6EB", padding:"8px 0", fontSize:15, outline:"none" }} />
+                        style={{ flex:1, border:"none", borderBottom:"1.5px solid #E5E7EB", padding:"8px 0", fontSize:15, outline:"none" }} />
                       {pollOptions.length > 2 && (
-                        <button onClick={() => setPollOptions(o => o.filter((_,i) => i !== idx))} style={{ background:"none", border:"none", cursor:"pointer", color:"#E02020", fontSize:20, padding:0 }}>✕</button>
+                        <button onClick={() => setPollOptions(o => o.filter((_,i) => i !== idx))} style={{ background:"none", border:"none", cursor:"pointer", color:"#EF4444", fontSize:20, padding:0 }}>✕</button>
                       )}
                     </div>
                   ))}
-                  <button onClick={() => setPollOptions(o => [...o, ""])} style={{ background:"none", border:"none", color:"#25D366", fontSize:15, fontWeight:700, cursor:"pointer", padding:"4px 0", marginBottom:16 }}>+ Ajouter une option</button>
+                  <button onClick={() => setPollOptions(o => [...o, ""])} style={{ background:"none", border:"none", color:"#22C55E", fontSize:15, fontWeight:700, cursor:"pointer", padding:"4px 0", marginBottom:16 }}>+ Ajouter une option</button>
                   <label style={{ display:"flex", alignItems:"center", gap:12, marginBottom:24, cursor:"pointer" }}>
-                    <input type="checkbox" checked={pollMultiple} onChange={e => setPollMultiple(e.target.checked)} style={{ width:18, height:18, accentColor:"#25D366" }} />
+                    <input type="checkbox" checked={pollMultiple} onChange={e => setPollMultiple(e.target.checked)} style={{ width:18, height:18, accentColor:"#22C55E" }} />
                     <span style={{ fontSize:14 }}>Autoriser plusieurs réponses</span>
                   </label>
                   <button
@@ -5073,7 +5073,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       setAttachSheet(false); setAttachPage("none");
                     }}
                     disabled={!pollQuestion.trim() || pollOptions.filter(o=>o.trim()).length < 2}
-                    style={{ width:"100%", background: pollQuestion.trim() && pollOptions.filter(o=>o.trim()).length>=2 ? "#25D366":"#E4E6EB", border:"none", borderRadius:30, padding:"15px", fontSize:16, fontWeight:800, color: pollQuestion.trim() && pollOptions.filter(o=>o.trim()).length>=2 ? "#fff":"#999", cursor:"pointer", transition:"all 0.2s" }}>
+                    style={{ width:"100%", background: pollQuestion.trim() && pollOptions.filter(o=>o.trim()).length>=2 ? "#22C55E":"#E5E7EB", border:"none", borderRadius:30, padding:"15px", fontSize:16, fontWeight:800, color: pollQuestion.trim() && pollOptions.filter(o=>o.trim()).length>=2 ? "#fff":"#999", cursor:"pointer", transition:"all 0.2s" }}>
                     Envoyer le sondage
                   </button>
                 </div>
@@ -5087,19 +5087,19 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     <div style={{ fontWeight:800, fontSize:17 }}>Créer un événement</div>
                   </div>
                   <input value={eventName} onChange={e => setEventName(e.target.value)} placeholder="Nom de l'événement"
-                    style={{ width:"100%", border:"none", borderBottom:"2px solid #25D366", padding:"8px 0", fontSize:18, fontWeight:700, outline:"none", marginBottom:16, boxSizing:"border-box" }} />
+                    style={{ width:"100%", border:"none", borderBottom:"2px solid #22C55E", padding:"8px 0", fontSize:18, fontWeight:700, outline:"none", marginBottom:16, boxSizing:"border-box" }} />
                   <textarea value={eventDesc} onChange={e => setEventDesc(e.target.value)} placeholder="Description (optionnel)"
-                    style={{ width:"100%", border:"none", borderBottom:"1.5px solid #E4E6EB", padding:"8px 0", fontSize:14, outline:"none", resize:"none" as const, height:56, marginBottom:16, boxSizing:"border-box", fontFamily:"inherit" }} />
+                    style={{ width:"100%", border:"none", borderBottom:"1.5px solid #E5E7EB", padding:"8px 0", fontSize:14, outline:"none", resize:"none" as const, height:56, marginBottom:16, boxSizing:"border-box", fontFamily:"inherit" }} />
                   <div style={{ display:"flex", gap:12, marginBottom:20 }}>
                     <div style={{ flex:1 }}>
                       <div style={{ fontSize:11, color:"#999", fontWeight:600, marginBottom:4 }}>DATE</div>
                       <input type="date" value={eventDate} onChange={e => setEventDate(e.target.value)}
-                        style={{ width:"100%", border:"none", borderBottom:"1.5px solid #E4E6EB", padding:"6px 0", fontSize:15, outline:"none", boxSizing:"border-box" }} />
+                        style={{ width:"100%", border:"none", borderBottom:"1.5px solid #E5E7EB", padding:"6px 0", fontSize:15, outline:"none", boxSizing:"border-box" }} />
                     </div>
                     <div style={{ flex:1 }}>
                       <div style={{ fontSize:11, color:"#999", fontWeight:600, marginBottom:4 }}>HEURE</div>
                       <input type="time" value={eventTime} onChange={e => setEventTime(e.target.value)}
-                        style={{ width:"100%", border:"none", borderBottom:"1.5px solid #E4E6EB", padding:"6px 0", fontSize:15, outline:"none", boxSizing:"border-box" }} />
+                        style={{ width:"100%", border:"none", borderBottom:"1.5px solid #E5E7EB", padding:"6px 0", fontSize:15, outline:"none", boxSizing:"border-box" }} />
                     </div>
                   </div>
                   <button
@@ -5115,7 +5115,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       setAttachSheet(false); setAttachPage("none");
                     }}
                     disabled={!eventName.trim()}
-                    style={{ width:"100%", background: eventName.trim()?"#25D366":"#E4E6EB", border:"none", borderRadius:30, padding:"15px", fontSize:16, fontWeight:800, color: eventName.trim()?"#fff":"#999", cursor:"pointer", transition:"all 0.2s" }}>
+                    style={{ width:"100%", background: eventName.trim()?"#22C55E":"#E5E7EB", border:"none", borderRadius:30, padding:"15px", fontSize:16, fontWeight:800, color: eventName.trim()?"#fff":"#999", cursor:"pointer", transition:"all 0.2s" }}>
                     Envoyer l'événement
                   </button>
                 </div>
@@ -5153,14 +5153,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     <button onClick={() => setAttachPage("none")} style={{ background:"none", border:"none", cursor:"pointer", fontSize:22, color:"#555", padding:0 }}>‹</button>
                     <div style={{ fontWeight:800, fontSize:17 }}>Générer une image IA</div>
                   </div>
-                  <div style={{ background:"linear-gradient(135deg,#00BCD4,#7B5EA7)", borderRadius:14, padding:"16px", marginBottom:18, textAlign:"center" }}>
+                  <div style={{ background:"linear-gradient(135deg,#0EA5E9,#8B5CF6)", borderRadius:14, padding:"16px", marginBottom:18, textAlign:"center" }}>
                     <div style={{ fontSize:36, marginBottom:8 }}>🤖✨</div>
                     <div style={{ color:"#fff", fontSize:13, lineHeight:1.5, fontWeight:500 }}>Décris l'image que tu veux générer et elle sera envoyée dans la conversation.</div>
                   </div>
                   <textarea value={aiPrompt} onChange={e => setAiPrompt(e.target.value)}
                     placeholder="Ex : un lion majestueux au coucher du soleil sur la savane africaine…"
                     rows={4}
-                    style={{ width:"100%", border:"1.5px solid #E4E6EB", borderRadius:12, padding:"12px 14px", fontSize:15, outline:"none", resize:"none" as const, boxSizing:"border-box" as const, fontFamily:"inherit", marginBottom:16 }} />
+                    style={{ width:"100%", border:"1.5px solid #E5E7EB", borderRadius:12, padding:"12px 14px", fontSize:15, outline:"none", resize:"none" as const, boxSizing:"border-box" as const, fontFamily:"inherit", marginBottom:16 }} />
                   <button
                     disabled={!aiPrompt.trim() || aiLoading}
                     onClick={async () => {
@@ -5186,7 +5186,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       }
                       setAiLoading(false);
                     }}
-                    style={{ width:"100%", background: aiPrompt.trim()&&!aiLoading?"linear-gradient(135deg,#00BCD4,#7B5EA7)":"#E4E6EB", border:"none", borderRadius:30, padding:"15px", fontSize:16, fontWeight:800, color: aiPrompt.trim()&&!aiLoading?"#fff":"#999", cursor:"pointer", transition:"all 0.2s", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+                    style={{ width:"100%", background: aiPrompt.trim()&&!aiLoading?"linear-gradient(135deg,#0EA5E9,#8B5CF6)":"#E5E7EB", border:"none", borderRadius:30, padding:"15px", fontSize:16, fontWeight:800, color: aiPrompt.trim()&&!aiLoading?"#fff":"#999", cursor:"pointer", transition:"all 0.2s", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
                     {aiLoading ? <><span style={{ animation:"fbl-rec-pulse 1s infinite", display:"inline-block" }}>⏳</span> Génération…</> : "✨ Générer et envoyer"}
                   </button>
                 </div>
@@ -5244,7 +5244,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
       /* ── EDIT PAGE ── */
       if (chViewPage === "edit") return createPortal(
-        <div style={{position:"fixed",inset:0,background:"#F2F2F7",zIndex:10001,display:"flex",flexDirection:"column"}}>
+        <div style={{position:"fixed",inset:0,background:"#F8FAFC",zIndex:10001,display:"flex",flexDirection:"column"}}>
           <div style={{background:"#fff",display:"flex",alignItems:"center",padding:"0 4px",height:56,boxShadow:"0 1px 0 rgba(0,0,0,0.09)",flexShrink:0}}>
             <button onClick={()=>setChViewPage("chat")} style={{background:"none",border:"none",cursor:"pointer",width:48,height:48,display:"flex",alignItems:"center",justifyContent:"center"}}>
               <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -5267,30 +5267,30 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               </div>
               <div style={{flex:1}}>
                 <input value={chEditName} onChange={e=>setChEditName(e.target.value)} placeholder="Nom du canal" style={{width:"100%",border:"none",borderBottom:"2px solid #22C55E",outline:"none",fontSize:16,fontWeight:600,color:"#111",padding:"6px 0",background:"transparent"}}/>
-                <textarea value={chEditDesc} onChange={e=>setChEditDesc(e.target.value)} placeholder="Description (facultative)" rows={2} style={{width:"100%",border:"none",outline:"none",fontSize:14,color:"#6B7280",marginTop:8,background:"transparent",resize:"none",fontFamily:"inherit"}}/>
+                <textarea value={chEditDesc} onChange={e=>setChEditDesc(e.target.value)} placeholder="Description (facultative)" rows={2} style={{width:"100%",border:"none",outline:"none",fontSize:14,color:"#64748B",marginTop:8,background:"transparent",resize:"none",fontFamily:"inherit"}}/>
               </div>
             </div>
             {/* Type */}
             <div style={{background:"#fff",borderTop:"1px solid rgba(0,0,0,0.08)",borderBottom:"1px solid rgba(0,0,0,0.08)",marginBottom:8}}>
               <div onClick={()=>{setChEditType("public");}} style={{display:"flex",alignItems:"center",padding:"16px",gap:12,cursor:"pointer",borderBottom:"1px solid rgba(0,0,0,0.06)"}}>
-                <div style={{width:22,height:22,borderRadius:"50%",border:`2px solid ${chEditType==="public"?"#22C55E":"#C7C7CC"}`,background:chEditType==="public"?"#22C55E":"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                <div style={{width:22,height:22,borderRadius:"50%",border:`2px solid ${chEditType==="public"?"#22C55E":"#CBD5E1"}`,background:chEditType==="public"?"#22C55E":"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
                   {chEditType==="public"&&<div style={{width:8,height:8,borderRadius:"50%",background:"#fff"}}/>}
                 </div>
-                <div><div style={{fontWeight:600,fontSize:15,color:"#111"}}>Canal public</div><div style={{fontSize:13,color:"#6B7280"}}>Visible dans la recherche</div></div>
+                <div><div style={{fontWeight:600,fontSize:15,color:"#111"}}>Canal public</div><div style={{fontSize:13,color:"#64748B"}}>Visible dans la recherche</div></div>
               </div>
               <div onClick={()=>setChEditType("private")} style={{display:"flex",alignItems:"center",padding:"16px",gap:12,cursor:"pointer"}}>
-                <div style={{width:22,height:22,borderRadius:"50%",border:`2px solid ${chEditType==="private"?"#22C55E":"#C7C7CC"}`,background:chEditType==="private"?"#22C55E":"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                <div style={{width:22,height:22,borderRadius:"50%",border:`2px solid ${chEditType==="private"?"#22C55E":"#CBD5E1"}`,background:chEditType==="private"?"#22C55E":"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
                   {chEditType==="private"&&<div style={{width:8,height:8,borderRadius:"50%",background:"#fff"}}/>}
                 </div>
-                <div><div style={{fontWeight:600,fontSize:15,color:"#111"}}>Canal privé</div><div style={{fontSize:13,color:"#6B7280"}}>Accessible via invitation uniquement</div></div>
+                <div><div style={{fontWeight:600,fontSize:15,color:"#111"}}>Canal privé</div><div style={{fontSize:13,color:"#64748B"}}>Accessible via invitation uniquement</div></div>
               </div>
             </div>
             {/* Link (public) */}
             {chEditType==="public" && (
               <div style={{background:"#fff",borderTop:"1px solid rgba(0,0,0,0.08)",borderBottom:"1px solid rgba(0,0,0,0.08)",padding:"16px",marginBottom:8}}>
-                <div style={{fontSize:13,color:"#6B7280",marginBottom:6}}>Lien public</div>
+                <div style={{fontSize:13,color:"#64748B",marginBottom:6}}>Lien public</div>
                 <div style={{display:"flex",alignItems:"center",gap:4}}>
-                  <span style={{fontSize:15,color:"#6B7280",whiteSpace:"nowrap"}}>brutepawa.com/c/</span>
+                  <span style={{fontSize:15,color:"#64748B",whiteSpace:"nowrap"}}>brutepawa.com/c/</span>
                   <input value={chEditLink} onChange={e=>{const v=e.target.value.replace(/[^a-z0-9_]/g,"").slice(0,30);setChEditLink(v);setChEditLinkAvail(v.length>=5?"ok":null);}} placeholder="nom_canal" style={{flex:1,border:"none",borderBottom:`2px solid ${chEditLinkAvail==="ok"?"#22C55E":chEditLinkAvail==="err"?"#EF4444":"#E5E7EB"}`,outline:"none",fontSize:15,color:"#111",padding:"4px 0",background:"transparent"}}/>
                   {chEditLinkAvail==="ok"&&<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>}
                 </div>
@@ -5303,27 +5303,27 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
       /* ── MEMBERS PAGE ── */
       if (chViewPage === "members") return createPortal(
-        <div style={{position:"fixed",inset:0,background:"#F2F2F7",zIndex:10001,display:"flex",flexDirection:"column"}}>
+        <div style={{position:"fixed",inset:0,background:"#F8FAFC",zIndex:10001,display:"flex",flexDirection:"column"}}>
           <div style={{background:"#fff",display:"flex",alignItems:"center",padding:"0 4px",height:56,boxShadow:"0 1px 0 rgba(0,0,0,0.09)",flexShrink:0}}>
             <button onClick={()=>setChViewPage("chat")} style={{background:"none",border:"none",cursor:"pointer",width:48,height:48,display:"flex",alignItems:"center",justifyContent:"center"}}>
               <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
             </button>
             <div style={{flex:1}}>
               <div style={{fontWeight:700,fontSize:16.5,color:"#111"}}>Gérer les abonnés</div>
-              <div style={{fontSize:12,color:"#6B7280"}}>{ch.members.length} abonné{ch.members.length>1?"s":""} mix</div>
+              <div style={{fontSize:12,color:"#64748B"}}>{ch.members.length} abonné{ch.members.length>1?"s":""} mix</div>
             </div>
           </div>
-          <div style={{flex:1,overflowY:"auto",background:"#F2F2F7",paddingTop:8}}>
+          <div style={{flex:1,overflowY:"auto",background:"#F8FAFC",paddingTop:8}}>
             {/* Ajouter admin + Inviter */}
             <div style={{background:"#fff",borderTop:"1px solid rgba(0,0,0,0.08)",borderBottom:"1px solid rgba(0,0,0,0.08)",marginBottom:8}}>
               <div style={{display:"flex",alignItems:"center",gap:14,padding:"14px 16px",cursor:"pointer",borderBottom:"1px solid rgba(0,0,0,0.06)"}}>
-                <div style={{width:44,height:44,borderRadius:"50%",background:"#E5F9EE",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                <div style={{width:44,height:44,borderRadius:"50%",background:"#DCFCE7",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
                   <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
                 </div>
                 <div style={{fontWeight:600,fontSize:15,color:"#22C55E"}}>Ajouter un administrateur</div>
               </div>
               <div style={{display:"flex",alignItems:"center",gap:14,padding:"14px 16px",cursor:"pointer"}}>
-                <div style={{width:44,height:44,borderRadius:"50%",background:"#E5F9EE",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                <div style={{width:44,height:44,borderRadius:"50%",background:"#DCFCE7",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
                   <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                 </div>
                 <div style={{fontWeight:600,fontSize:15,color:"#22C55E"}}>Inviter via lien</div>
@@ -5336,8 +5336,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 <div style={{width:44,height:44,borderRadius:"50%",background:CONV_COLORS[meId%CONV_COLORS.length],display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontWeight:700,fontSize:16,flexShrink:0}}>
                   {mkInitials("Moi")}
                 </div>
-                <div style={{flex:1}}><div style={{fontWeight:600,fontSize:15,color:"#111"}}>Vous</div><div style={{fontSize:13,color:"#6B7280"}}>en ligne</div></div>
-                <span style={{fontSize:13,color:"#6B7280",fontWeight:500}}>Propriétaire</span>
+                <div style={{flex:1}}><div style={{fontWeight:600,fontSize:15,color:"#111"}}>Vous</div><div style={{fontSize:13,color:"#64748B"}}>en ligne</div></div>
+                <span style={{fontSize:13,color:"#64748B",fontWeight:500}}>Propriétaire</span>
               </div>
               {ch.members.map((uid,i) => {
                 const u = allUsers.find(x=>x.id===uid);
@@ -5346,8 +5346,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 return (
                   <div key={uid} style={{display:"flex",alignItems:"center",gap:14,padding:"12px 16px",borderBottom:i<ch.members.length-1?"1px solid rgba(0,0,0,0.06)":"none"}}>
                     <div style={{width:44,height:44,borderRadius:"50%",background:CONV_COLORS[uid%CONV_COLORS.length],display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontWeight:700,fontSize:16,flexShrink:0}}>{mkInitials(name)}</div>
-                    <div style={{flex:1}}><div style={{fontWeight:600,fontSize:15,color:"#111"}}>{name}</div><div style={{fontSize:13,color:"#6B7280"}}>vu récemment</div></div>
-                    {isAdmin&&<span style={{fontSize:13,color:"#6B7280",fontWeight:500}}>Administrateur</span>}
+                    <div style={{flex:1}}><div style={{fontWeight:600,fontSize:15,color:"#111"}}>{name}</div><div style={{fontSize:13,color:"#64748B"}}>vu récemment</div></div>
+                    {isAdmin&&<span style={{fontSize:13,color:"#64748B",fontWeight:500}}>Administrateur</span>}
                   </div>
                 );
               })}
@@ -5370,17 +5370,17 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             <div style={{width:40,height:40,borderRadius:"50%",background:chCol,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginRight:10,color:"#fff",fontWeight:700,fontSize:16}}>{chInitials}</div>
             <div style={{flex:1,minWidth:0}}>
               <div style={{fontWeight:700,fontSize:16,color:"#111",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{ch.name}</div>
-              <div style={{fontSize:12,color:"#6B7280"}}>{ch.members.length} abonné{ch.members.length!==1?"s":""} mix</div>
+              <div style={{fontSize:12,color:"#64748B"}}>{ch.members.length} abonné{ch.members.length!==1?"s":""} mix</div>
             </div>
             <button onClick={e=>{e.stopPropagation();setChMenuOpen(p=>!p);}} style={{background:"none",border:"none",cursor:"pointer",width:44,height:44,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="#6B7280"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="#64748B"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
             </button>
             {/* ⋮ Dropdown */}
             {chMenuOpen && (
               <div onClick={e=>e.stopPropagation()} style={{position:"absolute",top:54,right:8,background:"#fff",borderRadius:10,boxShadow:"0 6px 30px rgba(0,0,0,0.15)",zIndex:20,minWidth:220,overflow:"hidden",animation:"ch-menu-in 0.15s ease"}}>
                 {chMenuItems.map((item,i)=>(
                   <div key={i} onClick={item.action} style={{display:"flex",alignItems:"center",gap:14,padding:"13px 16px",cursor:"pointer",borderBottom:i<chMenuItems.length-1?"1px solid rgba(0,0,0,0.06)":"none"}}
-                    onMouseEnter={e=>e.currentTarget.style.background="#F9FAFB"}
+                    onMouseEnter={e=>e.currentTarget.style.background="#F8FAFC"}
                     onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
                     {item.icon}
                     <span style={{fontSize:15,fontWeight:500,color:(item as any).labelColor??(i>=7?"#EF4444":"#111")}}>{item.label}</span>
@@ -5411,16 +5411,16 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           {/* Input */}
           <div style={{background:"rgba(255,255,255,0.97)",padding:"8px 10px",display:"flex",alignItems:"center",gap:8,boxShadow:"0 -1px 4px rgba(0,0,0,0.06)",flexShrink:0}}>
             <button style={{background:"none",border:"none",cursor:"pointer",width:38,height:38,display:"flex",alignItems:"center",justifyContent:"center"}}>
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1.2" fill="#6B7280"/><circle cx="15" cy="9" r="1.2" fill="#6B7280"/></svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1.2" fill="#64748B"/><circle cx="15" cy="9" r="1.2" fill="#64748B"/></svg>
             </button>
             <input value={chInput} onChange={e=>setChInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")handleChSend();}}
               placeholder="Diffuser..."
               style={{flex:1,height:42,borderRadius:22,border:"1px solid #E5E7EB",outline:"none",padding:"0 14px",fontSize:15,background:"#fff"}}/>
             <button style={{background:"none",border:"none",cursor:"pointer",width:36,height:36,display:"flex",alignItems:"center",justifyContent:"center"}}>
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
             </button>
             <button style={{background:"none",border:"none",cursor:"pointer",width:36,height:36,display:"flex",alignItems:"center",justifyContent:"center"}}>
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
             </button>
             {chInput.trim() ? (
               <button onClick={handleChSend} style={{width:44,height:44,borderRadius:"50%",background:"#22C55E",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 2px 10px rgba(34,197,94,0.4)"}}>
@@ -5441,7 +5441,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
      CHANNEL — Wizard (info → type → members)
   ══════════════════════════════════════════════════════════════ */
   if (chWiz !== "none") {
-    const WIZ_COLORS = ["#EC4899","#8B5CF6","#F97316","#22C55E","#14B8A6","#EF4444","#3B82F6","#F59E0B","#6366F1","#D946EF"];
+    const WIZ_COLORS = ["#EC4899","#8B5CF6","#F97316","#22C55E","#0EA5E9","#EF4444","#0EA5E9","#F59E0B","#6366F1","#8B5CF6"];
     const wizCol = (id:number) => WIZ_COLORS[id % WIZ_COLORS.length];
     const chFilteredUsers = allUsers.filter(u => u.id !== meId && (
       !chSearch.trim() || `${u.firstName??""} ${u.lastName??""}`.toLowerCase().includes(chSearch.toLowerCase()) || (u.name??"").toLowerCase().includes(chSearch.toLowerCase())
@@ -5458,7 +5458,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
     return createPortal(
       <div style={{position:"fixed",inset:0,background:chWiz==="members"?"#fff":"#fff",zIndex:10000,display:"flex",flexDirection:"column"}}>
-        <style>{`@keyframes ch-wiz-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}} @keyframes ch-check{from{transform:scale(0.4)}to{transform:scale(1)}} .ch-wiz-row:active{background:#F5F5F5!important}`}</style>
+        <style>{`@keyframes ch-wiz-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}} @keyframes ch-check{from{transform:scale(0.4)}to{transform:scale(1)}} .ch-wiz-row:active{background:#F1F5F9!important}`}</style>
 
         {/* ── HEADER ── */}
         <div style={{display:"flex",alignItems:"center",padding:"0 4px",height:56,background:"#fff",borderBottom:"1px solid rgba(0,0,0,0.09)",flexShrink:0}}>
@@ -5475,7 +5475,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             <button onClick={()=>setChWiz("type")} style={{background:"none",border:"none",cursor:"pointer",padding:"0 16px",color:"#22C55E",fontWeight:700,fontSize:16}}>Continuer</button>
           )}
           {chWiz==="type" && (
-            <button onClick={()=>{if(chType==="public"&&chLink.length<5)return;setChWiz("members");}} style={{background:"none",border:"none",cursor:"pointer",padding:"0 16px",color:chType==="private"||(chLink.length>=5)?"#22C55E":"#C7C7CC",fontWeight:700,fontSize:16}}>Continuer</button>
+            <button onClick={()=>{if(chType==="public"&&chLink.length<5)return;setChWiz("members");}} style={{background:"none",border:"none",cursor:"pointer",padding:"0 16px",color:chType==="private"||(chLink.length>=5)?"#22C55E":"#CBD5E1",fontWeight:700,fontSize:16}}>Continuer</button>
           )}
           {chWiz==="members" && (
             <button onClick={handleChCreate} style={{background:"none",border:"none",cursor:"pointer",padding:"0 16px"}}>
@@ -5486,7 +5486,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
         {/* ── STEP 1: INFO ── */}
         {chWiz==="info" && (
-          <div style={{flex:1,overflowY:"auto",background:"#F2F2F7"}}>
+          <div style={{flex:1,overflowY:"auto",background:"#F8FAFC"}}>
             <div style={{background:"#fff",borderTop:"1px solid rgba(0,0,0,0.08)",borderBottom:"1px solid rgba(0,0,0,0.08)",padding:"20px 16px",display:"flex",alignItems:"flex-start",gap:16,marginTop:8}}>
               {/* Camera circle */}
               <div style={{width:74,height:74,borderRadius:"50%",background:"#22C55E",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,cursor:"pointer",position:"relative"}}>
@@ -5502,14 +5502,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 <div style={{display:"flex",alignItems:"center",borderBottom:"2px solid #22C55E",paddingBottom:6,marginBottom:10}}>
                   <input autoFocus value={chName} onChange={e=>setChName(e.target.value)} placeholder="Nom du canal" style={{flex:1,border:"none",outline:"none",fontSize:17,fontWeight:600,color:"#111",background:"transparent"}}/>
                   <button style={{background:"none",border:"none",cursor:"pointer",padding:4,flexShrink:0}}>
-                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#C7C7CC" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1.2" fill="#C7C7CC"/><circle cx="15" cy="9" r="1.2" fill="#C7C7CC"/></svg>
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#CBD5E1" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1.2" fill="#CBD5E1"/><circle cx="15" cy="9" r="1.2" fill="#CBD5E1"/></svg>
                   </button>
                 </div>
-                <textarea value={chDesc} onChange={e=>setChDesc(e.target.value)} placeholder="Description (facultative)" rows={3} style={{width:"100%",border:"none",outline:"none",fontSize:15,color:"#6B7280",resize:"none",background:"transparent",fontFamily:"inherit"}}/>
+                <textarea value={chDesc} onChange={e=>setChDesc(e.target.value)} placeholder="Description (facultative)" rows={3} style={{width:"100%",border:"none",outline:"none",fontSize:15,color:"#64748B",resize:"none",background:"transparent",fontFamily:"inherit"}}/>
               </div>
             </div>
             <div style={{padding:"10px 16px"}}>
-              <p style={{fontSize:13,color:"#6B7280",margin:0,lineHeight:1.6}}>
+              <p style={{fontSize:13,color:"#64748B",margin:0,lineHeight:1.6}}>
                 Vous pouvez ajouter une description facultative pour votre canal.
               </p>
             </div>
@@ -5518,26 +5518,26 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
         {/* ── STEP 2: TYPE ── */}
         {chWiz==="type" && (
-          <div style={{flex:1,overflowY:"auto",background:"#F2F2F7"}}>
+          <div style={{flex:1,overflowY:"auto",background:"#F8FAFC"}}>
             <div style={{background:"#fff",borderTop:"1px solid rgba(0,0,0,0.08)",borderBottom:"1px solid rgba(0,0,0,0.08)",marginTop:8}}>
               {/* Public */}
               <div onClick={()=>setChType("public")} style={{display:"flex",alignItems:"flex-start",gap:14,padding:"16px",cursor:"pointer",borderBottom:"1px solid rgba(0,0,0,0.06)"}}>
-                <div style={{width:22,height:22,borderRadius:"50%",border:`2px solid ${chType==="public"?"#22C55E":"#C7C7CC"}`,background:chType==="public"?"#22C55E":"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:2,transition:"all 0.15s"}}>
+                <div style={{width:22,height:22,borderRadius:"50%",border:`2px solid ${chType==="public"?"#22C55E":"#CBD5E1"}`,background:chType==="public"?"#22C55E":"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:2,transition:"all 0.15s"}}>
                   {chType==="public"&&<div style={{width:8,height:8,borderRadius:"50%",background:"#fff"}}/>}
                 </div>
                 <div>
                   <div style={{fontWeight:600,fontSize:15.5,color:"#111",marginBottom:3}}>Canal public</div>
-                  <div style={{fontSize:13.5,color:"#6B7280",lineHeight:1.5}}>Les canaux publics sont visibles dans la recherche et tout le monde peut les rejoindre.</div>
+                  <div style={{fontSize:13.5,color:"#64748B",lineHeight:1.5}}>Les canaux publics sont visibles dans la recherche et tout le monde peut les rejoindre.</div>
                 </div>
               </div>
               {/* Private */}
               <div onClick={()=>setChType("private")} style={{display:"flex",alignItems:"flex-start",gap:14,padding:"16px",cursor:"pointer"}}>
-                <div style={{width:22,height:22,borderRadius:"50%",border:`2px solid ${chType==="private"?"#22C55E":"#C7C7CC"}`,background:chType==="private"?"#22C55E":"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:2,transition:"all 0.15s"}}>
+                <div style={{width:22,height:22,borderRadius:"50%",border:`2px solid ${chType==="private"?"#22C55E":"#CBD5E1"}`,background:chType==="private"?"#22C55E":"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:2,transition:"all 0.15s"}}>
                   {chType==="private"&&<div style={{width:8,height:8,borderRadius:"50%",background:"#fff"}}/>}
                 </div>
                 <div>
                   <div style={{fontWeight:600,fontSize:15.5,color:"#111",marginBottom:3}}>Canal privé</div>
-                  <div style={{fontSize:13.5,color:"#6B7280",lineHeight:1.5}}>Les canaux privés ne peuvent être rejoints que via un lien d'invitation.</div>
+                  <div style={{fontSize:13.5,color:"#64748B",lineHeight:1.5}}>Les canaux privés ne peuvent être rejoints que via un lien d'invitation.</div>
                 </div>
               </div>
             </div>
@@ -5545,7 +5545,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             {chType==="public" && (
               <div style={{background:"#fff",borderTop:"1px solid rgba(0,0,0,0.08)",borderBottom:"1px solid rgba(0,0,0,0.08)",padding:"16px",marginTop:8}}>
                 <div style={{display:"flex",alignItems:"center",gap:6,borderBottom:`2px solid ${chLinkAvail==="ok"?"#22C55E":chLinkAvail==="err"?"#EF4444":"#E5E7EB"}`,paddingBottom:8,marginBottom:6}}>
-                  <span style={{fontSize:15,color:"#6B7280",whiteSpace:"nowrap",flexShrink:0}}>brutepawa.com/c/</span>
+                  <span style={{fontSize:15,color:"#64748B",whiteSpace:"nowrap",flexShrink:0}}>brutepawa.com/c/</span>
                   <input autoFocus={chType==="public"} value={chLink} onChange={e=>{
                     const v=e.target.value.replace(/[^a-z0-9_]/g,"").slice(0,30);
                     setChLink(v);
@@ -5554,16 +5554,16 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   {chLinkAvail==="ok"&&<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>}
                 </div>
                 {chLinkAvail==="ok" && <div style={{fontSize:12.5,color:"#22C55E"}}>{chLink} est disponible.</div>}
-                {chLinkAvail==="err" && <div style={{fontSize:12.5,color:"#6B7280"}}>Vous pouvez utiliser a–z, 0–9 et underscore. Minimum 5 caractères.</div>}
-                {!chLinkAvail && <div style={{fontSize:12.5,color:"#6B7280"}}>Vous pouvez utiliser a–z, 0–9 et underscore. Minimum 5 caractères.</div>}
+                {chLinkAvail==="err" && <div style={{fontSize:12.5,color:"#64748B"}}>Vous pouvez utiliser a–z, 0–9 et underscore. Minimum 5 caractères.</div>}
+                {!chLinkAvail && <div style={{fontSize:12.5,color:"#64748B"}}>Vous pouvez utiliser a–z, 0–9 et underscore. Minimum 5 caractères.</div>}
               </div>
             )}
             {/* Private invite link */}
             {chType==="private" && (
               <div style={{background:"#fff",borderTop:"1px solid rgba(0,0,0,0.08)",borderBottom:"1px solid rgba(0,0,0,0.08)",padding:"16px",marginTop:8}}>
-                <div style={{fontSize:13,color:"#6B7280",marginBottom:6}}>Lien d'invitation</div>
+                <div style={{fontSize:13,color:"#64748B",marginBottom:6}}>Lien d'invitation</div>
                 <div style={{fontSize:14.5,color:"#22C55E",fontWeight:600}}>https://brutepawa.com/invite/{Math.random().toString(36).slice(2,9)}</div>
-                <div style={{fontSize:12,color:"#6B7280",marginTop:4}}>Lien unique et sécurisé. Renouvelable à tout moment.</div>
+                <div style={{fontSize:12,color:"#64748B",marginTop:4}}>Lien unique et sécurisé. Renouvelable à tout moment.</div>
               </div>
             )}
           </div>
@@ -5583,7 +5583,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       <div key={uid} onClick={()=>setChMembers(prev=>{const s=new Set(prev);s.delete(uid);return s;})} style={{flexShrink:0,textAlign:"center",cursor:"pointer",width:60,animation:"ch-wiz-in 0.15s ease"}}>
                         <div style={{position:"relative",marginBottom:4}}>
                           <div style={{width:52,height:52,borderRadius:"50%",background:wizCol(uid),display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontWeight:700,fontSize:17,margin:"0 auto"}}>{mkInitials(nm)}</div>
-                          <div style={{position:"absolute",top:-1,right:2,width:18,height:18,background:"#8E8E93",borderRadius:"50%",border:"2px solid #fff",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                          <div style={{position:"absolute",top:-1,right:2,width:18,height:18,background:"#9CA3AF",borderRadius:"50%",border:"2px solid #fff",display:"flex",alignItems:"center",justifyContent:"center"}}>
                             <svg viewBox="0 0 24 24" width="8" height="8" stroke="#fff" strokeWidth="3" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                           </div>
                         </div>
@@ -5597,9 +5597,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             {/* Search */}
             <div style={{padding:"10px 16px 6px",flexShrink:0}}>
               <div className="bp-search">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 <input value={chSearch} onChange={e=>setChSearch(e.target.value)} placeholder="Rechercher des personnes..."/>
-                {chSearch&&<div onClick={()=>setChSearch("")} style={{width:20,height:20,borderRadius:"50%",background:"#94A3B8",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0}}>
+                {chSearch&&<div onClick={()=>setChSearch("")} style={{width:20,height:20,borderRadius:"50%",background:"#9CA3AF",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0}}>
                   <svg viewBox="0 0 24 24" width="10" height="10" stroke="#fff" strokeWidth="3" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </div>}
               </div>
@@ -5615,15 +5615,15 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     <div style={{width:50,height:50,borderRadius:"50%",background:wizCol(u.id),display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontWeight:700,fontSize:18,flexShrink:0}}>{mkInitials(nm)}</div>
                     <div style={{flex:1,minWidth:0}}>
                       <div style={{fontWeight:600,fontSize:16,color:"#111",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{nm}</div>
-                      <div style={{fontSize:13,color:"#6B7280",marginTop:1}}>vu récemment</div>
+                      <div style={{fontSize:13,color:"#64748B",marginTop:1}}>vu récemment</div>
                     </div>
-                    <div style={{width:24,height:24,borderRadius:"50%",border:sel?"none":"2px solid #C7C7CC",background:sel?"#22C55E":"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,transition:"all 0.15s"}}>
+                    <div style={{width:24,height:24,borderRadius:"50%",border:sel?"none":"2px solid #CBD5E1",background:sel?"#22C55E":"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,transition:"all 0.15s"}}>
                       {sel&&<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{animation:"ch-check 0.15s ease"}}><polyline points="20 6 9 17 4 12"/></svg>}
                     </div>
                   </div>
                 );
               })}
-              {chFilteredUsers.length===0&&<div style={{padding:"52px 24px",textAlign:"center",color:"#6B7280",fontSize:15}}>Aucun contact trouvé</div>}
+              {chFilteredUsers.length===0&&<div style={{padding:"52px 24px",textAlign:"center",color:"#64748B",fontSize:15}}>Aucun contact trouvé</div>}
               <div style={{height:80}}/>
             </div>
             {/* FAB — skip or confirm */}
@@ -5667,10 +5667,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             </div>
             <div style={{ flex:1, minWidth:0 }}>
               <div style={{ fontWeight:700,fontSize:16,color:"#111827",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis" }}>{bc.recipients.length} destinataire{bc.recipients.length>1?"s":""}</div>
-              <div style={{ fontSize:12,color:"#6B7280" }}>Liste de diffusion</div>
+              <div style={{ fontSize:12,color:"#64748B" }}>Liste de diffusion</div>
             </div>
             <button style={{ background:"none",border:"none",cursor:"pointer",width:40,height:40,display:"flex",alignItems:"center",justifyContent:"center" }}>
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="#6B7280"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="#64748B"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
             </button>
           </div>
           {/* Messages */}
@@ -5686,9 +5686,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             </div>
             {bc.msgs.map(m => (
               <div key={m.id} style={{ display:"flex", justifyContent:"flex-end" }}>
-                <div style={{ maxWidth:"72%", background:"#DCF8C6", borderRadius:"16px 16px 4px 16px", padding:"8px 12px 6px", fontSize:14.5, boxShadow:"0 1px 2px rgba(0,0,0,0.1)" }}>
+                <div style={{ maxWidth:"72%", background:"#DCFCE7", borderRadius:"16px 16px 4px 16px", padding:"8px 12px 6px", fontSize:14.5, boxShadow:"0 1px 2px rgba(0,0,0,0.1)" }}>
                   {m.text}
-                  <div style={{ fontSize:10,color:"#888",textAlign:"right",marginTop:2 }}>{m.time} <span style={{ color:"#34D399" }}>✓✓</span></div>
+                  <div style={{ fontSize:10,color:"#888",textAlign:"right",marginTop:2 }}>{m.time} <span style={{ color:"#10B981" }}>✓✓</span></div>
                 </div>
               </div>
             ))}
@@ -5696,13 +5696,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           {/* Input */}
           <div style={{ background:"rgba(255,255,255,0.97)", padding:"8px 10px", display:"flex", alignItems:"center", gap:8, boxShadow:"0 -1px 4px rgba(0,0,0,0.06)", flexShrink:0 }}>
             <button style={{ background:"none",border:"none",cursor:"pointer",width:38,height:38,display:"flex",alignItems:"center",justifyContent:"center" }}>
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1.2" fill="#6B7280"/><circle cx="15" cy="9" r="1.2" fill="#6B7280"/></svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><circle cx="9" cy="9" r="1.2" fill="#64748B"/><circle cx="15" cy="9" r="1.2" fill="#64748B"/></svg>
             </button>
             <input value={bcInput} onChange={e=>setBcInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter")handleBcSend();}}
               placeholder="Message"
               style={{ flex:1,height:42,borderRadius:22,border:"1px solid #E5E7EB",outline:"none",padding:"0 14px",fontSize:15,background:"#fff" }} />
             <button style={{ background:"none",border:"none",cursor:"pointer",width:38,height:38,display:"flex",alignItems:"center",justifyContent:"center" }}>
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
             </button>
             {bcInput.trim() ? (
               <button onClick={handleBcSend} style={{ width:44,height:44,borderRadius:"50%",background:"#22C55E",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 2px 10px rgba(34,197,94,0.4)" }}>
@@ -5779,7 +5779,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 placeholder="Rechercher..."
                 style={{ flex:1,border:"none",outline:"none",fontSize:16,background:"transparent",color:"#111827" }} />
               {bcSearch && <button onClick={()=>setBcSearch("")} style={{ background:"none",border:"none",cursor:"pointer",padding:8 }}>
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>}
             </>
           ) : (
@@ -5790,11 +5790,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               </button>
               <div style={{ flex:1 }}>
                 <div style={{ fontWeight:700, fontSize:16.5, color:"#111827" }}>Nouvelle diffusion</div>
-                <div style={{ fontSize:12, color:"#6B7280" }}>{bcSelected.size} sélectionné{bcSelected.size>1?"s":""} sur {allContacts.length}</div>
+                <div style={{ fontSize:12, color:"#64748B" }}>{bcSelected.size} sélectionné{bcSelected.size>1?"s":""} sur {allContacts.length}</div>
               </div>
               <button onClick={() => { setBcSearchMode(true); setBcSearch(""); }}
                 style={{ background:"none",border:"none",cursor:"pointer",width:48,height:48,display:"flex",alignItems:"center",justifyContent:"center" }}>
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
               </button>
             </>
           )}
@@ -5813,7 +5813,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     <div style={{ width:50, height:50, borderRadius:"50%", background:col, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, fontSize:18 }}>
                       {mkInitials(name)}
                     </div>
-                    <div style={{ position:"absolute", top:-2, right:-2, width:20, height:20, borderRadius:"50%", background:"#4B5563", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 1px 3px rgba(0,0,0,0.25)" }}>
+                    <div style={{ position:"absolute", top:-2, right:-2, width:20, height:20, borderRadius:"50%", background:"#64748B", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 1px 3px rgba(0,0,0,0.25)" }}>
                       <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     </div>
                   </div>
@@ -5837,7 +5837,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         {/* ── CONTACT LIST ── */}
         <div style={{ flex:1, overflowY:"auto", background:"#fff" }}>
           {!bcSearch.trim() && (
-            <div style={{ padding:"12px 16px 6px", fontSize:13, fontWeight:600, color:"#6B7280", textTransform:"uppercase", letterSpacing:"0.04em" }}>
+            <div style={{ padding:"12px 16px 6px", fontSize:13, fontWeight:600, color:"#64748B", textTransform:"uppercase", letterSpacing:"0.04em" }}>
               Contacts sur BrutePawa
             </div>
           )}
@@ -5848,17 +5848,17 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             return (
               <div key={u.id} onClick={() => toggleContact(u.id)}
                 style={{ display:"flex", alignItems:"center", padding:"10px 16px", gap:14, cursor:"pointer", borderBottom:"1px solid #F3F4F6", transition:"background 0.1s" }}
-                onMouseEnter={e=>(e.currentTarget.style.background="#F9FAFB")}
+                onMouseEnter={e=>(e.currentTarget.style.background="#F8FAFC")}
                 onMouseLeave={e=>(e.currentTarget.style.background="transparent")}>
                 <div style={{ width:50, height:50, borderRadius:"50%", background:col, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, fontSize:18, flexShrink:0 }}>
                   {mkInitials(name)}
                 </div>
                 <div style={{ flex:1, minWidth:0 }}>
                   <div style={{ fontWeight:600, fontSize:15.5, color:"#111827", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{name}</div>
-                  <div style={{ fontSize:13, color:"#6B7280", marginTop:1 }}>en ligne</div>
+                  <div style={{ fontSize:13, color:"#64748B", marginTop:1 }}>en ligne</div>
                 </div>
                 {/* Checkbox */}
-                <div style={{ width:24, height:24, borderRadius:"50%", border:`2px solid ${isSelected ? "#22C55E" : "#D1D5DB"}`, background: isSelected ? "#22C55E" : "#fff", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, transition:"all 0.15s", animation: isSelected ? "bc-check-in 0.15s ease" : "none" }}>
+                <div style={{ width:24, height:24, borderRadius:"50%", border:`2px solid ${isSelected ? "#22C55E" : "#E5E7EB"}`, background: isSelected ? "#22C55E" : "#fff", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, transition:"all 0.15s", animation: isSelected ? "bc-check-in 0.15s ease" : "none" }}>
                   {isSelected && <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
                 </div>
               </div>
@@ -5889,14 +5889,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
       onTimeUpdate={e => { const el = e.currentTarget; if (el.duration) setAudioProgress(el.currentTime / el.duration); }}
       onEnded={() => { setPlayingAudioId(null); setAudioProgress(0); }} />
     <style>{`
-      .fbl-row{transition:background .1s}.fbl-row:active{background:#f2f3f5!important}
+      .fbl-row{transition:background .1s}.fbl-row:active{background:#F1F5F9!important}
       @keyframes fbl-fab-in{from{opacity:0;transform:scale(.7) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
       .fbl-toggle{width:51px;height:31px;border-radius:16px;border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
       .fbl-toggle::after{content:'';position:absolute;top:3px;width:25px;height:25px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.3);transition:left .2s}
       .fbl-toggle-on{background:#22C55E}.fbl-toggle-on::after{left:23px}
       .fbl-toggle-off{background:#ccc}.fbl-toggle-off::after{left:3px}
-      .fbl-settings-row{display:flex;align-items:center;padding:14px 16px;gap:14px;border-bottom:1px solid #f0f0f0;cursor:pointer;background:#fff}
-      .fbl-settings-row:active{background:#f5f5f5}
+      .fbl-settings-row{display:flex;align-items:center;padding:14px 16px;gap:14px;border-bottom:1px solid #F1F5F9;cursor:pointer;background:#fff}
+      .fbl-settings-row:active{background:#F1F5F9}
     `}</style>
 
     <div style={{ position: "fixed", top: 0, bottom: "58px", left: 0, right: 0, display: "flex", flexDirection: "column", background: "#fff", zIndex: 9999, overflow: "hidden" }}>
@@ -5907,13 +5907,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           /* ── Expanded search row ── */
           <div style={{ display: "flex", alignItems: "center", padding: "10px 12px 10px", gap: 8 }}>
             <button onClick={() => { setShowInboxSearch(false); setSearch(""); }} style={{ background: "none", border: "none", cursor: "pointer", padding: "6px 4px", display: "flex", alignItems: "center", flexShrink: 0 }}>
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0F172A" strokeWidth="2.2" strokeLinecap="round"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#111827" strokeWidth="2.2" strokeLinecap="round"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
             </button>
             <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 8, background: "#F1F5F9", borderRadius: 22, padding: "9px 14px" }}>
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#94A3B8" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
-              <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher des personnes, groupes…" style={{ flex: 1, background: "none", border: "none", outline: "none", fontSize: 14, color: "#0F172A" }} />
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#9CA3AF" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher des personnes, groupes…" style={{ flex: 1, background: "none", border: "none", outline: "none", fontSize: 14, color: "#111827" }} />
               {search && <button onClick={() => setSearch("")} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1, flexShrink: 0 }}>
-                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#94A3B8" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#9CA3AF" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>}
             </div>
           </div>
@@ -5924,14 +5924,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             <button onClick={() => navigate("/")} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", flexShrink: 0, marginRight: 6 }}>
               <img src="/logo.png" alt="Brute Pawa" style={{ width: 30, height: 30, borderRadius: 9, objectFit: "cover" }} />
             </button>
-            <span style={{ fontWeight: 800, fontSize: 20, color: "#0F172A", letterSpacing: -0.4, flex: 1 }}>Messages</span>
+            <span style={{ fontWeight: 800, fontSize: 20, color: "#111827", letterSpacing: -0.4, flex: 1 }}>Messages</span>
             {/* Search icon */}
             <button onClick={() => setShowInboxSearch(true)} style={{ background: "none", border: "none", cursor: "pointer", width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#374151" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#64748B" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
             </button>
             {/* Filter ≡ */}
             <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#374151" strokeWidth="2.2" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="15" y2="18"/></svg>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#64748B" strokeWidth="2.2" strokeLinecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="15" y2="18"/></svg>
             </button>
             {/* Avatar initials */}
             <div style={{ width: 34, height: 34, borderRadius: "50%", background: "linear-gradient(135deg,#22C55E,#16A34A)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, color: "#fff", flexShrink: 0, cursor: "pointer", marginLeft: 2 }}
@@ -5940,7 +5940,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             </div>
           </div>
         )}
-        <div style={{ height: 1, background: "#F0F2F5" }} />
+        <div style={{ height: 1, background: "#F1F5F9" }} />
       </div>
 
       {/* ── BODY ── */}
@@ -5948,17 +5948,17 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
         {/* Story / contacts bar */}
         {!search && convList.length > 0 && (
-          <div style={{ background: "#fff", borderBottom: "1px solid #F0F2F5" }}>
+          <div style={{ background: "#fff", borderBottom: "1px solid #F1F5F9" }}>
             <div style={{ display: "flex", overflowX: "auto", scrollbarWidth: "none", padding: "8px 6px 10px", gap: 0 }}>
               {/* "Votre note" */}
               <div style={{ flexShrink: 0, textAlign: "center", width: 66, padding: "0 3px" }}>
                 <div style={{ position: "relative", marginBottom: 4 }}>
-                  <div className="avatar" style={{ width: 52, height: 52, fontSize: 17, margin: "0 auto", background: "#E4E6EB", color: "#65676B", border: "2.5px solid #fff" }}>
+                  <div className="avatar" style={{ width: 52, height: 52, fontSize: 17, margin: "0 auto", background: "#E5E7EB", color: "#64748B", border: "2.5px solid #fff" }}>
                     {(() => { try { return (JSON.parse(localStorage.getItem("fb_user") ?? "{}") as { name?: string }).name?.slice(0,2).toUpperCase() ?? "??"; } catch { return "??"; } })()}
                   </div>
                   <div style={{ position: "absolute", bottom: 0, right: 5, width: 18, height: 18, background: "#22C55E", borderRadius: "50%", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 13, fontWeight: 900, lineHeight: 1 }}>+</div>
                 </div>
-                <div style={{ fontSize: 10.5, color: "#65676B", fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Votre note</div>
+                <div style={{ fontSize: 10.5, color: "#64748B", fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Votre note</div>
               </div>
               {convList.slice(0, 8).map(conv => {
                 const isOnline = convPresence[conv.id]?.online ?? false;
@@ -5971,7 +5971,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     }
                     {isOnline && <div style={{ position: "absolute", bottom: 1, right: 5, width: 12, height: 12, background: "#22C55E", borderRadius: "50%", border: "2px solid #fff" }} />}
                   </div>
-                  <div style={{ fontSize: 10.5, color: "#374151", fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  <div style={{ fontSize: 10.5, color: "#64748B", fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     {conv.user.name.split(" ")[0]}
                   </div>
                 </div>
@@ -6006,10 +6006,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       <path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
                     </svg>
                   </div>
-                  <span style={{ fontSize: 10.5, color: "#374151", fontWeight: 500, maxWidth: 60, textAlign: "center", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontFamily: "Inter, sans-serif" }}>
+                  <span style={{ fontSize: 10.5, color: "#64748B", fontWeight: 500, maxWidth: 60, textAlign: "center", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontFamily: "Inter, sans-serif" }}>
                     {bc.name}
                   </span>
-                  <span style={{ fontSize: 10, color: "#94A3B8", fontFamily: "Inter, sans-serif" }}>{bc.recipientCount} dest.</span>
+                  <span style={{ fontSize: 10, color: "#9CA3AF", fontFamily: "Inter, sans-serif" }}>{bc.recipientCount} dest.</span>
                 </div>
               ))}
             </div>
@@ -6027,12 +6027,12 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             const isChan = g.type === "channel";
             const ts = g.lastMessageAt ? new Date(g.lastMessageAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }) : "";
             const { text: previewText, isAudio } = fmtConvPreview(g.lastMessage || `${g.membersCount} membre${g.membersCount !== 1 ? "s" : ""}`);
-            return { type: "group" as const, id: g.id, key: `g${g.id}`, name: g.name, previewText, isAudio, time: ts, unread: g.unread, color: isChan ? "#00838F" : "#1877F2", initials: isChan ? "📢" : "👥", online: false, lastSeenAt: null as string|null, grp: g, lastMsgMine: false, lastMsgRead: false, lastMsgDelivered: false };
+            return { type: "group" as const, id: g.id, key: `g${g.id}`, name: g.name, previewText, isAudio, time: ts, unread: g.unread, color: isChan ? "#00838F" : "#22C55E", initials: isChan ? "📢" : "👥", online: false, lastSeenAt: null as string|null, grp: g, lastMsgMine: false, lastMsgRead: false, lastMsgDelivered: false };
           }),
         ].map(item => (
           <div key={item.key} className="fbl-row"
             onClick={() => item.type === "conv" ? setActiveConv(item.id) : setActiveGroupId(item.id)}
-            style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 16px", background:"#fff", borderBottom:"1px solid #F5F5F5", cursor:"pointer" }}>
+            style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 16px", background:"#fff", borderBottom:"1px solid #F1F5F9", cursor:"pointer" }}>
 
             {/* Avatar + online dot */}
             <div style={{ position:"relative", flexShrink:0 }}>
@@ -6043,7 +6043,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               {item.online ? (
                 <div style={{ position:"absolute", bottom:1, right:1, width:13, height:13, background:"#22C55E", borderRadius:"50%", border:"2px solid #fff" }} />
               ) : item.type === "conv" ? (
-                <div style={{ position:"absolute", bottom:1, right:1, width:13, height:13, background:"#D1D5DB", borderRadius:"50%", border:"2px solid #fff" }} />
+                <div style={{ position:"absolute", bottom:1, right:1, width:13, height:13, background:"#E5E7EB", borderRadius:"50%", border:"2px solid #fff" }} />
               ) : null}
             </div>
 
@@ -6052,7 +6052,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               {/* Row 1: name + (checkmark for mine + time) */}
               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:2 }}>
                 <div style={{ display:"flex", alignItems:"center", gap:4, flex:1, minWidth:0, marginRight:6, overflow:"hidden" }}>
-                  <span style={{ fontWeight: item.unread > 0 ? 700 : 600, fontSize:15.5, color:"#0F172A", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+                  <span style={{ fontWeight: item.unread > 0 ? 700 : 600, fontSize:15.5, color:"#111827", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
                     {item.name}
                   </span>
                   {item.type === "conv" && [13, 26, 40].includes(item.id) && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width:14, height:14, objectFit:"cover", borderRadius:"50%", flexShrink:0 }} />}
@@ -6062,7 +6062,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   {item.type === "conv" && item.lastMsgMine && (() => {
                     const read = item.lastMsgRead;
                     const delivered = item.lastMsgDelivered;
-                    const color = read ? "#22C55E" : "#94A3B8";
+                    const color = read ? "#22C55E" : "#9CA3AF";
                     if (read || delivered) {
                       return (
                         <svg width="16" height="11" viewBox="0 0 16 11" fill="none" style={{ flexShrink:0 }}>
@@ -6073,11 +6073,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     }
                     return (
                       <svg width="10" height="11" viewBox="0 0 10 11" fill="none" style={{ flexShrink:0 }}>
-                        <path d="M1 5.5L4 8.5L9 2" stroke="#94A3B8" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M1 5.5L4 8.5L9 2" stroke="#9CA3AF" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                     );
                   })()}
-                  <span style={{ fontSize:12, color: item.unread > 0 ? "#22C55E" : "#94A3B8", fontWeight: item.unread > 0 ? 700 : 400 }}>
+                  <span style={{ fontSize:12, color: item.unread > 0 ? "#22C55E" : "#9CA3AF", fontWeight: item.unread > 0 ? 700 : 400 }}>
                     {item.time}
                   </span>
                 </div>
@@ -6093,7 +6093,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                         <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke="#22C55E" strokeWidth="2.2" fill="none" strokeLinecap="round"/>
                         <line x1="12" y1="19" x2="12" y2="23" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"/>
                       </svg>
-                      <span style={{ fontSize:13.5, color: item.unread > 0 ? "#334155" : "#64748B", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontWeight: item.unread > 0 ? 500 : 400 }}>
+                      <span style={{ fontSize:13.5, color: item.unread > 0 ? "#111827" : "#64748B", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontWeight: item.unread > 0 ? 500 : 400 }}>
                         {item.previewText}
                       </span>
                     </>
@@ -6102,7 +6102,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       écrit...
                     </span>
                   ) : (
-                    <span style={{ fontSize:13.5, color: item.unread > 0 ? "#334155" : "#64748B", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontWeight: item.unread > 0 ? 500 : 400 }}>
+                    <span style={{ fontSize:13.5, color: item.unread > 0 ? "#111827" : "#64748B", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontWeight: item.unread > 0 ? 500 : 400 }}>
                       {item.previewText}
                     </span>
                   )}
@@ -6116,7 +6116,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
               {/* Row 3: last seen (offline users only) */}
               {!item.online && item.type === "conv" && item.lastSeenAt && (
-                <div style={{ fontSize:11.5, color:"#94A3B8", marginTop:1 }}>
+                <div style={{ fontSize:11.5, color:"#9CA3AF", marginTop:1 }}>
                   {presenceLabel(false, item.lastSeenAt)}
                 </div>
               )}
@@ -6129,9 +6129,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           <div style={{ padding:"0 16px" }}>
             {[1,2,3,4].map(i => (
               <div key={i} style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 0", borderBottom:"1px solid #F1F5F9" }}>
-                <div style={{ width:52, height:52, borderRadius:"50%", background:"#E2E8F0", flexShrink:0, animation:"fbl-pulse 1.4s ease-in-out infinite" }} />
+                <div style={{ width:52, height:52, borderRadius:"50%", background:"#E5E7EB", flexShrink:0, animation:"fbl-pulse 1.4s ease-in-out infinite" }} />
                 <div style={{ flex:1 }}>
-                  <div style={{ height:14, width:"55%", background:"#E2E8F0", borderRadius:7, marginBottom:8, animation:"fbl-pulse 1.4s ease-in-out infinite" }} />
+                  <div style={{ height:14, width:"55%", background:"#E5E7EB", borderRadius:7, marginBottom:8, animation:"fbl-pulse 1.4s ease-in-out infinite" }} />
                   <div style={{ height:12, width:"80%", background:"#F1F5F9", borderRadius:6, animation:"fbl-pulse 1.4s ease-in-out infinite" }} />
                 </div>
               </div>
@@ -6152,34 +6152,34 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
                 {/* ── Person 1 — left, standing, hoodie ── */}
                 {/* Body */}
-                <rect x="60" y="130" width="44" height="60" rx="10" fill="#16C24A"/>
+                <rect x="60" y="130" width="44" height="60" rx="10" fill="#22C55E"/>
                 {/* Head */}
                 <circle cx="82" cy="118" r="18" fill="#8B5E3C"/>
                 {/* Hair */}
-                <ellipse cx="82" cy="103" rx="18" ry="8" fill="#2D1A0E"/>
+                <ellipse cx="82" cy="103" rx="18" ry="8" fill="#1C1917"/>
                 {/* Eyes */}
                 <circle cx="76" cy="117" r="2.5" fill="#fff"/>
                 <circle cx="88" cy="117" r="2.5" fill="#fff"/>
-                <circle cx="77" cy="117" r="1.2" fill="#1A0A00"/>
-                <circle cx="89" cy="117" r="1.2" fill="#1A0A00"/>
+                <circle cx="77" cy="117" r="1.2" fill="#1C1917"/>
+                <circle cx="89" cy="117" r="1.2" fill="#1C1917"/>
                 {/* Legs */}
                 <rect x="64" y="185" width="14" height="42" rx="7" fill="#1E293B"/>
                 <rect x="82" y="185" width="14" height="42" rx="7" fill="#1E293B"/>
                 {/* Shoes */}
-                <ellipse cx="71" cy="228" rx="10" ry="5" fill="#0F172A"/>
-                <ellipse cx="89" cy="228" rx="10" ry="5" fill="#0F172A"/>
+                <ellipse cx="71" cy="228" rx="10" ry="5" fill="#111827"/>
+                <ellipse cx="89" cy="228" rx="10" ry="5" fill="#111827"/>
                 {/* Phone in hand */}
-                <rect x="95" y="148" width="18" height="28" rx="4" fill="#0F172A"/>
-                <rect x="97" y="151" width="14" height="20" rx="2" fill="#38BDF8"/>
+                <rect x="95" y="148" width="18" height="28" rx="4" fill="#111827"/>
+                <rect x="97" y="151" width="14" height="20" rx="2" fill="#0EA5E9"/>
                 {/* Arm */}
                 <path d="M104 148 Q100 138 95 148" stroke="#8B5E3C" strokeWidth="6" strokeLinecap="round" fill="none"/>
                 {/* Bag strap */}
-                <path d="M60 135 Q48 155 55 175" stroke="#0F172A" strokeWidth="3" strokeLinecap="round" fill="none"/>
+                <path d="M60 135 Q48 155 55 175" stroke="#111827" strokeWidth="3" strokeLinecap="round" fill="none"/>
 
                 {/* ── Person 2 — center, sitting on big chat bubble ── */}
                 {/* Big green chat bubble as seat */}
-                <rect x="140" y="190" width="100" height="60" rx="20" fill="#16C24A"/>
-                <path d="M165 248 L155 265 L180 248" fill="#16C24A"/>
+                <rect x="140" y="190" width="100" height="60" rx="20" fill="#22C55E"/>
+                <path d="M165 248 L155 265 L180 248" fill="#22C55E"/>
                 {/* 3 dots inside bubble */}
                 <circle cx="173" cy="220" r="5" fill="#fff"/>
                 <circle cx="190" cy="220" r="5" fill="#fff"/>
@@ -6192,78 +6192,78 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 <ellipse cx="174" cy="221" rx="9" ry="5" fill="white"/>
                 <ellipse cx="190" cy="221" rx="9" ry="5" fill="white"/>
                 {/* Head */}
-                <circle cx="185" cy="140" r="20" fill="#5C3A1E"/>
+                <circle cx="185" cy="140" r="20" fill="#1C1917"/>
                 {/* Bun hair */}
-                <ellipse cx="185" cy="122" rx="12" ry="9" fill="#2D1A0E"/>
-                <circle cx="185" cy="117" r="7" fill="#2D1A0E"/>
+                <ellipse cx="185" cy="122" rx="12" ry="9" fill="#1C1917"/>
+                <circle cx="185" cy="117" r="7" fill="#1C1917"/>
                 {/* Eyes */}
                 <circle cx="179" cy="139" r="2.5" fill="#fff"/>
                 <circle cx="191" cy="139" r="2.5" fill="#fff"/>
-                <circle cx="180" cy="139" r="1.2" fill="#1A0A00"/>
-                <circle cx="192" cy="139" r="1.2" fill="#1A0A00"/>
+                <circle cx="180" cy="139" r="1.2" fill="#1C1917"/>
+                <circle cx="192" cy="139" r="1.2" fill="#1C1917"/>
                 {/* Phone */}
-                <rect x="195" y="158" width="18" height="28" rx="4" fill="#0F172A"/>
-                <rect x="197" y="161" width="14" height="20" rx="2" fill="#A78BFA"/>
+                <rect x="195" y="158" width="18" height="28" rx="4" fill="#111827"/>
+                <rect x="197" y="161" width="14" height="20" rx="2" fill="#8B5CF6"/>
                 {/* Arm to phone */}
-                <path d="M207 158 Q206 150 200 158" stroke="#5C3A1E" strokeWidth="6" strokeLinecap="round" fill="none"/>
+                <path d="M207 158 Q206 150 200 158" stroke="#1C1917" strokeWidth="6" strokeLinecap="round" fill="none"/>
 
                 {/* ── Person 3 — right, sitting cross-legged ── */}
                 {/* Body */}
-                <rect x="262" y="155" width="44" height="48" rx="10" fill="#16C24A" opacity="0.9"/>
+                <rect x="262" y="155" width="44" height="48" rx="10" fill="#22C55E" opacity="0.9"/>
                 {/* Crossed legs */}
                 <path d="M262 198 Q255 215 268 222 Q280 230 280 215" stroke="#1E293B" strokeWidth="12" strokeLinecap="round" fill="none"/>
                 <path d="M306 198 Q313 215 300 222 Q288 230 288 215" stroke="#1E293B" strokeWidth="12" strokeLinecap="round" fill="none"/>
                 {/* Head */}
-                <circle cx="284" cy="142" r="18" fill="#3D2009"/>
+                <circle cx="284" cy="142" r="18" fill="#1C1917"/>
                 {/* Short hair */}
-                <ellipse cx="284" cy="126" rx="18" ry="7" fill="#1A0A00"/>
+                <ellipse cx="284" cy="126" rx="18" ry="7" fill="#1C1917"/>
                 {/* Eyes */}
                 <circle cx="278" cy="141" r="2.5" fill="#fff"/>
                 <circle cx="290" cy="141" r="2.5" fill="#fff"/>
-                <circle cx="279" cy="141" r="1.2" fill="#1A0A00"/>
-                <circle cx="291" cy="141" r="1.2" fill="#1A0A00"/>
+                <circle cx="279" cy="141" r="1.2" fill="#1C1917"/>
+                <circle cx="291" cy="141" r="1.2" fill="#1C1917"/>
                 {/* Phone in lap */}
-                <rect x="272" y="175" width="24" height="16" rx="4" fill="#0F172A"/>
-                <rect x="274" y="177" width="20" height="12" rx="2" fill="#FDE68A"/>
+                <rect x="272" y="175" width="24" height="16" rx="4" fill="#111827"/>
+                <rect x="274" y="177" width="20" height="12" rx="2" fill="#FEF3C7"/>
                 {/* Arm down */}
-                <path d="M275 168 Q272 174 277 175" stroke="#3D2009" strokeWidth="6" strokeLinecap="round" fill="none"/>
+                <path d="M275 168 Q272 174 277 175" stroke="#1C1917" strokeWidth="6" strokeLinecap="round" fill="none"/>
 
                 {/* ── Floating chat bubbles ── */}
                 {/* Top left white bubble */}
                 <rect x="18" y="80" width="72" height="36" rx="14" fill="#fff" style={{filter:"drop-shadow(0 2px 8px rgba(0,0,0,0.12))"}}/>
                 <path d="M30 115 L22 126 L42 115" fill="#fff"/>
-                <circle cx="36" cy="98" r="4" fill="#CBD5E1"/>
-                <circle cx="50" cy="98" r="4" fill="#CBD5E1"/>
-                <circle cx="64" cy="98" r="4" fill="#CBD5E1"/>
+                <circle cx="36" cy="98" r="4" fill="#E5E7EB"/>
+                <circle cx="50" cy="98" r="4" fill="#E5E7EB"/>
+                <circle cx="64" cy="98" r="4" fill="#E5E7EB"/>
                 {/* Top right green bubble */}
-                <rect x="288" y="60" width="72" height="36" rx="14" fill="#16C24A"/>
-                <path d="M348 95 L360 106 L340 95" fill="#16C24A"/>
+                <rect x="288" y="60" width="72" height="36" rx="14" fill="#22C55E"/>
+                <path d="M348 95 L360 106 L340 95" fill="#22C55E"/>
                 <rect x="296" y="73" width="20" height="5" rx="2.5" fill="#fff" opacity="0.8"/>
                 <rect x="296" y="82" width="50" height="5" rx="2.5" fill="#fff" opacity="0.6"/>
                 {/* Small bubble top center */}
-                <rect x="145" y="40" width="54" height="30" rx="12" fill="#16C24A" opacity="0.8"/>
-                <path d="M155 69 L148 78 L165 69" fill="#16C24A" opacity="0.8"/>
+                <rect x="145" y="40" width="54" height="30" rx="12" fill="#22C55E" opacity="0.8"/>
+                <path d="M155 69 L148 78 L165 69" fill="#22C55E" opacity="0.8"/>
                 <circle cx="159" cy="55" r="3.5" fill="#fff"/>
                 <circle cx="172" cy="55" r="3.5" fill="#fff"/>
                 <circle cx="185" cy="55" r="3.5" fill="#fff"/>
                 {/* Person icon top right area */}
                 <rect x="308" y="110" width="32" height="32" rx="16" fill="#fff" opacity="0.9" style={{filter:"drop-shadow(0 1px 4px rgba(0,0,0,0.1))"}}/>
-                <circle cx="324" cy="120" r="5" fill="#94A3B8"/>
-                <path d="M316 134c0-4.4 3.6-8 8-8s8 3.6 8 8" fill="#94A3B8"/>
+                <circle cx="324" cy="120" r="5" fill="#9CA3AF"/>
+                <path d="M316 134c0-4.4 3.6-8 8-8s8 3.6 8 8" fill="#9CA3AF"/>
                 {/* Video icon left */}
                 <rect x="22" y="155" width="32" height="32" rx="16" fill="#fff" opacity="0.9" style={{filter:"drop-shadow(0 1px 4px rgba(0,0,0,0.1))"}}/>
-                <rect x="29" y="163" width="14" height="10" rx="2" fill="#94A3B8"/>
-                <path d="M43 165 l6 3 -6 3 z" fill="#94A3B8"/>
+                <rect x="29" y="163" width="14" height="10" rx="2" fill="#9CA3AF"/>
+                <path d="M43 165 l6 3 -6 3 z" fill="#9CA3AF"/>
               </svg>
             </div>
 
             {/* Text + button — centered */}
             <div style={{ padding: "0 24px 24px", width: "100%", boxSizing: "border-box", textAlign: "center" }}>
-              <div style={{ fontWeight: 800, fontSize: 22, color: "#0F172A", marginBottom: 10, lineHeight: 1.2 }}>Aucune discussion</div>
+              <div style={{ fontWeight: 800, fontSize: 22, color: "#111827", marginBottom: 10, lineHeight: 1.2 }}>Aucune discussion</div>
               <div style={{ fontSize: 14, color: "#64748B", lineHeight: 1.6, marginBottom: 24 }}>Commencez une conversation avec vos amis ou rejoignez des groupes et canaux.</div>
               <button
                 onClick={() => setFabOpen(true)}
-                style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "#16C24A", color: "#fff", border: "none", borderRadius: 99, padding: "14px 28px", fontWeight: 700, fontSize: 15, cursor: "pointer", boxShadow: "0 4px 18px rgba(22,194,74,0.45)" }}
+                style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "#22C55E", color: "#fff", border: "none", borderRadius: 99, padding: "14px 28px", fontWeight: 700, fontSize: 15, cursor: "pointer", boxShadow: "0 4px 18px rgba(22,194,74,0.45)" }}
               >
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 Nouvelle discussion
@@ -6288,22 +6288,22 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             <div onClick={() => setFabOpen(false)} style={{ position: "fixed", inset: 0, zIndex: -1, background: "rgba(0,0,0,0.18)" }} />
             <div style={{ position: "absolute", bottom: 68, right: 0, display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-end" }}>
               {([
-                { label: "Nouvelle discussion", iconBg: "#16C24A", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>, action: () => setFabOpen(false) },
-                { label: "Nouveau groupe", iconBg: "#3B82F6", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, action: () => { setGroupWizardType("group"); setGroupWizard("members"); setWizardSearch(""); setWizardMembers(new Set()); setFabOpen(false); } },
+                { label: "Nouvelle discussion", iconBg: "#22C55E", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>, action: () => setFabOpen(false) },
+                { label: "Nouveau groupe", iconBg: "#0EA5E9", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, action: () => { setGroupWizardType("group"); setGroupWizard("members"); setWizardSearch(""); setWizardMembers(new Set()); setFabOpen(false); } },
                 { label: "Créer un canal", iconBg: "#22C55E", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>, action: () => { setChWiz("info"); setChName(""); setChDesc(""); setChType("public"); setChLink(""); setChLinkAvail(null); setChMembers(new Set()); setChSearch(""); setFabOpen(false); } },
                 { label: "Diffuser une annonce", iconBg: "#F59E0B", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 11a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 0h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 7.91a16 16 0 0 0 6.1 6.1l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>, action: () => { setShowBroadcast(true); setBcSelected(new Set()); setBcSearch(""); setBcSearchMode(false); setFabOpen(false); } },
                 { label: "Inviter des amis", iconBg: "#7C3AED", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>, action: () => setFabOpen(false) },
-                { label: "Fermer", iconBg: "#16C24A", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>, action: () => setFabOpen(false) },
+                { label: "Fermer", iconBg: "#22C55E", svg: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>, action: () => setFabOpen(false) },
               ] as {label:string;iconBg:string;svg:React.ReactNode;action:()=>void}[]).map((item, i) => (
                 <div key={i} onClick={item.action} style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", animation: `fbl-fab-in .18s ease ${i*.055}s both` }}>
-                  <div style={{ background: "#fff", borderRadius: 99, padding: "9px 18px", boxShadow: "0 2px 14px rgba(0,0,0,.14)", fontSize: 14, fontWeight: 600, color: "#0F172A", whiteSpace: "nowrap" }}>{item.label}</div>
+                  <div style={{ background: "#fff", borderRadius: 99, padding: "9px 18px", boxShadow: "0 2px 14px rgba(0,0,0,.14)", fontSize: 14, fontWeight: 600, color: "#111827", whiteSpace: "nowrap" }}>{item.label}</div>
                   <div style={{ width: 48, height: 48, borderRadius: "50%", background: item.iconBg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: `0 4px 16px ${item.iconBg}55` }}>{item.svg}</div>
                 </div>
               ))}
             </div>
           </>
         )}
-        <button onClick={() => setFabOpen(!fabOpen)} style={{ width: 58, height: 58, borderRadius: "50%", background: "#16C24A", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 20px rgba(22,194,74,.55)", transition: "transform .2s", transform: fabOpen ? "rotate(45deg)" : "rotate(0deg)" }}>
+        <button onClick={() => setFabOpen(!fabOpen)} style={{ width: 58, height: 58, borderRadius: "50%", background: "#22C55E", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 20px rgba(22,194,74,.55)", transition: "transform .2s", transform: fabOpen ? "rotate(45deg)" : "rotate(0deg)" }}>
           <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
         </button>
       </div>
@@ -6311,14 +6311,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
     {/* ── SETTINGS OVERLAY (portaled) ── */}
     {settingsPage !== "none" && createPortal(
-      <div style={{ position: "fixed", inset: 0, zIndex: 10000, display: "flex", flexDirection: "column", background: "#F7F8FA" }}>
+      <div style={{ position: "fixed", inset: 0, zIndex: 10000, display: "flex", flexDirection: "column", background: "#F8FAFC" }}>
 
         {/* ── SCREEN 1 — Paramètres de messagerie PREMIUM ── */}
         {settingsPage === "main" && (() => {
           const fbUser = (() => { try { return JSON.parse(localStorage.getItem("fb_user") ?? "{}") as { id?: number; name?: string; firstName?: string; lastName?: string; avatarUrl?: string }; } catch { return {}; } })();
           const fullName = fbUser.firstName && fbUser.lastName ? `${fbUser.firstName} ${fbUser.lastName}` : fbUser.name ?? "Mon profil";
           const initials = fullName.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
-          const chevron = <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#C4C9D4" strokeWidth="2.2" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>;
+          const chevron = <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#CBD5E1" strokeWidth="2.2" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>;
           const rows = [
             { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="#22C55E"><circle cx="12" cy="8" r="4"/><path d="M6 20c0-3.31 2.69-6 6-6s6 2.69 6 6H6z"/></svg>, label: "Statut en ligne", desc: "Autorisez les autres à vous voir en ligne", page: null as null, toggle: true },
             { icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="#22C55E"><path d="M18 8a6 6 0 0 0-12 0c0 4-2 5-2 5h16s-2-1-2-5"/><path d="M13.73 21a2 2 0 0 1-3.46 0" fill="none" stroke="#22C55E" strokeWidth="2"/></svg>, label: "Notifications de messages", desc: "Personnalisez vos notifications", page: "notifs" as const, toggle: false },
@@ -6330,12 +6330,12 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             {/* ── Header ── */}
             <div style={{ background: "#fff", display: "flex", alignItems: "center", padding: "10px 4px", borderBottom: "1px solid rgba(0,0,0,0.06)", flexShrink: 0, boxShadow: "0 1px 4px rgba(0,0,0,.05)" }}>
               <button onClick={() => setSettingsPage("none")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 14px", display: "flex", alignItems: "center" }}>
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="#0F172A"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="#111827"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
               </button>
-              <span style={{ flex: 1, fontWeight: 700, fontSize: 18, color: "#0F172A" }}>Paramètres de messagerie</span>
+              <span style={{ flex: 1, fontWeight: 700, fontSize: 18, color: "#111827" }}>Paramètres de messagerie</span>
             </div>
 
-            <div style={{ flex: 1, overflowY: "auto", background: "#F5F7FA", padding: "14px 14px 32px" }}>
+            <div style={{ flex: 1, overflowY: "auto", background: "#F8FAFC", padding: "14px 14px 32px" }}>
 
               {/* ── Profile card premium ── */}
               <div onClick={() => setSettingsPage("status")}
@@ -6352,7 +6352,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 {/* Info */}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
-                    <span style={{ fontWeight: 700, fontSize: 16.5, color: "#0F172A" }}>{fullName}</span>
+                    <span style={{ fontWeight: 700, fontSize: 16.5, color: "#111827" }}>{fullName}</span>
                     <span style={{ background: "#22C55E", color: "#fff", fontSize: 11, fontWeight: 700, borderRadius: 20, padding: "2px 9px", letterSpacing: .2 }}>Premium</span>
                     <img src="/bp-badge-premium.jpeg" alt="vérifié" style={{ width: 20, height: 20, borderRadius: "50%", objectFit: "cover" }} />
                   </div>
@@ -6378,8 +6378,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     onTouchEnd={e => (e.currentTarget.style.background = "#fff")}>
                     <div style={{ width: 46, height: 46, borderRadius: 14, background: "linear-gradient(135deg,#f0fdf4,#dcfce7)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 1px 4px rgba(34,197,94,0.15)" }}>{item.icon}</div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 15.5, fontWeight: 600, color: "#0F172A", marginBottom: 2 }}>{item.label}</div>
-                      <div style={{ fontSize: 12.5, color: "#94A3B8", fontWeight: 400 }}>{item.desc}</div>
+                      <div style={{ fontSize: 15.5, fontWeight: 600, color: "#111827", marginBottom: 2 }}>{item.label}</div>
+                      <div style={{ fontSize: 12.5, color: "#9CA3AF", fontWeight: 400 }}>{item.desc}</div>
                     </div>
                     {item.toggle
                       ? <button onClick={e => { e.stopPropagation(); const v = !onlineStatus; setOnlineStatus(v); apiUpdateMessagingSettings({ onlineStatus: v }).catch(() => {}); }} className={`fbl-toggle ${onlineStatus ? "fbl-toggle-on" : "fbl-toggle-off"}`} />
@@ -6395,7 +6395,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 <img src="/bp-logo-b.jpeg" alt="BrutePawa" style={{ width: 52, height: 52, borderRadius: 14, objectFit: "cover", flexShrink: 0, boxShadow: "0 2px 10px rgba(34,197,94,0.35)" }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
-                    <span style={{ fontWeight: 800, fontSize: 16, color: "#0F172A" }}>BrutePawa</span>
+                    <span style={{ fontWeight: 800, fontSize: 16, color: "#111827" }}>BrutePawa</span>
                     <span style={{ fontWeight: 700, fontSize: 16, color: "#22C55E" }}>Premium</span>
                   </div>
                   <div style={{ fontSize: 12, color: "#64748B", fontWeight: 400 }}>Réseau social africain nouvelle génération</div>
@@ -6406,7 +6406,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               </div>
 
               {/* ── Footer ── */}
-              <div style={{ textAlign: "center", padding: "28px 0 8px", color: "#94A3B8" }}>
+              <div style={{ textAlign: "center", padding: "28px 0 8px", color: "#9CA3AF" }}>
                 <div style={{ fontSize: 14, fontWeight: 500 }}>Fait en Afrique 🇧🇯</div>
                 <div style={{ fontSize: 12.5, marginTop: 4 }}>Version 1.0.0</div>
               </div>
@@ -6419,24 +6419,24 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         {settingsPage === "status" && <>
           <div style={{ background: "#fff", display: "flex", alignItems: "center", padding: "10px 4px", borderBottom: "1px solid #E5E7EB", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,.06)" }}>
             <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 12px" }}>
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="#0F172A"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="#111827"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
             </button>
-            <span style={{ flex: 1, fontWeight: 700, fontSize: 18, color: "#0F172A" }}>Statut En ligne</span>
+            <span style={{ flex: 1, fontWeight: 700, fontSize: 18, color: "#111827" }}>Statut En ligne</span>
           </div>
           <div style={{ flex: 1, overflowY: "auto", paddingTop: 16 }}>
             <div style={{ background: "#fff", borderRadius: 14, margin: "0 14px 12px", padding: "16px 18px", display: "flex", alignItems: "center", gap: 14, boxShadow: "0 1px 5px rgba(0,0,0,.07)" }}>
-              <span style={{ flex: 1, fontSize: 15, fontWeight: 500, color: "#0F172A" }}>Indiquer si vous êtes en ligne</span>
+              <span style={{ flex: 1, fontSize: 15, fontWeight: 500, color: "#111827" }}>Indiquer si vous êtes en ligne</span>
               <button onClick={() => { const v = !onlineStatus; setOnlineStatus(v); apiUpdateMessagingSettings({ onlineStatus: v }).catch(() => {}); }} className={`fbl-toggle ${onlineStatus ? "fbl-toggle-on" : "fbl-toggle-off"}`} />
             </div>
             <div style={{ background: "#fff", borderRadius: 14, margin: "0 14px 12px", padding: "16px 18px", display: "flex", gap: 13, boxShadow: "0 1px 5px rgba(0,0,0,.07)" }}>
               <div style={{ width: 38, height: 38, borderRadius: "50%", border: "2.5px solid #22C55E", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 17 }}>ℹ️</div>
-              <span style={{ fontSize: 13.5, color: "#475569", lineHeight: 1.7 }}>
+              <span style={{ fontSize: 13.5, color: "#64748B", lineHeight: 1.7 }}>
                 Lorsque ce paramètre est activé, votre statut En ligne est visible par les personnes avec qui vous êtes en contact sur <strong style={{ color: "#22C55E" }}>BrutePawa</strong>, et par celles auxquelles vous avez envoyé une invitation. Vous ne pouvez voir le statut En ligne des autres que si le vôtre est activé.
               </span>
             </div>
             <div style={{ background: "#fff", borderRadius: 14, margin: "0 14px 12px", padding: "16px 18px", display: "flex", gap: 13, boxShadow: "0 1px 5px rgba(0,0,0,.07)" }}>
               <div style={{ width: 38, height: 38, borderRadius: "50%", border: "2.5px solid #22C55E", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 17 }}>🔒</div>
-              <div style={{ fontSize: 13.5, color: "#475569", lineHeight: 1.7 }}>
+              <div style={{ fontSize: 13.5, color: "#64748B", lineHeight: 1.7 }}>
                 Pour ne plus afficher votre statut En ligne, désactivez-le partout où vous utilisez <strong style={{ color: "#22C55E" }}>BrutePawa</strong>.{" "}
                 <span style={{ color: "#22C55E", fontWeight: 700, cursor: "pointer" }}>En savoir plus</span>
               </div>
@@ -6444,8 +6444,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             <div style={{ textAlign: "center", padding: "28px 20px 44px", marginTop: 4 }}>
               <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
                 <span style={{ fontSize: 30 }}>🤛</span>
-                <span style={{ fontWeight: 800, fontSize: 16, color: "#0F172A" }}>BrutePawa</span>
-                <span style={{ fontSize: 12.5, color: "#94A3B8" }}>Réseau social 100% africain ❤️</span>
+                <span style={{ fontWeight: 800, fontSize: 16, color: "#111827" }}>BrutePawa</span>
+                <span style={{ fontSize: 12.5, color: "#9CA3AF" }}>Réseau social 100% africain ❤️</span>
               </div>
             </div>
           </div>
@@ -6455,9 +6455,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         {settingsPage === "notifs" && <>
           <div style={{ background: "#fff", display: "flex", alignItems: "center", padding: "10px 4px", borderBottom: "1px solid #E5E7EB", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,.06)" }}>
             <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 12px" }}>
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="#0F172A"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="#111827"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
             </button>
-            <span style={{ flex: 1, fontWeight: 700, fontSize: 18, color: "#0F172A" }}>Notifications de messages</span>
+            <span style={{ flex: 1, fontWeight: 700, fontSize: 18, color: "#111827" }}>Notifications de messages</span>
           </div>
           <div style={{ flex: 1, overflowY: "auto", paddingTop: 12 }}>
             {[
@@ -6471,7 +6471,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 <div style={{ background: "#fff", borderRadius: 14, padding: "6px 0", boxShadow: "0 1px 5px rgba(0,0,0,.07)" }}>
                   <div style={{ padding: "6px 18px 10px", fontSize: 13, color: "#64748B", lineHeight: 1.5 }}>{g.desc}</div>
                   <div style={{ display: "flex", alignItems: "center", padding: "12px 18px", borderTop: "1px solid #F1F5F9" }}>
-                    <span style={{ flex: 1, fontSize: 15, fontWeight: 500, color: "#0F172A" }}>{g.label}</span>
+                    <span style={{ flex: 1, fontSize: 15, fontWeight: 500, color: "#111827" }}>{g.label}</span>
                     <button onClick={() => g.set(!g.val)} className={`fbl-toggle ${g.val ? "fbl-toggle-on" : "fbl-toggle-off"}`} />
                   </div>
                 </div>
@@ -6480,8 +6480,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             <div style={{ textAlign: "center", padding: "28px 20px 44px", marginTop: 4 }}>
               <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
                 <span style={{ fontSize: 30 }}>🤛</span>
-                <span style={{ fontWeight: 800, fontSize: 16, color: "#0F172A" }}>BrutePawa</span>
-                <span style={{ fontSize: 12.5, color: "#94A3B8" }}>Réseau social 100% africain ❤️</span>
+                <span style={{ fontWeight: 800, fontSize: 16, color: "#111827" }}>BrutePawa</span>
+                <span style={{ fontSize: 12.5, color: "#9CA3AF" }}>Réseau social 100% africain ❤️</span>
               </div>
             </div>
           </div>
@@ -6491,9 +6491,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         {settingsPage === "invitations" && <>
           <div style={{ background: "#fff", display: "flex", alignItems: "center", padding: "10px 4px", borderBottom: "1px solid #E5E7EB", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,.06)" }}>
             <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 12px" }}>
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="#0F172A"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="#111827"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
             </button>
-            <span style={{ flex: 1, fontWeight: 700, fontSize: 18, color: "#0F172A" }}>Invitations par message</span>
+            <span style={{ flex: 1, fontWeight: 700, fontSize: 18, color: "#111827" }}>Invitations par message</span>
           </div>
           <div style={{ background: "#fff", display: "flex", flexShrink: 0 }}>
             {(["known", "spam"] as const).map(t => (
@@ -6505,16 +6505,16 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           <div style={{ flex: 1, overflowY: "auto", background: "#fff" }}>
             <div style={{ margin: "12px 14px", padding: "12px 14px", background: "#F0FDF4", borderRadius: 12, display: "flex", gap: 10, border: "1px solid #BBF7D0" }}>
               <span style={{ fontSize: 16, flexShrink: 0, marginTop: 2 }}>ℹ️</span>
-              <div style={{ fontSize: 13, color: "#374151", lineHeight: 1.65 }}>
+              <div style={{ fontSize: 13, color: "#64748B", lineHeight: 1.65 }}>
                 Ouvrez une invitation pour en savoir plus sur la personne qui vous envoie le message. Elle n'en saura rien tant que vous ne l'aurez pas acceptée.{" "}
                 <span style={{ color: "#22C55E", fontWeight: 700, cursor: "pointer" }}>Décidez qui peut vous envoyer un message</span>
               </div>
             </div>
             {msgRequests.length === 0 ? (
-              <div style={{ padding: "52px 24px", textAlign: "center", color: "#94A3B8", fontSize: 14 }}>Aucune invitation en attente</div>
+              <div style={{ padding: "52px 24px", textAlign: "center", color: "#9CA3AF", fontSize: 14 }}>Aucune invitation en attente</div>
             ) : (
               msgRequests.map((req, i) => {
-                const reqColors = ["#22C55E","#3B82F6","#F97316","#8B5CF6","#EF4444","#06B6D4","#D97706"];
+                const reqColors = ["#22C55E","#0EA5E9","#F97316","#8B5CF6","#EF4444","#0EA5E9","#D97706"];
                 const c = reqColors[req.senderId % reqColors.length];
                 const ini = req.senderName.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
                 const t = req.createdAt ? new Date(req.createdAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }) : "";
@@ -6528,12 +6528,12 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     }}>
                     <div style={{ width: 50, height: 50, borderRadius: "50%", background: c, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 17, flexShrink: 0 }}>{ini}</div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontWeight: 600, fontSize: 15, color: "#0F172A" }}>{req.senderName}</div>
-                      <div style={{ fontSize: 13, color: "#94A3B8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{req.messagePreview || "Invitation reçue"}</div>
+                      <div style={{ fontWeight: 600, fontSize: 15, color: "#111827" }}>{req.senderName}</div>
+                      <div style={{ fontSize: 13, color: "#9CA3AF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{req.messagePreview || "Invitation reçue"}</div>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 5, flexShrink: 0 }}>
-                      <span style={{ fontSize: 11.5, color: "#94A3B8" }}>{t}</span>
-                      <svg viewBox="0 0 24 24" width="16" height="16" fill="#CBD5E1"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                      <span style={{ fontSize: 11.5, color: "#9CA3AF" }}>{t}</span>
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="#E5E7EB"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
                     </div>
                   </div>
                 );
@@ -6545,16 +6545,16 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="#22C55E"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 700, fontSize: 14, color: "#0F172A" }}>Contrôlez vos invitations</div>
-                <div style={{ fontSize: 12.5, color: "#94A3B8", marginTop: 2 }}>Paramètres de messagerie</div>
+                <div style={{ fontWeight: 700, fontSize: 14, color: "#111827" }}>Contrôlez vos invitations</div>
+                <div style={{ fontSize: 12.5, color: "#9CA3AF", marginTop: 2 }}>Paramètres de messagerie</div>
               </div>
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="#CBD5E1"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="#E5E7EB"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
             </div>
             <div style={{ textAlign: "center", padding: "28px 20px 44px", marginTop: 4 }}>
               <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
                 <span style={{ fontSize: 30 }}>🤛</span>
-                <span style={{ fontWeight: 800, fontSize: 16, color: "#0F172A" }}>BrutePawa</span>
-                <span style={{ fontSize: 12.5, color: "#94A3B8" }}>Réseau social 100% africain ❤️</span>
+                <span style={{ fontWeight: 800, fontSize: 16, color: "#111827" }}>BrutePawa</span>
+                <span style={{ fontSize: 12.5, color: "#9CA3AF" }}>Réseau social 100% africain ❤️</span>
               </div>
             </div>
           </div>
@@ -6564,17 +6564,17 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         {settingsPage === "archive" && <>
           <div style={{ background: "#fff", display: "flex", alignItems: "center", padding: "10px 4px", borderBottom: "1px solid #E5E7EB", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,.06)" }}>
             <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 12px" }}>
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="#0F172A"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="#111827"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
             </button>
-            <span style={{ flex: 1, fontWeight: 700, fontSize: 18, color: "#0F172A" }}>Archive</span>
+            <span style={{ flex: 1, fontWeight: 700, fontSize: 18, color: "#111827" }}>Archive</span>
           </div>
           <div style={{ flex: 1, overflowY: "auto", background: "#fff" }}>
-            <div style={{ padding: "52px 24px", textAlign: "center", color: "#94A3B8", fontSize: 14 }}>Aucune discussion archivée</div>
+            <div style={{ padding: "52px 24px", textAlign: "center", color: "#9CA3AF", fontSize: 14 }}>Aucune discussion archivée</div>
             <div style={{ textAlign: "center", padding: "8px 20px 44px" }}>
               <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
                 <span style={{ fontSize: 30 }}>🤛</span>
-                <span style={{ fontWeight: 800, fontSize: 16, color: "#0F172A" }}>BrutePawa</span>
-                <span style={{ fontSize: 12.5, color: "#94A3B8" }}>Réseau social 100% africain ❤️</span>
+                <span style={{ fontWeight: 800, fontSize: 16, color: "#111827" }}>BrutePawa</span>
+                <span style={{ fontSize: 12.5, color: "#9CA3AF" }}>Réseau social 100% africain ❤️</span>
               </div>
             </div>
           </div>
@@ -6584,9 +6584,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         {settingsPage === "privacy" && <>
           <div style={{ background: "#fff", display: "flex", alignItems: "center", padding: "10px 4px", borderBottom: "1px solid #E5E7EB", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,.06)" }}>
             <button onClick={() => setSettingsPage("main")} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px 12px" }}>
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="#0F172A"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="#111827"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
             </button>
-            <span style={{ flex: 1, fontWeight: 700, fontSize: 18, color: "#0F172A" }}>Confidentialité et sécurité</span>
+            <span style={{ flex: 1, fontWeight: 700, fontSize: 18, color: "#111827" }}>Confidentialité et sécurité</span>
           </div>
           <div style={{ flex: 1, overflowY: "auto", paddingTop: 8 }}>
             {[
@@ -6612,12 +6612,12 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     <div key={item.label} style={{ display: "flex", alignItems: "center", padding: "14px 16px", borderTop: idx > 0 ? "1px solid #F1F5F9" : "none", gap: 14, cursor: "pointer" }}>
                       <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.icon}</div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 15, fontWeight: 500, color: "#0F172A", marginBottom: 2 }}>{item.label}</div>
-                        <div style={{ fontSize: 12.5, color: "#94A3B8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.sub}</div>
+                        <div style={{ fontSize: 15, fontWeight: 500, color: "#111827", marginBottom: 2 }}>{item.label}</div>
+                        <div style={{ fontSize: 12.5, color: "#9CA3AF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.sub}</div>
                       </div>
                       {(item as { hasToggle?: boolean }).hasToggle
                         ? <button onClick={() => { const v = !readReceiptsEnabled; setReadReceiptsEnabled(v); apiUpdateMessagingSettings({ readReceiptsEnabled: v }).catch(() => {}); }} className={`fbl-toggle ${readReceiptsEnabled ? "fbl-toggle-on" : "fbl-toggle-off"}`} />
-                        : <svg viewBox="0 0 24 24" width="18" height="18" fill="#CBD5E1"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                        : <svg viewBox="0 0 24 24" width="18" height="18" fill="#E5E7EB"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
                       }
                     </div>
                   ))}
@@ -6627,8 +6627,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             <div style={{ textAlign: "center", padding: "12px 20px 44px", marginTop: 4 }}>
               <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 5 }}>
                 <span style={{ fontSize: 30 }}>🤛</span>
-                <span style={{ fontWeight: 800, fontSize: 16, color: "#0F172A" }}>BrutePawa</span>
-                <span style={{ fontSize: 12.5, color: "#94A3B8" }}>Réseau social 100% africain ❤️</span>
+                <span style={{ fontWeight: 800, fontSize: 16, color: "#111827" }}>BrutePawa</span>
+                <span style={{ fontSize: 12.5, color: "#9CA3AF" }}>Réseau social 100% africain ❤️</span>
               </div>
             </div>
           </div>

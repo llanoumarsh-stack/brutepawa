@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#0F172A", secondary:"#64748B", muted:"#94A3B8", border:"#F1F5F9", danger:"#EF4444", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#111827", secondary:"#64748B", muted:"#9CA3AF", border:"#F1F5F9", danger:"#EF4444", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
 type PVal = "Tout le monde"|"Amis"|"Amis uniquement"|"Moi uniquement";
 
 function SubHeader({ title, onBack }:{title:string;onBack:()=>void}) {
@@ -22,7 +22,7 @@ function PrivRow({ label, value, danger=false, onPress, last=false }:{label:stri
   const [pressed, setPressed] = useState(false);
   return (
     <button onClick={onPress} onPointerDown={()=>setPressed(true)} onPointerUp={()=>setPressed(false)} onPointerLeave={()=>setPressed(false)}
-      style={{ display:"flex", alignItems:"center", padding:"14px 18px", background:pressed?"#F8FAFB":"none", border:"none", cursor:"pointer", width:"100%", textAlign:"left", borderBottom:last?"none":"1px solid #F1F5F9", transition:"background 150ms" }}>
+      style={{ display:"flex", alignItems:"center", padding:"14px 18px", background:pressed?"#F8FAFC":"none", border:"none", cursor:"pointer", width:"100%", textAlign:"left", borderBottom:last?"none":"1px solid #F1F5F9", transition:"background 150ms" }}>
       {danger && <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ marginRight:10, flexShrink:0 }}><circle cx="12" cy="12" r="10" fill="#FEE2E2"/><path d="M12 8v4m0 4h.01" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"/></svg>}
       <div style={{ flex:1 }}>
         <div style={{ fontWeight:500, fontSize:15, color:danger?"#EF4444":C.text }}>{label}</div>
@@ -30,7 +30,7 @@ function PrivRow({ label, value, danger=false, onPress, last=false }:{label:stri
       </div>
       <div style={{ display:"flex", alignItems:"center", gap:4 }}>
         <span style={{ fontSize:13, color:danger?"#EF4444":C.primary, fontWeight:600 }}>{value}</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="#C4C9D4" strokeWidth="2.2" strokeLinecap="round"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="#CBD5E1" strokeWidth="2.2" strokeLinecap="round"/></svg>
       </div>
     </button>
   );
@@ -41,7 +41,7 @@ function Sheet({ label, current, options, onSelect, onClose }:{label:string;curr
     <div style={{ position:"fixed", inset:0, zIndex:100 }} onClick={onClose}>
       <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.45)" }}/>
       <div onClick={e=>e.stopPropagation()} style={{ position:"absolute", bottom:0, left:0, right:0, background:"#fff", borderRadius:"24px 24px 0 0", paddingBottom:"env(safe-area-inset-bottom,0px)", animation:"slideUp 300ms cubic-bezier(0.34,1.56,0.64,1)" }}>
-        <div style={{ width:40,height:4,borderRadius:2,background:"#E2E8F0",margin:"12px auto 0" }}/>
+        <div style={{ width:40,height:4,borderRadius:2,background:"#E5E7EB",margin:"12px auto 0" }}/>
         <div style={{ padding:"16px 20px 8px", fontWeight:700, fontSize:16, color:C.text }}>{label}</div>
         {options.map((o,i) => (
           <button key={o} onClick={()=>{onSelect(o);onClose();}}
@@ -96,7 +96,7 @@ export default function PrivacyPage() {
         </div>
 
         {/* Confidentialité avancée card */}
-        <button style={{ width:"100%", background:"linear-gradient(135deg,#15803D,#22C55E)", borderRadius:24, padding:"18px 20px", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, boxShadow:"0 8px 30px rgba(34,197,94,0.3)", overflow:"hidden", position:"relative", textAlign:"left" }}>
+        <button style={{ width:"100%", background:"linear-gradient(135deg,#16A34A,#22C55E)", borderRadius:24, padding:"18px 20px", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, boxShadow:"0 8px 30px rgba(34,197,94,0.3)", overflow:"hidden", position:"relative", textAlign:"left" }}>
           <div style={{ position:"absolute",top:-30,right:-30,width:100,height:100,borderRadius:"50%",background:"rgba(255,255,255,0.08)",pointerEvents:"none" }}/>
           <div style={{ width:48,height:48,borderRadius:"50%",background:"rgba(255,255,255,0.2)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,backdropFilter:"blur(8px)" }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round">

@@ -4,7 +4,7 @@ import { COUNTRIES } from "../data/mock";
 import { apiCreateProduct } from "../lib/api";
 import { useR2Upload } from "../hooks/useR2Upload";
 
-const BP_GREEN = "#16C24A";
+const BP_GREEN = "#22C55E";
 
 /* ── SVG Icons ─────────────────────────────────────────────── */
 const Ico = {
@@ -14,13 +14,13 @@ const Ico = {
   wallet: <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke={BP_GREEN} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>,
   check: <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke={BP_GREEN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
   loc: <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke={BP_GREEN} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>,
-  clock: <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
-  eye: <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#475569" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>,
-  heart: <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>,
-  upload: <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#94A3B8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>,
+  clock: <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
+  eye: <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>,
+  heart: <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>,
+  upload: <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>,
   rocket: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke={BP_GREEN} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>,
   send: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>,
-  save: <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#475569" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>,
+  save: <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>,
   plus: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke={BP_GREEN} strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
   x: <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
   camera: <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>,
@@ -136,12 +136,12 @@ export default function CreateListingPage() {
 
   /* ── Input style ── */
   const fieldBox: React.CSSProperties = {
-    background: "#fff", border: "1.5px solid #E2E8F0", borderRadius: 14,
+    background: "#fff", border: "1.5px solid #E5E7EB", borderRadius: 14,
     padding: "0 14px", display: "flex", alignItems: "center", gap: 10,
     boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
   };
   const inp: React.CSSProperties = {
-    flex: 1, border: "none", outline: "none", fontSize: 15, color: "#0F172A",
+    flex: 1, border: "none", outline: "none", fontSize: 15, color: "#111827",
     background: "transparent", fontFamily: "inherit", padding: "14px 0",
   };
 
@@ -152,18 +152,18 @@ export default function CreateListingPage() {
       {/* ── Header ─────────────────────────────────────────── */}
       <div style={{ background: "#fff", borderBottom: "1px solid #F1F5F9", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 20 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={() => navigate("/marketplace")} style={{ width: 36, height: 36, borderRadius: "50%", background: "#F1F5F9", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#475569" }}>
+          <button onClick={() => navigate("/marketplace")} style={{ width: 36, height: 36, borderRadius: "50%", background: "#F1F5F9", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#64748B" }}>
             {Ico.back}
           </button>
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ fontWeight: 800, fontSize: 17, color: "#0F172A" }}>Créer une annonce</span>
+              <span style={{ fontWeight: 800, fontSize: 17, color: "#111827" }}>Créer une annonce</span>
               <span style={{ background: `${BP_GREEN}20`, color: BP_GREEN, fontSize: 11, fontWeight: 700, padding: "2px 9px", borderRadius: 20 }}>Nouveau</span>
             </div>
-            <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 1 }}>Vendez rapidement à des milliers d'utilisateurs</div>
+            <div style={{ fontSize: 12, color: "#9CA3AF", marginTop: 1 }}>Vendez rapidement à des milliers d'utilisateurs</div>
           </div>
         </div>
-        <button style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "1.5px solid #E2E8F0", borderRadius: 20, padding: "7px 14px", color: "#475569", fontWeight: 600, fontSize: 12.5, cursor: "pointer" }}>
+        <button style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "1.5px solid #E5E7EB", borderRadius: 20, padding: "7px 14px", color: "#64748B", fontWeight: 600, fontSize: 12.5, cursor: "pointer" }}>
           {Ico.help}
           Conseils pour bien vendre
         </button>
@@ -188,7 +188,7 @@ export default function CreateListingPage() {
                 onChange={e => setTitle(e.target.value)}
               />
               <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-                <span style={{ fontSize: 12, color: "#94A3B8" }}>{title.length}/80</span>
+                <span style={{ fontSize: 12, color: "#9CA3AF" }}>{title.length}/80</span>
                 {title.length > 5 && <span style={{ color: BP_GREEN }}>{Ico.check}</span>}
               </div>
             </div>
@@ -203,7 +203,7 @@ export default function CreateListingPage() {
                 value={price}
                 onChange={e => setPrice(formatPrice(e.target.value))}
               />
-              <span style={{ fontSize: 14, fontWeight: 700, color: "#475569", flexShrink: 0 }}>FCFA</span>
+              <span style={{ fontSize: 14, fontWeight: 700, color: "#64748B", flexShrink: 0 }}>FCFA</span>
               {rawPrice && <span style={{ color: BP_GREEN, flexShrink: 0 }}>{Ico.check}</span>}
             </div>
           </Section>
@@ -218,12 +218,12 @@ export default function CreateListingPage() {
                     key={cat.id}
                     onClick={() => setCategory(cat.id)}
                     style={{
-                      border: `2px solid ${active ? BP_GREEN : "#E2E8F0"}`,
+                      border: `2px solid ${active ? BP_GREEN : "#E5E7EB"}`,
                       borderRadius: 14, padding: "10px 4px 8px",
                       background: active ? `${BP_GREEN}12` : "#fff",
                       display: "flex", flexDirection: "column", alignItems: "center", gap: 5,
                       cursor: "pointer", transition: "all .15s",
-                      color: active ? BP_GREEN : "#475569",
+                      color: active ? BP_GREEN : "#64748B",
                       boxShadow: active ? `0 2px 10px ${BP_GREEN}30` : "none",
                     }}
                   >
@@ -246,9 +246,9 @@ export default function CreateListingPage() {
                     onClick={() => setCondition(c)}
                     style={{
                       flex: "0 0 auto", padding: "8px 16px", borderRadius: 999,
-                      border: `2px solid ${active ? BP_GREEN : "#E2E8F0"}`,
+                      border: `2px solid ${active ? BP_GREEN : "#E5E7EB"}`,
                       background: active ? BP_GREEN : "#fff",
-                      color: active ? "#fff" : "#475569",
+                      color: active ? "#fff" : "#64748B",
                       fontWeight: active ? 700 : 500, fontSize: 13, cursor: "pointer",
                       transition: "all .15s",
                       boxShadow: active ? `0 2px 10px ${BP_GREEN}40` : "none",
@@ -267,26 +267,26 @@ export default function CreateListingPage() {
           <Section title="Localisation *">
             <div style={{ display: "flex", gap: 10 }}>
               <div style={{ flex: 1, position: "relative" }}>
-                <label style={{ fontSize: 11, fontWeight: 600, color: "#94A3B8", display: "block", marginBottom: 4 }}>Pays</label>
-                <div style={{ background: "#fff", border: "1.5px solid #E2E8F0", borderRadius: 12, padding: "0 12px", display: "flex", alignItems: "center", gap: 8 }}>
+                <label style={{ fontSize: 11, fontWeight: 600, color: "#9CA3AF", display: "block", marginBottom: 4 }}>Pays</label>
+                <div style={{ background: "#fff", border: "1.5px solid #E5E7EB", borderRadius: 12, padding: "0 12px", display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{ fontSize: 18 }}>{selectedCountry.flag}</span>
                   <select
                     value={country}
                     onChange={e => handleCountryChange(e.target.value)}
-                    style={{ flex: 1, border: "none", outline: "none", fontSize: 13.5, color: "#0F172A", background: "transparent", fontFamily: "inherit", padding: "12px 0", cursor: "pointer" }}
+                    style={{ flex: 1, border: "none", outline: "none", fontSize: 13.5, color: "#111827", background: "transparent", fontFamily: "inherit", padding: "12px 0", cursor: "pointer" }}
                   >
                     {COUNTRIES.map(c => <option key={c.code} value={c.code}>{c.name}</option>)}
                   </select>
                 </div>
               </div>
               <div style={{ flex: 1 }}>
-                <label style={{ fontSize: 11, fontWeight: 600, color: "#94A3B8", display: "block", marginBottom: 4 }}>Ville</label>
-                <div style={{ background: "#fff", border: "1.5px solid #E2E8F0", borderRadius: 12, padding: "0 12px", display: "flex", alignItems: "center", gap: 8 }}>
+                <label style={{ fontSize: 11, fontWeight: 600, color: "#9CA3AF", display: "block", marginBottom: 4 }}>Ville</label>
+                <div style={{ background: "#fff", border: "1.5px solid #E5E7EB", borderRadius: 12, padding: "0 12px", display: "flex", alignItems: "center", gap: 8 }}>
                   {Ico.loc}
                   <select
                     value={city}
                     onChange={e => setCity(e.target.value)}
-                    style={{ flex: 1, border: "none", outline: "none", fontSize: 13.5, color: "#0F172A", background: "transparent", fontFamily: "inherit", padding: "12px 0", cursor: "pointer" }}
+                    style={{ flex: 1, border: "none", outline: "none", fontSize: 13.5, color: "#111827", background: "transparent", fontFamily: "inherit", padding: "12px 0", cursor: "pointer" }}
                   >
                     {selectedCountry.cities.map(ci => <option key={ci}>{ci}</option>)}
                   </select>
@@ -304,17 +304,17 @@ export default function CreateListingPage() {
 
           {/* ── Description ── */}
           <Section title="Description (optionnel)">
-            <div style={{ background: "#fff", border: "1.5px solid #E2E8F0", borderRadius: 14, overflow: "hidden" }}>
+            <div style={{ background: "#fff", border: "1.5px solid #E5E7EB", borderRadius: 14, overflow: "hidden" }}>
               <textarea
                 value={description}
                 onChange={e => setDescription(e.target.value)}
                 maxLength={1000}
                 placeholder="Décrivez votre article en détail : état, dimensions, couleur, matière..."
-                style={{ width: "100%", border: "none", outline: "none", resize: "none", padding: "14px", fontSize: 14, fontFamily: "inherit", color: "#0F172A", height: 100, boxSizing: "border-box", background: "transparent" }}
+                style={{ width: "100%", border: "none", outline: "none", resize: "none", padding: "14px", fontSize: 14, fontFamily: "inherit", color: "#111827", height: 100, boxSizing: "border-box", background: "transparent" }}
               />
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 14px", borderTop: "1px solid #F1F5F9", background: "#FAFAFA" }}>
-                <span style={{ fontSize: 11.5, color: "#94A3B8", fontStyle: "italic" }}>Soyez précis et honnête pour attirer plus d'acheteurs.</span>
-                <span style={{ fontSize: 11.5, color: description.length > 900 ? "#EF4444" : "#94A3B8" }}>{description.length}/1000 {description.length > 5 && <span style={{ color: BP_GREEN }}>✓</span>}</span>
+                <span style={{ fontSize: 11.5, color: "#9CA3AF", fontStyle: "italic" }}>Soyez précis et honnête pour attirer plus d'acheteurs.</span>
+                <span style={{ fontSize: 11.5, color: description.length > 900 ? "#EF4444" : "#9CA3AF" }}>{description.length}/1000 {description.length > 5 && <span style={{ color: BP_GREEN }}>✓</span>}</span>
               </div>
             </div>
           </Section>
@@ -325,14 +325,14 @@ export default function CreateListingPage() {
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading || photos.length >= 10}
-              style={{ width: "100%", border: "2px dashed #CBD5E1", borderRadius: 16, padding: "28px 20px", background: uploading ? "#F8FAFC" : "#fff", cursor: (uploading || photos.length >= 10) ? "default" : "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 10, transition: "all .15s" }}
+              style={{ width: "100%", border: "2px dashed #E5E7EB", borderRadius: 16, padding: "28px 20px", background: uploading ? "#F8FAFC" : "#fff", cursor: (uploading || photos.length >= 10) ? "default" : "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 10, transition: "all .15s" }}
             >
               {Ico.upload}
               <div>
-                <div style={{ fontWeight: 600, fontSize: 14, color: "#475569" }}>
+                <div style={{ fontWeight: 600, fontSize: 14, color: "#64748B" }}>
                   {uploading ? `Envoi en cours — ${progress}%` : "Glissez vos photos ici"}
                 </div>
-                {!uploading && <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 3 }}>ou appuyez pour sélectionner</div>}
+                {!uploading && <div style={{ fontSize: 12, color: "#9CA3AF", marginTop: 3 }}>ou appuyez pour sélectionner</div>}
               </div>
             </button>
 
@@ -340,7 +340,7 @@ export default function CreateListingPage() {
             {photos.length > 0 && (
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 10 }}>
                 {photos.map((photo, idx) => (
-                  <div key={idx} style={{ position: "relative", width: 72, height: 72, borderRadius: 12, overflow: "hidden", border: idx === 0 ? `3px solid ${BP_GREEN}` : "2px solid #E2E8F0", flexShrink: 0 }}>
+                  <div key={idx} style={{ position: "relative", width: 72, height: 72, borderRadius: 12, overflow: "hidden", border: idx === 0 ? `3px solid ${BP_GREEN}` : "2px solid #E5E7EB", flexShrink: 0 }}>
                     <img src={photo.localUrl} alt={photo.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     {idx === 0 && (
                       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: `${BP_GREEN}E0`, padding: "2px 0", textAlign: "center", fontSize: 9, fontWeight: 700, color: "#fff" }}>Photo principale</div>
@@ -366,7 +366,7 @@ export default function CreateListingPage() {
 
           {/* ── Error ── */}
           {error && (
-            <div style={{ background: "#FEF2F2", border: "1px solid #FECACA", borderRadius: 12, padding: "12px 16px", color: "#DC2626", fontSize: 14 }}>
+            <div style={{ background: "#FEF2F2", border: "1px solid #FCA5A5", borderRadius: 12, padding: "12px 16px", color: "#EF4444", fontSize: 14 }}>
               {error}
             </div>
           )}
@@ -376,13 +376,13 @@ export default function CreateListingPage() {
             <button
               onClick={handlePublish}
               disabled={!title.trim() || !rawPrice || submitting}
-              style={{ background: `linear-gradient(135deg, ${BP_GREEN}, #0EA046)`, color: "#fff", border: "none", borderRadius: 16, padding: "15px 0", fontWeight: 700, fontSize: 15, cursor: (!title.trim() || !rawPrice || submitting) ? "default" : "pointer", opacity: (!title.trim() || !rawPrice || submitting) ? 0.55 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, boxShadow: `0 6px 20px ${BP_GREEN}50`, transition: "opacity .15s" }}
+              style={{ background: `linear-gradient(135deg, ${BP_GREEN}, #22C55E)`, color: "#fff", border: "none", borderRadius: 16, padding: "15px 0", fontWeight: 700, fontSize: 15, cursor: (!title.trim() || !rawPrice || submitting) ? "default" : "pointer", opacity: (!title.trim() || !rawPrice || submitting) ? 0.55 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, boxShadow: `0 6px 20px ${BP_GREEN}50`, transition: "opacity .15s" }}
             >
               {Ico.send}
               {submitting ? "Publication…" : "Publier maintenant"}
             </button>
             <button
-              style={{ background: "#fff", color: "#475569", border: "1.5px solid #E2E8F0", borderRadius: 16, padding: "13px 0", fontWeight: 600, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
+              style={{ background: "#fff", color: "#64748B", border: "1.5px solid #E5E7EB", borderRadius: 16, padding: "13px 0", fontWeight: 600, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
               onClick={() => navigate("/marketplace")}
             >
               {Ico.save}
@@ -397,7 +397,7 @@ export default function CreateListingPage() {
           {/* Preview title */}
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             {Ico.eye}
-            <span style={{ fontWeight: 700, fontSize: 14, color: "#475569" }}>Aperçu en direct</span>
+            <span style={{ fontWeight: 700, fontSize: 14, color: "#64748B" }}>Aperçu en direct</span>
           </div>
 
           {/* Preview card */}
@@ -406,7 +406,7 @@ export default function CreateListingPage() {
             <div style={{ height: 200, background: "#F1F5F9", position: "relative", overflow: "hidden" }}>
               {previewPhoto
                 ? <img src={previewPhoto} alt={previewTitle} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                : <div style={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, color: "#CBD5E1" }}>
+                : <div style={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, color: "#E5E7EB" }}>
                     {Ico.camera}
                     <span style={{ fontSize: 12, fontWeight: 500 }}>Ajoutez une photo</span>
                   </div>
@@ -430,7 +430,7 @@ export default function CreateListingPage() {
             </div>
             {/* Info */}
             <div style={{ padding: "14px 16px" }}>
-              <div style={{ fontWeight: 800, fontSize: 15, color: "#0F172A", marginBottom: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{previewTitle}</div>
+              <div style={{ fontWeight: 800, fontSize: 15, color: "#111827", marginBottom: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{previewTitle}</div>
               <div style={{ fontWeight: 900, color: BP_GREEN, fontSize: 18, marginBottom: 8 }}>{previewPrice}</div>
               <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 3 }}>
                 {Ico.loc}
@@ -438,10 +438,10 @@ export default function CreateListingPage() {
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 10 }}>
                 {Ico.clock}
-                <span style={{ fontSize: 11.5, color: "#94A3B8" }}>Il y a quelques secondes</span>
+                <span style={{ fontSize: 11.5, color: "#9CA3AF" }}>Il y a quelques secondes</span>
               </div>
               {previewDesc && (
-                <div style={{ fontSize: 13, color: "#475569", lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                <div style={{ fontSize: 13, color: "#64748B", lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                   {previewDesc}
                 </div>
               )}
@@ -453,27 +453,27 @@ export default function CreateListingPage() {
 
           {/* Tips card */}
           <div style={{ background: `${BP_GREEN}10`, border: `1.5px solid ${BP_GREEN}30`, borderRadius: 18, padding: "14px 16px" }}>
-            <div style={{ fontWeight: 700, fontSize: 13.5, color: "#0F172A", marginBottom: 10 }}>Conseils pour mieux vendre</div>
+            <div style={{ fontWeight: 700, fontSize: 13.5, color: "#111827", marginBottom: 10 }}>Conseils pour mieux vendre</div>
             {TIPS.map((tip, i) => (
               <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 7 }}>
                 <div style={{ width: 18, height: 18, borderRadius: "50%", background: BP_GREEN, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
                   <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                 </div>
-                <span style={{ fontSize: 12.5, color: "#475569", lineHeight: 1.4 }}>{tip}</span>
+                <span style={{ fontSize: 12.5, color: "#64748B", lineHeight: 1.4 }}>{tip}</span>
               </div>
             ))}
           </div>
 
           {/* Boost card */}
-          <div style={{ background: "#fff", border: "1.5px solid #E2E8F0", borderRadius: 18, padding: "16px 16px 14px", boxShadow: "0 2px 10px rgba(0,0,0,0.06)" }}>
+          <div style={{ background: "#fff", border: "1.5px solid #E5E7EB", borderRadius: 18, padding: "16px 16px 14px", boxShadow: "0 2px 10px rgba(0,0,0,0.06)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
               {Ico.rocket}
-              <span style={{ fontWeight: 700, fontSize: 14, color: "#0F172A" }}>Boostez votre annonce</span>
+              <span style={{ fontWeight: 700, fontSize: 14, color: "#111827" }}>Boostez votre annonce</span>
             </div>
             <div style={{ fontSize: 12.5, color: "#64748B", marginBottom: 12, lineHeight: 1.5 }}>
               Touchez plus d'acheteurs en mettant votre annonce en avant.
             </div>
-            <button style={{ width: "100%", background: `linear-gradient(135deg, ${BP_GREEN}, #0EA046)`, color: "#fff", border: "none", borderRadius: 12, padding: "10px 0", fontWeight: 700, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, boxShadow: `0 3px 12px ${BP_GREEN}40` }}>
+            <button style={{ width: "100%", background: `linear-gradient(135deg, ${BP_GREEN}, #22C55E)`, color: "#fff", border: "none", borderRadius: 12, padding: "10px 0", fontWeight: 700, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, boxShadow: `0 3px 12px ${BP_GREEN}40` }}>
               Booster maintenant
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </button>
@@ -493,13 +493,13 @@ function Section({ title, subtitle, counter, children }: {
     <div style={{ background: "#fff", borderRadius: 20, padding: "16px 16px 18px", boxShadow: "0 2px 10px rgba(0,0,0,0.05)" }}>
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 14 }}>
         <div>
-          <div style={{ fontWeight: 700, fontSize: 14.5, color: "#0F172A", display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ fontWeight: 700, fontSize: 14.5, color: "#111827", display: "flex", alignItems: "center", gap: 6 }}>
             <div style={{ width: 4, height: 16, background: BP_GREEN, borderRadius: 2 }} />
             {title}
           </div>
-          {subtitle && <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 2, paddingLeft: 10 }}>{subtitle}</div>}
+          {subtitle && <div style={{ fontSize: 12, color: "#9CA3AF", marginTop: 2, paddingLeft: 10 }}>{subtitle}</div>}
         </div>
-        {counter && <span style={{ fontSize: 12, color: "#94A3B8", fontWeight: 600 }}>{counter}</span>}
+        {counter && <span style={{ fontSize: 12, color: "#9CA3AF", fontWeight: 600 }}>{counter}</span>}
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>{children}</div>
     </div>

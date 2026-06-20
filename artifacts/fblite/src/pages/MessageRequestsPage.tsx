@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"#22C55E",text:"#0F172A",secondary:"#64748B",muted:"#94A3B8",border:"#E2E8F0",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"#22C55E",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
 
 const Footer = () => (
   <div style={{ textAlign:"center",padding:"20px 0 32px" }}>
@@ -16,7 +16,7 @@ const Footer = () => (
 function EnvelopeIllustration() {
   return (
     <svg width="160" height="140" viewBox="0 0 160 140" fill="none">
-      <ellipse cx="80" cy="134" rx="50" ry="6" fill="#0F172A" opacity=".05"/>
+      <ellipse cx="80" cy="134" rx="50" ry="6" fill="#111827" opacity=".05"/>
       {/* Envelope body */}
       <rect x="14" y="38" width="132" height="88" rx="10" fill="#22C55E" opacity=".12"/>
       <rect x="14" y="38" width="132" height="88" rx="10" stroke="#22C55E" strokeWidth="2" fill="none"/>
@@ -27,7 +27,7 @@ function EnvelopeIllustration() {
       <line x1="30" y1="100" x2="55" y2="100" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" opacity=".3"/>
       {/* Plus badge */}
       <circle cx="122" cy="42" r="22" fill="#DCFCE7" stroke="#22C55E" strokeWidth="2"/>
-      <path d="M122 34v16M114 42h16" stroke="#15803D" strokeWidth="3" strokeLinecap="round"/>
+      <path d="M122 34v16M114 42h16" stroke="#16A34A" strokeWidth="3" strokeLinecap="round"/>
       {/* Small dots */}
       <circle cx="30" cy="38" r="6" fill="#22C55E" opacity=".3"/>
       <circle cx="130" cy="126" r="5" fill="#22C55E" opacity=".2"/>
@@ -77,7 +77,7 @@ export default function MessageRequestsPage() {
             <div style={{ fontWeight:600,fontSize:15,color:C.text }}>Contrôlez vos invitations</div>
             <div style={{ fontSize:13,color:C.secondary,marginTop:2 }}>Paramètres de messagerie</div>
           </div>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="#C4C9D4" strokeWidth="2.2" strokeLinecap="round"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="#CBD5E1" strokeWidth="2.2" strokeLinecap="round"/></svg>
         </button>
       </div>
 

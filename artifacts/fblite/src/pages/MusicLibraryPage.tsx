@@ -124,7 +124,7 @@ function TrackRow({ track, playing, loading, onPlay, onSelect }: {
       style={{
         display: "flex", alignItems: "center", gap: 12,
         padding: "14px 16px",
-        background: playing ? "rgba(34,197,94,0.04)" : pressed ? "#F9FAFB" : "#FFFFFF",
+        background: playing ? "rgba(34,197,94,0.04)" : pressed ? "#F8FAFC" : "#FFFFFF",
         borderBottom: "1px solid #F3F4F6",
         minHeight: 88,
         transform: pressed ? "scale(0.99)" : "scale(1)",
@@ -146,12 +146,12 @@ function TrackRow({ track, playing, loading, onPlay, onSelect }: {
           whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginBottom: 3,
         }}>{track.title}</div>
         <div style={{
-          fontSize: 13, color: "#6B7280", marginBottom: 4,
+          fontSize: 13, color: "#64748B", marginBottom: 4,
           whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
         }}>{track.artist}</div>
         <span style={{
           display: "inline-block", fontSize: 11, fontWeight: 500,
-          color: "#166534", background: "#DCFCE7",
+          color: "#16A34A", background: "#DCFCE7",
           borderRadius: 20, padding: "2px 8px",
         }}>{track.genre}</span>
       </button>
@@ -188,7 +188,7 @@ function TrackRow({ track, playing, loading, onPlay, onSelect }: {
             </svg>
           ) : (
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-              <polygon points="6,4 20,12 6,20" fill={track.previewUrl ? "#22C55E" : "#D1D5DB"} />
+              <polygon points="6,4 20,12 6,20" fill={track.previewUrl ? "#22C55E" : "#E5E7EB"} />
             </svg>
           )}
         </button>
@@ -225,7 +225,7 @@ function NowPlayingBar({ track, playing, onToggle, onClose }: {
         }}>{track.title}</div>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <span style={{
-            fontSize: 12, color: "#6B7280",
+            fontSize: 12, color: "#64748B",
             whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 130,
           }}>{track.artist}</span>
           <EqBars playing={playing} size="sm" />
@@ -269,13 +269,13 @@ function NowPlayingBar({ track, playing, onToggle, onClose }: {
 function SkeletonRow() {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", borderBottom: "1px solid #F3F4F6", minHeight: 88 }}>
-      <div style={{ width: 56, height: 56, borderRadius: 12, background: "#F3F4F6", flexShrink: 0, animation: "mlPulse 1.4s ease-in-out infinite" }} />
+      <div style={{ width: 56, height: 56, borderRadius: 12, background: "#F1F5F9", flexShrink: 0, animation: "mlPulse 1.4s ease-in-out infinite" }} />
       <div style={{ flex: 1 }}>
-        <div style={{ width: "65%", height: 14, borderRadius: 7, background: "#F3F4F6", marginBottom: 8, animation: "mlPulse 1.4s ease-in-out infinite" }} />
-        <div style={{ width: "45%", height: 12, borderRadius: 6, background: "#F3F4F6", marginBottom: 8, animation: "mlPulse 1.4s ease-in-out infinite 0.1s" }} />
-        <div style={{ width: 60, height: 18, borderRadius: 20, background: "#F3F4F6", animation: "mlPulse 1.4s ease-in-out infinite 0.2s" }} />
+        <div style={{ width: "65%", height: 14, borderRadius: 7, background: "#F1F5F9", marginBottom: 8, animation: "mlPulse 1.4s ease-in-out infinite" }} />
+        <div style={{ width: "45%", height: 12, borderRadius: 6, background: "#F1F5F9", marginBottom: 8, animation: "mlPulse 1.4s ease-in-out infinite 0.1s" }} />
+        <div style={{ width: 60, height: 18, borderRadius: 20, background: "#F1F5F9", animation: "mlPulse 1.4s ease-in-out infinite 0.2s" }} />
       </div>
-      <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#F3F4F6", animation: "mlPulse 1.4s ease-in-out infinite" }} />
+      <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#F1F5F9", animation: "mlPulse 1.4s ease-in-out infinite" }} />
     </div>
   );
 }
@@ -440,10 +440,10 @@ export default function MusicLibraryPage({ onSelect, onClose }: Props) {
         {/* Nav bar */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 16px 12px" }}>
           <button onClick={handleClose} style={{
-            width: 36, height: 36, borderRadius: "50%", background: "#F3F4F6",
+            width: 36, height: 36, borderRadius: "50%", background: "#F1F5F9",
             border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
           }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2.5" strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7" /></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.5" strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7" /></svg>
           </button>
           <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
             <div style={{
@@ -456,10 +456,10 @@ export default function MusicLibraryPage({ onSelect, onClose }: Props) {
             <span style={{ fontWeight: 800, fontSize: 16, color: "#111827" }}>BrutePawa</span>
           </div>
           <button onClick={handleClose} style={{
-            width: 36, height: 36, borderRadius: "50%", background: "#F3F4F6",
+            width: 36, height: 36, borderRadius: "50%", background: "#F1F5F9",
             border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
           }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
           </button>
         </div>
 
@@ -477,7 +477,7 @@ export default function MusicLibraryPage({ onSelect, onClose }: Props) {
             <h2 style={{ margin: 0, fontWeight: 800, fontSize: 20, color: "#111827", letterSpacing: "-0.4px" }}>
               Bibliothèque musicale
             </h2>
-            <p style={{ margin: "3px 0 0", fontSize: 12.5, color: "#6B7280", lineHeight: 1.4 }}>
+            <p style={{ margin: "3px 0 0", fontSize: 12.5, color: "#64748B", lineHeight: 1.4 }}>
               Appuie ▶ pour écouter · Appuie sur le titre pour choisir
             </p>
           </div>
@@ -487,7 +487,7 @@ export default function MusicLibraryPage({ onSelect, onClose }: Props) {
         <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 16px 14px" }}>
           <div style={{
             flex: 1, display: "flex", alignItems: "center", gap: 10,
-            background: "#F3F4F6", borderRadius: 18, padding: "0 16px", height: 56,
+            background: "#F1F5F9", borderRadius: 18, padding: "0 16px", height: 56,
           }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" style={{ flexShrink: 0 }}>
               <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
@@ -510,10 +510,10 @@ export default function MusicLibraryPage({ onSelect, onClose }: Props) {
           </div>
           <button style={{
             width: 56, height: 56, borderRadius: 18, flexShrink: 0,
-            background: "#F3F4F6", border: "none", cursor: "pointer",
+            background: "#F1F5F9", border: "none", cursor: "pointer",
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round">
               <line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="14" y2="12" /><line x1="4" y1="18" x2="10" y2="18" />
             </svg>
           </button>
@@ -522,7 +522,7 @@ export default function MusicLibraryPage({ onSelect, onClose }: Props) {
         {/* Tabs */}
         {!isSearching && (
           <div style={{ padding: "0 16px 14px" }}>
-            <div style={{ display: "flex", background: "#F3F4F6", borderRadius: 16, padding: 4, gap: 2, height: 52 }}>
+            <div style={{ display: "flex", background: "#F1F5F9", borderRadius: 16, padding: 4, gap: 2, height: 52 }}>
               {TABS.map(t => {
                 const active = tab === t.key;
                 return (
@@ -551,7 +551,7 @@ export default function MusicLibraryPage({ onSelect, onClose }: Props) {
             {loading ? (
               <span style={{ fontSize: 13, color: "#9CA3AF" }}>Recherche en cours…</span>
             ) : (
-              <span style={{ fontSize: 13, color: "#6B7280", fontWeight: 500 }}>
+              <span style={{ fontSize: 13, color: "#64748B", fontWeight: 500 }}>
                 {searchResults.length} résultat{searchResults.length !== 1 ? "s" : ""} pour « {debouncedQ || query} »
               </span>
             )}
@@ -567,7 +567,7 @@ export default function MusicLibraryPage({ onSelect, onClose }: Props) {
           ) : currentTracks.length === 0 ? (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: 200, gap: 12 }}>
               <div style={{
-                width: 64, height: 64, borderRadius: "50%", background: "#F3F4F6",
+                width: 64, height: 64, borderRadius: "50%", background: "#F1F5F9",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}>
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round">
@@ -575,7 +575,7 @@ export default function MusicLibraryPage({ onSelect, onClose }: Props) {
                 </svg>
               </div>
               <div style={{ textAlign: "center" }}>
-                <p style={{ color: "#374151", fontWeight: 600, fontSize: 15, margin: "0 0 4px" }}>Aucun résultat</p>
+                <p style={{ color: "#64748B", fontWeight: 600, fontSize: 15, margin: "0 0 4px" }}>Aucun résultat</p>
                 <p style={{ color: "#9CA3AF", fontSize: 13, margin: 0 }}>Essaie un autre mot-clé</p>
               </div>
             </div>

@@ -7,13 +7,13 @@ import {
   PublicUser, PublicUserWithStatus, FriendRequest, ApiGroup, ApiChatGroup,
 } from "../lib/api";
 
-const BP_GREEN = "#16C24A";
+const BP_GREEN = "#22C55E";
 
 /* ─── Types ────────────────────────────────────────────────── */
 type SubTab = "personnes"|"amis"|"abonnes"|"groupes"|"pages"|"entreprises"|"messagerie";
 
 /* ─── Helpers ──────────────────────────────────────────────── */
-const AV_COLORS = ["#1877F2","#E91E63","#9C27B0","#FF9800",BP_GREEN,"#0EA5E9","#D32F2F","#00838F"];
+const AV_COLORS = ["#22C55E","#E91E63","#9C27B0","#FF9800",BP_GREEN,"#0EA5E9","#D32F2F","#00838F"];
 function avColor(id: number) { return AV_COLORS[id % AV_COLORS.length]; }
 function fullName(u: { firstName: string; lastName: string }) { return `${u.firstName} ${u.lastName}`.trim(); }
 function initials(u: { firstName: string; lastName: string }) {
@@ -43,19 +43,19 @@ const COUNTRY_FILTERS = ["Tous","Côte d'Ivoire","Sénégal","Cameroun","Mali","
 
 /* ─── SVG Icons ─────────────────────────────────────────────── */
 const Ico = {
-  search: <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#94A3B8" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
-  filter: <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#475569" strokeWidth="2" strokeLinecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>,
+  search: <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#9CA3AF" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
+  filter: <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>,
   addFriend: <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>,
   message: <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
   check: <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>,
-  checkBlue: <svg viewBox="0 0 24 24" width="14" height="14" fill="#1877F2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5l-3.5-3.5 1.41-1.41L10 13.67l6.09-6.09 1.41 1.41L10 16.5z"/></svg>,
-  more: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="5" r="1" fill="#94A3B8"/><circle cx="12" cy="12" r="1" fill="#94A3B8"/><circle cx="12" cy="19" r="1" fill="#94A3B8"/></svg>,
+  checkBlue: <svg viewBox="0 0 24 24" width="14" height="14" fill="#22C55E"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5l-3.5-3.5 1.41-1.41L10 13.67l6.09-6.09 1.41 1.41L10 16.5z"/></svg>,
+  more: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="5" r="1" fill="#9CA3AF"/><circle cx="12" cy="12" r="1" fill="#9CA3AF"/><circle cx="12" cy="19" r="1" fill="#9CA3AF"/></svg>,
   people: <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
   shield: <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke={BP_GREEN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
   send: <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>,
   arrowR: <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke={BP_GREEN} strokeWidth="2.5" strokeLinecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>,
   groupIcon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
-  loc: <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>,
+  loc: <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>,
 };
 
 /* ─── Avatar ────────────────────────────────────────────────── */
@@ -189,7 +189,7 @@ export default function Community() {
     }
     if (user.friendshipStatus === "pending_sent") {
       return (
-        <button disabled={busy} onClick={()=>handleCancelRequest(user)} style={{ ...btnOutline, borderColor:"#CBD5E1", color:"#94A3B8" }}>
+        <button disabled={busy} onClick={()=>handleCancelRequest(user)} style={{ ...btnOutline, borderColor:"#E5E7EB", color:"#9CA3AF" }}>
           {busy ? "…" : "Envoyée"}
         </button>
       );
@@ -227,16 +227,16 @@ export default function Community() {
         {/* Info */}
         <div style={{ flex:1, minWidth:0, cursor:"pointer" }} onClick={()=>navigate(`/profile/${user.id}`)}>
           <div style={{ display:"flex", alignItems:"center", gap:5, marginBottom:2 }}>
-            <span style={{ fontWeight:800, fontSize:15, color:"#0F172A" }}>{fullName(user)}</span>
+            <span style={{ fontWeight:800, fontSize:15, color:"#111827" }}>{fullName(user)}</span>
             {user.role === "creator" && Ico.checkBlue}
           </div>
           <div style={{ fontSize:12.5, color:"#64748B", marginBottom:4, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{prof}</div>
           <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
-            <span style={{ fontSize:12, color:"#94A3B8", display:"flex", alignItems:"center", gap:3 }}>
+            <span style={{ fontSize:12, color:"#9CA3AF", display:"flex", alignItems:"center", gap:3 }}>
               {flag} {user.country ?? "Afrique"}
             </span>
             {mutual > 0 && (
-              <span style={{ fontSize:12, color:"#94A3B8", display:"flex", alignItems:"center", gap:3 }}>
+              <span style={{ fontSize:12, color:"#9CA3AF", display:"flex", alignItems:"center", gap:3 }}>
                 · {Ico.people} {mutual} amis communs
               </span>
             )}
@@ -289,7 +289,7 @@ export default function Community() {
           {/* Search bar + country chips */}
           <div style={{ background:"#fff", padding:"12px 14px 0" }}>
             <div className="bp-search">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               <input
                 autoFocus
                 value={search}
@@ -297,7 +297,7 @@ export default function Community() {
                 placeholder="Rechercher des personnes, métiers..."
               />
               {search && (
-                <button onClick={()=>setSearch("")} style={{ background:"none", border:"none", cursor:"pointer", padding:0, display:"flex", alignItems:"center", color:"#94A3B8", flexShrink:0 }}>
+                <button onClick={()=>setSearch("")} style={{ background:"none", border:"none", cursor:"pointer", padding:0, display:"flex", alignItems:"center", color:"#9CA3AF", flexShrink:0 }}>
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
               )}
@@ -309,9 +309,9 @@ export default function Community() {
                 return (
                   <button key={c} onClick={()=>setCountry(c)} style={{
                     flex:"0 0 auto", padding:"7px 14px", borderRadius:999,
-                    border:`1.5px solid ${active?BP_GREEN:"#E2E8F0"}`,
+                    border:`1.5px solid ${active?BP_GREEN:"#E5E7EB"}`,
                     background: active?BP_GREEN:"#fff",
-                    color: active?"#fff":"#475569",
+                    color: active?"#fff":"#64748B",
                     fontSize:13, fontWeight: active?700:500, cursor:"pointer", transition:"all .15s",
                     display:"flex", alignItems:"center", gap:5,
                   }}>
@@ -325,8 +325,8 @@ export default function Community() {
 
           {loading ? (
             <div style={{ textAlign:"center", padding:"48px 20px" }}>
-              <div style={{ width:32, height:32, border:`3px solid #E2E8F0`, borderTopColor:BP_GREEN, borderRadius:"50%", animation:"bp-spin .7s linear infinite", margin:"0 auto 12px" }} />
-              <div style={{ color:"#94A3B8", fontSize:14 }}>Chargement…</div>
+              <div style={{ width:32, height:32, border:`3px solid #E5E7EB`, borderTopColor:BP_GREEN, borderRadius:"50%", animation:"bp-spin .7s linear infinite", margin:"0 auto 12px" }} />
+              <div style={{ color:"#9CA3AF", fontSize:14 }}>Chargement…</div>
               <style>{`@keyframes bp-spin { to { transform:rotate(360deg); } }`}</style>
             </div>
           ) : (
@@ -335,7 +335,7 @@ export default function Community() {
               {filtered.length > 0 && (
                 <div style={{ background:"#fff", borderRadius:20, margin:"10px 12px 0", boxShadow:"0 2px 10px rgba(0,0,0,0.05)", overflow:"hidden" }}>
                   <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 16px 4px" }}>
-                    <span style={{ fontWeight:700, fontSize:15, color:"#0F172A" }}>Suggestions pour vous</span>
+                    <span style={{ fontWeight:700, fontSize:15, color:"#111827" }}>Suggestions pour vous</span>
                     <button style={{ background:"none", border:"none", color:BP_GREEN, fontWeight:700, fontSize:12.5, cursor:"pointer" }}>Voir tout</button>
                   </div>
                   {filtered.slice(0,6).map(u => <UserCard key={u.id} user={u} />)}
@@ -347,8 +347,8 @@ export default function Community() {
                   <div style={{ width:56, height:56, borderRadius:18, background:`${BP_GREEN}15`, display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 12px" }}>
                     {Ico.groupIcon}
                   </div>
-                  <div style={{ fontWeight:700, fontSize:15, color:"#0F172A", marginBottom:6 }}>Aucune personne trouvée</div>
-                  <div style={{ fontSize:13, color:"#94A3B8" }}>Modifiez votre recherche ou invitez des amis.</div>
+                  <div style={{ fontWeight:700, fontSize:15, color:"#111827", marginBottom:6 }}>Aucune personne trouvée</div>
+                  <div style={{ fontSize:13, color:"#9CA3AF" }}>Modifiez votre recherche ou invitez des amis.</div>
                 </div>
               )}
 
@@ -358,8 +358,8 @@ export default function Community() {
                   <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke={BP_GREEN} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 </div>
                 <div style={{ flex:1, minWidth:0 }}>
-                  <div style={{ fontWeight:700, fontSize:14, color:"#0F172A" }}>Invitez vos amis sur BrutePawa</div>
-                  <div style={{ fontSize:12, color:"#94A3B8", marginTop:2 }}>Plus vous êtes nombreux, plus l'expérience est enrichissante.</div>
+                  <div style={{ fontWeight:700, fontSize:14, color:"#111827" }}>Invitez vos amis sur BrutePawa</div>
+                  <div style={{ fontSize:12, color:"#9CA3AF", marginTop:2 }}>Plus vous êtes nombreux, plus l'expérience est enrichissante.</div>
                 </div>
                 <button style={{ flexShrink:0, display:"flex", alignItems:"center", gap:6, background:BP_GREEN, color:"#fff", border:"none", borderRadius:12, padding:"9px 14px", fontWeight:700, fontSize:13, cursor:"pointer", boxShadow:`0 3px 12px ${BP_GREEN}40` }}>
                   {Ico.send}
@@ -372,7 +372,7 @@ export default function Community() {
                 {/* Personnes populaires */}
                 <div style={{ background:"#fff", borderRadius:20, padding:"14px 12px", boxShadow:"0 2px 8px rgba(0,0,0,0.05)" }}>
                   <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12 }}>
-                    <span style={{ fontWeight:700, fontSize:13, color:"#0F172A" }}>Personnes populaires</span>
+                    <span style={{ fontWeight:700, fontSize:13, color:"#111827" }}>Personnes populaires</span>
                     <button style={{ background:"none", border:"none", color:BP_GREEN, fontSize:10.5, fontWeight:700, cursor:"pointer" }}>Voir tout</button>
                   </div>
                   <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
@@ -382,19 +382,19 @@ export default function Community() {
                           <Avatar user={u} size={36} />
                         </div>
                         <div style={{ minWidth:0 }}>
-                          <div style={{ fontWeight:700, fontSize:11.5, color:"#0F172A", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{u.firstName} {u.lastName.charAt(0)}.</div>
-                          <div style={{ fontSize:10, color:"#94A3B8", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{u.bio?.split(" ").slice(0,2).join(" ") ?? "Membre BP"}</div>
+                          <div style={{ fontWeight:700, fontSize:11.5, color:"#111827", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{u.firstName} {u.lastName.charAt(0)}.</div>
+                          <div style={{ fontSize:10, color:"#9CA3AF", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{u.bio?.split(" ").slice(0,2).join(" ") ?? "Membre BP"}</div>
                         </div>
                       </div>
                     ))}
-                    {popularUsers.length===0 && <div style={{ fontSize:12, color:"#94A3B8", textAlign:"center", padding:"12px 0" }}>Aucun membre</div>}
+                    {popularUsers.length===0 && <div style={{ fontSize:12, color:"#9CA3AF", textAlign:"center", padding:"12px 0" }}>Aucun membre</div>}
                   </div>
                 </div>
 
                 {/* Nouveaux membres */}
                 <div style={{ background:"#fff", borderRadius:20, padding:"14px 12px", boxShadow:"0 2px 8px rgba(0,0,0,0.05)" }}>
                   <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12 }}>
-                    <span style={{ fontWeight:700, fontSize:13, color:"#0F172A" }}>Nouveaux membres</span>
+                    <span style={{ fontWeight:700, fontSize:13, color:"#111827" }}>Nouveaux membres</span>
                     <button style={{ background:"none", border:"none", color:BP_GREEN, fontSize:10.5, fontWeight:700, cursor:"pointer" }}>Voir tout</button>
                   </div>
                   <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
@@ -405,14 +405,14 @@ export default function Community() {
                           <div style={{ position:"absolute", top:-3, right:-3, background:BP_GREEN, color:"#fff", fontSize:7, fontWeight:800, borderRadius:6, padding:"1px 4px", border:"1.5px solid #fff", whiteSpace:"nowrap" }}>Nouveau</div>
                         </div>
                         <div style={{ minWidth:0 }}>
-                          <div style={{ fontWeight:700, fontSize:11.5, color:"#0F172A", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{u.firstName} {u.lastName.charAt(0)}.</div>
-                          <div style={{ fontSize:10, color:"#94A3B8", display:"flex", alignItems:"center", gap:2 }}>
+                          <div style={{ fontWeight:700, fontSize:11.5, color:"#111827", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{u.firstName} {u.lastName.charAt(0)}.</div>
+                          <div style={{ fontSize:10, color:"#9CA3AF", display:"flex", alignItems:"center", gap:2 }}>
                             {countryFlag(u.country)} {u.country?.split(",")[0] ?? "Afrique"}
                           </div>
                         </div>
                       </div>
                     ))}
-                    {newMembers.length===0 && <div style={{ fontSize:12, color:"#94A3B8", textAlign:"center", padding:"12px 0" }}>Aucun membre</div>}
+                    {newMembers.length===0 && <div style={{ fontSize:12, color:"#9CA3AF", textAlign:"center", padding:"12px 0" }}>Aucun membre</div>}
                   </div>
                 </div>
               </div>
@@ -428,7 +428,7 @@ export default function Community() {
           {requests.length > 0 && (
             <div style={{ background:"#fff", borderRadius:20, marginBottom:12, overflow:"hidden", boxShadow:"0 2px 10px rgba(0,0,0,0.05)" }}>
               <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 16px 8px" }}>
-                <span style={{ fontWeight:700, fontSize:14.5, color:"#0F172A" }}>Invitations reçues</span>
+                <span style={{ fontWeight:700, fontSize:14.5, color:"#111827" }}>Invitations reçues</span>
                 <span style={{ background:"#EF4444", color:"#fff", borderRadius:20, padding:"2px 9px", fontSize:11, fontWeight:800 }}>{requests.length}</span>
               </div>
               {requests.map(req => (
@@ -437,9 +437,9 @@ export default function Community() {
                     <Avatar user={req.fromUser} size={50} />
                   </div>
                   <div style={{ flex:1, minWidth:0 }}>
-                    <div style={{ fontWeight:700, fontSize:14, color:"#0F172A" }}>{fullName(req.fromUser)}</div>
-                    {req.fromUser.country && <div style={{ fontSize:12, color:"#94A3B8" }}>{countryFlag(req.fromUser.country)} {req.fromUser.country}</div>}
-                    <div style={{ fontSize:11.5, color:"#94A3B8", marginTop:2 }}>{relTime(req.createdAt)}</div>
+                    <div style={{ fontWeight:700, fontSize:14, color:"#111827" }}>{fullName(req.fromUser)}</div>
+                    {req.fromUser.country && <div style={{ fontSize:12, color:"#9CA3AF" }}>{countryFlag(req.fromUser.country)} {req.fromUser.country}</div>}
+                    <div style={{ fontSize:11.5, color:"#9CA3AF", marginTop:2 }}>{relTime(req.createdAt)}</div>
                   </div>
                   <div style={{ display:"flex", gap:6, flexShrink:0 }}>
                     <button disabled={actionLoading[req.id]} onClick={()=>handleAccept(req)} style={btnSolid}>{actionLoading[req.id]?"…":"Confirmer"}</button>
@@ -453,16 +453,16 @@ export default function Community() {
           {/* Friends list */}
           <div style={{ background:"#fff", borderRadius:20, overflow:"hidden", boxShadow:"0 2px 10px rgba(0,0,0,0.05)" }}>
             <div style={{ padding:"14px 16px 8px", display:"flex", alignItems:"center", gap:8 }}>
-              <span style={{ fontWeight:700, fontSize:14.5, color:"#0F172A" }}>Vos amis</span>
+              <span style={{ fontWeight:700, fontSize:14.5, color:"#111827" }}>Vos amis</span>
               {friends.length>0 && <span style={{ background:"#F1F5F9", color:"#64748B", borderRadius:20, padding:"2px 9px", fontSize:11, fontWeight:700 }}>{friends.length}</span>}
             </div>
             {loading ? (
-              <div style={{ textAlign:"center", padding:"32px", color:"#94A3B8", fontSize:14 }}>Chargement…</div>
+              <div style={{ textAlign:"center", padding:"32px", color:"#9CA3AF", fontSize:14 }}>Chargement…</div>
             ) : friends.length===0 ? (
               <div style={{ textAlign:"center", padding:"40px 20px" }}>
                 <div style={{ width:56, height:56, borderRadius:18, background:`${BP_GREEN}15`, display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 12px" }}>{Ico.groupIcon}</div>
-                <div style={{ fontWeight:700, fontSize:15, color:"#0F172A", marginBottom:4 }}>Aucun ami pour l'instant</div>
-                <div style={{ fontSize:13, color:"#94A3B8" }}>Ajoutez des personnes depuis l'onglet Personnes.</div>
+                <div style={{ fontWeight:700, fontSize:15, color:"#111827", marginBottom:4 }}>Aucun ami pour l'instant</div>
+                <div style={{ fontSize:13, color:"#9CA3AF" }}>Ajoutez des personnes depuis l'onglet Personnes.</div>
               </div>
             ) : (
               friends.map(friend => (
@@ -471,8 +471,8 @@ export default function Community() {
                     <Avatar user={friend} size={50} online={false} />
                   </div>
                   <div style={{ flex:1, cursor:"pointer", minWidth:0 }} onClick={()=>navigate(`/profile/${friend.id}`)}>
-                    <div style={{ fontWeight:700, fontSize:14.5, color:"#0F172A" }}>{fullName(friend)}</div>
-                    {friend.country && <div style={{ fontSize:12, color:"#94A3B8", marginTop:2 }}>{countryFlag(friend.country)} {friend.country}</div>}
+                    <div style={{ fontWeight:700, fontSize:14.5, color:"#111827" }}>{fullName(friend)}</div>
+                    {friend.country && <div style={{ fontSize:12, color:"#9CA3AF", marginTop:2 }}>{countryFlag(friend.country)} {friend.country}</div>}
                     {friend.bio && <div style={{ fontSize:12, color:"#64748B", marginTop:2, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{friend.bio}</div>}
                   </div>
                   <button onClick={()=>navigate(`/messages?userId=${friend.id}`)} style={{ ...btnOutline, flexShrink:0 }}>
@@ -494,7 +494,7 @@ export default function Community() {
       {activeTab==="groupes" && (
         <div style={{ padding:"12px" }}>
           <div className="bp-search" style={{ marginBottom:12 }}>
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input
               value={groupSearch}
               onChange={e=>setGroupSearch(e.target.value)}
@@ -502,7 +502,7 @@ export default function Community() {
             />
           </div>
           {loading ? (
-            <div style={{ textAlign:"center", padding:"32px", color:"#94A3B8" }}>Chargement…</div>
+            <div style={{ textAlign:"center", padding:"32px", color:"#9CA3AF" }}>Chargement…</div>
           ) : (() => {
             const q = groupSearch.toLowerCase().trim();
             const fg = q ? groups.filter(g=>g.name.toLowerCase().includes(q)||(g.description??"").toLowerCase().includes(q)) : groups;
@@ -517,11 +517,11 @@ export default function Community() {
                 {/* ── Groupes de discussion (chat groups) ── */}
                 {fcg.length > 0 && (
                   <>
-                    <div style={{ fontSize:12, fontWeight:700, color:"#94A3B8", letterSpacing:0.5, padding:"4px 4px 2px", textTransform:"uppercase" }}>
+                    <div style={{ fontSize:12, fontWeight:700, color:"#9CA3AF", letterSpacing:0.5, padding:"4px 4px 2px", textTransform:"uppercase" }}>
                       Groupes de discussion
                     </div>
                     {fcg.map(cg => {
-                      const WIZ_COLORS = ["#EC4899","#8B5CF6","#F97316","#22C55E","#14B8A6","#EF4444","#3B82F6","#F59E0B","#6366F1","#D946EF"];
+                      const WIZ_COLORS = ["#EC4899","#8B5CF6","#F97316","#22C55E","#0EA5E9","#EF4444","#3B82F6","#F59E0B","#6366F1","#8B5CF6"];
                       const col = WIZ_COLORS[cg.id % WIZ_COLORS.length];
                       const initials = cg.name.split(" ").map((w:string)=>w[0]).join("").toUpperCase().slice(0,2);
                       return (
@@ -535,16 +535,16 @@ export default function Community() {
                             }
                           </div>
                           <div style={{ flex:1, minWidth:0 }}>
-                            <div style={{ fontWeight:700, fontSize:14.5, color:"#0F172A", marginBottom:2, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{cg.name}</div>
+                            <div style={{ fontWeight:700, fontSize:14.5, color:"#111827", marginBottom:2, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{cg.name}</div>
                             <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                              <span style={{ fontSize:12, color:"#94A3B8" }}>{Ico.people} {cg.membersCount} membre{cg.membersCount!==1?"s":""}</span>
+                              <span style={{ fontSize:12, color:"#9CA3AF" }}>{Ico.people} {cg.membersCount} membre{cg.membersCount!==1?"s":""}</span>
                               <span style={{ fontSize:11, background:`${BP_GREEN}18`, color:BP_GREEN, borderRadius:8, padding:"1px 7px", fontWeight:600 }}>
                                 {cg.type==="channel"?"Canal":"Discussion"}
                               </span>
                             </div>
                             {cg.lastMessage && <div style={{ fontSize:12, color:"#64748B", marginTop:2, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{cg.lastMessage}</div>}
                           </div>
-                          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#CBD5E1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#E5E7EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                         </div>
                       );
                     })}
@@ -555,7 +555,7 @@ export default function Community() {
                 {fg.length > 0 && (
                   <>
                     {fcg.length > 0 && (
-                      <div style={{ fontSize:12, fontWeight:700, color:"#94A3B8", letterSpacing:0.5, padding:"8px 4px 2px", textTransform:"uppercase" }}>
+                      <div style={{ fontSize:12, fontWeight:700, color:"#9CA3AF", letterSpacing:0.5, padding:"8px 4px 2px", textTransform:"uppercase" }}>
                         Communautés
                       </div>
                     )}
@@ -566,11 +566,11 @@ export default function Community() {
                         </div>
                         <div style={{ padding:"12px 14px", display:"flex", alignItems:"center", gap:12 }}>
                           <div style={{ flex:1, cursor:"pointer", minWidth:0 }} onClick={()=>navigate(`/groups/${group.id}`)}>
-                            <div style={{ fontWeight:700, fontSize:14.5, color:"#0F172A", marginBottom:3 }}>{group.name}</div>
+                            <div style={{ fontWeight:700, fontSize:14.5, color:"#111827", marginBottom:3 }}>{group.name}</div>
                             <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
-                              <span style={{ fontSize:12, color:"#94A3B8" }}>{Ico.people} {group.membersCount.toLocaleString()} membres</span>
-                              <span style={{ fontSize:12, color:"#94A3B8" }}>{group.privacy==="public"?"Public":"Privé"}</span>
-                              {group.country && <span style={{ fontSize:12, color:"#94A3B8" }}>{countryFlag(group.country)} {group.country}</span>}
+                              <span style={{ fontSize:12, color:"#9CA3AF" }}>{Ico.people} {group.membersCount.toLocaleString()} membres</span>
+                              <span style={{ fontSize:12, color:"#9CA3AF" }}>{group.privacy==="public"?"Public":"Privé"}</span>
+                              {group.country && <span style={{ fontSize:12, color:"#9CA3AF" }}>{countryFlag(group.country)} {group.country}</span>}
                             </div>
                             {group.description && <div style={{ fontSize:12, color:"#64748B", marginTop:4, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{group.description}</div>}
                           </div>
@@ -627,7 +627,7 @@ const btnSolid: React.CSSProperties = {
 };
 const btnOutline: React.CSSProperties = {
   display:"flex", alignItems:"center", justifyContent:"center", gap:5,
-  background:"#fff", color:"#475569", border:`1.5px solid ${BP_GREEN}`,
+  background:"#fff", color:"#64748B", border:`1.5px solid ${BP_GREEN}`,
   borderRadius:12, padding:"7px 13px", fontWeight:700, fontSize:13, cursor:"pointer",
   whiteSpace:"nowrap",
 };
@@ -637,8 +637,8 @@ function EmptyPlaceholder({ icon, title, sub }: { icon:React.ReactNode; title:st
   return (
     <div style={{ textAlign:"center", padding:"48px 20px", margin:"12px" }}>
       <div style={{ width:64, height:64, borderRadius:20, background:`${BP_GREEN}15`, display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 16px" }}>{icon}</div>
-      <div style={{ fontWeight:700, fontSize:15, color:"#0F172A", marginBottom:6 }}>{title}</div>
-      <div style={{ fontSize:13, color:"#94A3B8", lineHeight:1.5 }}>{sub}</div>
+      <div style={{ fontWeight:700, fontSize:15, color:"#111827", marginBottom:6 }}>{title}</div>
+      <div style={{ fontSize:13, color:"#9CA3AF", lineHeight:1.5 }}>{sub}</div>
     </div>
   );
 }

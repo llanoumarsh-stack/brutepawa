@@ -37,7 +37,7 @@ export default function FormationDetail({ id }: Props) {
     <div style={{ maxWidth: 600, margin: "0 auto", textAlign: "center", padding: 60 }}>
       <div style={{ fontSize: 40 }}>❌</div>
       <div style={{ marginTop: 12, fontWeight: 700 }}>Formation introuvable</div>
-      <button onClick={() => navigate("/formations")} style={{ marginTop: 16, background: "var(--fb-blue)", color: "#fff", border: "none", borderRadius: 20, padding: "10px 24px", cursor: "pointer", fontWeight: 700 }}>← Retour</button>
+      <button onClick={() => navigate("/formations")} style={{ marginTop: 16, background: "var(--bp-primary)", color: "#fff", border: "none", borderRadius: 20, padding: "10px 24px", cursor: "pointer", fontWeight: 700 }}>← Retour</button>
     </div>
   );
 
@@ -55,13 +55,13 @@ export default function FormationDetail({ id }: Props) {
     "advanced": "Avancé", "all": "Tous niveaux"
   };
   const levelColor: Record<string, string> = {
-    "Débutant": "#4CAF50", "beginner": "#4CAF50",
+    "Débutant": "#22C55E", "beginner": "#22C55E",
     "Intermédiaire": "#FF9800", "intermediate": "#FF9800",
-    "Avancé": "#F44336", "advanced": "#F44336",
-    "Tous niveaux": "#1877F2", "all": "#1877F2"
+    "Avancé": "#EF4444", "advanced": "#EF4444",
+    "Tous niveaux": "#22C55E", "all": "#22C55E"
   };
   const level = levelLabel[course.level] ?? course.level;
-  const lvlColor = levelColor[course.level] ?? "#1877F2";
+  const lvlColor = levelColor[course.level] ?? "#22C55E";
 
   const handleEnroll = async () => {
     setEnrolling(true);
@@ -93,7 +93,7 @@ export default function FormationDetail({ id }: Props) {
       </div>
 
       {/* Course hero */}
-      <div style={{ background: "linear-gradient(135deg, #1877F2, #0d47a1)", color: "#fff", padding: "24px 16px", textAlign: "center" }}>
+      <div style={{ background: "linear-gradient(135deg, #22C55E, #0d47a1)", color: "#fff", padding: "24px 16px", textAlign: "center" }}>
         <div style={{ fontSize: 64, marginBottom: 12 }}>{emoji}</div>
         <h1 style={{ margin: "0 0 8px", fontSize: 20, fontWeight: 900 }}>{course.title}</h1>
         <div style={{ fontSize: 13, opacity: 0.85 }}>
@@ -105,7 +105,7 @@ export default function FormationDetail({ id }: Props) {
       <div style={{ background: "var(--fb-white)", padding: "16px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
           <div>
-            <div style={{ fontWeight: 900, fontSize: 26, color: isFreeDisplay ? "#4CAF50" : "var(--fb-blue)" }}>
+            <div style={{ fontWeight: 900, fontSize: 26, color: isFreeDisplay ? "#22C55E" : "var(--bp-primary)" }}>
               {isFreeDisplay ? "🆓 Gratuit" : `${(course.price ?? 0).toLocaleString()} ${course.currency ?? "FCFA"}`}
             </div>
             <div style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>Accès à vie · Certificat inclus</div>
@@ -118,21 +118,21 @@ export default function FormationDetail({ id }: Props) {
         {isEnrolled ? (
           <>
             <div style={{ background: "var(--fb-bg)", borderRadius: 10, height: 10, marginBottom: 6 }}>
-              <div style={{ background: progress >= 100 ? "#4CAF50" : "var(--fb-blue)", height: 10, borderRadius: 10, width: `${progress}%`, transition: "width 0.5s" }} />
+              <div style={{ background: progress >= 100 ? "#22C55E" : "var(--bp-primary)", height: 10, borderRadius: 10, width: `${progress}%`, transition: "width 0.5s" }} />
             </div>
             <div style={{ fontSize: 13, color: "var(--fb-text-secondary)", marginBottom: 14 }}>
               {progress >= 100 ? "✅ Cours complété !" : `${progress}% complété · ${lessonsCompleted}/${syllabus.length} leçons`}
             </div>
             {progress < 100 && (
               <button onClick={() => void handleContinue(lessonsCompleted)} style={{
-                width: "100%", background: "var(--fb-blue)", color: "#fff", border: "none",
+                width: "100%", background: "var(--bp-primary)", color: "#fff", border: "none",
                 borderRadius: 12, padding: "14px", fontWeight: 800, fontSize: 16, cursor: "pointer"
               }}>▶ Continuer la formation</button>
             )}
           </>
         ) : (
           <button onClick={handleEnroll} disabled={enrolling} style={{
-            width: "100%", background: enrolling ? "#ccc" : (isFreeDisplay ? "#4CAF50" : "var(--fb-blue)"),
+            width: "100%", background: enrolling ? "#ccc" : (isFreeDisplay ? "#22C55E" : "var(--bp-primary)"),
             color: "#fff", border: "none", borderRadius: 12, padding: "14px", fontWeight: 800, fontSize: 16, cursor: "pointer"
           }}>
             {enrolling ? "Inscription..." : isFreeDisplay ? "🎓 S'inscrire gratuitement" : `💳 S'inscrire — ${(course.price ?? 0).toLocaleString()} ${course.currency ?? "FCFA"}`}
@@ -145,7 +145,7 @@ export default function FormationDetail({ id }: Props) {
         <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 12 }}>🎯 Ce que vous apprendrez</div>
         {["Maîtriser les concepts fondamentaux", "Créer des projets concrets", "Développer une expertise reconnue", "Obtenir votre certificat officiel"].map((item, i) => (
           <div key={i} style={{ display: "flex", gap: 10, marginBottom: 10, fontSize: 14 }}>
-            <span style={{ color: "#4CAF50", fontWeight: 700, flexShrink: 0 }}>✓</span>
+            <span style={{ color: "#22C55E", fontWeight: 700, flexShrink: 0 }}>✓</span>
             <span>{item}</span>
           </div>
         ))}
@@ -168,13 +168,13 @@ export default function FormationDetail({ id }: Props) {
             }} onClick={() => isCurrent && isEnrolled && !isLoading && void handleContinue(i)}>
               <div style={{
                 width: 36, height: 36, borderRadius: "50%", flexShrink: 0,
-                background: isCompleted ? "#E8F5E9" : isCurrent ? "var(--fb-blue)" : "var(--fb-bg)",
+                background: isCompleted ? "#DCFCE7" : isCurrent ? "var(--bp-primary)" : "var(--fb-bg)",
                 display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16
               }}>
                 {isLoading ? "⏳" : isCompleted ? "✅" : isCurrent ? "▶" : `${i + 1}`}
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: isCompleted || isCurrent ? 700 : 500, fontSize: 14, color: isCompleted ? "#4CAF50" : isCurrent ? "var(--fb-blue)" : "var(--fb-text)" }}>
+                <div style={{ fontWeight: isCompleted || isCurrent ? 700 : 500, fontSize: 14, color: isCompleted ? "#22C55E" : isCurrent ? "var(--bp-primary)" : "var(--fb-text)" }}>
                   Module {i + 1} : {lesson}
                 </div>
                 <div style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>
@@ -190,13 +190,13 @@ export default function FormationDetail({ id }: Props) {
       <div style={{ background: "var(--fb-white)", marginTop: 4, padding: "16px" }}>
         <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 12 }}>👤 Instructeur</div>
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-          <div style={{ width: 56, height: 56, borderRadius: "50%", background: "var(--fb-blue)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 20 }}>
+          <div style={{ width: 56, height: 56, borderRadius: "50%", background: "var(--bp-primary)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 20 }}>
             🎓
           </div>
           <div style={{ flex: 1 }}>
             <div style={{ fontWeight: 800, fontSize: 15, display: "flex", alignItems: "center", gap: 6 }}>
               Formateur Certifié
-              <span style={{ color: "var(--fb-blue)", fontSize: 14 }}>✔️</span>
+              <span style={{ color: "var(--bp-primary)", fontSize: 14 }}>✔️</span>
             </div>
             <div style={{ fontSize: 13, color: "var(--fb-text-secondary)" }}>Expert {course.category}</div>
             <div style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>📍 Afrique de l'Ouest</div>

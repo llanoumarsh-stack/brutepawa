@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#0F172A", secondary:"#64748B", muted:"#94A3B8", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#111827", secondary:"#64748B", muted:"#9CA3AF", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
 
 function SubHeader({ title, onBack }:{title:string;onBack:()=>void}) {
   return (
@@ -22,7 +22,7 @@ const CATS = [
   { label:"Médias",       mo:420, color:"#3B82F6" },
   { label:"Messages",     mo:420, color:"#F59E0B" },
   { label:"Cache",        mo:120, color:"#8B5CF6" },
-  { label:"Autre",        mo:80,  color:"#E2E8F0" },
+  { label:"Autre",        mo:80,  color:"#E5E7EB" },
 ];
 const TOTAL_MO = CATS.reduce((s,c)=>s+c.mo, 0);
 const TOTAL_GO  = 10;

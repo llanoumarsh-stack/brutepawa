@@ -22,13 +22,13 @@ const BOT_META: Record<string, { emoji: string; label: string; desc: string; col
     emoji: "👋",
     label: "Bot de Bienvenue",
     desc: "Publie automatiquement un message de bienvenue quand un nouveau membre rejoint le groupe.",
-    color: "#42B72A",
+    color: "#22C55E",
   },
   anti_insult: {
     emoji: "🛡️",
     label: "Bot Anti-Insultes",
     desc: "Supprime les messages contenant des mots interdits. Peut exclure automatiquement après plusieurs avertissements.",
-    color: "#E41E3F",
+    color: "#EF4444",
   },
   anti_link: {
     emoji: "🔗",
@@ -40,7 +40,7 @@ const BOT_META: Record<string, { emoji: string; label: string; desc: string; col
     emoji: "🌍",
     label: "Bot Traducteur",
     desc: "Permet aux membres de traduire des publications dans leur langue avec un bouton dédié.",
-    color: "#1877F2",
+    color: "#22C55E",
   },
   scheduler: {
     emoji: "📅",
@@ -56,7 +56,7 @@ function ToggleSwitch({ enabled, onChange }: { enabled: boolean; onChange: (v: b
       onClick={() => onChange(!enabled)}
       style={{
         width: 44, height: 24, borderRadius: 12, border: "none", cursor: "pointer",
-        background: enabled ? "#42B72A" : "#CCD0D5",
+        background: enabled ? "#22C55E" : "#CCD0D5",
         position: "relative", transition: "background 0.2s", flexShrink: 0,
       }}
     >
@@ -119,7 +119,7 @@ function AntiInsultSettings({
         <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
           {words.map(w => (
             <span key={w} style={{
-              background: "#FFF0F0", color: "#D32F2F", borderRadius: 20, padding: "3px 10px",
+              background: "#FEE2E2", color: "#D32F2F", borderRadius: 20, padding: "3px 10px",
               fontSize: 13, fontWeight: 600, display: "flex", alignItems: "center", gap: 4,
             }}>
               {w}
@@ -148,7 +148,7 @@ function AntiInsultSettings({
             onClick={addWord}
             style={{
               padding: "8px 14px", borderRadius: 8, border: "none",
-              background: "#42B72A", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer",
+              background: "#22C55E", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer",
             }}
           >Ajouter</button>
         </div>
@@ -224,13 +224,13 @@ function AntiLinkSettings({
         <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
           {domains.map(d => (
             <span key={d} style={{
-              background: "#E7F3FF", color: "#1877F2", borderRadius: 20, padding: "3px 10px",
+              background: "#DCFCE7", color: "#22C55E", borderRadius: 20, padding: "3px 10px",
               fontSize: 13, fontWeight: 600, display: "flex", alignItems: "center", gap: 4,
             }}>
               {d}
               <button
                 onClick={() => onChange({ ...settings, allowedDomains: domains.filter(x => x !== d) })}
-                style={{ background: "none", border: "none", cursor: "pointer", color: "#1877F2", padding: 0, fontSize: 14, lineHeight: 1 }}
+                style={{ background: "none", border: "none", cursor: "pointer", color: "#22C55E", padding: 0, fontSize: 14, lineHeight: 1 }}
               >×</button>
             </span>
           ))}
@@ -253,7 +253,7 @@ function AntiLinkSettings({
             onClick={addDomain}
             style={{
               padding: "8px 14px", borderRadius: 8, border: "none",
-              background: "#42B72A", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer",
+              background: "#22C55E", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer",
             }}
           >Ajouter</button>
         </div>
@@ -341,8 +341,8 @@ function SchedulerSettings({
               <button
                 onClick={() => removeAnnouncement(a.id)}
                 style={{
-                  padding: "5px 10px", borderRadius: 6, border: "1px solid #E41E3F",
-                  background: "#FFF0F0", color: "#D32F2F", fontWeight: 600, fontSize: 12, cursor: "pointer", flexShrink: 0,
+                  padding: "5px 10px", borderRadius: 6, border: "1px solid #EF4444",
+                  background: "#FEE2E2", color: "#D32F2F", fontWeight: 600, fontSize: 12, cursor: "pointer", flexShrink: 0,
                 }}
               >Supprimer</button>
             </div>
@@ -386,9 +386,9 @@ function SchedulerSettings({
                 onClick={() => toggleDay(i)}
                 style={{
                   padding: "5px 10px", borderRadius: 20, border: "1px solid",
-                  borderColor: newDays.includes(i) ? "#42B72A" : "var(--fb-border)",
-                  background: newDays.includes(i) ? "#42B72A20" : "var(--fb-bg)",
-                  color: newDays.includes(i) ? "#42B72A" : "var(--fb-text-secondary)",
+                  borderColor: newDays.includes(i) ? "#22C55E" : "var(--fb-border)",
+                  background: newDays.includes(i) ? "#22C55E20" : "var(--fb-bg)",
+                  color: newDays.includes(i) ? "#22C55E" : "var(--fb-text-secondary)",
                   fontWeight: 600, fontSize: 12, cursor: "pointer",
                 }}
               >{name}</button>
@@ -400,7 +400,7 @@ function SchedulerSettings({
           disabled={!newMsg.trim()}
           style={{
             padding: "9px 0", borderRadius: 8, border: "none",
-            background: newMsg.trim() ? "#42B72A" : "var(--fb-divider)",
+            background: newMsg.trim() ? "#22C55E" : "var(--fb-divider)",
             color: newMsg.trim() ? "#fff" : "var(--fb-text-secondary)",
             fontWeight: 700, fontSize: 14, cursor: newMsg.trim() ? "pointer" : "not-allowed",
           }}
@@ -485,7 +485,7 @@ function BotCard({ bot, onSave }: { bot: ApiGroupBot; onSave: (enabled: boolean,
             disabled={saving}
             style={{
               marginTop: 14, width: "100%", padding: "11px 0", borderRadius: 8, border: "none",
-              background: saved ? "#42B72A" : meta.color, color: "#fff",
+              background: saved ? "#22C55E" : meta.color, color: "#fff",
               fontWeight: 700, fontSize: 14, cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.7 : 1,
             }}
           >

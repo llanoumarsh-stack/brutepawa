@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#0F172A", secondary:"#64748B", muted:"#94A3B8", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#111827", secondary:"#64748B", muted:"#9CA3AF", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
 
 function SubHeader({ title, onBack }:{title:string;onBack:()=>void}) {
   return (
@@ -41,7 +41,7 @@ function SelectRow({ label, sub, selected, onSelect, last=false }:{label:string;
   const [pressed, setPressed] = useState(false);
   return (
     <button onClick={onSelect} onPointerDown={()=>setPressed(true)} onPointerUp={()=>setPressed(false)} onPointerLeave={()=>setPressed(false)}
-      style={{ display:"flex",alignItems:"center",padding:"14px 18px",background:pressed?"#F8FAFB":"none",border:"none",cursor:"pointer",width:"100%",textAlign:"left",borderBottom:last?"none":"1px solid #F1F5F9",transition:"background 150ms" }}>
+      style={{ display:"flex",alignItems:"center",padding:"14px 18px",background:pressed?"#F8FAFC":"none",border:"none",cursor:"pointer",width:"100%",textAlign:"left",borderBottom:last?"none":"1px solid #F1F5F9",transition:"background 150ms" }}>
       <div style={{ flex:1 }}>
         <div style={{ fontWeight:selected?700:500,fontSize:15,color:selected?C.primary:C.text }}>{label}</div>
         {sub && <div style={{ fontSize:12,color:C.muted,marginTop:1 }}>{sub}</div>}
@@ -67,14 +67,14 @@ export default function LanguagePage() {
       <div style={{ padding:"24px 14px 40px" }}>
         {/* Globe illustration */}
         <div style={{ display:"flex",justifyContent:"center",marginBottom:28 }}>
-          <div style={{ width:110,height:110,borderRadius:"50%",background:"radial-gradient(circle at 40% 35%,#E0F2FE,#BAE6FD)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 0 0 12px #F0F9FF,0 8px 30px rgba(14,165,233,0.2)" }}>
+          <div style={{ width:110,height:110,borderRadius:"50%",background:"radial-gradient(circle at 40% 35%,#DCFCE7,#DCFCE7)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 0 0 12px #DCFCE7,0 8px 30px rgba(14,165,233,0.2)" }}>
             <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
               <circle cx="12" cy="12" r="9.5" fill="#0EA5E9" opacity=".12"/>
-              <circle cx="12" cy="12" r="9.5" stroke="#0284C7" strokeWidth="1.5"/>
-              <ellipse cx="12" cy="12" rx="4.5" ry="9.5" stroke="#0284C7" strokeWidth="1.2"/>
-              <line x1="2.5" y1="12" x2="21.5" y2="12" stroke="#0284C7" strokeWidth="1.2"/>
-              <line x1="4" y1="7" x2="20" y2="7" stroke="#0284C7" strokeWidth="1" opacity=".5"/>
-              <line x1="4" y1="17" x2="20" y2="17" stroke="#0284C7" strokeWidth="1" opacity=".5"/>
+              <circle cx="12" cy="12" r="9.5" stroke="#0EA5E9" strokeWidth="1.5"/>
+              <ellipse cx="12" cy="12" rx="4.5" ry="9.5" stroke="#0EA5E9" strokeWidth="1.2"/>
+              <line x1="2.5" y1="12" x2="21.5" y2="12" stroke="#0EA5E9" strokeWidth="1.2"/>
+              <line x1="4" y1="7" x2="20" y2="7" stroke="#0EA5E9" strokeWidth="1" opacity=".5"/>
+              <line x1="4" y1="17" x2="20" y2="17" stroke="#0EA5E9" strokeWidth="1" opacity=".5"/>
               {/* Africa silhouette dot */}
               <ellipse cx="12" cy="13" rx="2.5" ry="3.5" fill="#0EA5E9" opacity=".3"/>
             </svg>

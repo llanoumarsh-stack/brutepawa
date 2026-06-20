@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "../router";
 
 type Tab = "stories"|"publications"|"corbeille";
-const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#0F172A", secondary:"#64748B", muted:"#94A3B8", shadow:"0 8px 30px rgba(0,0,0,0.05)", danger:"#EF4444" };
+const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#111827", secondary:"#64748B", muted:"#9CA3AF", shadow:"0 8px 30px rgba(0,0,0,0.05)", danger:"#EF4444" };
 
 function SubHeader({ title, onBack }:{title:string;onBack:()=>void}) {
   return (
@@ -23,29 +23,29 @@ function FolderIllustration() {
   return (
     <svg width="160" height="140" viewBox="0 0 160 140" fill="none">
       {/* Shadow */}
-      <ellipse cx="80" cy="132" rx="55" ry="7" fill="#0F172A" opacity=".06"/>
+      <ellipse cx="80" cy="132" rx="55" ry="7" fill="#111827" opacity=".06"/>
       {/* Back folder */}
       <path d="M18 40a6 6 0 016-6h42l10 12h60a6 6 0 016 6v60a6 6 0 01-6 6H24a6 6 0 01-6-6V40z" fill="#BBF7D0"/>
       {/* Front folder */}
       <path d="M14 52a6 6 0 016-6h44l10 12h66a6 6 0 016 6v58a6 6 0 01-6 6H20a6 6 0 01-6-6V52z" fill="#22C55E"/>
       {/* Folder highlight */}
-      <path d="M14 52a6 6 0 016-6h44l10 12h66a6 6 0 016 6v10H14V52z" fill="#4ADE80" opacity=".4"/>
+      <path d="M14 52a6 6 0 016-6h44l10 12h66a6 6 0 016 6v10H14V52z" fill="#22C55E" opacity=".4"/>
       {/* Tab */}
       <path d="M58 46h22l10 12H68L58 46z" fill="#16A34A"/>
       {/* Document 1 */}
       <rect x="50" y="70" width="44" height="52" rx="6" fill="#fff" transform="rotate(-8 50 70)"/>
-      <line x1="58" y1="90" x2="86" y2="86" stroke="#E2E8F0" strokeWidth="3" strokeLinecap="round"/>
-      <line x1="58" y1="97" x2="82" y2="94" stroke="#E2E8F0" strokeWidth="3" strokeLinecap="round"/>
-      <line x1="58" y1="104" x2="79" y2="101" stroke="#E2E8F0" strokeWidth="3" strokeLinecap="round"/>
+      <line x1="58" y1="90" x2="86" y2="86" stroke="#E5E7EB" strokeWidth="3" strokeLinecap="round"/>
+      <line x1="58" y1="97" x2="82" y2="94" stroke="#E5E7EB" strokeWidth="3" strokeLinecap="round"/>
+      <line x1="58" y1="104" x2="79" y2="101" stroke="#E5E7EB" strokeWidth="3" strokeLinecap="round"/>
       {/* Document 2 */}
       <rect x="68" y="65" width="44" height="52" rx="6" fill="#fff" transform="rotate(6 68 65)"/>
-      <line x1="76" y1="85" x2="102" y2="86" stroke="#E2E8F0" strokeWidth="3" strokeLinecap="round"/>
-      <line x1="76" y1="92" x2="98" y2="93" stroke="#E2E8F0" strokeWidth="3" strokeLinecap="round"/>
+      <line x1="76" y1="85" x2="102" y2="86" stroke="#E5E7EB" strokeWidth="3" strokeLinecap="round"/>
+      <line x1="76" y1="92" x2="98" y2="93" stroke="#E5E7EB" strokeWidth="3" strokeLinecap="round"/>
       {/* Star badge */}
       <circle cx="125" cy="38" r="16" fill="#FEF9C3" stroke="#FBBF24" strokeWidth="2"/>
       <text x="125" y="44" textAnchor="middle" fontSize="16">⭐</text>
       {/* Photo badge */}
-      <circle cx="38" cy="72" r="14" fill="#EFF6FF" stroke="#BFDBFE" strokeWidth="2"/>
+      <circle cx="38" cy="72" r="14" fill="#DCFCE7" stroke="#DCFCE7" strokeWidth="2"/>
       <text x="38" y="78" textAnchor="middle" fontSize="14">📷</text>
       {/* Play badge */}
       <circle cx="130" cy="95" r="13" fill="#FEF3C7" stroke="#FCD34D" strokeWidth="2"/>
@@ -71,13 +71,13 @@ export default function ArchivePage() {
 
       {/* Banner card */}
       <div style={{ margin:"14px 14px 0", background:"linear-gradient(135deg,#F0FDF4,#DCFCE7)", borderRadius:24, padding:"16px 18px", display:"flex", alignItems:"center", gap:14, boxShadow:C.shadow, border:"1px solid #BBF7D0" }}>
-        <div style={{ width:52,height:52,borderRadius:16,background:"linear-gradient(135deg,#15803D,#22C55E)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 4px 12px rgba(34,197,94,0.3)" }}>
+        <div style={{ width:52,height:52,borderRadius:16,background:"linear-gradient(135deg,#16A34A,#22C55E)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 4px 12px rgba(34,197,94,0.3)" }}>
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round">
             <polyline points="21,8 21,21 3,21 3,8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/>
           </svg>
         </div>
         <div style={{ flex:1 }}>
-          <div style={{ fontWeight:700,fontSize:15,color:"#15803D",letterSpacing:"-0.2px" }}>Conservez ce qui compte pour vous</div>
+          <div style={{ fontWeight:700,fontSize:15,color:"#16A34A",letterSpacing:"-0.2px" }}>Conservez ce qui compte pour vous</div>
           <div style={{ fontSize:13,color:"#16A34A",marginTop:2,opacity:.8 }}>Archivez ou restaurez vos publications à tout moment.</div>
         </div>
       </div>

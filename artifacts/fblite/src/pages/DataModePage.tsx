@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#0F172A", secondary:"#64748B", muted:"#94A3B8", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#111827", secondary:"#64748B", muted:"#9CA3AF", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
 
 function SubHeader({ title, onBack }:{title:string;onBack:()=>void}) {
   return (
@@ -18,7 +18,7 @@ function SubHeader({ title, onBack }:{title:string;onBack:()=>void}) {
 }
 
 const Toggle = ({ on, onChange }:{on:boolean;onChange:(v:boolean)=>void}) => (
-  <div onClick={()=>onChange(!on)} style={{ width:52,height:30,borderRadius:15,background:on?C.primary:"#E2E8F0",position:"relative",cursor:"pointer",transition:"background 250ms ease",flexShrink:0,boxShadow:on?"0 2px 10px rgba(34,197,94,0.35)":"inset 0 1px 3px rgba(0,0,0,0.08)" }}>
+  <div onClick={()=>onChange(!on)} style={{ width:52,height:30,borderRadius:15,background:on?C.primary:"#E5E7EB",position:"relative",cursor:"pointer",transition:"background 250ms ease",flexShrink:0,boxShadow:on?"0 2px 10px rgba(34,197,94,0.35)":"inset 0 1px 3px rgba(0,0,0,0.08)" }}>
     <div style={{ position:"absolute",top:3,left:on?"calc(100% - 27px)":3,width:24,height:24,borderRadius:"50%",background:"#fff",boxShadow:"0 2px 6px rgba(0,0,0,0.2)",transition:"left 250ms cubic-bezier(0.34,1.56,0.64,1)" }}/>
   </div>
 );
@@ -33,7 +33,7 @@ function DonutChart({ pct, on }:{pct:number;on:boolean}) {
   return (
     <svg width="128" height="128" viewBox="0 0 128 128">
       {/* Track */}
-      <circle cx={cx} cy={cy} r={r} fill="none" stroke="#E2E8F0" strokeWidth="12"/>
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="#E5E7EB" strokeWidth="12"/>
       {/* Progress */}
       <circle cx={cx} cy={cy} r={r} fill="none" stroke={color} strokeWidth="12" strokeLinecap="round"
         strokeDasharray={`${dash} ${circ}`} strokeDashoffset={circ*0.25} style={{ transition:"stroke-dasharray 1.2s cubic-bezier(0.4,0,0.2,1),stroke 500ms" }}/>
@@ -80,7 +80,7 @@ export default function DataModePage() {
         <div style={{ background:C.card,borderRadius:24,boxShadow:C.shadow,overflow:"hidden",marginBottom:12 }}>
           {/* Mode données toggle */}
           <div style={{ display:"flex",alignItems:"center",gap:14,padding:"14px 18px",borderBottom:"1px solid #F1F5F9" }}>
-            <div style={{ width:46,height:46,borderRadius:"50%",background:dataSaver?"linear-gradient(135deg,#15803D,#22C55E)":"#F1F5F9",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,transition:"background 300ms",boxShadow:dataSaver?"0 3px 10px rgba(34,197,94,0.3)":"none" }}>
+            <div style={{ width:46,height:46,borderRadius:"50%",background:dataSaver?"linear-gradient(135deg,#16A34A,#22C55E)":"#F1F5F9",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,transition:"background 300ms",boxShadow:dataSaver?"0 3px 10px rgba(34,197,94,0.3)":"none" }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={dataSaver?"#fff":C.muted} strokeWidth="2" strokeLinecap="round">
                 <path d="M1.5 8.5a17 17 0 0121 0M5 12a12 12 0 0114 0M8.5 15.5a7 7 0 017 0M12 19h.01"/>
               </svg>
@@ -94,7 +94,7 @@ export default function DataModePage() {
 
           {/* Chargement médias */}
           <div style={{ display:"flex",alignItems:"center",gap:14,padding:"14px 18px",borderBottom:"1px solid #F1F5F9" }}>
-            <div style={{ width:46,height:46,borderRadius:"50%",background:mediaWifi?"linear-gradient(135deg,#0E7490,#06B6D4)":"#F1F5F9",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,transition:"background 300ms",boxShadow:mediaWifi?"0 3px 10px rgba(6,182,212,0.3)":"none" }}>
+            <div style={{ width:46,height:46,borderRadius:"50%",background:mediaWifi?"linear-gradient(135deg,#0EA5E9,#06B6D4)":"#F1F5F9",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,transition:"background 300ms",boxShadow:mediaWifi?"0 3px 10px rgba(6,182,212,0.3)":"none" }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={mediaWifi?"#fff":C.muted} strokeWidth="2" strokeLinecap="round">
                 <path d="M5 12.55a11 11 0 0114.08 0M1.42 9a16 16 0 0121.16 0M8.53 16.11a6 6 0 016.95 0"/>
                 <line x1="12" y1="20" x2="12.01" y2="20"/>
@@ -112,7 +112,7 @@ export default function DataModePage() {
             <div style={{ fontWeight:600,fontSize:15,color:C.text,marginBottom:12 }}>Qualité vidéo</div>
             <div style={{ display:"flex",gap:8 }}>
               {([["eco","Économique"],["normal","Normale"],["hd","HD"]] as const).map(([v,l])=>(
-                <button key={v} onClick={()=>setVideoQuality(v)} style={{ flex:1,padding:"10px 4px",borderRadius:12,border:videoQuality===v?"2px solid "+C.primary:"1.5px solid #E2E8F0",background:videoQuality===v?"#F0FDF4":"#F8FAFC",color:videoQuality===v?C.primary:C.secondary,fontWeight:videoQuality===v?700:500,fontSize:13,cursor:"pointer",transition:"all 200ms" }}>
+                <button key={v} onClick={()=>setVideoQuality(v)} style={{ flex:1,padding:"10px 4px",borderRadius:12,border:videoQuality===v?"2px solid "+C.primary:"1.5px solid #E5E7EB",background:videoQuality===v?"#F0FDF4":"#F8FAFC",color:videoQuality===v?C.primary:C.secondary,fontWeight:videoQuality===v?700:500,fontSize:13,cursor:"pointer",transition:"all 200ms" }}>
                   {l}
                 </button>
               ))}

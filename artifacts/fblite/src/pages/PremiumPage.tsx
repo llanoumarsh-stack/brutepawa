@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#0F172A", secondary:"#64748B", muted:"#94A3B8", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#111827", secondary:"#64748B", muted:"#9CA3AF", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
 
 function SubHeader({ title, onBack }:{title:string;onBack:()=>void}) {
   return (
@@ -105,7 +105,7 @@ export default function PremiumPage() {
                   <div style={{ fontWeight:600,fontSize:15,color:C.text }}>{f.label}</div>
                   <div style={{ fontSize:13,color:C.secondary,marginTop:2 }}>{f.sub}</div>
                 </div>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="#C4C9D4" strokeWidth="2.2" strokeLinecap="round"/></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="#CBD5E1" strokeWidth="2.2" strokeLinecap="round"/></svg>
               </div>
             ))}
           </div>
@@ -141,9 +141,9 @@ export default function PremiumPage() {
       <div style={{ position:"fixed",bottom:0,left:0,right:0,padding:"12px 14px",paddingBottom:"calc(12px + env(safe-area-inset-bottom,0px))",background:"rgba(248,250,252,0.97)",backdropFilter:"blur(16px)",borderTop:"1px solid #F1F5F9" }}>
         <div style={{ textAlign:"center",marginBottom:10 }}>
           <span style={{ fontSize:12,color:C.muted }}>{plan==="yearly"?`${price} FCFA/mois · facturé annuellement`:`${price} FCFA/mois · sans engagement`}</span>
-          {plan==="yearly" && <span style={{ marginLeft:6,background:"#DCFCE7",color:"#15803D",fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:8 }}>-20%</span>}
+          {plan==="yearly" && <span style={{ marginLeft:6,background:"#DCFCE7",color:"#16A34A",fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:8 }}>-20%</span>}
         </div>
-        <button onClick={subscribe} disabled={loading} style={{ width:"100%",padding:"16px",borderRadius:18,background:loading?"#A7F3D0":"linear-gradient(135deg,#FBBF24,#F4C542,#D97706)",border:"none",color:"#1C1917",fontWeight:800,fontSize:16,cursor:loading?"not-allowed":"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:10,boxShadow:"0 8px 24px rgba(244,197,66,0.45)",transition:"all 300ms" }}>
+        <button onClick={subscribe} disabled={loading} style={{ width:"100%",padding:"16px",borderRadius:18,background:loading?"#BBF7D0":"linear-gradient(135deg,#FBBF24,#F4C542,#D97706)",border:"none",color:"#1C1917",fontWeight:800,fontSize:16,cursor:loading?"not-allowed":"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:10,boxShadow:"0 8px 24px rgba(244,197,66,0.45)",transition:"all 300ms" }}>
           {loading
             ? <><div style={{ width:20,height:20,borderRadius:"50%",border:"2.5px solid rgba(28,25,23,0.3)",borderTopColor:"#1C1917",animation:"spin 0.7s linear infinite" }}/> Traitement…</>
             : <><svg width="20" height="20" viewBox="0 0 24 24"><path d="M2 19h20v2H2v-2zM4 16l-2-9 5.5 4L12 3l4.5 8L22 7l-2 9H4z" fill="#1C1917"/></svg>Passer à Premium · {price} FCFA/mois</>}

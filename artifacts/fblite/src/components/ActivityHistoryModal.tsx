@@ -97,17 +97,17 @@ export default function ActivityHistoryModal({ onClose, userId, userName }: Prop
   };
 
   const ModeBar = () => (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px 8px", background: "#fff", borderBottom: "1px solid #E4E6EB" }}>
-      <span style={{ fontSize: 13, fontWeight: 600, color: "#050505", display: "flex", alignItems: "center", gap: 4 }}>
-        Mode payant <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 16, height: 16, borderRadius: "50%", background: "#65676B", color: "#fff", fontSize: 10, fontWeight: 700 }}>?</span>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px 8px", background: "#fff", borderBottom: "1px solid #E5E7EB" }}>
+      <span style={{ fontSize: 13, fontWeight: 600, color: "#111827", display: "flex", alignItems: "center", gap: 4 }}>
+        Mode payant <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 16, height: 16, borderRadius: "50%", background: "#64748B", color: "#fff", fontSize: 10, fontWeight: 700 }}>?</span>
       </span>
-      <button style={{ background: "#E4E6EB", border: "none", borderRadius: 6, padding: "6px 12px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Changer de mode</button>
+      <button style={{ background: "#E5E7EB", border: "none", borderRadius: 6, padding: "6px 12px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Changer de mode</button>
     </div>
   );
 
   const SubHeader = ({ title, onBack }: { title: string; onBack: () => void }) => (
-    <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", background: "#fff", borderBottom: "1px solid #E4E6EB" }}>
-      <button onClick={onBack} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "#050505", padding: "0 12px 0 0", lineHeight: 1 }}>‹</button>
+    <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", background: "#fff", borderBottom: "1px solid #E5E7EB" }}>
+      <button onClick={onBack} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "#111827", padding: "0 12px 0 0", lineHeight: 1 }}>‹</button>
       <span style={{ flex: 1, textAlign: "center", fontWeight: 700, fontSize: 16 }}>{title}</span>
       <div style={{ width: 32 }} />
     </div>
@@ -123,40 +123,40 @@ export default function ActivityHistoryModal({ onClose, userId, userName }: Prop
       <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
         <ModeBar />
         <SubHeader title={title} onBack={onBack} />
-        <div style={{ background: "#fff", borderBottom: "1px solid #E4E6EB", padding: "10px 16px", display: "flex", gap: 8 }}>
-          <button onClick={() => {}} style={{ background: "#E4E6EB", border: "none", borderRadius: 20, padding: "7px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>📁 Archive</button>
-          <button onClick={() => {}} style={{ background: "#E4E6EB", border: "none", borderRadius: 20, padding: "7px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>🗑️ Corbeille</button>
+        <div style={{ background: "#fff", borderBottom: "1px solid #E5E7EB", padding: "10px 16px", display: "flex", gap: 8 }}>
+          <button onClick={() => {}} style={{ background: "#E5E7EB", border: "none", borderRadius: 20, padding: "7px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>📁 Archive</button>
+          <button onClick={() => {}} style={{ background: "#E5E7EB", border: "none", borderRadius: 20, padding: "7px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>🗑️ Corbeille</button>
         </div>
-        <div style={{ background: "#F0F2F5", borderBottom: "1px solid #E4E6EB", padding: "8px 16px 4px", fontSize: 12, color: "#65676B" }}>
-          Il se peut que tous vos éléments n'apparaissent pas ici. <span style={{ color: "#050505", fontWeight: 600 }}>En savoir plus.</span>
+        <div style={{ background: "#F1F5F9", borderBottom: "1px solid #E5E7EB", padding: "8px 16px 4px", fontSize: 12, color: "#64748B" }}>
+          Il se peut que tous vos éléments n'apparaissent pas ici. <span style={{ color: "#111827", fontWeight: 600 }}>En savoir plus.</span>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 16px 6px", background: "#fff" }}>
-          <button onClick={() => selectAll(items.map(i => i.id))} style={{ background: "none", border: "none", color: "#1877F2", fontSize: 14, fontWeight: 600, cursor: "pointer", padding: 0 }}>Tout sélectionner</button>
-          <button onClick={deselectAll} style={{ background: "none", border: "none", color: "#1877F2", fontSize: 14, fontWeight: 600, cursor: "pointer", padding: 0 }}>Désélectionner</button>
+          <button onClick={() => selectAll(items.map(i => i.id))} style={{ background: "none", border: "none", color: "#22C55E", fontSize: 14, fontWeight: 600, cursor: "pointer", padding: 0 }}>Tout sélectionner</button>
+          <button onClick={deselectAll} style={{ background: "none", border: "none", color: "#22C55E", fontSize: 14, fontWeight: 600, cursor: "pointer", padding: 0 }}>Désélectionner</button>
         </div>
         <div style={{ flex: 1, overflowY: "auto" }}>
           {loading && (
-            <div style={{ textAlign: "center", padding: 32, color: "#65676B" }}>
-              <div style={{ width: 28, height: 28, border: "3px solid #E4E6EB", borderTopColor: "#1877F2", borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 12px" }} />Chargement…
+            <div style={{ textAlign: "center", padding: 32, color: "#64748B" }}>
+              <div style={{ width: 28, height: 28, border: "3px solid #E5E7EB", borderTopColor: "#22C55E", borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 12px" }} />Chargement…
             </div>
           )}
           {!loading && items.length === 0 && (
-            <div style={{ textAlign: "center", padding: "32px 16px", color: "#65676B" }}>
+            <div style={{ textAlign: "center", padding: "32px 16px", color: "#64748B" }}>
               <div style={{ fontSize: 44, marginBottom: 10 }}>📭</div>
               <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 6 }}>Aucun élément</div>
             </div>
           )}
           {!loading && Object.entries(groups).map(([date, grpItems]) => (
             <div key={date}>
-              <div style={{ padding: "10px 16px 4px", fontSize: 13, fontWeight: 700, color: "#050505", background: "#F0F2F5" }}>{date}</div>
+              <div style={{ padding: "10px 16px 4px", fontSize: 13, fontWeight: 700, color: "#111827", background: "#F1F5F9" }}>{date}</div>
               {(grpItems as any[]).map((item: any) => (
-                <div key={item.id} style={{ background: "#fff", borderBottom: "1px solid #F0F2F5", padding: "12px 16px", display: "flex", alignItems: "flex-start", gap: 10 }}>
-                  <button style={{ background: "none", border: "none", cursor: "pointer", padding: "2px 4px 0 0", color: "#65676B", fontSize: 18, lineHeight: 1 }}>⋮</button>
-                  <div style={{ flex: 1, fontSize: 14, color: "#050505", lineHeight: 1.45 }}>
+                <div key={item.id} style={{ background: "#fff", borderBottom: "1px solid #F1F5F9", padding: "12px 16px", display: "flex", alignItems: "flex-start", gap: 10 }}>
+                  <button style={{ background: "none", border: "none", cursor: "pointer", padding: "2px 4px 0 0", color: "#64748B", fontSize: 18, lineHeight: 1 }}>⋮</button>
+                  <div style={{ flex: 1, fontSize: 14, color: "#111827", lineHeight: 1.45 }}>
                     {renderItem(item)}
-                    <div style={{ fontSize: 12, color: "#65676B", display: "flex", alignItems: "center", gap: 4, marginTop: 3 }}>🌍 Public</div>
+                    <div style={{ fontSize: 12, color: "#64748B", display: "flex", alignItems: "center", gap: 4, marginTop: 3 }}>🌍 Public</div>
                   </div>
-                  <button onClick={() => toggleSelect(item.id)} style={{ width: 22, height: 22, borderRadius: 4, border: `2px solid ${selectedIds.has(item.id) ? "#1877F2" : "#BCC0C4"}`, background: selectedIds.has(item.id) ? "#1877F2" : "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, marginTop: 2 }}>
+                  <button onClick={() => toggleSelect(item.id)} style={{ width: 22, height: 22, borderRadius: 4, border: `2px solid ${selectedIds.has(item.id) ? "#22C55E" : "#CBD5E1"}`, background: selectedIds.has(item.id) ? "#22C55E" : "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, marginTop: 2 }}>
                     {selectedIds.has(item.id) && <span style={{ color: "#fff", fontSize: 12, fontWeight: 900 }}>✓</span>}
                   </button>
                 </div>
@@ -165,7 +165,7 @@ export default function ActivityHistoryModal({ onClose, userId, userName }: Prop
           ))}
           <div style={{ height: 80 }} />
         </div>
-        <div style={{ background: "#fff", borderTop: "1px solid #E4E6EB", padding: "10px 16px 20px" }}>
+        <div style={{ background: "#fff", borderTop: "1px solid #E5E7EB", padding: "10px 16px 20px" }}>
           {bottomBtn}
         </div>
       </div>
@@ -183,13 +183,13 @@ export default function ActivityHistoryModal({ onClose, userId, userName }: Prop
         renderItem={(p: Post) => (
           <>
             <span style={{ fontWeight: 700 }}>{userName ?? "Vous"}</span> a partagé une <span style={{ fontWeight: 700 }}>publication</span>.
-            {p.content && <div style={{ color: "#65676B", fontSize: 13, marginTop: 2 }}>{p.content.slice(0, 80)}{p.content.length > 80 ? "…" : ""}</div>}
+            {p.content && <div style={{ color: "#64748B", fontSize: 13, marginTop: 2 }}>{p.content.slice(0, 80)}{p.content.length > 80 ? "…" : ""}</div>}
           </>
         )}
         bottomBtn={
           <div style={{ display: "flex", gap: 10 }}>
-            <button onClick={handleArchivePosts} disabled={selectedIds.size === 0 || actionLoading} style={{ flex: 1, background: selectedIds.size > 0 ? "#E4E6EB" : "#F0F2F5", border: "none", borderRadius: 8, padding: 13, fontSize: 14, fontWeight: 700, cursor: selectedIds.size > 0 ? "pointer" : "default", color: selectedIds.size > 0 ? "#050505" : "#BCC0C4", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>📁 Archiver</button>
-            <button onClick={handleDeletePosts} disabled={selectedIds.size === 0 || actionLoading} style={{ flex: 1, background: selectedIds.size > 0 ? "#FFEBEE" : "#F0F2F5", border: "none", borderRadius: 8, padding: 13, fontSize: 14, fontWeight: 700, cursor: selectedIds.size > 0 ? "pointer" : "default", color: selectedIds.size > 0 ? "#C62828" : "#BCC0C4", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>🗑️ Supprimer</button>
+            <button onClick={handleArchivePosts} disabled={selectedIds.size === 0 || actionLoading} style={{ flex: 1, background: selectedIds.size > 0 ? "#E5E7EB" : "#F1F5F9", border: "none", borderRadius: 8, padding: 13, fontSize: 14, fontWeight: 700, cursor: selectedIds.size > 0 ? "pointer" : "default", color: selectedIds.size > 0 ? "#111827" : "#CBD5E1", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>📁 Archiver</button>
+            <button onClick={handleDeletePosts} disabled={selectedIds.size === 0 || actionLoading} style={{ flex: 1, background: selectedIds.size > 0 ? "#FEE2E2" : "#F1F5F9", border: "none", borderRadius: 8, padding: 13, fontSize: 14, fontWeight: 700, cursor: selectedIds.size > 0 ? "pointer" : "default", color: selectedIds.size > 0 ? "#EF4444" : "#CBD5E1", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>🗑️ Supprimer</button>
           </div>
         }
       />
@@ -204,11 +204,11 @@ export default function ActivityHistoryModal({ onClose, userId, userName }: Prop
         renderItem={(n: Notif) => (
           <>
             <span style={{ fontWeight: 700 }}>{n.fromUserName ?? "Quelqu'un"}</span> a mentionné votre nom dans un <span style={{ fontWeight: 700 }}>commentaire</span>.
-            {n.content && <div style={{ color: "#1877F2", fontSize: 13, marginTop: 2 }}>{n.content.slice(0, 80)}</div>}
+            {n.content && <div style={{ color: "#22C55E", fontSize: 13, marginTop: 2 }}>{n.content.slice(0, 80)}</div>}
           </>
         )}
         bottomBtn={
-          <button onClick={handleDeleteNotifs} disabled={selectedIds.size === 0 || actionLoading} style={{ width: "100%", background: selectedIds.size > 0 ? "#1C1E21" : "#F0F2F5", color: selectedIds.size > 0 ? "#fff" : "#BCC0C4", border: "none", borderRadius: 24, padding: 13, fontSize: 14, fontWeight: 700, cursor: selectedIds.size > 0 ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+          <button onClick={handleDeleteNotifs} disabled={selectedIds.size === 0 || actionLoading} style={{ width: "100%", background: selectedIds.size > 0 ? "#1E293B" : "#F1F5F9", color: selectedIds.size > 0 ? "#fff" : "#CBD5E1", border: "none", borderRadius: 24, padding: 13, fontSize: 14, fontWeight: 700, cursor: selectedIds.size > 0 ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
             ✕ Supprimer les tags
           </button>
         }
@@ -224,11 +224,11 @@ export default function ActivityHistoryModal({ onClose, userId, userName }: Prop
         renderItem={(n: Notif) => (
           <>
             <span style={{ fontWeight: 700 }}>{userName ?? "Vous"}</span> aime la <span style={{ fontWeight: 700 }}>photo</span> de <span style={{ fontWeight: 700 }}>{n.fromUserName ?? "quelqu'un"}</span>.
-            {n.content && <div style={{ color: "#65676B", fontSize: 13, marginTop: 2 }}>{n.content.slice(0, 80)}</div>}
+            {n.content && <div style={{ color: "#64748B", fontSize: 13, marginTop: 2 }}>{n.content.slice(0, 80)}</div>}
           </>
         )}
         bottomBtn={
-          <button onClick={handleDeleteNotifs} disabled={selectedIds.size === 0 || actionLoading} style={{ width: "100%", background: selectedIds.size > 0 ? "#1C1E21" : "#F0F2F5", color: selectedIds.size > 0 ? "#fff" : "#BCC0C4", border: "none", borderRadius: 24, padding: 13, fontSize: 14, fontWeight: 700, cursor: selectedIds.size > 0 ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+          <button onClick={handleDeleteNotifs} disabled={selectedIds.size === 0 || actionLoading} style={{ width: "100%", background: selectedIds.size > 0 ? "#1E293B" : "#F1F5F9", color: selectedIds.size > 0 ? "#fff" : "#CBD5E1", border: "none", borderRadius: 24, padding: 13, fontSize: 14, fontWeight: 700, cursor: selectedIds.size > 0 ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
             ✕ Supprimer
           </button>
         }
@@ -240,9 +240,9 @@ export default function ActivityHistoryModal({ onClose, userId, userName }: Prop
       <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
         <ModeBar />
         <SubHeader title={labels[subPage]} onBack={() => setSubPage(null)} />
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "32px 24px", gap: 12, color: "#65676B" }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "32px 24px", gap: 12, color: "#64748B" }}>
           <div style={{ fontSize: 52 }}>{subPage === "groups" ? "👥" : subPage === "profile_info" ? "👤" : "📇"}</div>
-          <div style={{ fontWeight: 700, fontSize: 16, color: "#050505" }}>{labels[subPage]}</div>
+          <div style={{ fontWeight: 700, fontSize: 16, color: "#111827" }}>{labels[subPage]}</div>
           <div style={{ fontSize: 14, textAlign: "center", lineHeight: 1.5 }}>
             {subPage === "groups" && "Votre activité dans les groupes, évènements et reels apparaîtra ici."}
             {subPage === "profile_info" && "Vos informations de profil (téléphone, e-mail, etc.) apparaîtront ici."}
@@ -254,7 +254,7 @@ export default function ActivityHistoryModal({ onClose, userId, userName }: Prop
   }
 
   const mainContent = (
-    <div style={{ position: "fixed", inset: 0, zIndex: 500, background: "#F0F2F5", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+    <div style={{ position: "fixed", inset: 0, zIndex: 500, background: "#F1F5F9", display: "flex", flexDirection: "column", overflow: "hidden" }}>
       {subPage ? (
         <div style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
           {subContent}
@@ -262,38 +262,38 @@ export default function ActivityHistoryModal({ onClose, userId, userName }: Prop
       ) : (
         <>
           <ModeBar />
-          <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", background: "#fff", borderBottom: "1px solid #E4E6EB" }}>
-            <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "#050505", padding: "0 12px 0 0", lineHeight: 1 }}>‹</button>
+          <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", background: "#fff", borderBottom: "1px solid #E5E7EB" }}>
+            <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "#111827", padding: "0 12px 0 0", lineHeight: 1 }}>‹</button>
             <span style={{ flex: 1, textAlign: "center", fontWeight: 700, fontSize: 16 }}>Historique d'activité</span>
             <div style={{ width: 32 }} />
           </div>
           <div style={{ flex: 1, overflowY: "auto" }}>
-            <div style={{ background: "#fff", padding: "14px 16px", borderBottom: "1px solid #E4E6EB", fontSize: 13, color: "#65676B", lineHeight: 1.5 }}>
+            <div style={{ background: "#fff", padding: "14px 16px", borderBottom: "1px solid #E5E7EB", fontSize: 13, color: "#64748B", lineHeight: 1.5 }}>
               Gérez votre activité et les éléments que vous avez partagés. Les éléments supprimés restent dans la corbeille et sont supprimés automatiquement après 30 jours.
             </div>
             <div style={{ padding: "10px 16px", display: "flex", gap: 8 }}>
-              <button style={{ background: "#E4E6EB", border: "none", borderRadius: 20, padding: "7px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>📁 Archive</button>
-              <button style={{ background: "#E4E6EB", border: "none", borderRadius: 20, padding: "7px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>🗑️ Corbeille</button>
+              <button style={{ background: "#E5E7EB", border: "none", borderRadius: 20, padding: "7px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>📁 Archive</button>
+              <button style={{ background: "#E5E7EB", border: "none", borderRadius: 20, padding: "7px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>🗑️ Corbeille</button>
             </div>
             <div style={{ background: "#fff" }}>
               {SECTIONS.map((section, i) => (
-                <div key={section.label} style={{ borderBottom: "1px solid #F0F2F5" }}>
+                <div key={section.label} style={{ borderBottom: "1px solid #F1F5F9" }}>
                   <button
                     onClick={() => setExpanded(expanded === section.id ? null : section.id)}
                     style={{ width: "100%", background: "none", border: "none", padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", textAlign: "left" }}
                   >
                     <span style={{ fontSize: 20, width: 24, textAlign: "center", flexShrink: 0 }}>{section.icon}</span>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600, fontSize: 14, color: "#050505" }}>{section.label}</div>
-                      <div style={{ fontSize: 12, color: "#65676B", marginTop: 2, lineHeight: 1.4 }}>{section.desc}</div>
+                      <div style={{ fontWeight: 600, fontSize: 14, color: "#111827" }}>{section.label}</div>
+                      <div style={{ fontSize: 12, color: "#64748B", marginTop: 2, lineHeight: 1.4 }}>{section.desc}</div>
                     </div>
-                    <span style={{ color: "#65676B", fontSize: 16, transform: expanded === section.id ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>∨</span>
+                    <span style={{ color: "#64748B", fontSize: 16, transform: expanded === section.id ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>∨</span>
                   </button>
                   {expanded === section.id && section.btnLabel && (
                     <div style={{ padding: "0 16px 14px 54px" }}>
                       <button
                         onClick={() => section.id && setSubPage(section.id)}
-                        style={{ width: "100%", background: "#F0F2F5", border: "none", borderRadius: 8, padding: "11px 16px", fontSize: 14, fontWeight: 700, cursor: "pointer", color: "#050505" }}
+                        style={{ width: "100%", background: "#F1F5F9", border: "none", borderRadius: 8, padding: "11px 16px", fontSize: 14, fontWeight: 700, cursor: "pointer", color: "#111827" }}
                       >
                         {section.btnLabel}
                       </button>

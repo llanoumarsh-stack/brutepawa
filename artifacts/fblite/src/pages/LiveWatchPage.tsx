@@ -210,7 +210,7 @@ export default function LiveWatchPage({ streamId }: Props) {
   if (loading) {
     return (
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", background: "#000", color: "#fff" }}>
-        <div style={{ width: 36, height: 36, border: "3px solid rgba(255,255,255,0.15)", borderTopColor: "#16C24A", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+        <div style={{ width: 36, height: 36, border: "3px solid rgba(255,255,255,0.15)", borderTopColor: "#22C55E", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
@@ -239,7 +239,7 @@ export default function LiveWatchPage({ streamId }: Props) {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", background: "rgba(0,0,0,0.8)", zIndex: 10 }}>
         <button onClick={() => navigate("/")} style={{ background: "none", border: "none", color: "#fff", fontSize: 22, cursor: "pointer", padding: 4 }}>✕</button>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ background: "#E53935", color: "#fff", fontSize: 11, fontWeight: 800, padding: "2px 8px", borderRadius: 4, animation: "livePulse 1.5s ease-in-out infinite", letterSpacing: 0.5 }}>LIVE</span>
+          <span style={{ background: "#EF4444", color: "#fff", fontSize: 11, fontWeight: 800, padding: "2px 8px", borderRadius: 4, animation: "livePulse 1.5s ease-in-out infinite", letterSpacing: 0.5 }}>LIVE</span>
           <span style={{ fontSize: 14, fontWeight: 700 }}>{stream.userFlag} {stream.userName}</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
@@ -247,8 +247,8 @@ export default function LiveWatchPage({ streamId }: Props) {
             <svg viewBox="0 0 24 24" width="16" height="16" fill="rgba(255,255,255,0.7)"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
             <span>{stream.viewerCount}</span>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 4, color: "#FFD700", fontWeight: 700 }}>
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="#FFD700"><circle cx="12" cy="12" r="10"/></svg>
+          <div style={{ display: "flex", alignItems: "center", gap: 4, color: "#FBBF24", fontWeight: 700 }}>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="#FBBF24"><circle cx="12" cy="12" r="10"/></svg>
             <span>{tokenBalance.toLocaleString()}</span>
           </div>
         </div>
@@ -321,9 +321,9 @@ export default function LiveWatchPage({ streamId }: Props) {
                 }}
               >
                 <span style={{ fontSize: 18 }}>{fe.giftEmoji}</span>
-                <span style={{ color: "#FFD700" }}>{fe.senderName}</span>
+                <span style={{ color: "#FBBF24" }}>{fe.senderName}</span>
                 <span style={{ fontWeight: 400, color: "rgba(255,255,255,0.8)" }}>a envoyé</span>
-                <span style={{ color: "#E91E8C" }}>{fe.giftName}</span>
+                <span style={{ color: "#EC4899" }}>{fe.giftName}</span>
               </div>
             ) : fe.type === "join" ? (
               <div
@@ -395,11 +395,11 @@ export default function LiveWatchPage({ streamId }: Props) {
           <span style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", whiteSpace: "nowrap" }}>🏆 Top</span>
           {topDonors.map((d, i) => (
             <div key={d.senderId} style={{ display: "flex", alignItems: "center", gap: 4, whiteSpace: "nowrap" }}>
-              <span style={{ fontSize: 12, color: i === 0 ? "#FFD700" : i === 1 ? "#C0C0C0" : "#CD7F32" }}>
+              <span style={{ fontSize: 12, color: i === 0 ? "#FBBF24" : i === 1 ? "#C0C0C0" : "#CD7F32" }}>
                 {i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉"}
               </span>
               <span style={{ fontSize: 12, fontWeight: 600 }}>{d.senderName || "Anonyme"}</span>
-              <span style={{ fontSize: 11, color: "#FFD700" }}>🪙{d.totalTokens.toLocaleString()}</span>
+              <span style={{ fontSize: 11, color: "#FBBF24" }}>🪙{d.totalTokens.toLocaleString()}</span>
             </div>
           ))}
         </div>
@@ -439,7 +439,7 @@ export default function LiveWatchPage({ streamId }: Props) {
               onClick={sendChat}
               disabled={!chatInput.trim() || sendingChat}
               style={{
-                background: chatInput.trim() ? "#1877F2" : "rgba(255,255,255,0.15)",
+                background: chatInput.trim() ? "#22C55E" : "rgba(255,255,255,0.15)",
                 border: "none",
                 borderRadius: "50%",
                 width: 38,
@@ -465,7 +465,7 @@ export default function LiveWatchPage({ streamId }: Props) {
         <button
           onClick={() => setShowGiftPicker(true)}
           style={{
-            background: "linear-gradient(135deg, #16C24A, #0DA63E)",
+            background: "linear-gradient(135deg, #22C55E, #22C55E)",
             border: "none",
             borderRadius: 24,
             padding: "9px 16px",

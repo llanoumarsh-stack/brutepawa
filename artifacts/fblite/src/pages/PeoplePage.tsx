@@ -35,7 +35,7 @@ const COUNTRIES = [
 ];
 
 /* ─── Avatar ─────────────────────────────────────────────────────────────── */
-const COLORS = ["#22C55E","#16A34A","#15803D","#4ADE80","#86EFAC"];
+const COLORS = ["#22C55E","#16A34A","#16A34A","#22C55E","#BBF7D0"];
 function Avatar({ user, size=52 }: { user: Pick<PersonUser,"id"|"fullname"|"avatar">, size?: number }) {
   const initials = user.fullname.split(" ").map(p=>p[0]).join("").slice(0,2).toUpperCase();
   const color = COLORS[user.id % COLORS.length];
@@ -96,13 +96,13 @@ function SuggestionCard({ user, onAdd, onDismiss, pending, added }:{
           </span>
           {user.verified && <Verified />}
         </div>
-        <div style={{ fontSize:12,color:"#6B7280",marginBottom:4,fontFamily:"Inter,sans-serif" }}>
+        <div style={{ fontSize:12,color:"#64748B",marginBottom:4,fontFamily:"Inter,sans-serif" }}>
           Membre BrutePawa
         </div>
-        <div style={{ display:"flex",alignItems:"center",gap:6,fontSize:12,color:"#6B7280",marginBottom:6,fontFamily:"Inter,sans-serif" }}>
+        <div style={{ display:"flex",alignItems:"center",gap:6,fontSize:12,color:"#64748B",marginBottom:6,fontFamily:"Inter,sans-serif" }}>
           <span>{f(user.country)} {user.country}</span>
-          <span style={{ color:"#D1D5DB" }}>·</span>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <span style={{ color:"#E5E7EB" }}>·</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
             <path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
           </svg>
@@ -151,7 +151,7 @@ function FriendReqCard({ req, onAccept, onReject }:{
             <span style={{ fontWeight:700,fontSize:14,color:"#111827",fontFamily:"Inter,sans-serif" }}>{req.fullname}</span>
             {req.verified && <Verified />}
           </div>
-          <div style={{ fontSize:12,color:"#6B7280",fontFamily:"Inter,sans-serif" }}>
+          <div style={{ fontSize:12,color:"#64748B",fontFamily:"Inter,sans-serif" }}>
             {req.mutualFriends} amis communs · {f(req.country)} {req.country}
           </div>
         </div>
@@ -161,7 +161,7 @@ function FriendReqCard({ req, onAccept, onReject }:{
           borderRadius:10,padding:"9px 0",fontWeight:700,fontSize:14,cursor:"pointer",fontFamily:"Inter,sans-serif" }}>
           Confirmer
         </button>
-        <button onClick={onReject} style={{ flex:1,background:"#F3F4F6",color:"#374151",border:"none",
+        <button onClick={onReject} style={{ flex:1,background:"#F1F5F9",color:"#64748B",border:"none",
           borderRadius:10,padding:"9px 0",fontWeight:600,fontSize:14,cursor:"pointer",fontFamily:"Inter,sans-serif" }}>
           Supprimer
         </button>
@@ -211,15 +211,15 @@ function FollowCard({ user, isNew, onFollow }:{
             </span>
             {user.verified && <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill="#1D9BF0"/><path d="M9 12l2 2 4-4" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
           </div>
-          <div style={{ fontSize:11,color:"#6B7280",fontFamily:"Inter,sans-serif" }}>
+          <div style={{ fontSize:11,color:"#64748B",fontFamily:"Inter,sans-serif" }}>
             {isNew ? `${f(user.country)} ${user.country}` : "Membre BP"}
           </div>
         </div>
       </div>
       <button onClick={handleFollow} disabled={loading}
-        style={{ background:following?"#F3F4F6":"#fff",border:"1.5px solid #22C55E",
+        style={{ background:following?"#F1F5F9":"#fff",border:"1.5px solid #22C55E",
           borderRadius:8,padding:"6px 0",fontWeight:600,fontSize:12,cursor:"pointer",
-          color:following?"#6B7280":"#22C55E",fontFamily:"Inter,sans-serif",
+          color:following?"#64748B":"#22C55E",fontFamily:"Inter,sans-serif",
           width:"100%",opacity:loading?0.7:1,transition:"all .15s" }}>
         {following ? "Abonné" : "Suivre"}
       </button>
@@ -230,7 +230,7 @@ function FollowCard({ user, isNew, onFollow }:{
 /* ─── Invitation Card ────────────────────────────────────────────────────── */
 function InviteCard({ onInvite }: { onInvite: ()=>void }) {
   return (
-    <div style={{ background:"linear-gradient(135deg,#166534 0%,#14532D 100%)",borderRadius:20,
+    <div style={{ background:"linear-gradient(135deg,#16A34A 0%,#052e16 100%)",borderRadius:20,
       padding:"18px 18px 20px",display:"flex",alignItems:"center",gap:14,
       boxShadow:"0 4px 18px rgba(22,101,52,0.35)",margin:"4px 0" }}>
       <div style={{ width:52,height:52,borderRadius:"50%",background:"rgba(255,255,255,0.18)",
@@ -457,7 +457,7 @@ export default function PeoplePage() {
 
       {/* ── Search + Filters ──────────────────────────────────────────────── */}
       <div style={{ background:"#fff",borderBottom:"1px solid #E5E7EB",padding:"10px 16px 8px",flexShrink:0 }}>
-        <div style={{ display:"flex",alignItems:"center",gap:10,background:"#F3F4F6",borderRadius:12,
+        <div style={{ display:"flex",alignItems:"center",gap:10,background:"#F1F5F9",borderRadius:12,
           padding:"9px 12px",border:`1.5px solid ${searchFocus?"#22C55E":"transparent"}`,transition:"border .15s" }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round">
             <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
@@ -488,7 +488,7 @@ export default function PeoplePage() {
                   style={{ flexShrink:0,background:active?"#22C55E":"#fff",
                     border:`1.5px solid ${active?"#22C55E":"#E5E7EB"}`,borderRadius:99,
                     padding:"5px 13px",cursor:"pointer",fontSize:13,fontWeight:active?700:500,
-                    color:active?"#fff":"#374151",fontFamily:"Inter,sans-serif",transition:"all .15s" }}>
+                    color:active?"#fff":"#64748B",fontFamily:"Inter,sans-serif",transition:"all .15s" }}>
                   Tous
                 </button>
               );
@@ -499,7 +499,7 @@ export default function PeoplePage() {
                   background:active?"#22C55E":"#fff",
                   border:`1.5px solid ${active?"#22C55E":"#E5E7EB"}`,borderRadius:99,
                   padding:"5px 11px",cursor:"pointer",fontSize:13,fontWeight:active?700:500,
-                  color:active?"#fff":"#374151",fontFamily:"Inter,sans-serif",transition:"all .15s" }}>
+                  color:active?"#fff":"#64748B",fontFamily:"Inter,sans-serif",transition:"all .15s" }}>
                 {c.code ? <>{f(c.code)} {c.name}</> : "Tous"}
               </button>
             );
@@ -508,7 +508,7 @@ export default function PeoplePage() {
             <button onClick={()=>setShowMoreCountries(true)}
               style={{ flexShrink:0,display:"flex",alignItems:"center",gap:3,background:"#fff",
                 border:"1.5px solid #E5E7EB",borderRadius:99,padding:"5px 11px",cursor:"pointer",
-                fontSize:13,fontWeight:500,color:"#374151",fontFamily:"Inter,sans-serif" }}>
+                fontSize:13,fontWeight:500,color:"#64748B",fontFamily:"Inter,sans-serif" }}>
               Plus <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M6 9l6 6 6-6"/></svg>
             </button>
           )}
@@ -554,9 +554,9 @@ export default function PeoplePage() {
             {loading ? (
               [1,2,3].map(i=>(
                 <div key={i} style={{ display:"flex",gap:12,padding:"12px 0",borderBottom:"1px solid #F3F4F6" }}>
-                  <div style={{ width:54,height:54,borderRadius:"50%",background:"#E2E8F0",flexShrink:0 }}/>
+                  <div style={{ width:54,height:54,borderRadius:"50%",background:"#E5E7EB",flexShrink:0 }}/>
                   <div style={{ flex:1 }}>
-                    <div style={{ height:14,width:"50%",background:"#E2E8F0",borderRadius:7,marginBottom:8 }}/>
+                    <div style={{ height:14,width:"50%",background:"#E5E7EB",borderRadius:7,marginBottom:8 }}/>
                     <div style={{ height:11,width:"70%",background:"#F1F5F9",borderRadius:6 }}/>
                   </div>
                 </div>
@@ -623,7 +623,7 @@ export default function PeoplePage() {
             <div style={{ display:"flex",gap:8,marginBottom:16 }}>
               {([{id:"requests",label:"Demandes"},{id:"list",label:"Mes amis"}] as const).map(t=>(
                 <button key={t.id} onClick={()=>setFriendsTab(t.id)}
-                  style={{ flex:1,background:friendsTab===t.id?"#22C55E":"#fff",color:friendsTab===t.id?"#fff":"#374151",
+                  style={{ flex:1,background:friendsTab===t.id?"#22C55E":"#fff",color:friendsTab===t.id?"#fff":"#64748B",
                     border:`1.5px solid ${friendsTab===t.id?"#22C55E":"#E5E7EB"}`,borderRadius:12,
                     padding:"9px 0",fontWeight:700,fontSize:14,cursor:"pointer",fontFamily:"Inter,sans-serif",transition:"all .15s" }}>
                   {t.label} {t.id==="requests" && friendRequests.length>0 ? `(${friendRequests.length})` : ""}
@@ -634,11 +634,11 @@ export default function PeoplePage() {
             {friendsTab === "requests" && (
               friendRequests.length === 0 ? (
                 <div style={{ textAlign:"center",padding:"40px 0" }}>
-                  <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="1.5" strokeLinecap="round" style={{ margin:"0 auto 12px",display:"block" }}>
+                  <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#E5E7EB" strokeWidth="1.5" strokeLinecap="round" style={{ margin:"0 auto 12px",display:"block" }}>
                     <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
                     <path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
                   </svg>
-                  <div style={{ fontSize:15,fontWeight:700,color:"#374151",marginBottom:6 }}>Aucune demande en attente</div>
+                  <div style={{ fontSize:15,fontWeight:700,color:"#64748B",marginBottom:6 }}>Aucune demande en attente</div>
                   <div style={{ fontSize:13,color:"#9CA3AF" }}>Les nouvelles demandes d'amis apparaîtront ici.</div>
                 </div>
               ) : friendRequests.map(req=>(
@@ -650,10 +650,10 @@ export default function PeoplePage() {
             {friendsTab === "list" && (
               friends.length === 0 ? (
                 <div style={{ textAlign:"center",padding:"40px 0" }}>
-                  <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="1.5" strokeLinecap="round" style={{ margin:"0 auto 12px",display:"block" }}>
+                  <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#E5E7EB" strokeWidth="1.5" strokeLinecap="round" style={{ margin:"0 auto 12px",display:"block" }}>
                     <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
                   </svg>
-                  <div style={{ fontSize:15,fontWeight:700,color:"#374151",marginBottom:6 }}>Vous n'avez pas encore d'amis</div>
+                  <div style={{ fontSize:15,fontWeight:700,color:"#64748B",marginBottom:6 }}>Vous n'avez pas encore d'amis</div>
                   <div style={{ fontSize:13,color:"#9CA3AF" }}>Consultez les suggestions pour commencer.</div>
                   <button onClick={()=>setTab("personnes")} style={{ marginTop:14,background:"#22C55E",color:"#fff",border:"none",
                     borderRadius:12,padding:"10px 24px",fontWeight:700,fontSize:14,cursor:"pointer",fontFamily:"Inter,sans-serif" }}>
@@ -665,11 +665,11 @@ export default function PeoplePage() {
                   <Avatar user={u} size={50} />
                   <div style={{ flex:1,minWidth:0 }}>
                     <div style={{ fontWeight:700,fontSize:14,color:"#111827",marginBottom:2 }}>{u.fullname}</div>
-                    <div style={{ fontSize:12,color:"#6B7280" }}>{f(u.country)} {u.country} · {u.friendsCount} ami(s)</div>
+                    <div style={{ fontSize:12,color:"#64748B" }}>{f(u.country)} {u.country} · {u.friendsCount} ami(s)</div>
                   </div>
                   <button onClick={()=>navigate(`/profile/${u.id}`)}
-                    style={{ background:"#F3F4F6",border:"none",borderRadius:10,padding:"7px 14px",
-                      fontWeight:600,fontSize:13,cursor:"pointer",color:"#374151",fontFamily:"Inter,sans-serif" }}>
+                    style={{ background:"#F1F5F9",border:"none",borderRadius:10,padding:"7px 14px",
+                      fontWeight:600,fontSize:13,cursor:"pointer",color:"#64748B",fontFamily:"Inter,sans-serif" }}>
                     Profil
                   </button>
                 </div>
@@ -684,7 +684,7 @@ export default function PeoplePage() {
             <div style={{ display:"flex",gap:8,marginBottom:16 }}>
               {([{id:"followers",label:"Abonnés"},{id:"following",label:"Abonnements"}] as const).map(t=>(
                 <button key={t.id} onClick={()=>setFollowersTab(t.id)}
-                  style={{ flex:1,background:followersTab===t.id?"#22C55E":"#fff",color:followersTab===t.id?"#fff":"#374151",
+                  style={{ flex:1,background:followersTab===t.id?"#22C55E":"#fff",color:followersTab===t.id?"#fff":"#64748B",
                     border:`1.5px solid ${followersTab===t.id?"#22C55E":"#E5E7EB"}`,borderRadius:12,
                     padding:"9px 0",fontWeight:700,fontSize:14,cursor:"pointer",fontFamily:"Inter,sans-serif",transition:"all .15s" }}>
                   {t.label}
@@ -701,13 +701,13 @@ export default function PeoplePage() {
                     <span style={{ fontWeight:700,fontSize:14,color:"#111827" }}>{u.fullname}</span>
                     {u.verified && <Verified />}
                   </div>
-                  <div style={{ fontSize:12,color:"#6B7280" }}>
+                  <div style={{ fontSize:12,color:"#64748B" }}>
                     {f(u.country)} {u.country} · <ScoreBadge score={u.score} />
                   </div>
                 </div>
                 <button onClick={()=>navigate(`/profile/${u.id}`)}
-                  style={{ background:"#F3F4F6",border:"none",borderRadius:10,padding:"7px 14px",
-                    fontWeight:600,fontSize:13,cursor:"pointer",color:"#374151",fontFamily:"Inter,sans-serif" }}>
+                  style={{ background:"#F1F5F9",border:"none",borderRadius:10,padding:"7px 14px",
+                    fontWeight:600,fontSize:13,cursor:"pointer",color:"#64748B",fontFamily:"Inter,sans-serif" }}>
                   Profil
                 </button>
               </div>

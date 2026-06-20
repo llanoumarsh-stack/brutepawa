@@ -35,19 +35,19 @@ export default function DeactivateProModal({ onClose, onDeactivated }: Props) {
   };
 
   const ModeBar = () => (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px 8px", background: "#fff", borderBottom: "1px solid #E4E6EB" }}>
-      <span style={{ fontSize: 13, fontWeight: 600, color: "#050505", display: "flex", alignItems: "center", gap: 4 }}>
-        Mode payant <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 16, height: 16, borderRadius: "50%", background: "#65676B", color: "#fff", fontSize: 10, fontWeight: 700 }}>?</span>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px 8px", background: "#fff", borderBottom: "1px solid #E5E7EB" }}>
+      <span style={{ fontSize: 13, fontWeight: 600, color: "#111827", display: "flex", alignItems: "center", gap: 4 }}>
+        Mode payant <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 16, height: 16, borderRadius: "50%", background: "#64748B", color: "#fff", fontSize: 10, fontWeight: 700 }}>?</span>
       </span>
-      <button style={{ background: "#E4E6EB", border: "none", borderRadius: 6, padding: "6px 12px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Changer de mode</button>
+      <button style={{ background: "#E5E7EB", border: "none", borderRadius: 6, padding: "6px 12px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Changer de mode</button>
     </div>
   );
 
   const content = (
     <div style={{ position: "fixed", inset: 0, zIndex: 500, background: "#fff", display: "flex", flexDirection: "column", overflow: "hidden" }}>
       <ModeBar />
-      <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", background: "#fff", borderBottom: "1px solid #E4E6EB" }}>
-        <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "#050505", padding: "0 12px 0 0", lineHeight: 1 }}>‹</button>
+      <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", background: "#fff", borderBottom: "1px solid #E5E7EB" }}>
+        <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "#111827", padding: "0 12px 0 0", lineHeight: 1 }}>‹</button>
         <span style={{ flex: 1, textAlign: "center", fontWeight: 700, fontSize: 16 }}>Mode professionnel</span>
         <div style={{ width: 32 }} />
       </div>
@@ -58,25 +58,25 @@ export default function DeactivateProModal({ onClose, onDeactivated }: Props) {
             <h2 style={{ textAlign: "center", fontWeight: 900, fontSize: 24, margin: "0 0 12px", lineHeight: 1.2 }}>
               Si vous désactivez le mode professionnel
             </h2>
-            <p style={{ textAlign: "center", fontSize: 14, color: "#65676B", margin: "0 0 28px", lineHeight: 1.5 }}>
+            <p style={{ textAlign: "center", fontSize: 14, color: "#64748B", margin: "0 0 28px", lineHeight: 1.5 }}>
               Découvrez ce qui change et ce qui ne change pas si vous désactivez le mode professionnel.
             </p>
             <h3 style={{ fontWeight: 800, fontSize: 16, margin: "0 0 16px" }}>Ce qui change</h3>
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               {CHANGES.map((c, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
-                  <div style={{ width: 40, height: 40, borderRadius: 8, background: "#F0F2F5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>{c.icon}</div>
-                  <p style={{ margin: 0, fontSize: 14, color: "#050505", lineHeight: 1.5 }}>{c.text}</p>
+                  <div style={{ width: 40, height: 40, borderRadius: 8, background: "#F1F5F9", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>{c.icon}</div>
+                  <p style={{ margin: 0, fontSize: 14, color: "#111827", lineHeight: 1.5 }}>{c.text}</p>
                 </div>
               ))}
             </div>
             <div style={{ height: 100 }} />
           </div>
-          <div style={{ background: "#fff", borderTop: "1px solid #E4E6EB", padding: "10px 16px 24px", display: "flex", flexDirection: "column", gap: 10 }}>
-            <button onClick={() => setStep("confirm")} style={{ width: "100%", background: "#1877F2", color: "#fff", border: "none", borderRadius: 8, padding: "14px", fontSize: 15, fontWeight: 700, cursor: "pointer" }}>
+          <div style={{ background: "#fff", borderTop: "1px solid #E5E7EB", padding: "10px 16px 24px", display: "flex", flexDirection: "column", gap: 10 }}>
+            <button onClick={() => setStep("confirm")} style={{ width: "100%", background: "#22C55E", color: "#fff", border: "none", borderRadius: 8, padding: "14px", fontSize: 15, fontWeight: 700, cursor: "pointer" }}>
               Désactiver
             </button>
-            <button onClick={onClose} style={{ width: "100%", background: "none", border: "none", padding: "12px", fontSize: 15, fontWeight: 600, cursor: "pointer", color: "#050505" }}>
+            <button onClick={onClose} style={{ width: "100%", background: "none", border: "none", padding: "12px", fontSize: 15, fontWeight: 600, cursor: "pointer", color: "#111827" }}>
               Retour
             </button>
           </div>
@@ -89,19 +89,19 @@ export default function DeactivateProModal({ onClose, onDeactivated }: Props) {
             <h2 style={{ textAlign: "center", fontWeight: 900, fontSize: 24, margin: "0 0 16px", lineHeight: 1.2 }}>
               Désactiver le mode professionnel
             </h2>
-            <p style={{ textAlign: "center", fontSize: 14, color: "#65676B", margin: 0, lineHeight: 1.6 }}>
+            <p style={{ textAlign: "center", fontSize: 14, color: "#64748B", margin: 0, lineHeight: 1.6 }}>
               Avant de désactiver le mode professionnel, consultez les changements importants que cela entraînera. Si vous changez d'avis, vous pouvez activer le mode professionnel à tout moment.
             </p>
           </div>
-          <div style={{ background: "#fff", borderTop: "1px solid #E4E6EB", padding: "10px 16px 24px", display: "flex", flexDirection: "column", gap: 10 }}>
+          <div style={{ background: "#fff", borderTop: "1px solid #E5E7EB", padding: "10px 16px 24px", display: "flex", flexDirection: "column", gap: 10 }}>
             <button
               onClick={handleDeactivate}
               disabled={loading}
-              style={{ width: "100%", background: loading ? "#BCC0C4" : "#1877F2", color: "#fff", border: "none", borderRadius: 8, padding: "14px", fontSize: 15, fontWeight: 700, cursor: loading ? "default" : "pointer" }}
+              style={{ width: "100%", background: loading ? "#CBD5E1" : "#22C55E", color: "#fff", border: "none", borderRadius: 8, padding: "14px", fontSize: 15, fontWeight: 700, cursor: loading ? "default" : "pointer" }}
             >
               {loading ? "Désactivation…" : "Continuer"}
             </button>
-            <button onClick={onClose} style={{ width: "100%", background: "#F0F2F5", border: "none", borderRadius: 8, padding: "14px", fontSize: 15, fontWeight: 600, cursor: "pointer", color: "#050505" }}>
+            <button onClick={onClose} style={{ width: "100%", background: "#F1F5F9", border: "none", borderRadius: 8, padding: "14px", fontSize: 15, fontWeight: 600, cursor: "pointer", color: "#111827" }}>
               Fermer
             </button>
           </div>
@@ -115,12 +115,12 @@ export default function DeactivateProModal({ onClose, onDeactivated }: Props) {
             <h2 style={{ textAlign: "center", fontWeight: 900, fontSize: 22, margin: "0 0 14px", lineHeight: 1.2 }}>
               Mode professionnel désactivé avec succès
             </h2>
-            <p style={{ textAlign: "center", fontSize: 14, color: "#65676B", margin: 0, lineHeight: 1.6 }}>
+            <p style={{ textAlign: "center", fontSize: 14, color: "#64748B", margin: 0, lineHeight: 1.6 }}>
               Le mode professionnel a été désactivé. Donnez-nous votre avis pour nous aider à améliorer votre expérience en mode professionnel.
             </p>
           </div>
-          <div style={{ background: "#fff", borderTop: "1px solid #E4E6EB", padding: "10px 16px 24px" }}>
-            <button onClick={onClose} style={{ width: "100%", background: "#F0F2F5", border: "none", borderRadius: 8, padding: "14px", fontSize: 15, fontWeight: 700, cursor: "pointer", color: "#050505" }}>
+          <div style={{ background: "#fff", borderTop: "1px solid #E5E7EB", padding: "10px 16px 24px" }}>
+            <button onClick={onClose} style={{ width: "100%", background: "#F1F5F9", border: "none", borderRadius: 8, padding: "14px", fontSize: 15, fontWeight: 700, cursor: "pointer", color: "#111827" }}>
               Fermer
             </button>
           </div>

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#0F172A", secondary:"#64748B", muted:"#94A3B8", shadow:"0 8px 30px rgba(0,0,0,0.05)", danger:"#EF4444" };
+const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#111827", secondary:"#64748B", muted:"#9CA3AF", shadow:"0 8px 30px rgba(0,0,0,0.05)", danger:"#EF4444" };
 type Step = "intro"|"phone"|"otp"|"done";
 
 function SubHeader({ title, onBack }:{title:string;onBack:()=>void}) {
@@ -20,7 +20,7 @@ function ProgressBar({ step }:{step:Step}) {
   const pct = step==="intro"?25:step==="phone"?50:step==="otp"?75:100;
   return (
     <div style={{ padding:"12px 14px 0" }}>
-      <div style={{ height:4,background:"#E2E8F0",borderRadius:999,overflow:"hidden" }}>
+      <div style={{ height:4,background:"#E5E7EB",borderRadius:999,overflow:"hidden" }}>
         <div style={{ height:"100%",width:`${pct}%`,background:"linear-gradient(90deg,#16A34A,#22C55E)",borderRadius:999,transition:"width 400ms ease" }}/>
       </div>
       <div style={{ display:"flex",justifyContent:"space-between",marginTop:6 }}>
@@ -37,15 +37,15 @@ function IntroStep({ onNext }:{onNext:()=>void}) {
     <div style={{ padding:"32px 20px 40px", display:"flex", flexDirection:"column", alignItems:"center" }}>
       {/* Shield illustration */}
       <div style={{ position:"relative",marginBottom:28 }}>
-        <div style={{ width:120,height:120,borderRadius:"50%",background:"radial-gradient(circle at 40% 35%,#DBEAFE,#EFF6FF)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 0 0 12px rgba(59,130,246,0.07),0 0 0 24px rgba(59,130,246,0.03),0 12px 40px rgba(59,130,246,0.2)" }}>
+        <div style={{ width:120,height:120,borderRadius:"50%",background:"radial-gradient(circle at 40% 35%,#DCFCE7,#DCFCE7)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 0 0 12px rgba(59,130,246,0.07),0 0 0 24px rgba(59,130,246,0.03),0 12px 40px rgba(59,130,246,0.2)" }}>
           <svg width="68" height="68" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7L12 2z" fill="#3B82F6" opacity=".15"/>
-            <path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7L12 2z" stroke="#2563EB" strokeWidth="1.8" fill="none"/>
-            <path d="M9 12l2 2 4-4" stroke="#2563EB" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7L12 2z" fill="#0EA5E9" opacity=".15"/>
+            <path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7L12 2z" stroke="#22C55E" strokeWidth="1.8" fill="none"/>
+            <path d="M9 12l2 2 4-4" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </div>
         <div style={{ position:"absolute",top:4,right:-4,width:14,height:14,borderRadius:"50%",background:"#FBBF24",opacity:.9 }}/>
-        <div style={{ position:"absolute",bottom:6,left:-8,width:9,height:9,borderRadius:"50%",background:"#60A5FA",opacity:.8 }}/>
+        <div style={{ position:"absolute",bottom:6,left:-8,width:9,height:9,borderRadius:"50%",background:"#0EA5E9",opacity:.8 }}/>
       </div>
 
       <h2 style={{ fontWeight:800,fontSize:22,color:C.text,marginBottom:10,letterSpacing:"-0.5px",textAlign:"center" }}>Vérification du compte</h2>
@@ -61,8 +61,8 @@ function IntroStep({ onNext }:{onNext:()=>void}) {
           { t:"Fonctionnalités complètes", s:"Accès à toutes les options premium" },
         ].map((b,i,a)=>(
           <div key={i} style={{ display:"flex",alignItems:"center",gap:12,padding:"13px 16px",borderBottom:i<a.length-1?"1px solid #F1F5F9":"none" }}>
-            <div style={{ width:36,height:36,borderRadius:"50%",background:"linear-gradient(135deg,#DBEAFE,#EFF6FF)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+            <div style={{ width:36,height:36,borderRadius:"50%",background:"linear-gradient(135deg,#DCFCE7,#DCFCE7)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>
             </div>
             <div>
               <div style={{ fontWeight:600,fontSize:14,color:C.text }}>{b.t}</div>
@@ -74,7 +74,7 @@ function IntroStep({ onNext }:{onNext:()=>void}) {
 
       <div style={{ fontSize:11,color:C.muted,marginBottom:16,textAlign:"center" }}>Durée estimée : environ 2 minutes</div>
 
-      <button onClick={onNext} style={{ width:"100%",padding:"16px",borderRadius:18,background:"linear-gradient(135deg,#1D4ED8,#3B82F6)",border:"none",color:"#fff",fontWeight:700,fontSize:16,cursor:"pointer",boxShadow:"0 8px 24px rgba(59,130,246,0.35)" }}>
+      <button onClick={onNext} style={{ width:"100%",padding:"16px",borderRadius:18,background:"linear-gradient(135deg,#0EA5E9,#0EA5E9)",border:"none",color:"#fff",fontWeight:700,fontSize:16,cursor:"pointer",boxShadow:"0 8px 24px rgba(59,130,246,0.35)" }}>
         Commencer la vérification
       </button>
     </div>
@@ -89,8 +89,8 @@ function PhoneStep({ onNext }:{onNext:(phone:string)=>void}) {
   return (
     <div style={{ padding:"32px 20px 40px" }}>
       <div style={{ display:"flex",justifyContent:"center",marginBottom:24 }}>
-        <div style={{ width:80,height:80,borderRadius:"50%",background:"linear-gradient(135deg,#DBEAFE,#EFF6FF)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 8px 24px rgba(59,130,246,0.18)" }}>
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="1.8" strokeLinecap="round">
+        <div style={{ width:80,height:80,borderRadius:"50%",background:"linear-gradient(135deg,#DCFCE7,#DCFCE7)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 8px 24px rgba(59,130,246,0.18)" }}>
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round">
             <rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>
           </svg>
         </div>
@@ -111,12 +111,12 @@ function PhoneStep({ onNext }:{onNext:(phone:string)=>void}) {
         </div>
         <div style={{ display:"flex",alignItems:"center",padding:"14px 16px",gap:10 }}>
           <span style={{ fontWeight:700,fontSize:15,color:C.secondary,flexShrink:0 }}>{country}</span>
-          <div style={{ width:1,height:22,background:"#E2E8F0" }}/>
+          <div style={{ width:1,height:22,background:"#E5E7EB" }}/>
           <input type="tel" value={phone} onChange={e=>setPhone(e.target.value)} placeholder="Numéro de téléphone" style={{ flex:1,border:"none",outline:"none",fontSize:15,color:C.text,fontFamily:"inherit",background:"none",letterSpacing:"0.5px" }}/>
         </div>
       </div>
 
-      <button onClick={()=>valid&&onNext(country+phone.replace(/\D/g,""))} disabled={!valid} style={{ width:"100%",padding:"16px",borderRadius:18,background:valid?"linear-gradient(135deg,#1D4ED8,#3B82F6)":"#E2E8F0",border:"none",color:valid?"#fff":C.muted,fontWeight:700,fontSize:16,cursor:valid?"pointer":"not-allowed",boxShadow:valid?"0 8px 24px rgba(59,130,246,0.35)":"none",transition:"all 250ms" }}>
+      <button onClick={()=>valid&&onNext(country+phone.replace(/\D/g,""))} disabled={!valid} style={{ width:"100%",padding:"16px",borderRadius:18,background:valid?"linear-gradient(135deg,#0EA5E9,#0EA5E9)":"#E5E7EB",border:"none",color:valid?"#fff":C.muted,fontWeight:700,fontSize:16,cursor:valid?"pointer":"not-allowed",boxShadow:valid?"0 8px 24px rgba(59,130,246,0.35)":"none",transition:"all 250ms" }}>
         Envoyer le code
       </button>
     </div>
@@ -143,8 +143,8 @@ function OtpStep({ phone, onNext }:{phone:string;onNext:()=>void}) {
   return (
     <div style={{ padding:"32px 20px 40px" }}>
       <div style={{ display:"flex",justifyContent:"center",marginBottom:24 }}>
-        <div style={{ width:80,height:80,borderRadius:"50%",background:"linear-gradient(135deg,#DBEAFE,#EFF6FF)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 8px 24px rgba(59,130,246,0.18)" }}>
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="1.8" strokeLinecap="round">
+        <div style={{ width:80,height:80,borderRadius:"50%",background:"linear-gradient(135deg,#DCFCE7,#DCFCE7)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 8px 24px rgba(59,130,246,0.18)" }}>
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round">
             <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
             <line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="13" y2="14"/>
           </svg>
@@ -157,11 +157,11 @@ function OtpStep({ phone, onNext }:{phone:string;onNext:()=>void}) {
         {code.map((d,i)=>(
           <input key={i} ref={refs[i]} maxLength={1} value={d}
             onChange={e=>handleInput(i,e.target.value)} onKeyDown={e=>handleKey(i,e)}
-            style={{ width:48,height:58,borderRadius:16,border:d?"2px solid "+C.primary:"2px solid #E2E8F0",background:d?"#F0FDF4":"#fff",textAlign:"center",fontSize:22,fontWeight:800,color:C.text,outline:"none",transition:"all 200ms",fontFamily:"inherit",boxShadow:d?"0 0 0 4px rgba(34,197,94,0.1)":"none" }}/>
+            style={{ width:48,height:58,borderRadius:16,border:d?"2px solid "+C.primary:"2px solid #E5E7EB",background:d?"#F0FDF4":"#fff",textAlign:"center",fontSize:22,fontWeight:800,color:C.text,outline:"none",transition:"all 200ms",fontFamily:"inherit",boxShadow:d?"0 0 0 4px rgba(34,197,94,0.1)":"none" }}/>
         ))}
       </div>
 
-      <button onClick={()=>valid&&onNext()} disabled={!valid} style={{ width:"100%",padding:"16px",borderRadius:18,background:valid?"linear-gradient(135deg,#1D4ED8,#3B82F6)":"#E2E8F0",border:"none",color:valid?"#fff":C.muted,fontWeight:700,fontSize:16,cursor:valid?"pointer":"not-allowed",boxShadow:valid?"0 8px 24px rgba(59,130,246,0.35)":"none",transition:"all 250ms",marginBottom:14 }}>
+      <button onClick={()=>valid&&onNext()} disabled={!valid} style={{ width:"100%",padding:"16px",borderRadius:18,background:valid?"linear-gradient(135deg,#0EA5E9,#0EA5E9)":"#E5E7EB",border:"none",color:valid?"#fff":C.muted,fontWeight:700,fontSize:16,cursor:valid?"pointer":"not-allowed",boxShadow:valid?"0 8px 24px rgba(59,130,246,0.35)":"none",transition:"all 250ms",marginBottom:14 }}>
         Vérifier le code
       </button>
       <button style={{ width:"100%",padding:"12px",background:"none",border:"none",color:C.primary,fontWeight:600,fontSize:14,cursor:"pointer" }}>

@@ -66,10 +66,10 @@ export default function FormationsPage() {
   };
 
   const levelColor: Record<string, string> = {
-    "Débutant": "#4CAF50", "beginner": "#4CAF50",
+    "Débutant": "#22C55E", "beginner": "#22C55E",
     "Intermédiaire": "#FF9800", "intermediate": "#FF9800",
-    "Avancé": "#F44336", "advanced": "#F44336",
-    "Tous niveaux": "#1877F2", "all": "#1877F2"
+    "Avancé": "#EF4444", "advanced": "#EF4444",
+    "Tous niveaux": "#22C55E", "all": "#22C55E"
   };
   const levelLabel: Record<string, string> = {
     "beginner": "Débutant", "intermediate": "Intermédiaire",
@@ -88,7 +88,7 @@ export default function FormationsPage() {
             <button key={id} onClick={() => setTab(id)} style={{
               flex: 1, padding: "8px", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 700, fontSize: 13,
               background: tab === id ? "var(--fb-white)" : "transparent",
-              color: tab === id ? "var(--fb-blue)" : "var(--fb-text-secondary)",
+              color: tab === id ? "var(--bp-primary)" : "var(--fb-text-secondary)",
               boxShadow: tab === id ? "0 1px 4px rgba(0,0,0,0.1)" : "none"
             }}>{label}</button>
           ))}
@@ -96,7 +96,7 @@ export default function FormationsPage() {
       </div>
 
       {/* Stats */}
-      <div style={{ background: "var(--fb-blue)", color: "#fff", padding: "10px 16px", display: "flex", gap: 24, fontSize: 13 }}>
+      <div style={{ background: "var(--bp-primary)", color: "#fff", padding: "10px 16px", display: "flex", gap: 24, fontSize: 13 }}>
         <span><strong>{loading ? "…" : myCourses.length}</strong> cours en cours</span>
         <span><strong>{myCourses.filter(c => getProgress(c.id) === 100).length}</strong> complétés</span>
         <span><strong>{courses.length}</strong> dispo</span>
@@ -109,7 +109,7 @@ export default function FormationsPage() {
               <div style={{ fontSize: 48 }}>🎓</div>
               <div style={{ fontWeight: 700, marginTop: 8 }}>Aucun cours en cours</div>
               <div style={{ fontSize: 13, marginTop: 4 }}>Parcourez le catalogue pour vous inscrire</div>
-              <button onClick={() => setTab("catalogue")} style={{ marginTop: 16, background: "var(--fb-blue)", color: "#fff", border: "none", borderRadius: 20, padding: "10px 24px", fontWeight: 700, cursor: "pointer" }}>
+              <button onClick={() => setTab("catalogue")} style={{ marginTop: 16, background: "var(--bp-primary)", color: "#fff", border: "none", borderRadius: 20, padding: "10px 24px", fontWeight: 700, cursor: "pointer" }}>
                 Voir le catalogue
               </button>
             </div>
@@ -129,15 +129,15 @@ export default function FormationsPage() {
                     <div style={{ fontWeight: 800, fontSize: 14, marginBottom: 2 }}>{course.title}</div>
                     <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", marginBottom: 8 }}>⏱ {fmtDuration(course.duration)}</div>
                     <div style={{ background: "var(--fb-bg)", borderRadius: 10, height: 8, marginBottom: 4 }}>
-                      <div style={{ background: isComplete ? "#4CAF50" : "var(--fb-blue)", height: 8, borderRadius: 10, width: `${progress}%`, transition: "width 0.5s" }} />
+                      <div style={{ background: isComplete ? "#22C55E" : "var(--bp-primary)", height: 8, borderRadius: 10, width: `${progress}%`, transition: "width 0.5s" }} />
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
-                      <span style={{ color: isComplete ? "#4CAF50" : "var(--fb-text-secondary)", fontWeight: isComplete ? 700 : 400 }}>
+                      <span style={{ color: isComplete ? "#22C55E" : "var(--fb-text-secondary)", fontWeight: isComplete ? 700 : 400 }}>
                         {isComplete ? "✅ Complété !" : `${progress}% complété`}
                       </span>
                       {!isComplete && (
                         <button onClick={(e) => handleContinue(course.id, e)} style={{
-                          background: "var(--fb-blue)", color: "#fff", border: "none", borderRadius: 12, padding: "4px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer"
+                          background: "var(--bp-primary)", color: "#fff", border: "none", borderRadius: 12, padding: "4px 12px", fontSize: 12, fontWeight: 700, cursor: "pointer"
                         }}>▶ Continuer</button>
                       )}
                     </div>
@@ -153,7 +153,7 @@ export default function FormationsPage() {
         <div>
           <div style={{ padding: "12px 16px", background: "var(--fb-white)", borderBottom: "1px solid var(--fb-divider)" }}>
             <div className="bp-search">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               <input
                 value={filter}
                 onChange={e => setFilter(e.target.value)}
@@ -176,10 +176,10 @@ export default function FormationsPage() {
                       <div style={{ fontWeight: 800, fontSize: 14, marginBottom: 3 }}>{course.title}</div>
                       <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", marginBottom: 6 }}>⏱ {fmtDuration(course.duration)} · 👥 {course.enrollmentsCount.toLocaleString()} élèves</div>
                       <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                        <span style={{ background: (levelColor[course.level] ?? "#1877F2") + "20", color: levelColor[course.level] ?? "#1877F2", fontWeight: 700, fontSize: 11, padding: "2px 10px", borderRadius: 12 }}>
+                        <span style={{ background: (levelColor[course.level] ?? "#22C55E") + "20", color: levelColor[course.level] ?? "#22C55E", fontWeight: 700, fontSize: 11, padding: "2px 10px", borderRadius: 12 }}>
                           {levelLabel[course.level] ?? course.level}
                         </span>
-                        <span style={{ fontWeight: 800, fontSize: 14, color: (course.isFree || !course.price) ? "#4CAF50" : "var(--fb-text)" }}>
+                        <span style={{ fontWeight: 800, fontSize: 14, color: (course.isFree || !course.price) ? "#22C55E" : "var(--fb-text)" }}>
                           {(course.isFree || !course.price) ? "🆓 Gratuit" : `${(course.price ?? 0).toLocaleString()} ${course.currency ?? "FCFA"}`}
                         </span>
                         <button
@@ -187,7 +187,7 @@ export default function FormationsPage() {
                           disabled={isEnrolled}
                           style={{
                             marginLeft: "auto", padding: "6px 14px", border: "none", borderRadius: 16, cursor: isEnrolled ? "default" : "pointer",
-                            background: isEnrolled ? "#E8F5E9" : "var(--fb-blue)", color: isEnrolled ? "#4CAF50" : "#fff",
+                            background: isEnrolled ? "#DCFCE7" : "var(--bp-primary)", color: isEnrolled ? "#22C55E" : "#fff",
                             fontWeight: 700, fontSize: 12
                           }}
                         >

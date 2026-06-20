@@ -88,12 +88,12 @@ export default function CreatorDashboardPage() {
     pending: "En attente", validated: "Validé", paid: "Payé", rejected: "Rejeté",
   };
   const statusColor: Record<string, string> = {
-    pending: "#FF9800", validated: "#2196F3", paid: "#4CAF50", rejected: "#F44336",
+    pending: "#FF9800", validated: "#2196F3", paid: "#22C55E", rejected: "#EF4444",
   };
 
   if (loading) return (
     <div style={{ display: "flex", justifyContent: "center", padding: 60 }}>
-      <div style={{ width: 32, height: 32, border: "4px solid #E91E8C", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+      <div style={{ width: 32, height: 32, border: "4px solid #EC4899", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
@@ -103,7 +103,7 @@ export default function CreatorDashboardPage() {
   return (
     <div style={{ maxWidth: 600, margin: "0 auto", paddingBottom: 40 }}>
       {/* Header */}
-      <div style={{ background: "linear-gradient(135deg, #E91E8C, #9C27B0)", color: "#fff", padding: "20px 16px 28px" }}>
+      <div style={{ background: "linear-gradient(135deg, #EC4899, #9C27B0)", color: "#fff", padding: "20px 16px 28px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
           <button onClick={() => navigate("/")} style={{ background: "rgba(255,255,255,0.2)", border: "none", borderRadius: "50%", width: 36, height: 36, color: "#fff", fontSize: 18, cursor: "pointer" }}>←</button>
           <div style={{ fontWeight: 800, fontSize: 18 }}>💎 Dashboard Créateur</div>
@@ -129,7 +129,7 @@ export default function CreatorDashboardPage() {
         {([ ["solde","💰 Solde"], ["revenus","📈 Revenus"], ["donateurs","🏆 Donateurs"], ["historique","📋 Historique"], ["retrait","💸 Retrait"] ] as [Tab, string][]).map(([t, label]) => (
           <button key={t} onClick={() => setTab(t)} style={{
             flexShrink: 0, padding: "6px 14px", borderRadius: 20, border: "none", cursor: "pointer", fontSize: 13, fontWeight: 700,
-            background: tab === t ? "#E91E8C" : "var(--fb-bg)",
+            background: tab === t ? "#E91E63" : "var(--fb-bg)",
             color: tab === t ? "#fff" : "var(--fb-text)",
           }}>{label}</button>
         ))}
@@ -167,7 +167,7 @@ export default function CreatorDashboardPage() {
             ].map(({ label, tokens, xof }) => (
               <div key={label} style={{ background: "var(--fb-white)", borderRadius: 14, padding: 16 }}>
                 <div style={{ fontSize: 13, color: "var(--fb-text-secondary)" }}>{label}</div>
-                <div style={{ fontWeight: 900, fontSize: 22, color: "#E91E8C", marginTop: 4 }}>🪙 {tokens.toLocaleString()}</div>
+                <div style={{ fontWeight: 900, fontSize: 22, color: "#E91E63", marginTop: 4 }}>🪙 {tokens.toLocaleString()}</div>
                 <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", marginTop: 2 }}>{xof.toLocaleString("fr-FR")} XOF</div>
               </div>
             ))}
@@ -188,14 +188,14 @@ export default function CreatorDashboardPage() {
           )}
           {donors.map((d, i) => (
             <div key={d.senderId} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", borderBottom: "1px solid var(--fb-divider)" }}>
-              <div style={{ width: 32, height: 32, borderRadius: "50%", background: i === 0 ? "#FFD700" : i === 1 ? "#C0C0C0" : i === 2 ? "#CD7F32" : "#E0E0E0", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 14, flexShrink: 0 }}>
+              <div style={{ width: 32, height: 32, borderRadius: "50%", background: i === 0 ? "#FBBF24" : i === 1 ? "#CBD5E1" : i === 2 ? "#D97706" : "#E5E7EB", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 14, flexShrink: 0 }}>
                 {i + 1}
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 700, fontSize: 14 }}>{d.senderName || `Utilisateur #${d.senderId}`}</div>
                 <div style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>{d.giftsCount} cadeau{d.giftsCount !== 1 ? "x" : ""}</div>
               </div>
-              <div style={{ fontWeight: 800, color: "#E91E8C" }}>🪙 {d.totalTokens.toLocaleString()}</div>
+              <div style={{ fontWeight: 800, color: "#E91E63" }}>🪙 {d.totalTokens.toLocaleString()}</div>
             </div>
           ))}
         </div>
@@ -221,7 +221,7 @@ export default function CreatorDashboardPage() {
                   {g.contextType === "live" ? "🔴 Live" : "🎥 Vidéo"} · {new Date(g.createdAt).toLocaleDateString("fr-FR")}
                 </div>
               </div>
-              <div style={{ fontWeight: 800, color: "#E91E8C" }}>+🪙{g.tokenAmount}</div>
+              <div style={{ fontWeight: 800, color: "#E91E63" }}>+🪙{g.tokenAmount}</div>
             </div>
           ))}
         </div>
@@ -242,8 +242,8 @@ export default function CreatorDashboardPage() {
               {OPERATORS.map(op => (
                 <button key={op.id} onClick={() => setWdOperator(op.id)} style={{
                   flex: 1, padding: "10px 0", borderRadius: 12, cursor: "pointer", fontWeight: 700, fontSize: 12,
-                  border: `2px solid ${wdOperator === op.id ? "#E91E8C" : "var(--fb-divider)"}`,
-                  background: wdOperator === op.id ? "#fce4ec" : "var(--fb-bg)",
+                  border: `2px solid ${wdOperator === op.id ? "#E91E63" : "var(--fb-divider)"}`,
+                  background: wdOperator === op.id ? "#FEE2E2" : "var(--fb-bg)",
                 }}>
                   <div style={{ fontSize: 20 }}>{op.emoji}</div>
                   <div style={{ marginTop: 2 }}>{op.label.split(" ")[0]}</div>
@@ -262,18 +262,18 @@ export default function CreatorDashboardPage() {
               placeholder={`Min. ${(w?.minWithdrawTokens ?? 1000).toLocaleString()} jetons`}
               style={{ width: "100%", background: "var(--fb-bg)", border: "none", borderRadius: 10, padding: "12px 14px", fontSize: 18, fontWeight: 800, marginBottom: 6, boxSizing: "border-box" }} />
             {wdTokens && (
-              <div style={{ fontSize: 13, color: "#E91E8C", fontWeight: 700, marginBottom: 12 }}>
+              <div style={{ fontSize: 13, color: "#E91E63", fontWeight: 700, marginBottom: 12 }}>
                 = {(parseInt(wdTokens || "0", 10) * (w?.tokenToXof ?? 5)).toLocaleString("fr-FR")} XOF
               </div>
             )}
 
-            {wdError   && <div style={{ background: "#FFEBEE", color: "#C62828", borderRadius: 10, padding: "10px 14px", marginBottom: 12, fontSize: 13 }}>❌ {wdError}</div>}
-            {wdSuccess && <div style={{ background: "#E8F5E9", color: "#2E7D32", borderRadius: 10, padding: "10px 14px", marginBottom: 12, fontSize: 13 }}>✅ {wdSuccess}</div>}
+            {wdError   && <div style={{ background: "#FEE2E2", color: "#EF4444", borderRadius: 10, padding: "10px 14px", marginBottom: 12, fontSize: 13 }}>❌ {wdError}</div>}
+            {wdSuccess && <div style={{ background: "#DCFCE7", color: "#16A34A", borderRadius: 10, padding: "10px 14px", marginBottom: 12, fontSize: 13 }}>✅ {wdSuccess}</div>}
 
             <button onClick={handleWithdraw}
               disabled={wdLoading || !wdPhone || !wdTokens || parseInt(wdTokens, 10) < (w?.minWithdrawTokens ?? 1000)}
               style={{
-                width: "100%", background: wdLoading ? "#ccc" : "#E91E8C", color: "#fff", border: "none",
+                width: "100%", background: wdLoading ? "#ccc" : "#E91E63", color: "#fff", border: "none",
                 borderRadius: 12, padding: 14, fontWeight: 800, fontSize: 16, cursor: "pointer",
               }}>
               {wdLoading ? "Traitement…" : "Demander le retrait"}
