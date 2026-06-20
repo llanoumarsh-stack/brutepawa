@@ -1061,12 +1061,58 @@ router.get("/notifications/unread-count", requireAuth, async (req, res): Promise
 
 router.get("/notifications", requireAuth, async (req, res): Promise<void> => {
   const userId = req.userId!;
-  const rows = await db
-    .select()
+
+  // Auto-seed demo notifications if user has none
+  const [countRow] = await db
+    .select({ count: sql<number>`count(*)::int` })
     .from(notificationsTable)
+    .where(eq(notificationsTable.userId, userId));
+
+  if ((countRow?.count ?? 0) === 0) {
+    const now = new Date();
+    const h = (n: number) => new Date(now.getTime() - n * 3_600_000);
+    await db.insert(notificationsTable).values([
+      { userId, type: "friend",  actorName: "Patron Patron",               action: "vous a envoyé une demande d'amitié",  isRead: false, createdAt: h(1)   },
+      { userId, type: "friend",  actorName: "Nith Adidjatou",              action: "vous a envoyé une demande d'amitié",  isRead: false, createdAt: h(2)   },
+      { userId, type: "friend",  actorName: "Euloge AKIYOKO",              action: "vous a envoyé une demande d'amitié",  isRead: false, createdAt: h(2.5) },
+      {
+        userId, type: "comment", actorName: "Aïcha Koné",
+        action: "a commenté votre publication",
+        detail: "Super contenu ! Merci pour le partage 🙌",
+        thumbnailUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=96&h=96&fit=crop&auto=format",
+        isRead: false, createdAt: h(3),
+      },
+      {
+        userId, type: "like",    actorName: "Mamadou",
+        action: "a aimé votre story",
+        thumbnailUrl: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=96&h=96&fit=crop&auto=format",
+        isRead: false, createdAt: h(5),
+      },
+      { userId, type: "message", actorName: "Groupe Développeurs Afrique", action: "12 nouveaux messages", messageCount: 12, isRead: false, createdAt: h(6) },
+    ]);
+  }
+
+  const rows = await db
+    .select({
+      id:            notificationsTable.id,
+      type:          notificationsTable.type,
+      actorId:       notificationsTable.actorId,
+      actorName:     notificationsTable.actorName,
+      actorAvatarUrl: sql<string | null>`COALESCE(${notificationsTable.actorAvatarUrl}, ${usersTable.avatarUrl})`,
+      action:        notificationsTable.action,
+      detail:        notificationsTable.detail,
+      thumbnailUrl:  notificationsTable.thumbnailUrl,
+      messageCount:  notificationsTable.messageCount,
+      link:          notificationsTable.link,
+      isRead:        notificationsTable.isRead,
+      createdAt:     notificationsTable.createdAt,
+    })
+    .from(notificationsTable)
+    .leftJoin(usersTable, eq(usersTable.id, notificationsTable.actorId))
     .where(eq(notificationsTable.userId, userId))
     .orderBy(desc(notificationsTable.createdAt))
     .limit(50);
+
   res.json(rows);
 });
 

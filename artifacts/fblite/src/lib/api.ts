@@ -1279,8 +1279,11 @@ export interface ApiNotification {
   type: string;
   actorId: number | null;
   actorName: string | null;
+  actorAvatarUrl: string | null;
   action: string;
   detail: string | null;
+  thumbnailUrl: string | null;
+  messageCount: number | null;
   link: string | null;
   isRead: boolean;
   createdAt: string;
@@ -1301,6 +1304,10 @@ export async function apiGetUnreadNotifCount(): Promise<number> {
 
 export async function apiMarkAllNotificationsRead(): Promise<void> {
   await apiFetch("/notifications/read-all", { method: "PATCH" });
+}
+
+export async function apiMarkNotificationRead(id: number): Promise<void> {
+  await apiFetch(`/notifications/${id}/read`, { method: "PATCH" });
 }
 
 export async function apiAdminPatchReport(
