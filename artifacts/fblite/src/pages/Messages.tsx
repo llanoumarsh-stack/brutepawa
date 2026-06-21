@@ -2959,7 +2959,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         backgroundImage:`url(${import.meta.env.BASE_URL}wallpapers/bp-chat-bg.jpg)`,
         backgroundSize:"cover", backgroundRepeat:"no-repeat", backgroundPosition:"center" }}>
         <style>{`
-          .bp-msg-mine   { background:#22C55E; color:#fff; border-radius:16px 16px 4px 16px; box-shadow:0 1px 2px rgba(0,0,0,0.10); }
+          .bp-msg-mine   { background:#C8E6B2; color:#14532D; border-radius:16px 16px 4px 16px; box-shadow:0 1px 2px rgba(0,0,0,0.10); }
           .bp-msg-theirs { background:#fff;    color:#111; border-radius:4px 16px 16px 16px; box-shadow:0 1px 2px rgba(0,0,0,0.08); }
           textarea:focus { outline:none !important; box-shadow:none !important; border:none !important; }
           textarea { -webkit-appearance:none; scrollbar-width:none; }
@@ -3255,7 +3255,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         backgroundImage: convWallpaper ? `url(${convWallpaper})` : convWpKey !== "none" && wpUrl(convWpKey) ? `url(${wpUrl(convWpKey)})` : `url(${import.meta.env.BASE_URL}wallpapers/bp-chat-bg.jpg)`,
         backgroundSize:"cover", backgroundRepeat:"no-repeat", backgroundPosition:"center" }}>
         <style>{`
-          .fbl-msg-mine   { background:#22C55E; color:#fff; border-radius:16px 16px 4px 16px; box-shadow:0 1px 2px rgba(0,0,0,0.10); }
+          .fbl-msg-mine   { background:#C8E6B2; color:#14532D; border-radius:16px 16px 4px 16px; box-shadow:0 1px 2px rgba(0,0,0,0.10); }
           .fbl-msg-theirs { background:#fff; color:#111; border-radius:4px 16px 16px 16px; box-shadow:0 1px 2px rgba(0,0,0,0.08); }
           textarea:focus  { outline:none !important; box-shadow:none !important; border:none !important; }
           textarea        { -webkit-appearance:none; scrollbar-width:none; }
@@ -3465,7 +3465,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       return (
                       /* ── VOICE MESSAGE BUBBLE — seekable, animated ── */
                       <div style={{
-                        background: mine ? "#22C55E" : "#fff",
+                        background: mine ? "#C8E6B2" : "#fff",
                         borderRadius: mine ? "18px 4px 18px 18px" : "4px 18px 18px 18px",
                         padding:"7px 10px 6px",
                         minWidth:196, maxWidth:258,
@@ -3632,13 +3632,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:6 }}>
                           <span style={{
                             fontSize:11, fontWeight:700, letterSpacing:0.15,
-                            color: mine ? "rgba(255,255,255,0.85)" : "#9CA3AF",
+                            color: mine ? "#166534" : "#9CA3AF",
                             fontVariantNumeric:"tabular-nums",
                           }}>
                             {dispTime}
                           </span>
                           <div style={{ display:"flex", alignItems:"center", gap:4 }}>
-                            <span style={{ fontSize:11, color: mine ? "rgba(255,255,255,0.85)" : "#9CA3AF" }}>{msg.time}</span>
+                            <span style={{ fontSize:11, color: mine ? "#166534" : "#9CA3AF" }}>{msg.time}</span>
                             {mine && (vUps && vUps.network !== "error"
                               ? <svg viewBox="0 0 16 16" width="14" height="14" fill="none">
                                   <circle cx="8" cy="8" r="5.5" stroke="#22C55E" strokeWidth="1.5"/>
@@ -3666,7 +3666,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     const counterText = ups ? `${fmtBytes(Math.round(ups.fileSize * pct / 100))} / ${fmtBytes(ups.fileSize)}` : "";
                     return (
                       <div style={{ borderRadius:18, overflow:"hidden", marginBottom:2, width:252,
-                        background: msg.mine ? "#22C55E" : "#fff",
+                        background: msg.mine ? "#C8E6B2" : "#fff",
                         boxShadow:"0 2px 12px rgba(0,0,0,0.10)",
                         animation:"fbl-fade-in 0.28s cubic-bezier(.22,1,.36,1)" }}>
                         {/* Image area — dominant (85-95 % de la bulle) */}
@@ -3876,7 +3876,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                       const cntText   = ups ? `${fmtBytes(Math.round(ups.fileSize * pct / 100))} / ${fmtBytes(ups.fileSize)}` : "";
                       return (
                         <div style={{ borderRadius:18, overflow:"hidden", marginBottom:2, width:252,
-                          background: msg.mine ? "#22C55E" : "#fff",
+                          background: msg.mine ? "#C8E6B2" : "#fff",
                           boxShadow:"0 2px 12px rgba(0,0,0,0.10)",
                           animation:"fbl-fade-in 0.28s cubic-bezier(.22,1,.36,1)" }}>
                           {/* Miniature vidéo */}
@@ -5686,9 +5686,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             </div>
             {bc.msgs.map(m => (
               <div key={m.id} style={{ display:"flex", justifyContent:"flex-end" }}>
-                <div style={{ maxWidth:"72%", background:"#22C55E", color:"#fff", borderRadius:"16px 16px 4px 16px", padding:"8px 12px 6px", fontSize:14.5, boxShadow:"0 1px 2px rgba(0,0,0,0.1)" }}>
+                <div style={{ maxWidth:"72%", background:"#C8E6B2", color:"#14532D", borderRadius:"16px 16px 4px 16px", padding:"8px 12px 6px", fontSize:14.5, boxShadow:"0 1px 2px rgba(0,0,0,0.1)" }}>
                   {m.text}
-                  <div style={{ fontSize:10,color:"rgba(255,255,255,0.75)",textAlign:"right",marginTop:2 }}>{m.time} <span style={{ color:"rgba(255,255,255,0.9)" }}>✓✓</span></div>
+                  <div style={{ fontSize:10,color:"#166534",textAlign:"right",marginTop:2 }}>{m.time} <span style={{ color:"#22C55E" }}>✓✓</span></div>
                 </div>
               </div>
             ))}
