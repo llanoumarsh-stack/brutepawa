@@ -304,20 +304,111 @@ export default function CreateModal({ onClose, onSelect }: Props) {
           ))}
         </div>
 
-        {/* Footer */}
-        <div style={{
-          display: "flex", alignItems: "center", justifyContent: "center",
-          gap: 6, padding: "14px 20px 32px",
-        }}>
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
-            <path d="M12 2l-7 3v5c0 5.25 3.5 10.15 7 11.5C16.5 20.15 20 15.25 20 10V5l-8-3z"
-              fill="#22C55E" fillOpacity=".15" stroke="#22C55E" strokeWidth="1.8"/>
-            <path d="M9 12l2 2 4-4" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          <span style={{ fontSize: 12.5, fontFamily: "Inter, sans-serif" }}>
-            <span style={{ color: "#22C55E", fontWeight: 700 }}>100% sécurisé</span>
-            <span style={{ color: "#6B7280", fontWeight: 400 }}> • Vos données sont protégées.</span>
-          </span>
+        {/* Footer — Security banner */}
+        <div style={{ padding: "8px 14px 32px" }}>
+          <div style={{
+            background: "linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 60%, #F0FDF4 100%)",
+            borderRadius: 18,
+            border: "1px solid #BBF7D0",
+            padding: "14px 14px 14px 14px",
+            display: "flex", alignItems: "center", gap: 12,
+            overflow: "hidden", position: "relative",
+          }}>
+            {/* Shield icon */}
+            <div style={{ flexShrink: 0, position: "relative" }}>
+              <svg viewBox="0 0 48 56" width="44" height="52" fill="none">
+                {/* Shield outer glow */}
+                <path d="M24 2L4 10v14c0 14 9 26 20 30C35 50 44 38 44 24V10L24 2z"
+                  fill="url(#shieldGrad)" filter="url(#glow)"/>
+                {/* Shield gradient def */}
+                <defs>
+                  <linearGradient id="shieldGrad" x1="4" y1="2" x2="44" y2="54" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stopColor="#4ADE80"/>
+                    <stop offset="100%" stopColor="#16A34A"/>
+                  </linearGradient>
+                  <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="2" result="blur"/>
+                    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                  </filter>
+                </defs>
+                {/* Shield inner lighter */}
+                <path d="M24 7L9 13v11c0 11 7 20.5 15 24C32 44.5 39 35 39 24V13L24 7z"
+                  fill="white" fillOpacity="0.18"/>
+                {/* Lock body */}
+                <rect x="17" y="28" width="14" height="11" rx="2.5" fill="white" fillOpacity="0.95"/>
+                {/* Lock shackle */}
+                <path d="M19 28v-4a5 5 0 0 1 10 0v4" stroke="white" strokeWidth="2.2"
+                  strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                {/* Lock keyhole */}
+                <circle cx="24" cy="33" r="2" fill="#16A34A"/>
+                <rect x="23" y="34.5" width="2" height="2.5" rx="1" fill="#16A34A"/>
+                {/* Sparkle top-right */}
+                <g opacity="0.7">
+                  <line x1="41" y1="8" x2="41" y2="12" stroke="#4ADE80" strokeWidth="1.5" strokeLinecap="round"/>
+                  <line x1="39" y1="10" x2="43" y2="10" stroke="#4ADE80" strokeWidth="1.5" strokeLinecap="round"/>
+                </g>
+                {/* Sparkle small */}
+                <circle cx="7" cy="26" r="1.5" fill="#4ADE80" opacity="0.6"/>
+              </svg>
+            </div>
+
+            {/* Text */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 3 }}>
+                <span style={{
+                  fontWeight: 800, fontSize: 15, color: "#15803D",
+                  fontFamily: "Inter, sans-serif",
+                }}>
+                  100% sécurisé
+                </span>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="#22C55E" strokeWidth="2"/>
+                  <path d="M8 12l3 3 5-5" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <div style={{
+                fontSize: 12, color: "#4B7A5A", lineHeight: 1.45,
+                fontFamily: "Inter, sans-serif", fontWeight: 400,
+              }}>
+                Vos données sont protégées avec le plus haut niveau de sécurité.
+              </div>
+            </div>
+
+            {/* Decorative padlock right */}
+            <div style={{ flexShrink: 0, opacity: 0.85 }}>
+              <svg viewBox="0 0 52 56" width="46" height="52" fill="none">
+                <defs>
+                  <linearGradient id="lockGrad" x1="0" y1="0" x2="52" y2="56" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stopColor="#4ADE80"/>
+                    <stop offset="100%" stopColor="#16A34A"/>
+                  </linearGradient>
+                  <linearGradient id="lockFace" x1="0" y1="0" x2="52" y2="0" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stopColor="#86EFAC"/>
+                    <stop offset="100%" stopColor="#22C55E"/>
+                  </linearGradient>
+                </defs>
+                {/* Lock body isometric */}
+                {/* Bottom face */}
+                <path d="M10 38 L26 48 L42 38 L26 28 Z" fill="#16A34A"/>
+                {/* Right face */}
+                <path d="M42 22 L42 38 L26 48 L26 32 Z" fill="#15803D"/>
+                {/* Top face */}
+                <path d="M10 22 L26 32 L42 22 L26 12 Z" fill="#4ADE80"/>
+                {/* Shackle left bar */}
+                <rect x="14" y="8" width="5" height="20" rx="2.5" fill="#22C55E"/>
+                {/* Shackle top */}
+                <path d="M14 10 Q14 2 26 2 Q38 2 38 10" stroke="#22C55E" strokeWidth="5" fill="none" strokeLinecap="round"/>
+                {/* Shackle right bar */}
+                <rect x="33" y="8" width="5" height="14" rx="2.5" fill="#22C55E"/>
+                {/* Keyhole on face */}
+                <circle cx="26" cy="29" r="3.5" fill="white" fillOpacity="0.7"/>
+                <rect x="24.5" y="31" width="3" height="4" rx="1.5" fill="white" fillOpacity="0.7"/>
+                {/* Card behind lock */}
+                <rect x="28" y="24" width="22" height="16" rx="3"
+                  fill="white" fillOpacity="0.25" stroke="white" strokeWidth="1" strokeOpacity="0.4"/>
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
     </div>
