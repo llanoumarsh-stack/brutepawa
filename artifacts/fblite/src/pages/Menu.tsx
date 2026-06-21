@@ -1053,327 +1053,278 @@ export default function Menu() {
   ];
 
   return (
-    <div style={{ maxWidth:600, margin:"0 auto", background:"#F8FAFC", minHeight:"100dvh", paddingBottom:88, fontFamily:"Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" }}>
+    <div style={{ maxWidth: 430, margin: "0 auto", background: "#F8FAFC", minHeight: "100dvh", paddingBottom: 104, fontFamily: "Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" }}>
       <style>{`
-        @keyframes bp-avatar-ring {
-          0%,100% { box-shadow:0 0 0 3.5px #22C55E,0 0 0 7px rgba(34,197,94,.22); }
-          50%      { box-shadow:0 0 0 3.5px #16A34A,0 0 0 8px rgba(34,197,94,.42); }
+        @keyframes bp-menu-in {
+          from { opacity: 0; transform: translateY(20px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
         @keyframes bp-badge-pulse {
-          0%,100% { box-shadow:0 0 0 0 rgba(34,197,94,.7); }
-          70%      { box-shadow:0 0 0 6px rgba(34,197,94,0); }
+          0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,.6); }
+          70%       { box-shadow: 0 0 0 5px rgba(34,197,94,0); }
         }
-        @keyframes bp-menu-in {
-          from { opacity:0; transform:translateY(18px); }
-          to   { opacity:1; transform:translateY(0); }
+        @keyframes bp-live-pulse {
+          0%, 100% { opacity: 1; }
+          50%       { opacity: 0.55; }
         }
       `}</style>
 
-      {/* ══ HEADER PREMIUM — Gradient vert ══ */}
-      <div style={{ background:"linear-gradient(135deg,#22C55E 0%,#16A34A 100%)", position:"relative", overflow:"hidden", padding:"calc(env(safe-area-inset-top,0px) + 14px) 16px 22px" }}>
-        <div style={{ position:"absolute",top:-80,right:-80,width:220,height:220,borderRadius:"50%",background:"rgba(255,255,255,.08)",pointerEvents:"none" }}/>
-        <div style={{ position:"absolute",bottom:-50,left:-50,width:165,height:165,borderRadius:"50%",background:"rgba(255,255,255,.06)",pointerEvents:"none" }}/>
-        <div style={{ position:"absolute",top:20,left:120,width:70,height:70,borderRadius:"50%",background:"rgba(255,255,255,.04)",pointerEvents:"none" }}/>
-        <div style={{ display:"flex",alignItems:"center",justifyContent:"space-between",position:"relative",zIndex:2 }}>
-          <button style={{ width:42,height:42,borderRadius:"50%",background:"rgba(255,255,255,.2)",backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)",border:"1.5px solid rgba(255,255,255,.3)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",outline:"none",boxShadow:"0 4px 12px rgba(0,0,0,.12)" }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/>
-            </svg>
-          </button>
-          <span style={{ fontWeight:800,fontSize:18,color:"#fff",letterSpacing:"-0.3px" }}>BrutePawa</span>
-          <button onClick={()=>navigate("/settings")} style={{ width:42,height:42,borderRadius:"50%",background:"rgba(255,255,255,.2)",backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)",border:"1.5px solid rgba(255,255,255,.3)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",outline:"none",boxShadow:"0 4px 12px rgba(0,0,0,.12)" }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="3"/>
-              <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
-            </svg>
-          </button>
+      {/* ══ HEADER ══ */}
+      <div style={{ padding: "calc(env(safe-area-inset-top,0px) + 20px) 20px 16px", background: "#F8FAFC", animation: "bp-menu-in 300ms cubic-bezier(0.22,1,0.36,1)" }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+          <div>
+            <div style={{ fontWeight: 800, fontSize: 32, color: "#0F172A", letterSpacing: "-0.8px", lineHeight: 1.1 }}>Menu</div>
+            <div style={{ fontSize: 13, color: "#64748B", marginTop: 5 }}>Tout ce dont vous avez besoin, au même endroit.</div>
+          </div>
+          <div style={{ display: "flex", gap: 8, alignItems: "center", paddingTop: 2 }}>
+            <button style={{ width: 40, height: 40, borderRadius: 13, background: "#fff", border: "1.5px solid #E2E8F0", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", outline: "none" }}>
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#0F172A" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            </button>
+            <button style={{ width: 40, height: 40, borderRadius: 13, background: "#fff", border: "1.5px solid #E2E8F0", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", outline: "none" }}>
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#0F172A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="5" height="5" rx="1"/><rect x="16" y="3" width="5" height="5" rx="1"/><rect x="3" y="16" width="5" height="5" rx="1"/>
+                <path d="M21 16h-3a2 2 0 00-2 2v3M21 21v.01M12 7v3M12 3v.01M7 12h3M3 12v.01M16 12h.01M12 16v.01M12 12v.01"/>
+              </svg>
+            </button>
+            <button onClick={() => navigate("/notifications")} style={{ width: 40, height: 40, borderRadius: 13, background: "#fff", border: "1.5px solid #E2E8F0", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", position: "relative", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", outline: "none" }}>
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#0F172A" strokeWidth="2.2" strokeLinecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+              <div style={{ position: "absolute", top: -5, right: -5, background: "#22C55E", color: "#fff", fontSize: 9, fontWeight: 800, minWidth: 19, height: 19, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 3px", animation: "bp-badge-pulse 2s infinite" }}>12</div>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* ══ TITRE — Menu 48px ══ */}
-      <div style={{ padding:"20px 16px 10px", animation:"bp-menu-in 300ms ease-out" }}>
-        <div style={{ fontWeight:800,fontSize:48,color:"#0F172A",lineHeight:1.05,letterSpacing:"-1.5px" }}>Menu</div>
-        <div style={{ fontSize:14,color:"#64748B",marginTop:7,lineHeight:1.5 }}>Accédez rapidement à tout ce dont vous avez besoin.</div>
-      </div>
+      {/* ══ SCROLLABLE CONTENT ══ */}
+      <div style={{ padding: "0 14px", display: "flex", flexDirection: "column", gap: 14, animation: "bp-menu-in 300ms .04s cubic-bezier(0.22,1,0.36,1) both", paddingBottom: 8 }}>
 
-      {/* ══ CONTENU PRINCIPAL ══ */}
-      <div style={{ padding:"0 12px 24px", display:"flex", flexDirection:"column", gap:12, animation:"bp-menu-in 300ms .05s ease-out both" }}>
-
-        {/* ── CARTE PROFIL PREMIUM ── */}
-        <div style={{ background:"#fff", borderRadius:32, boxShadow:"0 12px 40px rgba(0,0,0,.06)" }}>
-          <button onClick={()=>navigate("/profile")} style={{ display:"flex",alignItems:"flex-start",gap:14,padding:"20px 18px 0",background:"none",border:"none",cursor:"pointer",width:"100%",textAlign:"left" }}>
-            <div style={{ position:"relative",flexShrink:0 }}>
-              {user.avatarUrl
-                ? <img src={user.avatarUrl} alt="" style={{ width:72,height:72,borderRadius:"50%",objectFit:"cover",animation:"bp-avatar-ring 2.2s ease-in-out infinite" }}/>
-                : <div style={{ width:72,height:72,borderRadius:"50%",background:"linear-gradient(135deg,#22C55E,#16A34A)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,fontWeight:800,color:"#fff",animation:"bp-avatar-ring 2.2s ease-in-out infinite" }}>{userInitials}</div>
-              }
-              <div style={{ position:"absolute",bottom:-3,right:-3,width:24,height:24,borderRadius:"50%",background:"#fff",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 2px 6px rgba(0,0,0,.15)" }}>
-                <svg width="20" height="20" viewBox="0 0 24 24">
-                  <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" fill="#0EA5E9"/>
-                  <path d="M9 12l2 2 4-4" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
+        {/* ── CARTE PROFIL IMMERSIVE ── */}
+        <div style={{ borderRadius: 28, overflow: "hidden", boxShadow: "0 12px 40px rgba(0,0,0,0.12)" }}>
+          {/* Cover photo — forêt sombre */}
+          <div style={{ background: "linear-gradient(160deg,#0A3318 0%,#14522A 20%,#1B6B38 40%,#0F4523 65%,#092C16 100%)", position: "relative", padding: "20px 18px 0" }}>
+            <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
+              <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 120% 80% at 60% 20%,rgba(34,197,94,0.08) 0%,transparent 70%)" }}/>
+              {([20,38,55,72,88,108,128] as number[]).map((top,i)=>(
+                <div key={i} style={{ position:"absolute",left:0,right:0,top,height:1,background:`rgba(34,197,94,${0.06+i*0.015})` }}/>
+              ))}
+              {([{left:"8%",h:70,w:3,top:20},{left:"14%",h:55,w:2.5,top:35},{left:"80%",h:65,w:3,top:25},{left:"87%",h:80,w:2.5,top:15},{left:"93%",h:50,w:2,top:40}] as {left:string;h:number;w:number;top:number}[]).map((t,i)=>(
+                <div key={i} style={{ position:"absolute",left:t.left,top:t.top,width:t.w,height:t.h,background:"rgba(34,197,94,0.35)",borderRadius:2 }}/>
+              ))}
+              <div style={{ position:"absolute",bottom:0,left:0,right:0,height:60,background:"linear-gradient(transparent,rgba(0,0,0,0.55))" }}/>
+            </div>
+            {/* Avatar + nom + CTA */}
+            <div style={{ position:"relative",zIndex:2,display:"flex",alignItems:"center",gap:14 }}>
+              <div style={{ position:"relative",flexShrink:0 }}>
+                <div style={{ width:68,height:68,borderRadius:"50%",background:user.avatarUrl?"transparent":"linear-gradient(135deg,#22C55E,#16A34A)",border:"3px solid #fff",overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,fontWeight:800,color:"#fff",boxShadow:"0 4px 20px rgba(0,0,0,0.35)" }}>
+                  {user.avatarUrl
+                    ? <img src={user.avatarUrl} alt="" style={{ width:"100%",height:"100%",objectFit:"cover" }}/>
+                    : userInitials}
+                </div>
+                <div style={{ position:"absolute",bottom:1,right:1,width:22,height:22,borderRadius:"50%",background:"#22C55E",border:"2px solid #fff",display:"flex",alignItems:"center",justifyContent:"center" }}>
+                  <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </div>
+              </div>
+              <div style={{ flex:1,minWidth:0 }}>
+                <div style={{ display:"flex",alignItems:"center",gap:5 }}>
+                  <span style={{ fontWeight:700,fontSize:17,color:"#fff",letterSpacing:"-0.3px" }}>Brute Pawa</span>
+                  <svg viewBox="0 0 24 24" width="17" height="17">
+                    <circle cx="12" cy="12" r="10" fill="#22C55E"/>
+                    <path d="M8 12l3 3 5-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                  </svg>
+                </div>
+                <div style={{ fontSize:13,color:"rgba(255,255,255,0.72)",marginTop:2 }}>@brutepawa</div>
+              </div>
+              <button onClick={()=>navigate("/profile")} style={{ flexShrink:0,background:"rgba(255,255,255,0.18)",backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)",border:"1px solid rgba(255,255,255,0.28)",borderRadius:20,padding:"7px 12px",display:"flex",alignItems:"center",gap:4,cursor:"pointer",outline:"none" }}>
+                <span style={{ fontSize:11.5,fontWeight:600,color:"#fff",whiteSpace:"nowrap" }}>Voir mon profil</span>
+                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+            {/* XP bar */}
+            <div style={{ position:"relative",zIndex:2,marginTop:14,paddingBottom:18 }}>
+              <div style={{ display:"flex",alignItems:"center",gap:10 }}>
+                <div style={{ display:"flex",alignItems:"center",gap:5,background:"rgba(20,20,20,0.65)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",borderRadius:20,padding:"5px 11px",flexShrink:0 }}>
+                  <span style={{ fontSize:13 }}>⭐</span>
+                  <span style={{ fontSize:12,fontWeight:700,color:"#fff" }}>Niveau 12</span>
+                </div>
+                <div style={{ flex:1,height:6,background:"rgba(255,255,255,0.18)",borderRadius:999,overflow:"hidden" }}>
+                  <div style={{ height:"100%",width:"47%",background:"linear-gradient(90deg,#22C55E,#4ADE80)",borderRadius:999 }}/>
+                </div>
+                <span style={{ fontSize:11,color:"rgba(255,255,255,0.85)",fontWeight:600,whiteSpace:"nowrap" }}>2 350 / 5 000 XP</span>
               </div>
             </div>
-            <div style={{ flex:1,minWidth:0,paddingTop:2 }}>
-              <div style={{ display:"flex",alignItems:"center",gap:5 }}>
-                <span style={{ fontWeight:700,fontSize:17,color:"#0F172A",letterSpacing:"-0.3px" }}>{user.name||"Pat Pat"}</span>
-                <svg width="18" height="18" viewBox="0 0 24 24">
-                  <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" fill="#0EA5E9"/>
-                  <path d="M9 12l2 2 4-4" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-              <div style={{ fontSize:13,color:"#64748B",marginTop:3 }}>{handle}</div>
-              <div style={{ display:"inline-flex",alignItems:"center",gap:4,marginTop:7,background:"#DCFCE7",borderRadius:20,padding:"4px 10px" }}>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                  <polyline points="9 12 11 14 15 10"/>
-                </svg>
-                <span style={{ fontSize:11,fontWeight:700,color:"#16A34A" }}>Vérifié</span>
-              </div>
-            </div>
-            <div style={{ display:"flex",flexDirection:"column",alignItems:"flex-end",gap:12,flexShrink:0,paddingTop:2 }}>
-              <div style={{ background:"linear-gradient(135deg,#22C55E,#16A34A)",borderRadius:20,padding:"5px 11px",display:"flex",alignItems:"center",gap:5 }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="#FBBF24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                <span style={{ fontSize:11,fontWeight:800,color:"#fff" }}>Niveau 4</span>
-              </div>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
-            </div>
-          </button>
-
-          {/* Statistiques */}
-          <div style={{ display:"flex",padding:"16px 20px 0" }}>
-            {[
-              { value:formatCount(userStats?.postsCount??12),      label:"Publications" },
-              { value:formatCount(userStats?.followersCount??128),  label:"Abonnés" },
-              { value:formatCount(userStats?.followingCount??24),   label:"Abonnements" },
-            ].map((s,i)=>(
-              <div key={i} style={{ flex:1,textAlign:"center",borderRight:i<2?"1px solid #E2E8F0":"none" }}>
-                <div style={{ fontWeight:900,fontSize:17,color:"#0F172A" }}>{s.value}</div>
-                <div style={{ fontSize:11,color:"#94A3B8",marginTop:2 }}>{s.label}</div>
+          </div>
+          {/* 4 stat cards — glassmorphism dark */}
+          <div style={{ background:"rgba(8,28,16,0.92)",padding:"14px 10px",display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:6 }}>
+            {([
+              { label:"Score BP",        value:"12 580",       arrow:true  },
+              { label:"Revenus / mois",  value:"523 600 XOF",  arrow:false },
+              { label:"Portefeuille",    value:"245 900 XOF",  arrow:false },
+              { label:"Abonnés",         value:"18 745",       arrow:false },
+            ] as {label:string;value:string;arrow:boolean}[]).map((s,i)=>(
+              <div key={i} style={{ textAlign:"center",padding:"2px 0" }}>
+                <div style={{ fontSize:9.5,color:"rgba(255,255,255,0.5)",marginBottom:3,lineHeight:1.3 }}>{s.label}</div>
+                <div style={{ fontWeight:700,fontSize:i===0?13:10.5,color:"#fff",lineHeight:1.2,display:"flex",alignItems:"center",justifyContent:"center",gap:2,flexWrap:"wrap" }}>
+                  {s.value}
+                  {s.arrow&&<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>}
+                </div>
               </div>
             ))}
           </div>
+        </div>
 
-          {/* Barre de progression */}
-          <div style={{ padding:"14px 20px 20px" }}>
-            <div style={{ display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8 }}>
-              <span style={{ fontSize:12,color:"#64748B" }}>Plus que 320 pts pour atteindre le niveau 5</span>
-              <span style={{ fontSize:12,fontWeight:700,color:"#22C55E",whiteSpace:"nowrap",marginLeft:8 }}>680 / 1000</span>
+        {/* ── QUICK ACTIONS BAR ── */}
+        <div style={{ background:"#fff",borderRadius:22,padding:"14px",boxShadow:"0 2px 12px rgba(0,0,0,0.06)" }}>
+          <div style={{ display:"flex",alignItems:"center",gap:6,overflowX:"auto",msOverflowStyle:"none",scrollbarWidth:"none" } as React.CSSProperties}>
+            {/* Bouton Créer */}
+            <div style={{ display:"flex",flexDirection:"column",alignItems:"center",gap:5,flexShrink:0,minWidth:56 }}>
+              <div style={{ width:50,height:50,borderRadius:"50%",background:"linear-gradient(135deg,#22C55E,#16A34A)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 6px 18px rgba(34,197,94,0.38)",cursor:"pointer" }}>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round">
+                  <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </div>
+              <span style={{ fontSize:11,fontWeight:700,color:"#0F172A" }}>Créer</span>
             </div>
-            <div style={{ height:8,background:"#DCFCE7",borderRadius:999,overflow:"hidden" }}>
-              <div style={{ height:"100%",width:"68%",background:"linear-gradient(90deg,#22C55E,#16A34A)",borderRadius:999,transition:"width 1.2s ease" }}/>
-            </div>
+            <div style={{ width:1,height:48,background:"#E2E8F0",flexShrink:0,marginLeft:4,marginRight:4 }}/>
+            {([
+              { label:"Publier",         bg:"#F0FDF4", action:()=>{},                      icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg> },
+              { label:"Reel",            bg:"#FFF0F0", action:()=>navigate("/reels"),       icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg> },
+              { label:"Produit",         bg:"#FFF7ED", action:()=>navigate("/marketplace"), icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg> },
+              { label:"Service",         bg:"#F0F9FF", action:()=>navigate("/marketplace"), icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg> },
+              { label:"Offre emploi",    bg:"#FAF5FF", action:()=>navigate("/jobs"),        icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg> },
+            ] as {label:string;bg:string;action:()=>void;icon:React.ReactNode}[]).map((item,i)=>(
+              <div key={i} onClick={item.action}
+                style={{ display:"flex",flexDirection:"column",alignItems:"center",gap:5,flexShrink:0,minWidth:52,cursor:"pointer",transition:"transform 250ms cubic-bezier(0.22,1,0.36,1)" }}
+                onPointerDown={e=>(e.currentTarget.style.transform="scale(0.92)")}
+                onPointerUp={e=>(e.currentTarget.style.transform="scale(1)")}
+                onPointerLeave={e=>(e.currentTarget.style.transform="scale(1)")}
+              >
+                <div style={{ width:48,height:48,borderRadius:16,background:item.bg,display:"flex",alignItems:"center",justifyContent:"center" }}>{item.icon}</div>
+                <span style={{ fontSize:10.5,fontWeight:600,color:"#0F172A",textAlign:"center",lineHeight:1.2 }}>{item.label}</span>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* ── CHANGER DE COMPTE ── */}
-        <div style={{ background:"#fff",borderRadius:20,padding:"14px 16px",display:"flex",alignItems:"center",gap:14,cursor:"pointer",boxShadow:"0 4px 16px rgba(0,0,0,.05)" }}
-          onPointerDown={e=>(e.currentTarget.style.background="#F8FAFC")}
-          onPointerUp={e=>(e.currentTarget.style.background="#fff")}
-          onPointerLeave={e=>(e.currentTarget.style.background="#fff")}
-        >
-          <div style={{ width:48,height:48,borderRadius:"50%",background:"#F0FDF4",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
-            </svg>
-          </div>
-          <div style={{ flex:1 }}>
-            <div style={{ fontWeight:700,fontSize:15,color:"#0F172A" }}>Changer de compte</div>
-            <div style={{ fontSize:12,color:"#64748B",marginTop:2 }}>Gérez vos comptes facilement</div>
-          </div>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </div>
-
-        {/* ── INVITER DES AMI(E)S ── */}
-        <div style={{ background:"#fff",borderRadius:20,padding:"14px 16px",display:"flex",alignItems:"center",gap:14,cursor:"pointer",boxShadow:"0 4px 16px rgba(0,0,0,.05)" }}
-          onPointerDown={e=>(e.currentTarget.style.background="#F8FAFC")}
-          onPointerUp={e=>(e.currentTarget.style.background="#fff")}
-          onPointerLeave={e=>(e.currentTarget.style.background="#fff")}
-        >
-          <div style={{ width:48,height:48,borderRadius:"50%",background:"#FEE2E2",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="#EF4444">
-              <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
-            </svg>
-          </div>
-          <div style={{ flex:1 }}>
-            <div style={{ fontWeight:700,fontSize:15,color:"#0F172A" }}>Inviter des ami(e)s</div>
-            <div style={{ fontSize:12,color:"#64748B",marginTop:2 }}>Plus d'amis, plus de fun</div>
-          </div>
-          <div style={{ display:"flex",alignItems:"center",gap:8 }}>
-            <div style={{ width:36,height:36,borderRadius:12,background:"#FEF3C7",display:"flex",alignItems:"center",justifyContent:"center" }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 12 20 22 4 22 4 12"/>
-                <rect x="2" y="7" width="20" height="5"/>
-                <line x1="12" y1="22" x2="12" y2="7"/>
-                <path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/>
-                <path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/>
-              </svg>
+        {/* ── 4 SECTIONS 2×2 ── */}
+        {([
+          {
+            id:"social", title:"Social",
+            titleIcon:<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>,
+            seeAll:()=>navigate("/"),
+            cards:[
+              { label:"Fil d'actualité", sub:"Dernières publications", bg:"#F0FDF4", badge:0,            live:false, action:()=>navigate("/"),
+                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> },
+              { label:"Messages",         sub:"Vos conversations",      bg:"#EFF6FF", badge:unreadMessages||8, live:false, action:()=>navigate("/messages"),
+                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> },
+              { label:"Amis",             sub:"Amis & invitations",     bg:"#FFF7ED", badge:pendingRequests, live:false, action:()=>navigate("/friends"),
+                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg> },
+              { label:"Groupes",          sub:"Vos groupes actifs",    bg:"#FAF5FF", badge:0,            live:false, action:()=>navigate("/community?tab=groupes"),
+                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg> },
+            ],
+          },
+          {
+            id:"business", title:"Business",
+            titleIcon:<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>,
+            seeAll:()=>navigate("/marketplace"),
+            cards:[
+              { label:"Marketplace", sub:"Acheter & vendre",    bg:"#F0FDF4", badge:0, live:false, action:()=>navigate("/marketplace"),
+                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg> },
+              { label:"Services",    sub:"Trouver ou proposer", bg:"#EFF6FF", badge:0, live:false, action:()=>navigate("/marketplace"),
+                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg> },
+              { label:"Emplois",     sub:"Offres & candidats",  bg:"#FFF7ED", badge:0, live:false, action:()=>navigate("/jobs"),
+                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg> },
+              { label:"Pages",       sub:"Gérer vos pages",    bg:"#F0FDF4", badge:0, live:false, action:()=>{},
+                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg> },
+            ],
+          },
+          {
+            id:"finance", title:"Finance",
+            titleIcon:<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>,
+            seeAll:()=>navigate("/wallet"),
+            cards:[
+              { label:"Portefeuille", sub:"Gérer votre argent",  bg:"#F0FDF4", badge:0,             live:false, action:()=>navigate("/wallet"),
+                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M2 17V7a2 2 0 012-2h16a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2z"/><path d="M18 12h.01"/></svg> },
+              { label:"Tontines",    sub:"Épargner ensemble",   bg:"#FEF3C7", badge:tontines.length, live:false, action:()=>navigate("/tontines"),
+                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg> },
+              { label:"Revenus",     sub:"Suivre vos gains",    bg:"#F0FDF4", badge:0,             live:false, action:()=>{},
+                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> },
+              { label:"Paiements",   sub:"Envoyer & recevoir",  bg:"#EFF6FF", badge:0,             live:false, action:()=>{},
+                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> },
+            ],
+          },
+          {
+            id:"createur", title:"Créateur",
+            titleIcon:<svg viewBox="0 0 24 24" width="14" height="14" fill="#22C55E"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
+            seeAll:()=>navigate("/reels"),
+            cards:[
+              { label:"Reels",        sub:"Créer des vidéos",     bg:"#FFF0F0", badge:0, live:false, action:()=>navigate("/reels"),
+                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="4.93" y1="4.93" x2="9.17" y2="9.17"/><line x1="14.83" y1="14.83" x2="19.07" y2="19.07"/><line x1="14.83" y1="9.17" x2="19.07" y2="4.93"/><line x1="4.93" y1="19.07" x2="9.17" y2="14.83"/></svg> },
+              { label:"Lives",        sub:"Diffuser en direct",   bg:"#FFF0F0", badge:0, live:true,  action:()=>{},
+                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg> },
+              { label:"Formations",   sub:"Apprendre & enseigner",bg:"#FAF5FF", badge:0, live:false, action:()=>navigate("/formations"),
+                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> },
+              { label:"Monétisation", sub:"Gagner de l'argent",  bg:"#F0FDF4", badge:0, live:false, action:()=>{},
+                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg> },
+            ],
+          },
+        ] as {id:string;title:string;titleIcon:React.ReactNode;seeAll:()=>void;cards:{label:string;sub:string;bg:string;badge:number;live:boolean;action:()=>void;icon:React.ReactNode}[]}[]).map(section=>(
+          <div key={section.id}>
+            {/* Section header */}
+            <div style={{ display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:10,paddingLeft:2 }}>
+              <div style={{ display:"flex",alignItems:"center",gap:7 }}>
+                <div style={{ width:28,height:28,borderRadius:9,background:"#F0FDF4",display:"flex",alignItems:"center",justifyContent:"center" }}>{section.titleIcon}</div>
+                <span style={{ fontWeight:700,fontSize:16,color:"#0F172A" }}>{section.title}</span>
+              </div>
+              <button onClick={section.seeAll} style={{ background:"none",border:"none",fontSize:12.5,fontWeight:600,color:"#22C55E",cursor:"pointer",display:"flex",alignItems:"center",gap:2,padding:0,outline:"none" }}>
+                Tout voir
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
             </div>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
-          </div>
-        </div>
-
-        {/* ══ GRILLE 4 COLONNES — 12 items ══ */}
-        {(()=>{
-          const subs4=["Vidéos courtes","Chat privé","Communautés","Vos amis","Acheter & vendre","Paiements","Gérez vos pages","Autour de vous","Compte vérifié","Gestion tontines","Actualités","Apprenez"];
-          return (
-            <div style={{ display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10 }}>
-              {gridCards.slice(0,12).map((card,i)=>(
+            {/* 2×2 grid */}
+            <div style={{ background:"#fff",borderRadius:24,padding:"16px 14px",boxShadow:"0 2px 12px rgba(0,0,0,0.06)",display:"grid",gridTemplateColumns:"1fr 1fr",gap:16 }}>
+              {section.cards.map((card,i)=>(
                 <div key={i} onClick={card.action}
-                  style={{ background:"#fff",borderRadius:28,padding:"12px 6px 10px",cursor:"pointer",boxShadow:"0 2px 12px rgba(0,0,0,.05)",display:"flex",flexDirection:"column",alignItems:"center",gap:5,position:"relative",transition:"transform 250ms cubic-bezier(0.22,1,0.36,1)" }}
-                  onPointerDown={e=>{e.currentTarget.style.transform="scale(0.96)";}}
-                  onPointerUp={e=>{e.currentTarget.style.transform="scale(1)";}}
-                  onPointerLeave={e=>{e.currentTarget.style.transform="scale(1)";}}
+                  style={{ display:"flex",flexDirection:"column",gap:8,cursor:"pointer",transition:"transform 250ms cubic-bezier(0.22,1,0.36,1)",position:"relative" }}
+                  onPointerDown={e=>(e.currentTarget.style.transform="scale(0.97)")}
+                  onPointerUp={e=>(e.currentTarget.style.transform="scale(1)")}
+                  onPointerLeave={e=>(e.currentTarget.style.transform="scale(1)")}
                 >
-                  {card.badge>0&&(
-                    <div style={{ position:"absolute",top:8,right:8,background:card.iconColor,color:"#fff",fontSize:9,fontWeight:800,minWidth:18,height:18,borderRadius:9,display:"flex",alignItems:"center",justifyContent:"center",padding:"0 4px",animation:"bp-badge-pulse 2s infinite" }}>
-                      {card.badge>99?"99+":card.badge}
-                    </div>
-                  )}
-                  <div style={{ width:46,height:46,borderRadius:14,background:card.bg,display:"flex",alignItems:"center",justifyContent:"center" }}>
-                    {card.icon(card.iconColor)}
+                  <div style={{ position:"relative",display:"inline-flex" }}>
+                    <div style={{ width:44,height:44,borderRadius:14,background:card.bg,display:"flex",alignItems:"center",justifyContent:"center" }}>{card.icon}</div>
+                    {card.badge>0&&(
+                      <div style={{ position:"absolute",top:-5,right:-5,background:"#22C55E",color:"#fff",fontSize:9,fontWeight:800,minWidth:17,height:17,borderRadius:9,display:"flex",alignItems:"center",justifyContent:"center",padding:"0 3px",animation:"bp-badge-pulse 2s infinite" }}>
+                        {card.badge>99?"99+":card.badge}
+                      </div>
+                    )}
+                    {card.live&&(
+                      <div style={{ position:"absolute",top:-6,left:-2,background:"#EF4444",color:"#fff",fontSize:8,fontWeight:800,borderRadius:5,padding:"2px 5px",lineHeight:1,animation:"bp-live-pulse 1.5s infinite" }}>LIVE</div>
+                    )}
                   </div>
-                  <div style={{ fontWeight:700,fontSize:11.5,color:"#0F172A",textAlign:"center",lineHeight:1.2,marginTop:2 }}>{card.label}</div>
-                  <div style={{ fontSize:10,color:"#94A3B8",textAlign:"center",lineHeight:1.3 }}>{subs4[i]}</div>
-                  <div style={{ width:22,height:22,borderRadius:7,background:card.bg,display:"flex",alignItems:"center",justifyContent:"center",marginTop:1 }}>
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={card.iconColor} strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  <div>
+                    <div style={{ fontWeight:700,fontSize:13,color:"#0F172A",lineHeight:1.2 }}>{card.label}</div>
+                    <div style={{ fontSize:11,color:"#64748B",marginTop:2,lineHeight:1.3 }}>{card.sub}</div>
                   </div>
                 </div>
               ))}
             </div>
-          );
-        })()}
+          </div>
+        ))}
 
-        {/* ══ SCORE + EMPLOIS — 2 colonnes ══ */}
-        <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:12 }}>
-          <div onClick={()=>setActiveSection("score")}
-            style={{ background:"#fff",borderRadius:20,padding:"14px 12px",display:"flex",alignItems:"center",gap:10,cursor:"pointer",boxShadow:"0 4px 16px rgba(0,0,0,.05)",transition:"transform 250ms cubic-bezier(0.22,1,0.36,1)" }}
-            onPointerDown={e=>{e.currentTarget.style.transform="scale(0.97)";}}
-            onPointerUp={e=>{e.currentTarget.style.transform="scale(1)";}}
-            onPointerLeave={e=>{e.currentTarget.style.transform="scale(1)";}}
-          >
-            <div style={{ width:46,height:46,borderRadius:14,background:"#FEF3C7",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
-              {gridCards[12]?.icon(gridCards[12]?.iconColor||"#F97316")}
-            </div>
-            <div style={{ flex:1,minWidth:0 }}>
-              <div style={{ fontWeight:700,fontSize:13,color:"#0F172A" }}>Score</div>
-              <div style={{ fontSize:11,color:"#94A3B8",marginTop:1 }}>Gagnez en visibilité</div>
-            </div>
-            <div style={{ width:22,height:22,borderRadius:7,background:"#FEF3C7",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#F97316" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
-            </div>
+        {/* ── BANNIÈRE PREMIUM ── */}
+        <div style={{ background:"linear-gradient(135deg,#052E14 0%,#064E24 40%,#0A5E2A 70%,#0D7A36 100%)",borderRadius:28,padding:"20px 18px",display:"flex",alignItems:"center",gap:14,boxShadow:"0 12px 40px rgba(0,0,0,0.2)",position:"relative",overflow:"hidden" }}>
+          <div style={{ position:"absolute",top:-30,right:-30,width:140,height:140,borderRadius:"50%",background:"rgba(34,197,94,0.12)",pointerEvents:"none" }}/>
+          <div style={{ position:"absolute",bottom:-20,left:120,width:80,height:80,borderRadius:"50%",background:"rgba(34,197,94,0.08)",pointerEvents:"none" }}/>
+          <div style={{ flexShrink:0,fontSize:38,lineHeight:1 }}>👑</div>
+          <div style={{ flex:1,minWidth:0 }}>
+            <div style={{ fontWeight:800,fontSize:15,color:"#fff",lineHeight:1.3 }}>Passez à BrutePawa Premium</div>
+            <div style={{ fontSize:11.5,color:"rgba(255,255,255,0.7)",marginTop:4,lineHeight:1.4 }}>Plus de visibilité, d'opportunités et de revenus.</div>
           </div>
-
-          <div onClick={()=>navigate("/jobs")}
-            style={{ background:"#fff",borderRadius:20,padding:"14px 12px",display:"flex",alignItems:"center",gap:10,cursor:"pointer",boxShadow:"0 4px 16px rgba(0,0,0,.05)",transition:"transform 250ms cubic-bezier(0.22,1,0.36,1)" }}
-            onPointerDown={e=>{e.currentTarget.style.transform="scale(0.97)";}}
-            onPointerUp={e=>{e.currentTarget.style.transform="scale(1)";}}
-            onPointerLeave={e=>{e.currentTarget.style.transform="scale(1)";}}
-          >
-            <div style={{ width:46,height:46,borderRadius:14,background:"#DCFCE7",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
-              <svg width="28" height="28" viewBox="0 0 30 30">
-                <rect x="2" y="11" width="26" height="17" rx="4" fill="#388E3C"/>
-                <rect x="2" y="11" width="26" height="5" rx="2" fill="#16A34A"/>
-                <rect x="9" y="4" width="12" height="9" rx="3" fill="#22C55E"/>
-                <rect x="9" y="4" width="12" height="4" rx="2" fill="#16A34A"/>
-                <rect x="12" y="7" width="6" height="2" rx="1" fill="#BBF7D0"/>
-                <rect x="6" y="16" width="5" height="7" rx="2" fill="#BBF7D0"/>
-                <rect x="13" y="16" width="5" height="7" rx="2" fill="#BBF7D0"/>
-                <rect x="20" y="16" width="5" height="7" rx="2" fill="#BBF7D0"/>
-              </svg>
-            </div>
-            <div style={{ flex:1,minWidth:0 }}>
-              <div style={{ fontWeight:700,fontSize:13,color:"#0F172A" }}>Emplois</div>
-              <div style={{ fontSize:11,color:"#94A3B8",marginTop:1 }}>Offres d'emploi</div>
-            </div>
-            <div style={{ width:22,height:22,borderRadius:7,background:"#DCFCE7",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
-            </div>
-          </div>
-        </div>
-
-        {/* ══ PARAMÈTRES + AIDE — 2 colonnes ══ */}
-        <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:12 }}>
-          <div onClick={()=>navigate("/settings")}
-            style={{ background:"#fff",borderRadius:20,padding:"14px 12px",display:"flex",alignItems:"center",gap:10,cursor:"pointer",boxShadow:"0 4px 16px rgba(0,0,0,.05)",transition:"transform 250ms cubic-bezier(0.22,1,0.36,1)" }}
-            onPointerDown={e=>{e.currentTarget.style.transform="scale(0.97)";}}
-            onPointerUp={e=>{e.currentTarget.style.transform="scale(1)";}}
-            onPointerLeave={e=>{e.currentTarget.style.transform="scale(1)";}}
-          >
-            <div style={{ width:44,height:44,borderRadius:14,background:"#DCFCE7",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-              </svg>
-            </div>
-            <div style={{ flex:1,minWidth:0 }}>
-              <div style={{ fontWeight:700,fontSize:11,color:"#0F172A",lineHeight:1.3 }}>Paramètres et confidentialité</div>
-              <div style={{ fontSize:10,color:"#94A3B8",marginTop:1 }}>Compte, sécurité, préférences</div>
-            </div>
-          </div>
-
-          <div onClick={()=>setActiveSection("help")}
-            style={{ background:"#fff",borderRadius:20,padding:"14px 12px",display:"flex",alignItems:"center",gap:10,cursor:"pointer",boxShadow:"0 4px 16px rgba(0,0,0,.05)",transition:"transform 250ms cubic-bezier(0.22,1,0.36,1)" }}
-            onPointerDown={e=>{e.currentTarget.style.transform="scale(0.97)";}}
-            onPointerUp={e=>{e.currentTarget.style.transform="scale(1)";}}
-            onPointerLeave={e=>{e.currentTarget.style.transform="scale(1)";}}
-          >
-            <div style={{ width:44,height:44,borderRadius:14,background:"#DCFCE7",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/>
-                <line x1="12" y1="17" x2="12.01" y2="17"/>
-              </svg>
-            </div>
-            <div style={{ flex:1,minWidth:0 }}>
-              <div style={{ fontWeight:700,fontSize:11,color:"#0F172A",lineHeight:1.3 }}>Aide et assistance</div>
-              <div style={{ fontSize:10,color:"#94A3B8",marginTop:1 }}>FAQ, centre d'aide</div>
-            </div>
-          </div>
-        </div>
-
-        {/* ══ AJOUTER UN COMPTE — Hero card ══ */}
-        <div style={{ background:"linear-gradient(135deg,#22C55E 0%,#16A34A 100%)",borderRadius:32,padding:"20px 18px",display:"flex",alignItems:"center",gap:16,cursor:"pointer",boxShadow:"0 12px 40px rgba(34,197,94,.3)",position:"relative",overflow:"hidden" }}
-          onPointerDown={e=>(e.currentTarget.style.opacity=".88")}
-          onPointerUp={e=>(e.currentTarget.style.opacity="1")}
-          onPointerLeave={e=>(e.currentTarget.style.opacity="1")}
-        >
-          <div style={{ position:"absolute",top:-30,right:30,width:100,height:100,borderRadius:"50%",background:"rgba(255,255,255,.12)",pointerEvents:"none" }}/>
-          <div style={{ position:"absolute",bottom:-20,right:80,width:70,height:70,borderRadius:"50%",background:"rgba(255,255,255,.08)",pointerEvents:"none" }}/>
-          <div style={{ width:50,height:50,borderRadius:"50%",background:"rgba(255,255,255,.22)",border:"2px solid rgba(255,255,255,.4)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round">
-              <line x1="12" y1="5" x2="12" y2="19"/>
-              <line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
-          </div>
-          <div style={{ flex:1,position:"relative",zIndex:1 }}>
-            <div style={{ fontWeight:800,fontSize:16,color:"#fff" }}>Ajouter un compte</div>
-            <div style={{ fontSize:12,color:"rgba(255,255,255,.82)",marginTop:3,lineHeight:1.4 }}>Ajoutez un autre compte et basculez facilement entre vos profils</div>
-          </div>
-          <div style={{ width:36,height:36,borderRadius:"50%",background:"rgba(255,255,255,.2)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,position:"relative",zIndex:1 }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
-          </div>
-        </div>
-
-        {/* ══ DÉCONNEXION ══ */}
-        <div onClick={logout} style={{ background:"#FEE2E2",borderRadius:32,padding:"16px 18px",display:"flex",alignItems:"center",gap:14,cursor:"pointer",boxShadow:"0 4px 16px rgba(239,68,68,.08)" }}
-          onPointerDown={e=>(e.currentTarget.style.opacity=".85")}
-          onPointerUp={e=>(e.currentTarget.style.opacity="1")}
-          onPointerLeave={e=>(e.currentTarget.style.opacity="1")}
-        >
-          <div style={{ width:48,height:48,borderRadius:16,background:"rgba(239,68,68,.12)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
-              <polyline points="16 17 21 12 16 7"/>
-              <line x1="21" y1="12" x2="9" y2="12"/>
-            </svg>
-          </div>
-          <div style={{ flex:1 }}>
-            <div style={{ fontWeight:700,fontSize:15,color:"#DC2626" }}>Déconnexion</div>
-            <div style={{ fontSize:12,color:"#FCA5A5",marginTop:2 }}>Se déconnecter de votre compte en toute sécurité</div>
-          </div>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <button onClick={()=>setActiveSection("premium")} style={{ flexShrink:0,background:"#22C55E",border:"none",borderRadius:20,padding:"10px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:4,outline:"none" }}>
+            <span style={{ fontWeight:700,fontSize:11.5,color:"#fff",whiteSpace:"nowrap" }}>Découvrir</span>
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
         </div>
 
       </div>
