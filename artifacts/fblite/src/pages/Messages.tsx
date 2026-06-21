@@ -431,6 +431,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [activeBcId, setActiveBcId]           = useState<number|null>(null);
   const [bcInput, setBcInput]                 = useState("");
   const [apiBcLists, setApiBcLists]           = useState<{ id: number; name: string; emoji: string; color: string; recipientCount: number; updatedAt: string }[]>([]);
+  const [apiBcReceived, setApiBcReceived]     = useState<{ id: number; name: string; emoji: string; color: string; ownerName: string; unreadCount: number; lastMessage: { content: string; createdAt: string } | null }[]>([]);
   const [fabOpen, setFabOpen]   = useState(false);
   const [inboxTab, setInboxTab] = useState<"all" | "unread" | "groups">("all");
   const [showInboxSearch, setShowInboxSearch] = useState(false);
@@ -1234,6 +1235,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
   useEffect(() => {
     apiFetch("/broadcast").then(r => r.json()).then(setApiBcLists).catch(() => {});
+    apiFetch("/broadcast/received").then(r => r.json()).then(setApiBcReceived).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -5981,7 +5983,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           </div>
         )}
 
-        {/* ── Listes de diffusion (API persistantes) ── */}
+        {/* ── Listes de diffusion envoyées (propriétaire) ── */}
         {!search && apiBcLists.length > 0 && (
           <div style={{ background: "white", borderBottom: "1px solid #F3F4F6", padding: "10px 16px 8px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
@@ -6013,6 +6015,57 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* ── Diffusions reçues (destinataire) ── */}
+        {!search && apiBcReceived.length > 0 && (
+          <div style={{ background: "white", borderBottom: "1px solid #F3F4F6" }}>
+            {apiBcReceived.map(bc => {
+              const lastContent = bc.lastMessage?.content ?? "";
+              const preview = lastContent.startsWith("__audio__") ? "🎤 Message vocal"
+                : lastContent.startsWith("__image__") ? "📷 Photo"
+                : lastContent.startsWith("__video__") ? "📹 Vidéo"
+                : lastContent.startsWith("__doc__") ? "📎 Document"
+                : lastContent.length > 50 ? lastContent.slice(0, 50) + "…" : lastContent;
+              const time = bc.lastMessage ? new Date(bc.lastMessage.createdAt).toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }) : "";
+              return (
+                <div key={bc.id} onClick={() => navigate(`/broadcast/${bc.id}/received`)} style={{
+                  display: "flex", alignItems: "center", gap: 12, padding: "12px 16px",
+                  borderBottom: "1px solid #F9FAFB", cursor: "pointer",
+                }}>
+                  <div style={{
+                    width: 50, height: 50, borderRadius: "50%", flexShrink: 0,
+                    background: bc.color ?? "#22C55E",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    boxShadow: "0 1px 4px rgba(0,0,0,0.10)",
+                  }}>
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                      <path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
+                    </svg>
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 2 }}>
+                      <span style={{ fontWeight: 700, fontSize: 15, color: "#111827", fontFamily: "Inter, sans-serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        📢 {bc.name}
+                      </span>
+                      <span style={{ fontSize: 11.5, color: "#9CA3AF", flexShrink: 0, marginLeft: 8 }}>{time}</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <span style={{ fontSize: 13, color: "#64748B", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontFamily: "Inter, sans-serif" }}>
+                        <span style={{ color: "#9CA3AF" }}>{bc.ownerName} · </span>{preview || "Aucun message"}
+                      </span>
+                      {bc.unreadCount > 0 && (
+                        <span style={{ background: "#22C55E", color: "white", borderRadius: 12, fontSize: 11, fontWeight: 700, minWidth: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 5px", flexShrink: 0, marginLeft: 8 }}>
+                          {bc.unreadCount}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
 

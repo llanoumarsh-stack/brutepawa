@@ -1547,7 +1547,7 @@ function DropdownMenu({ onSelect, onClose }: { onSelect: (id: SubPageId) => void
 /* ═══════════════════════════════════════════════════════════════
    ── MAIN BROADCAST LIST PAGE ──
 ═══════════════════════════════════════════════════════════════ */
-export default function BroadcastListPage({ broadcastId }: { broadcastId: number }) {
+export default function BroadcastListPage({ broadcastId, recipientView }: { broadcastId: number; recipientView?: boolean }) {
   const navigate = useNavigate();
   const [list,     setList]     = useState<BroadcastList | null>(null);
   const [messages, setMessages] = useState<BroadcastMessage[]>([]);
@@ -1560,13 +1560,24 @@ export default function BroadcastListPage({ broadcastId }: { broadcastId: number
 
   /* Load broadcast */
   useEffect(() => {
-    bcFetch(`/${broadcastId}`)
-      .then((data: BroadcastList) => setList(data))
-      .catch(() => navigate("/messages"))
-      .finally(() => setLoading(false));
-    bcFetch(`/${broadcastId}/messages`)
-      .then(setMessages).catch(console.error);
-  }, [broadcastId]);
+    if (recipientView) {
+      // Recipient view: load from received-messages endpoint
+      bcFetch(`/${broadcastId}/received-messages`)
+        .then((data: { broadcast: BroadcastList & { ownerName: string }; messages: BroadcastMessage[] }) => {
+          setList(data.broadcast);
+          setMessages(data.messages);
+        })
+        .catch(() => navigate("/messages"))
+        .finally(() => setLoading(false));
+    } else {
+      bcFetch(`/${broadcastId}`)
+        .then((data: BroadcastList) => setList(data))
+        .catch(() => navigate("/messages"))
+        .finally(() => setLoading(false));
+      bcFetch(`/${broadcastId}/messages`)
+        .then(setMessages).catch(console.error);
+    }
+  }, [broadcastId, recipientView]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -1679,44 +1690,54 @@ export default function BroadcastListPage({ broadcastId }: { broadcastId: number
           <div ref={messagesEndRef}/>
         </div>
 
-        {/* ── INPUT BAR ── */}
-        <div style={{
-          background: "#F1F5F9", padding: "8px 10px",
-          display: "flex", alignItems: "center", gap: 8, flexShrink: 0,
-          position: "relative", zIndex: 1,
-        }}>
+        {/* ── INPUT BAR (owner) / READ-ONLY NOTICE (recipient) ── */}
+        {recipientView ? (
           <div style={{
-            flex: 1, background: "white", borderRadius: 26,
-            display: "flex", alignItems: "center", padding: "6px 14px", gap: 10,
-            boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+            background: "#F1F5F9", padding: "12px 16px", flexShrink: 0,
+            textAlign: "center", color: "#64748B", fontSize: 13, fontFamily: "Inter, sans-serif",
+            borderTop: "1px solid #E5E7EB",
           }}>
-            <button style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", flexShrink: 0 }}>
-              <IcSmile />
-            </button>
-            <input
-              value={text} onChange={e => setText(e.target.value)}
-              onKeyDown={e => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), sendMessage())}
-              placeholder="Message"
-              style={{
-                flex: 1, border: "none", background: "none", fontSize: 15,
-                outline: "none", color: "#111827", fontFamily: "Inter, sans-serif",
-              }}
-            />
-            <button style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", flexShrink: 0 }}>
-              <IcPaperclip />
+            📢 Vous ne pouvez pas répondre à cette diffusion
+          </div>
+        ) : (
+          <div style={{
+            background: "#F1F5F9", padding: "8px 10px",
+            display: "flex", alignItems: "center", gap: 8, flexShrink: 0,
+            position: "relative", zIndex: 1,
+          }}>
+            <div style={{
+              flex: 1, background: "white", borderRadius: 26,
+              display: "flex", alignItems: "center", padding: "6px 14px", gap: 10,
+              boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+            }}>
+              <button style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", flexShrink: 0 }}>
+                <IcSmile />
+              </button>
+              <input
+                value={text} onChange={e => setText(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && !e.shiftKey && (e.preventDefault(), sendMessage())}
+                placeholder="Message"
+                style={{
+                  flex: 1, border: "none", background: "none", fontSize: 15,
+                  outline: "none", color: "#111827", fontFamily: "Inter, sans-serif",
+                }}
+              />
+              <button style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", flexShrink: 0 }}>
+                <IcPaperclip />
+              </button>
+            </div>
+            <button onClick={sendMessage} disabled={sending} style={{
+              width: 46, height: 46, borderRadius: "50%",
+              background: "#22C55E", border: "none", cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+              boxShadow: "0 2px 8px rgba(34,197,94,0.4)",
+            }}>
+              {sending
+                ? <div style={{ width: 20, height: 20, border: "2px solid rgba(255,255,255,0.5)", borderTopColor: "white", borderRadius: "50%", animation: "spin 0.8s linear infinite" }}/>
+                : <IcMic />}
             </button>
           </div>
-          <button onClick={sendMessage} disabled={sending} style={{
-            width: 46, height: 46, borderRadius: "50%",
-            background: "#22C55E", border: "none", cursor: "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-            boxShadow: "0 2px 8px rgba(34,197,94,0.4)",
-          }}>
-            {sending
-              ? <div style={{ width: 20, height: 20, border: "2px solid rgba(255,255,255,0.5)", borderTopColor: "white", borderRadius: "50%", animation: "spin 0.8s linear infinite" }}/>
-              : <IcMic />}
-          </button>
-        </div>
+        )}
       </div>
 
       {/* ═══════════════════════════════════════════════════════

@@ -7,6 +7,7 @@ import {
 } from "@workspace/db";
 import { eq, and, desc, count, ilike, or, inArray, sql } from "drizzle-orm";
 import { requireAuth } from "../middlewares/requireAuth";
+import { pushToUserDevice } from "./push";
 
 const router = Router();
 
@@ -40,6 +41,97 @@ router.get("/broadcast", requireAuth, async (req, res): Promise<void> => {
     ...bc, recipientCount: await memberCount(bc.id),
   })));
   res.json(withCounts);
+});
+
+/* ── Received broadcasts (recipient view) ── */
+router.get("/broadcast/received", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  // Find all broadcast lists where me is a member
+  const memberships = await db.select({ broadcastId: broadcastMembersTable.broadcastId })
+    .from(broadcastMembersTable).where(eq(broadcastMembersTable.userId, me));
+
+  if (memberships.length === 0) { res.json([]); return; }
+
+  const bcIds = memberships.map(m => m.broadcastId);
+  const lists = await db.select().from(broadcastListsTable)
+    .where(inArray(broadcastListsTable.id, bcIds))
+    .orderBy(desc(broadcastListsTable.updatedAt));
+
+  // For each list get last message + unread count
+  const enriched = await Promise.all(lists.map(async bc => {
+    const [lastMsg] = await db.select().from(broadcastMessagesTable)
+      .where(eq(broadcastMessagesTable.broadcastId, bc.id))
+      .orderBy(desc(broadcastMessagesTable.createdAt)).limit(1);
+
+    const [{ unread }] = await db.select({ unread: count() }).from(broadcastReceiptsTable)
+      .where(and(
+        eq(broadcastReceiptsTable.recipientId, me),
+        eq(broadcastReceiptsTable.seen, false),
+        inArray(broadcastReceiptsTable.messageId,
+          db.select({ id: broadcastMessagesTable.id }).from(broadcastMessagesTable)
+            .where(eq(broadcastMessagesTable.broadcastId, bc.id))
+        ),
+      ));
+
+    const [owner] = await db.select({ firstName: usersTable.firstName, lastName: usersTable.lastName })
+      .from(usersTable).where(eq(usersTable.id, bc.ownerId));
+
+    return {
+      ...bc,
+      ownerName: owner ? `${owner.firstName} ${owner.lastName}`.trim() : "Inconnu",
+      lastMessage: lastMsg ?? null,
+      unreadCount: Number(unread),
+    };
+  }));
+
+  res.json(enriched);
+});
+
+/* ── Messages in a received broadcast ── */
+router.get("/broadcast/:id/received-messages", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const id = parseInt(req.params.id);
+
+  // Verify user is a member
+  const [membership] = await db.select().from(broadcastMembersTable)
+    .where(and(eq(broadcastMembersTable.broadcastId, id), eq(broadcastMembersTable.userId, me)));
+  if (!membership) { res.status(403).json({ error: "Non membre de cette diffusion" }); return; }
+
+  const [bc] = await db.select().from(broadcastListsTable).where(eq(broadcastListsTable.id, id));
+  if (!bc) { res.status(404).json({ error: "Diffusion introuvable" }); return; }
+
+  const limit  = Math.min(parseInt(req.query.limit  as string || "50", 10), 100);
+  const before = req.query.before ? parseInt(req.query.before as string) : undefined;
+
+  const msgs = await db.select().from(broadcastMessagesTable)
+    .where(and(
+      eq(broadcastMessagesTable.broadcastId, id),
+      before ? sql`${broadcastMessagesTable.id} < ${before}` : undefined,
+    ))
+    .orderBy(desc(broadcastMessagesTable.createdAt)).limit(limit);
+
+  // Mark all receipts as delivered + seen
+  const msgIds = msgs.map(m => m.id);
+  if (msgIds.length > 0) {
+    await db.update(broadcastReceiptsTable)
+      .set({ delivered: true, seen: true, deliveredAt: new Date(), seenAt: new Date() })
+      .where(and(
+        eq(broadcastReceiptsTable.recipientId, me),
+        inArray(broadcastReceiptsTable.messageId, msgIds),
+      )).catch(() => {});
+  }
+
+  const [owner] = await db.select({ firstName: usersTable.firstName, lastName: usersTable.lastName, avatarUrl: usersTable.avatarUrl })
+    .from(usersTable).where(eq(usersTable.id, bc.ownerId));
+
+  res.json({
+    broadcast: {
+      ...bc,
+      ownerName: owner ? `${owner.firstName} ${owner.lastName}`.trim() : "Inconnu",
+      ownerAvatarUrl: owner?.avatarUrl ?? null,
+    },
+    messages: msgs.reverse(),
+  });
 });
 
 router.post("/broadcast", requireAuth, async (req, res): Promise<void> => {
@@ -273,10 +365,40 @@ router.post("/broadcast/:id/messages", requireAuth, async (req, res): Promise<vo
   // Create receipt stubs for all members
   const members = await db.select({ userId: broadcastMembersTable.userId })
     .from(broadcastMembersTable).where(eq(broadcastMembersTable.broadcastId, id));
+
   if (members.length > 0) {
     await db.insert(broadcastReceiptsTable).values(
       members.map(m => ({ messageId: msg.id, recipientId: m.userId }))
     ).onConflictDoNothing();
+
+    // Fetch sender info for push notification
+    const [sender] = await db.select({ firstName: usersTable.firstName, lastName: usersTable.lastName })
+      .from(usersTable).where(eq(usersTable.id, me));
+    const senderName = sender ? `${sender.firstName} ${sender.lastName}`.trim() : bc.name;
+
+    const notifBody = content?.startsWith("__audio__")  ? "🎤 Message vocal"
+      : content?.startsWith("__image__")  ? "📷 Photo"
+      : content?.startsWith("__video__")  ? "📹 Vidéo"
+      : content?.startsWith("__doc__")    ? "📎 Document"
+      : content?.length > 80 ? content.slice(0, 80) + "…" : (content || "📎 Fichier");
+
+    const origin = `${req.protocol}://${req.get("host")}`;
+
+    // Send push notification to each recipient (fire-and-forget)
+    Promise.allSettled(
+      members.map(m =>
+        pushToUserDevice(m.userId, {
+          title:    `📢 ${bc.name}`,
+          body:     `${senderName} : ${notifBody}`,
+          icon:     `${origin}/api/users/${me}/avatar-icon`,
+          badge:    `${origin}/icons/badge-96.png`,
+          tag:      `broadcast-${id}`,
+          renotify: true,
+          vibrate:  [200, 100, 200],
+          data:     { url: `/broadcast/${id}/received` },
+        })
+      )
+    ).catch(() => {});
   }
 
   await db.update(broadcastListsTable).set({ updatedAt: new Date() }).where(eq(broadcastListsTable.id, id));

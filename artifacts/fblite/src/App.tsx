@@ -474,6 +474,14 @@ function AppContent() {
     }
   }
 
+  const broadcastReceivedMatch = matchDynamic("/broadcast/:id/received", path);
+  if (broadcastReceivedMatch) {
+    const bid = parseInt(broadcastReceivedMatch.id, 10);
+    if (!isNaN(bid)) {
+      return <BroadcastListPage broadcastId={bid} recipientView />;
+    }
+  }
+
   if (broadcastMatch) {
     const bid = parseInt(broadcastMatch.id, 10);
     if (!isNaN(bid)) {
