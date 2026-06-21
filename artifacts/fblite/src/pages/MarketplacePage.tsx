@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "../router";
 import { COUNTRIES } from "../data/mock";
+import ServiceFilterSheet, { type ServiceFilters } from "../components/ServiceFilterSheet";
 import {
   apiGetProducts, apiGetJobs, apiGetMarketplaceServices, apiToggleMarketplaceFavorite, apiGetMarketplaceFavorites,
   apiCreateMarketplaceService,
@@ -93,6 +94,8 @@ export default function MarketplacePage() {
   const [showCreate,    setShowCreate]    = useState(false);
   const [createType,    setCreateType]    = useState<ListingType>("produit");
   const [dotIdx,        setDotIdx]        = useState(0);
+  const [showFilter,    setShowFilter]    = useState(false);
+  const [serviceFilters, setServiceFilters] = useState<ServiceFilters | null>(null);
 
   /* Forms */
   const [prodForm,    setProdForm]    = useState({ title: "", price: "", category: "Mode", description: "", country: fbUser.countryCode ?? "CI", condition: "Neuf" });
@@ -272,13 +275,19 @@ export default function MarketplacePage() {
               style={{ flex: 1, border: "none", outline: "none", background: "none", fontSize: 14, color: "#111827", fontFamily: "inherit" }}
             />
           </div>
-          <button style={{
-            display: "flex", alignItems: "center", gap: 6,
-            background: "#fff", border: "1px solid #E5E7EB", borderRadius: 24,
-            padding: "0 16px", height: 44,
-            color: "#64748B", fontWeight: 600, fontSize: 13, cursor: "pointer",
-            whiteSpace: "nowrap", boxShadow: "0 1px 3px rgba(0,0,0,0.05)", fontFamily: "inherit",
-          }}>
+          <button
+            onClick={() => setShowFilter(true)}
+            style={{
+              display: "flex", alignItems: "center", gap: 6,
+              background: showFilter || serviceFilters ? G : "#fff",
+              border: `1px solid ${showFilter || serviceFilters ? G : "#E5E7EB"}`,
+              borderRadius: 24, padding: "0 16px", height: 44,
+              color: showFilter || serviceFilters ? "#fff" : "#64748B",
+              fontWeight: 600, fontSize: 13, cursor: "pointer",
+              whiteSpace: "nowrap", boxShadow: "0 1px 3px rgba(0,0,0,0.05)", fontFamily: "inherit",
+              transition: "all 200ms ease-out",
+            }}
+          >
             <IcoFilter />
             Filtres
           </button>
@@ -809,6 +818,14 @@ function ProdSkeleton() {
         </div>
       ))}
       <style>{`@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }`}</style>
+
+      {/* ── Service Filter Sheet ─────────────────────────────── */}
+      <ServiceFilterSheet
+        open={showFilter}
+        onClose={() => setShowFilter(false)}
+        onApply={(f) => { setServiceFilters(f); setActiveTab("services"); }}
+        resultCount={128}
+      />
     </div>
   );
 }
