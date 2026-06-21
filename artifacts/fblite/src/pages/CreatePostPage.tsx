@@ -4,20 +4,26 @@ import { searchPlaces, type Place } from "../data/locations";
 import { searchItunes, MUSIC_CATEGORIES, type Track } from "../data/music";
 import { apiGetUsers, apiCreatePost, type PublicUser } from "../lib/api";
 import { useR2Upload, phaseLabel, type UploadedMedia } from "../hooks/useR2Upload";
+import {
+  ArrowLeft, Send, Type, Smile, List, Palette, AtSign, Hash, BarChart2,
+  ImagePlus, Music, Users, MapPin, SmilePlus, CalendarDays, Video,
+  Globe, ChevronDown, ChevronRight, Eye, Check, PlaySquare,
+} from "lucide-react";
 
 interface Props {
   onPublish?: (content: string, bg?: string, mood?: string, location?: string) => void;
 }
 
 const BG_OPTIONS = [
-  { id: "none",       value: "none",                                             preview: "#fff"     },
-  { id: "purple",     value: "linear-gradient(135deg,#9C27B0,#E91E63)",          preview: "#9C27B0"  },
-  { id: "red",        value: "linear-gradient(135deg,#EF4444,#F97316)",          preview: "#EF4444"  },
-  { id: "black",      value: "linear-gradient(135deg,#212121,#64748B)",          preview: "#212121"  },
-  { id: "darkpurple", value: "linear-gradient(135deg,#7C3AED,#8B5CF6)",          preview: "#7C3AED"  },
-  { id: "softpurple", value: "linear-gradient(135deg,#8B5CF6,#8B5CF6)",          preview: "#8B5CF6"  },
-  { id: "sunset",     value: "linear-gradient(135deg,#D97706,#D97706,#D97706)", preview: "#D97706"  },
-  { id: "night",      value: "linear-gradient(160deg,#111827,#1a3a52)",         preview: "#111827"  },
+  { id: "none",       value: "none",                                             preview: "#fff",      label: "Aucun"    },
+  { id: "purple",     value: "linear-gradient(135deg,#9C27B0,#E91E63)",          preview: "#9C27B0",   label: "Violet"   },
+  { id: "red",        value: "linear-gradient(135deg,#EF4444,#F97316)",          preview: "#EF4444",   label: "Rouge"    },
+  { id: "orange",     value: "linear-gradient(135deg,#F97316,#EAB308)",          preview: "#F97316",   label: "Orange"   },
+  { id: "black",      value: "linear-gradient(135deg,#0F172A,#374151)",          preview: "#0F172A",   label: "Noir"     },
+  { id: "blue",       value: "linear-gradient(135deg,#3B82F6,#06B6D4)",          preview: "#3B82F6",   label: "Bleu"     },
+  { id: "darkpurple", value: "linear-gradient(135deg,#7C3AED,#8B5CF6)",          preview: "#7C3AED",   label: "Violet foncé" },
+  { id: "green",      value: "linear-gradient(135deg,#22C55E,#16A34A)",          preview: "#22C55E",   label: "Vert"     },
+  { id: "rainbow",    value: "linear-gradient(135deg,#EF4444,#F97316,#EAB308,#22C55E,#3B82F6,#8B5CF6)", preview: "rainbow", label: "Arc-en-ciel" },
 ];
 
 const MOODS = [
@@ -37,40 +43,69 @@ const ACTIVITIES = [
   "🎓 en train d'étudier", "🤝 en réunion", "🌿 dans la nature",
 ];
 
-
-const GENRE_COLORS: Record<string, string> = {
-  "Afrobeats": "#D97706", "R&B Afro": "#E91E63", "Afropop": "#9C27B0",
-  "Ndombolo": "#22C55E", "Soukous": "#0EA5E9", "Rumba": "#16A34A",
-  "Bongo": "#22C55E", "Rap FR": "#212121", "Rap KE": "#64748B",
-  "Mbalax": "#D32F2F", "Reggae": "#388E3C", "Afro": "#D97706",
-  "Highlife": "#8B5CF6", "Coupé-Décalé": "#EF4444", "Zouglou": "#EC4899",
-  "Dancehall": "#16A34A", "Hiplife": "#7C3AED",
+const COUNTRY_FLAGS: Record<string, string> = {
+  CI:"🇨🇮", BJ:"🇧🇯", ML:"🇲🇱", SN:"🇸🇳", TG:"🇹🇬", GN:"🇬🇳", NE:"🇳🇪",
+  BF:"🇧🇫", CM:"🇨🇲", NG:"🇳🇬", GH:"🇬🇭", MA:"🇲🇦", FR:"🇫🇷", US:"🇺🇸",
 };
+
+function BottomSheet({ onClose, title, children }: { onClose: () => void; title: string; children: React.ReactNode }) {
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 100, display: "flex", alignItems: "flex-end" }} onClick={onClose}>
+      <div style={{ background: "#fff", borderRadius: "24px 24px 0 0", width: "100%", maxHeight: "88vh", display: "flex", flexDirection: "column", boxShadow: "0 -8px 40px rgba(0,0,0,0.18)" }} onClick={e => e.stopPropagation()}>
+        <div style={{ display: "flex", justifyContent: "center", padding: "10px 0 0" }}>
+          <div style={{ width: 40, height: 4, borderRadius: 2, background: "#E5E7EB" }} />
+        </div>
+        <div style={{ padding: "14px 20px 8px", fontWeight: 800, fontSize: 17 }}>{title}</div>
+        <div style={{ overflowY: "auto", flex: 1, padding: "0 16px" }}>{children}</div>
+      </div>
+    </div>
+  );
+}
+
+function MusicRow({ track, selected, playing, onSelect, onPlayPause }: {
+  track: Track; selected: boolean; playing: boolean;
+  onSelect: () => void; onPlayPause: () => void;
+}) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 20px", borderBottom: "1px solid #F1F5F9", background: selected ? "#F0FDF4" : "#fff", cursor: "pointer" }} onClick={onSelect}>
+      <img src={track.artworkUrl} alt="" style={{ width: 46, height: 46, borderRadius: 10, objectFit: "cover", flexShrink: 0 }} onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontWeight: 700, fontSize: 14, color: selected ? "#22C55E" : "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{track.title}</div>
+        <div style={{ fontSize: 12, color: "#9CA3AF", marginTop: 2 }}>{track.artist} · {track.duration}s</div>
+      </div>
+      {track.previewUrl && (
+        <button onClick={e => { e.stopPropagation(); onPlayPause(); }}
+          style={{ width: 36, height: 36, borderRadius: "50%", border: "none", background: playing ? "#22C55E" : "#F0FDF4", color: playing ? "#fff" : "#22C55E", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          {playing ? "⏸" : "▶"}
+        </button>
+      )}
+      {selected && <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center" }}><Check size={12} color="#fff" /></div>}
+    </div>
+  );
+}
 
 export default function CreatePostPage({ onPublish }: Props) {
   const navigate = useNavigate();
   const rawUser = localStorage.getItem("fb_user");
-  const user = rawUser ? JSON.parse(rawUser) : { name: "Moi", flag: "" };
-  const userInitials = user.name ? user.name.slice(0, 2).toUpperCase() : "ME";
+  const user = rawUser ? JSON.parse(rawUser) : { name: "Pat Pat", flag: "🇧🇯" };
+  const userInitials = user.name ? user.name.slice(0, 2).toUpperCase() : "PA";
   const firstName = user.name?.split(" ")[0] ?? "Moi";
 
   const [content, setContent]     = useState("");
   const [selectedBg, setSelectedBg] = useState("none");
   const [audience, setAudience]   = useState<"public" | "friends" | "private">("public");
   const [showAudience, setShowAudience] = useState(false);
+  const [mounted, setMounted]     = useState(false);
 
-  // Mood / Activity
   const [showMood, setShowMood]     = useState(false);
   const [moodTab, setMoodTab]       = useState<"mood" | "activity">("mood");
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
 
-  // Location
   const [showLocation, setShowLocation] = useState(false);
   const [locationQuery, setLocationQuery] = useState("");
   const [locationResults, setLocationResults] = useState<Place[]>(searchPlaces(""));
   const [selectedLocation, setSelectedLocation] = useState<Place | null>(null);
 
-  // Music
   const [showMusic, setShowMusic]   = useState(false);
   const [musicQuery, setMusicQuery] = useState("");
   const [musicCat, setMusicCat]     = useState("all");
@@ -80,12 +115,10 @@ export default function CreatePostPage({ onPublish }: Props) {
   const [playingId, setPlayingId]   = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Tag people
   const [showTag, setShowTag]       = useState(false);
   const [tagQuery, setTagQuery]     = useState("");
   const [taggedUsers, setTaggedUsers] = useState<number[]>([]);
 
-  // Create event
   const [showEvent, setShowEvent]   = useState(false);
   const [eventName, setEventName]   = useState("");
   const [eventDate, setEventDate]   = useState(new Date().toISOString().slice(0, 10));
@@ -95,10 +128,10 @@ export default function CreatePostPage({ onPublish }: Props) {
   const [eventOnline, setEventOnline] = useState(false);
   const [eventLocation, setEventLocation] = useState("");
   const [eventDesc, setEventDesc]   = useState("");
-  // Photos / médias (R2)
+
   const [medias, setMedias]             = useState<UploadedMedia[]>([]);
-  const [mediaPreviews, setMediaPreviews] = useState<string[]>([]); // local preview URLs
-  const [mediaIsVideo, setMediaIsVideo]   = useState<boolean[]>([]); // parallel flag per preview
+  const [mediaPreviews, setMediaPreviews] = useState<string[]>([]);
+  const [mediaIsVideo, setMediaIsVideo]   = useState<boolean[]>([]);
   const [uploadingIdx, setUploadingIdx] = useState<number | null>(null);
   const [eventCoverMedia, setEventCoverMedia] = useState<UploadedMedia | null>(null);
   const [eventCoverPreview, setEventCoverPreview] = useState<string | null>(null);
@@ -107,9 +140,14 @@ export default function CreatePostPage({ onPublish }: Props) {
   const coverInputRef = useRef<HTMLInputElement>(null);
   const textareaRef  = useRef<HTMLTextAreaElement>(null);
 
-  useEffect(() => { setLocationResults(searchPlaces(locationQuery)); }, [locationQuery]);
+  const [allUsers, setAllUsers] = useState<PublicUser[]>([]);
 
-  // iTunes search — debounced, async, zero storage
+  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => { setLocationResults(searchPlaces(locationQuery)); }, [locationQuery]);
+  useEffect(() => {
+    apiGetUsers().then(users => setAllUsers(users)).catch(() => {});
+  }, []);
+
   useEffect(() => {
     if (!showMusic) return;
     const term = musicQuery.trim()
@@ -125,28 +163,16 @@ export default function CreatePostPage({ onPublish }: Props) {
     return () => clearTimeout(timer);
   }, [musicQuery, musicCat, showMusic]);
 
-  // Stop audio when picker closes
   useEffect(() => {
-    if (!showMusic) {
-      audioRef.current?.pause();
-      setPlayingId(null);
-    }
+    if (!showMusic) { audioRef.current?.pause(); setPlayingId(null); }
   }, [showMusic]);
 
-  // Cleanup on unmount
   useEffect(() => { return () => { audioRef.current?.pause(); }; }, []);
-
-  const [allUsers, setAllUsers] = useState<PublicUser[]>([]);
-
-  useEffect(() => {
-    apiGetUsers().then(users => setAllUsers(users)).catch(() => {});
-  }, []);
 
   const activeBg  = BG_OPTIONS.find(b => b.id === selectedBg);
   const hasBg     = selectedBg !== "none";
   const canPublish = (content.trim().length > 0 || medias.length > 0 || selectedTrack !== null) && uploadStatus !== "uploading";
 
-  // Build tagline for header
   const tagUsers = allUsers.map(u => ({
     id: u.id,
     name: `${u.firstName} ${u.lastName}`,
@@ -158,22 +184,12 @@ export default function CreatePostPage({ onPublish }: Props) {
   const taggedNames = taggedUsers.map(id => tagUsers.find(u => u.id === id)?.name).filter(Boolean);
   const moodEmoji   = selectedMood ? selectedMood.split(" ")[0] : null;
   const moodWord    = selectedMood ? selectedMood.slice(selectedMood.indexOf(" ") + 1) : null;
-
-  let headerLine = firstName;
-  if (moodEmoji) headerLine += ` est ${moodEmoji} ${moodWord}`;
-  if (taggedNames.length > 0) {
-    const avec = taggedNames.length === 1 ? taggedNames[0]
-      : taggedNames.slice(0, -1).join(", ") + " et " + taggedNames[taggedNames.length - 1];
-    headerLine += `, avec ${avec}`;
-  }
-  const hasHeaderExtra = moodEmoji || taggedNames.length > 0;
+  const userFlag = user.country ? (COUNTRY_FLAGS[user.country] ?? user.flag ?? "") : (user.flag ?? "🇧🇯");
 
   const handlePublish = async () => {
     if (!canPublish) return;
     let finalContent = content.trim();
     if (selectedLocation) finalContent += `\n📍 ${selectedLocation.city}, ${selectedLocation.country}`;
-
-    // Persist post to backend — include first uploaded media + its thumbnail
     const firstMedia = medias[0];
     try {
       await apiCreatePost(
@@ -192,7 +208,6 @@ export default function CreatePostPage({ onPublish }: Props) {
       alert((err as Error).message ?? "Erreur lors de la publication.");
       return;
     }
-
     onPublish?.(finalContent, hasBg ? activeBg?.value : undefined, selectedMood ?? undefined, selectedLocation ? `${selectedLocation.city}` : undefined);
     navigate("/");
   };
@@ -205,18 +220,15 @@ export default function CreatePostPage({ onPublish }: Props) {
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const isVid = file.type.startsWith("video/") || VIDEO_EXTS.test(file.name);
-      // Show local preview immediately
       const previewUrl = URL.createObjectURL(file);
       setMediaPreviews(p => [...p, previewUrl]);
       setMediaIsVideo(v => [...v, isVid]);
       setUploadingIdx(medias.length + i);
-      // Upload to R2
       const result = await upload(file);
       setUploadingIdx(null);
       if (result) {
         setMedias(m => [...m, result]);
       } else {
-        // Remove preview on failure
         setMediaPreviews(p => p.filter(u => u !== previewUrl));
         setMediaIsVideo(v => v.filter((_, j) => j !== mediaPreviews.length + i));
       }
@@ -233,11 +245,13 @@ export default function CreatePostPage({ onPublish }: Props) {
     if (result) setEventCoverMedia(result);
   };
 
-  const AUDIENCE_MAP = { public: { icon: "🌐", label: "Public" }, friends: { icon: "👥", label: "Amis" }, private: { icon: "🔒", label: "Privé" } };
+  const AUDIENCE_MAP = {
+    public:  { icon: <Globe size={13} color="#16A34A" />, label: "Public" },
+    friends: { icon: <Users size={13} color="#16A34A" />, label: "Amis" },
+    private: { icon: <span style={{ fontSize: 12 }}>🔒</span>, label: "Privé" },
+  };
 
   const filteredUsers = tagUsers.filter(u => !tagQuery.trim() || u.name.toLowerCase().includes(tagQuery.toLowerCase()));
-
-  // Music grouped by artist when searching
   const groupedMusic = musicQuery.trim()
     ? Object.entries(musicResults.reduce<Record<string, Track[]>>((acc, t) => { (acc[t.artist] ??= []).push(t); return acc; }, {}))
     : [];
@@ -257,70 +271,162 @@ export default function CreatePostPage({ onPublish }: Props) {
     }
   }
 
-  const OPTIONS = [
-    { icon: "🖼️", color: "#22C55E", label: medias.length > 0 ? "Ajouter ou supprimer des photos" : "Photos/Vidéos",
-      sub: medias.length > 0 ? `${medias.length} fichier${medias.length > 1 ? "s" : ""} uploadé${medias.length > 1 ? "s" : ""}` : null,
-      action: () => fileInputRef.current?.click() },
-    { icon: "🎵", color: "#E91E63", label: "Musique",
-      sub: selectedTrack ? `${selectedTrack.title} · ${selectedTrack.artist}` : null,
-      action: () => setShowMusic(true) },
-    { icon: "👥", color: "#22C55E", label: "Identifier des personnes",
-      sub: taggedNames.length > 0 ? taggedNames.join(", ") : null,
-      action: () => setShowTag(true) },
-    { icon: "📍", color: "#EF4444", label: "Ajouter un lieu",
-      sub: selectedLocation ? `${selectedLocation.city}, ${selectedLocation.country}` : null,
-      action: () => setShowLocation(true) },
-    { icon: "😊", color: "#FF9800", label: "Humeur/Activité",
-      sub: selectedMood ?? null,
-      action: () => setShowMood(true) },
-    { icon: "📅", color: "#1565C0", label: "Créer un évènement",
-      sub: null,
-      action: () => setShowEvent(true) },
-    { icon: "🔴", color: "#EF4444", label: "Lancer un direct",
-      sub: null,
-      action: () => navigate("/live") },
+  const TOOLBAR_ITEMS = [
+    { id: "texte",   icon: <Type size={22} strokeWidth={2} />,       label: "Texte",   color: "#22C55E", bg: "#DCFCE7" },
+    { id: "emoji",   icon: <Smile size={22} strokeWidth={2} />,      label: "Emoji",   color: "#F59E0B", bg: "#FEF3C7" },
+    { id: "gif",     icon: <PlaySquare size={22} strokeWidth={2} />, label: "GIF",     color: "#7C3AED", bg: "#EDE9FE" },
+    { id: "liste",   icon: <List size={22} strokeWidth={2} />,       label: "Liste",   color: "#0EA5E9", bg: "#DBEAFE" },
+    { id: "couleur", icon: <Palette size={22} strokeWidth={2} />,    label: "Couleur", color: "#EC4899", bg: "#FCE7F3" },
+    { id: "mention", icon: <AtSign size={22} strokeWidth={2} />,     label: "Mention", color: "#8B5CF6", bg: "#EDE9FE" },
+    { id: "hashtag", icon: <Hash size={22} strokeWidth={2} />,       label: "Hashtag", color: "#06B6D4", bg: "#CFFAFE" },
+    { id: "sondage", icon: <BarChart2 size={22} strokeWidth={2} />,  label: "Sondage", color: "#EF4444", bg: "#FEE2E2" },
   ];
 
-  const COUNTRY_FLAGS: Record<string,string> = { CI:"🇨🇮",BJ:"🇧🇯",ML:"🇲🇱",SN:"🇸🇳",TG:"🇹🇬",GN:"🇬🇳",NE:"🇳🇪",BF:"🇧🇫",CM:"🇨🇲",NG:"🇳🇬",GH:"🇬🇭",MA:"🇲🇦",FR:"🇫🇷",US:"🇺🇸" };
-  const userFlag = user.country ? (COUNTRY_FLAGS[user.country] ?? user.flag ?? "") : (user.flag ?? "");
+  const OPTIONS = [
+    {
+      icon: <ImagePlus size={24} strokeWidth={2} color="#22C55E" />,
+      iconBg: "#DCFCE7", iconShadow: "0 4px 12px rgba(34,197,94,.14)",
+      label: medias.length > 0 ? "Ajouter ou supprimer des photos" : "Photos/Vidéos",
+      sub: medias.length > 0 ? `${medias.length} fichier${medias.length > 1 ? "s" : ""} uploadé${medias.length > 1 ? "s" : ""}` : "Ajoutez des photos ou vidéos",
+      action: () => fileInputRef.current?.click(),
+    },
+    {
+      icon: <Music size={24} strokeWidth={2} color="#EC4899" />,
+      iconBg: "#FCE7F3", iconShadow: "0 4px 12px rgba(236,72,153,.14)",
+      label: "Musique",
+      sub: selectedTrack ? `${selectedTrack.title} · ${selectedTrack.artist}` : "Ajoutez une musique à votre publication",
+      action: () => setShowMusic(true),
+    },
+    {
+      icon: <Users size={24} strokeWidth={2} color="#3B82F6" />,
+      iconBg: "#DBEAFE", iconShadow: "0 4px 12px rgba(59,130,246,.14)",
+      label: "Identifier des personnes",
+      sub: taggedNames.length > 0 ? taggedNames.join(", ") : "Mentionnez des amis",
+      action: () => setShowTag(true),
+    },
+    {
+      icon: <MapPin size={24} strokeWidth={2} color="#F97316" />,
+      iconBg: "#FFEDD5", iconShadow: "0 4px 12px rgba(249,115,22,.14)",
+      label: "Ajouter un lieu",
+      sub: selectedLocation ? `${selectedLocation.city}, ${selectedLocation.country}` : "Indiquez où vous êtes",
+      action: () => setShowLocation(true),
+    },
+    {
+      icon: <SmilePlus size={24} strokeWidth={2} color="#EAB308" />,
+      iconBg: "#FEF9C3", iconShadow: "0 4px 12px rgba(234,179,8,.14)",
+      label: "Humeur/Activité",
+      sub: selectedMood ?? "Exprimez votre humeur",
+      action: () => setShowMood(true),
+    },
+    {
+      icon: <CalendarDays size={24} strokeWidth={2} color="#8B5CF6" />,
+      iconBg: "#EDE9FE", iconShadow: "0 4px 12px rgba(139,92,246,.14)",
+      label: "Créer un évènement",
+      sub: "Organisez un évènement",
+      action: () => setShowEvent(true),
+    },
+    {
+      icon: (
+        <div style={{ position: "relative" }}>
+          <Video size={24} strokeWidth={2} color="#EF4444" />
+          <div style={{ position: "absolute", top: -6, right: -8, background: "#EF4444", borderRadius: 4, padding: "1px 4px" }}>
+            <span style={{ fontSize: 8, fontWeight: 900, color: "#fff", letterSpacing: 0.5 }}>LIVE</span>
+          </div>
+        </div>
+      ),
+      iconBg: "#FEE2E2", iconShadow: "0 4px 12px rgba(239,68,68,.14)",
+      label: "Lancer un direct",
+      sub: "Diffusez en direct",
+      action: () => navigate("/live"),
+    },
+  ];
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "#F8FAFC", zIndex: 50, display: "flex", flexDirection: "column", overflowY: "auto", fontFamily: "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" }}>
+    <div style={{
+      position: "fixed", inset: 0, background: "#F8FAFC", zIndex: 50,
+      display: "flex", flexDirection: "column", overflowY: "auto",
+      fontFamily: "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif",
+      opacity: mounted ? 1 : 0,
+      transform: mounted ? "translateY(0)" : "translateY(20px)",
+      transition: "opacity 300ms cubic-bezier(0.22,1,0.36,1), transform 300ms cubic-bezier(0.22,1,0.36,1)",
+    }}>
       <style>{`
-        @keyframes cp-in { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes cp-pulse { 0%,100%{box-shadow:0 4px 20px rgba(34,197,94,0.4)} 50%{box-shadow:0 4px 28px rgba(34,197,94,0.65)} }
-        .cp-opt { transition: transform 0.12s ease, box-shadow 0.12s ease; }
-        .cp-opt:hover { transform: translateY(-1px) !important; box-shadow: 0 4px 16px rgba(34,197,94,0.18) !important; }
-        .cp-opt:active { transform: scale(0.96) !important; box-shadow: 0 1px 4px rgba(0,0,0,0.08) !important; }
-        .cp-pub { transition: all 0.2s ease; }
-        .cp-pub:hover:not(:disabled) { transform: translateY(-2px) !important; box-shadow: 0 10px 32px rgba(34,197,94,0.55) !important; }
-        .cp-pub:active:not(:disabled) { transform: scale(0.97) !important; }
-        .cp-pill:active { transform: scale(0.94) !important; }
-        .cp-pill { transition: transform 0.1s ease; }
+        @keyframes bp-in { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        .bp-card { transition: transform 200ms cubic-bezier(0.22,1,0.36,1), box-shadow 200ms ease; }
+        .bp-card:hover { transform: scale(1.02); }
+        .bp-card:active { transform: scale(0.97) !important; }
+        .bp-btn { transition: filter 200ms ease; }
+        .bp-btn:hover { filter: brightness(1.05); }
+        .bp-btn:active { filter: brightness(0.95); }
+        .bp-tool { transition: transform 150ms cubic-bezier(0.22,1,0.36,1); cursor: pointer; }
+        .bp-tool:active { transform: scale(0.92) !important; }
+        .bp-col { transition: transform 150ms ease, box-shadow 150ms ease; cursor: pointer; }
+        .bp-col:active { transform: scale(0.88) !important; }
+        textarea::placeholder { color: #94A3B8; }
+        ::-webkit-scrollbar { display: none; }
       `}</style>
       <input ref={fileInputRef} type="file" accept="image/*,video/*" multiple style={{ display: "none" }} onChange={handleFileSelect} />
       <input ref={coverInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleCoverSelect} />
 
-      {/* ── HEADER avec dégradé vert ── */}
-      <div style={{ display: "flex", alignItems: "center", padding: "13px 14px 15px", background: "linear-gradient(135deg,#22C55E 0%,#16A34A 100%)", position: "sticky", top: 0, zIndex: 10, boxShadow: "0 3px 16px rgba(34,197,94,0.35)", flexShrink: 0, gap: 10 }}>
-        <button onClick={() => navigate("/")} style={{ width: 36, height: 36, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.22)", backdropFilter: "blur(8px)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color: "#fff" }}>
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+      {/* ══ HEADER ══ */}
+      <div style={{
+        display: "flex", alignItems: "center", padding: "14px 16px 16px",
+        background: "linear-gradient(135deg,#22C55E 0%,#16A34A 100%)",
+        position: "sticky", top: 0, zIndex: 10,
+        boxShadow: "0 4px 20px rgba(34,197,94,.30)", flexShrink: 0, gap: 12,
+      }}>
+        <button onClick={() => navigate("/")} className="bp-btn" style={{
+          width: 40, height: 40, borderRadius: "50%", border: "none",
+          background: "rgba(255,255,255,0.20)", backdropFilter: "blur(8px)",
+          cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+          flexShrink: 0, color: "#fff",
+        }}>
+          <ArrowLeft size={20} strokeWidth={2.5} />
         </button>
-        <div style={{ flex: 1, fontWeight: 800, fontSize: 17, color: "#fff", letterSpacing: "0.1px" }}>Créer une publication</div>
-        <button onClick={handlePublish} disabled={!canPublish} className="cp-pub"
-          style={{ background: canPublish ? "#fff" : "rgba(255,255,255,0.3)", color: canPublish ? "#16A34A" : "rgba(255,255,255,0.6)", border: "none", borderRadius: 22, padding: "8px 16px", fontWeight: 800, fontSize: 13, cursor: canPublish ? "pointer" : "not-allowed", boxShadow: canPublish ? "0 2px 10px rgba(0,0,0,0.15)" : "none", display: "flex", alignItems: "center", gap: 5, flexShrink: 0 }}>
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        <div style={{ flex: 1, fontWeight: 700, fontSize: 18, color: "#fff", letterSpacing: "-0.1px" }}>
+          Créer une publication
+        </div>
+        <button onClick={handlePublish} disabled={!canPublish} className="bp-btn" style={{
+          background: "#fff", color: "#16A34A", border: "none", borderRadius: 999,
+          padding: "10px 18px", fontWeight: 700, fontSize: 14,
+          cursor: canPublish ? "pointer" : "not-allowed",
+          boxShadow: "0 8px 24px rgba(0,0,0,.08)",
+          display: "flex", alignItems: "center", gap: 6, flexShrink: 0,
+          opacity: canPublish ? 1 : 0.5,
+        }}>
+          <Send size={15} strokeWidth={2.5} color="#16A34A" />
           PUBLIER
         </button>
       </div>
 
-      {/* ── AUTHOR + SAISIE CARD ── */}
-      <div style={{ margin: "12px 14px 0", background: "#fff", borderRadius: 22, padding: "14px 14px 0", boxShadow: "0 2px 14px rgba(0,0,0,0.07)", animation: "cp-in 0.22s ease", flexShrink: 0, overflow: "hidden" }}>
+      {/* ══ COMPOSER CARD ══ */}
+      <div style={{
+        margin: "16px 14px 0", background: "#fff", borderRadius: 32,
+        padding: "20px 20px 0",
+        boxShadow: "0 12px 40px rgba(15,23,42,.06)",
+        animation: "bp-in 300ms cubic-bezier(0.22,1,0.36,1) both",
+        flexShrink: 0, overflow: "visible",
+      }}>
         {/* Author row */}
-        <div style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: 10 }}>
-          <div style={{ width: 48, height: 48, borderRadius: "50%", background: "linear-gradient(135deg,#22C55E,#16A34A)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 17, flexShrink: 0, boxShadow: "0 3px 10px rgba(34,197,94,0.32)" }}>{userInitials}</div>
+        <div style={{ display: "flex", gap: 14, alignItems: "flex-start", marginBottom: 14 }}>
+          <div style={{
+            width: 52, height: 52, borderRadius: "50%",
+            background: "linear-gradient(135deg,#22C55E,#16A34A)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            color: "#fff", fontWeight: 800, fontSize: 18, flexShrink: 0,
+            boxShadow: "0 4px 14px rgba(34,197,94,.32)", position: "relative",
+          }}>
+            {userInitials}
+            <div style={{
+              position: "absolute", bottom: 0, right: 0, width: 18, height: 18,
+              background: "#fff", borderRadius: "50%", border: "2px solid #fff",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <div style={{ width: 10, height: 10, background: "#22C55E", borderRadius: "50%" }} />
+            </div>
+          </div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 800, fontSize: 15, color: "#111827", lineHeight: 1.3, marginBottom: 5 }}>
+            <div style={{ fontWeight: 700, fontSize: 15.5, color: "#0F172A", lineHeight: 1.3, marginBottom: 8 }}>
               {user.name} {userFlag}
               {moodEmoji && <span style={{ fontWeight: 400, color: "#64748B" }}> est {moodEmoji} <em>{moodWord}</em></span>}
               {taggedNames.length > 0 && (
@@ -333,24 +439,30 @@ export default function CreatePostPage({ onPublish }: Props) {
               )}
             </div>
             {selectedTrack && (
-              <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 5, background: "#EDE9FE", borderRadius: 8, padding: "3px 8px", width: "fit-content" }}>
-                <span style={{ fontSize: 12 }}>🎵</span>
+              <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: 8, background: "#EDE9FE", borderRadius: 8, padding: "4px 10px", width: "fit-content" }}>
+                <Music size={12} color="#7C3AED" />
                 <span style={{ fontSize: 12, fontWeight: 600, color: "#7C3AED" }}>{selectedTrack.title} · {selectedTrack.artist}</span>
                 <button onClick={() => setSelectedTrack(null)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 11, color: "#9CA3AF", padding: "0 2px" }}>✕</button>
               </div>
             )}
+            {/* Audience selector */}
             <div style={{ position: "relative" }}>
-              <button onClick={() => setShowAudience(v => !v)} style={{ display: "flex", alignItems: "center", gap: 5, background: "#F0FDF4", border: "1.5px solid #BBF7D0", borderRadius: 20, padding: "4px 11px", cursor: "pointer" }}>
-                <span style={{ fontSize: 12 }}>{AUDIENCE_MAP[audience].icon}</span>
-                <span style={{ fontSize: 12, fontWeight: 700, color: "#16A34A" }}>{AUDIENCE_MAP[audience].label}</span>
-                <svg viewBox="0 0 24 24" width="10" height="10" fill="#16A34A"><path d="M7 10l5 5 5-5z"/></svg>
+              <button onClick={() => setShowAudience(v => !v)} style={{
+                display: "flex", alignItems: "center", gap: 6,
+                background: "#F0FDF4", border: "1.5px solid #BBF7D0",
+                borderRadius: 20, padding: "5px 12px", cursor: "pointer",
+              }}>
+                {AUDIENCE_MAP[audience].icon}
+                <span style={{ fontSize: 13, fontWeight: 700, color: "#16A34A" }}>{AUDIENCE_MAP[audience].label}</span>
+                <ChevronDown size={12} color="#16A34A" />
               </button>
               {showAudience && (
-                <div style={{ position: "absolute", top: 36, left: 0, background: "#fff", border: "1px solid #E5E7EB", borderRadius: 16, boxShadow: "0 8px 24px rgba(0,0,0,0.12)", zIndex: 20, minWidth: 155, overflow: "hidden" }}>
+                <div style={{ position: "absolute", top: 38, left: 0, background: "#fff", border: "1px solid #E5E7EB", borderRadius: 16, boxShadow: "0 8px 24px rgba(0,0,0,.12)", zIndex: 20, minWidth: 160, overflow: "hidden" }}>
                   {(["public","friends","private"] as const).map(a => (
-                    <div key={a} onClick={() => { setAudience(a); setShowAudience(false); }} style={{ padding: "11px 16px", cursor: "pointer", display: "flex", gap: 10, alignItems: "center", fontWeight: a === audience ? 700 : 500, background: a === audience ? "#F0FDF4" : "#fff", color: a === audience ? "#16A34A" : "#64748B" }}>
-                      <span>{AUDIENCE_MAP[a].icon}</span><span>{AUDIENCE_MAP[a].label}</span>
-                      {a === audience && <svg viewBox="0 0 24 24" width="16" height="16" fill="#22C55E" style={{ marginLeft: "auto" }}><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>}
+                    <div key={a} onClick={() => { setAudience(a); setShowAudience(false); }} style={{ padding: "12px 16px", cursor: "pointer", display: "flex", gap: 10, alignItems: "center", fontWeight: a === audience ? 700 : 500, background: a === audience ? "#F0FDF4" : "#fff", color: a === audience ? "#16A34A" : "#64748B" }}>
+                      {AUDIENCE_MAP[a].icon}
+                      <span style={{ fontSize: 14 }}>{AUDIENCE_MAP[a].label}</span>
+                      {a === audience && <Check size={14} color="#22C55E" style={{ marginLeft: "auto" }} />}
                     </div>
                   ))}
                 </div>
@@ -359,52 +471,86 @@ export default function CreatePostPage({ onPublish }: Props) {
           </div>
         </div>
 
-        {/* Zone de saisie */}
-        <div style={{ background: hasBg ? activeBg?.value : "transparent", borderRadius: hasBg ? 14 : 0, padding: hasBg ? "22px 14px 16px" : "0 4px", minHeight: hasBg ? 80 : 60, display: "flex", flexDirection: "column", alignItems: hasBg ? "center" : "stretch", justifyContent: hasBg ? "center" : "flex-start", transition: "background 0.3s", marginBottom: 0 }}>
-          <textarea ref={textareaRef} value={content} onChange={e => setContent(e.target.value)}
+        {/* Textarea */}
+        <div style={{
+          background: hasBg ? activeBg?.value : "transparent",
+          borderRadius: hasBg ? 16 : 0, padding: hasBg ? "24px 16px 20px" : "0 2px",
+          minHeight: hasBg ? 90 : 70, display: "flex", flexDirection: "column",
+          alignItems: hasBg ? "center" : "stretch", justifyContent: hasBg ? "center" : "flex-start",
+          transition: "background 0.3s", marginBottom: 0,
+        }}>
+          <textarea
+            ref={textareaRef} value={content}
+            onChange={e => { setContent(e.target.value); if (textareaRef.current) { textareaRef.current.style.height = "auto"; textareaRef.current.style.height = textareaRef.current.scrollHeight + "px"; } }}
             placeholder="Partagez un moment fort de votre journée..."
             autoFocus
-            style={{ width: "100%", border: "none", outline: "none", resize: "none", fontSize: hasBg ? 21 : 16, fontWeight: hasBg ? 700 : 400, color: hasBg ? "#fff" : "#111827", background: "transparent", textAlign: hasBg ? "center" : "left", minHeight: hasBg ? 70 : 60, lineHeight: 1.55, caretColor: "#22C55E", fontFamily: "inherit", boxSizing: "border-box" }} />
+            style={{
+              width: "100%", border: "none", outline: "none", resize: "none",
+              fontSize: hasBg ? 20 : 20, fontWeight: 500,
+              color: hasBg ? "#fff" : "#0F172A",
+              background: "transparent", textAlign: hasBg ? "center" : "left",
+              minHeight: 70, lineHeight: 1.6,
+              caretColor: "#22C55E", fontFamily: "inherit", boxSizing: "border-box",
+            }}
+          />
           {selectedLocation && (
-            <div style={{ fontSize: 12, color: hasBg ? "rgba(255,255,255,0.85)" : "#64748B", marginTop: 2, display: "flex", alignItems: "center", gap: 4 }}>
-              📍 <span>{selectedLocation.city}, {selectedLocation.country}</span>
+            <div style={{ fontSize: 12, color: hasBg ? "rgba(255,255,255,.85)" : "#64748B", marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
+              <MapPin size={12} /> <span>{selectedLocation.city}, {selectedLocation.country}</span>
             </div>
           )}
         </div>
 
-        {/* Barre Aa/Emoji/GIF/Sondage — intégrée dans la carte, séparée par une ligne */}
-        <div style={{ borderTop: "1px solid #F3F4F6", marginTop: 6, padding: "8px 4px 10px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", gap: 2 }}>
-            {[
-              { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="#22C55E"><path d="M5 17v2h14v-2H5zm4.5-4.2h5l.9 2.2h2.1L12.75 4h-1.5L6.5 15h2.1l.9-2.2zm2.5-6.82L13.87 11h-2.74L12 6.98z"/></svg>, label: "Aa", title: "Texte" },
-              { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="#F59E0B"><circle cx="12" cy="12" r="10"/><path d="M8.5 14.5s1.5 2 3.5 2 3.5-2 3.5-2" stroke="#fff" strokeWidth="1.5" fill="none" strokeLinecap="round"/><circle cx="9" cy="10" r="1.2" fill="#fff"/><circle cx="15" cy="10" r="1.2" fill="#fff"/></svg>, label: "😊", title: "Emoji" },
-              { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="#7C3AED"><rect x="2" y="6" width="20" height="12" rx="3"/><text x="12" y="15" textAnchor="middle" fill="#fff" fontSize="7" fontWeight="900">GIF</text></svg>, label: "GIF", title: "GIF" },
-              { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="#0EA5E9"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>, label: "📊", title: "Sondage" },
-            ].map(b => (
-              <button key={b.label} title={b.title} className="cp-pill"
-                style={{ width: 40, height: 36, background: "none", border: "none", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>{b.icon}</button>
+        {/* ── TOOLBAR 8 boutons ── */}
+        <div style={{ borderTop: "1px solid #F1F5F9", marginTop: 8, padding: "14px 0 16px" }}>
+          <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 2 }}>
+            {TOOLBAR_ITEMS.map(item => (
+              <div key={item.id} className="bp-tool" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                <div style={{
+                  width: 56, height: 56, borderRadius: 16,
+                  background: item.bg, border: `1px solid ${item.color}22`,
+                  boxShadow: "0 4px 12px rgba(0,0,0,.04)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  color: item.color,
+                }}>
+                  {item.icon}
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 500, color: "#64748B", whiteSpace: "nowrap" }}>{item.label}</span>
+              </div>
             ))}
           </div>
-          <div style={{ display: "flex", gap: 5, alignItems: "center" }}>
-            {/* Character counter — discret */}
-            {content.length > 0 && (
-              <span style={{ fontSize: 11, color: content.length > 250 ? "#EF4444" : "#9CA3AF", fontWeight: 600, minWidth: 28, textAlign: "right" }}>{content.length}</span>
-            )}
-            {/* Color circles */}
-            <div style={{ display: "flex", gap: 5, alignItems: "center", overflowX: "auto", scrollbarWidth: "none" }}>
-              <button onClick={() => setSelectedBg("none")} style={{ width: 26, height: 26, borderRadius: "50%", border: selectedBg === "none" ? "2.5px solid #22C55E" : "1.5px solid #E5E7EB", background: "#F8FAFC", cursor: "pointer", fontSize: 12, display: "flex", alignItems: "center", justifyContent: "center", color: "#64748B", flexShrink: 0 }}>✕</button>
-              {BG_OPTIONS.filter(b => b.id !== "none").map(bg => (
-                <button key={bg.id} onClick={() => setSelectedBg(bg.id === selectedBg ? "none" : bg.id)}
-                  style={{ width: 26, height: 26, borderRadius: "50%", flexShrink: 0, cursor: "pointer", background: bg.preview, border: selectedBg === bg.id ? "2.5px solid #22C55E" : "1.5px solid rgba(0,0,0,0.08)", boxShadow: selectedBg === bg.id ? "0 0 0 2px #fff,0 0 0 4px #22C55E" : "0 1px 3px rgba(0,0,0,0.14)", transition: "all 0.15s" }} />
-              ))}
-            </div>
+
+          {/* ── PALETTE DE COULEURS ── */}
+          <div style={{ display: "flex", gap: 10, marginTop: 14, alignItems: "center", overflowX: "auto", paddingBottom: 2 }}>
+            {BG_OPTIONS.map(bg => {
+              const isActive = selectedBg === bg.id;
+              if (bg.id === "none") return null;
+              const isRainbow = bg.id === "rainbow";
+              return (
+                <div key={bg.id} className="bp-col" onClick={() => setSelectedBg(bg.id === selectedBg ? "none" : bg.id)}
+                  style={{
+                    width: 52, height: 52, borderRadius: "50%", flexShrink: 0,
+                    background: isRainbow ? "linear-gradient(135deg,#EF4444,#F97316,#EAB308,#22C55E,#3B82F6,#8B5CF6)" : bg.preview,
+                    border: isActive ? "3px solid #fff" : "2px solid rgba(0,0,0,.08)",
+                    boxShadow: isActive ? `0 0 0 3px #22C55E, 0 6px 20px rgba(34,197,94,.35)` : "0 2px 8px rgba(0,0,0,.12)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    transition: "box-shadow 200ms ease, border 200ms ease",
+                    position: "relative",
+                  }}>
+                  {isActive && (
+                    <div style={{ width: 22, height: 22, borderRadius: "50%", background: "rgba(255,255,255,0.9)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <Check size={13} color="#22C55E" strokeWidth={3} />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
 
       {/* Upload progress */}
       {uploadStatus === "uploading" && (
-        <div style={{ padding: "6px 14px", flexShrink: 0 }}>
+        <div style={{ padding: "8px 14px", flexShrink: 0 }}>
           <div style={{ height: 3, background: "#E5E7EB", borderRadius: 4, overflow: "hidden" }}>
             <div style={{ height: "100%", width: uploadPhase === "uploading" ? `${progress}%` : "100%", background: "linear-gradient(90deg,#22C55E,#16A34A)", borderRadius: 4, transition: "width 0.2s" }} />
           </div>
@@ -419,7 +565,7 @@ export default function CreatePostPage({ onPublish }: Props) {
 
       {/* Media previews */}
       {mediaPreviews.length > 0 && (
-        <div style={{ padding: "8px 14px", display: "flex", gap: 8, overflowX: "auto", flexShrink: 0 }}>
+        <div style={{ padding: "10px 14px", display: "flex", gap: 8, overflowX: "auto", flexShrink: 0 }}>
           {mediaPreviews.map((src, i) => {
             const uploaded = medias[i];
             const isUploading = uploadingIdx === i;
@@ -432,20 +578,20 @@ export default function CreatePostPage({ onPublish }: Props) {
                   <img src={src} alt="" style={{ width: 88, height: 88, objectFit: "cover", borderRadius: 14, opacity: isUploading ? 0.5 : 1 }} />
                 )}
                 {isUploading && (
-                  <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.3)", borderRadius: 14 }}>
+                  <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,.3)", borderRadius: 14 }}>
                     <span style={{ fontSize: 10, color: "#fff", fontWeight: 700 }}>{progress}%</span>
                   </div>
                 )}
                 {uploaded && (
                   <div style={{ position: "absolute", bottom: 4, left: 4, background: "#22C55E", borderRadius: "50%", width: 18, height: 18, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <svg viewBox="0 0 24 24" width="10" height="10" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                    <Check size={10} color="#fff" />
                   </div>
                 )}
                 <button onClick={() => {
                   setMediaPreviews(p => p.filter((_, j) => j !== i));
                   setMediaIsVideo(v => v.filter((_, j) => j !== i));
                   setMedias(m => m.filter((_, j) => j !== i));
-                }} style={{ position: "absolute", top: 4, right: 4, background: "rgba(0,0,0,0.55)", border: "none", borderRadius: "50%", width: 22, height: 22, color: "#fff", fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
+                }} style={{ position: "absolute", top: 4, right: 4, background: "rgba(0,0,0,.55)", border: "none", borderRadius: "50%", width: 22, height: 22, color: "#fff", fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
               </div>
             );
           })}
@@ -453,69 +599,90 @@ export default function CreatePostPage({ onPublish }: Props) {
         </div>
       )}
 
-      {/* ── OPTIONS ── */}
-      <div style={{ margin: "10px 14px 0", display: "flex", flexDirection: "column", gap: 7 }}>
+      {/* ══ OPTIONS ══ */}
+      <div style={{ margin: "14px 14px 0", display: "flex", flexDirection: "column", gap: 8 }}>
         {OPTIONS.map((opt, i) => (
-          <div key={i} className="cp-opt" onClick={opt.action}
-            style={{ display: "flex", gap: 13, padding: "11px 14px", alignItems: "center", cursor: "pointer", background: "#fff", borderRadius: 18, boxShadow: "0 1px 5px rgba(0,0,0,0.05)", animation: `cp-in ${0.18 + i * 0.04}s ease both` }}>
-            {/* Icon — cercle coloré */}
-            <div style={{ width: 42, height: 42, borderRadius: "50%", background: `linear-gradient(135deg,${opt.color}22,${opt.color}10)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0, border: `1.5px solid ${opt.color}30` }}>{opt.icon}</div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontWeight: 600, fontSize: 14.5, color: "#111827" }}>{opt.label}</div>
-              {opt.sub && <div style={{ fontSize: 11.5, color: "#22C55E", marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: 500 }}>{opt.sub}</div>}
+          <div key={i} className="bp-card" onClick={opt.action}
+            style={{
+              display: "flex", gap: 16, padding: "0 16px",
+              alignItems: "center", cursor: "pointer",
+              background: "#fff", borderRadius: 28, height: 92,
+              boxShadow: "0 8px 24px rgba(0,0,0,.05)",
+              animation: `bp-in ${300 + i * 40}ms cubic-bezier(0.22,1,0.36,1) both`,
+            }}>
+            <div style={{
+              width: 56, height: 56, borderRadius: 18, flexShrink: 0,
+              background: opt.iconBg,
+              boxShadow: opt.iconShadow,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              {opt.icon}
             </div>
-            {opt.sub ? (
-              <div style={{ width: 22, height: 22, borderRadius: "50%", background: "#DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <svg viewBox="0 0 24 24" width="12" height="12" fill="#22C55E"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-              </div>
-            ) : (
-              <svg viewBox="0 0 24 24" width="17" height="17" fill="#E5E7EB" style={{ flexShrink: 0 }}><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-            )}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontWeight: 700, fontSize: 15, color: "#0F172A", marginBottom: 3 }}>{opt.label}</div>
+              <div style={{ fontSize: 13, color: "#64748B", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{opt.sub}</div>
+            </div>
+            <ChevronRight size={18} color="#E2E8F0" strokeWidth={2.5} style={{ flexShrink: 0 }} />
           </div>
         ))}
       </div>
 
-      {/* ── BOUTON PUBLIER BAS ── */}
-      <div style={{ padding: "14px 14px 28px", flexShrink: 0 }}>
-        <button onClick={handlePublish} disabled={!canPublish} className="cp-pub"
-          style={{ width: "100%", height: 60, borderRadius: 18, border: "none", background: canPublish ? "linear-gradient(135deg,#22C55E 0%,#16A34A 100%)" : "#E5E7EB", color: canPublish ? "#fff" : "#9CA3AF", fontWeight: 900, fontSize: 17, cursor: canPublish ? "pointer" : "not-allowed", display: "flex", alignItems: "center", justifyContent: "center", gap: 10, boxShadow: canPublish ? "0 6px 22px rgba(34,197,94,0.45)" : "none", letterSpacing: "0.8px" }}>
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-          PUBLIER
-        </button>
+      {/* ══ CARTE APERÇU ══ */}
+      <div style={{
+        margin: "14px 14px 32px",
+        background: "#F0FDF4", border: "1.5px solid #BBF7D0",
+        borderRadius: 24, padding: "18px 20px",
+        display: "flex", alignItems: "center", gap: 16,
+        animation: `bp-in 620ms cubic-bezier(0.22,1,0.36,1) both`,
+        flexShrink: 0,
+      }}>
+        <div style={{ width: 44, height: 44, borderRadius: 14, background: "#DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <Eye size={22} strokeWidth={2} color="#22C55E" />
+        </div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 700, fontSize: 14, color: "#166534", marginBottom: 3 }}>Aperçu de votre publication</div>
+          <div style={{ fontSize: 12.5, color: "#15803D", lineHeight: 1.4 }}>Voyez exactement ce que vos abonnés verront.</div>
+        </div>
+        {/* Illustration */}
+        <div style={{ width: 64, height: 48, borderRadius: 12, background: "linear-gradient(135deg,#BBF7D0,#86EFAC)", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
+          <div style={{ position: "absolute", bottom: 6, left: 8, right: 8, height: 6, background: "rgba(255,255,255,.6)", borderRadius: 3 }} />
+          <div style={{ position: "absolute", bottom: 14, left: 8, right: 16, height: 4, background: "rgba(255,255,255,.4)", borderRadius: 2 }} />
+          <div style={{ width: 22, height: 22, borderRadius: "50%", background: "rgba(255,255,255,.7)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8 }}>
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#16A34A" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          </div>
+        </div>
       </div>
 
-      {/* ══════════ MOOD OVERLAY ══════════ */}
+      {/* ══ MOOD OVERLAY ══ */}
       {showMood && (
         <BottomSheet onClose={() => setShowMood(false)} title="Humeur / Activité">
-          <div style={{ display: "flex", borderBottom: "2px solid var(--fb-divider)", marginBottom: 12 }}>
+          <div style={{ display: "flex", borderBottom: "2px solid #F1F5F9", marginBottom: 12 }}>
             {(["mood","activity"] as const).map(tab => (
-              <button key={tab} onClick={() => setMoodTab(tab)} style={{ flex: 1, padding: "10px 0", border: "none", background: "none", fontWeight: 700, fontSize: 14, cursor: "pointer", color: moodTab === tab ? "var(--bp-primary)" : "var(--fb-text-secondary)", borderBottom: moodTab === tab ? "2px solid var(--bp-primary)" : "2px solid transparent", marginBottom: -2 }}>
+              <button key={tab} onClick={() => setMoodTab(tab)} style={{ flex: 1, padding: "10px 0", border: "none", background: "none", fontWeight: 700, fontSize: 14, cursor: "pointer", color: moodTab === tab ? "#22C55E" : "#64748B", borderBottom: moodTab === tab ? "2px solid #22C55E" : "2px solid transparent", marginBottom: -2 }}>
                 {tab === "mood" ? "😊 Humeur" : "🎯 Activité"}
               </button>
             ))}
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, paddingBottom: 32 }}>
             {(moodTab === "mood" ? MOODS : ACTIVITIES).map(item => (
-              <div key={item} onClick={() => { setSelectedMood(item); setShowMood(false); }} style={{ padding: "11px 14px", background: selectedMood === item ? "#DCFCE7" : "var(--fb-bg)", borderRadius: 10, cursor: "pointer", fontSize: 13, fontWeight: 600, border: selectedMood === item ? "2px solid var(--bp-primary)" : "2px solid transparent" }}>{item}</div>
+              <div key={item} onClick={() => { setSelectedMood(item); setShowMood(false); }} style={{ padding: "11px 14px", background: selectedMood === item ? "#DCFCE7" : "#F8FAFC", borderRadius: 10, cursor: "pointer", fontSize: 13, fontWeight: 600, border: selectedMood === item ? "2px solid #22C55E" : "2px solid transparent" }}>{item}</div>
             ))}
             {selectedMood && <div onClick={() => { setSelectedMood(null); setShowMood(false); }} style={{ padding: "11px 14px", background: "#FEE2E2", borderRadius: 10, cursor: "pointer", fontSize: 13, fontWeight: 600, color: "#EF4444" }}>✕ Supprimer</div>}
           </div>
         </BottomSheet>
       )}
 
-      {/* ══════════ LOCATION OVERLAY premium ══════════ */}
+      {/* ══ LOCATION OVERLAY ══ */}
       {showLocation && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 100, display: "flex", alignItems: "flex-end" }} onClick={() => setShowLocation(false)}>
-          <div style={{ background: "#fff", borderRadius: "24px 24px 0 0", width: "100%", maxHeight: "88vh", display: "flex", flexDirection: "column", boxShadow: "0 -8px 40px rgba(0,0,0,0.18)" }} onClick={e => e.stopPropagation()}>
-            {/* Handle bar */}
+          <div style={{ background: "#fff", borderRadius: "24px 24px 0 0", width: "100%", maxHeight: "88vh", display: "flex", flexDirection: "column", boxShadow: "0 -8px 40px rgba(0,0,0,.18)" }} onClick={e => e.stopPropagation()}>
             <div style={{ display: "flex", justifyContent: "center", padding: "10px 0 0" }}>
               <div style={{ width: 40, height: 4, borderRadius: 2, background: "#E5E7EB" }} />
             </div>
-            {/* Header */}
             <div style={{ padding: "16px 20px 8px", flexShrink: 0 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
-                <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#FEE2E2", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <svg viewBox="0 0 24 24" width="20" height="20" fill="#EF4444"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg>
+                <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#FFEDD5", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <MapPin size={20} color="#F97316" />
                 </div>
                 <div>
                   <div style={{ fontWeight: 800, fontSize: 17 }}>Où êtes-vous ?</div>
@@ -523,74 +690,47 @@ export default function CreatePostPage({ onPublish }: Props) {
                 </div>
               </div>
             </div>
-            {/* Search field */}
             <div style={{ padding: "0 16px 10px", flexShrink: 0 }}>
               <div style={{ position: "relative" }}>
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="#9CA3AF" style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)" }}><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
                 <input autoFocus value={locationQuery} onChange={e => setLocationQuery(e.target.value)}
                   placeholder="Rechercher une ville ou un pays..."
-                  style={{ width: "100%", padding: "12px 40px 12px 42px", border: "1.5px solid #E5E7EB", borderRadius: 24, fontSize: 15, outline: "none", background: "#F8FAFC", boxSizing: "border-box", transition: "border-color 0.2s" }}
+                  style={{ width: "100%", padding: "12px 40px 12px 42px", border: "1.5px solid #E5E7EB", borderRadius: 24, fontSize: 15, outline: "none", background: "#F8FAFC", boxSizing: "border-box" }}
                   onFocus={e => (e.currentTarget.style.borderColor = "#22C55E")}
                   onBlur={e => (e.currentTarget.style.borderColor = "#E5E7EB")}
                 />
                 {locationQuery && (
-                  <button onClick={() => setLocationQuery("")}
-                    style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", width: 22, height: 22, borderRadius: "50%", background: "#9CA3AF", border: "none", color: "#fff", fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1 }}>✕</button>
+                  <button onClick={() => setLocationQuery("")} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", width: 22, height: 22, borderRadius: "50%", background: "#9CA3AF", border: "none", color: "#fff", fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
                 )}
               </div>
             </div>
-            {/* GPS option */}
-            <div style={{ padding: "0 16px 6px", flexShrink: 0 }}>
-              <div onClick={() => {
-                if (!navigator.geolocation) return;
-                navigator.geolocation.getCurrentPosition(pos => {
-                  const fake: Place = { city: "Ma position actuelle", country: "GPS", flag: "📡", countryCode: "GPS" };
-                  setSelectedLocation(fake); setShowLocation(false); setLocationQuery("");
-                }, () => {});
-              }} style={{ display: "flex", alignItems: "center", gap: 14, padding: "13px 14px", background: "#F0FDF4", borderRadius: 14, cursor: "pointer", border: "1.5px solid #BBF7D0" }}>
-                <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#22C55E22", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <svg viewBox="0 0 24 24" width="22" height="22" fill="#22C55E"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 700, fontSize: 15, color: "#22C55E" }}>Ma position actuelle</div>
-                  <div style={{ fontSize: 12, color: "#9CA3AF" }}>Utiliser ma position actuelle</div>
-                </div>
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="#22C55E"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-              </div>
-            </div>
-            {/* Divider */}
             <div style={{ padding: "0 16px 4px", flexShrink: 0 }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em" }}>Suggestions</div>
             </div>
-            {/* City list */}
             <div style={{ overflowY: "auto", flex: 1, paddingBottom: 20 }}>
               {locationResults.map((place, i) => {
                 const sel = selectedLocation?.city === place.city && selectedLocation?.country === place.country;
                 return (
                   <div key={i} onClick={() => { setSelectedLocation(place); setShowLocation(false); setLocationQuery(""); }}
-                    style={{ display: "flex", alignItems: "center", gap: 14, padding: "13px 20px", cursor: "pointer", background: sel ? "#F0FDF4" : "#fff", borderBottom: "1px solid #F1F5F9", transition: "background 0.12s" }}
-                    onMouseEnter={e => { if (!sel) (e.currentTarget as HTMLDivElement).style.background = "#F8FAFC"; }}
-                    onMouseLeave={e => { if (!sel) (e.currentTarget as HTMLDivElement).style.background = "#fff"; }}>
+                    style={{ display: "flex", alignItems: "center", gap: 14, padding: "13px 20px", cursor: "pointer", background: sel ? "#F0FDF4" : "#fff", borderBottom: "1px solid #F1F5F9" }}>
                     <span style={{ fontSize: 24, flexShrink: 0 }}>{place.flag}</span>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: sel ? 700 : 600, fontSize: 15, color: sel ? "#22C55E" : "#111827" }}>{place.city}</div>
                       <div style={{ fontSize: 12, color: "#9CA3AF", marginTop: 1 }}>{place.country}</div>
                     </div>
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill={sel ? "#22C55E" : "#E5E7EB"}><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg>
+                    <MapPin size={18} color={sel ? "#22C55E" : "#E5E7EB"} />
                   </div>
                 );
               })}
               {locationResults.length === 0 && (
                 <div style={{ padding: "32px", textAlign: "center", color: "#9CA3AF" }}>
-                  <svg viewBox="0 0 24 24" width="40" height="40" fill="#E5E7EB" style={{ display: "block", margin: "0 auto 8px" }}><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg>
+                  <MapPin size={40} color="#E5E7EB" style={{ display: "block", margin: "0 auto 8px" }} />
                   Aucune ville trouvée
                 </div>
               )}
               {selectedLocation && (
                 <div onClick={() => { setSelectedLocation(null); setShowLocation(false); }}
                   style={{ padding: "14px 20px", cursor: "pointer", fontSize: 15, fontWeight: 600, color: "#EF4444", display: "flex", alignItems: "center", gap: 8, borderTop: "1px solid #FEE2E2" }}>
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="#EF4444"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-                  Supprimer le lieu
+                  ✕ Supprimer le lieu
                 </div>
               )}
             </div>
@@ -598,272 +738,136 @@ export default function CreatePostPage({ onPublish }: Props) {
         </div>
       )}
 
-      {/* ══════════ MUSIC OVERLAY ══════════ */}
+      {/* ══ MUSIC OVERLAY ══ */}
       {showMusic && (
-        <div style={{ position: "fixed", inset: 0, background: "var(--fb-white)", zIndex: 100, display: "flex", flexDirection: "column" }}>
-          {/* Header */}
-          <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", borderBottom: "1px solid var(--fb-divider)", flexShrink: 0 }}>
-            <button onClick={() => setShowMusic(false)} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "var(--fb-text)", padding: "4px 10px 4px 0" }}>←</button>
+        <div style={{ position: "fixed", inset: 0, background: "#fff", zIndex: 100, display: "flex", flexDirection: "column" }}>
+          <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", borderBottom: "1px solid #F1F5F9", flexShrink: 0 }}>
+            <button onClick={() => setShowMusic(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#0F172A", padding: "4px 10px 4px 0" }}><ArrowLeft size={22} /></button>
             <div style={{ flex: 1, fontWeight: 800, fontSize: 17 }}>Musique</div>
           </div>
-          {/* Search */}
           <div style={{ padding: "10px 16px 0", flexShrink: 0 }}>
             <div style={{ position: "relative" }}>
               <input value={musicQuery} onChange={e => setMusicQuery(e.target.value)} placeholder="Recherchez de la musique"
-                style={{ width: "100%", padding: "10px 36px 10px 40px", border: "none", borderRadius: 24, fontSize: 15, outline: "none", background: "var(--fb-bg)", boxSizing: "border-box" }} />
-              <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: 16, color: "var(--fb-text-secondary)" }}>🔍</span>
-              {musicQuery && <button onClick={() => setMusicQuery("")} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", fontSize: 16, color: "var(--fb-text-secondary)" }}>✕</button>}
+                style={{ width: "100%", padding: "10px 36px 10px 40px", border: "none", borderRadius: 24, fontSize: 15, outline: "none", background: "#F8FAFC", boxSizing: "border-box" }} />
+              <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: 16, color: "#64748B" }}>🔍</span>
+              {musicQuery && <button onClick={() => setMusicQuery("")} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", fontSize: 16, color: "#64748B" }}>✕</button>}
             </div>
           </div>
-          {/* Category chips */}
           <div style={{ display: "flex", gap: 8, padding: "10px 16px", overflowX: "auto", scrollbarWidth: "none", flexShrink: 0 }}>
             {MUSIC_CATEGORIES.map(cat => (
-              <button key={cat.id} onClick={() => setMusicCat(cat.id)} style={{ flexShrink: 0, padding: "7px 16px", borderRadius: 20, border: "none", background: musicCat === cat.id ? "var(--bp-primary)" : "var(--fb-bg)", color: musicCat === cat.id ? "#fff" : "var(--fb-text)", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>{cat.label}</button>
+              <button key={cat.id} onClick={() => setMusicCat(cat.id)} style={{ flexShrink: 0, padding: "7px 16px", borderRadius: 20, border: "none", background: musicCat === cat.id ? "#22C55E" : "#F8FAFC", color: musicCat === cat.id ? "#fff" : "#0F172A", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>{cat.label}</button>
             ))}
           </div>
-          {/* Track list */}
           <div style={{ overflowY: "auto", flex: 1 }}>
-            {musicLoading && (
-              <div style={{ padding: "32px", textAlign: "center", color: "var(--fb-text-secondary)" }}>
-                <div style={{ fontSize: 24, marginBottom: 8 }}>🎵</div>
-                Chargement…
-              </div>
-            )}
-            {!musicLoading && !musicQuery.trim() && (
-              <div style={{ padding: "4px 20px 8px", fontSize: 14, fontWeight: 700 }}>
-                {MUSIC_CATEGORIES.find(c => c.id === musicCat)?.label ?? "Pour vous"}
-              </div>
-            )}
+            {musicLoading && <div style={{ padding: "32px", textAlign: "center", color: "#64748B" }}>🎵 Chargement…</div>}
+            {!musicLoading && !musicQuery.trim() && <div style={{ padding: "4px 20px 8px", fontSize: 14, fontWeight: 700 }}>{MUSIC_CATEGORIES.find(c => c.id === musicCat)?.label ?? "Pour vous"}</div>}
             {!musicLoading && musicQuery.trim() && groupedMusic.length > 0 ? (
               groupedMusic.map(([artist, tracks]) => (
                 <div key={artist}>
-                  <div style={{ padding: "8px 20px 4px", fontSize: 12, fontWeight: 700, color: "var(--fb-text-secondary)", textTransform: "uppercase", letterSpacing: 0.5, background: "var(--fb-bg)" }}>{artist}</div>
-                  {tracks.map(t => (
-                    <MusicRow key={t.id} track={t}
-                      selected={selectedTrack?.id === t.id}
-                      playing={playingId === t.id}
-                      onSelect={() => { setSelectedTrack(t); setShowMusic(false); audioRef.current?.pause(); setPlayingId(null); }}
-                      onPlayPause={() => handlePlayPause(t)}
-                    />
-                  ))}
+                  <div style={{ padding: "8px 20px 4px", fontSize: 12, fontWeight: 700, color: "#64748B", textTransform: "uppercase", letterSpacing: 0.5, background: "#F8FAFC" }}>{artist}</div>
+                  {tracks.map(t => (<MusicRow key={t.id} track={t} selected={selectedTrack?.id === t.id} playing={playingId === t.id} onSelect={() => { setSelectedTrack(t); setShowMusic(false); audioRef.current?.pause(); setPlayingId(null); }} onPlayPause={() => handlePlayPause(t)} />))}
                 </div>
               ))
             ) : !musicLoading ? (
-              musicResults.map(t => (
-                <MusicRow key={t.id} track={t}
-                  selected={selectedTrack?.id === t.id}
-                  playing={playingId === t.id}
-                  onSelect={() => { setSelectedTrack(t); setShowMusic(false); audioRef.current?.pause(); setPlayingId(null); }}
-                  onPlayPause={() => handlePlayPause(t)}
-                />
-              ))
+              musicResults.map(t => (<MusicRow key={t.id} track={t} selected={selectedTrack?.id === t.id} playing={playingId === t.id} onSelect={() => { setSelectedTrack(t); setShowMusic(false); audioRef.current?.pause(); setPlayingId(null); }} onPlayPause={() => handlePlayPause(t)} />))
             ) : null}
-            {!musicLoading && musicResults.length === 0 && (
-              <div style={{ padding: "32px", textAlign: "center", color: "var(--fb-text-secondary)" }}>Aucun titre trouvé</div>
-            )}
-            {selectedTrack && (
-              <div onClick={() => { setSelectedTrack(null); setShowMusic(false); }} style={{ padding: "16px 20px", cursor: "pointer", fontSize: 15, fontWeight: 600, color: "#EF4444" }}>✕ Supprimer la musique</div>
-            )}
+            {!musicLoading && musicResults.length === 0 && <div style={{ padding: "32px", textAlign: "center", color: "#64748B" }}>Aucun titre trouvé</div>}
+            {selectedTrack && <div onClick={() => { setSelectedTrack(null); setShowMusic(false); }} style={{ padding: "16px 20px", cursor: "pointer", fontSize: 15, fontWeight: 600, color: "#EF4444" }}>✕ Supprimer la musique</div>}
           </div>
         </div>
       )}
 
-      {/* ══════════ TAG PEOPLE OVERLAY ══════════ */}
+      {/* ══ TAG PEOPLE OVERLAY ══ */}
       {showTag && (
-        <div style={{ position: "fixed", inset: 0, background: "var(--fb-white)", zIndex: 100, display: "flex", flexDirection: "column" }}>
-          <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", borderBottom: "1px solid var(--fb-divider)", flexShrink: 0 }}>
-            <button onClick={() => setShowTag(false)} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "var(--fb-text)", padding: "4px 10px 4px 0" }}>←</button>
+        <div style={{ position: "fixed", inset: 0, background: "#fff", zIndex: 100, display: "flex", flexDirection: "column" }}>
+          <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", borderBottom: "1px solid #F1F5F9", flexShrink: 0 }}>
+            <button onClick={() => setShowTag(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#0F172A", padding: "4px 10px 4px 0" }}><ArrowLeft size={22} /></button>
             <div style={{ flex: 1, fontWeight: 800, fontSize: 17, textAlign: "center" }}>Identifier des personnes</div>
             <div style={{ width: 44 }} />
           </div>
           <div style={{ padding: "10px 16px 4px", flexShrink: 0 }}>
             <div style={{ position: "relative" }}>
               <input autoFocus value={tagQuery} onChange={e => setTagQuery(e.target.value)} placeholder="Rechercher un(e) ami(e)"
-                style={{ width: "100%", padding: "10px 36px 10px 14px", border: "none", borderRadius: 24, fontSize: 15, outline: "none", background: "var(--fb-bg)", boxSizing: "border-box" }} />
-              <span style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", fontSize: 16, color: "var(--fb-text-secondary)" }}>🔍</span>
+                style={{ width: "100%", padding: "10px 36px 10px 14px", border: "none", borderRadius: 24, fontSize: 15, outline: "none", background: "#F8FAFC", boxSizing: "border-box" }} />
+              <span style={{ position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)", fontSize: 16, color: "#64748B" }}>🔍</span>
             </div>
           </div>
           <div style={{ overflowY: "auto", flex: 1 }}>
-            <div style={{ padding: "8px 20px 4px", fontSize: 14, fontWeight: 700, color: "var(--fb-text-secondary)" }}>Suggestions</div>
+            <div style={{ padding: "8px 20px 4px", fontSize: 14, fontWeight: 700, color: "#64748B" }}>Suggestions</div>
             {filteredUsers.map(u => {
               const checked = taggedUsers.includes(u.id);
               return (
                 <div key={u.id} onClick={() => setTaggedUsers(prev => checked ? prev.filter(id => id !== u.id) : [...prev, u.id])}
-                  style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 20px", borderBottom: "1px solid var(--fb-divider)", cursor: "pointer", background: checked ? "#DCFCE7" : "var(--fb-white)" }}>
+                  style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 20px", borderBottom: "1px solid #F1F5F9", cursor: "pointer", background: checked ? "#DCFCE7" : "#fff" }}>
                   <div style={{ width: 46, height: 46, borderRadius: "50%", background: u.color, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 16, flexShrink: 0 }}>{u.initials}</div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: 700, fontSize: 15 }}>{u.name}</div>
-                    <div style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>{u.city}, {u.country}</div>
+                    <div style={{ fontSize: 12, color: "#64748B" }}>{u.city}, {u.country}</div>
                   </div>
-                  <div style={{ width: 22, height: 22, border: checked ? "none" : "2px solid var(--fb-divider)", borderRadius: 4, background: checked ? "var(--bp-primary)" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    {checked && <span style={{ color: "#fff", fontSize: 14 }}>✓</span>}
+                  <div style={{ width: 22, height: 22, border: checked ? "none" : "2px solid #E5E7EB", borderRadius: 4, background: checked ? "#22C55E" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    {checked && <Check size={14} color="#fff" />}
                   </div>
                 </div>
               );
             })}
           </div>
-          <div style={{ padding: "12px 16px", borderTop: "1px solid var(--fb-divider)", flexShrink: 0 }}>
-            <button onClick={() => setShowTag(false)} style={{ width: "100%", padding: 14, borderRadius: 10, border: "none", background: "var(--bp-primary)", color: "#fff", fontWeight: 900, fontSize: 16, cursor: "pointer" }}>
+          <div style={{ padding: "12px 16px", borderTop: "1px solid #F1F5F9", flexShrink: 0 }}>
+            <button onClick={() => setShowTag(false)} style={{ width: "100%", padding: 14, borderRadius: 10, border: "none", background: "#22C55E", color: "#fff", fontWeight: 900, fontSize: 16, cursor: "pointer" }}>
               {taggedUsers.length > 0 ? `Terminé (${taggedUsers.length})` : "Terminé"}
             </button>
           </div>
         </div>
       )}
 
-      {/* ══════════ CREATE EVENT OVERLAY ══════════ */}
+      {/* ══ CREATE EVENT OVERLAY ══ */}
       {showEvent && (
-        <div style={{ position: "fixed", inset: 0, background: "var(--fb-white)", zIndex: 100, display: "flex", flexDirection: "column", overflowY: "auto" }}>
-          <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", borderBottom: "1px solid var(--fb-divider)", flexShrink: 0, position: "sticky", top: 0, background: "var(--fb-white)", zIndex: 10 }}>
-            <button onClick={() => setShowEvent(false)} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "var(--fb-text)", padding: "4px 10px 4px 0" }}>←</button>
+        <div style={{ position: "fixed", inset: 0, background: "#fff", zIndex: 100, display: "flex", flexDirection: "column", overflowY: "auto" }}>
+          <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", borderBottom: "1px solid #F1F5F9", flexShrink: 0, position: "sticky", top: 0, background: "#fff", zIndex: 10 }}>
+            <button onClick={() => setShowEvent(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#0F172A", padding: "4px 10px 4px 0" }}><ArrowLeft size={22} /></button>
             <div style={{ flex: 1, fontWeight: 800, fontSize: 17, textAlign: "center" }}>Créer un évènement</div>
             <div style={{ width: 44 }} />
           </div>
-
-          {/* Cover photo */}
           <div onClick={() => coverInputRef.current?.click()} style={{ margin: "0", background: eventCoverPreview ? "transparent" : "#E5E7EB", minHeight: 160, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, position: "relative", overflow: "hidden" }}>
             {eventCoverPreview ? (
               <img src={eventCoverPreview} alt="" style={{ width: "100%", height: 160, objectFit: "cover", opacity: eventCoverMedia ? 1 : 0.6 }} />
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, padding: 24 }}>
-                <div style={{ width: 40, height: 40, borderRadius: 8, background: "rgba(0,0,0,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 }}>⊞</div>
-                <span style={{ fontWeight: 600, fontSize: 15, color: "#444" }}>Ajouter une photo de couverture</span>
+              <div style={{ textAlign: "center", color: "#9CA3AF" }}>
+                <ImagePlus size={32} color="#9CA3AF" />
+                <div style={{ marginTop: 8, fontWeight: 600 }}>Ajouter une couverture</div>
               </div>
             )}
           </div>
-
-          <div style={{ padding: "20px 16px", display: "flex", flexDirection: "column", gap: 18 }}>
-            {/* Event name */}
-            <div>
-              <label style={{ fontSize: 13, fontWeight: 600, color: "var(--fb-text-secondary)", display: "block", marginBottom: 6 }}>Nom de l'évènement</label>
-              <input value={eventName} onChange={e => setEventName(e.target.value)} placeholder="" style={{ width: "100%", padding: "12px 14px", border: "1px solid var(--fb-divider)", borderRadius: 8, fontSize: 16, outline: "none", boxSizing: "border-box" }} />
-            </div>
-
-            {/* Date + time */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              <div>
-                <label style={{ fontSize: 13, fontWeight: 600, color: "var(--fb-text-secondary)", display: "block", marginBottom: 6 }}>Date de début</label>
-                <input type="date" value={eventDate} onChange={e => setEventDate(e.target.value)} style={{ width: "100%", padding: "12px 10px", border: "1px solid var(--fb-divider)", borderRadius: 8, fontSize: 14, outline: "none", boxSizing: "border-box" }} />
+          <div style={{ padding: "0 16px 24px" }}>
+            {[
+              { label: "Nom de l'évènement", value: eventName, set: setEventName, placeholder: "Ex: Soirée anniversaire" },
+              { label: "Date", value: eventDate, set: setEventDate, type: "date", placeholder: "" },
+              { label: "Heure de début", value: eventTime, set: setEventTime, type: "time", placeholder: "" },
+              ...(showEndTime ? [{ label: "Heure de fin", value: eventEndTime, set: setEventEndTime, type: "time", placeholder: "" }] : []),
+              { label: "Lieu", value: eventLocation, set: setEventLocation, placeholder: "Ex: Cotonou, Bénin" },
+              { label: "Description", value: eventDesc, set: setEventDesc, placeholder: "Décrivez votre évènement" },
+            ].map((f, i) => (
+              <div key={i} style={{ marginTop: 14 }}>
+                <label style={{ fontSize: 12, fontWeight: 700, color: "#64748B", display: "block", marginBottom: 4 }}>{f.label}</label>
+                <input value={f.value} onChange={e => f.set(e.target.value)} type={(f as any).type ?? "text"} placeholder={f.placeholder}
+                  style={{ width: "100%", padding: "12px 14px", border: "1.5px solid #E5E7EB", borderRadius: 14, fontSize: 15, outline: "none", background: "#F8FAFC", boxSizing: "border-box", fontFamily: "inherit" }}
+                  onFocus={e => (e.currentTarget.style.borderColor = "#22C55E")}
+                  onBlur={e => (e.currentTarget.style.borderColor = "#E5E7EB")} />
               </div>
-              <div>
-                <label style={{ fontSize: 13, fontWeight: 600, color: "var(--fb-text-secondary)", display: "block", marginBottom: 6 }}>Heure de début</label>
-                <input type="time" value={eventTime} onChange={e => setEventTime(e.target.value)} style={{ width: "100%", padding: "12px 10px", border: "1px solid var(--fb-divider)", borderRadius: 8, fontSize: 14, outline: "none", boxSizing: "border-box" }} />
-              </div>
-            </div>
-
-            {/* End time toggle */}
-            {!showEndTime ? (
-              <button onClick={() => setShowEndTime(true)} style={{ background: "none", border: "none", color: "var(--bp-primary)", fontWeight: 700, fontSize: 14, cursor: "pointer", textAlign: "left", padding: 0 }}>+ Heure de fin</button>
-            ) : (
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                <div>
-                  <label style={{ fontSize: 13, fontWeight: 600, color: "var(--fb-text-secondary)", display: "block", marginBottom: 6 }}>Date de fin</label>
-                  <input type="date" value={eventDate} style={{ width: "100%", padding: "12px 10px", border: "1px solid var(--fb-divider)", borderRadius: 8, fontSize: 14, outline: "none", boxSizing: "border-box" }} />
-                </div>
-                <div>
-                  <label style={{ fontSize: 13, fontWeight: 600, color: "var(--fb-text-secondary)", display: "block", marginBottom: 6 }}>Heure de fin</label>
-                  <input type="time" value={eventEndTime} onChange={e => setEventEndTime(e.target.value)} style={{ width: "100%", padding: "12px 10px", border: "1px solid var(--fb-divider)", borderRadius: 8, fontSize: 14, outline: "none", boxSizing: "border-box" }} />
-                </div>
-              </div>
+            ))}
+            {!showEndTime && (
+              <button onClick={() => setShowEndTime(true)} style={{ marginTop: 10, background: "none", border: "none", color: "#22C55E", fontSize: 14, fontWeight: 600, cursor: "pointer", padding: "4px 0" }}>+ Ajouter une heure de fin</button>
             )}
-
-            {/* Online toggle */}
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
-              <div>
-                <div style={{ fontWeight: 700, fontSize: 15 }}>Évènement en ligne</div>
-                <div style={{ fontSize: 13, color: "var(--fb-text-secondary)", marginTop: 2 }}>Créez des évènements qui se déroulent en ligne, sans adresse physique.</div>
+            <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 12 }}>
+              <div onClick={() => setEventOnline(v => !v)} style={{ width: 42, height: 24, borderRadius: 12, background: eventOnline ? "#22C55E" : "#E5E7EB", cursor: "pointer", position: "relative", transition: "background 0.2s", flexShrink: 0 }}>
+                <div style={{ position: "absolute", top: 2, left: eventOnline ? 20 : 2, width: 20, height: 20, borderRadius: "50%", background: "#fff", boxShadow: "0 1px 4px rgba(0,0,0,.2)", transition: "left 0.2s" }} />
               </div>
-              <div onClick={() => setEventOnline(v => !v)} style={{ width: 22, height: 22, border: eventOnline ? "none" : "2px solid var(--fb-divider)", borderRadius: 4, background: eventOnline ? "var(--bp-primary)" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, marginTop: 2 }}>
-                {eventOnline && <span style={{ color: "#fff", fontSize: 14 }}>✓</span>}
-              </div>
+              <span style={{ fontSize: 14, fontWeight: 600, color: "#0F172A" }}>Évènement en ligne</span>
             </div>
-
-            {/* Location */}
-            {!eventOnline && (
-              <div>
-                <label style={{ fontSize: 13, fontWeight: 600, color: "var(--fb-text-secondary)", display: "block", marginBottom: 6 }}>Lieu</label>
-                <div style={{ display: "flex", alignItems: "center", padding: "12px 14px", border: "1px solid var(--fb-divider)", borderRadius: 8, cursor: "pointer", justifyContent: "space-between" }}
-                  onClick={() => { setShowEvent(false); setShowLocation(true); }}>
-                  <span style={{ color: eventLocation ? "var(--fb-text)" : "var(--fb-text-secondary)", fontSize: 15 }}>{selectedLocation ? `📍 ${selectedLocation.city}, ${selectedLocation.country}` : "Ajouter un lieu"}</span>
-                  <span style={{ color: "var(--fb-text-secondary)" }}>›</span>
-                </div>
-              </div>
-            )}
-
-            {/* Description */}
-            <div>
-              <label style={{ fontSize: 13, fontWeight: 600, color: "var(--fb-text-secondary)", display: "block", marginBottom: 6 }}>Description</label>
-              <textarea value={eventDesc} onChange={e => setEventDesc(e.target.value)} rows={4}
-                style={{ width: "100%", padding: "12px 14px", border: "1px solid var(--fb-divider)", borderRadius: 8, fontSize: 15, outline: "none", resize: "none", fontFamily: "inherit", boxSizing: "border-box" }} />
-            </div>
-
-            {/* Save draft */}
-            <button onClick={() => {
-              if (!eventName.trim()) return;
-              const eventText = `📅 ${eventName}\n🗓️ ${eventDate} à ${eventTime}${showEndTime ? ` → ${eventEndTime}` : ""}${eventOnline ? "\n🌐 Évènement en ligne" : ""}${selectedLocation ? `\n📍 ${selectedLocation.city}` : ""}${eventDesc ? `\n${eventDesc}` : ""}`;
-              setContent(c => c ? c + "\n" + eventText : eventText);
-              setShowEvent(false);
-            }} style={{ width: "100%", padding: 14, borderRadius: 10, border: "none", background: "var(--bp-primary)", color: "#fff", fontWeight: 900, fontSize: 16, cursor: "pointer", marginBottom: 8 }}>
-              Enregistrer le brouillon de l'évènement
+            <button onClick={() => { setShowEvent(false); }} style={{ marginTop: 20, width: "100%", padding: 14, borderRadius: 14, border: "none", background: "linear-gradient(135deg,#22C55E,#16A34A)", color: "#fff", fontWeight: 900, fontSize: 16, cursor: "pointer" }}>
+              Créer l'évènement
             </button>
-            <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", textAlign: "center", marginBottom: 20 }}>
-              Cet évènement sera publié quand vous le partagerez avec le groupe.
-            </div>
           </div>
         </div>
-      )}
-    </div>
-  );
-}
-
-// ── Reusable bottom sheet wrapper
-function BottomSheet({ children, onClose, title }: { children: React.ReactNode; onClose: () => void; title: string }) {
-  return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 100, display: "flex", alignItems: "flex-end" }} onClick={onClose}>
-      <div style={{ background: "var(--fb-white)", borderRadius: "20px 20px 0 0", width: "100%", maxHeight: "82vh", display: "flex", flexDirection: "column" }} onClick={e => e.stopPropagation()}>
-        <div style={{ padding: "16px 16px 8px", fontWeight: 700, fontSize: 17, flexShrink: 0 }}>{title}</div>
-        <div style={{ overflowY: "auto", padding: "0 16px", flex: 1 }}>{children}</div>
-      </div>
-    </div>
-  );
-}
-
-// ── Music track row with real iTunes artwork + audio preview
-function MusicRow({ track, selected, playing, onSelect, onPlayPause }: {
-  track: Track;
-  selected: boolean;
-  playing: boolean;
-  onSelect: () => void;
-  onPlayPause: () => void;
-}) {
-  const color = GENRE_COLORS[track.genre] ?? "#22C55E";
-  return (
-    <div onClick={onSelect} style={{ display: "flex", alignItems: "center", gap: 14, padding: "10px 20px", background: selected ? "#DCFCE7" : "var(--fb-white)", borderBottom: "1px solid var(--fb-divider)", cursor: "pointer" }}>
-      {/* Album art — iTunes image or gradient placeholder */}
-      <div style={{ width: 46, height: 46, borderRadius: 6, overflow: "hidden", flexShrink: 0, position: "relative" }}>
-        {track.artworkUrl ? (
-          <img src={track.artworkUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-        ) : (
-          <div style={{ width: "100%", height: "100%", background: `linear-gradient(135deg,${color},${color}99)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, color: "#fff", fontWeight: 700 }}>
-            {track.artist.slice(0, 1)}
-          </div>
-        )}
-      </div>
-      {/* Title + artist */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontWeight: 600, fontSize: 14, color: selected ? "var(--bp-primary)" : "var(--fb-text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{track.title}</div>
-        <div style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>{track.artist} · {track.duration}</div>
-      </div>
-      {/* Play/Pause button — stops propagation so it doesn't select */}
-      {track.previewUrl ? (
-        <button
-          onClick={e => { e.stopPropagation(); onPlayPause(); }}
-          style={{ width: 36, height: 36, borderRadius: "50%", border: "none", background: playing ? "var(--bp-primary)" : selected ? "#DCFCE7" : "var(--fb-bg)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, cursor: "pointer", fontSize: playing ? 13 : 12, color: playing ? "#fff" : selected ? "var(--bp-primary)" : "var(--fb-text-secondary)", transition: "background 0.15s" }}
-          aria-label={playing ? "Pause" : "Écouter un aperçu"}
-        >
-          {playing ? "⏸" : "▶"}
-        </button>
-      ) : (
-        <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--fb-bg)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, opacity: 0.3, fontSize: 11, color: "var(--fb-text-secondary)" }}>▶</div>
       )}
     </div>
   );
