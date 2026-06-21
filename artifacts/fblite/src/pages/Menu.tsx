@@ -1097,17 +1097,11 @@ export default function Menu() {
 
         {/* ── CARTE PROFIL IMMERSIVE ── */}
         <div style={{ borderRadius: 28, overflow: "hidden", boxShadow: "0 12px 40px rgba(0,0,0,0.12)" }}>
-          {/* Cover photo — forêt sombre */}
-          <div style={{ background: "linear-gradient(160deg,#0A3318 0%,#14522A 20%,#1B6B38 40%,#0F4523 65%,#092C16 100%)", position: "relative", padding: "20px 18px 0" }}>
+          {/* Cover photo — paysage réel */}
+          <div style={{ backgroundImage:"url('/profile-bg.png')", backgroundSize:"cover", backgroundPosition:"center 40%", position: "relative", padding: "20px 18px 0" }}>
             <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
-              <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse 120% 80% at 60% 20%,rgba(34,197,94,0.08) 0%,transparent 70%)" }}/>
-              {([20,38,55,72,88,108,128] as number[]).map((top,i)=>(
-                <div key={i} style={{ position:"absolute",left:0,right:0,top,height:1,background:`rgba(34,197,94,${0.06+i*0.015})` }}/>
-              ))}
-              {([{left:"8%",h:70,w:3,top:20},{left:"14%",h:55,w:2.5,top:35},{left:"80%",h:65,w:3,top:25},{left:"87%",h:80,w:2.5,top:15},{left:"93%",h:50,w:2,top:40}] as {left:string;h:number;w:number;top:number}[]).map((t,i)=>(
-                <div key={i} style={{ position:"absolute",left:t.left,top:t.top,width:t.w,height:t.h,background:"rgba(34,197,94,0.35)",borderRadius:2 }}/>
-              ))}
-              <div style={{ position:"absolute",bottom:0,left:0,right:0,height:60,background:"linear-gradient(transparent,rgba(0,0,0,0.55))" }}/>
+              <div style={{ position:"absolute",inset:0,background:"linear-gradient(160deg,rgba(5,20,10,0.72) 0%,rgba(10,40,18,0.58) 50%,rgba(5,18,10,0.70) 100%)" }}/>
+              <div style={{ position:"absolute",bottom:0,left:0,right:0,height:70,background:"linear-gradient(transparent,rgba(0,0,0,0.60))" }}/>
             </div>
             {/* Avatar + nom + CTA */}
             <div style={{ position:"relative",zIndex:2,display:"flex",alignItems:"center",gap:14 }}>
