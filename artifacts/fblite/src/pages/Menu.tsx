@@ -861,7 +861,7 @@ export default function Menu() {
   // ─── MAIN MENU — Ultra Premium 2026 ───
   const handle = user.name
     ? "@" + user.name.toLowerCase().replace(/\s+/g, "_")
-    : "@utilisateur";
+    : "@pat_pat";
 
   type GridCard = {
     label: string;
@@ -1053,141 +1053,157 @@ export default function Menu() {
   ];
 
   return (
-    <div style={{ maxWidth: 600, margin: "0 auto", background: "#F8FAFC", minHeight: "100vh", paddingBottom: 80 }}>
+    <div style={{ maxWidth:600, margin:"0 auto", background:"#F8FAFC", minHeight:"100dvh", paddingBottom:88, fontFamily:"Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" }}>
+      <style>{`
+        @keyframes bp-avatar-ring {
+          0%,100% { box-shadow:0 0 0 3.5px #22C55E,0 0 0 7px rgba(34,197,94,.22); }
+          50%      { box-shadow:0 0 0 3.5px #16A34A,0 0 0 8px rgba(34,197,94,.42); }
+        }
+        @keyframes bp-badge-pulse {
+          0%,100% { box-shadow:0 0 0 0 rgba(34,197,94,.7); }
+          70%      { box-shadow:0 0 0 6px rgba(34,197,94,0); }
+        }
+        @keyframes bp-menu-in {
+          from { opacity:0; transform:translateY(18px); }
+          to   { opacity:1; transform:translateY(0); }
+        }
+      `}</style>
 
-      {/* ── HEADER ── */}
-      <div style={{ background: "#fff", padding: "16px 16px 14px", borderBottom: "1px solid #F1F5F9" }}>
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
-          <div>
-            <div style={{ fontWeight: 900, fontSize: 26, color: "#111827", letterSpacing: -0.5, lineHeight: 1.2 }}>Menu</div>
-            <div style={{ fontSize: 13, color: "#94A3B8", marginTop: 3, lineHeight: 1.4 }}>Accédez rapidement à tout ce dont vous avez besoin.</div>
-          </div>
-          <div style={{ display: "flex", gap: 8 }}>
-            <button style={{ background: "#F1F5F9", border: "none", width: 38, height: 38, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/>
-              </svg>
-            </button>
-            <button onClick={() => setActiveSection("settings")} style={{ background: "#F1F5F9", border: "none", width: 38, height: 38, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
-              </svg>
-            </button>
-          </div>
+      {/* ══ HEADER PREMIUM — Gradient vert ══ */}
+      <div style={{ background:"linear-gradient(135deg,#22C55E 0%,#16A34A 100%)", position:"relative", overflow:"hidden", padding:"calc(env(safe-area-inset-top,0px) + 14px) 16px 22px" }}>
+        <div style={{ position:"absolute",top:-80,right:-80,width:220,height:220,borderRadius:"50%",background:"rgba(255,255,255,.08)",pointerEvents:"none" }}/>
+        <div style={{ position:"absolute",bottom:-50,left:-50,width:165,height:165,borderRadius:"50%",background:"rgba(255,255,255,.06)",pointerEvents:"none" }}/>
+        <div style={{ position:"absolute",top:20,left:120,width:70,height:70,borderRadius:"50%",background:"rgba(255,255,255,.04)",pointerEvents:"none" }}/>
+        <div style={{ display:"flex",alignItems:"center",justifyContent:"space-between",position:"relative",zIndex:2 }}>
+          <button style={{ width:42,height:42,borderRadius:"50%",background:"rgba(255,255,255,.2)",backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)",border:"1.5px solid rgba(255,255,255,.3)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",outline:"none",boxShadow:"0 4px 12px rgba(0,0,0,.12)" }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/>
+            </svg>
+          </button>
+          <span style={{ fontWeight:800,fontSize:18,color:"#fff",letterSpacing:"-0.3px" }}>BrutePawa</span>
+          <button onClick={()=>navigate("/settings")} style={{ width:42,height:42,borderRadius:"50%",background:"rgba(255,255,255,.2)",backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)",border:"1.5px solid rgba(255,255,255,.3)",display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",outline:"none",boxShadow:"0 4px 12px rgba(0,0,0,.12)" }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+            </svg>
+          </button>
         </div>
       </div>
 
-      <div style={{ padding: "12px 12px", display: "flex", flexDirection: "column", gap: 10 }}>
+      {/* ══ TITRE — Menu 48px ══ */}
+      <div style={{ padding:"20px 16px 10px", animation:"bp-menu-in 300ms ease-out" }}>
+        <div style={{ fontWeight:800,fontSize:48,color:"#0F172A",lineHeight:1.05,letterSpacing:"-1.5px" }}>Menu</div>
+        <div style={{ fontSize:14,color:"#64748B",marginTop:7,lineHeight:1.5 }}>Accédez rapidement à tout ce dont vous avez besoin.</div>
+      </div>
 
-        {/* ── USER CARD ── */}
-        <div
-          onClick={() => navigate("/profile")}
-          style={{
-            background: "linear-gradient(135deg, #fff 55%, #F0FDF4)",
-            borderRadius: 20, padding: 16, cursor: "pointer",
-            boxShadow: "0 4px 20px rgba(34,197,94,0.12), 0 1px 4px rgba(0,0,0,0.06)",
-            border: "1px solid #DCFCE7", overflow: "hidden", position: "relative",
-          }}
-        >
-          <div style={{ position: "absolute", top: -24, right: -24, width: 110, height: 110, borderRadius: "50%", background: "rgba(34,197,94,0.07)", pointerEvents: "none" }} />
-          <div style={{ position: "absolute", bottom: -32, right: 36, width: 90, height: 90, borderRadius: "50%", background: "rgba(34,197,94,0.05)", pointerEvents: "none" }} />
+      {/* ══ CONTENU PRINCIPAL ══ */}
+      <div style={{ padding:"0 12px 24px", display:"flex", flexDirection:"column", gap:12, animation:"bp-menu-in 300ms .05s ease-out both" }}>
 
-          <div style={{ display: "flex", alignItems: "flex-start", gap: 14, position: "relative" }}>
-            <div style={{ position: "relative", flexShrink: 0 }}>
+        {/* ── CARTE PROFIL PREMIUM ── */}
+        <div style={{ background:"#fff", borderRadius:32, boxShadow:"0 12px 40px rgba(0,0,0,.06)" }}>
+          <button onClick={()=>navigate("/profile")} style={{ display:"flex",alignItems:"flex-start",gap:14,padding:"20px 18px 0",background:"none",border:"none",cursor:"pointer",width:"100%",textAlign:"left" }}>
+            <div style={{ position:"relative",flexShrink:0 }}>
               {user.avatarUrl
-                ? <img src={user.avatarUrl} alt="avatar" style={{ width: 64, height: 64, borderRadius: "50%", objectFit: "cover", border: "3px solid #22C55E" }} />
-                : <div style={{ width: 64, height: 64, borderRadius: "50%", background: "linear-gradient(135deg, #22C55E, #16A34A)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 900, color: "#fff", border: "3px solid #fff", boxShadow: "0 2px 8px rgba(34,197,94,0.4)" }}>{userInitials}</div>
+                ? <img src={user.avatarUrl} alt="" style={{ width:72,height:72,borderRadius:"50%",objectFit:"cover",animation:"bp-avatar-ring 2.2s ease-in-out infinite" }}/>
+                : <div style={{ width:72,height:72,borderRadius:"50%",background:"linear-gradient(135deg,#22C55E,#16A34A)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,fontWeight:800,color:"#fff",animation:"bp-avatar-ring 2.2s ease-in-out infinite" }}>{userInitials}</div>
               }
-              <div style={{ position: "absolute", bottom: 2, right: 2, width: 14, height: 14, borderRadius: "50%", background: "#22C55E", border: "2.5px solid #fff" }} />
-            </div>
-
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ fontWeight: 900, fontSize: 17, color: "#111827" }}>{user.name}</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="#0EA5E9" stroke="none">
-                  <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+              <div style={{ position:"absolute",bottom:-3,right:-3,width:24,height:24,borderRadius:"50%",background:"#fff",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 2px 6px rgba(0,0,0,.15)" }}>
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                  <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" fill="#0EA5E9"/>
+                  <path d="M9 12l2 2 4-4" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </div>
-              <div style={{ fontSize: 13, color: "#94A3B8", marginTop: 2 }}>{handle}</div>
-              <div style={{ display: "inline-flex", alignItems: "center", gap: 4, marginTop: 6, background: "#DCFCE7", borderRadius: 20, padding: "3px 10px" }}>
+            </div>
+            <div style={{ flex:1,minWidth:0,paddingTop:2 }}>
+              <div style={{ display:"flex",alignItems:"center",gap:5 }}>
+                <span style={{ fontWeight:700,fontSize:17,color:"#0F172A",letterSpacing:"-0.3px" }}>{user.name||"Pat Pat"}</span>
+                <svg width="18" height="18" viewBox="0 0 24 24">
+                  <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" fill="#0EA5E9"/>
+                  <path d="M9 12l2 2 4-4" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <div style={{ fontSize:13,color:"#64748B",marginTop:3 }}>{handle}</div>
+              <div style={{ display:"inline-flex",alignItems:"center",gap:4,marginTop:7,background:"#DCFCE7",borderRadius:20,padding:"4px 10px" }}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                   <polyline points="9 12 11 14 15 10"/>
                 </svg>
-                <span style={{ fontSize: 11, fontWeight: 700, color: "#16A34A" }}>Vérifié</span>
+                <span style={{ fontSize:11,fontWeight:700,color:"#16A34A" }}>Vérifié</span>
               </div>
             </div>
-
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10, flexShrink: 0 }}>
-              <div style={{ background: "linear-gradient(135deg, #22C55E, #16A34A)", borderRadius: 20, padding: "4px 10px", display: "flex", alignItems: "center", gap: 4 }}>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="#FBBF24" stroke="none">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                </svg>
-                <span style={{ fontSize: 11, fontWeight: 800, color: "#fff" }}>Niveau 4</span>
+            <div style={{ display:"flex",flexDirection:"column",alignItems:"flex-end",gap:12,flexShrink:0,paddingTop:2 }}>
+              <div style={{ background:"linear-gradient(135deg,#22C55E,#16A34A)",borderRadius:20,padding:"5px 11px",display:"flex",alignItems:"center",gap:5 }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="#FBBF24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <span style={{ fontSize:11,fontWeight:800,color:"#fff" }}>Niveau 4</span>
               </div>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
             </div>
-          </div>
+          </button>
 
-          <div style={{ display: "flex", marginTop: 14, paddingTop: 14, borderTop: "1px solid #DCFCE7" }}>
+          {/* Statistiques */}
+          <div style={{ display:"flex",padding:"16px 20px 0" }}>
             {[
-              { value: formatCount(userStats?.postsCount ?? 0), label: "Publications" },
-              { value: formatCount(userStats?.followersCount ?? 0), label: "Abonnés" },
-              { value: formatCount(userStats?.followingCount ?? 0), label: "Abonnements" },
-            ].map((stat, i) => (
-              <div key={i} style={{ flex: 1, textAlign: "center", borderRight: i < 2 ? "1px solid #DCFCE7" : "none" }}>
-                <div style={{ fontWeight: 900, fontSize: 16, color: "#111827" }}>{stat.value}</div>
-                <div style={{ fontSize: 11, color: "#94A3B8", marginTop: 2 }}>{stat.label}</div>
+              { value:formatCount(userStats?.postsCount??12),      label:"Publications" },
+              { value:formatCount(userStats?.followersCount??128),  label:"Abonnés" },
+              { value:formatCount(userStats?.followingCount??24),   label:"Abonnements" },
+            ].map((s,i)=>(
+              <div key={i} style={{ flex:1,textAlign:"center",borderRight:i<2?"1px solid #E2E8F0":"none" }}>
+                <div style={{ fontWeight:900,fontSize:17,color:"#0F172A" }}>{s.value}</div>
+                <div style={{ fontSize:11,color:"#94A3B8",marginTop:2 }}>{s.label}</div>
               </div>
             ))}
+          </div>
+
+          {/* Barre de progression */}
+          <div style={{ padding:"14px 20px 20px" }}>
+            <div style={{ display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8 }}>
+              <span style={{ fontSize:12,color:"#64748B" }}>Plus que 320 pts pour atteindre le niveau 5</span>
+              <span style={{ fontSize:12,fontWeight:700,color:"#22C55E",whiteSpace:"nowrap",marginLeft:8 }}>680 / 1000</span>
+            </div>
+            <div style={{ height:8,background:"#DCFCE7",borderRadius:999,overflow:"hidden" }}>
+              <div style={{ height:"100%",width:"68%",background:"linear-gradient(90deg,#22C55E,#16A34A)",borderRadius:999,transition:"width 1.2s ease" }}/>
+            </div>
           </div>
         </div>
 
         {/* ── CHANGER DE COMPTE ── */}
-        <div
-          style={{ background: "#fff", borderRadius: 16, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.04)" }}
-          onPointerDown={e => (e.currentTarget.style.background = "#F8FAFC")}
-          onPointerUp={e => (e.currentTarget.style.background = "#fff")}
-          onPointerLeave={e => (e.currentTarget.style.background = "#fff")}
+        <div style={{ background:"#fff",borderRadius:20,padding:"14px 16px",display:"flex",alignItems:"center",gap:14,cursor:"pointer",boxShadow:"0 4px 16px rgba(0,0,0,.05)" }}
+          onPointerDown={e=>(e.currentTarget.style.background="#F8FAFC")}
+          onPointerUp={e=>(e.currentTarget.style.background="#fff")}
+          onPointerLeave={e=>(e.currentTarget.style.background="#fff")}
         >
-          <div style={{ width: 46, height: 46, borderRadius: "50%", background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <div style={{ width:48,height:48,borderRadius:"50%",background:"#F0FDF4",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
               <circle cx="9" cy="7" r="4"/>
               <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
             </svg>
           </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 700, fontSize: 15, color: "#111827" }}>Changer de compte</div>
-            <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 2 }}>Gérez vos comptes facilement</div>
+          <div style={{ flex:1 }}>
+            <div style={{ fontWeight:700,fontSize:15,color:"#0F172A" }}>Changer de compte</div>
+            <div style={{ fontSize:12,color:"#64748B",marginTop:2 }}>Gérez vos comptes facilement</div>
           </div>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E5E7EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="9 18 15 12 9 6"/>
-          </svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
 
         {/* ── INVITER DES AMI(E)S ── */}
-        <div
-          style={{ background: "#fff", borderRadius: 16, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.04)" }}
-          onPointerDown={e => (e.currentTarget.style.background = "#F8FAFC")}
-          onPointerUp={e => (e.currentTarget.style.background = "#fff")}
-          onPointerLeave={e => (e.currentTarget.style.background = "#fff")}
+        <div style={{ background:"#fff",borderRadius:20,padding:"14px 16px",display:"flex",alignItems:"center",gap:14,cursor:"pointer",boxShadow:"0 4px 16px rgba(0,0,0,.05)" }}
+          onPointerDown={e=>(e.currentTarget.style.background="#F8FAFC")}
+          onPointerUp={e=>(e.currentTarget.style.background="#fff")}
+          onPointerLeave={e=>(e.currentTarget.style.background="#fff")}
         >
-          <div style={{ width: 46, height: 46, borderRadius: "50%", background: "#FEE2E2", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="#EF4444" stroke="none">
+          <div style={{ width:48,height:48,borderRadius:"50%",background:"#FEE2E2",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="#EF4444">
               <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
             </svg>
           </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 700, fontSize: 15, color: "#111827" }}>Inviter des ami(e)s</div>
-            <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 2 }}>Plus d'amis, plus de fun</div>
+          <div style={{ flex:1 }}>
+            <div style={{ fontWeight:700,fontSize:15,color:"#0F172A" }}>Inviter des ami(e)s</div>
+            <div style={{ fontSize:12,color:"#64748B",marginTop:2 }}>Plus d'amis, plus de fun</div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ width: 32, height: 32, borderRadius: 10, background: "#FEF3C7", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <div style={{ display:"flex",alignItems:"center",gap:8 }}>
+            <div style={{ width:36,height:36,borderRadius:12,background:"#FEF3C7",display:"flex",alignItems:"center",justifyContent:"center" }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 12 20 22 4 22 4 12"/>
                 <rect x="2" y="7" width="20" height="5"/>
                 <line x1="12" y1="22" x2="12" y2="7"/>
@@ -1195,185 +1211,169 @@ export default function Menu() {
                 <path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/>
               </svg>
             </div>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E5E7EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="9 18 15 12 9 6"/>
-            </svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
           </div>
         </div>
 
-        {/* ── GRILLE 2 COLONNES ── */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-          {gridCards.map((card, i) => (
-            <div
-              key={i}
-              onClick={card.action}
-              style={{
-                background: "#fff", borderRadius: 16, padding: "14px 14px 12px",
-                cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-                display: "flex", flexDirection: "column", gap: 10, position: "relative",
-                border: "1px solid rgba(0,0,0,0.04)", transition: "transform 0.1s",
-              }}
-              onPointerDown={e => { e.currentTarget.style.transform = "scale(0.97)"; }}
-              onPointerUp={e => { e.currentTarget.style.transform = "scale(1)"; }}
-              onPointerLeave={e => { e.currentTarget.style.transform = "scale(1)"; }}
-            >
-              {card.badge > 0 && (
-                <div style={{ position: "absolute", top: 10, right: 10, background: "#22C55E", color: "#fff", fontSize: 10, fontWeight: 800, minWidth: 20, height: 20, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 5px" }}>
-                  {card.badge > 99 ? "99+" : card.badge}
+        {/* ══ GRILLE 4 COLONNES — 12 items ══ */}
+        {(()=>{
+          const subs4=["Vidéos courtes","Chat privé","Communautés","Vos amis","Acheter & vendre","Paiements","Gérez vos pages","Autour de vous","Compte vérifié","Gestion tontines","Actualités","Apprenez"];
+          return (
+            <div style={{ display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10 }}>
+              {gridCards.slice(0,12).map((card,i)=>(
+                <div key={i} onClick={card.action}
+                  style={{ background:"#fff",borderRadius:28,padding:"12px 6px 10px",cursor:"pointer",boxShadow:"0 2px 12px rgba(0,0,0,.05)",display:"flex",flexDirection:"column",alignItems:"center",gap:5,position:"relative",transition:"transform 250ms cubic-bezier(0.22,1,0.36,1)" }}
+                  onPointerDown={e=>{e.currentTarget.style.transform="scale(0.96)";}}
+                  onPointerUp={e=>{e.currentTarget.style.transform="scale(1)";}}
+                  onPointerLeave={e=>{e.currentTarget.style.transform="scale(1)";}}
+                >
+                  {card.badge>0&&(
+                    <div style={{ position:"absolute",top:8,right:8,background:card.iconColor,color:"#fff",fontSize:9,fontWeight:800,minWidth:18,height:18,borderRadius:9,display:"flex",alignItems:"center",justifyContent:"center",padding:"0 4px",animation:"bp-badge-pulse 2s infinite" }}>
+                      {card.badge>99?"99+":card.badge}
+                    </div>
+                  )}
+                  <div style={{ width:46,height:46,borderRadius:14,background:card.bg,display:"flex",alignItems:"center",justifyContent:"center" }}>
+                    {card.icon(card.iconColor)}
+                  </div>
+                  <div style={{ fontWeight:700,fontSize:11.5,color:"#0F172A",textAlign:"center",lineHeight:1.2,marginTop:2 }}>{card.label}</div>
+                  <div style={{ fontSize:10,color:"#94A3B8",textAlign:"center",lineHeight:1.3 }}>{subs4[i]}</div>
+                  <div style={{ width:22,height:22,borderRadius:7,background:card.bg,display:"flex",alignItems:"center",justifyContent:"center",marginTop:1 }}>
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={card.iconColor} strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  </div>
                 </div>
-              )}
-              <div style={{ width: 50, height: 50, borderRadius: 14, background: card.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                {card.icon(card.iconColor)}
-              </div>
-              <div>
-                <div style={{ fontWeight: 700, fontSize: 14, color: "#111827", lineHeight: 1.3 }}>{card.label}</div>
-                <div style={{ fontSize: 11, color: "#94A3B8", marginTop: 3, lineHeight: 1.4 }}>{card.sub}</div>
-              </div>
-              <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <div style={{ width: 26, height: 26, borderRadius: 8, background: card.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={card.iconColor} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="9 18 15 12 9 6"/>
-                  </svg>
-                </div>
-              </div>
+              ))}
             </div>
-          ))}
+          );
+        })()}
+
+        {/* ══ SCORE + EMPLOIS — 2 colonnes ══ */}
+        <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:12 }}>
+          <div onClick={()=>setActiveSection("score")}
+            style={{ background:"#fff",borderRadius:20,padding:"14px 12px",display:"flex",alignItems:"center",gap:10,cursor:"pointer",boxShadow:"0 4px 16px rgba(0,0,0,.05)",transition:"transform 250ms cubic-bezier(0.22,1,0.36,1)" }}
+            onPointerDown={e=>{e.currentTarget.style.transform="scale(0.97)";}}
+            onPointerUp={e=>{e.currentTarget.style.transform="scale(1)";}}
+            onPointerLeave={e=>{e.currentTarget.style.transform="scale(1)";}}
+          >
+            <div style={{ width:46,height:46,borderRadius:14,background:"#FEF3C7",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
+              {gridCards[12]?.icon(gridCards[12]?.iconColor||"#F97316")}
+            </div>
+            <div style={{ flex:1,minWidth:0 }}>
+              <div style={{ fontWeight:700,fontSize:13,color:"#0F172A" }}>Score</div>
+              <div style={{ fontSize:11,color:"#94A3B8",marginTop:1 }}>Gagnez en visibilité</div>
+            </div>
+            <div style={{ width:22,height:22,borderRadius:7,background:"#FEF3C7",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#F97316" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+
+          <div onClick={()=>navigate("/jobs")}
+            style={{ background:"#fff",borderRadius:20,padding:"14px 12px",display:"flex",alignItems:"center",gap:10,cursor:"pointer",boxShadow:"0 4px 16px rgba(0,0,0,.05)",transition:"transform 250ms cubic-bezier(0.22,1,0.36,1)" }}
+            onPointerDown={e=>{e.currentTarget.style.transform="scale(0.97)";}}
+            onPointerUp={e=>{e.currentTarget.style.transform="scale(1)";}}
+            onPointerLeave={e=>{e.currentTarget.style.transform="scale(1)";}}
+          >
+            <div style={{ width:46,height:46,borderRadius:14,background:"#DCFCE7",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
+              <svg width="28" height="28" viewBox="0 0 30 30">
+                <rect x="2" y="11" width="26" height="17" rx="4" fill="#388E3C"/>
+                <rect x="2" y="11" width="26" height="5" rx="2" fill="#16A34A"/>
+                <rect x="9" y="4" width="12" height="9" rx="3" fill="#22C55E"/>
+                <rect x="9" y="4" width="12" height="4" rx="2" fill="#16A34A"/>
+                <rect x="12" y="7" width="6" height="2" rx="1" fill="#BBF7D0"/>
+                <rect x="6" y="16" width="5" height="7" rx="2" fill="#BBF7D0"/>
+                <rect x="13" y="16" width="5" height="7" rx="2" fill="#BBF7D0"/>
+                <rect x="20" y="16" width="5" height="7" rx="2" fill="#BBF7D0"/>
+              </svg>
+            </div>
+            <div style={{ flex:1,minWidth:0 }}>
+              <div style={{ fontWeight:700,fontSize:13,color:"#0F172A" }}>Emplois</div>
+              <div style={{ fontSize:11,color:"#94A3B8",marginTop:1 }}>Offres d'emploi</div>
+            </div>
+            <div style={{ width:22,height:22,borderRadius:7,background:"#DCFCE7",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
         </div>
 
-        {/* ── EMPLOIS (pleine largeur) ── */}
-        <div
-          onClick={() => navigate("/jobs")}
-          style={{ background: "#fff", borderRadius: 16, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.04)" }}
-          onPointerDown={e => (e.currentTarget.style.background = "#F8FAFC")}
-          onPointerUp={e => (e.currentTarget.style.background = "#fff")}
-          onPointerLeave={e => (e.currentTarget.style.background = "#fff")}
-        >
-          <div style={{ width: 50, height: 50, borderRadius: 14, background: "#DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <svg width="30" height="30" viewBox="0 0 30 30">
-              <rect x="2" y="11" width="26" height="17" rx="4" fill="#388E3C"/>
-              <rect x="2" y="11" width="26" height="5" rx="2" fill="#16A34A"/>
-              <rect x="9" y="4" width="12" height="9" rx="3" fill="#22C55E"/>
-              <rect x="9" y="4" width="12" height="4" rx="2" fill="#16A34A"/>
-              <rect x="12" y="7" width="6" height="2" rx="1" fill="#BBF7D0"/>
-              <rect x="6" y="16" width="5" height="7" rx="2" fill="#BBF7D0"/>
-              <rect x="13" y="16" width="5" height="7" rx="2" fill="#BBF7D0"/>
-              <rect x="20" y="16" width="5" height="7" rx="2" fill="#BBF7D0"/>
-            </svg>
+        {/* ══ PARAMÈTRES + AIDE — 2 colonnes ══ */}
+        <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:12 }}>
+          <div onClick={()=>navigate("/settings")}
+            style={{ background:"#fff",borderRadius:20,padding:"14px 12px",display:"flex",alignItems:"center",gap:10,cursor:"pointer",boxShadow:"0 4px 16px rgba(0,0,0,.05)",transition:"transform 250ms cubic-bezier(0.22,1,0.36,1)" }}
+            onPointerDown={e=>{e.currentTarget.style.transform="scale(0.97)";}}
+            onPointerUp={e=>{e.currentTarget.style.transform="scale(1)";}}
+            onPointerLeave={e=>{e.currentTarget.style.transform="scale(1)";}}
+          >
+            <div style={{ width:44,height:44,borderRadius:14,background:"#DCFCE7",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <div style={{ flex:1,minWidth:0 }}>
+              <div style={{ fontWeight:700,fontSize:11,color:"#0F172A",lineHeight:1.3 }}>Paramètres et confidentialité</div>
+              <div style={{ fontSize:10,color:"#94A3B8",marginTop:1 }}>Compte, sécurité, préférences</div>
+            </div>
           </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 700, fontSize: 15, color: "#111827" }}>Emplois</div>
-            <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 2 }}>Trouvez des offres d'emploi qui vous correspondent</div>
-          </div>
-          <div style={{ width: 28, height: 28, borderRadius: 8, background: "#DCFCE7", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="9 18 15 12 9 6"/>
-            </svg>
+
+          <div onClick={()=>setActiveSection("help")}
+            style={{ background:"#fff",borderRadius:20,padding:"14px 12px",display:"flex",alignItems:"center",gap:10,cursor:"pointer",boxShadow:"0 4px 16px rgba(0,0,0,.05)",transition:"transform 250ms cubic-bezier(0.22,1,0.36,1)" }}
+            onPointerDown={e=>{e.currentTarget.style.transform="scale(0.97)";}}
+            onPointerUp={e=>{e.currentTarget.style.transform="scale(1)";}}
+            onPointerLeave={e=>{e.currentTarget.style.transform="scale(1)";}}
+          >
+            <div style={{ width:44,height:44,borderRadius:14,background:"#DCFCE7",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+            </div>
+            <div style={{ flex:1,minWidth:0 }}>
+              <div style={{ fontWeight:700,fontSize:11,color:"#0F172A",lineHeight:1.3 }}>Aide et assistance</div>
+              <div style={{ fontSize:10,color:"#94A3B8",marginTop:1 }}>FAQ, centre d'aide</div>
+            </div>
           </div>
         </div>
 
-        {/* ── PARAMÈTRES ET CONFIDENTIALITÉ ── */}
-        <div
-          onClick={() => setActiveSection("settings")}
-          style={{ background: "#fff", borderRadius: 16, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.04)" }}
-          onPointerDown={e => (e.currentTarget.style.background = "#F8FAFC")}
-          onPointerUp={e => (e.currentTarget.style.background = "#fff")}
-          onPointerLeave={e => (e.currentTarget.style.background = "#fff")}
+        {/* ══ AJOUTER UN COMPTE — Hero card ══ */}
+        <div style={{ background:"linear-gradient(135deg,#22C55E 0%,#16A34A 100%)",borderRadius:32,padding:"20px 18px",display:"flex",alignItems:"center",gap:16,cursor:"pointer",boxShadow:"0 12px 40px rgba(34,197,94,.3)",position:"relative",overflow:"hidden" }}
+          onPointerDown={e=>(e.currentTarget.style.opacity=".88")}
+          onPointerUp={e=>(e.currentTarget.style.opacity="1")}
+          onPointerLeave={e=>(e.currentTarget.style.opacity="1")}
         >
-          <div style={{ width: 50, height: 50, borderRadius: 14, background: "#DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <svg width="30" height="30" viewBox="0 0 30 30">
-              <path d="M15 2 L28 7.5 V15 C28 22.5 22 27.5 15 30 C8 27.5 2 22.5 2 15 V7.5 Z" fill="#16A34A"/>
-              <path d="M15 2 L28 7.5 V15 C28 22.5 22 27.5 15 30" fill="#388E3C" opacity="0.4"/>
-              <rect x="13" y="10" width="4" height="6" rx="2" fill="white"/>
-              <circle cx="15" cy="20" r="2.2" fill="white"/>
-            </svg>
-          </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 700, fontSize: 15, color: "#111827" }}>Paramètres et confidentialité</div>
-            <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 2 }}>Gérez votre compte, la sécurité et vos préférences.</div>
-          </div>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E5E7EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="9 18 15 12 9 6"/>
-          </svg>
-        </div>
-
-        {/* ── AIDE ET ASSISTANCE ── */}
-        <div
-          onClick={() => setActiveSection("help")}
-          style={{ background: "#fff", borderRadius: 16, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.04)" }}
-          onPointerDown={e => (e.currentTarget.style.background = "#F8FAFC")}
-          onPointerUp={e => (e.currentTarget.style.background = "#fff")}
-          onPointerLeave={e => (e.currentTarget.style.background = "#fff")}
-        >
-          <div style={{ width: 50, height: 50, borderRadius: 14, background: "#DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <svg width="30" height="30" viewBox="0 0 30 30">
-              <path d="M15 3 C8 3 3 8 3 14 V20" stroke="#16A34A" strokeWidth="3.5" fill="none" strokeLinecap="round"/>
-              <path d="M15 3 C22 3 27 8 27 14 V20" stroke="#16A34A" strokeWidth="3.5" fill="none" strokeLinecap="round"/>
-              <rect x="1" y="18" width="6" height="8" rx="3" fill="#16A34A"/>
-              <rect x="23" y="18" width="6" height="8" rx="3" fill="#16A34A"/>
-              <rect x="12" y="24" width="6" height="3" rx="1.5" fill="#16A34A"/>
-              <circle cx="15" cy="27" r="2" fill="#16A34A"/>
-            </svg>
-          </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 700, fontSize: 15, color: "#111827" }}>Aide et assistance</div>
-            <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 2 }}>FAQ, assistance et centre d'aide.</div>
-          </div>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E5E7EB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="9 18 15 12 9 6"/>
-          </svg>
-        </div>
-
-        {/* ── AJOUTER UN COMPTE ── */}
-        <div
-          style={{
-            background: "linear-gradient(135deg, #22C55E 0%, #16A34A 100%)",
-            borderRadius: 20, padding: "18px 18px",
-            display: "flex", alignItems: "center", gap: 16, cursor: "pointer",
-            boxShadow: "0 8px 24px rgba(34,197,94,0.35)",
-          }}
-          onPointerDown={e => (e.currentTarget.style.opacity = "0.88")}
-          onPointerUp={e => (e.currentTarget.style.opacity = "1")}
-          onPointerLeave={e => (e.currentTarget.style.opacity = "1")}
-        >
-          <div style={{ width: 50, height: 50, borderRadius: "50%", background: "rgba(255,255,255,0.22)", border: "2px solid rgba(255,255,255,0.4)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <div style={{ position:"absolute",top:-30,right:30,width:100,height:100,borderRadius:"50%",background:"rgba(255,255,255,.12)",pointerEvents:"none" }}/>
+          <div style={{ position:"absolute",bottom:-20,right:80,width:70,height:70,borderRadius:"50%",background:"rgba(255,255,255,.08)",pointerEvents:"none" }}/>
+          <div style={{ width:50,height:50,borderRadius:"50%",background:"rgba(255,255,255,.22)",border:"2px solid rgba(255,255,255,.4)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round">
               <line x1="12" y1="5" x2="12" y2="19"/>
               <line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
           </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 800, fontSize: 16, color: "#fff" }}>Ajouter un compte</div>
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,0.82)", marginTop: 3, lineHeight: 1.4 }}>Ajoutez un autre compte et basculez facilement entre vos profils</div>
+          <div style={{ flex:1,position:"relative",zIndex:1 }}>
+            <div style={{ fontWeight:800,fontSize:16,color:"#fff" }}>Ajouter un compte</div>
+            <div style={{ fontSize:12,color:"rgba(255,255,255,.82)",marginTop:3,lineHeight:1.4 }}>Ajoutez un autre compte et basculez facilement entre vos profils</div>
           </div>
-          <div style={{ width: 34, height: 34, borderRadius: "50%", background: "rgba(255,255,255,0.22)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="9 18 15 12 9 6"/>
-            </svg>
+          <div style={{ width:36,height:36,borderRadius:"50%",background:"rgba(255,255,255,.2)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,position:"relative",zIndex:1 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
           </div>
         </div>
 
-        {/* ── DÉCONNEXION ── */}
-        <div
-          onClick={logout}
-          style={{ background: "#FEE2E2", borderRadius: 16, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer", boxShadow: "0 2px 8px rgba(239,68,68,0.08)", border: "1px solid #FEE2E2", marginBottom: 8 }}
-          onPointerDown={e => (e.currentTarget.style.background = "#FEE2E2")}
-          onPointerUp={e => (e.currentTarget.style.background = "#FEE2E2")}
-          onPointerLeave={e => (e.currentTarget.style.background = "#FEE2E2")}
+        {/* ══ DÉCONNEXION ══ */}
+        <div onClick={logout} style={{ background:"#FEE2E2",borderRadius:32,padding:"16px 18px",display:"flex",alignItems:"center",gap:14,cursor:"pointer",boxShadow:"0 4px 16px rgba(239,68,68,.08)" }}
+          onPointerDown={e=>(e.currentTarget.style.opacity=".85")}
+          onPointerUp={e=>(e.currentTarget.style.opacity="1")}
+          onPointerLeave={e=>(e.currentTarget.style.opacity="1")}
         >
-          <div style={{ width: 50, height: 50, borderRadius: 14, background: "#FEE2E2", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <div style={{ width:48,height:48,borderRadius:16,background:"rgba(239,68,68,.12)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
               <polyline points="16 17 21 12 16 7"/>
               <line x1="21" y1="12" x2="9" y2="12"/>
             </svg>
           </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 700, fontSize: 15, color: "#EF4444" }}>Déconnexion</div>
-            <div style={{ fontSize: 12, color: "#FCA5A5", marginTop: 2 }}>Se déconnecter de votre compte en toute sécurité</div>
+          <div style={{ flex:1 }}>
+            <div style={{ fontWeight:700,fontSize:15,color:"#DC2626" }}>Déconnexion</div>
+            <div style={{ fontSize:12,color:"#FCA5A5",marginTop:2 }}>Se déconnecter de votre compte en toute sécurité</div>
           </div>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="9 18 15 12 9 6"/>
-          </svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
 
       </div>
