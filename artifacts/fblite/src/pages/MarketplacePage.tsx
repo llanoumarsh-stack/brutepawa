@@ -567,6 +567,14 @@ export default function MarketplacePage() {
         </div>
       )}
 
+      {/* ── Service Filter Sheet ─────────────────────────────── */}
+      <ServiceFilterSheet
+        open={showFilter}
+        onClose={() => setShowFilter(false)}
+        onApply={(f) => { setServiceFilters(f); setActiveTab("services"); }}
+        resultCount={128}
+      />
+
       <style>{`
         input::placeholder { color: #9CA3AF; }
         textarea::placeholder { color: #9CA3AF; }
@@ -818,14 +826,6 @@ function ProdSkeleton() {
         </div>
       ))}
       <style>{`@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }`}</style>
-
-      {/* ── Service Filter Sheet ─────────────────────────────── */}
-      <ServiceFilterSheet
-        open={showFilter}
-        onClose={() => setShowFilter(false)}
-        onApply={(f) => { setServiceFilters(f); setActiveTab("services"); }}
-        resultCount={128}
-      />
     </div>
   );
 }
