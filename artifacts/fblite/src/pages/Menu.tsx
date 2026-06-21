@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "../router";
 import { isAdmin, ADMIN_SECRET_PATH } from "../lib/admin";
 import { apiGetTontines, apiGetCourses, apiGetEnrollments, apiGetWallet, apiGetBlockedUsers, apiUnblockUser, apiGetConversations, apiGetFriendRequests, apiGetGroups, apiGetUserStats, type ApiTontine, type ApiCourse, type ApiEnrollment, type BlockedUser } from "../lib/api";
+import { BPFeed, BPMessages, BPAmis, BPGroupes, BPMarketplace, BPServices, BPEmplois, BPPages, BPPortefeuille, BPTontines, BPRevenus, BPPaiements, BPReels, BPLives, BPFormations, BPMonetisation, BPSocialHeader, BPBusinessHeader, BPFinanceHeader, BPCreateurHeader, BPPublier, BPReel, BPProduit, BPService, BPOffreEmploi, BPSearch, BPQR, BPBell } from "../components/BPIcons";
 
 const SCORE_MAP: Record<string, { label: string; color: string; next: string; emoji: string; progress: number; bg: string }> = {
   bronze:  { label: "Bronze",  color: "#CD7F32", bg: "#FEF3C7", next: "Argent",  emoji: "🥉", progress: 45 },
@@ -1078,16 +1079,13 @@ export default function Menu() {
           </div>
           <div style={{ display: "flex", gap: 8, alignItems: "center", paddingTop: 2 }}>
             <button style={{ width: 40, height: 40, borderRadius: 13, background: "#fff", border: "1.5px solid #E2E8F0", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", outline: "none" }}>
-              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#0F172A" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <BPSearch size={18} />
             </button>
             <button style={{ width: 40, height: 40, borderRadius: 13, background: "#fff", border: "1.5px solid #E2E8F0", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", outline: "none" }}>
-              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#0F172A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="5" height="5" rx="1"/><rect x="16" y="3" width="5" height="5" rx="1"/><rect x="3" y="16" width="5" height="5" rx="1"/>
-                <path d="M21 16h-3a2 2 0 00-2 2v3M21 21v.01M12 7v3M12 3v.01M7 12h3M3 12v.01M16 12h.01M12 16v.01M12 12v.01"/>
-              </svg>
+              <BPQR size={18} />
             </button>
             <button onClick={() => navigate("/notifications")} style={{ width: 40, height: 40, borderRadius: 13, background: "#fff", border: "1.5px solid #E2E8F0", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", position: "relative", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", outline: "none" }}>
-              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#0F172A" strokeWidth="2.2" strokeLinecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+              <BPBell size={18} />
               <div style={{ position: "absolute", top: -5, right: -5, background: "#22C55E", color: "#fff", fontSize: 9, fontWeight: 800, minWidth: 19, height: 19, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 3px", animation: "bp-badge-pulse 2s infinite" }}>12</div>
             </button>
           </div>
@@ -1188,11 +1186,11 @@ export default function Menu() {
             </div>
             <div style={{ width:1,height:48,background:"#E2E8F0",flexShrink:0,marginLeft:4,marginRight:4 }}/>
             {([
-              { label:"Publier",         bg:"#F0FDF4", action:()=>{},                      icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg> },
-              { label:"Reel",            bg:"#FFF0F0", action:()=>navigate("/reels"),       icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg> },
-              { label:"Produit",         bg:"#FFF7ED", action:()=>navigate("/marketplace"), icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg> },
-              { label:"Service",         bg:"#F0F9FF", action:()=>navigate("/marketplace"), icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg> },
-              { label:"Offre emploi",    bg:"#FAF5FF", action:()=>navigate("/jobs"),        icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg> },
+              { label:"Publier",         bg:"#F0FDF4", action:()=>{},                      icon:<BPPublier size={22} /> },
+              { label:"Reel",            bg:"#FFF0F0", action:()=>navigate("/reels"),       icon:<BPReel size={22} /> },
+              { label:"Produit",         bg:"#FFF7ED", action:()=>navigate("/marketplace"), icon:<BPProduit size={22} /> },
+              { label:"Service",         bg:"#F0F9FF", action:()=>navigate("/marketplace"), icon:<BPService size={22} /> },
+              { label:"Offre emploi",    bg:"#FAF5FF", action:()=>navigate("/jobs"),        icon:<BPOffreEmploi size={22} /> },
             ] as {label:string;bg:string;action:()=>void;icon:React.ReactNode}[]).map((item,i)=>(
               <div key={i} onClick={item.action}
                 style={{ display:"flex",flexDirection:"column",alignItems:"center",gap:5,flexShrink:0,minWidth:52,cursor:"pointer",transition:"transform 250ms cubic-bezier(0.22,1,0.36,1)" }}
@@ -1211,62 +1209,62 @@ export default function Menu() {
         {([
           {
             id:"social", title:"Social",
-            titleIcon:<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>,
+            titleIcon:<BPSocialHeader size={16} />,
             seeAll:()=>navigate("/"),
             cards:[
               { label:"Fil d'actualité", sub:"Dernières publications", bg:"#F0FDF4", badge:0,            live:false, action:()=>navigate("/"),
-                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> },
+                icon:<BPFeed size={26} /> },
               { label:"Messages",         sub:"Vos conversations",      bg:"#EFF6FF", badge:unreadMessages||8, live:false, action:()=>navigate("/messages"),
-                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> },
+                icon:<BPMessages size={26} /> },
               { label:"Amis",             sub:"Amis & invitations",     bg:"#FFF7ED", badge:pendingRequests, live:false, action:()=>navigate("/friends"),
-                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg> },
+                icon:<BPAmis size={26} /> },
               { label:"Groupes",          sub:"Vos groupes actifs",    bg:"#FAF5FF", badge:0,            live:false, action:()=>navigate("/community?tab=groupes"),
-                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg> },
+                icon:<BPGroupes size={26} /> },
             ],
           },
           {
             id:"business", title:"Business",
-            titleIcon:<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>,
+            titleIcon:<BPBusinessHeader size={16} />,
             seeAll:()=>navigate("/marketplace"),
             cards:[
               { label:"Marketplace", sub:"Acheter & vendre",    bg:"#F0FDF4", badge:0, live:false, action:()=>navigate("/marketplace"),
-                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg> },
+                icon:<BPMarketplace size={26} /> },
               { label:"Services",    sub:"Trouver ou proposer", bg:"#EFF6FF", badge:0, live:false, action:()=>navigate("/marketplace"),
-                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg> },
+                icon:<BPServices size={26} /> },
               { label:"Emplois",     sub:"Offres & candidats",  bg:"#FFF7ED", badge:0, live:false, action:()=>navigate("/jobs"),
-                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg> },
+                icon:<BPEmplois size={26} /> },
               { label:"Pages",       sub:"Gérer vos pages",    bg:"#F0FDF4", badge:0, live:false, action:()=>{},
-                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg> },
+                icon:<BPPages size={26} /> },
             ],
           },
           {
             id:"finance", title:"Finance",
-            titleIcon:<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>,
+            titleIcon:<BPFinanceHeader size={16} />,
             seeAll:()=>navigate("/wallet"),
             cards:[
               { label:"Portefeuille", sub:"Gérer votre argent",  bg:"#F0FDF4", badge:0,             live:false, action:()=>navigate("/wallet"),
-                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M2 17V7a2 2 0 012-2h16a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2z"/><path d="M18 12h.01"/></svg> },
+                icon:<BPPortefeuille size={26} /> },
               { label:"Tontines",    sub:"Épargner ensemble",   bg:"#FEF3C7", badge:tontines.length, live:false, action:()=>navigate("/tontines"),
-                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg> },
+                icon:<BPTontines size={26} /> },
               { label:"Revenus",     sub:"Suivre vos gains",    bg:"#F0FDF4", badge:0,             live:false, action:()=>{},
-                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> },
+                icon:<BPRevenus size={26} /> },
               { label:"Paiements",   sub:"Envoyer & recevoir",  bg:"#EFF6FF", badge:0,             live:false, action:()=>{},
-                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> },
+                icon:<BPPaiements size={26} /> },
             ],
           },
           {
             id:"createur", title:"Créateur",
-            titleIcon:<svg viewBox="0 0 24 24" width="14" height="14" fill="#22C55E"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
+            titleIcon:<BPCreateurHeader size={16} />,
             seeAll:()=>navigate("/reels"),
             cards:[
               { label:"Reels",        sub:"Créer des vidéos",     bg:"#FFF0F0", badge:0, live:false, action:()=>navigate("/reels"),
-                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="4.93" y1="4.93" x2="9.17" y2="9.17"/><line x1="14.83" y1="14.83" x2="19.07" y2="19.07"/><line x1="14.83" y1="9.17" x2="19.07" y2="4.93"/><line x1="4.93" y1="19.07" x2="9.17" y2="14.83"/></svg> },
+                icon:<BPReels size={26} /> },
               { label:"Lives",        sub:"Diffuser en direct",   bg:"#FFF0F0", badge:0, live:true,  action:()=>{},
-                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg> },
+                icon:<BPLives size={26} /> },
               { label:"Formations",   sub:"Apprendre & enseigner",bg:"#FAF5FF", badge:0, live:false, action:()=>navigate("/formations"),
-                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> },
+                icon:<BPFormations size={26} /> },
               { label:"Monétisation", sub:"Gagner de l'argent",  bg:"#F0FDF4", badge:0, live:false, action:()=>{},
-                icon:<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg> },
+                icon:<BPMonetisation size={26} /> },
             ],
           },
         ] as {id:string;title:string;titleIcon:React.ReactNode;seeAll:()=>void;cards:{label:string;sub:string;bg:string;badge:number;live:boolean;action:()=>void;icon:React.ReactNode}[]}[]).map(section=>(
