@@ -458,7 +458,7 @@ router.post("/messages", requireAuth, async (req, res): Promise<void> => {
     /* Same-origin proxy URL — Chrome always loads this, regardless of whether
        the user has a real avatar or not. No CORS issues in the service worker. */
     icon:     avatarIconUrl,
-    badge:    `${origin}/icons/icon-192.png`,
+    badge:    `${origin}/icons/badge-96.png`,
     tag:      `msg-${me}`,
     renotify: true,
     vibrate:  [200, 100, 200],
