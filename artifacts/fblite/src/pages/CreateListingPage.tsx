@@ -287,34 +287,10 @@ const ShieldPhoneLockSVG = () => (
 );
 
 const FEATURE_CARDS_DATA = [
-  {
-    img: imgAI,
-    title:"Assistant IA",
-    desc:"Titre, description et prix suggérés pour maximiser vos ventes",
-    badge:"✓ Optimisation intelligente",
-    badgeBg:"#DCFCE7", badgeColor:"#16A34A",
-  },
-  {
-    img: imgShield,
-    title:"Protection garantie",
-    desc:"Détection anti-fraude et protection complète de vos données",
-    badge:"✓ 100% Sécurisé",
-    badgeBg:"#DCFCE7", badgeColor:"#16A34A",
-  },
-  {
-    img: imgGlobe,
-    title:"Diffusion maximale",
-    desc:"Touchez des milliers d'acheteurs à travers toute l'Afrique",
-    badge:"📶 Visibilité continentale",
-    badgeBg:"#DCFCE7", badgeColor:"#16A34A",
-  },
-  {
-    img: imgCard,
-    title:"Paiement sécurisé",
-    desc:"Transactions sécurisées et paiement garanti sur BrutePawa",
-    badge:"🔒 Paiement protégé",
-    badgeBg:"#DCFCE7", badgeColor:"#16A34A",
-  },
+  { img:imgAI,     title:"Assistant IA",     desc:"Optimise automatiquement votre annonce.",   badge:"Optimisation intelligente" },
+  { img:imgShield, title:"Protection totale", desc:"Vos données restent protégées.",            badge:"100% sécurisé" },
+  { img:imgGlobe,  title:"Audience africaine",desc:"Touchez des acheteurs partout.",            badge:"Visibilité maximale" },
+  { img:imgCard,   title:"Paiement protégé", desc:"Transactions fiables et garanties.",        badge:"Paiement sécurisé" },
 ];
 
 function Step1({ photos, uploading, progress, phase, onSelectFiles, onRemove, onSetMain, onDrop }: {
@@ -322,8 +298,22 @@ function Step1({ photos, uploading, progress, phase, onSelectFiles, onRemove, on
   onSelectFiles:(f:File[])=>void; onRemove:(i:number)=>void;
   onSetMain:(i:number)=>void; onDrop:(e:React.DragEvent)=>void;
 }) {
-  const fileRef = useRef<HTMLInputElement>(null);
-  const [dragOver, setDragOver] = useState(false);
+  const fileRef  = useRef<HTMLInputElement>(null);
+  const featRef  = useRef<HTMLDivElement>(null);
+  const [dragOver,    setDragOver]    = useState(false);
+  const [featVisible, setFeatVisible] = useState(false);
+  const [hovCard,     setHovCard]     = useState<number|null>(null);
+
+  useEffect(() => {
+    const el = featRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) setFeatVisible(true); },
+      { threshold: 0.1 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   const qualityScore = Math.min(100,
     40 + (photos.length>=1?15:0) + (photos.length>=3?15:0) +
@@ -480,32 +470,117 @@ function Step1({ photos, uploading, progress, phase, onSelectFiles, onRemove, on
         </div>
       </div>
 
-      {/* ── WHY BRUTEPAWA SECTION ── */}
-      <div style={{ textAlign:"center", padding:"6px 0 2px" }}>
-        <div style={{ fontSize:16, fontWeight:700, color:"#0F172A" }}>Pourquoi publier sur BrutePawa ?</div>
-        <div style={{ fontSize:12.5, color:"#64748B", marginTop:4 }}>Nous vous aidons à vendre plus vite et en toute sécurité</div>
-      </div>
+      {/* ── WHY BRUTEPAWA — PREMIUM ── */}
+      <div ref={featRef}>
 
-      {/* ── 4 FEATURE CARDS ── */}
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:7 }}>
-        {FEATURE_CARDS_DATA.map(card => (
-          <div key={card.title} style={{
-            background:"#fff", borderRadius:16, padding:"8px 4px 8px",
-            boxShadow:"0 6px 20px rgba(15,23,42,0.07)", border:"1px solid #E5E7EB",
-            display:"flex", flexDirection:"column", alignItems:"center", gap:4,
-            cursor:"default", transition:"transform 0.3s, box-shadow 0.3s",
-          }}
-            onMouseEnter={e=>(e.currentTarget.style.cssText+=";transform:translateY(-4px);box-shadow:0 12px 32px rgba(15,23,42,0.12)")}
-            onMouseLeave={e=>{ e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow="0 6px 20px rgba(15,23,42,0.07)"; }}
-          >
-            <img src={card.img} alt={card.title} style={{ width:58, height:58, objectFit:"contain", animation:"float 3s ease-in-out infinite" }}/>
-            <div style={{ fontWeight:700, fontSize:10, color:"#0F172A", textAlign:"center", lineHeight:1.3 }}>{card.title}</div>
-            <div style={{ fontSize:9, color:"#64748B", textAlign:"center", lineHeight:1.4, flex:1 }}>{card.desc}</div>
-            <div style={{ background:card.badgeBg, borderRadius:99, padding:"2px 6px" }}>
-              <span style={{ fontSize:8.5, color:card.badgeColor, fontWeight:700 }}>{card.badge}</span>
-            </div>
+        {/* Section header */}
+        <div style={{ textAlign:"center", padding:"10px 4px 18px" }}>
+          <div style={{
+            display:"inline-flex", alignItems:"center", gap:5,
+            background:"linear-gradient(135deg,#DCFCE7 0%,#F0FDF4 100%)",
+            borderRadius:99, padding:"5px 14px", marginBottom:12,
+            border:"1px solid rgba(34,197,94,0.25)",
+          }}>
+            <span style={{ fontSize:11, color:GD, fontWeight:700, letterSpacing:0.3 }}>✨ Fonctionnalités</span>
           </div>
-        ))}
+          <div style={{ fontSize:19, fontWeight:800, color:"#0F172A", letterSpacing:"-0.4px", lineHeight:1.25 }}>
+            Pourquoi publier sur<br/>
+            <span style={{ background:`linear-gradient(135deg,${G},${GD})`, WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>
+              BrutePawa ?
+            </span>
+          </div>
+          <div style={{ fontSize:13, color:"#64748B", marginTop:8, lineHeight:1.6 }}>
+            Vendez plus rapidement grâce à nos outils<br/>intelligents et notre sécurité renforcée.
+          </div>
+        </div>
+
+        {/* 2×2 premium card grid */}
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+          {FEATURE_CARDS_DATA.map((card, i) => {
+            const isHov = hovCard === i;
+            return (
+              <div
+                key={card.title}
+                onMouseEnter={() => setHovCard(i)}
+                onMouseLeave={() => setHovCard(null)}
+                style={{
+                  position:"relative", overflow:"hidden",
+                  background:"#fff",
+                  borderRadius:24,
+                  padding:"22px 14px 18px",
+                  border:`1.5px solid ${isHov ? "rgba(34,197,94,0.4)" : "rgba(34,197,94,0.12)"}`,
+                  boxShadow: isHov
+                    ? "0 24px 60px rgba(34,197,94,0.22), 0 8px 32px rgba(15,23,42,0.10)"
+                    : "0 4px 24px rgba(15,23,42,0.07), inset 0 1px 0 rgba(255,255,255,0.9)",
+                  display:"flex", flexDirection:"column", alignItems:"center", gap:10,
+                  opacity: featVisible ? 1 : 0,
+                  transform: featVisible
+                    ? `translateY(${isHov ? -6 : 0}px) scale(${isHov ? 1.02 : 1})`
+                    : "translateY(28px)",
+                  transition: featVisible
+                    ? `opacity 0.5s ease ${i*0.09}s, transform 0.35s cubic-bezier(0.34,1.2,0.64,1), box-shadow 0.25s ease, border-color 0.25s ease`
+                    : `opacity 0.5s ease ${i*0.09}s, transform 0.5s ease ${i*0.09}s`,
+                  cursor:"default",
+                }}
+              >
+                {/* Subtle corner glow */}
+                <div style={{
+                  position:"absolute", top:-20, right:-20, width:80, height:80,
+                  borderRadius:"50%",
+                  background:`radial-gradient(circle, rgba(34,197,94,${isHov?0.18:0.07}) 0%, transparent 70%)`,
+                  transition:"all 0.3s ease", pointerEvents:"none",
+                }}/>
+
+                {/* Icon with floating glow halo */}
+                <div style={{ position:"relative", width:84, height:84 }}>
+                  <div style={{
+                    position:"absolute", inset:-6, borderRadius:"50%",
+                    background:`radial-gradient(circle, rgba(34,197,94,${isHov?0.2:0.09}) 0%, transparent 68%)`,
+                    transition:"all 0.3s ease",
+                  }}/>
+                  <img
+                    src={card.img}
+                    alt={card.title}
+                    style={{
+                      width:84, height:84, objectFit:"contain", position:"relative",
+                      animation:`float 3s ease-in-out ${i*0.6}s infinite`,
+                      filter: isHov ? "drop-shadow(0 8px 16px rgba(34,197,94,0.35))" : "drop-shadow(0 4px 8px rgba(15,23,42,0.12))",
+                      transition:"filter 0.3s ease",
+                    }}
+                  />
+                </div>
+
+                {/* Title */}
+                <div style={{
+                  fontWeight:800, fontSize:14.5, color:"#0F172A",
+                  textAlign:"center", lineHeight:1.25, letterSpacing:"-0.2px",
+                }}>
+                  {card.title}
+                </div>
+
+                {/* Description */}
+                <div style={{
+                  fontSize:12, color:"#64748B",
+                  textAlign:"center", lineHeight:1.6,
+                  maxWidth:150,
+                }}>
+                  {card.desc}
+                </div>
+
+                {/* Badge */}
+                <div style={{
+                  background:`linear-gradient(135deg,#DCFCE7,#F0FDF4)`,
+                  borderRadius:99, padding:"5px 13px",
+                  border:`1px solid rgba(34,197,94,${isHov?0.35:0.2})`,
+                  boxShadow: isHov ? "0 4px 14px rgba(34,197,94,0.22)" : "none",
+                  transition:"all 0.25s ease",
+                }}>
+                  <span style={{ fontSize:11, color:GD, fontWeight:700 }}>✓ {card.badge}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* ── TRUST BANNER ── */}
