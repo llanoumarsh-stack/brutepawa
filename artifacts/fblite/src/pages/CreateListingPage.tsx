@@ -482,22 +482,24 @@ function Step1({ photos, uploading, progress, phase, onSelectFiles, onRemove, on
       </div>
 
       {/* ── 4 FEATURE CARDS ── */}
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:8 }}>
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:7 }}>
         {FEATURE_CARDS_DATA.map(card => (
           <div key={card.title} style={{
-            background:"#fff", borderRadius:18, padding:"12px 6px 10px",
-            boxShadow:"0 10px 40px rgba(15,23,42,0.08)", border:"1px solid #E5E7EB",
-            display:"flex", flexDirection:"column", alignItems:"center", gap:6,
+            background:"#fff", borderRadius:16, padding:"8px 4px 8px",
+            boxShadow:"0 6px 20px rgba(15,23,42,0.07)", border:"1px solid #E5E7EB",
+            display:"flex", flexDirection:"column", alignItems:"center", gap:4,
             cursor:"default", transition:"transform 0.3s, box-shadow 0.3s",
           }}
-            onMouseEnter={e=>(e.currentTarget.style.cssText+=";transform:translateY(-6px) scale(1.02);box-shadow:0 16px 40px rgba(15,23,42,0.14)")}
-            onMouseLeave={e=>{ e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow="0 10px 40px rgba(15,23,42,0.08)"; }}
+            onMouseEnter={e=>(e.currentTarget.style.cssText+=";transform:translateY(-4px);box-shadow:0 12px 32px rgba(15,23,42,0.12)")}
+            onMouseLeave={e=>{ e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow="0 6px 20px rgba(15,23,42,0.07)"; }}
           >
-            <div style={{ animation:"float 3s ease-in-out infinite" }}>{card.illust}</div>
-            <div style={{ fontWeight:700, fontSize:11, color:"#0F172A", textAlign:"center", lineHeight:1.3 }}>{card.title}</div>
-            <div style={{ fontSize:9.5, color:"#64748B", textAlign:"center", lineHeight:1.45, flex:1 }}>{card.desc}</div>
-            <div style={{ background:card.badgeBg, borderRadius:99, padding:"3px 8px" }}>
-              <span style={{ fontSize:9.5, color:card.badgeColor, fontWeight:700 }}>{card.badge}</span>
+            <div style={{ width:52, height:52, display:"flex", alignItems:"center", justifyContent:"center", overflow:"hidden", animation:"float 3s ease-in-out infinite" }}>
+              <div style={{ transform:"scale(0.72)", transformOrigin:"center center", flexShrink:0 }}>{card.illust}</div>
+            </div>
+            <div style={{ fontWeight:700, fontSize:10, color:"#0F172A", textAlign:"center", lineHeight:1.3 }}>{card.title}</div>
+            <div style={{ fontSize:9, color:"#64748B", textAlign:"center", lineHeight:1.4, flex:1 }}>{card.desc}</div>
+            <div style={{ background:card.badgeBg, borderRadius:99, padding:"2px 6px" }}>
+              <span style={{ fontSize:8.5, color:card.badgeColor, fontWeight:700 }}>{card.badge}</span>
             </div>
           </div>
         ))}
