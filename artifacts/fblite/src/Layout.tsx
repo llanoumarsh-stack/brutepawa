@@ -125,7 +125,36 @@ export default function Layout({ children, onNewPost }: Props) {
     return () => ro.disconnect();
   }, [isFullscreen]);
 
-  /* ── Nav toujours visible (pas d'auto-hide au scroll) ── */
+  /* ── Nav hide/show on scroll ──
+     Disabled on pages that use an internal scroll container (not window),
+     to avoid the nav getting stuck hidden with no way to show it again.     */
+  const INNER_SCROLL_PATHS = ["/marketplace/create"];
+  useEffect(() => {
+    if (INNER_SCROLL_PATHS.some(p => path.startsWith(p))) return; // inner scroll — keep nav visible
+    lastScrollY.current = window.scrollY;
+    const handleScroll = () => {
+      if (scrollTicking.current) return;
+      scrollTicking.current = true;
+      requestAnimationFrame(() => {
+        const currentY = window.scrollY;
+        const delta = currentY - lastScrollY.current;
+        if (Math.abs(delta) > 8) {
+          setNavHidden(delta > 0 && currentY > 200);
+        }
+        lastScrollY.current = currentY;
+        scrollTicking.current = false;
+      });
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    document.addEventListener("scroll", handleScroll, { passive: true });
+    const handleTouch = () => { if (window.scrollY < 80) setNavHidden(false); };
+    window.addEventListener("touchstart", handleTouch, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      document.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("touchstart", handleTouch);
+    };
+  }, [path]);
 
   /* Reset nav + overflow + scroll position sur changement de route */
   useEffect(() => {
@@ -133,7 +162,6 @@ export default function Layout({ children, onNewPost }: Props) {
     lastScrollY.current = 0;
     document.documentElement.style.overflow = "";
     document.body.style.overflow = "";
-    /* Remonter en haut de page à chaque navigation */
     window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
   }, [path]);
 
