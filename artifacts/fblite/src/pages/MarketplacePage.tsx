@@ -92,7 +92,7 @@ export default function MarketplacePage() {
   const [apiJobs,       setApiJobs]       = useState<ApiJob[]>([]);
   const [loading,       setLoading]       = useState(true);
   const [showCreate,    setShowCreate]    = useState(false);
-  const [createType,    setCreateType]    = useState<ListingType>("produit");
+  const [createType,    setCreateType]    = useState<ListingType>("service");
   const [dotIdx,        setDotIdx]        = useState(0);
   const [showFilter,    setShowFilter]    = useState(false);
   const [serviceFilters, setServiceFilters] = useState<ServiceFilters | null>(null);
@@ -368,7 +368,7 @@ export default function MarketplacePage() {
         {/* ═══════════════════════════════════════════════════ */}
         {activeTab === "produits" && (
           <>
-            <button onClick={() => { setCreateType("produit"); setShowCreate(true); }} style={{
+            <button onClick={() => navigate("/marketplace/create")} style={{
               width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
               background: G, color: "#fff", border: "none", borderRadius: 14,
               padding: "13px 0", fontWeight: 700, fontSize: 15, cursor: "pointer",
@@ -441,7 +441,7 @@ export default function MarketplacePage() {
 
       {/* ── FAB ─────────────────────────────────────────────── */}
       <button
-        onClick={() => { setCreateType("produit"); setShowCreate(true); }}
+        onClick={() => navigate("/marketplace/create")}
         style={{
           position: "fixed", bottom: 88, right: 20, zIndex: 30,
           width: 56, height: 56, borderRadius: "50%",
@@ -468,7 +468,7 @@ export default function MarketplacePage() {
 
             {/* Type selector */}
             <div style={{ display: "flex", gap: 8, margin: "16px 0 20px" }}>
-              {(["produit","service","emploi"] as ListingType[]).map(t => (
+              {(["service","emploi"] as ListingType[]).map(t => (
                 <button key={t} onClick={() => setCreateType(t)} style={{
                   flex: 1, padding: "8px 0", border: "1.5px solid", borderRadius: 12,
                   borderColor: createType === t ? G : "#E5E7EB",
@@ -477,49 +477,16 @@ export default function MarketplacePage() {
                   fontWeight: createType === t ? 700 : 500, fontSize: 13, cursor: "pointer",
                   fontFamily: "inherit", textTransform: "capitalize",
                 }}>
-                  {t.charAt(0).toUpperCase() + t.slice(1)}
+                  {t === "service" ? "Service" : "Emploi"}
                 </button>
               ))}
             </div>
 
             <div style={{ fontWeight: 800, fontSize: 18, color: "#111827", marginBottom: 18 }}>
-              {createType === "produit" ? "Nouvelle annonce" : createType === "service" ? "Proposer un service" : "Publier un emploi"}
+              {createType === "service" ? "Proposer un service" : "Publier un emploi"}
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {createType === "produit" && (
-                <>
-                  <FInput placeholder="Titre de l'article *" value={prodForm.title} onChange={v => setProdForm(f => ({ ...f, title: v }))} />
-                  <FInput placeholder="Prix (FCFA) *" type="number" value={prodForm.price} onChange={v => setProdForm(f => ({ ...f, price: v }))} />
-                  <div style={{ display: "flex", gap: 10 }}>
-                    <FSel value={prodForm.category} onChange={v => setProdForm(f => ({ ...f, category: v }))}>
-                      {CATEGORIES.slice(1).map(c => <option key={c}>{c}</option>)}
-                    </FSel>
-                    <FSel value={prodForm.condition} onChange={v => setProdForm(f => ({ ...f, condition: v }))}>
-                      <option>Neuf</option><option>Occasion</option><option>Reconditionné</option>
-                    </FSel>
-                  </div>
-                  <FSel value={prodForm.country} onChange={v => setProdForm(f => ({ ...f, country: v }))}>
-                    {COUNTRIES.map(c => <option key={c.code} value={c.code}>{c.flag} {c.name}</option>)}
-                  </FSel>
-                  <textarea placeholder="Description..." value={prodForm.description} onChange={e => setProdForm(f => ({ ...f, description: e.target.value }))}
-                    style={taStyle} />
-                  <button onClick={() => mediaRef.current?.click()} disabled={uploading} style={uploadBtnStyle}>
-                    <IcoCamera />
-                    {uploading ? `Upload ${progress}%` : "Ajouter des photos"}
-                  </button>
-                  {uploadedImgs.length > 0 && (
-                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                      {uploadedImgs.map((u, i) => (
-                        <div key={i} style={{ width: 68, height: 68, borderRadius: 10, overflow: "hidden", border: `2px solid ${G}` }}>
-                          <img src={u} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </>
-              )}
-
               {createType === "service" && (
                 <>
                   <FInput placeholder="Votre nom *" value={svcForm.name} onChange={v => setSvcForm(f => ({ ...f, name: v }))} />
