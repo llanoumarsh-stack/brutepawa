@@ -3,6 +3,11 @@ import { useNavigate } from "../router";
 import { COUNTRIES } from "../data/mock";
 import { apiCreateProduct } from "../lib/api";
 import { useR2Upload, phaseLabel } from "../hooks/useR2Upload";
+import imgAI      from "@assets/file_00000000dc9871f486329b83a7a1d9d1_1782125734073.png";
+import imgShield  from "@assets/file_00000000a50c71f49a3cfccdfd4ceab1_1782125734281.png";
+import imgGlobe   from "@assets/file_00000000b41c71f494fdafca86977d00_1782125734393.png";
+import imgCard    from "@assets/file_000000004adc71f4984d0ffa850d6fbf_1782125734448.png";
+import imgTrust   from "@assets/file_00000000f6bc71f48736fd5fc12d67f2_1782125734519.png";
 
 /* ═══════════════════════════════════════════════════════════════════════════
    TOKENS
@@ -283,28 +288,28 @@ const ShieldPhoneLockSVG = () => (
 
 const FEATURE_CARDS_DATA = [
   {
-    illust: <IllustAI/>,
+    img: imgAI,
     title:"Assistant IA",
     desc:"Titre, description et prix suggérés pour maximiser vos ventes",
     badge:"✓ Optimisation intelligente",
     badgeBg:"#DCFCE7", badgeColor:"#16A34A",
   },
   {
-    illust: <IllustShield/>,
+    img: imgShield,
     title:"Protection garantie",
     desc:"Détection anti-fraude et protection complète de vos données",
     badge:"✓ 100% Sécurisé",
     badgeBg:"#DCFCE7", badgeColor:"#16A34A",
   },
   {
-    illust: <IllustGlobe/>,
+    img: imgGlobe,
     title:"Diffusion maximale",
     desc:"Touchez des milliers d'acheteurs à travers toute l'Afrique",
     badge:"📶 Visibilité continentale",
     badgeBg:"#DCFCE7", badgeColor:"#16A34A",
   },
   {
-    illust: <IllustCard/>,
+    img: imgCard,
     title:"Paiement sécurisé",
     desc:"Transactions sécurisées et paiement garanti sur BrutePawa",
     badge:"🔒 Paiement protégé",
@@ -493,9 +498,7 @@ function Step1({ photos, uploading, progress, phase, onSelectFiles, onRemove, on
             onMouseEnter={e=>(e.currentTarget.style.cssText+=";transform:translateY(-4px);box-shadow:0 12px 32px rgba(15,23,42,0.12)")}
             onMouseLeave={e=>{ e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow="0 6px 20px rgba(15,23,42,0.07)"; }}
           >
-            <div style={{ width:52, height:52, display:"flex", alignItems:"center", justifyContent:"center", overflow:"hidden", animation:"float 3s ease-in-out infinite" }}>
-              <div style={{ transform:"scale(0.72)", transformOrigin:"center center", flexShrink:0 }}>{card.illust}</div>
-            </div>
+            <img src={card.img} alt={card.title} style={{ width:58, height:58, objectFit:"contain", animation:"float 3s ease-in-out infinite" }}/>
             <div style={{ fontWeight:700, fontSize:10, color:"#0F172A", textAlign:"center", lineHeight:1.3 }}>{card.title}</div>
             <div style={{ fontSize:9, color:"#64748B", textAlign:"center", lineHeight:1.4, flex:1 }}>{card.desc}</div>
             <div style={{ background:card.badgeBg, borderRadius:99, padding:"2px 6px" }}>
@@ -506,22 +509,8 @@ function Step1({ photos, uploading, progress, phase, onSelectFiles, onRemove, on
       </div>
 
       {/* ── TRUST BANNER ── */}
-      <div style={{ background:"linear-gradient(135deg,#fff 0%,#F0FDF4 100%)", borderRadius:24, padding:"14px 16px", border:"1px solid #DCFCE7", display:"flex", alignItems:"center", gap:10, boxShadow:"0 4px 20px rgba(34,197,94,0.08)" }}>
-        {/* Left shield */}
-        <div style={{ flexShrink:0 }}><ShieldUserSVG/></div>
-        {/* Center */}
-        <div style={{ flex:1, minWidth:0 }}>
-          <div style={{ fontSize:13.5, fontWeight:700, color:"#0F172A", lineHeight:1.4 }}>
-            BrutePawa <span style={{ color:G }}>protège vos données</span> et sécurise vos transactions
-          </div>
-          <div style={{ display:"flex", flexWrap:"wrap", gap:4, marginTop:6 }}>
-            {["✓ Données chiffrées","✓ Paiements sécurisés","✓ Support 24/7","✓ Politique anti-fraude"].map(b=>(
-              <span key={b} style={{ fontSize:10, fontWeight:600, color:GD, background:"#F8FAFC", border:"1px solid #E5E7EB", borderRadius:999, padding:"2px 7px", whiteSpace:"nowrap" }}>{b}</span>
-            ))}
-          </div>
-        </div>
-        {/* Right shield+phone+lock */}
-        <div style={{ flexShrink:0 }}><ShieldPhoneLockSVG/></div>
+      <div style={{ borderRadius:20, overflow:"hidden", boxShadow:"0 4px 20px rgba(34,197,94,0.10)" }}>
+        <img src={imgTrust} alt="BrutePawa protège vos données" style={{ width:"100%", height:"auto", display:"block" }}/>
       </div>
     </div>
   );
