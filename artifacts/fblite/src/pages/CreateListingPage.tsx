@@ -1250,7 +1250,7 @@ export default function CreateListingPage() {
       </div>
 
       {/* ═══ CONTENT ═══ */}
-      <div ref={scrollRef} style={{ flex:1, overflowY:"auto", padding:"16px 16px 110px" }}>
+      <div ref={scrollRef} style={{ flex:1, overflowY:"auto", padding:"16px 16px 180px" }}>
         <div key={step} style={{ maxWidth:480, margin:"0 auto", animation:"fadeUp 0.3s ease" }}>
           {step===1 && (
             <Step1
@@ -1288,7 +1288,7 @@ export default function CreateListingPage() {
 
       {/* ═══ STICKY BOTTOM BUTTON ═══ */}
       {step < 4 && (
-        <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:30, padding:"12px 16px 22px", background:"#fff", borderTop:"1px solid #F1F5F9", boxShadow:"0 -6px 24px rgba(0,0,0,0.08)" }}>
+        <div style={{ position:"fixed", bottom:58, left:0, right:0, zIndex:150, padding:"12px 16px 14px", background:"#fff", borderTop:"1px solid #F1F5F9", boxShadow:"0 -6px 24px rgba(0,0,0,0.08)" }}>
           <div style={{ maxWidth:480, margin:"0 auto" }}>
             <button
               onClick={() => canContinue() && setStep(step+1)}

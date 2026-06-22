@@ -125,38 +125,7 @@ export default function Layout({ children, onNewPost }: Props) {
     return () => ro.disconnect();
   }, [isFullscreen]);
 
-  /* ── Nav hide/show on scroll ── */
-  useEffect(() => {
-    lastScrollY.current = window.scrollY;
-    const handleScroll = () => {
-      if (scrollTicking.current) return;
-      scrollTicking.current = true;
-      requestAnimationFrame(() => {
-        const currentY = window.scrollY;
-        const delta = currentY - lastScrollY.current;
-        /* Seuil plus élevé (8px) pour éviter les faux positifs sur mobile */
-        if (Math.abs(delta) > 8) {
-          /* Cache nav uniquement après 200px de scroll vers le bas */
-          setNavHidden(delta > 0 && currentY > 200);
-        }
-        lastScrollY.current = currentY;
-        scrollTicking.current = false;
-      });
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    /* Fallback pour les navigateurs mobiles où scroll fire sur document */
-    document.addEventListener("scroll", handleScroll, { passive: true });
-    /* Touchstart : si l'utilisateur touche l'écran la nav redevient visible */
-    const handleTouch = () => {
-      if (window.scrollY < 80) setNavHidden(false);
-    };
-    window.addEventListener("touchstart", handleTouch, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      document.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("touchstart", handleTouch);
-    };
-  }, []);
+  /* ── Nav toujours visible (pas d'auto-hide au scroll) ── */
 
   /* Reset nav + overflow + scroll position sur changement de route */
   useEffect(() => {
