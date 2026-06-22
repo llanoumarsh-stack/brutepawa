@@ -300,20 +300,8 @@ function Step1({ photos, uploading, progress, phase, onSelectFiles, onRemove, on
 }) {
   const fileRef  = useRef<HTMLInputElement>(null);
   const featRef  = useRef<HTMLDivElement>(null);
-  const [dragOver,    setDragOver]    = useState(false);
-  const [featVisible, setFeatVisible] = useState(false);
-  const [hovCard,     setHovCard]     = useState<number|null>(null);
-
-  useEffect(() => {
-    const el = featRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) setFeatVisible(true); },
-      { threshold: 0.1 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
+  const [dragOver, setDragOver] = useState(false);
+  const [hovCard,  setHovCard]  = useState<number|null>(null);
 
   const qualityScore = Math.min(100,
     40 + (photos.length>=1?15:0) + (photos.length>=3?15:0) +
@@ -513,13 +501,9 @@ function Step1({ photos, uploading, progress, phase, onSelectFiles, onRemove, on
                     ? "0 24px 60px rgba(34,197,94,0.22), 0 8px 32px rgba(15,23,42,0.10)"
                     : "0 4px 24px rgba(15,23,42,0.07), inset 0 1px 0 rgba(255,255,255,0.9)",
                   display:"flex", flexDirection:"column", alignItems:"center", gap:10,
-                  opacity: featVisible ? 1 : 0,
-                  transform: featVisible
-                    ? `translateY(${isHov ? -6 : 0}px) scale(${isHov ? 1.02 : 1})`
-                    : "translateY(28px)",
-                  transition: featVisible
-                    ? `opacity 0.5s ease ${i*0.09}s, transform 0.35s cubic-bezier(0.34,1.2,0.64,1), box-shadow 0.25s ease, border-color 0.25s ease`
-                    : `opacity 0.5s ease ${i*0.09}s, transform 0.5s ease ${i*0.09}s`,
+                  animation: `cardIn 0.5s cubic-bezier(0.34,1.2,0.64,1) ${i*0.09}s both`,
+                  transform: `translateY(${isHov ? -6 : 0}px) scale(${isHov ? 1.02 : 1})`,
+                  transition: `transform 0.35s cubic-bezier(0.34,1.2,0.64,1), box-shadow 0.25s ease, border-color 0.25s ease`,
                   cursor:"default",
                 }}
               >
@@ -1241,6 +1225,7 @@ export default function CreateListingPage() {
         @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
         @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
         @keyframes float  { 0%,100%{transform:translateY(0px);} 50%{transform:translateY(-6px);} }
+        @keyframes cardIn { from{opacity:0;} to{opacity:1;} }
         * { box-sizing:border-box; }
         ::-webkit-scrollbar { width:0; }
         button:active { transform:scale(0.96); }
