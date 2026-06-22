@@ -133,15 +133,183 @@ function StepBar({ step }: { step: number }) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   STEP 1 — MÉDIAS
+   STEP 1 — 3D ILLUSTRATIONS
 ═══════════════════════════════════════════════════════════════════════════ */
-const FEATURES = [
-  { icon:"🤖", title:"Assistant IA",       desc:"Titre, description, prix suggérés automatiquement" },
-  { icon:"🛡️", title:"Sécurité garantie",  desc:"Détection de fraude et protection des utilisateurs" },
-  { icon:"📡", title:"Diffusion maximale", desc:"Touchez des milliers d'acheteurs potentiels" },
-  { icon:"⚡",  title:"Vendez plus vite",  desc:"Les annonces optimisées se vendent 3x plus vite" },
-  { icon:"⭐",  title:"Plus de confiance", desc:"Badge vendeur, avis et score de fiabilité" },
-  { icon:"💳",  title:"Paiement sécurisé",desc:"Transactions sécurisées sur BrutePawa" },
+const IllustAI = () => (
+  <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+    <defs>
+      <linearGradient id="chipTop" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#34D399"/><stop offset="100%" stopColor="#16A34A"/></linearGradient>
+      <linearGradient id="chipFace" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#22C55E"/><stop offset="100%" stopColor="#15803D"/></linearGradient>
+      <linearGradient id="platBase" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="rgba(34,197,94,0.25)"/><stop offset="100%" stopColor="rgba(34,197,94,0.05)"/></linearGradient>
+      <filter id="glowAI"><feGaussianBlur stdDeviation="2.5" result="b"/><feComposite in="SourceGraphic" in2="b" operator="over"/></filter>
+    </defs>
+    <ellipse cx="36" cy="62" rx="22" ry="5" fill="rgba(34,197,94,0.18)"/>
+    <ellipse cx="36" cy="59" rx="18" ry="3.5" fill="rgba(34,197,94,0.10)"/>
+    <rect x="14" y="20" width="44" height="36" rx="7" fill="url(#chipFace)" filter="url(#glowAI)"/>
+    <rect x="17" y="23" width="38" height="30" rx="5" fill="#22C55E" opacity="0.4"/>
+    <rect x="20" y="26" width="32" height="24" rx="3" fill="#166534" opacity="0.6"/>
+    <line x1="24" y1="26" x2="24" y2="50" stroke="#22C55E" strokeWidth="0.6" opacity="0.5"/>
+    <line x1="30" y1="26" x2="30" y2="50" stroke="#22C55E" strokeWidth="0.6" opacity="0.5"/>
+    <line x1="36" y1="26" x2="36" y2="50" stroke="#22C55E" strokeWidth="0.6" opacity="0.5"/>
+    <line x1="42" y1="26" x2="42" y2="50" stroke="#22C55E" strokeWidth="0.6" opacity="0.5"/>
+    <line x1="48" y1="26" x2="48" y2="50" stroke="#22C55E" strokeWidth="0.6" opacity="0.5"/>
+    <line x1="20" y1="32" x2="52" y2="32" stroke="#22C55E" strokeWidth="0.6" opacity="0.5"/>
+    <line x1="20" y1="38" x2="52" y2="38" stroke="#22C55E" strokeWidth="0.6" opacity="0.5"/>
+    <line x1="20" y1="44" x2="52" y2="44" stroke="#22C55E" strokeWidth="0.6" opacity="0.5"/>
+    <rect x="22" y="28" width="28" height="20" rx="2" fill="#14532D" opacity="0.8"/>
+    <text x="36" y="41" textAnchor="middle" fill="white" fontSize="11" fontWeight="800" fontFamily="Inter,sans-serif" letterSpacing="1">AI</text>
+    <rect x="8" y="30" width="6" height="3" rx="1.5" fill="#4ADE80"/><rect x="8" y="36" width="6" height="3" rx="1.5" fill="#4ADE80"/><rect x="8" y="42" width="6" height="3" rx="1.5" fill="#4ADE80"/>
+    <rect x="58" y="30" width="6" height="3" rx="1.5" fill="#4ADE80"/><rect x="58" y="36" width="6" height="3" rx="1.5" fill="#4ADE80"/><rect x="58" y="42" width="6" height="3" rx="1.5" fill="#4ADE80"/>
+    <rect x="26" y="14" width="3" height="6" rx="1.5" fill="#4ADE80"/><rect x="33" y="14" width="3" height="6" rx="1.5" fill="#4ADE80"/><rect x="40" y="14" width="3" height="6" rx="1.5" fill="#4ADE80"/>
+    <rect x="2" y="28" width="7" height="5" rx="2.5" fill="rgba(34,197,94,0.3)" stroke="#22C55E" strokeWidth="0.5"/>
+    <rect x="2" y="35" width="7" height="5" rx="2.5" fill="rgba(34,197,94,0.3)" stroke="#22C55E" strokeWidth="0.5"/>
+    <rect x="2" y="42" width="7" height="5" rx="2.5" fill="rgba(34,197,94,0.3)" stroke="#22C55E" strokeWidth="0.5"/>
+    <ellipse cx="36" cy="20" rx="14" ry="3" fill="url(#chipTop)" opacity="0.7"/>
+  </svg>
+);
+
+const IllustShield = () => (
+  <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+    <defs>
+      <linearGradient id="shBase" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#374151"/><stop offset="100%" stopColor="#1F2937"/></linearGradient>
+      <linearGradient id="shFace" x1="0" y1="0" x2="0.5" y2="1"><stop offset="0%" stopColor="#4B5563"/><stop offset="100%" stopColor="#111827"/></linearGradient>
+      <linearGradient id="shGreen" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#22C55E"/><stop offset="100%" stopColor="#16A34A"/></linearGradient>
+    </defs>
+    <ellipse cx="36" cy="63" rx="20" ry="4" fill="rgba(0,0,0,0.18)"/>
+    <rect x="12" y="55" width="48" height="7" rx="3" fill="#111827" opacity="0.5"/>
+    <path d="M36 10 L58 20 L58 42 C58 52 48 60 36 64 C24 60 14 52 14 42 L14 20 Z" fill="url(#shBase)"/>
+    <path d="M36 14 L55 23 L55 41 C55 50 46 57 36 61 C26 57 17 50 17 41 L17 23 Z" fill="url(#shFace)"/>
+    <path d="M36 16 L53 24.5 L53 40.5 C53 49 45 55.5 36 59 C27 55.5 19 49 19 40.5 L19 24.5 Z" fill="#1F2937" opacity="0.7"/>
+    <circle cx="36" cy="39" r="12" fill="url(#shGreen)" opacity="0.9"/>
+    <rect x="31" y="35" width="10" height="9" rx="2" fill="white" opacity="0.9"/>
+    <path d="M33 35 L33 33 C33 31 39 31 39 33 L39 35" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round"/>
+    <circle cx="36" cy="40" r="2" fill="#16A34A"/>
+    <path d="M36 42 L36 44" stroke="#16A34A" strokeWidth="2" strokeLinecap="round"/>
+    <ellipse cx="36" cy="58" rx="5" ry="1.5" fill="rgba(34,197,94,0.2)"/>
+    <path d="M22 22 L28 24" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" strokeLinecap="round"/>
+  </svg>
+);
+
+const IllustGlobe = () => (
+  <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+    <defs>
+      <radialGradient id="ocean" cx="40%" cy="35%" r="60%"><stop offset="0%" stopColor="#3B82F6"/><stop offset="100%" stopColor="#1D4ED8"/></radialGradient>
+      <radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="rgba(34,197,94,0.3)"/><stop offset="100%" stopColor="rgba(34,197,94,0)"/></radialGradient>
+    </defs>
+    <circle cx="36" cy="36" r="22" fill="url(#ocean)"/>
+    <circle cx="36" cy="36" r="22" fill="url(#glow)"/>
+    <ellipse cx="36" cy="63" rx="16" ry="4" fill="rgba(59,130,246,0.2)"/>
+    <ellipse cx="36" cy="14" rx="22" ry="4" fill="rgba(59,130,246,0.2)"/>
+    <path d="M28 22 C26 24 24 28 24 32 C24 36 25 38 28 40 C30 41 32 40 34 38 C35 36 36 32 35 28 C34 24 30 20 28 22Z" fill="#22C55E" opacity="0.95"/>
+    <path d="M34 28 C35 30 36 33 35 36 C34 39 32 41 30 42 C32 44 35 44 38 43 C40 42 41 40 41 37 C41 33 39 29 37 27 C36 26 34 26 34 28Z" fill="#16A34A"/>
+    <path d="M36 40 C37 42 38 44 37 46 C36 47 35 46 35 44 C34 43 35 41 36 40Z" fill="#22C55E" opacity="0.8"/>
+    <path d="M21 26 C22 25 24 25 25 26 C25 28 24 29 23 29 C22 28 21 27 21 26Z" fill="#34D399" opacity="0.6"/>
+    <path d="M44 20 C46 21 47 23 46 25 C45 26 43 26 42 24 C42 22 43 20 44 20Z" fill="#4ADE80" opacity="0.6"/>
+    <ellipse cx="36" cy="36" rx="22" ry="6" stroke="rgba(147,197,253,0.3)" strokeWidth="0.8" fill="none"/>
+    <ellipse cx="36" cy="36" rx="6" ry="22" stroke="rgba(147,197,253,0.3)" strokeWidth="0.8" fill="none"/>
+    <line x1="14" y1="36" x2="58" y2="36" stroke="rgba(147,197,253,0.3)" strokeWidth="0.8"/>
+    <path d="M14 28 Q36 24 58 28" stroke="rgba(147,197,253,0.25)" strokeWidth="0.7" fill="none"/>
+    <path d="M14 44 Q36 48 58 44" stroke="rgba(147,197,253,0.25)" strokeWidth="0.7" fill="none"/>
+    <circle cx="36" cy="36" r="22" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
+    <ellipse cx="29" cy="28" rx="5" ry="3" fill="rgba(255,255,255,0.08)" transform="rotate(-20 29 28)"/>
+  </svg>
+);
+
+const IllustCard = () => (
+  <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+    <defs>
+      <linearGradient id="cardBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#1F2937"/><stop offset="100%" stopColor="#0F172A"/></linearGradient>
+      <linearGradient id="cardShine" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stopColor="rgba(255,255,255,0.12)"/><stop offset="50%" stopColor="rgba(255,255,255,0.04)"/><stop offset="100%" stopColor="rgba(255,255,255,0)"/></linearGradient>
+      <linearGradient id="lockBody" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#9CA3AF"/><stop offset="100%" stopColor="#4B5563"/></linearGradient>
+      <linearGradient id="chipCard" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#F4C542"/><stop offset="100%" stopColor="#D97706"/></linearGradient>
+    </defs>
+    <ellipse cx="36" cy="63" rx="20" ry="4" fill="rgba(0,0,0,0.2)"/>
+    <rect x="8" y="22" width="50" height="32" rx="5" fill="url(#cardBg)"/>
+    <rect x="8" y="22" width="50" height="32" rx="5" fill="url(#cardShine)"/>
+    <rect x="8" y="30" width="50" height="8" fill="rgba(255,255,255,0.06)"/>
+    <rect x="13" y="34" width="18" height="13" rx="2" fill="url(#chipCard)"/>
+    <line x1="13" y1="38" x2="31" y2="38" stroke="rgba(0,0,0,0.3)" strokeWidth="0.8"/>
+    <line x1="13" y1="42" x2="31" y2="42" stroke="rgba(0,0,0,0.3)" strokeWidth="0.8"/>
+    <line x1="18" y1="34" x2="18" y2="47" stroke="rgba(0,0,0,0.2)" strokeWidth="0.8"/>
+    <line x1="24" y1="34" x2="24" y2="47" stroke="rgba(0,0,0,0.2)" strokeWidth="0.8"/>
+    {[0,1,2,3,4,5,6,7].map(i=><circle key={i} cx={35+(i%4)*5} cy={50-(Math.floor(i/4)*4)} r="1.5" fill="rgba(255,255,255,0.2)"/>)}
+    <text x="49" y="51" textAnchor="end" fill="rgba(255,255,255,0.5)" fontSize="6" fontFamily="monospace" fontWeight="600">VISA</text>
+    <circle cx="51" cy="46" r="12" fill="#1F2937"/>
+    <rect x="43" y="44" width="16" height="12" rx="2.5" fill="url(#lockBody)"/>
+    <rect x="44" y="44" width="14" height="7" rx="2" fill="#6B7280"/>
+    <path d="M47 44 L47 41.5 C47 39.5 55 39.5 55 41.5 L55 44" stroke="#9CA3AF" strokeWidth="2" fill="none" strokeLinecap="round"/>
+    <circle cx="51" cy="49.5" r="2" fill="#374151"/>
+    <path d="M51 51.5 L51 53" stroke="#374151" strokeWidth="1.5" strokeLinecap="round"/>
+    <circle cx="52" cy="45" r="8" fill="rgba(34,197,94,0.08)" stroke="rgba(34,197,94,0.2)" strokeWidth="0.5"/>
+  </svg>
+);
+
+const ShieldUserSVG = () => (
+  <svg width="56" height="64" viewBox="0 0 56 64" fill="none">
+    <defs>
+      <linearGradient id="sug1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#22C55E"/><stop offset="100%" stopColor="#16A34A"/></linearGradient>
+    </defs>
+    <path d="M28 4 L52 14 L52 36 C52 50 42 59 28 62 C14 59 4 50 4 36 L4 14 Z" fill="url(#sug1)"/>
+    <path d="M28 8 L48 17 L48 35 C48 48 39 56 28 59 C17 56 8 48 8 35 L8 17 Z" fill="#16A34A" opacity="0.5"/>
+    <circle cx="28" cy="28" r="9" fill="white" opacity="0.95"/>
+    <circle cx="28" cy="26" r="4" fill="#22C55E"/>
+    <path d="M19 38 C19 33 22 31 28 31 C34 31 37 33 37 38" stroke="white" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+    <circle cx="28" cy="26" r="4" fill="#16A34A"/>
+    <polyline points="24 26 27 29 33 23" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+const ShieldPhoneLockSVG = () => (
+  <svg width="72" height="64" viewBox="0 0 72 64" fill="none">
+    <defs>
+      <linearGradient id="spl1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#22C55E"/><stop offset="100%" stopColor="#16A34A"/></linearGradient>
+      <linearGradient id="spl2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#374151"/><stop offset="100%" stopColor="#1F2937"/></linearGradient>
+    </defs>
+    <circle cx="36" cy="32" r="28" fill="rgba(34,197,94,0.08)"/>
+    <circle cx="36" cy="32" r="20" fill="rgba(34,197,94,0.05)"/>
+    <path d="M36 6 L54 14 L54 30 C54 40 46 47 36 50 C26 47 18 40 18 30 L18 14 Z" fill="url(#spl1)" opacity="0.9"/>
+    <polyline points="27 30 33 36 46 23" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+    <rect x="52" y="18" width="16" height="26" rx="3" fill="url(#spl2)"/>
+    <rect x="53.5" y="19.5" width="13" height="23" rx="2" fill="#111827"/>
+    <rect x="55" y="22" width="10" height="16" rx="1" fill="#1F2937"/>
+    <circle cx="60" cy="41" r="1.2" fill="#374151"/>
+    <rect x="3" y="28" width="14" height="10" rx="2" fill="#4B5563"/>
+    <rect x="4" y="29" width="12" height="6" rx="1.5" fill="#374151"/>
+    <path d="M6 29 L6 27.5 C6 25.5 12 25.5 12 27.5 L12 29" stroke="#6B7280" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
+    <circle cx="10" cy="33" r="1.3" fill="#6B7280"/>
+    <path d="M10 34.3 L10 35.5" stroke="#6B7280" strokeWidth="1" strokeLinecap="round"/>
+  </svg>
+);
+
+const FEATURE_CARDS_DATA = [
+  {
+    illust: <IllustAI/>,
+    title:"Assistant IA",
+    desc:"Titre, description et prix suggérés pour maximiser vos ventes",
+    badge:"✓ Optimisation intelligente",
+    badgeBg:"#DCFCE7", badgeColor:"#16A34A",
+  },
+  {
+    illust: <IllustShield/>,
+    title:"Protection garantie",
+    desc:"Détection anti-fraude et protection complète de vos données",
+    badge:"✓ 100% Sécurisé",
+    badgeBg:"#DCFCE7", badgeColor:"#16A34A",
+  },
+  {
+    illust: <IllustGlobe/>,
+    title:"Diffusion maximale",
+    desc:"Touchez des milliers d'acheteurs à travers toute l'Afrique",
+    badge:"📶 Visibilité continentale",
+    badgeBg:"#DCFCE7", badgeColor:"#16A34A",
+  },
+  {
+    illust: <IllustCard/>,
+    title:"Paiement sécurisé",
+    desc:"Transactions sécurisées et paiement garanti sur BrutePawa",
+    badge:"🔒 Paiement protégé",
+    badgeBg:"#DCFCE7", badgeColor:"#16A34A",
+  },
 ];
 
 function Step1({ photos, uploading, progress, phase, onSelectFiles, onRemove, onSetMain, onDrop }: {
@@ -158,11 +326,11 @@ function Step1({ photos, uploading, progress, phase, onSelectFiles, onRemove, on
   );
 
   const checklist = [
-    { label:"Photo principale",   ok: photos.length >= 1 },
-    { label:"Au moins 3 photos",  ok: photos.length >= 3 },
-    { label:"Bonne luminosité",   ok: photos.length >= 1 },
-    { label:"Photo de face",      ok: photos.length >= 1 },
-    { label:"Photo en extérieur", ok: photos.length >= 2 },
+    { label:"Photo principale",  ok: photos.length >= 1 },
+    { label:"Au moins 3 photos", ok: photos.length >= 3 },
+    { label:"Bonne luminosité",  ok: photos.length >= 1 },
+    { label:"Photo nette",       ok: photos.length >= 1 },
+    { label:"Plusieurs angles",  ok: photos.length >= 3 },
   ];
 
   return (
@@ -170,143 +338,188 @@ function Step1({ photos, uploading, progress, phase, onSelectFiles, onRemove, on
       <input ref={fileRef} type="file" accept="image/*,video/mp4,video/webm" multiple style={{ display:"none" }}
         onChange={e => { if (e.target.files) { onSelectFiles(Array.from(e.target.files)); e.target.value=""; }}} />
 
-      {/* Upload zone */}
-      <div
-        onDragOver={e => { e.preventDefault(); setDragOver(true); }}
-        onDragLeave={() => setDragOver(false)}
-        onDrop={e => { e.preventDefault(); setDragOver(false); onDrop(e); }}
-        onClick={() => !uploading && photos.length < 10 && fileRef.current?.click()}
-        style={{
-          border:`2px dashed ${dragOver ? G : "#D1D5DB"}`,
-          borderRadius:20, padding:"30px 20px",
-          background: dragOver ? `${G}08` : "#fff",
-          cursor:(uploading||photos.length>=10)?"default":"pointer",
-          display:"flex", flexDirection:"column", alignItems:"center", gap:10,
-          transition:"all 0.2s ease",
-          boxShadow: dragOver ? `0 0 0 4px ${G}20, 0 10px 30px rgba(0,0,0,0.08)` : "0 10px 30px rgba(0,0,0,0.06)",
-        }}
-      >
-        <IcCloud/>
-        <div style={{ textAlign:"center" }}>
-          {uploading ? (
-            <>
-              <div style={{ fontWeight:700, fontSize:14, color:"#374151" }}>{phaseLabel(phase as never, progress)}</div>
-              <div style={{ marginTop:10, width:220, height:5, background:"#E5E7EB", borderRadius:99 }}>
-                <div style={{ width:`${progress}%`, height:"100%", background:`linear-gradient(90deg,${G},${GD})`, borderRadius:99, transition:"width 0.3s" }} />
-              </div>
-              <div style={{ fontSize:12, color:G, fontWeight:600, marginTop:5 }}>{progress}%</div>
-            </>
-          ) : photos.length >= 10 ? (
-            <div style={{ fontWeight:600, fontSize:14, color:"#9CA3AF" }}>Maximum 10 photos atteint</div>
-          ) : (
-            <>
-              <div style={{ fontWeight:700, fontSize:16, color:"#374151" }}>Ajoutez jusqu'à 10 photos ou vidéos</div>
-              <div style={{ fontSize:13, color:"#9CA3AF", marginTop:4 }}>Glissez-déposez ou sélectionnez</div>
-              <div style={{ fontSize:12, color:"#D1D5DB", marginTop:3 }}>JPG, PNG, WEBP, MP4 · Max 50 Mo</div>
-            </>
-          )}
-        </div>
-      </div>
+      {/* ── HERO UPLOAD CARD (left/right split) ── */}
+      <div style={{ background:"#fff", borderRadius:24, border:`1.5px solid ${dragOver?G:"#E5E7EB"}`, boxShadow: dragOver?`0 0 0 4px ${G}20,0 10px 40px rgba(15,23,42,0.08)`:"0 10px 40px rgba(15,23,42,0.08)", overflow:"hidden", transition:"all 0.2s" }}>
+        <div style={{ display:"flex", minHeight:170 }}>
 
-      {/* Thumbnails */}
-      {photos.length > 0 && (
-        <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
-          {photos.map((ph,i) => (
-            <div key={i} style={{
-              position:"relative", width:80, height:80, borderRadius:14, overflow:"hidden",
-              border: i===0 ? `3px solid ${G}` : "2px solid #E5E7EB",
-              flexShrink:0,
-              boxShadow: i===0 ? `0 4px 12px ${G}35` : "0 2px 6px rgba(0,0,0,0.08)",
-            }}>
-              <img src={ph.localUrl} alt={ph.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
-              {i===0 && (
-                <div style={{ position:"absolute", bottom:0, left:0, right:0, background:`${G}E0`, padding:"3px 0", textAlign:"center", fontSize:9, fontWeight:700, color:"#fff", letterSpacing:0.3 }}>
-                  Photo principale
+          {/* LEFT — drag zone + CTA */}
+          <div
+            onDragOver={e=>{ e.preventDefault(); setDragOver(true); }}
+            onDragLeave={()=>setDragOver(false)}
+            onDrop={e=>{ e.preventDefault(); setDragOver(false); onDrop(e); }}
+            onClick={()=>!uploading&&photos.length<10&&fileRef.current?.click()}
+            style={{ flex:"0 0 52%", padding:"20px 14px 16px", display:"flex", flexDirection:"column", gap:9, justifyContent:"center", cursor:uploading||photos.length>=10?"default":"pointer" }}
+          >
+            {/* Cloud icon */}
+            <div style={{ width:40, height:40 }}>
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke={G} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/>
+                <path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/>
+              </svg>
+            </div>
+            {uploading ? (
+              <div>
+                <div style={{ fontWeight:700, fontSize:13, color:"#0F172A" }}>{phaseLabel(phase as never, progress)}</div>
+                <div style={{ marginTop:8, width:"100%", height:4, background:"#E5E7EB", borderRadius:99 }}>
+                  <div style={{ width:`${progress}%`, height:"100%", background:`linear-gradient(90deg,${G},${GD})`, borderRadius:99, transition:"width 0.3s" }}/>
                 </div>
-              )}
-              {i!==0 && (
-                <button onClick={e => { e.stopPropagation(); onSetMain(i); }} style={{
-                  position:"absolute", bottom:3, left:"50%", transform:"translateX(-50%)",
-                  background:"rgba(0,0,0,0.55)", border:"none", borderRadius:6, padding:"2px 5px",
-                  fontSize:8.5, color:"#fff", cursor:"pointer", whiteSpace:"nowrap",
-                }}>Principale</button>
-              )}
-              <button onClick={e => { e.stopPropagation(); onRemove(i); }} style={{
-                position:"absolute", top:4, right:4, background:"rgba(239,68,68,0.92)", border:"none",
-                borderRadius:"50%", width:18, height:18, cursor:"pointer",
-                display:"flex", alignItems:"center", justifyContent:"center",
-              }}><IcX/></button>
-            </div>
-          ))}
-          {photos.length < 10 && (
-            <button onClick={() => fileRef.current?.click()} style={{
-              width:80, height:80, borderRadius:14, border:`2px dashed ${G}`,
-              background:`${G}08`, display:"flex", flexDirection:"column",
-              alignItems:"center", justifyContent:"center", cursor:"pointer", gap:4,
-            }}>
-              <IcPlus/>
-              <span style={{ fontSize:10, color:G, fontWeight:600 }}>Ajouter</span>
-            </button>
-          )}
-        </div>
-      )}
-
-      {/* Quality score */}
-      <div style={{ background:"#fff", borderRadius:20, padding:"16px", boxShadow:"0 10px 30px rgba(0,0,0,0.08)", border:"1px solid #F1F5F9" }}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
-          <span style={{ fontWeight:700, fontSize:14, color:"#111827" }}>Qualité des médias</span>
-          <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-            <div style={{
-              width:36, height:36, borderRadius:"50%",
-              background:`conic-gradient(${G} ${qualityScore*3.6}deg, #E5E7EB 0deg)`,
-              display:"flex", alignItems:"center", justifyContent:"center",
-              boxShadow:`0 0 0 3px #fff, 0 0 0 5px ${G}20`,
-            }}>
-              <div style={{ width:26, height:26, borderRadius:"50%", background:"#fff", display:"flex", alignItems:"center", justifyContent:"center" }}>
-                <span style={{ fontSize:10, fontWeight:800, color:G }}>{qualityScore}</span>
+                <div style={{ fontSize:11, color:G, fontWeight:700, marginTop:4 }}>{progress}%</div>
               </div>
-            </div>
-            <span style={{ fontSize:12, color:"#6B7280", fontWeight:600 }}>/100</span>
+            ) : (
+              <>
+                <div>
+                  <div style={{ fontWeight:700, fontSize:15, color:"#0F172A", lineHeight:1.35 }}>Glissez-déposez vos photos ou vidéos</div>
+                  <div style={{ fontSize:12, color:"#64748B", marginTop:4 }}>ou sélectionnez depuis votre galerie</div>
+                </div>
+                {/* Format pills */}
+                <div style={{ display:"flex", flexWrap:"wrap", alignItems:"center", gap:4 }}>
+                  {["JPG","PNG","WEBP","MP4"].map(f=>(
+                    <span key={f} style={{ fontSize:10.5, fontWeight:600, color:"#64748B", background:"#F8FAFC", border:"1px solid #E5E7EB", borderRadius:99, padding:"2px 7px" }}>{f}</span>
+                  ))}
+                  <span style={{ fontSize:10.5, color:"#9CA3AF" }}>• Max 50 Mo</span>
+                </div>
+                {/* Badge */}
+                <div style={{ display:"inline-flex", alignItems:"center", gap:5, background:"#F0FDF4", border:`1px solid ${G}50`, borderRadius:99, padding:"4px 10px", alignSelf:"flex-start" }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={G} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  <span style={{ fontSize:11, color:GD, fontWeight:600 }}>Jusqu'à 10 photos ou 1 vidéo</span>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* RIGHT — photo fan + add button */}
+          <div style={{ flex:1, padding:"14px 12px", display:"flex", alignItems:"center", justifyContent:"flex-end", gap:8, overflow:"hidden" }}>
+            {photos.length > 0 ? (
+              <div style={{ position:"relative", width:130, height:130, flexShrink:0 }}>
+                {photos.slice(0,3).map((ph,i) => {
+                  const rots = [-10, 0, 10];
+                  const txs = [-28, 0, 28];
+                  return (
+                    <div key={i} style={{
+                      position:"absolute", left:"50%", top:"50%",
+                      width:86, height:108,
+                      borderRadius:14, overflow:"hidden",
+                      border:"2.5px solid #fff",
+                      boxShadow:"0 6px 20px rgba(0,0,0,0.18)",
+                      transform:`translate(calc(-50% + ${txs[i]}px), -50%) rotate(${rots[i]}deg)`,
+                      zIndex: i===1?3:i===0?2:1,
+                    }}>
+                      <img src={ph.localUrl} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+                      {i===1 && (
+                        <div style={{ position:"absolute", bottom:0, left:0, right:0, background:`linear-gradient(transparent,rgba(0,0,0,0.65))`, padding:"14px 4px 5px", textAlign:"center" }}>
+                          <span style={{ fontSize:8.5, fontWeight:700, color:"#fff" }}>👑 Photo principale</span>
+                        </div>
+                      )}
+                      <button onClick={e=>{ e.stopPropagation(); onRemove(photos.indexOf(ph)); }} style={{ position:"absolute", top:4, right:4, background:"rgba(239,68,68,0.9)", border:"none", borderRadius:"50%", width:17, height:17, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                        <IcX/>
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div style={{ width:86, height:108, borderRadius:14, border:"2px dashed #D1D5DB", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="1.5" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              </div>
+            )}
+            {photos.length < 10 && (
+              <button onClick={()=>fileRef.current?.click()} style={{ width:44, height:44, borderRadius:12, border:"1.5px dashed #D1D5DB", background:"#F8FAFC", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", flexShrink:0, fontSize:22, color:"#9CA3AF", lineHeight:1 }}>
+                +
+              </button>
+            )}
           </div>
         </div>
-        <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
-          {checklist.map(item => (
-            <div key={item.label} style={{ display:"flex", alignItems:"center", gap:10 }}>
-              <div style={{ width:20, height:20, borderRadius:"50%", background: item.ok ? G : "#E5E7EB", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, transition:"all 0.3s" }}>
-                {item.ok && <IcCheckW/>}
+      </div>
+
+      {/* ── QUALITY CARD (3 columns) ── */}
+      <div style={{ background:"#fff", borderRadius:24, padding:"16px", boxShadow:"0 10px 40px rgba(15,23,42,0.08)", border:"1px solid #E5E7EB" }}>
+        <div style={{ fontSize:13, fontWeight:700, color:"#0F172A", marginBottom:12 }}>Qualité des médias</div>
+        <div style={{ display:"flex", alignItems:"flex-start", gap:12 }}>
+
+          {/* Score ring */}
+          <div style={{ flexShrink:0, display:"flex", flexDirection:"column", alignItems:"center", gap:2 }}>
+            <div style={{
+              width:62, height:62, borderRadius:"50%",
+              background:`conic-gradient(${G} ${qualityScore*3.6}deg, #E5E7EB ${qualityScore*3.6}deg)`,
+              display:"flex", alignItems:"center", justifyContent:"center",
+            }}>
+              <div style={{ width:48, height:48, borderRadius:"50%", background:"#fff", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:0 }}>
+                <span style={{ fontSize:17, fontWeight:800, color:"#0F172A", lineHeight:1 }}>{qualityScore}</span>
+                <span style={{ fontSize:9, color:"#64748B", lineHeight:1 }}>/100</span>
               </div>
-              <span style={{ fontSize:13, color: item.ok?"#111827":"#9CA3AF", fontWeight: item.ok?500:400 }}>{item.label}</span>
             </div>
-          ))}
+          </div>
+
+          {/* Checklist 2-column */}
+          <div style={{ flex:1, display:"grid", gridTemplateColumns:"1fr 1fr", gap:"7px 6px", alignContent:"start" }}>
+            {checklist.map(item => (
+              <div key={item.label} style={{ display:"flex", alignItems:"center", gap:5 }}>
+                <div style={{ width:17, height:17, borderRadius:"50%", background: item.ok ? G : "#E5E7EB", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, transition:"all 0.3s" }}>
+                  {item.ok
+                    ? <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="10 3 5 9 2 6"/></svg>
+                    : <div style={{ width:5, height:5, borderRadius:"50%", background:"#D1D5DB" }}/>
+                  }
+                </div>
+                <span style={{ fontSize:11, color: item.ok?"#0F172A":"#9CA3AF", fontWeight: item.ok?500:400 }}>{item.label}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Conseil BrutePawa box */}
+          <div style={{ flexShrink:0, width:112, background:"#F0FDF4", borderRadius:14, padding:"10px 9px", border:"1px solid #DCFCE7" }}>
+            <div style={{ fontSize:10.5, fontWeight:700, color:GD, marginBottom:5, display:"flex", alignItems:"center", gap:3 }}>
+              <span>✨</span> Conseil BrutePawa
+            </div>
+            <div style={{ fontSize:10, color:"#374151", lineHeight:1.55 }}>Les annonces avec 5+ photos se vendent 3x plus vite ! Ajoutez des photos sous plusieurs angles.</div>
+          </div>
         </div>
       </div>
 
-      {/* AI tip */}
-      <div style={{ background:`${G}0D`, borderRadius:18, padding:"14px", border:`1px solid ${G}30`, display:"flex", gap:12, alignItems:"flex-start", boxShadow:"0 4px 16px rgba(34,197,94,0.1)" }}>
-        <div style={{ width:36, height:36, borderRadius:12, background:G, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-          <IcBulb/>
-        </div>
-        <div>
-          <div style={{ fontWeight:700, fontSize:13, color:GD, marginBottom:4 }}>Conseil BrutePawa</div>
-          <div style={{ fontSize:13, color:"#374151", lineHeight:1.6 }}>Les annonces avec 5+ photos se vendent 3x plus vite ! Ajoutez des photos sous plusieurs angles.</div>
-        </div>
+      {/* ── WHY BRUTEPAWA SECTION ── */}
+      <div style={{ textAlign:"center", padding:"6px 0 2px" }}>
+        <div style={{ fontSize:16, fontWeight:700, color:"#0F172A" }}>Pourquoi publier sur BrutePawa ?</div>
+        <div style={{ fontSize:12.5, color:"#64748B", marginTop:4 }}>Nous vous aidons à vendre plus vite et en toute sécurité</div>
       </div>
 
-      {/* Feature cards grid */}
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:10 }}>
-        {FEATURES.map(f => (
-          <div key={f.title} style={{ background:"#fff", borderRadius:18, padding:"14px 10px", boxShadow:"0 10px 30px rgba(0,0,0,0.07)", border:"1px solid #F1F5F9", textAlign:"center" }}>
-            <div style={{ fontSize:24, marginBottom:6 }}>{f.icon}</div>
-            <div style={{ fontWeight:700, fontSize:12, color:"#111827", marginBottom:4, lineHeight:1.3 }}>{f.title}</div>
-            <div style={{ fontSize:10.5, color:"#9CA3AF", lineHeight:1.5 }}>{f.desc}</div>
+      {/* ── 4 FEATURE CARDS ── */}
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:8 }}>
+        {FEATURE_CARDS_DATA.map(card => (
+          <div key={card.title} style={{
+            background:"#fff", borderRadius:18, padding:"12px 6px 10px",
+            boxShadow:"0 10px 40px rgba(15,23,42,0.08)", border:"1px solid #E5E7EB",
+            display:"flex", flexDirection:"column", alignItems:"center", gap:6,
+            cursor:"default", transition:"transform 0.3s, box-shadow 0.3s",
+          }}
+            onMouseEnter={e=>(e.currentTarget.style.cssText+=";transform:translateY(-6px) scale(1.02);box-shadow:0 16px 40px rgba(15,23,42,0.14)")}
+            onMouseLeave={e=>{ e.currentTarget.style.transform=""; e.currentTarget.style.boxShadow="0 10px 40px rgba(15,23,42,0.08)"; }}
+          >
+            <div style={{ animation:"float 3s ease-in-out infinite" }}>{card.illust}</div>
+            <div style={{ fontWeight:700, fontSize:11, color:"#0F172A", textAlign:"center", lineHeight:1.3 }}>{card.title}</div>
+            <div style={{ fontSize:9.5, color:"#64748B", textAlign:"center", lineHeight:1.45, flex:1 }}>{card.desc}</div>
+            <div style={{ background:card.badgeBg, borderRadius:99, padding:"3px 8px" }}>
+              <span style={{ fontSize:9.5, color:card.badgeColor, fontWeight:700 }}>{card.badge}</span>
+            </div>
           </div>
         ))}
       </div>
 
-      {/* Security bar */}
-      <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:7, padding:"11px", background:"#fff", borderRadius:14, border:"1px solid #F1F5F9", boxShadow:"0 2px 8px rgba(0,0,0,0.04)" }}>
-        <IcShield/>
-        <span style={{ fontSize:12.5, color:"#6B7280", fontWeight:500 }}>BrutePawa protège vos données et sécurise vos transactions</span>
+      {/* ── TRUST BANNER ── */}
+      <div style={{ background:"linear-gradient(135deg,#fff 0%,#F0FDF4 100%)", borderRadius:24, padding:"14px 16px", border:"1px solid #DCFCE7", display:"flex", alignItems:"center", gap:10, boxShadow:"0 4px 20px rgba(34,197,94,0.08)" }}>
+        {/* Left shield */}
+        <div style={{ flexShrink:0 }}><ShieldUserSVG/></div>
+        {/* Center */}
+        <div style={{ flex:1, minWidth:0 }}>
+          <div style={{ fontSize:13.5, fontWeight:700, color:"#0F172A", lineHeight:1.4 }}>
+            BrutePawa <span style={{ color:G }}>protège vos données</span> et sécurise vos transactions
+          </div>
+          <div style={{ display:"flex", flexWrap:"wrap", gap:4, marginTop:6 }}>
+            {["✓ Données chiffrées","✓ Paiements sécurisés","✓ Support 24/7","✓ Politique anti-fraude"].map(b=>(
+              <span key={b} style={{ fontSize:10, fontWeight:600, color:GD, background:"#F8FAFC", border:"1px solid #E5E7EB", borderRadius:999, padding:"2px 7px", whiteSpace:"nowrap" }}>{b}</span>
+            ))}
+          </div>
+        </div>
+        {/* Right shield+phone+lock */}
+        <div style={{ flexShrink:0 }}><ShieldPhoneLockSVG/></div>
       </div>
     </div>
   );
@@ -961,6 +1174,7 @@ export default function CreateListingPage() {
         @keyframes spin   { to { transform:rotate(360deg); } }
         @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
         @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+        @keyframes float  { 0%,100%{transform:translateY(0px);} 50%{transform:translateY(-6px);} }
         * { box-sizing:border-box; }
         ::-webkit-scrollbar { width:0; }
         button:active { transform:scale(0.96); }
