@@ -63,6 +63,7 @@ import AboutPage from "./pages/AboutPage";
 import BroadcastListPage from "./pages/BroadcastListPage";
 import PeoplePage from "./pages/PeoplePage";
 
+import { Toaster } from "sonner";
 import { ADMIN_SECRET_PATH } from "./lib/admin";
 import { Post } from "./lib/store";
 import { apiGetPosts, apiLikePost, apiCreatePost, getBpToken } from "./lib/api";
@@ -542,6 +543,7 @@ export default function App() {
         <PushAutoSubscribe />
         <AppContent />
         <InstallBanner />
+        <Toaster position="top-center" richColors closeButton />
       </Router>
     </GlobalErrorBoundary>
   );

@@ -1,3 +1,5 @@
+import { toast } from "sonner";
+
 const BASE = "/api";
 
 export function getBpToken(): string | null {
@@ -36,11 +38,30 @@ export async function apiFetch(path: string, options?: RequestInit): Promise<Res
     ...(options?.headers as Record<string, string> ?? {}),
   };
   if (token) headers["Authorization"] = `Bearer ${token}`;
-  const res = await fetch(`${BASE}${path}`, { ...options, headers });
+
+  let res: Response;
+  try {
+    res = await fetch(`${BASE}${path}`, { ...options, headers });
+  } catch {
+    toast.error("Impossible de joindre le serveur", {
+      description: "Vérifiez votre connexion internet.",
+      duration: 4000,
+    });
+    throw new Error("Network error");
+  }
+
   if (res.status === 401 && token) {
     clearBpToken();
     window.dispatchEvent(new CustomEvent("bp:session-expired"));
+    return res;
   }
+
+  if (!res.ok && res.status !== 401) {
+    const body = await res.clone().json().catch(() => ({})) as { error?: string; message?: string };
+    const msg = body.error ?? body.message ?? `Erreur ${res.status}`;
+    toast.error(msg, { duration: 4000 });
+  }
+
   return res;
 }
 
