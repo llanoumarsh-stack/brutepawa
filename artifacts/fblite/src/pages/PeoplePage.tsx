@@ -86,8 +86,6 @@ function SuggestionCard({ user, onAdd, onDismiss, pending, added }:{
       borderBottom:"1px solid #F3F4F6" }}>
       <div style={{ position:"relative",flexShrink:0 }}>
         <Avatar user={user} size={54} />
-        <div style={{ position:"absolute",bottom:1,right:0,width:13,height:13,
-          background:"#22C55E",borderRadius:"50%",border:"2px solid #fff" }} />
       </div>
       <div style={{ flex:1,minWidth:0 }}>
         <div style={{ display:"flex",alignItems:"center",gap:5,marginBottom:1 }}>

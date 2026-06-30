@@ -7,7 +7,7 @@ import {
   apiSendFriendRequest, apiAcceptFriendRequest, apiRejectFriendRequest,
   apiBlockUser, apiUnblockUser, apiCheckBlock, apiReportUser, apiGetUserStats,
   apiGetMutualFriends, apiGetMutualGroups, apiHideUser,
-  apiToggleSaved, apiHidePost, apiReportPost,
+  apiToggleSaved, apiHidePost, apiReportPost, apiGetUserPresence,
   type PublicUser, type PublicUserWithStatus, type FriendRequest, type FeedPost,
 } from "../lib/api";
 
@@ -270,9 +270,11 @@ export default function UserProfilePage({ userId }: { userId: number }) {
   const [mutualGroups, setMutualGroups] = useState<{ id: number; name: string; avatarUrl: string | null; type: string }[]>([]);
   const [mutualGroupsLoading, setMutualGroupsLoading] = useState(false);
   const [hideToast, setHideToast] = useState<string | null>(null);
+  const [isOnline, setIsOnline] = useState(false);
 
   useEffect(() => {
     setLoading(true);
+    apiGetUserPresence(userId).then(p => setIsOnline(p.online)).catch(() => {});
     Promise.all([
       apiGetUserById(userId),
       apiGetUserPosts(userId),
@@ -958,7 +960,9 @@ export default function UserProfilePage({ userId }: { userId: number }) {
             ? <img src={user.avatarUrl} alt={name} style={{ width: 96, height: 96, borderRadius: "50%", border: "4px solid #fff", objectFit: "cover", boxShadow: "0 4px 20px rgba(0,0,0,0.2)" }} />
             : <div style={{ width: 96, height: 96, borderRadius: "50%", background: color, border: "4px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 900, fontSize: 32, boxShadow: "0 4px 20px rgba(0,0,0,0.2)" }}>{initials(user)}</div>
           }
-          <div style={{ position: "absolute", bottom: 7, right: 5, width: 18, height: 18, borderRadius: "50%", background: "#22C55E", border: "2.5px solid #fff" }} />
+          {isOnline && (
+            <div style={{ position: "absolute", bottom: 7, right: 5, width: 18, height: 18, borderRadius: "50%", background: "#22C55E", border: "2.5px solid #fff" }} />
+          )}
         </div>
       </div>
 
