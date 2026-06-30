@@ -245,7 +245,8 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
   };
 
   const handleShare = (postId: number) => {
-    const link = `https://brutepawa.app/post/${postId}`;
+    const base = (import.meta.env.BASE_URL ?? "/").replace(/\/$/, "");
+    const link = `${window.location.origin}${base}/post/${postId}`;
     if (navigator.share) {
       navigator.share({ title: "Publication Brute Pawa", url: link }).catch(() => {});
     } else {
@@ -699,7 +700,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 return (
                   <button
                     className="post-btn"
-                    style={{ flex: 1, borderRight: "1px solid #E5E7EB", color: liked ? rx.color : "#64748B", fontWeight: liked ? 700 : 500, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+                    style={{ flex: 1, borderRight: "1px solid #E5E7EB", color: liked ? rx.color : "#64748B", fontWeight: liked ? 700 : 500, display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}
                     onClick={() => quickLike(post.id, liked)}
                     onMouseDown={() => startReactionTimer(post.id)}
                     onMouseUp={cancelReactionTimer}
@@ -718,13 +719,13 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
               })()}
 
               {/* Commenter */}
-              <button className="post-btn" style={{ flex: 1, borderRight: "1px solid #E5E7EB", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }} onClick={() => navigate(`/post/${post.id}`)}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <button className="post-btn" style={{ flex: 1, borderRight: "1px solid #E5E7EB", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }} onClick={() => navigate(`/post/${post.id}`)}>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 Commenter
               </button>
 
               {/* Partager */}
-              <button className="post-btn" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }} onClick={() => handleShare(post.id)}>
+              <button className="post-btn" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }} onClick={() => handleShare(post.id)}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
                 Partager
               </button>

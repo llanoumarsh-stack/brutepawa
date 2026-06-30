@@ -849,18 +849,21 @@ select:focus { outline: none !important; box-shadow: none !important; border-col
 }
 .post-btn {
   flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 8px;
+  gap: 5px;
+  padding: 8px 4px;
   border-radius: 6px;
   background: none;
   border: none;
   color: var(--fb-text-secondary);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
   transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
 }
 .post-btn:hover { background: var(--fb-bg); color: var(--fb-text); }
