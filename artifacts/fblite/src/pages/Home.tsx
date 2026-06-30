@@ -1009,31 +1009,15 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                     </button>
                   ))}
                 </div>
-                {/* OTHER: hide/unfollow */}
+                {/* OTHER: hide */}
                 <div style={{ background:"#F8FAFC", borderRadius:18, overflow:"hidden" }}>
-                  {([
-                    { iconBg:"#F1F5F9", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#64748B" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>, label:"Masquer cette publication", desc:"Moins de publications comme celle-ci.", action:()=>{ handleHide(openMenu.postId); apiHidePost(openMenu.postId).catch(()=>{}); } },
-                    { iconBg:"#F1F5F9", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#64748B" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h0"/><line x1="17" y1="17" x2="17" y2="23"/><line x1="14" y1="20" x2="20" y2="20"/></svg>, label:`Ne plus suivre ${openMenu.authorName}`, desc:"Arrêter de voir ses publications.", action:()=>handleUnfollow(openMenu.authorId, openMenu.authorName) },
-                  ] as const).map((item,i,arr)=>(
-                    <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom:i<arr.length-1?"1px solid #F1F5F9":"none", textAlign:"left" }}>
-                      <div style={{ width:42, height:42, borderRadius:"50%", background:item.iconBg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{item.svg}</div>
-                      <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#111827" }}>{item.label}</div><div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:2 }}>{item.desc}</div></div>
-                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#E5E7EB" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
-                    </button>
-                  ))}
-                </div>
-                {/* OTHER: report/block danger */}
-                <div style={{ background:"#FEE2E2", borderRadius:18, overflow:"hidden" }}>
-                  {([
-                    { label:"Signaler la publication", desc:`${openMenu.authorName} ne saura pas qui l'a signalé(e).`, svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="#EF4444"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15" stroke="#EF4444" strokeWidth="2"/></svg>, action:()=>{ closeMenu(); setTimeout(()=>setReportSheet({postId:openMenu.postId,authorName:openMenu.authorName}),80); } },
-                    { label:`Bloquer ${openMenu.authorName}`, desc:"Vous ne verrez plus ses publications.", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#EF4444" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>, action:()=>{ closeMenu(); setTimeout(()=>setConfirmAction({type:"block",authorId:openMenu.authorId,authorName:openMenu.authorName}),80); } },
-                  ] as const).map((item,i,arr)=>(
-                    <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom:i<arr.length-1?"1px solid #FEE2E2":"none", textAlign:"left" }}>
-                      <div style={{ width:42, height:42, borderRadius:"50%", background:"#FEE2E2", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{item.svg}</div>
-                      <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#EF4444" }}>{item.label}</div><div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:2 }}>{item.desc}</div></div>
-                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#FCA5A5" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
-                    </button>
-                  ))}
+                  <button onClick={()=>{ handleHide(openMenu.postId); apiHidePost(openMenu.postId).catch(()=>{}); }} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", textAlign:"left" }}>
+                    <div style={{ width:42, height:42, borderRadius:"50%", background:"#F1F5F9", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#64748B" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                    </div>
+                    <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#111827" }}>Masquer cette publication</div><div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:2 }}>Moins de publications comme celle-ci.</div></div>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#E5E7EB" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  </button>
                 </div>
               </>)}
               <button onClick={closeMenu} style={{ width:"100%", background:"#F8FAFC", border:"none", borderRadius:18, padding:"15px", fontWeight:700, fontSize:16, color:"#64748B", cursor:"pointer" }}>Annuler</button>
