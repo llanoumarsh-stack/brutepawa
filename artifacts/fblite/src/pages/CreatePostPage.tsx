@@ -4,6 +4,7 @@ import { searchPlaces, type Place } from "../data/locations";
 import { searchItunes, MUSIC_CATEGORIES, type Track } from "../data/music";
 import { apiGetUsers, apiCreatePost, type PublicUser } from "../lib/api";
 import { useR2Upload, phaseLabel, type UploadedMedia } from "../hooks/useR2Upload";
+import VoiceRecorder from "../components/VoiceRecorder";
 import {
   ArrowLeft, Send, Type, Smile, List, Palette, AtSign, Hash, BarChart2,
   ImagePlus, Music, Users, MapPin, SmilePlus, CalendarDays, Video,
@@ -136,13 +137,76 @@ export default function CreatePostPage({ onPublish }: Props) {
   const [eventCoverMedia, setEventCoverMedia] = useState<UploadedMedia | null>(null);
   const [eventCoverPreview, setEventCoverPreview] = useState<string | null>(null);
   const { upload, status: uploadStatus, phase: uploadPhase, progress, error: uploadError, reset: resetUpload } = useR2Upload();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef  = useRef<HTMLInputElement>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
-  const textareaRef  = useRef<HTMLTextAreaElement>(null);
+  const textareaRef   = useRef<HTMLTextAreaElement>(null);
+
+  const [showVoiceRecorder, setShowVoiceRecorder] = useState(false);
+  const [voiceMedia, setVoiceMedia] = useState<UploadedMedia | null>(null);
+  const [voiceUploadProgress, setVoiceUploadProgress] = useState(0);
+
+  interface NearbyPlace { name: string; type: string; dist: number; lat: number; lng: number; }
+  const [nearbyPlaces, setNearbyPlaces]   = useState<NearbyPlace[]>([]);
+  const [nearbyLoading, setNearbyLoading] = useState(false);
+  const [nearbyCity, setNearbyCity]       = useState<string | null>(null);
 
   const [allUsers, setAllUsers] = useState<PublicUser[]>([]);
 
   useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+    const mode = sessionStorage.getItem("createPost_mode");
+    if (!mode) return;
+    sessionStorage.removeItem("createPost_mode");
+    if (mode === "photo") {
+      setTimeout(() => photoInputRef.current?.click(), 400);
+    } else if (mode === "video") {
+      setTimeout(() => videoInputRef.current?.click(), 400);
+    } else if (mode === "vocal") {
+      setShowVoiceRecorder(true);
+    } else if (mode === "location") {
+      const stored = sessionStorage.getItem("createPost_location");
+      sessionStorage.removeItem("createPost_location");
+      if (stored) {
+        try {
+          const { lat, lng } = JSON.parse(stored) as { lat: number; lng: number };
+          fetchNearbyPlaces(lat, lng);
+        } catch { /* ignore */ }
+      }
+    }
+  }, []);
+
+  const fetchNearbyPlaces = async (lat: number, lng: number) => {
+    setNearbyLoading(true);
+    setShowLocation(true);
+    try {
+      const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=fr`);
+      const geoData = await geoRes.json() as { address?: { city?: string; town?: string; village?: string; county?: string; country?: string } };
+      const city = geoData.address?.city ?? geoData.address?.town ?? geoData.address?.village ?? geoData.address?.county ?? "Votre position";
+      const country = geoData.address?.country ?? "";
+      setNearbyCity(`${city}${country ? `, ${country}` : ""}`);
+
+      const q = `[out:json][timeout:20];(node["amenity"~"restaurant|bar|cafe|nightclub|cinema|sport"](around:2000,${lat},${lng});node["leisure"~"park|sports_centre|playground|stadium|fitness_centre"](around:2000,${lat},${lng});node["tourism"~"attraction|museum|hotel"](around:2000,${lat},${lng}););out body 30;`;
+      const ovRes = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(q)}`);
+      const ovData = await ovRes.json() as { elements: { lat: number; lon: number; tags: { name?: string; amenity?: string; leisure?: string; tourism?: string } }[] };
+      const places = ovData.elements
+        .filter(e => e.tags?.name)
+        .map(e => ({
+          name: e.tags.name!,
+          type: e.tags.amenity ?? e.tags.leisure ?? e.tags.tourism ?? "lieu",
+          dist: Math.round(Math.sqrt(((e.lat - lat) * 111000) ** 2 + ((e.lon - lng) * 111000 * Math.cos(lat * Math.PI / 180)) ** 2)),
+          lat: e.lat,
+          lng: e.lon,
+        }))
+        .sort((a, b) => a.dist - b.dist)
+        .slice(0, 25);
+      setNearbyPlaces(places);
+    } catch { /* ignore */ }
+    setNearbyLoading(false);
+  };
+
   useEffect(() => { setLocationResults(searchPlaces(locationQuery)); }, [locationQuery]);
   useEffect(() => {
     apiGetUsers().then(users => setAllUsers(users)).catch(() => {});
@@ -365,7 +429,9 @@ export default function CreatePostPage({ onPublish }: Props) {
         textarea::placeholder { color: #94A3B8; }
         ::-webkit-scrollbar { display: none; }
       `}</style>
-      <input ref={fileInputRef} type="file" accept="image/*,video/*" multiple style={{ display: "none" }} onChange={handleFileSelect} />
+      <input ref={fileInputRef}  type="file" accept="image/*,video/*" multiple style={{ display: "none" }} onChange={handleFileSelect} />
+      <input ref={photoInputRef} type="file" accept="image/*" multiple style={{ display: "none" }} onChange={handleFileSelect} />
+      <input ref={videoInputRef} type="file" accept="video/*" multiple style={{ display: "none" }} onChange={handleFileSelect} />
       <input ref={coverInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleCoverSelect} />
 
       {/* ══ HEADER ══ */}
@@ -471,34 +537,70 @@ export default function CreatePostPage({ onPublish }: Props) {
           </div>
         </div>
 
-        {/* Textarea */}
-        <div style={{
-          background: hasBg ? activeBg?.value : "transparent",
-          borderRadius: hasBg ? 16 : 0, padding: hasBg ? "24px 16px 20px" : "0 2px",
-          minHeight: hasBg ? 90 : 70, display: "flex", flexDirection: "column",
-          alignItems: hasBg ? "center" : "stretch", justifyContent: hasBg ? "center" : "flex-start",
-          transition: "background 0.3s", marginBottom: 0,
-        }}>
-          <textarea
-            ref={textareaRef} value={content}
-            onChange={e => { setContent(e.target.value); if (textareaRef.current) { textareaRef.current.style.height = "auto"; textareaRef.current.style.height = textareaRef.current.scrollHeight + "px"; } }}
-            placeholder="Partagez un moment fort de votre journée..."
-            autoFocus
-            style={{
-              width: "100%", border: "none", outline: "none", resize: "none",
-              fontSize: hasBg ? 20 : 20, fontWeight: 500,
-              color: hasBg ? "#fff" : "#0F172A",
-              background: "transparent", textAlign: hasBg ? "center" : "left",
-              minHeight: 70, lineHeight: 1.6,
-              caretColor: "#22C55E", fontFamily: "inherit", boxSizing: "border-box",
-            }}
-          />
-          {selectedLocation && (
-            <div style={{ fontSize: 12, color: hasBg ? "rgba(255,255,255,.85)" : "#64748B", marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
-              <MapPin size={12} /> <span>{selectedLocation.city}, {selectedLocation.country}</span>
+        {/* Textarea or Voice Recorder */}
+        {showVoiceRecorder ? (
+          <div style={{ padding: "12px 4px 8px", minHeight: 90 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "#E91E63", marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="8" y="2" width="8" height="12" rx="4" fill="#E91E63"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4" stroke="#E91E63" strokeWidth="1.8" strokeLinecap="round"/></svg>
+              Enregistrement vocal
             </div>
-          )}
-        </div>
+            {voiceUploadProgress > 0 && voiceUploadProgress < 100 && (
+              <div style={{ marginBottom: 8 }}>
+                <div style={{ height: 3, background: "#E5E7EB", borderRadius: 4 }}>
+                  <div style={{ height: "100%", width: `${voiceUploadProgress}%`, background: "#E91E63", borderRadius: 4, transition: "width 0.2s" }} />
+                </div>
+                <div style={{ fontSize: 11, color: "#64748B", marginTop: 2 }}>Upload vocal… {voiceUploadProgress}%</div>
+              </div>
+            )}
+            {!voiceMedia && (
+              <VoiceRecorder
+                onSend={async (blob, _dur) => {
+                  setVoiceUploadProgress(1);
+                  const file = new File([blob], `vocal_${Date.now()}.webm`, { type: blob.type || "audio/webm" });
+                  const result = await upload(file);
+                  setVoiceUploadProgress(100);
+                  if (result) {
+                    setVoiceMedia(result);
+                    setMedias(m => [...m, result]);
+                    setMediaPreviews(p => [...p, "__audio__"]);
+                    setMediaIsVideo(v => [...v, false]);
+                  }
+                  setShowVoiceRecorder(false);
+                  setVoiceUploadProgress(0);
+                }}
+                onCancel={() => setShowVoiceRecorder(false)}
+              />
+            )}
+          </div>
+        ) : (
+          <div style={{
+            background: hasBg ? activeBg?.value : "transparent",
+            borderRadius: hasBg ? 16 : 0, padding: hasBg ? "24px 16px 20px" : "0 2px",
+            minHeight: hasBg ? 90 : 70, display: "flex", flexDirection: "column",
+            alignItems: hasBg ? "center" : "stretch", justifyContent: hasBg ? "center" : "flex-start",
+            transition: "background 0.3s", marginBottom: 0,
+          }}>
+            <textarea
+              ref={textareaRef} value={content}
+              onChange={e => { setContent(e.target.value); if (textareaRef.current) { textareaRef.current.style.height = "auto"; textareaRef.current.style.height = textareaRef.current.scrollHeight + "px"; } }}
+              placeholder="Partagez un moment fort de votre journée..."
+              autoFocus
+              style={{
+                width: "100%", border: "none", outline: "none", resize: "none",
+                fontSize: hasBg ? 20 : 20, fontWeight: 500,
+                color: hasBg ? "#fff" : "#0F172A",
+                background: "transparent", textAlign: hasBg ? "center" : "left",
+                minHeight: 70, lineHeight: 1.6,
+                caretColor: "#22C55E", fontFamily: "inherit", boxSizing: "border-box",
+              }}
+            />
+            {selectedLocation && (
+              <div style={{ fontSize: 12, color: hasBg ? "rgba(255,255,255,.85)" : "#64748B", marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
+                <MapPin size={12} /> <span>{selectedLocation.city}, {selectedLocation.country}</span>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* ── TOOLBAR 8 boutons ── */}
         <div style={{ borderTop: "1px solid #F1F5F9", marginTop: 8, padding: "14px 0 16px" }}>
@@ -569,10 +671,16 @@ export default function CreatePostPage({ onPublish }: Props) {
           {mediaPreviews.map((src, i) => {
             const uploaded = medias[i];
             const isUploading = uploadingIdx === i;
-            const isVideo = uploaded?.kind === "video" || mediaIsVideo[i] === true;
+            const isAudio = src === "__audio__" || uploaded?.kind === "audio";
+            const isVideo = !isAudio && (uploaded?.kind === "video" || mediaIsVideo[i] === true);
             return (
               <div key={i} style={{ position: "relative", flexShrink: 0 }}>
-                {isVideo ? (
+                {isAudio ? (
+                  <div style={{ width: 88, height: 88, borderRadius: 14, background: "linear-gradient(135deg,#FCE4EC,#F8BBD0)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4 }}>
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="8" y="2" width="8" height="12" rx="4" fill="#E91E63"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4" stroke="#E91E63" strokeWidth="1.8" strokeLinecap="round"/></svg>
+                    <span style={{ fontSize: 9, fontWeight: 700, color: "#E91E63" }}>VOCAL</span>
+                  </div>
+                ) : isVideo ? (
                   <video src={src} style={{ width: 88, height: 88, objectFit: "cover", borderRadius: 14 }} muted playsInline />
                 ) : (
                   <img src={src} alt="" style={{ width: 88, height: 88, objectFit: "cover", borderRadius: 14, opacity: isUploading ? 0.5 : 1 }} />
@@ -588,6 +696,8 @@ export default function CreatePostPage({ onPublish }: Props) {
                   </div>
                 )}
                 <button onClick={() => {
+                  const removed = medias[i];
+                  if (removed?.kind === "audio") setVoiceMedia(null);
                   setMediaPreviews(p => p.filter((_, j) => j !== i));
                   setMediaIsVideo(v => v.filter((_, j) => j !== i));
                   setMedias(m => m.filter((_, j) => j !== i));
@@ -686,46 +796,107 @@ export default function CreatePostPage({ onPublish }: Props) {
                 </div>
                 <div>
                   <div style={{ fontWeight: 800, fontSize: 17 }}>Où êtes-vous ?</div>
-                  <div style={{ fontSize: 12, color: "#9CA3AF", marginTop: 1 }}>Ajoutez votre position pour aider vos amis à vous retrouver.</div>
+                  <div style={{ fontSize: 12, color: "#9CA3AF", marginTop: 1 }}>
+                    {nearbyCity ? `📍 ${nearbyCity}` : "Ajoutez votre position pour aider vos amis à vous retrouver."}
+                  </div>
                 </div>
               </div>
             </div>
             <div style={{ padding: "0 16px 10px", flexShrink: 0 }}>
               <div style={{ position: "relative" }}>
-                <input autoFocus value={locationQuery} onChange={e => setLocationQuery(e.target.value)}
-                  placeholder="Rechercher une ville ou un pays..."
+                <input value={locationQuery} onChange={e => setLocationQuery(e.target.value)}
+                  placeholder="Rechercher une ville ou un lieu..."
                   style={{ width: "100%", padding: "12px 40px 12px 42px", border: "1.5px solid #E5E7EB", borderRadius: 24, fontSize: 15, outline: "none", background: "#F8FAFC", boxSizing: "border-box" }}
                   onFocus={e => (e.currentTarget.style.borderColor = "#22C55E")}
                   onBlur={e => (e.currentTarget.style.borderColor = "#E5E7EB")}
                 />
+                <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: 16 }}>🔍</span>
                 {locationQuery && (
                   <button onClick={() => setLocationQuery("")} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", width: 22, height: 22, borderRadius: "50%", background: "#9CA3AF", border: "none", color: "#fff", fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
                 )}
               </div>
             </div>
-            <div style={{ padding: "0 16px 4px", flexShrink: 0 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em" }}>Suggestions</div>
-            </div>
+
             <div style={{ overflowY: "auto", flex: 1, paddingBottom: 20 }}>
-              {locationResults.map((place, i) => {
-                const sel = selectedLocation?.city === place.city && selectedLocation?.country === place.country;
-                return (
-                  <div key={i} onClick={() => { setSelectedLocation(place); setShowLocation(false); setLocationQuery(""); }}
-                    style={{ display: "flex", alignItems: "center", gap: 14, padding: "13px 20px", cursor: "pointer", background: sel ? "#F0FDF4" : "#fff", borderBottom: "1px solid #F1F5F9" }}>
-                    <span style={{ fontSize: 24, flexShrink: 0 }}>{place.flag}</span>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: sel ? 700 : 600, fontSize: 15, color: sel ? "#22C55E" : "#111827" }}>{place.city}</div>
-                      <div style={{ fontSize: 12, color: "#9CA3AF", marginTop: 1 }}>{place.country}</div>
-                    </div>
-                    <MapPin size={18} color={sel ? "#22C55E" : "#E5E7EB"} />
+              {/* Nearby GPS places section */}
+              {!locationQuery && nearbyPlaces.length > 0 && (
+                <>
+                  <div style={{ padding: "4px 20px 6px", fontSize: 12, fontWeight: 700, color: "#F97316", textTransform: "uppercase", letterSpacing: "0.05em", display: "flex", alignItems: "center", gap: 5 }}>
+                    <span>📍</span> Zones de loisir proches
                   </div>
-                );
-              })}
-              {locationResults.length === 0 && (
-                <div style={{ padding: "32px", textAlign: "center", color: "#9CA3AF" }}>
-                  <MapPin size={40} color="#E5E7EB" style={{ display: "block", margin: "0 auto 8px" }} />
-                  Aucune ville trouvée
+                  {nearbyPlaces.map((p, i) => {
+                    const sel = selectedLocation?.city === p.name;
+                    const typeLabel: Record<string, string> = { restaurant: "🍽 Restaurant", bar: "🍻 Bar", cafe: "☕ Café", nightclub: "🎵 Nightclub", cinema: "🎬 Cinéma", park: "🌳 Parc", sports_centre: "🏋 Sport", playground: "🛝 Loisir", stadium: "🏟 Stade", fitness_centre: "💪 Fitness", attraction: "⭐ Attraction", museum: "🏛 Musée", hotel: "🏨 Hôtel" };
+                    const tag = typeLabel[p.type] ?? `📌 ${p.type}`;
+                    return (
+                      <div key={i} onClick={() => {
+                        setSelectedLocation({ city: p.name, country: nearbyCity?.split(", ").slice(1).join(", ") ?? "", flag: "📍" });
+                        setShowLocation(false);
+                      }} style={{ display: "flex", alignItems: "center", gap: 14, padding: "12px 20px", cursor: "pointer", background: sel ? "#FFF7ED" : "#fff", borderBottom: "1px solid #F1F5F9" }}>
+                        <div style={{ width: 40, height: 40, borderRadius: 12, background: "#FFEDD5", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 18 }}>
+                          {tag.split(" ")[0]}
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontWeight: 700, fontSize: 14, color: sel ? "#F97316" : "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.name}</div>
+                          <div style={{ fontSize: 12, color: "#9CA3AF", marginTop: 1 }}>{tag.slice(tag.indexOf(" ") + 1)} · {p.dist < 1000 ? `${p.dist} m` : `${(p.dist / 1000).toFixed(1)} km`}</div>
+                        </div>
+                        <MapPin size={16} color={sel ? "#F97316" : "#E5E7EB"} />
+                      </div>
+                    );
+                  })}
+                  <div style={{ height: 1, background: "#F1F5F9", margin: "4px 0" }} />
+                </>
+              )}
+              {!locationQuery && nearbyLoading && (
+                <div style={{ padding: "20px", textAlign: "center", color: "#F97316", fontSize: 13, fontWeight: 600 }}>
+                  📍 Chargement des lieux proches…
                 </div>
+              )}
+
+              {/* City/country search results */}
+              {locationQuery.trim() && (
+                <>
+                  <div style={{ padding: "4px 20px 6px", fontSize: 12, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em" }}>Villes & pays</div>
+                  {locationResults.map((place, i) => {
+                    const sel = selectedLocation?.city === place.city && selectedLocation?.country === place.country;
+                    return (
+                      <div key={i} onClick={() => { setSelectedLocation(place); setShowLocation(false); setLocationQuery(""); }}
+                        style={{ display: "flex", alignItems: "center", gap: 14, padding: "13px 20px", cursor: "pointer", background: sel ? "#F0FDF4" : "#fff", borderBottom: "1px solid #F1F5F9" }}>
+                        <span style={{ fontSize: 24, flexShrink: 0 }}>{place.flag}</span>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: sel ? 700 : 600, fontSize: 15, color: sel ? "#22C55E" : "#111827" }}>{place.city}</div>
+                          <div style={{ fontSize: 12, color: "#9CA3AF", marginTop: 1 }}>{place.country}</div>
+                        </div>
+                        <MapPin size={18} color={sel ? "#22C55E" : "#E5E7EB"} />
+                      </div>
+                    );
+                  })}
+                  {locationResults.length === 0 && (
+                    <div style={{ padding: "32px", textAlign: "center", color: "#9CA3AF" }}>
+                      <MapPin size={40} color="#E5E7EB" style={{ display: "block", margin: "0 auto 8px" }} />
+                      Aucune ville trouvée
+                    </div>
+                  )}
+                </>
+              )}
+              {!locationQuery && !nearbyLoading && nearbyPlaces.length === 0 && (
+                <>
+                  <div style={{ padding: "4px 20px 6px", fontSize: 12, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: "0.05em" }}>Suggestions</div>
+                  {locationResults.map((place, i) => {
+                    const sel = selectedLocation?.city === place.city && selectedLocation?.country === place.country;
+                    return (
+                      <div key={i} onClick={() => { setSelectedLocation(place); setShowLocation(false); setLocationQuery(""); }}
+                        style={{ display: "flex", alignItems: "center", gap: 14, padding: "13px 20px", cursor: "pointer", background: sel ? "#F0FDF4" : "#fff", borderBottom: "1px solid #F1F5F9" }}>
+                        <span style={{ fontSize: 24, flexShrink: 0 }}>{place.flag}</span>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontWeight: sel ? 700 : 600, fontSize: 15, color: sel ? "#22C55E" : "#111827" }}>{place.city}</div>
+                          <div style={{ fontSize: 12, color: "#9CA3AF", marginTop: 1 }}>{place.country}</div>
+                        </div>
+                        <MapPin size={18} color={sel ? "#22C55E" : "#E5E7EB"} />
+                      </div>
+                    );
+                  })}
+                </>
               )}
               {selectedLocation && (
                 <div onClick={() => { setSelectedLocation(null); setShowLocation(false); }}

@@ -419,11 +419,11 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
             Quoi de neuf, {user.name.split(" ")[0]} ?
           </div>
           {/* Photo icon */}
-          <button onClick={() => navigate("/create-post")} style={{ background: "none", border: "none", cursor: "pointer", padding: 6, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <button onClick={() => { sessionStorage.setItem("createPost_mode","photo"); navigate("/create-post"); }} style={{ background: "none", border: "none", cursor: "pointer", padding: 6, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="16" rx="3" stroke="#64748B" strokeWidth="1.8"/><circle cx="9" cy="12" r="3" stroke="#64748B" strokeWidth="1.8"/><path d="M2 9l5-5 3 4" stroke="#64748B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><circle cx="17" cy="8" r="1.5" fill="#64748B"/></svg>
           </button>
           {/* Mic icon */}
-          <button onClick={() => navigate("/create-post")} style={{ background: "none", border: "none", cursor: "pointer", padding: 6, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <button onClick={() => { sessionStorage.setItem("createPost_mode","vocal"); navigate("/create-post"); }} style={{ background: "none", border: "none", cursor: "pointer", padding: 6, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="12" rx="3" stroke="#22C55E" strokeWidth="1.8"/><path d="M5 11a7 7 0 0 0 14 0" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"/><path d="M12 18v4M9 22h6" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"/></svg>
           </button>
         </div>
@@ -433,17 +433,24 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
 
         {/* Action buttons row */}
         <div style={{ display: "flex", overflowX: "auto", scrollbarWidth: "none" as const }}>
-          {[
-            { label: "Photo",       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="3" fill="#22C55E"/><circle cx="12" cy="12" r="4" fill="#fff" fillOpacity=".9"/><circle cx="9" cy="7" r="1.5" fill="#fff" fillOpacity=".7"/></svg>, action: "/create-post" },
-            { label: "Vocal",       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="8" y="2" width="8" height="12" rx="4" fill="#E91E63"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/></svg>, action: "/create-post" },
-            { label: "Vidéo",       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="14" height="12" rx="2" fill="#EF4444"/><path d="M16 9l5-3v12l-5-3V9z" fill="#EF4444"/></svg>, action: "/create-post" },
-            { label: "Localisation", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#E91E63"/><circle cx="12" cy="9" r="2.5" fill="#fff"/></svg>, action: "/create-post" },
-            { label: "Humeur",      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#FFC107"/><path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/><circle cx="9" cy="10" r="1.5" fill="#fff"/><circle cx="15" cy="10" r="1.5" fill="#fff"/></svg>, action: "/create-post" },
-            { label: "Sondage",     icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="15" width="4" height="6" rx="1" fill="#22C55E"/><rect x="10" y="10" width="4" height="11" rx="1" fill="#22C55E"/><rect x="16" y="5" width="4" height="16" rx="1" fill="#22C55E"/></svg>, action: "/create-post" },
-          ].map((btn, i, arr) => (
+          {([
+            { label: "Photo",       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="3" fill="#22C55E"/><circle cx="12" cy="12" r="4" fill="#fff" fillOpacity=".9"/><circle cx="9" cy="7" r="1.5" fill="#fff" fillOpacity=".7"/></svg>, action: () => { sessionStorage.setItem("createPost_mode","photo"); navigate("/create-post"); } },
+            { label: "Vocal",       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="8" y="2" width="8" height="12" rx="4" fill="#E91E63"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/></svg>, action: () => { sessionStorage.setItem("createPost_mode","vocal"); navigate("/create-post"); } },
+            { label: "Vidéo",       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="14" height="12" rx="2" fill="#EF4444"/><path d="M16 9l5-3v12l-5-3V9z" fill="#EF4444"/></svg>, action: () => { sessionStorage.setItem("createPost_mode","video"); navigate("/create-post"); } },
+            { label: "Localisation", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#E91E63"/><circle cx="12" cy="9" r="2.5" fill="#fff"/></svg>, action: () => {
+              if (!navigator.geolocation) { alert("La géolocalisation n'est pas disponible sur cet appareil."); return; }
+              sessionStorage.setItem("createPost_mode","location");
+              navigator.geolocation.getCurrentPosition(
+                (pos) => { sessionStorage.setItem("createPost_location", JSON.stringify({ lat: pos.coords.latitude, lng: pos.coords.longitude })); navigate("/create-post"); },
+                () => { sessionStorage.removeItem("createPost_mode"); alert("Impossible d'accéder à votre position. Vérifiez les autorisations."); }
+              );
+            }},
+            { label: "Humeur",      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#FFC107"/><path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/><circle cx="9" cy="10" r="1.5" fill="#fff"/><circle cx="15" cy="10" r="1.5" fill="#fff"/></svg>, action: () => navigate("/create-post") },
+            { label: "Sondage",     icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="15" width="4" height="6" rx="1" fill="#22C55E"/><rect x="10" y="10" width="4" height="11" rx="1" fill="#22C55E"/><rect x="16" y="5" width="4" height="16" rx="1" fill="#22C55E"/></svg>, action: () => navigate("/create-post") },
+          ] as { label: string; icon: React.ReactNode; action: () => void }[]).map((btn, i, arr) => (
             <button
               key={btn.label}
-              onClick={() => navigate(btn.action)}
+              onClick={btn.action}
               style={{ flex: "0 0 auto", display: "flex", flexDirection: "column" as const, alignItems: "center" as const, justifyContent: "center" as const, gap: 4, padding: "10px 14px 12px", background: "none", border: "none", cursor: "pointer", borderRight: i < arr.length - 1 ? "1px solid #E5E7EB" : "none", minWidth: 80 }}
             >
               {btn.icon}
