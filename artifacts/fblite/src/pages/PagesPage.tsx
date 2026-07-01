@@ -71,35 +71,112 @@ function PreviewRow({ label, value }: { label: string; value: string }) {
 
 const IST: React.CSSProperties = { width: "100%", border: "1.5px solid #E5E7EB", borderRadius: 12, padding: "11px 14px", fontSize: 14, color: "#111827", outline: "none", boxSizing: "border-box", background: "#fff" };
 
+/* ── Sparkline ── */
+function Sparkline({ growth, color = "#22C55E" }: { growth: number; color?: string }) {
+  const trending = growth >= 0;
+  const pts = trending
+    ? [[0,28],[10,22],[20,24],[30,16],[40,18],[50,10],[60,12],[70,6],[80,8],[90,2]]
+    : [[0,2],[10,8],[20,6],[30,14],[40,12],[50,18],[60,16],[70,22],[80,20],[90,28]];
+  const d = pts.map((p,i)=>`${i===0?"M":"L"}${p[0]},${p[1]}`).join(" ");
+  const area = `${d} L90,32 L0,32 Z`;
+  return (
+    <svg viewBox="0 0 90 32" width="80" height="28" style={{ display:"block" }}>
+      <defs>
+        <linearGradient id={`sg-${color.replace("#","")}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity=".25"/>
+          <stop offset="100%" stopColor={color} stopOpacity="0"/>
+        </linearGradient>
+      </defs>
+      <path d={area} fill={`url(#sg-${color.replace("#","")})`}/>
+      <path d={d} fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+}
+
 /* ── Page card ── */
 function PageCard({ page, onOpen, onFollow, onSettings }: { page: ApiPage; onOpen: () => void; onFollow: () => void; onSettings: () => void }) {
   return (
-    <div onClick={onOpen} style={{ background: "#fff", borderRadius: 20, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,.06)", cursor: "pointer" }}>
-      <div style={{ height: 80, background: page.coverUrl ? `url(${page.coverUrl}) center/cover` : `linear-gradient(135deg, ${G}, ${GD})`, position: "relative" }}>
-        <div style={{ position: "absolute", bottom: -24, left: 16 }}>
-          <div style={{ width: 52, height: 52, borderRadius: "50%", border: "3px solid #fff", background: G, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-            {page.avatarUrl ? <img src={page.avatarUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ fontSize: 22 }}>{page.emoji}</span>}
+    <div style={{ background: "#fff", borderRadius: 28, overflow: "hidden", boxShadow: "0 4px 24px rgba(0,0,0,.07),0 1px 4px rgba(0,0,0,.04)", cursor: "pointer", border: "1px solid rgba(0,0,0,.04)" }}>
+      {/* Cover */}
+      <div onClick={onOpen} style={{ height: 170, position: "relative", overflow: "hidden", background: page.coverUrl ? `url(${page.coverUrl}) center/cover` : "linear-gradient(135deg,#0C1A12 0%,#0A3D1F 45%,#064E3B 100%)" }}>
+        {!page.coverUrl && (
+          <svg viewBox="0 0 400 170" width="100%" height="100%" style={{ position:"absolute", inset:0 }} preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <radialGradient id="glow1" cx="70%" cy="40%" r="50%"><stop offset="0%" stopColor="#22C55E" stopOpacity=".25"/><stop offset="100%" stopColor="#22C55E" stopOpacity="0"/></radialGradient>
+              <radialGradient id="glow2" cx="20%" cy="80%" r="40%"><stop offset="0%" stopColor="#16A34A" stopOpacity=".2"/><stop offset="100%" stopColor="#16A34A" stopOpacity="0"/></radialGradient>
+            </defs>
+            <rect width="400" height="170" fill="url(#glow1)"/>
+            <rect width="400" height="170" fill="url(#glow2)"/>
+            <path d="M0 120 Q60 80 120 100 Q180 120 240 90 Q300 60 360 80 Q400 92 400 100 L400 170 L0 170Z" fill="rgba(34,197,94,.07)"/>
+            <path d="M0 140 Q80 110 160 130 Q240 150 320 120 Q370 108 400 115 L400 170 L0 170Z" fill="rgba(34,197,94,.05)"/>
+            {[20,80,140,200,260,320,380].map(x=>(
+              <circle key={x} cx={x} cy={40 + (x % 60)} r={1.5} fill="rgba(134,239,172,.4)"/>
+            ))}
+            {[50,110,170,230,290,350].map(x=>(
+              <circle key={x} cx={x} cy={100 + (x % 40)} r={1} fill="rgba(134,239,172,.3)"/>
+            ))}
+          </svg>
+        )}
+        {!page.coverUrl && (
+          <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:4 }}>
+            <span style={{ fontWeight:900, fontSize:22, color:"#fff", letterSpacing:"-0.3px", textShadow:"0 2px 12px rgba(0,0,0,.3)" }}>BrutePawa</span>
+            <span style={{ fontSize:12, color:"rgba(255,255,255,.55)", letterSpacing:"0.3px" }}>Votre voix, votre communauté.</span>
           </div>
-        </div>
+        )}
       </div>
-      <div style={{ padding: "30px 16px 16px", display: "flex", flexDirection: "column", gap: 8 }}>
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              <p style={{ margin: 0, fontWeight: 700, fontSize: 16, color: "#111827" }}>{page.name}</p>
-              {page.verified && <svg viewBox="0 0 24 24" width="16" height="16" fill={G}><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>}
-            </div>
-            <p style={{ margin: "2px 0 0", fontSize: 13, color: "#6B7280" }}>{page.category} · {page.followersCount.toLocaleString()} abonnés</p>
+
+      {/* Body */}
+      <div style={{ padding: "0 18px 20px" }}>
+        {/* Avatar row */}
+        <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", marginTop:-36 }}>
+          <div style={{ position:"relative", width:72, height:72, borderRadius:"50%", border:"4px solid #fff", background: page.avatarUrl ? "transparent" : G, display:"flex", alignItems:"center", justifyContent:"center", overflow:"hidden", boxShadow:"0 4px 16px rgba(0,0,0,.14)", flexShrink:0 }}>
+            {page.avatarUrl
+              ? <img src={page.avatarUrl} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+              : <span style={{ color:"#fff", fontWeight:900, fontSize:26 }}>{page.name.charAt(0).toUpperCase()}</span>}
           </div>
-          {page.isOwner ? (
-            <button onClick={e => { e.stopPropagation(); onSettings(); }} style={{ background: "#F3F4F6", border: "none", borderRadius: 20, padding: "7px 14px", fontWeight: 700, fontSize: 13, color: "#374151", cursor: "pointer" }}>Gérer</button>
-          ) : (
-            <button onClick={e => { e.stopPropagation(); onFollow(); }} style={{ background: page.isFollowed ? "#F3F4F6" : G, color: page.isFollowed ? "#374151" : "#fff", border: "none", borderRadius: 20, padding: "7px 14px", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
-              {page.isFollowed ? "Abonné" : "S'abonner"}
-            </button>
-          )}
+          <button onClick={e=>{ e.stopPropagation(); page.isOwner ? onSettings() : onFollow(); }}
+            style={{ background: page.isOwner ? "#F1F5F9" : (page.isFollowed ? "#F1F5F9" : "linear-gradient(135deg,#22C55E,#16A34A)"), color: (page.isOwner || page.isFollowed) ? "#374151" : "#fff", border: page.isOwner || page.isFollowed ? "1.5px solid #E2E8F0" : "none", borderRadius:999, padding:"8px 18px", fontWeight:700, fontSize:13, cursor:"pointer", boxShadow: (page.isOwner || page.isFollowed) ? "none" : "0 4px 12px rgba(34,197,94,.3)", display:"flex", alignItems:"center", gap:6 }}>
+            {page.isOwner
+              ? <><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#374151" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Gérer</>
+              : page.isFollowed
+                ? <><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#374151" strokeWidth="2.2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>Abonné</>
+                : <><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>S'abonner</>
+            }
+          </button>
         </div>
-        {page.description && <p style={{ margin: 0, fontSize: 13, color: "#6B7280", lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{page.description}</p>}
+
+        {/* Name + handle */}
+        <div onClick={onOpen} style={{ marginTop:12 }}>
+          <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+            <p style={{ margin:0, fontWeight:900, fontSize:18, color:"#0F172A", letterSpacing:"-0.3px" }}>{page.name}</p>
+            {page.verified && (
+              <svg viewBox="0 0 22 22" width="18" height="18" fill="#22C55E">
+                <path d="M11 0C4.925 0 0 4.925 0 11s4.925 11 11 11 11-4.925 11-11S17.075 0 11 0zm5.02 8.71-6.13 6.13a.75.75 0 0 1-1.06 0L5.98 11a.75.75 0 1 1 1.06-1.06l2.32 2.32 5.6-5.6a.75.75 0 0 1 1.06 1.05z"/>
+              </svg>
+            )}
+          </div>
+          <p style={{ margin:"3px 0 0", fontSize:13, color:"#64748B" }}>@{page.username ?? page.name.toLowerCase().replace(/\s+/g,"")}</p>
+          <p style={{ margin:"2px 0 0", fontSize:13, color:"#64748B" }}>{page.category} · {page.followersCount.toLocaleString()} abonné{page.followersCount !== 1 ? "s" : ""}</p>
+        </div>
+
+        {/* Stats mini cards */}
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, marginTop:14 }}>
+          {[
+            { label:"Abonnés", val:page.followersCount, icon:<svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"><path d="M14 17v-1a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v1"/><circle cx="8" cy="7" r="4"/><path d="M18 17v-1a4 4 0 0 0-3-3.87"/><path d="M15 3.13a4 4 0 0 1 0 7.75"/></svg> },
+            { label:"Publications", val:0, icon:<svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"><path d="M12 2H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7z"/><polyline points="12 2 12 7 17 7"/><line x1="13" y1="11" x2="7" y2="11"/><line x1="13" y1="14" x2="7" y2="14"/><polyline points="9 8 8 8 7 8"/></svg> },
+            { label:"Abonnements", val:0, icon:<svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg> },
+          ].map(s=>(
+            <div key={s.label} style={{ background:"#F0FDF4", borderRadius:16, padding:"10px 8px", textAlign:"center" }}>
+              <div style={{ display:"flex", justifyContent:"center", marginBottom:4 }}>{s.icon}</div>
+              <p style={{ margin:0, fontWeight:800, fontSize:15, color:"#0F172A" }}>{s.val.toLocaleString()}</p>
+              <p style={{ margin:"1px 0 0", fontSize:10, color:"#64748B", fontWeight:500 }}>{s.label}</p>
+            </div>
+          ))}
+        </div>
+
+        {page.description && (
+          <p style={{ margin:"12px 0 0", fontSize:13, color:"#64748B", lineHeight:1.5, display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden" }}>{page.description}</p>
+        )}
       </div>
     </div>
   );
@@ -147,6 +224,7 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
   /* ── Stats ─────────────────────────────────────────────────── */
   const [stats, setStats] = useState<ApiPageStats | null>(null);
   const [statsPeriod, setStatsPeriod] = useState("7 derniers jours");
+  const [chartActive, setChartActive] = useState<number | null>(null);
 
   /* ── Invite friends ────────────────────────────────────────── */
   const [friends, setFriends] = useState<{ id: number; name: string; avatarUrl: string | null; country: string | null }[]>([]);
@@ -295,60 +373,102 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
 
   /* ── LIST ────────────────────────────────────────────────────── */
   if (view === "list") {
-    const TABS: Array<{ id: "toutes"|"mes"|"invitations"; label: string }> = [
-      { id: "toutes", label: "Toutes" },
-      { id: "mes", label: "Mes pages" },
-      { id: "invitations", label: "Invitations" },
+    const TABS: Array<{ id: "toutes"|"mes"|"invitations"; label: string; icon: React.ReactNode }> = [
+      { id:"toutes",       label:"Toutes",      icon:<svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><rect x="2" y="2" width="7" height="7" rx="2"/><rect x="11" y="2" width="7" height="7" rx="2"/><rect x="2" y="11" width="7" height="7" rx="2"/><rect x="11" y="11" width="7" height="7" rx="2"/></svg> },
+      { id:"mes",          label:"Mes pages",   icon:<svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/><path d="M8 6h4M8 9h4M8 12h2"/></svg> },
+      { id:"invitations",  label:"Invitations", icon:<svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg> },
     ];
     const list = activeTab === "toutes" ? pages : activeTab === "mes" ? myPages : [];
 
     return (
       <div style={{ fontFamily:"'Inter',system-ui,sans-serif", background:"#F8FAFC", minHeight:"100vh", maxWidth:640, margin:"0 auto", paddingBottom:90 }}>
-        {/* Header */}
-        <div style={{ background:"#fff", borderBottom:"1px solid #E5E7EB", padding:"12px 16px", display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:10 }}>
+        <style>{`
+          .list-tab-btn { transition: color 180ms, border-color 180ms; }
+          .page-card-wrap { transition: transform 150ms, box-shadow 150ms; }
+          .page-card-wrap:active { transform: scale(0.985); }
+        `}</style>
+
+        {/* ── Header ── */}
+        <div style={{ background:"rgba(255,255,255,.95)", backdropFilter:"blur(16px)", borderBottom:"1px solid #E2E8F0", padding:"12px 16px", display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, zIndex:20 }}>
           <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-            <button onClick={() => navigate("/")} style={{ background:"none", border:"none", cursor:"pointer", padding:4 }}>
+            <button onClick={()=>navigate("/")} style={{ background:"none", border:"none", cursor:"pointer", padding:6, margin:-6, display:"flex", borderRadius:12 }}>
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#374151" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
             </button>
-            <span style={{ fontWeight:700, fontSize:18, color:"#111827" }}>Pages</span>
+            <span style={{ fontWeight:900, fontSize:19, color:"#0F172A", letterSpacing:"-0.3px" }}>Pages</span>
           </div>
-          <button onClick={() => { resetCreateForm(); setView("create"); }}
-            style={{ background:G, color:"#fff", border:"none", borderRadius:20, padding:"8px 16px", fontWeight:600, fontSize:14, cursor:"pointer", display:"flex", alignItems:"center", gap:6 }}>
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <button onClick={()=>{ resetCreateForm(); setView("create"); }}
+            style={{ background:"linear-gradient(135deg,#22C55E,#16A34A)", color:"#fff", border:"none", borderRadius:999, padding:"9px 18px", fontWeight:700, fontSize:14, cursor:"pointer", display:"flex", alignItems:"center", gap:6, boxShadow:"0 4px 14px rgba(34,197,94,.3)", letterSpacing:"-0.1px" }}>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Créer
           </button>
         </div>
 
-        {/* Tabs */}
-        <div style={{ display:"flex", background:"#fff", borderBottom:"1px solid #E5E7EB", padding:"0 16px" }}>
-          {TABS.map(t => (
-            <button key={t.id} onClick={() => setActiveTab(t.id)}
-              style={{ flex:1, padding:"13px 0", fontSize:14, fontWeight:activeTab===t.id?700:500, color:activeTab===t.id?G:"#6B7280", background:"none", border:"none", borderBottom:activeTab===t.id?`3px solid ${G}`:"3px solid transparent", cursor:"pointer" }}>
+        {/* ── Tabs with icons ── */}
+        <div style={{ display:"flex", background:"#fff", borderBottom:"1px solid #E2E8F0", padding:"0 12px" }}>
+          {TABS.map(t=>(
+            <button key={t.id} className="list-tab-btn" onClick={()=>setActiveTab(t.id)}
+              style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:6, padding:"14px 0", fontSize:13.5, fontWeight:activeTab===t.id?700:500, color:activeTab===t.id?G:"#64748B", background:"none", border:"none", borderBottom:activeTab===t.id?`2.5px solid ${G}`:"2.5px solid transparent", cursor:"pointer", whiteSpace:"nowrap" }}>
+              <span style={{ color:activeTab===t.id?G:"#94A3B8" }}>{t.icon}</span>
               {t.label}
-              {t.id==="invitations"&&invitations.length>0&&<span style={{ marginLeft:4, background:"#EF4444", color:"#fff", borderRadius:10, padding:"1px 6px", fontSize:11, fontWeight:700 }}>{invitations.length}</span>}
+              {t.id==="invitations"&&invitations.length>0&&(
+                <span style={{ background:"#EF4444", color:"#fff", borderRadius:10, padding:"1px 6px", fontSize:11, fontWeight:800, lineHeight:1.4 }}>{invitations.length}</span>
+              )}
             </button>
           ))}
         </div>
 
-        {/* Content */}
+        {/* ── Content ── */}
         {loading ? (
-          <div style={{ padding:16, display:"flex", flexDirection:"column", gap:12 }}>
-            {[1,2,3].map(i => <div key={i} style={{ height:130, borderRadius:20, background:"#E5E7EB" }}/>)}
+          <div style={{ padding:16, display:"flex", flexDirection:"column", gap:16 }}>
+            {[1,2].map(i=>(
+              <div key={i} style={{ background:"#fff", borderRadius:28, overflow:"hidden", boxShadow:"0 2px 8px rgba(0,0,0,.05)" }}>
+                <div style={{ height:170, background:"linear-gradient(90deg,#F1F5F9 25%,#E2E8F0 50%,#F1F5F9 75%)", backgroundSize:"200% 100%", animation:"shimmer 1.5s infinite" }}/>
+                <div style={{ padding:"0 18px 20px" }}>
+                  <div style={{ marginTop:-28, display:"flex", justifyContent:"space-between", alignItems:"flex-end" }}>
+                    <div style={{ width:72, height:72, borderRadius:"50%", background:"#E2E8F0", border:"4px solid #fff" }}/>
+                    <div style={{ width:100, height:36, borderRadius:999, background:"#E2E8F0" }}/>
+                  </div>
+                  <div style={{ marginTop:14, height:16, borderRadius:8, background:"#F1F5F9", width:"55%" }}/>
+                  <div style={{ marginTop:8, height:12, borderRadius:6, background:"#F1F5F9", width:"40%" }}/>
+                  <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, marginTop:14 }}>
+                    {[1,2,3].map(j=><div key={j} style={{ height:62, borderRadius:16, background:"#F1F5F9" }}/>)}
+                  </div>
+                </div>
+              </div>
+            ))}
+            <style>{`@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }`}</style>
           </div>
         ) : activeTab === "invitations" ? (
-          invitations.length === 0 ? <EmptyState icon="📨" title="Aucune invitation" desc="Les invitations de pages apparaîtront ici." /> : (
+          invitations.length === 0 ? (
+            <div style={{ padding:"56px 24px", display:"flex", flexDirection:"column", alignItems:"center", gap:16, textAlign:"center" }}>
+              <div style={{ width:80, height:80, borderRadius:24, background:"#F0FDF4", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <svg viewBox="0 0 48 48" width="44" height="44" fill="none">
+                  <rect x="6" y="10" width="36" height="28" rx="5" fill="#DCFCE7"/>
+                  <path d="M6 16l18 13L42 16" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"/>
+                  <circle cx="38" cy="36" r="8" fill="#22C55E"/>
+                  <path d="M34 36l3 3 5-5" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              </div>
+              <div>
+                <p style={{ margin:"0 0 6px", fontWeight:800, fontSize:18, color:"#0F172A" }}>Aucune invitation</p>
+                <p style={{ margin:0, fontSize:14, color:"#64748B" }}>Les invitations de pages apparaîtront ici.</p>
+              </div>
+            </div>
+          ) : (
             <div style={{ padding:16, display:"flex", flexDirection:"column", gap:12 }}>
-              {invitations.map(inv => (
-                <div key={inv.id} style={{ background:"#fff", borderRadius:16, padding:16, boxShadow:"0 1px 4px rgba(0,0,0,.06)", display:"flex", alignItems:"center", gap:12 }}>
-                  <Av name={inv.pageName} src={inv.pageAvatar} size={52} />
+              {invitations.map(inv=>(
+                <div key={inv.id} style={{ background:"#fff", borderRadius:24, padding:16, boxShadow:"0 2px 12px rgba(0,0,0,.06)", display:"flex", alignItems:"center", gap:14, border:"1px solid #F1F5F9" }}>
+                  <Av name={inv.pageName} src={inv.pageAvatar} size={56}/>
                   <div style={{ flex:1, minWidth:0 }}>
-                    <p style={{ margin:0, fontWeight:700, fontSize:15, color:"#111827" }}>{inv.pageName}</p>
-                    <p style={{ margin:"2px 0 0", fontSize:13, color:"#6B7280" }}>{inv.pageCategory} · {(inv.pageFollowers??0).toLocaleString()} abonnés</p>
-                    <p style={{ margin:"2px 0 0", fontSize:12, color:"#9CA3AF" }}>Invité par {inv.inviterName}</p>
+                    <p style={{ margin:0, fontWeight:800, fontSize:15, color:"#0F172A" }}>{inv.pageName}</p>
+                    <p style={{ margin:"2px 0 0", fontSize:12, color:"#64748B" }}>{inv.pageCategory} · {(inv.pageFollowers??0).toLocaleString()} abonnés</p>
+                    <p style={{ margin:"2px 0 0", fontSize:12, color:"#94A3B8" }}>Invité par {inv.inviterName}</p>
                   </div>
-                  <div style={{ display:"flex", gap:8 }}>
-                    <button onClick={async()=>{ await apiDeclinePageInvitation(inv.id); setInvitations(p=>p.filter(i=>i.id!==inv.id)); }} style={{ background:"#F3F4F6", color:"#374151", border:"none", borderRadius:10, padding:"7px 12px", fontSize:13, fontWeight:600, cursor:"pointer" }}>Refuser</button>
-                    <button onClick={async()=>{ await apiAcceptPageInvitation(inv.id); toast.success("Vous suivez maintenant cette page"); setInvitations(p=>p.filter(i=>i.id!==inv.id)); loadPages(); }} style={{ background:G, color:"#fff", border:"none", borderRadius:10, padding:"7px 12px", fontSize:13, fontWeight:600, cursor:"pointer" }}>Accepter</button>
+                  <div style={{ display:"flex", flexDirection:"column", gap:7 }}>
+                    <button onClick={async()=>{ await apiAcceptPageInvitation(inv.id); toast.success("Vous suivez maintenant cette page"); setInvitations(p=>p.filter(i=>i.id!==inv.id)); loadPages(); }}
+                      style={{ background:"linear-gradient(135deg,#22C55E,#16A34A)", color:"#fff", border:"none", borderRadius:10, padding:"7px 14px", fontSize:13, fontWeight:700, cursor:"pointer", boxShadow:"0 2px 8px rgba(34,197,94,.25)" }}>Accepter</button>
+                    <button onClick={async()=>{ await apiDeclinePageInvitation(inv.id); setInvitations(p=>p.filter(i=>i.id!==inv.id)); }}
+                      style={{ background:"#F1F5F9", color:"#374151", border:"none", borderRadius:10, padding:"7px 14px", fontSize:13, fontWeight:600, cursor:"pointer" }}>Refuser</button>
                   </div>
                 </div>
               ))}
@@ -356,12 +476,43 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
           )
         ) : list.length === 0 ? (
           activeTab === "mes" ? (
-            <EmptyState icon="🏠" title="Aucune page" desc="Créez votre première page pour partager votre univers." btn="Créer une page" onBtn={() => { resetCreateForm(); setView("create"); }} />
-          ) : <EmptyState icon="🔍" title="Aucune page disponible" desc="Les pages arrivent bientôt dans votre communauté." />
+            <div style={{ padding:"56px 24px", display:"flex", flexDirection:"column", alignItems:"center", gap:16, textAlign:"center" }}>
+              <div style={{ width:80, height:80, borderRadius:24, background:"#F0FDF4", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <svg viewBox="0 0 48 48" width="44" height="44" fill="none">
+                  <rect x="6" y="6" width="36" height="36" rx="8" fill="#DCFCE7"/>
+                  <path d="M24 16v16M16 24h16" stroke="#22C55E" strokeWidth="3" strokeLinecap="round"/>
+                </svg>
+              </div>
+              <div>
+                <p style={{ margin:"0 0 6px", fontWeight:800, fontSize:18, color:"#0F172A" }}>Aucune page créée</p>
+                <p style={{ margin:0, fontSize:14, color:"#64748B", maxWidth:240 }}>Créez votre première page pour partager votre univers avec votre communauté.</p>
+              </div>
+              <button onClick={()=>{ resetCreateForm(); setView("create"); }}
+                style={{ height:48, background:"linear-gradient(135deg,#22C55E,#16A34A)", color:"#fff", border:"none", borderRadius:14, padding:"0 28px", fontWeight:700, fontSize:15, cursor:"pointer", boxShadow:"0 4px 16px rgba(34,197,94,.3)", display:"flex", alignItems:"center", gap:8 }}>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Créer une page
+              </button>
+            </div>
+          ) : (
+            <div style={{ padding:"56px 24px", display:"flex", flexDirection:"column", alignItems:"center", gap:16, textAlign:"center" }}>
+              <div style={{ width:80, height:80, borderRadius:24, background:"#EEF2FF", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <svg viewBox="0 0 48 48" width="44" height="44" fill="none">
+                  <circle cx="22" cy="22" r="14" stroke="#6366F1" strokeWidth="2.5" fill="#C7D2FE"/>
+                  <path d="M32 32l10 10" stroke="#6366F1" strokeWidth="3" strokeLinecap="round"/>
+                </svg>
+              </div>
+              <div>
+                <p style={{ margin:"0 0 6px", fontWeight:800, fontSize:18, color:"#0F172A" }}>Aucune page disponible</p>
+                <p style={{ margin:0, fontSize:14, color:"#64748B" }}>Les pages de votre communauté apparaîtront ici.</p>
+              </div>
+            </div>
+          )
         ) : (
-          <div style={{ padding:16, display:"flex", flexDirection:"column", gap:12 }}>
-            {list.map(page => (
-              <PageCard key={page.id} page={page} onOpen={()=>openPage(page.id)} onFollow={()=>handleFollow(page.id,!!page.isFollowed)} onSettings={()=>openSettings(page)} />
+          <div style={{ padding:16, display:"flex", flexDirection:"column", gap:16 }}>
+            {list.map(page=>(
+              <div key={page.id} className="page-card-wrap">
+                <PageCard page={page} onOpen={()=>openPage(page.id)} onFollow={()=>handleFollow(page.id,!!page.isFollowed)} onSettings={()=>openSettings(page)}/>
+              </div>
             ))}
           </div>
         )}
@@ -1065,7 +1216,7 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
               { label:"Signaler la page", desc:"Contenu inapproprié", icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>, bg:"#FEF2F2" },
             ]).map(item=>(
               <button key={item.label} className="plus-row" onClick={(item as {action?:()=>void}).action}
-                style={{ display:"flex", alignItems:"center", gap:14, padding:"16px 14px", background:"#fff", border:"none", borderRadius:18, cursor:"pointer", textAlign:"left", boxShadow:"0 1px 4px rgba(0,0,0,.04)", width:"100%", border:"1px solid #F1F5F9" } as React.CSSProperties}>
+                style={{ display:"flex", alignItems:"center", gap:14, padding:"16px 14px", background:"#fff", borderRadius:18, cursor:"pointer", textAlign:"left", boxShadow:"0 1px 4px rgba(0,0,0,.04)", width:"100%", border:"1px solid #F1F5F9" } as React.CSSProperties}>
                 <div style={{ width:44, height:44, borderRadius:13, background:item.bg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                   {item.icon}
                 </div>
@@ -1349,54 +1500,171 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
   /* ── SETTINGS STATS ──────────────────────────────────────────── */
   if (view === "settings-stats" && selectedPage) {
     const PERIODS = ["7 derniers jours","30 derniers jours","90 derniers jours"];
+    const KPI = stats ? [
+      {
+        label:"Vues de la page", val:stats.viewsTotal, growth:stats.viewsGrowth,
+        icon:<svg viewBox="0 0 22 22" width="19" height="19" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M1 11s4-8 10-8 10 8 10 8-4 8-10 8-10-8-10-8z"/><circle cx="11" cy="11" r="3"/></svg>,
+        bg:"#F0FDF4", color:"#22C55E",
+      },
+      {
+        label:"Nouveaux abonnés", val:stats.newFollowers, growth:stats.followersGrowth,
+        icon:<svg viewBox="0 0 22 22" width="19" height="19" fill="none" stroke="#6366F1" strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
+        bg:"#EEF2FF", color:"#6366F1",
+      },
+      {
+        label:"Interactions", val:stats.interactions, growth:stats.interactionsGrowth,
+        icon:<svg viewBox="0 0 22 22" width="19" height="19" fill="none" stroke="#F43F5E" strokeWidth="2" strokeLinecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L11 6.67l-2.06-2.06a5.5 5.5 0 0 0-7.78 7.78l2.06 2.06L11 22l7.78-7.78 2.06-2.06a5.5 5.5 0 0 0 0-7.55z"/></svg>,
+        bg:"#FFF1F2", color:"#F43F5E",
+      },
+      {
+        label:"Clics sur le site web", val:stats.clicks, growth:stats.clicksGrowth,
+        icon:<svg viewBox="0 0 22 22" width="19" height="19" fill="none" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>,
+        bg:"#F0F9FF", color:"#0EA5E9",
+      },
+    ] : null;
+
+    const maxViews = stats ? Math.max(...stats.chart.map(p=>p.views), 1) : 1;
+    const avgGrowth = stats ? ((stats.viewsGrowth + stats.followersGrowth + stats.interactionsGrowth + stats.clicksGrowth) / 4) : 0;
+
     return (
       <div style={{ fontFamily:"'Inter',system-ui,sans-serif", background:"#F8FAFC", minHeight:"100vh", maxWidth:640, margin:"0 auto", paddingBottom:80 }}>
-        <div style={{ background:"#fff", borderBottom:"1px solid #E5E7EB", padding:"12px 16px", display:"flex", alignItems:"center", gap:12, position:"sticky", top:0, zIndex:10 }}>
-          <button onClick={()=>goBack("settings")} style={{ background:"none", border:"none", cursor:"pointer" }}>
+        <style>{`
+          @keyframes bar-grow { from { transform: scaleY(0); transform-origin: bottom; } to { transform: scaleY(1); transform-origin: bottom; } }
+          .stat-bar { animation: bar-grow .5s cubic-bezier(.22,1,.36,1) both; }
+        `}</style>
+
+        {/* ── Header ── */}
+        <div style={{ background:"rgba(255,255,255,.95)", backdropFilter:"blur(16px)", borderBottom:"1px solid #E2E8F0", padding:"12px 16px", display:"flex", alignItems:"center", gap:12, position:"sticky", top:0, zIndex:10 }}>
+          <button onClick={()=>goBack("settings")} style={{ background:"none", border:"none", cursor:"pointer", padding:6, margin:-6, borderRadius:12, display:"flex" }}>
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#374151" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
           </button>
-          <span style={{ fontWeight:700, fontSize:17, color:"#111827" }}>Statistiques</span>
+          <span style={{ fontWeight:900, fontSize:17, color:"#0F172A", flex:1, letterSpacing:"-0.2px" }}>Statistiques</span>
+          <button style={{ width:36, height:36, borderRadius:12, background:"#F1F5F9", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </button>
         </div>
-        <div style={{ padding:16, display:"flex", flexDirection:"column", gap:16 }}>
-          <select value={statsPeriod} onChange={e=>setStatsPeriod(e.target.value)} style={{ border:"1.5px solid #E5E7EB", borderRadius:12, padding:"8px 14px", fontSize:14, color:"#111827", background:"#fff", outline:"none", alignSelf:"flex-start" }}>
-            {PERIODS.map(p=><option key={p}>{p}</option>)}
-          </select>
-          {!stats?(
-            <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
-              {[1,2,3,4].map(i=><div key={i} style={{ height:80, borderRadius:16, background:"#E5E7EB" }}/>)}
+
+        <div style={{ padding:"16px 16px 0", display:"flex", flexDirection:"column", gap:16 }}>
+          {/* Period selector */}
+          <div style={{ position:"relative", display:"inline-block" }}>
+            <div style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)", pointerEvents:"none" }}>
+              <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"><rect x="2" y="3" width="16" height="15" rx="2"/><line x1="6" y1="1" x2="6" y2="5"/><line x1="14" y1="1" x2="14" y2="5"/><line x1="2" y1="9" x2="18" y2="9"/></svg>
             </div>
-          ):(
-            <>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
-                {[
-                  { label:"Vues de la page", val:stats.viewsTotal, growth:stats.viewsGrowth },
-                  { label:"Nouveaux abonnés", val:stats.newFollowers, growth:stats.followersGrowth },
-                  { label:"Interactions", val:stats.interactions, growth:stats.interactionsGrowth },
-                  { label:"Clics sur le site web", val:stats.clicks, growth:stats.clicksGrowth },
-                ].map(st=>(
-                  <div key={st.label} style={{ background:"#fff", borderRadius:16, padding:"16px 14px", boxShadow:"0 1px 4px rgba(0,0,0,.05)" }}>
-                    <p style={{ margin:"0 0 4px", fontSize:12, color:"#6B7280", fontWeight:500 }}>{st.label}</p>
-                    <p style={{ margin:0, fontSize:22, fontWeight:800, color:"#111827" }}>{st.val.toLocaleString()}</p>
-                    <p style={{ margin:"4px 0 0", fontSize:12, fontWeight:700, color:G }}>↑ +{st.growth.toFixed(1)}%</p>
+            <select value={statsPeriod} onChange={e=>setStatsPeriod(e.target.value)}
+              style={{ appearance:"none", WebkitAppearance:"none", background:"#fff", border:"1.5px solid #E2E8F0", borderRadius:18, padding:"11px 36px 11px 36px", fontSize:14, color:"#0F172A", fontWeight:600, outline:"none", cursor:"pointer", boxShadow:"0 1px 4px rgba(0,0,0,.04)", fontFamily:"inherit" }}>
+              {PERIODS.map(p=><option key={p}>{p}</option>)}
+            </select>
+            <div style={{ position:"absolute", right:12, top:"50%", transform:"translateY(-50%)", pointerEvents:"none" }}>
+              <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round"><polyline points="5 8 10 13 15 8"/></svg>
+            </div>
+          </div>
+
+          {/* KPI cards */}
+          {!KPI ? (
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+              {[1,2,3,4].map(i=>(
+                <div key={i} style={{ height:110, borderRadius:24, background:"#fff", border:"1px solid #F1F5F9", boxShadow:"0 2px 8px rgba(0,0,0,.04)" }}>
+                  <div style={{ margin:16, height:16, borderRadius:8, background:"#F1F5F9", width:"60%" }}/>
+                  <div style={{ margin:"8px 16px", height:28, borderRadius:8, background:"#F1F5F9", width:"45%" }}/>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+              {KPI.map(kpi=>(
+                <div key={kpi.label} style={{ background:"#fff", borderRadius:24, padding:"16px 14px 12px", boxShadow:"0 2px 12px rgba(0,0,0,.05)", border:"1px solid #F1F5F9", display:"flex", flexDirection:"column", gap:8 }}>
+                  {/* Top row: icon + sparkline */}
+                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between" }}>
+                    <div style={{ width:36, height:36, borderRadius:11, background:kpi.bg, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                      {kpi.icon}
+                    </div>
+                    <Sparkline growth={kpi.growth} color={kpi.color}/>
                   </div>
-                ))}
-              </div>
-              <div style={{ background:"#fff", borderRadius:20, padding:20, boxShadow:"0 1px 4px rgba(0,0,0,.05)" }}>
-                <p style={{ margin:"0 0 12px", fontWeight:700, fontSize:15, color:"#111827" }}>Graphique des vues</p>
-                <div style={{ display:"flex", alignItems:"flex-end", gap:6, height:80 }}>
-                  {stats.chart.map((pt,i)=>{
-                    const maxV = Math.max(...stats.chart.map(p=>p.views));
-                    const h = Math.round((pt.views/maxV)*72);
-                    return (
-                      <div key={i} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:4 }}>
-                        <div style={{ width:"100%", height:h, background:`linear-gradient(to top,${G},#86EFAC)`, borderRadius:"4px 4px 0 0" }}/>
-                        <span style={{ fontSize:10, color:"#9CA3AF" }}>{pt.day}</span>
-                      </div>
-                    );
-                  })}
+                  {/* Value */}
+                  <p style={{ margin:0, fontWeight:900, fontSize:26, color:"#0F172A", letterSpacing:"-0.5px", lineHeight:1 }}>{kpi.val.toLocaleString()}</p>
+                  {/* Label */}
+                  <p style={{ margin:0, fontSize:11.5, color:"#64748B", fontWeight:500, lineHeight:1.3 }}>{kpi.label}</p>
+                  {/* Growth */}
+                  <div style={{ display:"flex", alignItems:"center", gap:4 }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:3, background:kpi.growth>=0?"#F0FDF4":"#FFF1F2", borderRadius:8, padding:"3px 8px" }}>
+                      <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke={kpi.growth>=0?"#22C55E":"#EF4444"} strokeWidth="2" strokeLinecap="round">
+                        {kpi.growth>=0 ? <><polyline points="14 5 8 11 2 5"/></> : <><polyline points="2 11 8 5 14 11"/></>}
+                      </svg>
+                      <span style={{ fontSize:12, fontWeight:800, color:kpi.growth>=0?"#22C55E":"#EF4444" }}>{kpi.growth>=0?"+":""}{kpi.growth.toFixed(1)}%</span>
+                    </div>
+                    <span style={{ fontSize:11, color:"#94A3B8" }}>vs 7 jours préc.</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Bar chart */}
+          {stats && (
+            <div style={{ background:"#fff", borderRadius:24, padding:"20px 16px 16px", boxShadow:"0 2px 12px rgba(0,0,0,.05)", border:"1px solid #F1F5F9" }}>
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:20 }}>
+                <p style={{ margin:0, fontWeight:800, fontSize:16, color:"#0F172A", letterSpacing:"-0.2px" }}>Graphique des vues</p>
+                <div style={{ width:28, height:28, borderRadius:8, background:"#F1F5F9", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  <svg viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="#94A3B8" strokeWidth="1.8" strokeLinecap="round"><circle cx="10" cy="10" r="8"/><line x1="10" y1="6" x2="10" y2="10"/><line x1="10" y1="14" x2="10.01" y2="14"/></svg>
                 </div>
               </div>
-            </>
+
+              {/* Y-axis + bars */}
+              <div style={{ display:"flex", gap:8 }}>
+                {/* Y-axis labels */}
+                <div style={{ display:"flex", flexDirection:"column", justifyContent:"space-between", alignItems:"flex-end", height:140, paddingBottom:20, flexShrink:0, width:32 }}>
+                  {[maxViews, Math.round(maxViews*0.75), Math.round(maxViews*0.5), Math.round(maxViews*0.25), 0].map(v=>(
+                    <span key={v} style={{ fontSize:10, color:"#CBD5E1", fontWeight:500, lineHeight:1 }}>
+                      {v>=1000?`${(v/1000).toFixed(0)}k`:v}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Grid + bars */}
+                <div style={{ flex:1, position:"relative" }}>
+                  {/* Grid lines */}
+                  {[0,0.25,0.5,0.75,1].map(pct=>(
+                    <div key={pct} style={{ position:"absolute", left:0, right:0, bottom:`calc(${pct*100}% + 20px)`, borderTop:"1px dashed #F1F5F9" }}/>
+                  ))}
+                  {/* Bars */}
+                  <div style={{ display:"flex", alignItems:"flex-end", gap:5, height:140, paddingBottom:20, position:"relative" }}>
+                    {stats.chart.map((pt,i)=>{
+                      const hPct = pt.views / maxViews;
+                      const isActive = chartActive === i;
+                      return (
+                        <div key={i} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:0, height:"100%", justifyContent:"flex-end", cursor:"pointer" }}
+                          onClick={()=>setChartActive(prev=>prev===i?null:i)}>
+                          {/* Tooltip */}
+                          {isActive && (
+                            <div style={{ position:"absolute", bottom:`calc(${hPct*100}% + 8px)`, left:`${(i+0.5)*(100/stats.chart.length)}%`, transform:"translateX(-50%)", background:"#0F172A", color:"#fff", borderRadius:10, padding:"5px 10px", fontSize:11, fontWeight:700, whiteSpace:"nowrap", zIndex:5, boxShadow:"0 4px 14px rgba(0,0,0,.2)" }}>
+                              {pt.views.toLocaleString()} vues<br/>
+                              <span style={{ fontWeight:500, opacity:.7 }}>{pt.day}</span>
+                            </div>
+                          )}
+                          {/* Bar */}
+                          <div className="stat-bar" style={{ animationDelay:`${i*40}ms`, width:"100%", height:`${Math.max(hPct*100, 4)}%`, background:isActive?`linear-gradient(to top,#16A34A,#4ADE80)`:`linear-gradient(to top,#22C55E,#86EFAC)`, borderRadius:"6px 6px 0 0", boxShadow:isActive?"0 0 0 2px #16A34A":"none", transition:"background 200ms, box-shadow 200ms" }}/>
+                          {/* Day label */}
+                          <span style={{ fontSize:9.5, color:"#94A3B8", marginTop:5, fontWeight:500 }}>{pt.day}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Growth summary card */}
+          {stats && (
+            <div style={{ background:"linear-gradient(135deg,#22C55E,#16A34A)", borderRadius:20, padding:"14px 18px", display:"flex", alignItems:"center", gap:10, boxShadow:"0 4px 16px rgba(34,197,94,.25)", marginBottom:8 }}>
+              <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round">
+                <polyline points="18 4 10 12 6 8 2 12"/>
+                <polyline points="14 4 18 4 18 8"/>
+              </svg>
+              <p style={{ margin:0, fontSize:13, fontWeight:700, color:"#fff", flex:1 }}>
+                Augmentation de {avgGrowth.toFixed(1)}% par rapport à la période précédente
+              </p>
+            </div>
           )}
         </div>
       </div>

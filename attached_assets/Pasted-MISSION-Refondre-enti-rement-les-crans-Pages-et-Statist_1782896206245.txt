@@ -1,0 +1,273 @@
+MISSION
+
+Refondre entièrement les écrans "Pages" et "Statistiques" de BrutePawa pour atteindre un niveau de qualité visuelle équivalent à Facebook Pages, LinkedIn Analytics, Stripe Dashboard et Instagram Professional.
+
+Le résultat doit sembler conçu par une équipe UI/UX senior de Meta en 2026.
+
+═══════════════════════════════════════
+
+STYLE
+
+- Apple Human Interface Guidelines
+- Material Design 3
+- Glassmorphism léger
+- Ombres douces premium
+- Coins 24px
+- Animations 60 FPS
+- Interface mobile native
+- Aucun aspect WebView
+
+═══════════════════════════════════════
+
+PALETTE
+
+Primary:
+#22C55E
+
+Primary Dark:
+#16A34A
+
+Background:
+#F8FAFC
+
+Card:
+#FFFFFF
+
+Text:
+#0F172A
+
+Secondary:
+#64748B
+
+Border:
+#E2E8F0
+
+═══════════════════════════════════════
+
+ÉCRAN 1 : STATISTIQUES
+
+HEADER
+
+← Statistiques
+
+Bouton calendrier premium à droite
+
+═══════════════════════════════════════
+
+FILTRE
+
+Sélecteur moderne
+
+"7 derniers jours"
+
+- Fond blanc
+- Coins 18px
+- Icône calendrier Lucide
+- Ombre légère
+
+═══════════════════════════════════════
+
+CARTES KPI
+
+Disposition 2x2
+
+Carte 1
+
+👁 Vues de la page
+1209
++22.1%
+
+Carte 2
+
+👥 Nouveaux abonnés
+12
++16.3%
+
+Carte 3
+
+❤️ Interactions
+80
++31.9%
+
+Carte 4
+
+🔗 Clics sur le site web
+10
++8.7%
+
+Chaque carte :
+
+- Coins 24px
+- Fond blanc
+- Ombre premium
+- Mini graphique sparkline
+- Icône moderne
+- Animation au toucher
+
+═══════════════════════════════════════
+
+GRAPHIQUE
+
+Titre :
+
+Graphique des vues
+
+Graphique interactif professionnel
+
+- Barres dégradées vertes
+- Tooltip au clic
+- Axes modernes
+- Animation d'entrée
+- Style Stripe Analytics
+
+Sous le graphique :
+
+Carte verte de croissance
+
+"Augmentation de 22.1% par rapport à la période précédente"
+
+═══════════════════════════════════════
+
+ÉCRAN 2 : MES PAGES
+
+HEADER
+
+← Pages
+
+Bouton premium :
+
++ Créer
+
+Coins 999px
+
+Dégradé vert
+
+═══════════════════════════════════════
+
+ONGLETS
+
+Toutes
+
+Mes pages
+
+Invitations
+
+Indicateur animé vert
+
+═══════════════════════════════════════
+
+CARTE PAGE
+
+Grande carte premium
+
+Coins 28px
+
+Ombre moderne
+
+═══════════════════════════════════════
+
+COUVERTURE
+
+Image de couverture premium
+
+Dégradé vert futuriste
+
+Motifs lumineux
+
+Effet verre dépoli
+
+Bouton flottant :
+
+Modifier la couverture
+
+═══════════════════════════════════════
+
+AVATAR
+
+120px
+
+Bordure blanche
+
+Ombre douce
+
+Bouton caméra flottant
+
+═══════════════════════════════════════
+
+INFOS
+
+Nom :
+Omar
+
+Badge vérifié vert
+
+@omar
+
+Artiste / Créateur
+
+0 abonnés
+
+═══════════════════════════════════════
+
+STATISTIQUES RAPIDES
+
+3 mini cartes
+
+👥 Abonnés
+
+📝 Publications
+
+📈 Abonnements
+
+Style :
+
+Fond vert très clair
+
+Coins 20px
+
+═══════════════════════════════════════
+
+ACTION
+
+Bouton principal :
+
+S'abonner
+
+Dégradé vert premium
+
+Icône utilisateur +
+
+═══════════════════════════════════════
+
+MICRO-INTERACTIONS
+
+Scale 0.98 au clic
+
+Fade animation
+
+Ripple effect
+
+Slide transitions
+
+═══════════════════════════════════════
+
+INTERDICTIONS
+
+❌ Emoji système
+❌ Icônes incohérentes
+❌ Ombres fortes
+❌ Bannière vide
+❌ Coins carrés
+❌ Interface datée
+❌ Design amateur
+❌ Aspect Android basique
+
+═══════════════════════════════════════
+
+OBJECTIF
+
+Créer un rendu visuellement supérieur à 99% des applications disponibles sur Google Play Store.
+
+Le résultat doit provoquer :
+
+"Wow, cette application ressemble à un produit Meta ou Apple."
