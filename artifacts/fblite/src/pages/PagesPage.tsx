@@ -495,30 +495,229 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
 
   /* ── SUCCESS ─────────────────────────────────────────────────── */
   if (view === "success") {
+    const pageName = selectedPage?.name ?? "Ma page";
+    const pageCategory = selectedPage?.category ?? "";
+    const avatarUrl = selectedPage?.avatarUrl ?? null;
+
     return (
-      <div style={{ fontFamily:"'Inter',system-ui,sans-serif", background:"#F8FAFC", minHeight:"100vh", maxWidth:640, margin:"0 auto", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:32, gap:20 }}>
-        <div style={{ width:96, height:96, borderRadius:"50%", background:"#F0FDF4", display:"flex", alignItems:"center", justifyContent:"center" }}>
-          <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke={G} strokeWidth="2.5" strokeLinecap="round">
-            <circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/>
-          </svg>
+      <div style={{ fontFamily:"'Inter',system-ui,sans-serif", background:"#F8FAFC", minHeight:"100vh", maxWidth:640, margin:"0 auto", display:"flex", flexDirection:"column", overflowX:"hidden" }}>
+        <style>{`
+          @keyframes confetti-fall {
+            0%   { transform: translateY(-20px) rotate(0deg); opacity:1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity:0; }
+          }
+          @keyframes pop-in {
+            0%   { transform: scale(0.6); opacity:0; }
+            70%  { transform: scale(1.08); }
+            100% { transform: scale(1); opacity:1; }
+          }
+          @keyframes check-draw {
+            0%   { stroke-dashoffset: 100; }
+            100% { stroke-dashoffset: 0; }
+          }
+          @keyframes fade-up {
+            0%   { transform: translateY(24px); opacity:0; }
+            100% { transform: translateY(0); opacity:1; }
+          }
+          @keyframes pulse-ring {
+            0%   { transform: scale(1); opacity:.4; }
+            100% { transform: scale(1.5); opacity:0; }
+          }
+          .confetti-piece { position:fixed; width:8px; height:8px; top:-10px; animation: confetti-fall linear infinite; border-radius:2px; }
+          .fade-up-1 { animation: fade-up .55s cubic-bezier(.22,1,.36,1) .15s both; }
+          .fade-up-2 { animation: fade-up .55s cubic-bezier(.22,1,.36,1) .28s both; }
+          .fade-up-3 { animation: fade-up .55s cubic-bezier(.22,1,.36,1) .38s both; }
+          .fade-up-4 { animation: fade-up .55s cubic-bezier(.22,1,.36,1) .48s both; }
+          .fade-up-5 { animation: fade-up .55s cubic-bezier(.22,1,.36,1) .58s both; }
+        `}</style>
+
+        {/* ── Confetti ── */}
+        {[
+          { left:"8%",  delay:"0s",   dur:"2.8s", color:"#22C55E", size:9 },
+          { left:"18%", delay:".3s",  dur:"3.2s", color:"#F59E0B", size:7 },
+          { left:"28%", delay:".7s",  dur:"2.5s", color:"#22C55E", size:11, round:"50%" },
+          { left:"38%", delay:".1s",  dur:"3.5s", color:"#FCD34D", size:8 },
+          { left:"52%", delay:".5s",  dur:"2.9s", color:"#86EFAC", size:10 },
+          { left:"63%", delay:".2s",  dur:"3.1s", color:"#22C55E", size:7, round:"50%" },
+          { left:"73%", delay:".9s",  dur:"2.7s", color:"#F59E0B", size:9 },
+          { left:"83%", delay:".4s",  dur:"3.3s", color:"#22C55E", size:8 },
+          { left:"92%", delay:".6s",  dur:"2.6s", color:"#FCD34D", size:10, round:"50%" },
+        ].map((c,i) => (
+          <div key={i} className="confetti-piece" style={{
+            left:c.left, animationDelay:c.delay, animationDuration:c.dur,
+            background:c.color, width:c.size, height:c.size, borderRadius:c.round??2,
+          }}/>
+        ))}
+
+        {/* ── Hero illustration zone ── */}
+        <div style={{ background:"linear-gradient(180deg,#F0FDF4 0%,#F8FAFC 100%)", padding:"48px 24px 28px", display:"flex", flexDirection:"column", alignItems:"center", gap:0 }}>
+
+          {/* Illustration SVG premium */}
+          <div style={{ position:"relative", width:200, height:220, animation:"pop-in .7s cubic-bezier(.22,1,.36,1) both" }}>
+            {/* Glow background */}
+            <div style={{ position:"absolute", top:"50%", left:"50%", transform:"translate(-50%,-50%)", width:170, height:170, borderRadius:"50%", background:"radial-gradient(circle,#DCFCE7 0%,#F0FDF4 60%,transparent 100%)" }}/>
+            {/* Pulse ring */}
+            <div style={{ position:"absolute", top:"50%", left:"50%", transform:"translate(-50%,-50%)", width:140, height:140, borderRadius:"50%", border:"2px solid #22C55E", animation:"pulse-ring 1.8s ease-out .4s infinite", opacity:.3 }}/>
+
+            {/* Smartphone body */}
+            <svg viewBox="0 0 120 200" width="120" height="200" style={{ position:"absolute", left:"50%", top:"50%", transform:"translate(-50%,-55%)" }}>
+              {/* Phone shadow */}
+              <ellipse cx="60" cy="195" rx="36" ry="6" fill="rgba(0,0,0,.08)"/>
+              {/* Phone body */}
+              <rect x="14" y="8" width="92" height="172" rx="16" fill="#fff" stroke="#E5E7EB" strokeWidth="1.5"/>
+              <rect x="18" y="12" width="84" height="164" rx="13" fill="#F8FAFC"/>
+              {/* Status bar */}
+              <rect x="38" y="16" width="44" height="6" rx="3" fill="#E5E7EB"/>
+              {/* Screen content */}
+              <rect x="24" y="32" width="72" height="38" rx="6" fill="#DCFCE7"/>
+              {/* Landscape placeholder */}
+              <path d="M24 56 L44 42 L58 52 L72 38 L96 56 Z" fill="#22C55E" opacity=".5"/>
+              <circle cx="35" cy="42" r="5" fill="#22C55E" opacity=".6"/>
+              {/* Lines */}
+              <rect x="24" y="76" width="72" height="7" rx="3.5" fill="#E5E7EB"/>
+              <rect x="24" y="88" width="52" height="7" rx="3.5" fill="#E5E7EB"/>
+              <rect x="24" y="104" width="72" height="7" rx="3.5" fill="#F0FDF4"/>
+              <rect x="24" y="116" width="44" height="7" rx="3.5" fill="#F0FDF4"/>
+              {/* Bottom button */}
+              <rect x="24" y="134" width="72" height="20" rx="10" fill="#22C55E"/>
+              <rect x="36" y="140" width="48" height="8" rx="4" fill="rgba(255,255,255,.5)"/>
+              {/* Home bar */}
+              <rect x="44" y="164" width="32" height="4" rx="2" fill="#D1D5DB"/>
+              {/* Decorative plant */}
+              <ellipse cx="10" cy="190" rx="10" ry="12" fill="#86EFAC" opacity=".5"/>
+              <line x1="10" y1="178" x2="10" y2="190" stroke="#22C55E" strokeWidth="1.5"/>
+              <path d="M10 186 Q4 180 2 174" stroke="#22C55E" strokeWidth="1.2" fill="none"/>
+              <path d="M10 184 Q16 178 18 172" stroke="#22C55E" strokeWidth="1.2" fill="none"/>
+              {/* Stars / sparkles */}
+              <path d="M100 20 L102 16 L104 20 L108 22 L104 24 L102 28 L100 24 L96 22 Z" fill="#FCD34D" opacity=".8"/>
+              <path d="M16 30 L17.2 27 L18.4 30 L21 31 L18.4 32 L17.2 35 L16 32 L13 31 Z" fill="#FCD34D" opacity=".6"/>
+              <circle cx="108" cy="60" r="3" fill="#22C55E" opacity=".5"/>
+              <circle cx="12" cy="70" r="2" fill="#F59E0B" opacity=".6"/>
+            </svg>
+
+            {/* Check badge */}
+            <div style={{ position:"absolute", bottom:24, right:12, width:52, height:52, borderRadius:"50%", background:"linear-gradient(135deg,#22C55E,#16A34A)", boxShadow:"0 8px 24px rgba(34,197,94,.45)", display:"flex", alignItems:"center", justifyContent:"center", animation:"pop-in .5s cubic-bezier(.22,1,.36,1) .5s both" }}>
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+
+            {/* Confetti cannons (decoration) */}
+            <svg viewBox="0 0 30 30" width="36" height="36" style={{ position:"absolute", right:-8, top:40, transform:"rotate(-20deg)" }}>
+              <rect x="8" y="18" width="14" height="8" rx="2" fill="#F59E0B"/>
+              <polygon points="8,18 4,8 22,18" fill="#FCD34D"/>
+              {[0,1,2].map(i=>(
+                <line key={i} x1={12+i*3} y1="8" x2={10+i*4} y2={i%2===0?0:4} stroke={["#22C55E","#F59E0B","#22C55E"][i]} strokeWidth="1.5" strokeLinecap="round"/>
+              ))}
+            </svg>
+          </div>
+
+          {/* Title */}
+          <div className="fade-up-1" style={{ marginTop:8, textAlign:"center" }}>
+            <h1 style={{ margin:"0 0 10px", fontWeight:900, fontSize:26, letterSpacing:"-0.5px", color:"#0F172A", lineHeight:1.2 }}>
+              Page créée avec succès{" "}
+              <span style={{ color:"#22C55E" }}>!</span>
+            </h1>
+            <p style={{ margin:0, fontSize:15, color:"#64748B", lineHeight:1.55, maxWidth:300 }}>
+              Votre page est prête. Personnalisez-la et invitez vos amis à vous rejoindre.
+            </p>
+          </div>
         </div>
-        <h2 style={{ margin:0, fontWeight:800, fontSize:22, color:"#111827", textAlign:"center" }}>Page créée avec succès !</h2>
-        <p style={{ margin:0, fontSize:15, color:"#6B7280", textAlign:"center" }}>Votre page est prête. Personnalisez-la et invitez vos amis à vous rejoindre.</p>
-        {selectedPage && (
-          <div style={{ background:"#fff", borderRadius:20, padding:16, width:"100%", boxShadow:"0 2px 12px rgba(0,0,0,.07)", display:"flex", alignItems:"center", gap:12 }}>
-            <Av name={selectedPage.name} src={selectedPage.avatarUrl} size={56} />
-            <div>
-              <p style={{ margin:0, fontWeight:700, fontSize:17, color:"#111827" }}>{selectedPage.name}</p>
-              <p style={{ margin:0, fontSize:13, color:"#6B7280" }}>{selectedPage.category}</p>
+
+        {/* ── Page card ── */}
+        <div className="fade-up-2" style={{ margin:"0 20px", padding:"18px 18px 16px", background:"#fff", borderRadius:24, boxShadow:"0 4px 24px rgba(0,0,0,.07),0 1px 4px rgba(0,0,0,.04)", border:"1px solid rgba(0,0,0,.04)" }}>
+          <div style={{ display:"flex", alignItems:"center", gap:14 }}>
+            {/* Avatar */}
+            <div style={{ position:"relative", flexShrink:0 }}>
+              <div style={{ width:56, height:56, borderRadius:"50%", overflow:"hidden", background:"linear-gradient(135deg,#F97316,#EA580C)", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 4px 14px rgba(249,115,22,.3)" }}>
+                {avatarUrl
+                  ? <img src={avatarUrl} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+                  : <span style={{ color:"#fff", fontWeight:900, fontSize:22, letterSpacing:"-0.5px" }}>{pageName.charAt(0).toUpperCase()}</span>}
+              </div>
+              <div style={{ position:"absolute", bottom:-2, right:-2, width:18, height:18, borderRadius:"50%", background:"#22C55E", border:"2px solid #fff", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <svg viewBox="0 0 10 10" width="9" height="9" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round">
+                  <polyline points="8 2.5 4 7.5 2 5.5"/>
+                </svg>
+              </div>
+            </div>
+
+            {/* Info */}
+            <div style={{ flex:1, minWidth:0 }}>
+              <p style={{ margin:"0 0 3px", fontWeight:800, fontSize:17, color:"#0F172A", letterSpacing:"-0.2px" }}>{pageName}</p>
+              <p style={{ margin:"0 0 6px", fontSize:13, color:"#64748B" }}>{pageCategory}</p>
+              <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                <span style={{ background:"linear-gradient(135deg,#DCFCE7,#BBF7D0)", color:"#15803D", borderRadius:20, padding:"3px 10px", fontSize:11, fontWeight:700, letterSpacing:"0.2px" }}>
+                  ✓ Page créée
+                </span>
+                <span style={{ fontSize:12, color:"#94A3B8" }}>à l'instant</span>
+              </div>
             </div>
           </div>
-        )}
-        <button onClick={()=>{ if(selectedPage) loadFriends(selectedPage.id); setView("invite"); }} style={{ width:"100%", background:G, color:"#fff", border:"none", borderRadius:14, padding:14, fontWeight:700, fontSize:15, cursor:"pointer" }}>
-          Inviter des amis
-        </button>
-        <button onClick={()=>{ if(selectedPage) openPage(selectedPage.id); }} style={{ width:"100%", background:"#F3F4F6", color:"#374151", border:"none", borderRadius:14, padding:14, fontWeight:700, fontSize:15, cursor:"pointer" }}>
-          Aller à ma page
-        </button>
+
+          {/* Divider */}
+          <div style={{ height:1, background:"linear-gradient(90deg,transparent,#F1F5F9,transparent)", margin:"14px 0" }}/>
+
+          {/* Stats row */}
+          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:0 }}>
+            {[
+              { icon:<svg viewBox="0 0 22 22" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, label:"Abonnés", val:selectedPage?.followersCount??0 },
+              { icon:<svg viewBox="0 0 22 22" width="20" height="20" fill="none" stroke="#6366F1" strokeWidth="1.8" strokeLinecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>, label:"Publications", val:0 },
+              { icon:<svg viewBox="0 0 22 22" width="20" height="20" fill="none" stroke="#0EA5E9" strokeWidth="1.8" strokeLinecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>, label:"Vues", val:0 },
+            ].map((s,i) => (
+              <div key={i} style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:5, padding:"6px 0", borderRight:i<2?"1px solid #F1F5F9":"none" }}>
+                <div style={{ width:36, height:36, borderRadius:10, background:["#F0FDF4","#EEF2FF","#F0F9FF"][i], display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  {s.icon}
+                </div>
+                <p style={{ margin:0, fontWeight:800, fontSize:18, color:"#0F172A", lineHeight:1 }}>{s.val.toLocaleString()}</p>
+                <p style={{ margin:0, fontSize:11, color:"#94A3B8", fontWeight:500 }}>{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Buttons ── */}
+        <div className="fade-up-4" style={{ padding:"20px 20px 0", display:"flex", flexDirection:"column", gap:12 }}>
+          {/* Primary CTA */}
+          <button onClick={()=>{ if(selectedPage) loadFriends(selectedPage.id); setView("invite"); }}
+            style={{ width:"100%", background:"linear-gradient(135deg,#22C55E 0%,#16A34A 100%)", color:"#fff", border:"none", borderRadius:16, padding:"16px 0", fontWeight:800, fontSize:16, cursor:"pointer", boxShadow:"0 8px 24px rgba(34,197,94,.35),0 2px 8px rgba(34,197,94,.2)", display:"flex", alignItems:"center", justifyContent:"center", gap:10, letterSpacing:"-0.2px", position:"relative", overflow:"hidden" }}>
+            {/* Shine */}
+            <div style={{ position:"absolute", top:0, left:"-30%", width:"60%", height:"100%", background:"linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent)", transform:"skewX(-20deg)" }}/>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+              <line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>
+            </svg>
+            Inviter des amis
+          </button>
+
+          {/* Secondary CTA */}
+          <button onClick={()=>{ if(selectedPage) openPage(selectedPage.id); }}
+            style={{ width:"100%", background:"#fff", color:"#374151", border:"1.5px solid #E5E7EB", borderRadius:16, padding:"15px 0", fontWeight:700, fontSize:15, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:10, boxShadow:"0 2px 8px rgba(0,0,0,.04)" }}>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+            Aller à ma page
+          </button>
+        </div>
+
+        {/* ── Bottom actions ── */}
+        <div className="fade-up-5" style={{ margin:"20px 20px 40px", display:"flex", gap:12 }}>
+          <button onClick={()=>openSettings(selectedPage!)}
+            style={{ flex:1, background:"#F1F5F9", color:"#374151", border:"none", borderRadius:16, padding:"14px 0", fontWeight:700, fontSize:14, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+            Modifier
+          </button>
+          <button onClick={async()=>{ if(selectedPage&&navigator.share) await navigator.share({ title:pageName, text:`Rejoignez ma page ${pageName} sur BrutePawa !` }); }}
+            style={{ flex:1, background:"#F1F5F9", color:"#374151", border:"none", borderRadius:16, padding:"14px 0", fontWeight:700, fontSize:14, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round">
+              <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+            </svg>
+            Partager
+          </button>
+        </div>
       </div>
     );
   }
