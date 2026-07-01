@@ -135,7 +135,11 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
   });
 
   /* ── Profile sub-tab ───────────────────────────────────────── */
-  const [profileTab, setProfileTab] = useState<"publications" | "apropos" | "photos" | "plus">("publications");
+  const [profileTab, setProfileTab] = useState<"publications" | "apropos" | "photos" | "videos" | "evenements" | "plus">("publications");
+
+  /* ── Delete modal ───────────────────────────────────────────── */
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingPage, setDeletingPage] = useState(false);
 
   /* ── Roles ─────────────────────────────────────────────────── */
   const [roles, setRoles] = useState<ApiPageRole[]>([]);
@@ -248,15 +252,16 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
 
   const handleDeletePage = async () => {
     if (!selectedPage) return;
-    if (!confirm("Supprimer définitivement cette page ?")) return;
+    setDeletingPage(true);
     try {
       await apiDeletePage(selectedPage.id);
       toast.success("Page supprimée");
       setMyPages(prev => prev.filter(p => p.id !== selectedPage.id));
       setPages(prev => prev.filter(p => p.id !== selectedPage.id));
       setSelectedPage(null);
+      setShowDeleteModal(false);
       setView("list");
-    } catch { toast.error("Erreur lors de la suppression"); }
+    } catch { toast.error("Erreur lors de la suppression"); } finally { setDeletingPage(false); }
   };
 
   const handleUpdatePage = async () => {
@@ -768,123 +773,307 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
   /* ── PROFILE ─────────────────────────────────────────────────── */
   if (view === "profile" && selectedPage) {
     const isOwner = selectedPage.isOwner;
+    const handle = selectedPage.username ?? selectedPage.name.toLowerCase().replace(/\s+/g, "");
     const PTABS = [
       { id:"publications" as const, label:"Publications" },
-      { id:"apropos" as const, label:"À propos" },
-      { id:"photos" as const, label:"Photos" },
-      { id:"plus" as const, label:"Plus" },
+      { id:"apropos"      as const, label:"À propos" },
+      { id:"photos"       as const, label:"Photos" },
+      { id:"videos"       as const, label:"Vidéos" },
+      { id:"evenements"   as const, label:"Évènements" },
+      { id:"plus"         as const, label:"Plus" },
     ];
+
     return (
-      <div style={{ fontFamily:"'Inter',system-ui,sans-serif", background:"#F8FAFC", minHeight:"100vh", maxWidth:640, margin:"0 auto", paddingBottom:80 }}>
-        <div style={{ background:"#fff", position:"sticky", top:0, zIndex:10, borderBottom:"1px solid #E5E7EB" }}>
-          <div style={{ display:"flex", alignItems:"center", padding:"10px 14px", gap:10 }}>
-            <button onClick={()=>goBack("list")} style={{ background:"none", border:"none", cursor:"pointer" }}>
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#374151" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-            </button>
-            <span style={{ fontWeight:700, fontSize:17, color:"#111827", flex:1 }}>{selectedPage.name}</span>
-            {isOwner&&<button onClick={()=>openSettings(selectedPage)} style={{ background:"none", border:"none", cursor:"pointer", padding:4 }}>
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            </button>}
-          </div>
+      <div style={{ fontFamily:"'Inter',system-ui,sans-serif", background:"#F8FAFC", minHeight:"100vh", maxWidth:640, margin:"0 auto", paddingBottom:90 }}>
+        <style>{`
+          .ptab-scroll::-webkit-scrollbar { display:none; }
+          .ptab-btn { transition: color 180ms, border-color 180ms; }
+          .action-btn { transition: transform 120ms, box-shadow 120ms; }
+          .action-btn:active { transform: scale(0.97); }
+          .plus-row { transition: background 150ms; }
+          .plus-row:hover { background:#F8FAFC !important; }
+        `}</style>
+
+        {/* ── Floating header ── */}
+        <div style={{ position:"sticky", top:0, zIndex:30, display:"flex", alignItems:"center", justifyContent:"space-between", padding:"10px 14px", background:"rgba(255,255,255,.92)", backdropFilter:"blur(16px)", borderBottom:"1px solid rgba(229,231,235,.8)" }}>
+          <button onClick={()=>goBack("list")} style={{ background:"none", border:"none", cursor:"pointer", padding:6, margin:-6, borderRadius:12, display:"flex" }}>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#374151" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <span style={{ fontWeight:800, fontSize:17, color:"#0F172A", letterSpacing:"-0.2px" }}>{selectedPage.name}</span>
+          {isOwner
+            ? <button onClick={()=>openSettings(selectedPage)} style={{ background:"#F1F5F9", border:"none", cursor:"pointer", padding:8, borderRadius:12, display:"flex" }}>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              </button>
+            : <div style={{ width:36 }}/>
+          }
         </div>
-        <div style={{ background:"#fff", marginBottom:8 }}>
-          {/* Cover */}
-          <div style={{ height:180, background:selectedPage.coverUrl?`url(${selectedPage.coverUrl}) center/cover`:`linear-gradient(135deg,${G},${GD})`, position:"relative" }}>
-            {!selectedPage.coverUrl&&<div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
-              <div style={{ background:"rgba(255,255,255,.15)", borderRadius:20, padding:"10px 20px", display:"flex", alignItems:"center", gap:8 }}>
-                <span style={{ fontSize:28 }}>{selectedPage.emoji}</span>
-                <span style={{ fontWeight:800, fontSize:22, color:"#fff" }}>BrutePawa</span>
+
+        {/* ── Cover 260px ── */}
+        <div style={{ position:"relative", height:260, background:selectedPage.coverUrl?`url(${selectedPage.coverUrl}) center/cover`:"linear-gradient(135deg,#22C55E 0%,#16A34A 55%,#15803D 100%)", overflow:"hidden" }}>
+          {/* Geometric patterns */}
+          <svg viewBox="0 0 400 260" width="100%" height="100%" style={{ position:"absolute", inset:0 }} preserveAspectRatio="xMidYMid slice">
+            <circle cx="340" cy="40"  r="80"  fill="rgba(255,255,255,.06)"/>
+            <circle cx="360" cy="240" r="120" fill="rgba(255,255,255,.05)"/>
+            <circle cx="30"  cy="200" r="60"  fill="rgba(255,255,255,.06)"/>
+            <circle cx="80"  cy="20"  r="40"  fill="rgba(255,255,255,.08)"/>
+            <line x1="0" y1="90"  x2="400" y2="170" stroke="rgba(255,255,255,.07)" strokeWidth="1"/>
+            <line x1="0" y1="140" x2="400" y2="60"  stroke="rgba(255,255,255,.05)" strokeWidth="1"/>
+            {[40,80,120,160,200,240,280,320,360].map(x=>(
+              <circle key={x} cx={x} cy={130} r="2" fill="rgba(255,255,255,.2)"/>
+            ))}
+          </svg>
+          {/* Branding */}
+          {!selectedPage.coverUrl && (
+            <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:10 }}>
+              <div style={{ background:"rgba(255,255,255,.18)", backdropFilter:"blur(12px)", borderRadius:18, padding:"12px 24px", display:"flex", alignItems:"center", gap:10 }}>
+                <svg viewBox="0 0 36 36" width="32" height="32" fill="none">
+                  <circle cx="18" cy="18" r="18" fill="rgba(255,255,255,.25)"/>
+                  <path d="M11 13c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H13a2 2 0 0 1-2-2v-7z" fill="#fff" opacity=".9"/>
+                  <path d="M15 24v3M21 24v3M13 27h10" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/>
+                </svg>
+                <span style={{ fontWeight:900, fontSize:20, color:"#fff", letterSpacing:"-0.3px" }}>BrutePawa</span>
+                <svg viewBox="0 0 20 20" width="18" height="18" fill="#fff" opacity={.9}>
+                  <path d="M10 1l2.39 6.26L19 8.27l-4.88 4.73L15.56 19 10 15.27 4.44 19l1.44-6L1 8.27l6.61-1.01z"/>
+                </svg>
               </div>
-            </div>}
-          </div>
-          <div style={{ padding:"0 16px 16px" }}>
-            <div style={{ display:"flex", alignItems:"flex-end", gap:12, marginTop:-28 }}>
-              <div style={{ width:72, height:72, borderRadius:"50%", border:"4px solid #fff", background:G, display:"flex", alignItems:"center", justifyContent:"center", overflow:"hidden", flexShrink:0 }}>
-                {selectedPage.avatarUrl?<img src={selectedPage.avatarUrl} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }}/>:<span style={{ fontSize:30 }}>{selectedPage.emoji}</span>}
-              </div>
-              <div style={{ flex:1, paddingBottom:4 }}>
-                <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-                  <p style={{ margin:0, fontWeight:800, fontSize:18, color:"#111827" }}>{selectedPage.name}</p>
-                  {selectedPage.verified&&<svg viewBox="0 0 24 24" width="18" height="18" fill={G}><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>}
+              <span style={{ color:"rgba(255,255,255,.7)", fontSize:13, fontWeight:500, letterSpacing:"0.3px" }}>Votre voix, votre communauté.</span>
+            </div>
+          )}
+        </div>
+
+        {/* ── White card: avatar + info + stats + buttons ── */}
+        <div style={{ background:"#fff", paddingBottom:0 }}>
+          <div style={{ padding:"0 20px" }}>
+            {/* Avatar overlapping cover */}
+            <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", marginTop:-52 }}>
+              <div style={{ position:"relative" }}>
+                <div style={{ width:104, height:104, borderRadius:"50%", border:"5px solid #fff", background:`linear-gradient(135deg,${G},${GD})`, display:"flex", alignItems:"center", justifyContent:"center", overflow:"hidden", boxShadow:"0 8px 24px rgba(0,0,0,.15)", flexShrink:0 }}>
+                  {selectedPage.avatarUrl
+                    ? <img src={selectedPage.avatarUrl} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
+                    : <span style={{ color:"#fff", fontWeight:900, fontSize:40, letterSpacing:"-1px" }}>{selectedPage.name.charAt(0).toUpperCase()}</span>}
                 </div>
-                <p style={{ margin:0, fontSize:13, color:"#6B7280" }}>@{selectedPage.username??selectedPage.name.toLowerCase().replace(/\s+/g,"")}</p>
+                {selectedPage.verified && (
+                  <div style={{ position:"absolute", bottom:4, right:4, width:26, height:26, borderRadius:"50%", background:G, border:"2.5px solid #fff", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(34,197,94,.4)" }}>
+                    <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><polyline points="13 4 6 11 3 8"/></svg>
+                  </div>
+                )}
               </div>
             </div>
-            <div style={{ display:"flex", gap:24, marginTop:12, marginBottom:12 }}>
-              {[{label:"Abonnés",val:selectedPage.followersCount},{label:"Publications",val:0},{label:"Abonnements",val:0}].map(s=>(
-                <div key={s.label} style={{ textAlign:"center" }}>
-                  <p style={{ margin:0, fontWeight:800, fontSize:18, color:"#111827" }}>{s.val.toLocaleString()}</p>
-                  <p style={{ margin:0, fontSize:12, color:"#6B7280" }}>{s.label}</p>
+
+            {/* Name + handle */}
+            <div style={{ marginTop:12, marginBottom:16 }}>
+              <div style={{ display:"flex", alignItems:"center", gap:7 }}>
+                <h1 style={{ margin:0, fontWeight:900, fontSize:22, color:"#0F172A", letterSpacing:"-0.4px" }}>{selectedPage.name}</h1>
+                {selectedPage.verified && (
+                  <svg viewBox="0 0 22 22" width="20" height="20" fill={G}>
+                    <path d="M11 0C4.925 0 0 4.925 0 11s4.925 11 11 11 11-4.925 11-11S17.075 0 11 0zm5.02 8.71-6.13 6.13a.75.75 0 0 1-1.06 0L5.98 11a.75.75 0 1 1 1.06-1.06l2.32 2.32 5.6-5.6a.75.75 0 0 1 1.06 1.05z"/>
+                  </svg>
+                )}
+              </div>
+              <p style={{ margin:"3px 0 0", fontSize:14, color:"#64748B", fontWeight:500 }}>@{handle}</p>
+            </div>
+
+            {/* Stats — 3 individual cards */}
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10, marginBottom:16 }}>
+              {[
+                { label:"Abonnés",     val:selectedPage.followersCount },
+                { label:"Publications",val:0 },
+                { label:"Abonnements", val:0 },
+              ].map(s=>(
+                <div key={s.label} style={{ background:"#F8FAFC", borderRadius:18, padding:"14px 8px", textAlign:"center", boxShadow:"0 1px 4px rgba(0,0,0,.04)", border:"1px solid #F1F5F9" }}>
+                  <p style={{ margin:"0 0 3px", fontWeight:900, fontSize:20, color:"#0F172A", letterSpacing:"-0.5px" }}>{s.val.toLocaleString()}</p>
+                  <p style={{ margin:0, fontSize:11, color:"#64748B", fontWeight:500 }}>{s.label}</p>
                 </div>
               ))}
             </div>
-            <div style={{ display:"flex", gap:10 }}>
-              {isOwner?(
+
+            {/* Action buttons 52px */}
+            <div style={{ display:"flex", gap:10, paddingBottom:16 }}>
+              {isOwner ? (
                 <>
-                  <button onClick={()=>openSettings(selectedPage)} style={{ flex:1, background:"#F3F4F6", border:"none", borderRadius:10, padding:"10px 0", fontWeight:700, fontSize:14, color:"#374151", cursor:"pointer" }}>Modifier</button>
-                  <button onClick={()=>{ loadFriends(selectedPage.id); setView("invite"); }} style={{ flex:1, background:G, border:"none", borderRadius:10, padding:"10px 0", fontWeight:700, fontSize:14, color:"#fff", cursor:"pointer" }}>Promouvoir</button>
-                </>
-              ):(
-                <>
-                  <button onClick={()=>handleFollow(selectedPage.id,!!selectedPage.isFollowed)} style={{ flex:1, background:selectedPage.isFollowed?"#F3F4F6":G, color:selectedPage.isFollowed?"#374151":"#fff", border:"none", borderRadius:10, padding:"10px 0", fontWeight:700, fontSize:14, cursor:"pointer" }}>
-                    {selectedPage.isFollowed?"Abonné ✓":"S'abonner"}
+                  <button className="action-btn" onClick={()=>openSettings(selectedPage)}
+                    style={{ flex:1, height:52, background:"#fff", border:"1.5px solid #E2E8F0", borderRadius:16, fontWeight:700, fontSize:15, color:"#374151", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8, boxShadow:"0 1px 4px rgba(0,0,0,.05)" }}>
+                    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#374151" strokeWidth="2.2" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    Modifier
                   </button>
-                  <button onClick={()=>{ loadFriends(selectedPage.id); setView("invite"); }} style={{ flex:1, background:"#F3F4F6", color:"#374151", border:"none", borderRadius:10, padding:"10px 0", fontWeight:700, fontSize:14, cursor:"pointer" }}>Partager</button>
+                  <button className="action-btn" onClick={()=>{ loadFriends(selectedPage.id); setView("invite"); }}
+                    style={{ flex:1, height:52, background:"linear-gradient(135deg,#22C55E,#16A34A)", border:"none", borderRadius:16, fontWeight:700, fontSize:15, color:"#fff", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8, boxShadow:"0 6px 20px rgba(34,197,94,.35)" }}>
+                    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M3 3l1.664 9.143a2 2 0 0 0 1.958 1.636L15 14l-3 3-3-3"/><path d="M15 14l3 3 3-3"/><path d="M9 11V3l12 12"/></svg>
+                    Promouvoir
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button className="action-btn" onClick={()=>handleFollow(selectedPage.id, !!selectedPage.isFollowed)}
+                    style={{ flex:1, height:52, background:selectedPage.isFollowed?"#F1F5F9":"linear-gradient(135deg,#22C55E,#16A34A)", color:selectedPage.isFollowed?"#374151":"#fff", border:selectedPage.isFollowed?"1.5px solid #E2E8F0":"none", borderRadius:16, fontWeight:700, fontSize:15, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8, boxShadow:selectedPage.isFollowed?"none":"0 6px 20px rgba(34,197,94,.35)" }}>
+                    {selectedPage.isFollowed
+                      ? <><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#374151" strokeWidth="2.2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>Abonné</>
+                      : <><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>S'abonner</>
+                    }
+                  </button>
+                  <button className="action-btn" onClick={async()=>{ if(navigator.share) await navigator.share({ title:selectedPage.name }); }}
+                    style={{ height:52, width:52, background:"#F1F5F9", border:"1.5px solid #E2E8F0", borderRadius:16, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#374151" strokeWidth="2.2" strokeLinecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                  </button>
                 </>
               )}
             </div>
           </div>
-          {/* Profile tabs */}
-          <div style={{ display:"flex", borderTop:"1px solid #F1F5F9" }}>
+
+          {/* ── Tabs scrollable ── */}
+          <div className="ptab-scroll" style={{ display:"flex", borderTop:"1px solid #F1F5F9", overflowX:"auto", scrollbarWidth:"none" }}>
             {PTABS.map(t=>(
-              <button key={t.id} onClick={()=>setProfileTab(t.id)}
-                style={{ flex:1, padding:"12px 0", fontSize:13, fontWeight:profileTab===t.id?700:500, color:profileTab===t.id?G:"#6B7280", background:"none", border:"none", borderBottom:profileTab===t.id?`3px solid ${G}`:"3px solid transparent", cursor:"pointer" }}>
+              <button key={t.id} className="ptab-btn" onClick={()=>setProfileTab(t.id)}
+                style={{ flexShrink:0, padding:"14px 18px", fontSize:13.5, fontWeight:profileTab===t.id?700:500, color:profileTab===t.id?G:"#64748B", background:"none", border:"none", borderBottom:profileTab===t.id?`2.5px solid ${G}`:"2.5px solid transparent", cursor:"pointer", whiteSpace:"nowrap", transition:"all 180ms" }}>
                 {t.label}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Tab content */}
-        {profileTab==="publications"&&<div style={{ padding:16 }}><EmptyState icon="📝" title="Aucune publication" desc="Partagez du contenu avec votre communauté."/></div>}
-        {profileTab==="apropos"&&(
-          <div style={{ padding:16, background:"#fff", margin:"0 0 8px" }}>
-            <h3 style={{ margin:"0 0 12px", fontSize:16, fontWeight:700, color:"#111827" }}>Informations</h3>
-            {selectedPage.email&&<InfoRow icon="✉️" label={selectedPage.email}/>}
-            {selectedPage.phone&&<InfoRow icon="📞" label={selectedPage.phone}/>}
-            {selectedPage.website&&<InfoRow icon="🌐" label={selectedPage.website}/>}
-            {selectedPage.address&&<InfoRow icon="📍" label={selectedPage.address}/>}
-            {selectedPage.description&&<>
-              <h3 style={{ margin:"16px 0 8px", fontSize:16, fontWeight:700, color:"#111827" }}>Présentation</h3>
-              <p style={{ margin:0, fontSize:14, color:"#374151", lineHeight:1.6 }}>{selectedPage.description}</p>
-            </>}
+        {/* ── Tab content ── */}
+        {profileTab==="publications" && (
+          <div style={{ padding:"40px 20px", display:"flex", flexDirection:"column", alignItems:"center", gap:16, textAlign:"center" }}>
+            <div style={{ width:80, height:80, borderRadius:24, background:"#F0FDF4", display:"flex", alignItems:"center", justifyContent:"center" }}>
+              <svg viewBox="0 0 48 48" width="44" height="44" fill="none">
+                <rect x="8" y="6" width="32" height="36" rx="5" fill="#DCFCE7"/>
+                <path d="M16 17h16M16 23h16M16 29h10" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"/>
+                <path d="M34 34l5 5" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"/>
+                <circle cx="34" cy="30" r="5" fill="#22C55E" opacity=".3" stroke="#22C55E" strokeWidth="2"/>
+                <path d="M32 30h4M34 28v4" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <p style={{ margin:"0 0 6px", fontWeight:800, fontSize:18, color:"#0F172A" }}>Aucune publication</p>
+              <p style={{ margin:0, fontSize:14, color:"#64748B", lineHeight:1.55, maxWidth:260 }}>Partagez du contenu avec votre communauté et engagez votre audience.</p>
+            </div>
+            <button style={{ height:44, background:"linear-gradient(135deg,#22C55E,#16A34A)", color:"#fff", border:"none", borderRadius:14, padding:"0 24px", fontWeight:700, fontSize:14, cursor:"pointer", display:"flex", alignItems:"center", gap:8, boxShadow:"0 4px 14px rgba(34,197,94,.3)" }}>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Créer une publication
+            </button>
+          </div>
+        )}
+
+        {profileTab==="apropos" && (
+          <div style={{ margin:"12px 16px", background:"#fff", borderRadius:24, padding:20, boxShadow:"0 2px 12px rgba(0,0,0,.05)", border:"1px solid #F1F5F9" }}>
+            <h3 style={{ margin:"0 0 16px", fontSize:16, fontWeight:800, color:"#0F172A" }}>Informations</h3>
+            {selectedPage.email && (
+              <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:14 }}>
+                <div style={{ width:36, height:36, borderRadius:10, background:"#EFF6FF", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </div>
+                <span style={{ fontSize:14, color:"#374151" }}>{selectedPage.email}</span>
+              </div>
+            )}
+            {selectedPage.phone && (
+              <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:14 }}>
+                <div style={{ width:36, height:36, borderRadius:10, background:"#F0FDF4", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13 19.79 19.79 0 0 1 1.61 4.4 2 2 0 0 1 3.6 2.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.16 6.16l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                </div>
+                <span style={{ fontSize:14, color:"#374151" }}>{selectedPage.phone}</span>
+              </div>
+            )}
+            {selectedPage.website && (
+              <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:14 }}>
+                <div style={{ width:36, height:36, borderRadius:10, background:"#FDF4FF", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#A855F7" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                </div>
+                <span style={{ fontSize:14, color:"#374151" }}>{selectedPage.website}</span>
+              </div>
+            )}
+            {selectedPage.address && (
+              <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:14 }}>
+                <div style={{ width:36, height:36, borderRadius:10, background:"#FFF7ED", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                </div>
+                <span style={{ fontSize:14, color:"#374151" }}>{selectedPage.address}</span>
+              </div>
+            )}
+            {selectedPage.description && (
+              <>
+                <div style={{ height:1, background:"#F1F5F9", margin:"16px 0" }}/>
+                <h3 style={{ margin:"0 0 8px", fontSize:15, fontWeight:700, color:"#0F172A" }}>Présentation</h3>
+                <p style={{ margin:0, fontSize:14, color:"#374151", lineHeight:1.65 }}>{selectedPage.description}</p>
+              </>
+            )}
             <div style={{ marginTop:16, display:"flex", flexWrap:"wrap", gap:8 }}>
-              {[selectedPage.category,"Communauté active"].map(t=>(
-                <span key={t} style={{ background:"#F0FDF4", color:G, borderRadius:20, padding:"4px 12px", fontSize:13, fontWeight:600 }}>{t}</span>
+              {[selectedPage.category, "Communauté active"].map(t=>(
+                <span key={t} style={{ background:"#F0FDF4", color:G, borderRadius:20, padding:"5px 14px", fontSize:13, fontWeight:600, border:"1px solid #DCFCE7" }}>{t}</span>
               ))}
             </div>
           </div>
         )}
-        {profileTab==="photos"&&<div style={{ padding:16 }}><EmptyState icon="🖼️" title="Aucune photo" desc="Les photos de cette page apparaîtront ici."/></div>}
-        {profileTab==="plus"&&(
-          <div style={{ padding:"12px 16px", display:"flex", flexDirection:"column", gap:10 }}>
-            {(isOwner?[
-              { icon:"🛠️", label:"Outils professionnels" },
-              { icon:"📣", label:"Centre publicitaire" },
-              { icon:"📬", label:"Boîte de réception" },
-              { icon:"📊", label:"Statistiques", action:()=>{ loadStats(selectedPage.id); setView("settings-stats"); } },
-              { icon:"❓", label:"Aide et assistance" },
-              { icon:"🔗", label:"Partager la page" },
-            ]:[
-              { icon:"📣", label:"Promouvoir cette page" },
-              { icon:"🔗", label:"Copier le lien" },
-              { icon:"🚩", label:"Signaler la page" },
+
+        {profileTab==="photos" && (
+          <div style={{ padding:"40px 20px", display:"flex", flexDirection:"column", alignItems:"center", gap:16, textAlign:"center" }}>
+            <div style={{ width:80, height:80, borderRadius:24, background:"#FFF7ED", display:"flex", alignItems:"center", justifyContent:"center" }}>
+              <svg viewBox="0 0 48 48" width="44" height="44" fill="none">
+                <rect x="4" y="8" width="40" height="32" rx="6" fill="#FED7AA"/>
+                <path d="M4 32l10-12 8 10 6-6 16 14H4z" fill="#F97316" opacity=".5"/>
+                <circle cx="34" cy="18" r="5" fill="#F97316" opacity=".7"/>
+              </svg>
+            </div>
+            <p style={{ margin:0, fontWeight:800, fontSize:18, color:"#0F172A" }}>Aucune photo</p>
+            <p style={{ margin:0, fontSize:14, color:"#64748B" }}>Les photos de cette page apparaîtront ici.</p>
+          </div>
+        )}
+
+        {profileTab==="videos" && (
+          <div style={{ padding:"40px 20px", display:"flex", flexDirection:"column", alignItems:"center", gap:16, textAlign:"center" }}>
+            <div style={{ width:80, height:80, borderRadius:24, background:"#EEF2FF", display:"flex", alignItems:"center", justifyContent:"center" }}>
+              <svg viewBox="0 0 48 48" width="44" height="44" fill="none">
+                <rect x="4" y="10" width="28" height="28" rx="5" fill="#C7D2FE"/>
+                <path d="M32 18l12-7v26l-12-7V18z" fill="#6366F1" opacity=".7"/>
+                <circle cx="18" cy="24" r="6" fill="#6366F1" opacity=".4"/>
+                <path d="M16 22l6 4-6 4V22z" fill="#6366F1"/>
+              </svg>
+            </div>
+            <p style={{ margin:0, fontWeight:800, fontSize:18, color:"#0F172A" }}>Aucune vidéo</p>
+            <p style={{ margin:0, fontSize:14, color:"#64748B" }}>Les vidéos publiées par cette page apparaîtront ici.</p>
+          </div>
+        )}
+
+        {profileTab==="evenements" && (
+          <div style={{ padding:"40px 20px", display:"flex", flexDirection:"column", alignItems:"center", gap:16, textAlign:"center" }}>
+            <div style={{ width:80, height:80, borderRadius:24, background:"#FFF1F2", display:"flex", alignItems:"center", justifyContent:"center" }}>
+              <svg viewBox="0 0 48 48" width="44" height="44" fill="none">
+                <rect x="4" y="10" width="40" height="34" rx="6" fill="#FECDD3"/>
+                <rect x="4" y="10" width="40" height="12" rx="6" fill="#F43F5E" opacity=".6"/>
+                <line x1="16" y1="4" x2="16" y2="14" stroke="#F43F5E" strokeWidth="3" strokeLinecap="round"/>
+                <line x1="32" y1="4" x2="32" y2="14" stroke="#F43F5E" strokeWidth="3" strokeLinecap="round"/>
+                <rect x="12" y="28" width="8" height="8" rx="2" fill="#F43F5E" opacity=".6"/>
+                <rect x="28" y="28" width="8" height="8" rx="2" fill="#F43F5E" opacity=".3"/>
+              </svg>
+            </div>
+            <p style={{ margin:0, fontWeight:800, fontSize:18, color:"#0F172A" }}>Aucun évènement</p>
+            <p style={{ margin:0, fontSize:14, color:"#64748B" }}>Les évènements organisés par cette page apparaîtront ici.</p>
+          </div>
+        )}
+
+        {profileTab==="plus" && (
+          <div style={{ padding:"12px 16px", display:"flex", flexDirection:"column", gap:8 }}>
+            {(isOwner ? [
+              { label:"Outils professionnels", desc:"Gérez vos activités", icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>, bg:"#F0FDF4" },
+              { label:"Centre publicitaire", desc:"Créez des publicités", icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>, bg:"#FFF7ED" },
+              { label:"Boîte de réception", desc:"Messages entrants", icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#6366F1" strokeWidth="2" strokeLinecap="round"><polyline points="22 13 16 13 14 16 10 16 8 13 2 13"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>, bg:"#EEF2FF" },
+              { label:"Statistiques", desc:"Performances et croissance", icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>, bg:"#F0F9FF", action:()=>{ loadStats(selectedPage.id); setView("settings-stats"); } },
+              { label:"Aide et assistance", desc:"Centre d'aide BrutePawa", icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>, bg:"#F5F3FF" },
+              { label:"Partager la page", desc:"Invitez des personnes", icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#EC4899" strokeWidth="2" strokeLinecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>, bg:"#FDF2F8" },
+            ] : [
+              { label:"Promouvoir cette page", desc:"Boostez votre visibilité", icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>, bg:"#FFF7ED" },
+              { label:"Copier le lien", desc:"Partagez l'URL de la page", icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#6366F1" strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>, bg:"#EEF2FF" },
+              { label:"Signaler la page", desc:"Contenu inapproprié", icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>, bg:"#FEF2F2" },
             ]).map(item=>(
-              <button key={item.label} onClick={(item as {action?:()=>void}).action}
-                style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 16px", background:"#fff", border:"none", borderRadius:14, cursor:"pointer", textAlign:"left", boxShadow:"0 1px 4px rgba(0,0,0,.04)", width:"100%" }}>
-                <span style={{ fontSize:22, width:36, textAlign:"center" }}>{item.icon}</span>
-                <span style={{ flex:1, fontWeight:600, fontSize:15, color:"#111827" }}>{item.label}</span>
-                <ChevRight/>
+              <button key={item.label} className="plus-row" onClick={(item as {action?:()=>void}).action}
+                style={{ display:"flex", alignItems:"center", gap:14, padding:"16px 14px", background:"#fff", border:"none", borderRadius:18, cursor:"pointer", textAlign:"left", boxShadow:"0 1px 4px rgba(0,0,0,.04)", width:"100%", border:"1px solid #F1F5F9" } as React.CSSProperties}>
+                <div style={{ width:44, height:44, borderRadius:13, background:item.bg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                  {item.icon}
+                </div>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <p style={{ margin:0, fontWeight:700, fontSize:15, color:"#0F172A" }}>{item.label}</p>
+                  <p style={{ margin:"2px 0 0", fontSize:12, color:"#64748B" }}>{item.desc}</p>
+                </div>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
               </button>
             ))}
           </div>
@@ -896,61 +1085,146 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
   /* ── SETTINGS ────────────────────────────────────────────────── */
   if (view === "settings" && selectedPage) {
     const SITEMS = [
-      { id:"settings-info" as View, icon:"ℹ️", label:"Informations générales", desc:"Nom, description, catégorie" },
-      { id:"settings-roles" as View, icon:"👥", label:"Rôles de la page", desc:"Gérer les membres de l'équipe" },
-      { id:"settings-about" as View, icon:"📋", label:"À propos", desc:"Informations de contact" },
-      { id:"settings-stats" as View, icon:"📊", label:"Statistiques", desc:"Performances et croissance" },
+      {
+        id:"settings-info" as View,
+        icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>,
+        iconBg:"#F0FDF4", label:"Informations générales", desc:"Nom, description, catégorie",
+      },
+      {
+        id:"settings-roles" as View,
+        icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#6366F1" strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
+        iconBg:"#EEF2FF", label:"Rôles de la page", desc:"Gérer les membres de l'équipe",
+      },
+      {
+        id:"settings-about" as View,
+        icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>,
+        iconBg:"#FFF7ED", label:"À propos", desc:"Informations de contact",
+      },
+      {
+        id:"settings-stats" as View,
+        icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><rect x="1" y="20" width="22" height="1" rx=".5" fill="#0EA5E9"/></svg>,
+        iconBg:"#F0F9FF", label:"Statistiques", desc:"Performances et croissance",
+      },
     ];
     const PRIVACY = [
-      { icon:"💬", label:"Messages", desc:"Qui peut vous écrire" },
-      { icon:"🔔", label:"Notifications", desc:"Paramètres des alertes" },
-      { icon:"🔒", label:"Confidentialité", desc:"Visibilité de la page" },
+      { icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>, iconBg:"#F5F3FF", label:"Messages", desc:"Qui peut vous écrire" },
+      { icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>, iconBg:"#FFFBEB", label:"Notifications", desc:"Paramètres des alertes" },
+      { icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>, iconBg:"#F8FAFC", label:"Confidentialité", desc:"Visibilité de la page" },
     ];
+
+    const SettingsRow = ({ icon, iconBg, label, desc, onClick, danger = false }: { icon: React.ReactNode; iconBg: string; label: string; desc?: string; onClick?: () => void; danger?: boolean }) => (
+      <button onClick={onClick} style={{ width:"100%", display:"flex", alignItems:"center", gap:14, padding:"0 16px", height:72, background:"none", border:"none", borderBottom:"1px solid #F8FAFC", cursor:"pointer", textAlign:"left" }}>
+        <div style={{ width:44, height:44, borderRadius:13, background:danger?"#FEF2F2":iconBg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+          {icon}
+        </div>
+        <div style={{ flex:1, minWidth:0 }}>
+          <p style={{ margin:0, fontWeight:700, fontSize:15, color:danger?"#EF4444":"#0F172A" }}>{label}</p>
+          {desc && <p style={{ margin:"2px 0 0", fontSize:12, color:danger?"#FCA5A5":"#64748B" }}>{desc}</p>}
+        </div>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke={danger?"#FCA5A5":"#CBD5E1"} strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    );
+
     return (
       <div style={{ fontFamily:"'Inter',system-ui,sans-serif", background:"#F8FAFC", minHeight:"100vh", maxWidth:640, margin:"0 auto", paddingBottom:80 }}>
-        <div style={{ background:"#fff", borderBottom:"1px solid #E5E7EB", padding:"12px 16px", display:"flex", alignItems:"center", gap:12, position:"sticky", top:0, zIndex:10 }}>
-          <button onClick={()=>setView("profile")} style={{ background:"none", border:"none", cursor:"pointer" }}>
+        <style>{`
+          @keyframes modal-in {
+            0%   { transform: scale(0.92) translateY(12px); opacity:0; }
+            100% { transform: scale(1) translateY(0); opacity:1; }
+          }
+        `}</style>
+
+        {/* ── Delete modal ── */}
+        {showDeleteModal && (
+          <div style={{ position:"fixed", inset:0, zIndex:100, display:"flex", alignItems:"flex-end", justifyContent:"center", background:"rgba(15,23,42,.45)", backdropFilter:"blur(6px)" }}
+            onClick={e=>{ if(e.target===e.currentTarget) setShowDeleteModal(false); }}>
+            <div style={{ background:"#fff", borderRadius:"32px 32px 0 0", padding:"28px 24px 40px", width:"100%", maxWidth:640, animation:"modal-in .25s cubic-bezier(.22,1,.36,1)" }}>
+              {/* Handle */}
+              <div style={{ width:36, height:4, borderRadius:4, background:"#E2E8F0", margin:"0 auto 28px" }}/>
+              {/* Icon */}
+              <div style={{ width:72, height:72, borderRadius:24, background:"#FEF2F2", border:"1.5px solid #FECACA", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 20px" }}>
+                <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#EF4444" strokeWidth="1.8" strokeLinecap="round">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                  <path d="M10 11v6M14 11v6"/>
+                  <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                </svg>
+              </div>
+              {/* Text */}
+              <h2 style={{ margin:"0 0 10px", fontWeight:900, fontSize:20, color:"#0F172A", textAlign:"center", letterSpacing:"-0.3px" }}>Supprimer définitivement<br/>cette page&nbsp;?</h2>
+              <p style={{ margin:"0 0 28px", fontSize:14, color:"#64748B", textAlign:"center", lineHeight:1.6, maxWidth:300, marginLeft:"auto", marginRight:"auto" }}>
+                Cette action est irréversible. Toutes les données, publications et informations seront définitivement supprimées.
+              </p>
+              {/* Buttons */}
+              <button onClick={handleDeletePage} disabled={deletingPage}
+                style={{ width:"100%", height:52, background:deletingPage?"#FCA5A5":"#EF4444", color:"#fff", border:"none", borderRadius:16, fontWeight:800, fontSize:16, cursor:deletingPage?"not-allowed":"pointer", marginBottom:12, display:"flex", alignItems:"center", justifyContent:"center", gap:8, boxShadow:"0 4px 16px rgba(239,68,68,.3)", transition:"background 200ms" }}>
+                {deletingPage
+                  ? <><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>Suppression…</>
+                  : <>Supprimer définitivement</>
+                }
+              </button>
+              <button onClick={()=>setShowDeleteModal(false)}
+                style={{ width:"100%", height:52, background:"#F1F5F9", color:"#374151", border:"none", borderRadius:16, fontWeight:700, fontSize:16, cursor:"pointer" }}>
+                Annuler
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Header ── */}
+        <div style={{ background:"#fff", borderBottom:"1px solid #E2E8F0", padding:"12px 16px", display:"flex", alignItems:"center", gap:12, position:"sticky", top:0, zIndex:10 }}>
+          <button onClick={()=>setView("profile")} style={{ background:"none", border:"none", cursor:"pointer", padding:6, margin:-6, borderRadius:12, display:"flex" }}>
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#374151" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
           </button>
-          <span style={{ fontWeight:700, fontSize:17, color:"#111827" }}>Paramètres de la page</span>
+          <span style={{ fontWeight:800, fontSize:17, color:"#0F172A", letterSpacing:"-0.2px" }}>Paramètres de la page</span>
         </div>
-        <div style={{ padding:16, display:"flex", flexDirection:"column", gap:12 }}>
-          <div style={{ background:"#fff", borderRadius:20, overflow:"hidden", boxShadow:"0 1px 4px rgba(0,0,0,.05)" }}>
-            <p style={{ margin:0, padding:"12px 16px 6px", fontSize:12, fontWeight:700, color:"#9CA3AF", textTransform:"uppercase", letterSpacing:1 }}>Gestion</p>
-            {SITEMS.map(item=>(
-              <button key={item.id} onClick={async()=>{
-                if(item.id==="settings-roles") await loadRoles(selectedPage.id);
-                if(item.id==="settings-stats") await loadStats(selectedPage.id);
-                if(item.id==="settings-info") setForm(f=>({...f,name:selectedPage.name,category:selectedPage.category,description:selectedPage.description??"",website:selectedPage.website??"",email:selectedPage.email??"",phone:selectedPage.phone??"",address:selectedPage.address??"",timezone:selectedPage.timezone??TIMEZONES[5],actionButton:selectedPage.actionButton??"Aucun"}));
-                if(item.id==="settings-about") setForm(f=>({...f,website:selectedPage.website??"",email:selectedPage.email??"",phone:selectedPage.phone??"",address:selectedPage.address??"",timezone:selectedPage.timezone??TIMEZONES[5],actionButton:selectedPage.actionButton??"Aucun"}));
-                setView(item.id);
-              }} style={{ width:"100%", display:"flex", alignItems:"center", gap:14, padding:"14px 16px", background:"none", border:"none", borderBottom:"1px solid #F1F5F9", cursor:"pointer", textAlign:"left" }}>
-                <span style={{ fontSize:22, width:36, textAlign:"center" }}>{item.icon}</span>
-                <div style={{ flex:1 }}>
-                  <p style={{ margin:0, fontWeight:600, fontSize:15, color:"#111827" }}>{item.label}</p>
-                  <p style={{ margin:0, fontSize:13, color:"#6B7280" }}>{item.desc}</p>
+
+        <div style={{ padding:"16px 16px 24px", display:"flex", flexDirection:"column", gap:12 }}>
+          {/* Gestion */}
+          <div>
+            <p style={{ margin:"0 4px 8px", fontSize:11, fontWeight:800, color:"#94A3B8", textTransform:"uppercase", letterSpacing:"1px" }}>Gestion</p>
+            <div style={{ background:"#fff", borderRadius:28, overflow:"hidden", boxShadow:"0 2px 12px rgba(0,0,0,.05)", border:"1px solid #F1F5F9" }}>
+              {SITEMS.map((item, i) => (
+                <div key={item.id} style={{ borderBottom:i<SITEMS.length-1?"1px solid #F8FAFC":"none" }}>
+                  <SettingsRow
+                    icon={item.icon} iconBg={item.iconBg} label={item.label} desc={item.desc}
+                    onClick={async()=>{
+                      if(item.id==="settings-roles") await loadRoles(selectedPage.id);
+                      if(item.id==="settings-stats") await loadStats(selectedPage.id);
+                      if(item.id==="settings-info") setForm(f=>({...f,name:selectedPage.name,category:selectedPage.category,description:selectedPage.description??"",website:selectedPage.website??"",email:selectedPage.email??"",phone:selectedPage.phone??"",address:selectedPage.address??"",timezone:selectedPage.timezone??TIMEZONES[5],actionButton:selectedPage.actionButton??"Aucun"}));
+                      if(item.id==="settings-about") setForm(f=>({...f,website:selectedPage.website??"",email:selectedPage.email??"",phone:selectedPage.phone??"",address:selectedPage.address??"",timezone:selectedPage.timezone??TIMEZONES[5],actionButton:selectedPage.actionButton??"Aucun"}));
+                      setView(item.id);
+                    }}
+                  />
                 </div>
-                <ChevRight/>
-              </button>
-            ))}
+              ))}
+            </div>
           </div>
-          <div style={{ background:"#fff", borderRadius:20, overflow:"hidden", boxShadow:"0 1px 4px rgba(0,0,0,.05)" }}>
-            <p style={{ margin:0, padding:"12px 16px 6px", fontSize:12, fontWeight:700, color:"#9CA3AF", textTransform:"uppercase", letterSpacing:1 }}>Confidentialité</p>
-            {PRIVACY.map(item=>(
-              <button key={item.label} style={{ width:"100%", display:"flex", alignItems:"center", gap:14, padding:"14px 16px", background:"none", border:"none", borderBottom:"1px solid #F1F5F9", cursor:"pointer", textAlign:"left" }}>
-                <span style={{ fontSize:22, width:36, textAlign:"center" }}>{item.icon}</span>
-                <div style={{ flex:1 }}>
-                  <p style={{ margin:0, fontWeight:600, fontSize:15, color:"#111827" }}>{item.label}</p>
-                  <p style={{ margin:0, fontSize:13, color:"#6B7280" }}>{item.desc}</p>
+
+          {/* Confidentialité */}
+          <div>
+            <p style={{ margin:"0 4px 8px", fontSize:11, fontWeight:800, color:"#94A3B8", textTransform:"uppercase", letterSpacing:"1px" }}>Confidentialité</p>
+            <div style={{ background:"#fff", borderRadius:28, overflow:"hidden", boxShadow:"0 2px 12px rgba(0,0,0,.05)", border:"1px solid #F1F5F9" }}>
+              {PRIVACY.map((item, i) => (
+                <div key={item.label} style={{ borderBottom:i<PRIVACY.length-1?"1px solid #F8FAFC":"none" }}>
+                  <SettingsRow icon={item.icon} iconBg={item.iconBg} label={item.label} desc={item.desc}/>
                 </div>
-                <ChevRight/>
-              </button>
-            ))}
+              ))}
+            </div>
           </div>
-          <button onClick={handleDeletePage} style={{ width:"100%", display:"flex", alignItems:"center", gap:14, padding:"14px 16px", background:"#fff", border:"none", borderRadius:20, cursor:"pointer", boxShadow:"0 1px 4px rgba(0,0,0,.05)" }}>
-            <span style={{ fontSize:22, width:36, textAlign:"center", color:"#EF4444" }}>🗑️</span>
-            <span style={{ fontWeight:600, fontSize:15, color:"#EF4444" }}>Supprimer la page</span>
-          </button>
+
+          {/* Zone danger */}
+          <div>
+            <p style={{ margin:"0 4px 8px", fontSize:11, fontWeight:800, color:"#94A3B8", textTransform:"uppercase", letterSpacing:"1px" }}>Zone de danger</p>
+            <div style={{ background:"#fff", borderRadius:28, overflow:"hidden", boxShadow:"0 2px 12px rgba(0,0,0,.05)", border:"1.5px solid #FECACA" }}>
+              <SettingsRow
+                danger
+                icon={<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>}
+                iconBg="#FEF2F2" label="Supprimer la page" desc="Action irréversible"
+                onClick={()=>setShowDeleteModal(true)}
+              />
+            </div>
+          </div>
         </div>
       </div>
     );

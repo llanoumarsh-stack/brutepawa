@@ -1,0 +1,263 @@
+MISSION
+
+Créer une interface mobile PREMIUM ABSOLUE pour BrutePawa, capable de rivaliser avec Facebook Pages, LinkedIn Company Pages, Instagram Professional et Threads.
+
+L'interface doit être si professionnelle qu'un utilisateur pense immédiatement qu'elle a été conçue par une équipe de designers senior de Meta, Apple ou Stripe.
+
+====================================================
+
+STYLE VISUEL
+
+- Minimalisme Apple iOS 26
+- Design System Google Material 3
+- Finition Stripe
+- Fluidité Instagram
+- Espacement Notion
+- Qualité Dribbble Top 0.1%
+
+====================================================
+
+COULEURS
+
+Primary:
+#22C55E
+
+Primary Dark:
+#16A34A
+
+Background:
+#F8FAFC
+
+Cards:
+#FFFFFF
+
+Text Primary:
+#0F172A
+
+Text Secondary:
+#64748B
+
+Danger:
+#EF4444
+
+Borders:
+#E2E8F0
+
+====================================================
+
+PAGE PROFIL
+
+HEADER
+
+Hauteur : 260px
+
+Couverture :
+
+- Dégradé premium vert
+- Motifs géométriques subtils
+- Effet verre dépoli
+- Texture moderne
+- Reflets lumineux légers
+
+Avatar :
+
+- 120px
+- Cercle parfait
+- Bordure blanche 6px
+- Ombre douce
+- Position premium style Facebook
+
+Nom :
+
+Omar
+
+Badge vérifié vert
+
+@omar
+
+====================================================
+
+STATISTIQUES
+
+Cartes modernes
+
+Abonnés
+0
+
+Publications
+0
+
+Abonnements
+0
+
+Chaque statistique dans une mini carte :
+
+- Fond blanc
+- Coins 18px
+- Ombre douce
+- Animation hover
+
+====================================================
+
+BOUTONS
+
+Modifier
+
+- Blanc
+- Bordure légère
+- Icône crayon Lucide
+- Hauteur 52px
+
+Promouvoir
+
+- Dégradé vert premium
+- Icône fusée
+- Hauteur 52px
+- Ombre verte
+
+====================================================
+
+ONGLETS
+
+Publications
+À propos
+Photos
+Vidéos
+Évènements
+Plus
+
+Animation fluide
+
+Indicateur vert animé
+
+====================================================
+
+ETAT VIDE
+
+Aucune publication
+
+Ne jamais utiliser emoji
+
+Utiliser illustration vectorielle premium
+
+Titre :
+
+Aucune publication
+
+Description :
+
+Partagez du contenu avec votre communauté.
+
+Bouton :
+
+Créer une publication
+
+====================================================
+
+PARAMETRES PAGE
+
+Sections :
+
+Informations générales
+Rôles de la page
+À propos
+Statistiques
+Messages
+Notifications
+Confidentialité
+
+Chaque ligne :
+
+- Icône Lucide personnalisée
+- Hauteur 72px
+- Chevron à droite
+- Animation tactile
+- Séparateurs subtils
+
+Cartes :
+
+- Coins 28px
+- Ombres modernes
+- Fond blanc
+
+====================================================
+
+SUPPRESSION PAGE
+
+INTERDICTION D'UTILISER ALERT()
+
+Créer un modal premium.
+
+Fond :
+
+- Backdrop blur
+- Overlay sombre 40%
+
+Modal :
+
+- Coins 32px
+- Ombre profonde
+
+Icône :
+
+Corbeille rouge moderne
+
+Titre :
+
+Supprimer cette page ?
+
+Texte :
+
+Cette action est irréversible.
+Toutes les publications, abonnés et données associées seront définitivement supprimés.
+
+Bouton primaire :
+
+Supprimer définitivement
+
+Rouge
+
+Bouton secondaire :
+
+Annuler
+
+====================================================
+
+ANIMATIONS
+
+60 FPS
+
+Micro interactions
+
+Ripple effect
+
+Transitions 250ms
+
+Scale 0.98 au clic
+
+Fade in
+
+Slide up
+
+====================================================
+
+INTERDICTIONS
+
+❌ Emoji dans l'interface
+❌ Alert Android native
+❌ Icônes incohérentes
+❌ Couleurs agressives
+❌ Coins carrés
+❌ Bannière vide
+❌ Design amateur
+❌ Aspect webview
+
+====================================================
+
+OBJECTIF FINAL
+
+Le résultat doit être visuellement supérieur à 95% des applications actuellement publiées sur Google Play Store.
+
+L'utilisateur doit penser :
+
+"Cette application ressemble à un produit Meta ou Apple."
