@@ -1759,3 +1759,149 @@ export async function apiGetLinkPreview(url: string): Promise<LinkPreview | null
     return r.json();
   } catch { return null; }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   PAGES
+══════════════════════════════════════════════════════════════ */
+export interface ApiPage {
+  id: number;
+  name: string;
+  username: string | null;
+  category: string;
+  description: string | null;
+  emoji: string;
+  avatarUrl: string | null;
+  coverUrl: string | null;
+  coverVideoUrl: string | null;
+  country: string | null;
+  website: string | null;
+  email: string | null;
+  phone: string | null;
+  address: string | null;
+  timezone: string | null;
+  actionButton: string | null;
+  verified: boolean;
+  isPublic: boolean;
+  followersCount: number;
+  createdById: number;
+  createdAt: string;
+  updatedAt: string;
+  isFollowed?: boolean;
+  isOwner?: boolean;
+  myRole?: string | null;
+}
+
+export interface ApiPageRole {
+  userId: number;
+  role: string;
+  addedAt: string;
+  name: string;
+  avatarUrl: string | null;
+}
+
+export interface ApiPageStats {
+  followersCount: number;
+  viewsTotal: number;
+  newFollowers: number;
+  interactions: number;
+  clicks: number;
+  viewsGrowth: number;
+  followersGrowth: number;
+  interactionsGrowth: number;
+  clicksGrowth: number;
+  chart: { day: string; views: number }[];
+}
+
+export interface ApiPageInvitation {
+  id: number;
+  pageId: number;
+  invitedBy: number;
+  status: string;
+  invitedAt: string;
+  pageName: string | null;
+  pageAvatar: string | null;
+  pageCategory: string | null;
+  pageFollowers: number | null;
+  inviterName: string | null;
+}
+
+export async function apiGetPages(filter: "all" | "mine" | "invitations" = "all", search?: string): Promise<(ApiPage | ApiPageInvitation)[]> {
+  const qs = new URLSearchParams({ filter });
+  if (search) qs.set("search", search);
+  const res = await apiFetch(`/pages?${qs}`);
+  if (!res.ok) return [];
+  return res.json();
+}
+
+export async function apiCreatePage(data: {
+  name: string; category: string; description?: string; emoji?: string;
+  username?: string; website?: string; email?: string; phone?: string;
+  address?: string; timezone?: string; actionButton?: string;
+  avatarUrl?: string; coverUrl?: string; coverVideoUrl?: string; isPublic?: boolean;
+}): Promise<ApiPage> {
+  const res = await apiFetch("/pages", { method: "POST", body: JSON.stringify(data) });
+  if (!res.ok) throw new Error("Erreur création page");
+  return res.json();
+}
+
+export async function apiGetPage(id: number): Promise<ApiPage> {
+  const res = await apiFetch(`/pages/${id}`);
+  if (!res.ok) throw new Error("Page introuvable");
+  return res.json();
+}
+
+export async function apiUpdatePage(id: number, data: Partial<Omit<ApiPage, "id" | "createdById" | "createdAt" | "updatedAt">>): Promise<ApiPage> {
+  const res = await apiFetch(`/pages/${id}`, { method: "PATCH", body: JSON.stringify(data) });
+  if (!res.ok) throw new Error("Erreur mise à jour");
+  return res.json();
+}
+
+export async function apiDeletePage(id: number): Promise<void> {
+  await apiFetch(`/pages/${id}`, { method: "DELETE" });
+}
+
+export async function apiFollowPage(id: number): Promise<void> {
+  await apiFetch(`/pages/${id}/follow`, { method: "POST" });
+}
+
+export async function apiUnfollowPage(id: number): Promise<void> {
+  await apiFetch(`/pages/${id}/follow`, { method: "DELETE" });
+}
+
+export async function apiGetPageRoles(id: number): Promise<ApiPageRole[]> {
+  const res = await apiFetch(`/pages/${id}/roles`);
+  if (!res.ok) return [];
+  return res.json();
+}
+
+export async function apiAddPageRole(id: number, targetUserId: number, role: string): Promise<void> {
+  await apiFetch(`/pages/${id}/roles`, { method: "POST", body: JSON.stringify({ targetUserId, role }) });
+}
+
+export async function apiRemovePageRole(id: number, targetUserId: number): Promise<void> {
+  await apiFetch(`/pages/${id}/roles/${targetUserId}`, { method: "DELETE" });
+}
+
+export async function apiInviteFriendsToPage(id: number, targetUserIds: number[]): Promise<void> {
+  await apiFetch(`/pages/${id}/invite`, { method: "POST", body: JSON.stringify({ targetUserIds }) });
+}
+
+export async function apiGetPageStats(id: number): Promise<ApiPageStats> {
+  const res = await apiFetch(`/pages/${id}/stats`);
+  if (!res.ok) throw new Error("Erreur stats");
+  return res.json();
+}
+
+export async function apiGetPageFriendSuggestions(id: number): Promise<{ id: number; name: string; avatarUrl: string | null; country: string | null }[]> {
+  const res = await apiFetch(`/pages/${id}/suggest-friends`);
+  if (!res.ok) return [];
+  return res.json();
+}
+
+export async function apiAcceptPageInvitation(invId: number): Promise<void> {
+  await apiFetch(`/pages/invitations/${invId}/accept`, { method: "POST" });
+}
+
+export async function apiDeclinePageInvitation(invId: number): Promise<void> {
+  await apiFetch(`/pages/invitations/${invId}/decline`, { method: "POST" });
+}

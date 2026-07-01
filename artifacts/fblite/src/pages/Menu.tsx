@@ -1227,7 +1227,7 @@ export default function Menu() {
                 icon:<BPServices size={26} /> },
               { label:"Emplois",     sub:"Offres & candidats",  bg:"#FFF7ED", badge:0, live:false, action:()=>navigate("/jobs"),
                 icon:<BPEmplois size={26} /> },
-              { label:"Pages",       sub:"Gérer vos pages",    bg:"#F0FDF4", badge:0, live:false, action:()=>{},
+              { label:"Pages",       sub:"Gérer vos pages",    bg:"#F0FDF4", badge:0, live:false, action:()=>navigate("/pages"),
                 icon:<BPPages size={26} /> },
             ],
           },

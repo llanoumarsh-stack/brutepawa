@@ -25,6 +25,7 @@ import messagingRouter from "./messaging";
 import regionRouter from "./region";
 import broadcastRouter from "./broadcast";
 import { peopleRouter } from "./people";
+import pagesRouter from "./pages";
 
 const router: IRouter = Router();
 
@@ -54,5 +55,6 @@ router.use(messagingRouter);
 router.use(regionRouter);
 router.use(broadcastRouter);
 router.use(peopleRouter);
+router.use(pagesRouter);
 
 export default router;

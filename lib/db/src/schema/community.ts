@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, integer, boolean, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, integer, boolean, uniqueIndex, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -28,25 +28,60 @@ export const groupMembersTable = pgTable("group_members", {
 export const pagesTable = pgTable("pages", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
+  username: text("username"),
   description: text("description"),
   category: text("category").notNull().default("general"),
   emoji: text("emoji").notNull().default("📢"),
   avatarUrl: text("avatar_url"),
   coverUrl: text("cover_url"),
+  coverVideoUrl: text("cover_video_url"),
   country: text("country"),
+  website: text("website"),
+  email: text("email"),
+  phone: text("phone"),
+  address: text("address"),
+  timezone: text("timezone").default("(GMT+01:00) Afrique de l'Ouest"),
+  actionButton: text("action_button").default("Aucun"),
   verified: boolean("verified").notNull().default(false),
+  isPublic: boolean("is_public").notNull().default(true),
   createdById: integer("created_by_id").notNull(),
   followersCount: integer("followers_count").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
-});
+}, (t) => [uniqueIndex("pages_username_idx").on(t.username)]);
 
 export const pageFollowersTable = pgTable("page_followers", {
   id: serial("id").primaryKey(),
   pageId: integer("page_id").notNull(),
   userId: integer("user_id").notNull(),
   followedAt: timestamp("followed_at", { withTimezone: true }).notNull().defaultNow(),
-});
+}, (t) => [
+  uniqueIndex("page_followers_pair_idx").on(t.pageId, t.userId),
+  index("page_followers_page_idx").on(t.pageId),
+]);
+
+export const pageRolesTable = pgTable("page_roles", {
+  id: serial("id").primaryKey(),
+  pageId: integer("page_id").notNull(),
+  userId: integer("user_id").notNull(),
+  role: text("role").notNull().default("editor"),
+  addedAt: timestamp("added_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  uniqueIndex("page_roles_pair_idx").on(t.pageId, t.userId),
+  index("page_roles_page_idx").on(t.pageId),
+]);
+
+export const pageInvitationsTable = pgTable("page_invitations", {
+  id: serial("id").primaryKey(),
+  pageId: integer("page_id").notNull(),
+  invitedBy: integer("invited_by").notNull(),
+  invitedUserId: integer("invited_user_id").notNull(),
+  status: text("status").notNull().default("pending"),
+  invitedAt: timestamp("invited_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  uniqueIndex("page_invitations_pair_idx").on(t.pageId, t.invitedUserId),
+  index("page_invitations_page_idx").on(t.pageId),
+]);
 
 export const groupPostsTable = pgTable("group_posts", {
   id: serial("id").primaryKey(),
@@ -94,6 +129,8 @@ export type GroupPost = typeof groupPostsTable.$inferSelect;
 export type GroupJoinRequest = typeof groupJoinRequestsTable.$inferSelect;
 export type Page = typeof pagesTable.$inferSelect;
 export type PageFollower = typeof pageFollowersTable.$inferSelect;
+export type PageRole = typeof pageRolesTable.$inferSelect;
+export type PageInvitation = typeof pageInvitationsTable.$inferSelect;
 export type GroupBot = typeof groupBotsTable.$inferSelect;
 export type BotLog = typeof botLogsTable.$inferSelect;
 export type InsertGroup = z.infer<typeof insertGroupSchema>;

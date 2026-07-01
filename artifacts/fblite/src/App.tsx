@@ -62,6 +62,7 @@ import AdvancedSettingsPage from "./pages/AdvancedSettingsPage";
 import AboutPage from "./pages/AboutPage";
 import BroadcastListPage from "./pages/BroadcastListPage";
 import PeoplePage from "./pages/PeoplePage";
+import PagesPage from "./pages/PagesPage";
 
 import { Toaster } from "sonner";
 import { ADMIN_SECRET_PATH } from "./lib/admin";
@@ -414,6 +415,15 @@ function AppContent() {
 
   if (path === "/people") {
     return <PeoplePage />;
+  }
+
+  if (path === "/pages") {
+    return <PagesPage />;
+  }
+
+  const pageDetailMatch = matchDynamic("/pages/:id", path);
+  if (pageDetailMatch) {
+    return <PagesPage initialPageId={parseInt(pageDetailMatch.id, 10)} />;
   }
 
   if (path === "/profile") {

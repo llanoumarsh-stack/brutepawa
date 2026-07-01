@@ -1,0 +1,174 @@
+Analyse l'image de référence et reproduis-la avec une fidélité visuelle de 99%.
+
+OBJECTIF
+Créer un système complet de gestion de Pages pour BrutePawa avec une qualité visuelle équivalente à une application sociale premium publiée sur le Play Store.
+
+CONTRAINTES STRICTES
+
+- Reproduire la structure, les espacements, les proportions, la hiérarchie visuelle et l'organisation générale de l'image.
+- Design mobile first.
+- Style moderne 2026.
+- Interface ultra premium.
+- Aucun composant générique ou amateur.
+- Aucun élément visuellement daté.
+- Tous les écrans doivent être cohérents entre eux.
+- Respecter parfaitement les marges, alignements et dimensions.
+- Optimisé pour Android et iPhone.
+
+STACK
+
+- React
+- TypeScript
+- Tailwind CSS
+- Shadcn UI
+- Lucide Icons
+- Framer Motion
+
+IDENTITÉ VISUELLE
+
+Couleur principale :
+#22C55E
+
+Couleur secondaire :
+#16A34A
+
+Fond :
+#FFFFFF
+
+Texte principal :
+#111827
+
+Texte secondaire :
+#6B7280
+
+Bordures :
+#E5E7EB
+
+Coins :
+20px
+
+Ombres :
+Très douces et modernes
+
+TYPOGRAPHIE
+
+- Inter
+- Font-weight 400, 500, 600, 700
+- Lisibilité parfaite
+
+ANIMATIONS
+
+- Framer Motion
+- Transition 200ms à 300ms
+- Hover premium
+- Scale légère au clic
+- Skeleton loading
+- Fade In
+- Slide Up
+
+ÉCRANS À CRÉER
+
+1. Liste des pages
+- Aucune page disponible
+- Bouton Créer une page
+- Mes pages
+- Invitations
+
+2. Création de page Étape 1
+- Nom de la page
+- Catégorie
+- Description
+- Photo de profil
+
+3. Création Étape 2
+- Site web
+- Email
+- Téléphone
+- Adresse
+- Fuseau horaire
+- Bouton d'action
+
+4. Création Étape 3
+- Bannière
+- Vidéo de présentation
+- Galerie
+
+5. Création Étape 4
+- Vérification
+- Aperçu complet
+- Validation
+
+6. Succès de création
+- Animation validation
+- CTA principal
+
+7. Invitation d'amis
+- Recherche
+- Suggestions
+- Boutons Inviter
+
+8. Profil de page
+- Couverture
+- Avatar
+- Nom
+- Publications
+- Photos
+- Vidéos
+- À propos
+- Plus
+
+9. Paramètres de page
+- Informations générales
+- Messages
+- Notifications
+- Rôles
+- Confidentialité
+- Suppression
+
+10. Modifier informations
+- Tous les champs éditables
+
+11. Gestion des rôles
+- Propriétaire
+- Administrateur
+- Modérateur
+- Éditeur
+
+12. À propos
+
+13. Statistiques
+- Graphiques
+- Croissance
+- Visites
+- Abonnés
+- Engagement
+
+14. Outils professionnels
+
+EXIGENCE UI/UX
+
+Je veux une qualité comparable à :
+
+- Facebook
+- LinkedIn
+- Threads
+- Instagram
+- X Premium
+
+Chaque écran doit sembler conçu par une équipe senior UI/UX de niveau international.
+
+Aucune approximation.
+
+Créer tous les composants réutilisables.
+
+Créer toutes les routes.
+
+Créer toutes les pages.
+
+Créer toutes les animations.
+
+Créer les données fictives.
+
+Créer une expérience prête pour la production.
+
+Le résultat doit être visuellement quasi identique à la référence tout en respectant l'identité BrutePawa.
