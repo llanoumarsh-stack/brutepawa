@@ -1,0 +1,199 @@
+MISSION
+
+Créer un Bottom Sheet d'information ultra premium pour BrutePawa qui s'ouvre lorsqu'un utilisateur clique sur l'icône ℹ️ des statistiques.
+
+Le design doit être comparable aux interfaces Apple, Stripe, Notion et LinkedIn Premium.
+
+══════════════════════════════
+
+STYLE
+
+- Ultra moderne
+- Mobile natif
+- Fond blanc premium
+- Coins supérieurs 32px
+- Ombres douces
+- Backdrop blur
+- Animation slide-up
+- Material Design 3
+- Apple Human Interface Guidelines
+
+══════════════════════════════
+
+OUVERTURE
+
+Lors du clic sur ℹ️ :
+
+- Assombrir l'arrière-plan à 40%
+- Appliquer un effet blur
+- Faire monter le Bottom Sheet depuis le bas
+- Animation 250ms
+- Fermeture par swipe ou bouton X
+
+══════════════════════════════
+
+HEADER
+
+Icône Analytics moderne
+
+Titre :
+
+À propos de ces statistiques
+
+Description :
+
+Comprenez les performances de votre page et découvrez comment améliorer votre visibilité sur BrutePawa.
+
+══════════════════════════════
+
+SECTION 1
+
+Carte premium
+
+Icône œil verte
+
+Titre :
+
+Vues de la page
+
+Description :
+
+Nombre de fois où votre page a été affichée par les utilisateurs.
+
+══════════════════════════════
+
+SECTION 2
+
+Carte premium
+
+Icône utilisateur violette
+
+Titre :
+
+Nouveaux abonnés
+
+Description :
+
+Nombre de personnes ayant commencé à suivre votre page durant la période sélectionnée.
+
+══════════════════════════════
+
+SECTION 3
+
+Carte premium
+
+Icône cœur rose
+
+Titre :
+
+Interactions
+
+Description :
+
+Total des réactions, commentaires, partages et engagements générés par vos publications.
+
+══════════════════════════════
+
+SECTION 4
+
+Carte premium
+
+Icône lien bleue
+
+Titre :
+
+Clics sur le site web
+
+Description :
+
+Nombre de visiteurs ayant cliqué sur le lien externe associé à votre page.
+
+══════════════════════════════
+
+SECTION 5
+
+Carte verte premium
+
+Icône calendrier
+
+Titre :
+
+Période analysée
+
+Description :
+
+Ces données correspondent à la période actuellement sélectionnée.
+
+Badge :
+
+30 derniers jours
+
+══════════════════════════════
+
+SECTION 6
+
+Carte conseil premium
+
+Icône étoile verte
+
+Titre :
+
+Comment améliorer vos performances ?
+
+Liste :
+
+✓ Publiez régulièrement
+
+✓ Invitez vos amis à suivre votre page
+
+✓ Répondez aux commentaires
+
+✓ Ajoutez une photo de couverture
+
+✓ Utilisez des hashtags pertinents
+
+✓ Partagez du contenu de qualité
+
+══════════════════════════════
+
+DESIGN DES CARTES
+
+- Fond blanc
+- Coins 24px
+- Ombre douce
+- Padding 20px
+- Espacement généreux
+- Icônes Lucide React
+
+══════════════════════════════
+
+ANIMATIONS
+
+- Fade In
+- Slide Up
+- Scale 0.98 au clic
+- Ripple Effect
+- 60 FPS
+
+══════════════════════════════
+
+INTERDICTIONS
+
+❌ Alert Android native
+❌ Popup système
+❌ Emoji
+❌ Design daté
+❌ Coins carrés
+❌ Ombres agressives
+❌ Aspect WebView
+
+══════════════════════════════
+
+OBJECTIF
+
+Créer une fenêtre d'aide si premium qu'elle semble provenir d'une application Meta, Apple ou Stripe.
+
+L'utilisateur doit penser :
+
+"Wow, même l'aide est magnifique."
+``` 😁🚀💚

@@ -225,6 +225,7 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
   const [stats, setStats] = useState<ApiPageStats | null>(null);
   const [statsPeriod, setStatsPeriod] = useState("7 derniers jours");
   const [chartActive, setChartActive] = useState<number | null>(null);
+  const [showStatsInfo, setShowStatsInfo] = useState(false);
 
   /* ── Invite friends ────────────────────────────────────────── */
   const [friends, setFriends] = useState<{ id: number; name: string; avatarUrl: string | null; country: string | null }[]>([]);
@@ -1604,9 +1605,9 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
             <div style={{ background:"#fff", borderRadius:24, padding:"20px 16px 16px", boxShadow:"0 2px 12px rgba(0,0,0,.05)", border:"1px solid #F1F5F9" }}>
               <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:20 }}>
                 <p style={{ margin:0, fontWeight:800, fontSize:16, color:"#0F172A", letterSpacing:"-0.2px" }}>Graphique des vues</p>
-                <div style={{ width:28, height:28, borderRadius:8, background:"#F1F5F9", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <button onClick={()=>setShowStatsInfo(true)} style={{ width:28, height:28, borderRadius:8, background:"#F1F5F9", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
                   <svg viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="#94A3B8" strokeWidth="1.8" strokeLinecap="round"><circle cx="10" cy="10" r="8"/><line x1="10" y1="6" x2="10" y2="10"/><line x1="10" y1="14" x2="10.01" y2="14"/></svg>
-                </div>
+                </button>
               </div>
 
               {/* Y-axis + bars */}
@@ -1667,6 +1668,127 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
             </div>
           )}
         </div>
+
+        {/* ── Info Bottom Sheet ─────────────────────────────────── */}
+        {showStatsInfo && (
+          <div
+            onClick={()=>setShowStatsInfo(false)}
+            style={{ position:"fixed", inset:0, background:"rgba(0,0,0,.45)", backdropFilter:"blur(6px)", zIndex:100, display:"flex", alignItems:"flex-end" }}>
+            <style>{`
+              @keyframes sheet-up { from { transform:translateY(100%) } to { transform:translateY(0) } }
+              .stats-sheet { animation: sheet-up 260ms cubic-bezier(.32,1.05,.56,1) both; }
+              .info-card:active { transform: scale(0.98); }
+            `}</style>
+            <div
+              className="stats-sheet"
+              onClick={e=>e.stopPropagation()}
+              style={{ background:"#fff", borderRadius:"32px 32px 0 0", width:"100%", maxWidth:640, margin:"0 auto", maxHeight:"92vh", overflowY:"auto", paddingBottom:32 }}>
+
+              {/* Handle */}
+              <div style={{ display:"flex", justifyContent:"center", padding:"14px 0 0" }}>
+                <div style={{ width:40, height:4, borderRadius:2, background:"#E2E8F0" }}/>
+              </div>
+
+              {/* Close button */}
+              <div style={{ display:"flex", justifyContent:"flex-end", padding:"8px 16px 0" }}>
+                <button onClick={()=>setShowStatsInfo(false)}
+                  style={{ width:32, height:32, borderRadius:999, background:"#F1F5F9", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="#374151" strokeWidth="2.5" strokeLinecap="round"><line x1="15" y1="5" x2="5" y2="15"/><line x1="5" y1="5" x2="15" y2="15"/></svg>
+                </button>
+              </div>
+
+              {/* Hero */}
+              <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:10, padding:"8px 24px 24px" }}>
+                <div style={{ width:64, height:64, borderRadius:20, background:"linear-gradient(135deg,#F0FDF4,#DCFCE7)", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 4px 16px rgba(34,197,94,.15)" }}>
+                  <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round">
+                    <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+                  </svg>
+                </div>
+                <p style={{ margin:0, fontWeight:900, fontSize:20, color:"#0F172A", letterSpacing:"-0.3px", textAlign:"center" }}>À propos de ces statistiques</p>
+                <p style={{ margin:0, fontSize:14, color:"#64748B", textAlign:"center", lineHeight:1.55, maxWidth:300 }}>
+                  Comprenez les performances de votre page et découvrez comment améliorer votre visibilité sur BrutePawa.
+                </p>
+              </div>
+
+              {/* Metric cards */}
+              <div style={{ padding:"0 16px", display:"flex", flexDirection:"column", gap:10 }}>
+                {[
+                  {
+                    icon:<svg viewBox="0 0 22 22" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M1 11s4-8 10-8 10 8 10 8-4 8-10 8-10-8-10-8z"/><circle cx="11" cy="11" r="3"/></svg>,
+                    bg:"#F0FDF4", label:"Vues de la page",
+                    desc:"Nombre de fois où votre page a été affichée par les utilisateurs.",
+                  },
+                  {
+                    icon:<svg viewBox="0 0 22 22" width="20" height="20" fill="none" stroke="#6366F1" strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
+                    bg:"#EEF2FF", label:"Nouveaux abonnés",
+                    desc:"Nombre de personnes ayant commencé à suivre votre page durant la période sélectionnée.",
+                  },
+                  {
+                    icon:<svg viewBox="0 0 22 22" width="20" height="20" fill="none" stroke="#F43F5E" strokeWidth="2" strokeLinecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L11 6.67l-2.06-2.06a5.5 5.5 0 0 0-7.78 7.78l2.06 2.06L11 22l7.78-7.78 2.06-2.06a5.5 5.5 0 0 0 0-7.55z"/></svg>,
+                    bg:"#FFF1F2", label:"Interactions",
+                    desc:"Total des réactions, commentaires, partages et engagements générés par vos publications.",
+                  },
+                  {
+                    icon:<svg viewBox="0 0 22 22" width="20" height="20" fill="none" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>,
+                    bg:"#F0F9FF", label:"Clics sur le site web",
+                    desc:"Nombre de visiteurs ayant cliqué sur le lien externe associé à votre page.",
+                  },
+                ].map(card=>(
+                  <div key={card.label} className="info-card" style={{ display:"flex", alignItems:"flex-start", gap:14, background:"#fff", border:"1.5px solid #F1F5F9", borderRadius:20, padding:"16px 16px", boxShadow:"0 2px 8px rgba(0,0,0,.04)", transition:"transform 150ms" }}>
+                    <div style={{ width:42, height:42, borderRadius:13, background:card.bg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                      {card.icon}
+                    </div>
+                    <div>
+                      <p style={{ margin:"0 0 4px", fontWeight:800, fontSize:15, color:"#0F172A" }}>{card.label}</p>
+                      <p style={{ margin:0, fontSize:13, color:"#64748B", lineHeight:1.5 }}>{card.desc}</p>
+                    </div>
+                  </div>
+                ))}
+
+                {/* Période analysée */}
+                <div style={{ display:"flex", alignItems:"center", gap:14, background:"#F0FDF4", border:"1.5px solid #DCFCE7", borderRadius:20, padding:"16px 16px" }}>
+                  <div style={{ width:42, height:42, borderRadius:13, background:"#DCFCE7", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                    <svg viewBox="0 0 22 22" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><rect x="3" y="4" width="16" height="15" rx="2"/><line x1="7" y1="2" x2="7" y2="6"/><line x1="15" y1="2" x2="15" y2="6"/><line x1="3" y1="10" x2="19" y2="10"/></svg>
+                  </div>
+                  <div style={{ flex:1 }}>
+                    <p style={{ margin:"0 0 4px", fontWeight:800, fontSize:15, color:"#15803D" }}>Période analysée</p>
+                    <p style={{ margin:0, fontSize:13, color:"#16A34A", lineHeight:1.5 }}>Ces données correspondent à la période actuellement sélectionnée.</p>
+                  </div>
+                  <div style={{ background:"#22C55E", borderRadius:10, padding:"5px 10px", flexShrink:0 }}>
+                    <span style={{ fontSize:11, fontWeight:800, color:"#fff", whiteSpace:"nowrap" }}>{statsPeriod}</span>
+                  </div>
+                </div>
+
+                {/* Conseils */}
+                <div style={{ background:"#fff", border:"1.5px solid #F1F5F9", borderRadius:20, padding:"18px 16px", boxShadow:"0 2px 8px rgba(0,0,0,.04)" }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:14 }}>
+                    <div style={{ width:32, height:32, borderRadius:10, background:"#FEF9C3", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                      <svg viewBox="0 0 20 20" width="17" height="17" fill="#FBBF24"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 0 0-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 0 0 .951-.69l1.07-3.292z"/></svg>
+                    </div>
+                    <p style={{ margin:0, fontWeight:800, fontSize:15, color:"#0F172A" }}>Comment améliorer vos performances ?</p>
+                  </div>
+                  <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                    {[
+                      "Publiez régulièrement du contenu de qualité",
+                      "Invitez vos amis à suivre votre page",
+                      "Répondez aux commentaires et messages",
+                      "Ajoutez une photo de couverture attractive",
+                      "Utilisez des hashtags pertinents",
+                      "Partagez du contenu de qualité",
+                    ].map(tip=>(
+                      <div key={tip} style={{ display:"flex", alignItems:"flex-start", gap:10 }}>
+                        <div style={{ width:20, height:20, borderRadius:6, background:"#F0FDF4", border:"1.5px solid #DCFCE7", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, marginTop:1 }}>
+                          <svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="13 4 6 11 3 8"/></svg>
+                        </div>
+                        <p style={{ margin:0, fontSize:13.5, color:"#374151", lineHeight:1.4 }}>{tip}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
