@@ -4,7 +4,8 @@ import {
   apiGetUsersWithStatus, apiGetFriends, apiGetFriendRequests,
   apiSendFriendRequest, apiAcceptFriendRequest, apiRejectFriendRequest,
   apiGetGroups, apiJoinGroup, apiLeaveGroup, apiGetChatGroups,
-  PublicUser, PublicUserWithStatus, FriendRequest, ApiGroup, ApiChatGroup,
+  apiGetPages, apiFollowPage, apiUnfollowPage,
+  PublicUser, PublicUserWithStatus, FriendRequest, ApiGroup, ApiChatGroup, ApiPage,
 } from "../lib/api";
 
 const BP_GREEN = "#22C55E";
@@ -108,6 +109,9 @@ export default function Community() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading]   = useState<Record<number,boolean>>({});
   const [groupActionLoading, setGroupActionLoading] = useState<Record<number,boolean>>({});
+  const [communityPages, setCommunityPages] = useState<ApiPage[]>([]);
+  const [pagesLoaded, setPagesLoaded] = useState(false);
+  const [pageActionLoading, setPageActionLoading] = useState<Record<number,boolean>>({});;
 
   const loadAll = useCallback(async () => {
     setLoading(true);
@@ -122,6 +126,13 @@ export default function Community() {
   }, []);
 
   useEffect(() => { loadAll(); }, [loadAll]);
+
+  useEffect(() => {
+    if (activeTab === "pages" && !pagesLoaded) {
+      setPagesLoaded(true);
+      apiGetPages("all").then(p => setCommunityPages(p as ApiPage[])).catch(()=>{});
+    }
+  }, [activeTab, pagesLoaded]);
 
   const setLoader = (id:number, v:boolean) => setActionLoading(p=>({...p,[id]:v}));
 
@@ -597,8 +608,57 @@ export default function Community() {
       {/* ══ 7. PAGES TAB ════════════════════════════════════ */}
       {activeTab==="pages" && (
         <div style={{ padding:"12px" }}>
-          <button style={{ ...btnSolid, marginBottom:16, width:"100%" }}>Créer une page</button>
-          <EmptyPlaceholder icon={<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke={BP_GREEN} strokeWidth="1.8" strokeLinecap="round"><path d="M11 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-5m-1.414-9.414a2 2 0 1 1 2.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>} title="Aucune page disponible" sub="Les pages arrivent bientôt." />
+          <div style={{ display:"flex", gap:8, marginBottom:12 }}>
+            <button onClick={()=>navigate("/pages")} style={{ ...btnSolid, flex:1 }}>
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Créer une page
+            </button>
+            <button onClick={()=>navigate("/pages")} style={{ ...btnOutline, borderColor:BP_GREEN, color:BP_GREEN, paddingLeft:12, paddingRight:12 }}>
+              Toutes les pages
+            </button>
+          </div>
+          {communityPages.length === 0 ? (
+            <EmptyPlaceholder
+              icon={<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke={BP_GREEN} strokeWidth="1.8" strokeLinecap="round"><path d="M11 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-5m-1.414-9.414a2 2 0 1 1 2.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>}
+              title="Aucune page disponible"
+              sub="Soyez le premier à créer une page sur BrutePawa !"
+            />
+          ) : (
+            <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+              {communityPages.slice(0,10).map(page => (
+                <div key={page.id} onClick={()=>navigate("/pages")}
+                  style={{ background:"#fff", borderRadius:16, overflow:"hidden", boxShadow:"0 1px 4px rgba(0,0,0,.07)", cursor:"pointer" }}>
+                  <div style={{ height:60, background:page.coverUrl?`url(${page.coverUrl}) center/cover`:`linear-gradient(135deg,${BP_GREEN},#16A34A)`, position:"relative" }}>
+                    <div style={{ position:"absolute", bottom:-20, left:12 }}>
+                      <div style={{ width:44, height:44, borderRadius:"50%", border:"3px solid #fff", background:BP_GREEN, display:"flex", alignItems:"center", justifyContent:"center", overflow:"hidden" }}>
+                        {page.avatarUrl?<img src={page.avatarUrl} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }}/>:<span style={{ fontSize:18 }}>{page.emoji}</span>}
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ padding:"26px 12px 12px", display:"flex", alignItems:"flex-end", justifyContent:"space-between" }}>
+                    <div style={{ minWidth:0 }}>
+                      <p style={{ margin:0, fontWeight:700, fontSize:14, color:"#111827" }}>{page.name}</p>
+                      <p style={{ margin:0, fontSize:12, color:"#6B7280" }}>{page.category} · {page.followersCount.toLocaleString()} abonnés</p>
+                    </div>
+                    <button onClick={async e=>{ e.stopPropagation(); setPageActionLoading(p=>({...p,[page.id]:true}));
+                      try {
+                        if(page.isFollowed){ await apiUnfollowPage(page.id); setCommunityPages(prev=>prev.map(p=>p.id===page.id?{...p,isFollowed:false,followersCount:p.followersCount-1}:p)); }
+                        else { await apiFollowPage(page.id); setCommunityPages(prev=>prev.map(p=>p.id===page.id?{...p,isFollowed:true,followersCount:p.followersCount+1}:p)); }
+                      } catch{} setPageActionLoading(p=>({...p,[page.id]:false}));
+                    }} disabled={pageActionLoading[page.id]}
+                    style={{ ...btnSolid, fontSize:12, padding:"6px 12px", background:page.isFollowed?"#F3F4F6":"#22C55E", color:page.isFollowed?"#374151":"#fff", boxShadow:"none" }}>
+                      {page.isFollowed?"Abonné":"S'abonner"}
+                    </button>
+                  </div>
+                </div>
+              ))}
+              {communityPages.length > 10 && (
+                <button onClick={()=>navigate("/pages")} style={{ ...btnOutline, borderColor:BP_GREEN, color:BP_GREEN, width:"100%" }}>
+                  Voir toutes les pages ({communityPages.length})
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
 
