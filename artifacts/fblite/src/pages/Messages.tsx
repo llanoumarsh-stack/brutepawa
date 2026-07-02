@@ -364,20 +364,26 @@ function DustEffect({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    const dpr = window.devicePixelRatio || 1;
     const { width: bw, height: bh } = rect;
     const EXTRA_W = 320; // room for particles to drift right
     const EXTRA_H = 60;
-    const CW = bw + EXTRA_W;
-    const CH = bh + EXTRA_H;
-    canvas.width  = CW;
-    canvas.height = CH;
-    canvas.style.left = `${rect.left}px`;
-    canvas.style.top  = `${rect.top - EXTRA_H / 2}px`;
+    // CSS dimensions
+    const cssW = bw + EXTRA_W;
+    const cssH = bh + EXTRA_H;
+    // Physical canvas resolution (sharp on hi-DPI)
+    canvas.width  = cssW  * dpr;
+    canvas.height = cssH  * dpr;
+    canvas.style.width  = `${cssW}px`;
+    canvas.style.height = `${cssH}px`;
+    canvas.style.left   = `${rect.left}px`;
+    canvas.style.top    = `${rect.top - EXTRA_H / 2}px`;
 
     const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
+    ctx.scale(dpr, dpr); // all drawing in CSS px
 
-    const DURATION = 950; // ms
+    const DURATION  = 950; // ms
     const PARTICLES = 240;
 
     const greens  = ["#22C55E", "#86EFAC", "#4ADE80", "#A7F3D0", "#DCFCE7", "#16A34A", "#BBF7D0"];
@@ -392,18 +398,18 @@ function DustEffect({
       color: string; decay: number;
     };
 
-    // Particles start inside the bubble bounds, positioned in canvas space
+    // Particles start inside the bubble bounds, positioned in canvas CSS space
     // The canvas top is offset by EXTRA_H/2, so bubble top in canvas = EXTRA_H/2
     const offsetY = EXTRA_H / 2;
     const pts: Pt[] = Array.from({ length: PARTICLES }, () => ({
       x:     Math.random() * bw,
       y:     offsetY + Math.random() * bh,
-      vx:    0.6 + Math.random() * 4.2,
-      vy:    (Math.random() - 0.5) * 2.2,
-      r:     0.6 + Math.random() * 2.6,
-      alpha: 0.85 + Math.random() * 0.15,
+      vx:    0.8 + Math.random() * 4.8,
+      vy:    (Math.random() - 0.5) * 2.4,
+      r:     1.2 + Math.random() * 2.8,   // bigger so they show on mobile
+      alpha: 0.9 + Math.random() * 0.1,
       color: colors[Math.floor(Math.random() * colors.length)],
-      decay: 0.012 + Math.random() * 0.018,
+      decay: 0.010 + Math.random() * 0.016,
     }));
 
     let t0: number | null = null;
@@ -414,7 +420,7 @@ function DustEffect({
       if (!t0) t0 = ts;
       const p = Math.min((ts - t0) / DURATION, 1); // 0→1
 
-      ctx.clearRect(0, 0, CW, CH);
+      ctx.clearRect(0, 0, cssW, cssH);
 
       // 1. Fading bubble outline
       const bAlpha = Math.max(0, 1 - p * 2.8);
@@ -425,7 +431,7 @@ function DustEffect({
         ctx.fill();
       }
 
-      // 2. Move + fade particles (GPU-friendly: only arc + fill, no shadows)
+      // 2. Move + fade particles
       const speedMult = 1 + p * 3.5;
       pts.forEach(pt => {
         pt.x += pt.vx * speedMult;
@@ -508,7 +514,6 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [deleteForAll, setDeleteForAll]         = useState(false);
   /* Dust-delete: msgId → bounding rect captured just before animation */
   const [dustingMsgs, setDustingMsgs]           = useState<Map<number, DustRect>>(new Map());
-  const bubbleRefs = useRef<Map<number, HTMLDivElement>>(new Map());
   const [presence, setPresence] = useState<{ online: boolean; lastSeenAt: string | null }>({ online: false, lastSeenAt: null });
   const [presenceTick, setPresenceTick] = useState(0);
 
@@ -1754,10 +1759,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     const convId  = activeConv;
     const toDelete = [...selectedMsgs];
 
-    // 1. Capture bounding rects for each bubble about to be dusted
+    // 1. Capture bounding rects — use data-msgid query so refs never go stale
     const newDust = new Map<number, DustRect>();
     toDelete.forEach(msgId => {
-      const el = bubbleRefs.current.get(msgId);
+      const el = document.querySelector<HTMLElement>(`[data-msgid="${msgId}"]`);
       if (el) {
         const r = el.getBoundingClientRect();
         newDust.set(msgId, { left: r.left, top: r.top, width: r.width, height: r.height });
@@ -3625,7 +3630,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                   </div>
                 )}
                 <div
-                  ref={el => { if (el) bubbleRefs.current.set(msg.id, el); else bubbleRefs.current.delete(msg.id); }}
+                  data-msgid={msg.id}
                   style={{ maxWidth:"78%", position:"relative",
                     opacity: dustingMsgs.has(msg.id) ? 0 : 1,
                     pointerEvents: dustingMsgs.has(msg.id) ? "none" : undefined,
