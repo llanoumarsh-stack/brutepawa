@@ -322,6 +322,151 @@ function MapThumbnail({ lat, lng }: { lat: number; lng: number }) {
   );
 }
 
+/* ══════════════════════════════════════════════════════════════
+   DUST DELETE EFFECT — GPU-accelerated Canvas particle animation
+   Triggered when user deletes their own message. The bubble
+   fragments into ~220 green particles drifting rightward, then
+   the message is removed from React state. 60 FPS via rAF.
+══════════════════════════════════════════════════════════════ */
+function dustRoundRect(
+  ctx: CanvasRenderingContext2D,
+  x: number, y: number, w: number, h: number, r: number,
+) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+type DustRect = { left: number; top: number; width: number; height: number };
+
+function DustEffect({
+  rect,
+  mine,
+  onComplete,
+}: {
+  rect: DustRect;
+  mine: boolean;
+  onComplete: () => void;
+}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const onCompleteRef = useRef(onComplete);
+  onCompleteRef.current = onComplete;
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const { width: bw, height: bh } = rect;
+    const EXTRA_W = 320; // room for particles to drift right
+    const EXTRA_H = 60;
+    const CW = bw + EXTRA_W;
+    const CH = bh + EXTRA_H;
+    canvas.width  = CW;
+    canvas.height = CH;
+    canvas.style.left = `${rect.left}px`;
+    canvas.style.top  = `${rect.top - EXTRA_H / 2}px`;
+
+    const ctx = canvas.getContext("2d", { alpha: true });
+    if (!ctx) return;
+
+    const DURATION = 950; // ms
+    const PARTICLES = 240;
+
+    const greens  = ["#22C55E", "#86EFAC", "#4ADE80", "#A7F3D0", "#DCFCE7", "#16A34A", "#BBF7D0"];
+    const grays   = ["#E5E7EB", "#D1D5DB", "#CBD5E1", "#94A3B8", "#F3F4F6"];
+    const colors  = mine ? greens : grays;
+    const bubbleC = mine ? "#C8E6B2" : "#ffffff";
+
+    type Pt = {
+      x: number; y: number;
+      vx: number; vy: number;
+      r: number; alpha: number;
+      color: string; decay: number;
+    };
+
+    // Particles start inside the bubble bounds, positioned in canvas space
+    // The canvas top is offset by EXTRA_H/2, so bubble top in canvas = EXTRA_H/2
+    const offsetY = EXTRA_H / 2;
+    const pts: Pt[] = Array.from({ length: PARTICLES }, () => ({
+      x:     Math.random() * bw,
+      y:     offsetY + Math.random() * bh,
+      vx:    0.6 + Math.random() * 4.2,
+      vy:    (Math.random() - 0.5) * 2.2,
+      r:     0.6 + Math.random() * 2.6,
+      alpha: 0.85 + Math.random() * 0.15,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      decay: 0.012 + Math.random() * 0.018,
+    }));
+
+    let t0: number | null = null;
+    let raf: number;
+    let done = false;
+
+    const step = (ts: number) => {
+      if (!t0) t0 = ts;
+      const p = Math.min((ts - t0) / DURATION, 1); // 0→1
+
+      ctx.clearRect(0, 0, CW, CH);
+
+      // 1. Fading bubble outline
+      const bAlpha = Math.max(0, 1 - p * 2.8);
+      if (bAlpha > 0.01) {
+        ctx.globalAlpha = bAlpha;
+        ctx.fillStyle   = bubbleC;
+        dustRoundRect(ctx, 0, offsetY, bw, bh, 18);
+        ctx.fill();
+      }
+
+      // 2. Move + fade particles (GPU-friendly: only arc + fill, no shadows)
+      const speedMult = 1 + p * 3.5;
+      pts.forEach(pt => {
+        pt.x += pt.vx * speedMult;
+        pt.y += pt.vy;
+        pt.alpha = Math.max(0, pt.alpha - pt.decay * speedMult * 0.8);
+        if (pt.alpha < 0.01) return;
+        ctx.globalAlpha = pt.alpha;
+        ctx.fillStyle   = pt.color;
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, pt.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.globalAlpha = 1;
+
+      if (p < 1) {
+        raf = requestAnimationFrame(step);
+      } else {
+        if (!done) { done = true; onCompleteRef.current(); }
+      }
+    };
+
+    raf = requestAnimationFrame(step);
+    return () => { cancelAnimationFrame(raf); if (!done) { done = true; } };
+  }, []); // eslint-disable-line
+
+  return createPortal(
+    <canvas
+      ref={canvasRef}
+      style={{
+        position:      "fixed",
+        pointerEvents: "none",
+        zIndex:        9999,
+        willChange:    "transform",
+        // left/top set imperatively in useEffect after measuring
+      }}
+    />,
+    document.body,
+  );
+}
+
 function voiceWaveform(seed: number, bars = 36): number[] {
   return Array.from({ length: bars }, (_, i) => {
     const t = i / bars;
@@ -361,6 +506,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [selectedMsgs, setSelectedMsgs]         = useState<Set<number>>(new Set());
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteForAll, setDeleteForAll]         = useState(false);
+  /* Dust-delete: msgId → bounding rect captured just before animation */
+  const [dustingMsgs, setDustingMsgs]           = useState<Map<number, DustRect>>(new Map());
+  const bubbleRefs = useRef<Map<number, HTMLDivElement>>(new Map());
   const [presence, setPresence] = useState<{ online: boolean; lastSeenAt: string | null }>({ online: false, lastSeenAt: null });
   const [presenceTick, setPresenceTick] = useState(0);
 
@@ -1603,13 +1751,34 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   };
   const confirmDelete = () => {
     if (!activeConv) return;
+    const convId  = activeConv;
     const toDelete = [...selectedMsgs];
-    setMessages(prev => ({ ...prev, [activeConv]: (prev[activeConv] ?? []).filter(m => !selectedMsgs.has(m.id)) }));
-    exitSelection();
-    // Delete on server so the other user also loses these messages via polling
+
+    // 1. Capture bounding rects for each bubble about to be dusted
+    const newDust = new Map<number, DustRect>();
     toDelete.forEach(msgId => {
-      apiDeleteMessage(msgId).catch(() => {});
+      const el = bubbleRefs.current.get(msgId);
+      if (el) {
+        const r = el.getBoundingClientRect();
+        newDust.set(msgId, { left: r.left, top: r.top, width: r.width, height: r.height });
+      }
     });
+
+    // 2. Mark messages as dusting (show canvas overlay, hide bubble)
+    setDustingMsgs(prev => { const next = new Map(prev); newDust.forEach((v,k) => next.set(k,v)); return next; });
+
+    // 3. Exit selection mode immediately
+    exitSelection();
+
+    // 4. Fire API deletes right away (don't wait for animation)
+    toDelete.forEach(msgId => apiDeleteMessage(msgId).catch(() => {}));
+
+    // 5. After animation finishes (1100ms), purge from React state
+    //    onComplete per-message also removes from dustingMsgs — this is the fallback
+    setTimeout(() => {
+      setMessages(prev => ({ ...prev, [convId]: (prev[convId] ?? []).filter(m => !toDelete.includes(m.id)) }));
+      setDustingMsgs(prev => { const next = new Map(prev); toDelete.forEach(id => next.delete(id)); return next; });
+    }, 1100);
   };
 
   navigate;
@@ -3455,7 +3624,27 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     {isLast && <div className="avatar xs" style={{ background:activeUser.color, width:26, height:26, fontSize:10 }}>{activeUser.initials}</div>}
                   </div>
                 )}
-                <div style={{ maxWidth:"78%" }}>
+                <div
+                  ref={el => { if (el) bubbleRefs.current.set(msg.id, el); else bubbleRefs.current.delete(msg.id); }}
+                  style={{ maxWidth:"78%", position:"relative",
+                    opacity: dustingMsgs.has(msg.id) ? 0 : 1,
+                    pointerEvents: dustingMsgs.has(msg.id) ? "none" : undefined,
+                    transition: "opacity 80ms" }}>
+                  {/* ── DUST DELETE ANIMATION ── */}
+                  {dustingMsgs.has(msg.id) && (() => {
+                    const dr = dustingMsgs.get(msg.id)!;
+                    return (
+                      <DustEffect
+                        key={`dust-${msg.id}`}
+                        rect={dr}
+                        mine={msg.mine}
+                        onComplete={() => {
+                          setMessages(prev => ({ ...prev, [activeConv!]: (prev[activeConv!] ?? []).filter(m => m.id !== msg.id) }));
+                          setDustingMsgs(prev => { const next = new Map(prev); next.delete(msg.id); return next; });
+                        }}
+                      />
+                    );
+                  })()}
                   {msg.attachment && (
                     msg.attachment.type === "audio" ? (() => {
                       const durStr   = msg.attachment!.extra || "0:00";

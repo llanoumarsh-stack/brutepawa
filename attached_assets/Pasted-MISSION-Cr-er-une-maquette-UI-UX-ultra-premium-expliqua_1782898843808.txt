@@ -1,0 +1,227 @@
+MISSION
+
+Créer une maquette UI/UX ultra premium expliquant le fonctionnement des actions disponibles lorsqu'un utilisateur sélectionne un message dans BrutePawa Messenger.
+
+Le résultat doit ressembler à une documentation officielle conçue par Meta, Telegram Premium ou WhatsApp Business.
+
+══════════════════════════════
+
+STYLE
+
+- Apple Design Language
+- Material Design 3
+- Ultra moderne
+- Fond blanc premium
+- Dégradés subtils
+- Ombres douces
+- Coins 24px
+- Qualité Dribbble Top 1%
+
+══════════════════════════════
+
+TITRE
+
+Fonctionnement des actions sur un message
+
+Sous-titre :
+
+Découvrez comment copier, répondre, transférer et supprimer des messages dans BrutePawa.
+
+══════════════════════════════
+
+SECTION 1
+
+COPIER
+
+Icône :
+
+Copy moderne verte
+
+Titre :
+
+Copier
+
+Description :
+
+Copie le contenu du message dans le presse-papiers.
+
+Exemple visuel :
+
+Toast premium :
+
+✓ Message copié
+
+Carte verte légère
+
+══════════════════════════════
+
+SECTION 2
+
+RÉPONDRE
+
+Icône :
+
+Reply moderne verte
+
+Titre :
+
+Répondre
+
+Description :
+
+Répond directement à un message spécifique.
+
+Exemple :
+
+↪ Je taff plus avec les leaders
+
+Pourquoi ?
+
+Afficher une citation premium du message original.
+
+══════════════════════════════
+
+SECTION 3
+
+TRANSFÉRER
+
+Icône :
+
+Forward moderne verte
+
+Titre :
+
+Transférer
+
+Description :
+
+Envoyer le message à un ou plusieurs contacts ou groupes.
+
+Exemple :
+
+✓ Junior
+
+✓ Omar
+
+✓ Groupe Développeurs
+
+Bouton :
+
+Transférer (3)
+
+══════════════════════════════
+
+SECTION 4
+
+SUPPRIMER
+
+Icône :
+
+Corbeille rouge premium
+
+Titre :
+
+Supprimer
+
+Description :
+
+Supprime le message pour vous ou pour tous les participants.
+
+Modal premium :
+
+Supprimer le message ?
+
+○ Supprimer pour moi
+
+○ Supprimer pour tout le monde
+
+[ Annuler ]
+
+[ Supprimer ]
+
+══════════════════════════════
+
+ZONE PRINCIPALE
+
+Afficher 4 smartphones modernes côte à côte.
+
+Téléphone 1 :
+
+Action Copier sélectionnée
+
+Téléphone 2 :
+
+Action Répondre sélectionnée
+
+Téléphone 3 :
+
+Écran de transfert avec contacts
+
+Téléphone 4 :
+
+Popup suppression premium
+
+══════════════════════════════
+
+DESIGN DES SMARTPHONES
+
+- Style iPhone 2026
+- Bords fins
+- Ombres réalistes
+- Interface BrutePawa verte
+- Messages modernes
+- Bulles premium
+
+══════════════════════════════
+
+PALETTE
+
+Vert principal :
+
+#22C55E
+
+Vert foncé :
+
+#16A34A
+
+Fond :
+
+#F8FAFC
+
+Texte :
+
+#0F172A
+
+Rouge :
+
+#EF4444
+
+══════════════════════════════
+
+ANIMATIONS VISUELLES
+
+- Glow subtil
+- Ombres premium
+- Effet verre dépoli
+- Transitions fluides
+
+══════════════════════════════
+
+INTERDICTIONS
+
+❌ Emojis système
+❌ Design amateur
+❌ Icônes pixélisées
+❌ Fenêtres Android natives
+❌ Couleurs agressives
+❌ Aspect WebView
+
+══════════════════════════════
+
+OBJECTIF
+
+Créer une illustration si professionnelle qu'elle pourrait être utilisée dans la documentation officielle de BrutePawa ou sur la fiche Play Store.
+
+Niveau visuel :
+
+Meta • Telegram Premium • WhatsApp Business • Stripe
