@@ -405,7 +405,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
       )}
 
       {/* ─── Create post card ─── */}
-      <div style={{ background: "#1a1a1a", borderRadius: 12, border: "1px solid #2c2c2e", boxShadow: "0 1px 4px rgba(0,0,0,0.3)", overflow: "hidden" }}>
+      <div style={{ background: "#0F241D", borderRadius: 12, border: "1px solid rgba(34,197,94,0.15)", boxShadow: "0 1px 4px rgba(0,0,0,0.3)", overflow: "hidden" }}>
         {/* Top row: avatar + input + icons */}
         <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 14px 10px" }}>
           {user.avatarUrl
@@ -414,7 +414,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
           }
           <div
             onClick={() => navigate("/create-post")}
-            style={{ flex: 1, background: "#2a2a2a", borderRadius: 30, padding: "11px 16px", fontSize: 15, color: "#9CA3AF", cursor: "pointer", fontWeight: 400, lineHeight: 1 }}
+            style={{ flex: 1, background: "#132a1f", borderRadius: 30, padding: "11px 16px", fontSize: 15, color: "#9CA3AF", cursor: "pointer", fontWeight: 400, lineHeight: 1 }}
           >
             Quoi de neuf, {user.name.split(" ")[0]} ?
           </div>
@@ -429,7 +429,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
         </div>
 
         {/* Divider */}
-        <div style={{ height: 1, background: "#2c2c2e", margin: "0 14px" }} />
+        <div style={{ height: 1, background: "rgba(34,197,94,0.12)", margin: "0 14px" }} />
 
         {/* Action buttons row */}
         <div style={{ display: "flex", overflowX: "auto", scrollbarWidth: "none" as const }}>
@@ -451,7 +451,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
             <button
               key={btn.label}
               onClick={btn.action}
-              style={{ flex: "0 0 auto", display: "flex", flexDirection: "column" as const, alignItems: "center" as const, justifyContent: "center" as const, gap: 4, padding: "10px 14px 12px", background: "none", border: "none", cursor: "pointer", borderRight: i < arr.length - 1 ? "1px solid #2c2c2e" : "none", minWidth: 80 }}
+              style={{ flex: "0 0 auto", display: "flex", flexDirection: "column" as const, alignItems: "center" as const, justifyContent: "center" as const, gap: 4, padding: "10px 14px 12px", background: "none", border: "none", cursor: "pointer", borderRight: i < arr.length - 1 ? "1px solid rgba(34,197,94,0.15)" : "none", minWidth: 80 }}
             >
               {btn.icon}
               <span style={{ fontSize: 12, fontWeight: 600, color: "#9CA3AF", whiteSpace: "nowrap" as const }}>{btn.label}</span>
@@ -462,7 +462,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
 
       {/* ─── Stories Row ─── */}
       <input ref={storyFileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleStoryFileSelect} />
-      <div style={{ background: "#1a1a1a", borderRadius: 12, border: "1px solid #2c2c2e", boxShadow: "0 1px 4px rgba(0,0,0,0.3)", padding: "12px 10px 10px" }}>
+      <div style={{ background: "#0F241D", borderRadius: 12, border: "1px solid rgba(34,197,94,0.15)", boxShadow: "0 1px 4px rgba(0,0,0,0.3)", padding: "12px 10px 10px" }}>
         <div style={{ display: "flex", gap: 10, overflowX: "auto", scrollbarWidth: "none" as const, alignItems: "flex-start" }}>
 
           {/* ── Créer une story — circulaire ── */}
@@ -472,14 +472,14 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 width: 76, height: 76, borderRadius: "50%", overflow: "hidden",
                 background: "linear-gradient(135deg, #1e3a2e 0%, #0f2a1a 100%)",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                border: "2px solid #2c2c2e",
+                border: "2px solid rgba(34,197,94,0.25)",
               }}>
                 {user.avatarUrl
                   ? <img src={user.avatarUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.6 }} />
                   : <span style={{ color: "#22C55E", fontWeight: 900, fontSize: 22, lineHeight: 1 }}>{userInitials}</span>
                 }
               </div>
-              <div style={{ position: "absolute", bottom: 2, right: 2, width: 22, height: 22, borderRadius: "50%", background: "#22C55E", border: "2px solid #1a1a1a", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ position: "absolute", bottom: 2, right: 2, width: 22, height: 22, borderRadius: "50%", background: "#22C55E", border: "2px solid #081C15", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
               </div>
             </div>
@@ -510,7 +510,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                     }
                   </div>
                   {/* Online dot */}
-                  <div style={{ position: "absolute", bottom: 4, right: 4, width: 14, height: 14, borderRadius: "50%", background: "#22C55E", border: "2px solid #1a1a1a" }} />
+                  <div style={{ position: "absolute", bottom: 4, right: 4, width: 14, height: 14, borderRadius: "50%", background: "#22C55E", border: "2px solid #081C15" }} />
                 </div>
                 <div style={{ marginTop: 6, fontSize: 11, fontWeight: 600, color: "#f0f0f0", textAlign: "center" as const, maxWidth: 76, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>
                   {group.authorName.split(" ")[0]}
@@ -522,7 +522,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
           {/* ── Voir plus ── */}
           {storyGroups.length >= 3 && (
             <div style={{ flex: "0 0 auto", cursor: "pointer", display: "flex", flexDirection: "column" as const, alignItems: "center" as const }}>
-              <div style={{ width: 76, height: 76, borderRadius: "50%", background: "#2a2a2a", border: "1px solid #2c2c2e", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ width: 76, height: 76, borderRadius: "50%", background: "#132a1f", border: "1px solid rgba(34,197,94,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="5" cy="12" r="1.8" fill="#9CA3AF"/><circle cx="12" cy="12" r="1.8" fill="#9CA3AF"/><circle cx="19" cy="12" r="1.8" fill="#9CA3AF"/></svg>
               </div>
               <div style={{ marginTop: 6, fontSize: 11, fontWeight: 600, color: "#9CA3AF", textAlign: "center" as const }}>Voir plus</div>
@@ -541,7 +541,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
       {postsLoading && (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {[0, 1, 2].map(i => (
-            <div key={i} style={{ background: "#1a1a1a", borderRadius: 10, border: "1px solid #2c2c2e", overflow: "hidden", padding: "14px 16px" }}>
+            <div key={i} style={{ background: "#0F241D", borderRadius: 10, border: "1px solid rgba(34,197,94,0.15)", overflow: "hidden", padding: "14px 16px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
                 <span className="bp-skeleton" style={{ width: 42, height: 42, borderRadius: "50%", flexShrink: 0 }} />
                 <div style={{ flex: 1 }}>
@@ -677,7 +677,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
             )}
 
             {/* ── Action bar ── */}
-            <div style={{ display: "flex", borderTop: "1px solid #2c2c2e", borderBottom: "1px solid #2c2c2e", position: "relative" }}>
+            <div style={{ display: "flex", borderTop: "1px solid rgba(34,197,94,0.15)", borderBottom: "1px solid rgba(34,197,94,0.15)", position: "relative" }}>
               {/* Reaction picker backdrop */}
               {showReactionPicker === post.id && (
                 <div style={{ position: "fixed", inset: 0, zIndex: 98 }} onClick={() => setShowReactionPicker(null)} />
@@ -686,7 +686,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
               {showReactionPicker === post.id && (
                 <div style={{
                   position: "absolute", bottom: "calc(100% + 8px)", left: 4, zIndex: 99,
-                  background: "#2a2a2a", borderRadius: 30, padding: "8px 14px",
+                  background: "#132a1f", borderRadius: 30, padding: "8px 14px",
                   boxShadow: "0 4px 24px rgba(0,0,0,0.6)",
                   display: "flex", gap: 8, alignItems: "flex-end",
                 }}>
@@ -714,7 +714,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 return (
                   <button
                     className="post-btn"
-                    style={{ flex: 1, borderRight: "1px solid #2c2c2e", color: liked ? rx.color : "#9CA3AF", fontWeight: liked ? 700 : 500, display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}
+                    style={{ flex: 1, borderRight: "1px solid rgba(34,197,94,0.15)", color: liked ? rx.color : "#9CA3AF", fontWeight: liked ? 700 : 500, display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}
                     onClick={() => quickLike(post.id, liked)}
                     onMouseDown={() => startReactionTimer(post.id)}
                     onMouseUp={cancelReactionTimer}
@@ -733,7 +733,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
               })()}
 
               {/* Commenter */}
-              <button className="post-btn" style={{ flex: 1, borderRight: "1px solid #2c2c2e", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }} onClick={() => navigate(`/post/${post.id}`)}>
+              <button className="post-btn" style={{ flex: 1, borderRight: "1px solid rgba(34,197,94,0.15)", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }} onClick={() => navigate(`/post/${post.id}`)}>
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 Commenter
               </button>
@@ -781,7 +781,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                           }
                           <div style={{ flex: 1, minWidth: 0 }}>
                             {/* Bubble */}
-                            <div style={{ display: "inline-block", background: "#2a2a2a", borderRadius: 18, padding: "8px 12px", maxWidth: "calc(100% - 32px)" }}>
+                            <div style={{ display: "inline-block", background: "#132a1f", borderRadius: 18, padding: "8px 12px", maxWidth: "calc(100% - 32px)" }}>
                               <div style={{ fontWeight: 700, fontSize: 13, color: "#f0f0f0", marginBottom: 2 }}>{c.authorFirstName} {c.authorLastName}</div>
                               {c.audioUrl
                                 ? <VoicePlayer url={c.audioUrl} duration={c.audioDuration} />
@@ -790,7 +790,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                             </div>
                             {/* Like count badge */}
                             {c.likesCount > 0 && (
-                              <span style={{ display: "inline-flex", alignItems: "center", gap: 2, background: "#2a2a2a", borderRadius: 10, padding: "1px 5px 1px 3px", boxShadow: "0 1px 3px rgba(0,0,0,0.4)", fontSize: 12, marginLeft: 4, verticalAlign: "middle" }}>
+                              <span style={{ display: "inline-flex", alignItems: "center", gap: 2, background: "#132a1f", borderRadius: 10, padding: "1px 5px 1px 3px", boxShadow: "0 1px 3px rgba(0,0,0,0.4)", fontSize: 12, marginLeft: 4, verticalAlign: "middle" }}>
                                 <span>❤️</span><span style={{ color: "#9CA3AF", fontWeight: 600 }}>{c.likesCount}</span>
                               </span>
                             )}
@@ -824,12 +824,12 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                                     : <div className="avatar xs" style={{ width: 26, height: 26, fontSize: 9, flexShrink: 0 }}>{rInitials}</div>
                                   }
                                   <div style={{ flex: 1 }}>
-                                    <div style={{ display: "inline-block", background: "#2a2a2a", borderRadius: 14, padding: "6px 10px", maxWidth: "100%" }}>
+                                    <div style={{ display: "inline-block", background: "#132a1f", borderRadius: 14, padding: "6px 10px", maxWidth: "100%" }}>
                                       <div style={{ fontWeight: 700, fontSize: 12, color: "#f0f0f0", marginBottom: 1 }}>{r.authorFirstName} {r.authorLastName}</div>
                                       <div style={{ fontSize: 13, color: "#e0e0e0" }}>{r.content}</div>
                                     </div>
                                     {r.likesCount > 0 && (
-                                      <span style={{ display: "inline-flex", alignItems: "center", gap: 1, background: "#2a2a2a", borderRadius: 10, padding: "1px 4px 1px 2px", boxShadow: "0 1px 3px rgba(0,0,0,0.4)", fontSize: 11, marginLeft: 3, verticalAlign: "middle" }}>
+                                      <span style={{ display: "inline-flex", alignItems: "center", gap: 1, background: "#132a1f", borderRadius: 10, padding: "1px 4px 1px 2px", boxShadow: "0 1px 3px rgba(0,0,0,0.4)", fontSize: 11, marginLeft: 3, verticalAlign: "middle" }}>
                                         <span>❤️</span><span style={{ color: "#9CA3AF" }}>{r.likesCount}</span>
                                       </span>
                                     )}
@@ -862,7 +862,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                   )}
 
                   {/* ── Bottom comment input bar (Facebook style) ── */}
-                  <div style={{ display: "flex", alignItems: voiceMode === post.id ? "flex-start" : "center", gap: 8, padding: "8px 12px 12px", borderTop: topLevel.length > 0 ? "1px solid #2c2c2e" : "none", marginTop: 6 }}>
+                  <div style={{ display: "flex", alignItems: voiceMode === post.id ? "flex-start" : "center", gap: 8, padding: "8px 12px 12px", borderTop: topLevel.length > 0 ? "1px solid rgba(34,197,94,0.15)" : "none", marginTop: 6 }}>
                     {voiceMode !== post.id && (
                       user.avatarUrl
                         ? <img src={user.avatarUrl} alt="moi" style={{ width: 34, height: 34, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
@@ -876,7 +876,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                         disabled={submittingComment === post.id}
                       />
                     ) : (
-                      <div style={{ flex: 1, background: "#2a2a2a", borderRadius: 22, display: "flex", alignItems: "center", padding: "0 6px 0 14px", gap: 4 }}>
+                      <div style={{ flex: 1, background: "#132a1f", borderRadius: 22, display: "flex", alignItems: "center", padding: "0 6px 0 14px", gap: 4 }}>
                         <input
                           ref={el => { commentInputRef.current[post.id] = el; }}
                           style={{ flex: 1, background: "transparent", border: "none", padding: "9px 0", fontSize: 14, outline: "none", color: "#f0f0f0", minWidth: 0 }}
@@ -932,9 +932,9 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
       {openMenu && createPortal(
         <>
           <div onClick={closeMenu} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.65)", backdropFilter:"blur(4px)", WebkitBackdropFilter:"blur(4px)", zIndex:9000 }} />
-          <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:9001, background:"#1c1c1e", borderRadius:"24px 24px 0 0", boxShadow:"0 -8px 40px rgba(0,0,0,0.6)", maxHeight:"90vh", overflowY:"auto", animation:"slideUpSheet 0.28s cubic-bezier(0.32,0.72,0,1)" }}>
+          <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:9001, background:"#0b1e16", borderRadius:"24px 24px 0 0", boxShadow:"0 -8px 40px rgba(0,0,0,0.6)", maxHeight:"90vh", overflowY:"auto", animation:"slideUpSheet 0.28s cubic-bezier(0.32,0.72,0,1)" }}>
             <div style={{ display:"flex", justifyContent:"center", paddingTop:10, paddingBottom:6 }}>
-              <div style={{ width:40, height:4, background:"#3c3c3e", borderRadius:99 }} />
+              <div style={{ width:40, height:4, background:"rgba(34,197,94,0.2)", borderRadius:99 }} />
             </div>
             <div style={{ display:"flex", alignItems:"center", gap:10, padding:"4px 18px 14px" }}>
               <div style={{ width:38, height:38, borderRadius:"50%", background:"#22C55E", display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:700, color:"#fff", flexShrink:0 }}>
@@ -948,43 +948,43 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
             <div style={{ padding:"0 12px 34px", display:"flex", flexDirection:"column", gap:8 }}>
               {openMenu.isOwn ? (<>
                 {/* OWN: edit + pin */}
-                <div style={{ background:"#2a2a2a", borderRadius:18, overflow:"hidden" }}>
+                <div style={{ background:"#132a1f", borderRadius:18, overflow:"hidden" }}>
                   {([
                     { iconBg:"#1e3a2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>, label:"Modifier la publication", desc:"Modifiez le texte ou le contenu.", action:()=>{ navigate("/profile"); closeMenu(); } },
                     { iconBg: openMenu.isPinned ? "#3a2e1e" : "#1e3a2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke={openMenu.isPinned?"#F59E0B":"#22C55E"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>, label: openMenu.isPinned ? "Désépingler du profil" : "Épingler au profil", desc: openMenu.isPinned ? "Retirer l'épingle de votre profil." : "Afficher en haut de votre profil.", action:()=>handlePin(openMenu.postId, openMenu.isPinned) },
                   ] as const).map((item,i,arr)=>(
-                    <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom:i<arr.length-1?"1px solid #333":"none", textAlign:"left" }}>
+                    <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom:i<arr.length-1?"1px solid rgba(34,197,94,0.12)":"none", textAlign:"left" }}>
                       <div style={{ width:42, height:42, borderRadius:"50%", background:item.iconBg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{item.svg}</div>
                       <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#f0f0f0" }}>{item.label}</div><div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:2 }}>{item.desc}</div></div>
-                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#444" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="rgba(200,230,210,0.5)" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
                     </button>
                   ))}
                 </div>
                 {/* OWN: share/stats/audience */}
-                <div style={{ background:"#2a2a2a", borderRadius:18, overflow:"hidden" }}>
+                <div style={{ background:"#132a1f", borderRadius:18, overflow:"hidden" }}>
                   {([
                     { iconBg:"#1e3a2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0EA5E9" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>, label:"Partager", desc:"Envoyez cette publication à vos amis.", action:()=>handleShare(openMenu.postId) },
                     { iconBg:"#1e3a2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0EA5E9" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>, label:"Copier le lien", desc:"Copiez le lien de cette publication.", action:()=>handleCopyLink(openMenu.postId) },
                     { iconBg:"#1e3a2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>, label:"Voir les statistiques", desc:"Vues, likes, portée et engagement.", action:()=>handleViewStats(openMenu.postId) },
                     { iconBg:"#1e3a2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0EA5E9" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>, label:"Modifier l'audience", desc:`Actuellement : ${openMenu.audience==="public"?"🌐 Public":openMenu.audience==="friends"?"👥 Amis":"🔒 Privé"}`, action:()=>{ setAudienceSheet({postId:openMenu.postId,current:openMenu.audience}); closeMenu(); } },
                   ] as const).map((item,i,arr)=>(
-                    <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom:i<arr.length-1?"1px solid #333":"none", textAlign:"left" }}>
+                    <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom:i<arr.length-1?"1px solid rgba(34,197,94,0.12)":"none", textAlign:"left" }}>
                       <div style={{ width:42, height:42, borderRadius:"50%", background:item.iconBg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{item.svg}</div>
                       <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#f0f0f0" }}>{item.label}</div><div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:2 }}>{item.desc}</div></div>
-                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#444" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="rgba(200,230,210,0.5)" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
                     </button>
                   ))}
                 </div>
                 {/* OWN: comments/archive */}
-                <div style={{ background:"#2a2a2a", borderRadius:18, overflow:"hidden" }}>
+                <div style={{ background:"#132a1f", borderRadius:18, overflow:"hidden" }}>
                   {([
-                    { iconBg:"#2c2c2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke={openMenu.commentsDisabled?"#22C55E":"#9CA3AF"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>, label: openMenu.commentsDisabled?"Activer les commentaires":"Désactiver les commentaires", desc: openMenu.commentsDisabled?"Permettre à nouveau les commentaires.":"Empêcher les commentaires sur ce post.", action:()=>handleToggleComments(openMenu.postId, openMenu.commentsDisabled) },
-                    { iconBg:"#2c2c2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#9CA3AF" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>, label:"Archiver la publication", desc:"Masquer sans supprimer définitivement.", action:()=>handleArchivePost(openMenu.postId) },
+                    { iconBg:"rgba(34,197,94,0.12)", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke={openMenu.commentsDisabled?"#22C55E":"#9CA3AF"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>, label: openMenu.commentsDisabled?"Activer les commentaires":"Désactiver les commentaires", desc: openMenu.commentsDisabled?"Permettre à nouveau les commentaires.":"Empêcher les commentaires sur ce post.", action:()=>handleToggleComments(openMenu.postId, openMenu.commentsDisabled) },
+                    { iconBg:"rgba(34,197,94,0.12)", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#9CA3AF" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>, label:"Archiver la publication", desc:"Masquer sans supprimer définitivement.", action:()=>handleArchivePost(openMenu.postId) },
                   ] as const).map((item,i,arr)=>(
-                    <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom:i<arr.length-1?"1px solid #333":"none", textAlign:"left" }}>
+                    <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom:i<arr.length-1?"1px solid rgba(34,197,94,0.12)":"none", textAlign:"left" }}>
                       <div style={{ width:42, height:42, borderRadius:"50%", background:item.iconBg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{item.svg}</div>
                       <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#f0f0f0" }}>{item.label}</div><div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:2 }}>{item.desc}</div></div>
-                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#444" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="rgba(200,230,210,0.5)" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
                     </button>
                   ))}
                 </div>
@@ -998,43 +998,43 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 </div>
               </>) : (<>
                 {/* OTHER: save/notif */}
-                <div style={{ background:"#2a2a2a", borderRadius:18, overflow:"hidden" }}>
+                <div style={{ background:"#132a1f", borderRadius:18, overflow:"hidden" }}>
                   {([
                     { iconBg: savedPosts.has(openMenu.postId)?"#3a2e1e":"#1e3a2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke={savedPosts.has(openMenu.postId)?"#F59E0B":"#22C55E"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>, label: savedPosts.has(openMenu.postId)?"Retirer des enregistrements":"Enregistrer la publication", desc: savedPosts.has(openMenu.postId)?"Retirer de vos éléments enregistrés.":"Ajoutez ceci à vos éléments enregistrés.", action:()=>handleSave(openMenu.postId) },
                     { iconBg: notifPosts.has(openMenu.postId)?"#2c2c2e":"#1e3a2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke={notifPosts.has(openMenu.postId)?"#9CA3AF":"#22C55E"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>, label: notifPosts.has(openMenu.postId)?"Désactiver les notifications":"Activer les notifications", desc:"Recevez des notifications pour cette publication.", action:()=>handleNotif(openMenu.postId) },
                   ] as const).map((item,i,arr)=>(
-                    <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom:i<arr.length-1?"1px solid #333":"none", textAlign:"left" }}>
+                    <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom:i<arr.length-1?"1px solid rgba(34,197,94,0.12)":"none", textAlign:"left" }}>
                       <div style={{ width:42, height:42, borderRadius:"50%", background:item.iconBg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{item.svg}</div>
                       <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#f0f0f0" }}>{item.label}</div><div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:2 }}>{item.desc}</div></div>
-                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#444" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="rgba(200,230,210,0.5)" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
                     </button>
                   ))}
                 </div>
                 {/* OTHER: share/copy */}
-                <div style={{ background:"#2a2a2a", borderRadius:18, overflow:"hidden" }}>
+                <div style={{ background:"#132a1f", borderRadius:18, overflow:"hidden" }}>
                   {([
                     { iconBg:"#1a2a3a", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0EA5E9" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>, label:"Partager la publication", desc:"Envoyez cette publication à vos amis.", action:()=>handleShare(openMenu.postId) },
                     { iconBg:"#1a2a3a", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0EA5E9" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>, label:"Copier le lien", desc:"Copiez le lien de cette publication.", action:()=>handleCopyLink(openMenu.postId) },
                   ] as const).map((item,i,arr)=>(
-                    <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom:i<arr.length-1?"1px solid #333":"none", textAlign:"left" }}>
+                    <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom:i<arr.length-1?"1px solid rgba(34,197,94,0.12)":"none", textAlign:"left" }}>
                       <div style={{ width:42, height:42, borderRadius:"50%", background:item.iconBg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{item.svg}</div>
                       <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#f0f0f0" }}>{item.label}</div><div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:2 }}>{item.desc}</div></div>
-                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#444" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="rgba(200,230,210,0.5)" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
                     </button>
                   ))}
                 </div>
                 {/* OTHER: hide */}
-                <div style={{ background:"#2a2a2a", borderRadius:18, overflow:"hidden" }}>
+                <div style={{ background:"#132a1f", borderRadius:18, overflow:"hidden" }}>
                   <button onClick={()=>{ handleHide(openMenu.postId); apiHidePost(openMenu.postId).catch(()=>{}); }} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", textAlign:"left" }}>
-                    <div style={{ width:42, height:42, borderRadius:"50%", background:"#2c2c2e", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                    <div style={{ width:42, height:42, borderRadius:"50%", background:"rgba(34,197,94,0.12)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#9CA3AF" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
                     </div>
                     <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#f0f0f0" }}>Masquer cette publication</div><div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:2 }}>Moins de publications comme celle-ci.</div></div>
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#444" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="rgba(200,230,210,0.5)" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
                   </button>
                 </div>
               </>)}
-              <button onClick={closeMenu} style={{ width:"100%", background:"#2a2a2a", border:"none", borderRadius:18, padding:"15px", fontWeight:700, fontSize:16, color:"#9CA3AF", cursor:"pointer" }}>Annuler</button>
+              <button onClick={closeMenu} style={{ width:"100%", background:"#132a1f", border:"none", borderRadius:18, padding:"15px", fontWeight:700, fontSize:16, color:"#9CA3AF", cursor:"pointer" }}>Annuler</button>
             </div>
           </div>
         </>,
@@ -1045,7 +1045,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
       {confirmAction && createPortal(
         <>
           <div onClick={()=>setConfirmAction(null)} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.6)", backdropFilter:"blur(4px)", zIndex:9100 }} />
-          <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:9101, background:"#1c1c1e", borderRadius:"24px 24px 0 0", padding:"20px 20px 34px", animation:"slideUpSheet 0.22s cubic-bezier(0.32,0.72,0,1)" }}>
+          <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:9101, background:"#0b1e16", borderRadius:"24px 24px 0 0", padding:"20px 20px 34px", animation:"slideUpSheet 0.22s cubic-bezier(0.32,0.72,0,1)" }}>
             <div style={{ display:"flex", justifyContent:"center", marginBottom:14 }}>
               <div style={{ width:48, height:48, borderRadius:"50%", background:"#3a1a1a", display:"flex", alignItems:"center", justifyContent:"center" }}>
                 {confirmAction.type==="delete"
@@ -1075,7 +1075,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
             }} style={{ width:"100%", background:"#EF4444", color:"#fff", border:"none", borderRadius:14, padding:"15px", fontWeight:700, fontSize:16, cursor:"pointer", marginBottom:10 }}>
               {confirmAction.type==="delete" ? "Supprimer" : "Bloquer"}
             </button>
-            <button onClick={()=>setConfirmAction(null)} style={{ width:"100%", background:"#2a2a2a", color:"#9CA3AF", border:"none", borderRadius:14, padding:"14px", fontWeight:700, fontSize:15, cursor:"pointer" }}>
+            <button onClick={()=>setConfirmAction(null)} style={{ width:"100%", background:"#132a1f", color:"#9CA3AF", border:"none", borderRadius:14, padding:"14px", fontWeight:700, fontSize:15, cursor:"pointer" }}>
               Annuler
             </button>
           </div>
@@ -1087,23 +1087,23 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
       {reportSheet && createPortal(
         <>
           <div onClick={()=>setReportSheet(null)} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", backdropFilter:"blur(4px)", zIndex:9200 }} />
-          <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:9201, background:"#1c1c1e", borderRadius:"24px 24px 0 0", padding:"14px 14px 34px", animation:"slideUpSheet 0.22s cubic-bezier(0.32,0.72,0,1)" }}>
-            <div style={{ display:"flex", justifyContent:"center", paddingBottom:12 }}><div style={{ width:40, height:4, background:"#3c3c3e", borderRadius:99 }} /></div>
+          <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:9201, background:"#0b1e16", borderRadius:"24px 24px 0 0", padding:"14px 14px 34px", animation:"slideUpSheet 0.22s cubic-bezier(0.32,0.72,0,1)" }}>
+            <div style={{ display:"flex", justifyContent:"center", paddingBottom:12 }}><div style={{ width:40, height:4, background:"rgba(34,197,94,0.2)", borderRadius:99 }} /></div>
             <div style={{ fontWeight:800, fontSize:17, color:"#f0f0f0", marginBottom:4, paddingLeft:4 }}>Signaler la publication</div>
             <div style={{ fontSize:13, color:"#9CA3AF", marginBottom:14, paddingLeft:4 }}>Pourquoi signalez-vous cette publication ?</div>
-            <div style={{ background:"#2a2a2a", borderRadius:18, overflow:"hidden", marginBottom:12 }}>
+            <div style={{ background:"#132a1f", borderRadius:18, overflow:"hidden", marginBottom:12 }}>
               {["Spam ou publicité","Arnaque ou escroquerie","Harcèlement ou intimidation","Contenu inapproprié","Fausse information","Violence ou danger","Autre"].map((reason,i,arr)=>(
                 <button key={i} onClick={()=>{
                   apiReportPost(reportSheet.postId, reason).catch(()=>{});
                   showToast("🚩 Signalement envoyé — merci !");
                   setReportSheet(null);
-                }} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", textAlign:"left", padding:"14px 16px", borderBottom:i<arr.length-1?"1px solid #333":"none", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                }} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", textAlign:"left", padding:"14px 16px", borderBottom:i<arr.length-1?"1px solid rgba(34,197,94,0.12)":"none", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
                   <span style={{ fontSize:15, fontWeight:500, color:"#f0f0f0" }}>{reason}</span>
-                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#444" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="rgba(200,230,210,0.5)" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
                 </button>
               ))}
             </div>
-            <button onClick={()=>setReportSheet(null)} style={{ width:"100%", background:"#2a2a2a", border:"none", borderRadius:14, padding:"14px", fontWeight:700, fontSize:15, color:"#9CA3AF", cursor:"pointer" }}>Annuler</button>
+            <button onClick={()=>setReportSheet(null)} style={{ width:"100%", background:"#132a1f", border:"none", borderRadius:14, padding:"14px", fontWeight:700, fontSize:15, color:"#9CA3AF", cursor:"pointer" }}>Annuler</button>
           </div>
         </>,
         document.body
@@ -1113,8 +1113,8 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
       {statsModal && createPortal(
         <>
           <div onClick={()=>setStatsModal(null)} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", backdropFilter:"blur(4px)", zIndex:9300 }} />
-          <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:9301, background:"#1c1c1e", borderRadius:"24px 24px 0 0", padding:"14px 14px 34px", animation:"slideUpSheet 0.22s cubic-bezier(0.32,0.72,0,1)" }}>
-            <div style={{ display:"flex", justifyContent:"center", paddingBottom:12 }}><div style={{ width:40, height:4, background:"#3c3c3e", borderRadius:99 }} /></div>
+          <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:9301, background:"#0b1e16", borderRadius:"24px 24px 0 0", padding:"14px 14px 34px", animation:"slideUpSheet 0.22s cubic-bezier(0.32,0.72,0,1)" }}>
+            <div style={{ display:"flex", justifyContent:"center", paddingBottom:12 }}><div style={{ width:40, height:4, background:"rgba(34,197,94,0.2)", borderRadius:99 }} /></div>
             <div style={{ fontWeight:800, fontSize:17, color:"#f0f0f0", marginBottom:16, paddingLeft:4 }}>📊 Statistiques</div>
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:10, marginBottom:12 }}>
               {([
@@ -1125,7 +1125,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 {label:"Enregistrements",value:statsModal.stats.saves,icon:"🔖"},
                 {label:"Portée",value:statsModal.stats.reach,icon:"📡"},
               ] as const).map(s=>(
-                <div key={s.label} style={{ background:"#2a2a2a", borderRadius:14, padding:"12px 8px", textAlign:"center" }}>
+                <div key={s.label} style={{ background:"#132a1f", borderRadius:14, padding:"12px 8px", textAlign:"center" }}>
                   <div style={{ fontSize:18, marginBottom:4 }}>{s.icon}</div>
                   <div style={{ fontWeight:800, fontSize:17, color:"#f0f0f0" }}>{typeof s.value==="number"?(s.value as number).toLocaleString("fr"):String(s.value??0)}</div>
                   <div style={{ fontSize:11, color:"#9CA3AF", marginTop:2 }}>{s.label}</div>
@@ -1139,7 +1139,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 <div style={{ fontSize:16, fontWeight:800, color:"#22C55E" }}>{String(statsModal.stats.engagement??"0%")}</div>
               </div>
             </div>
-            <button onClick={()=>setStatsModal(null)} style={{ width:"100%", background:"#2a2a2a", border:"none", borderRadius:14, padding:"14px", fontWeight:700, fontSize:15, color:"#9CA3AF", cursor:"pointer" }}>Fermer</button>
+            <button onClick={()=>setStatsModal(null)} style={{ width:"100%", background:"#132a1f", border:"none", borderRadius:14, padding:"14px", fontWeight:700, fontSize:15, color:"#9CA3AF", cursor:"pointer" }}>Fermer</button>
           </div>
         </>,
         document.body
@@ -1149,24 +1149,24 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
       {audienceSheet && createPortal(
         <>
           <div onClick={()=>setAudienceSheet(null)} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", backdropFilter:"blur(4px)", zIndex:9400 }} />
-          <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:9401, background:"#1c1c1e", borderRadius:"24px 24px 0 0", padding:"14px 14px 34px", animation:"slideUpSheet 0.22s cubic-bezier(0.32,0.72,0,1)" }}>
-            <div style={{ display:"flex", justifyContent:"center", paddingBottom:12 }}><div style={{ width:40, height:4, background:"#3c3c3e", borderRadius:99 }} /></div>
+          <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:9401, background:"#0b1e16", borderRadius:"24px 24px 0 0", padding:"14px 14px 34px", animation:"slideUpSheet 0.22s cubic-bezier(0.32,0.72,0,1)" }}>
+            <div style={{ display:"flex", justifyContent:"center", paddingBottom:12 }}><div style={{ width:40, height:4, background:"rgba(34,197,94,0.2)", borderRadius:99 }} /></div>
             <div style={{ fontWeight:800, fontSize:17, color:"#f0f0f0", marginBottom:4, paddingLeft:4 }}>Modifier l'audience</div>
             <div style={{ fontSize:13, color:"#9CA3AF", marginBottom:14, paddingLeft:4 }}>Qui peut voir cette publication ?</div>
-            <div style={{ background:"#2a2a2a", borderRadius:18, overflow:"hidden", marginBottom:14 }}>
+            <div style={{ background:"#132a1f", borderRadius:18, overflow:"hidden", marginBottom:14 }}>
               {([
                 {value:"public",icon:"🌐",label:"Public",desc:"Tout le monde peut voir cette publication"},
                 {value:"friends",icon:"👥",label:"Amis",desc:"Seulement vos amis peuvent la voir"},
                 {value:"private",icon:"🔒",label:"Privé",desc:"Seulement vous pouvez la voir"},
               ] as const).map((opt,i,arr)=>(
-                <button key={opt.value} onClick={()=>handleAudienceChange(audienceSheet.postId, opt.value)} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"14px 16px", borderBottom:i<arr.length-1?"1px solid #333":"none", textAlign:"left" }}>
+                <button key={opt.value} onClick={()=>handleAudienceChange(audienceSheet.postId, opt.value)} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"14px 16px", borderBottom:i<arr.length-1?"1px solid rgba(34,197,94,0.12)":"none", textAlign:"left" }}>
                   <div style={{ width:42, height:42, borderRadius:"50%", background:audienceSheet.current===opt.value?"#1e3a2e":"#2c2c2e", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, flexShrink:0 }}>{opt.icon}</div>
                   <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#f0f0f0" }}>{opt.label}</div><div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:2 }}>{opt.desc}</div></div>
                   {audienceSheet.current===opt.value && <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
                 </button>
               ))}
             </div>
-            <button onClick={()=>setAudienceSheet(null)} style={{ width:"100%", background:"#2a2a2a", border:"none", borderRadius:14, padding:"14px", fontWeight:700, fontSize:15, color:"#9CA3AF", cursor:"pointer" }}>Annuler</button>
+            <button onClick={()=>setAudienceSheet(null)} style={{ width:"100%", background:"#132a1f", border:"none", borderRadius:14, padding:"14px", fontWeight:700, fontSize:15, color:"#9CA3AF", cursor:"pointer" }}>Annuler</button>
           </div>
         </>,
         document.body
@@ -1176,9 +1176,10 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
       {toast && (
         <div style={{
           position: "fixed", bottom: 80, left: "50%", transform: "translateX(-50%)",
-          background: "#333", color: "#fff", borderRadius: 22, padding: "10px 18px",
+          background: "rgba(13,45,26,0.97)", color: "#e8f5e9", borderRadius: 22, padding: "10px 18px",
           fontSize: 13, fontWeight: 600, zIndex: 200, whiteSpace: "nowrap",
-          boxShadow: "0 4px 16px rgba(0,0,0,0.3)", maxWidth: "calc(100vw - 32px)",
+          border: "1px solid rgba(34,197,94,0.3)",
+          boxShadow: "0 4px 20px rgba(0,15,6,0.6)", maxWidth: "calc(100vw - 32px)",
           textAlign: "center", pointerEvents: "none",
         }}>
           {toast}
