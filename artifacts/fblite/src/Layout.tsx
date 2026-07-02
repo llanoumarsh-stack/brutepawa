@@ -182,12 +182,12 @@ export default function Layout({ children, onNewPost }: Props) {
       id: "home", label: "Accueil", path: "/",
       Icon: () => activeTab === "home"
         ? <svg width="24" height="24" viewBox="0 0 24 24" fill="#22C55E"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-        : <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinejoin="round"><path d="M3 12L12 3l9 9M5 10v9a1 1 0 0 0 1 1h4v-5h4v5h4a1 1 0 0 0 1-1v-9"/></svg>,
+        : <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinejoin="round"><path d="M3 12L12 3l9 9M5 10v9a1 1 0 0 0 1 1h4v-5h4v5h4a1 1 0 0 0 1-1v-9"/></svg>,
     },
     {
       id: "community", label: "Amis", path: "/community", badge: pendingRequests || undefined,
       Icon: () => {
-        const c = activeTab === "community" ? "#22C55E" : "#64748B";
+        const c = activeTab === "community" ? "#22C55E" : "#9CA3AF";
         return <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="3.5" stroke={c} strokeWidth="1.8"/><circle cx="17" cy="8" r="2.5" stroke={c} strokeWidth="1.8"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6" stroke={c} strokeWidth="1.8" strokeLinecap="round"/><path d="M19 14c2.5.5 4 2 4 4.5" stroke={c} strokeWidth="1.8" strokeLinecap="round"/></svg>;
       },
     },
@@ -195,7 +195,7 @@ export default function Layout({ children, onNewPost }: Props) {
       id: "notifications" as Tab, label: "Messages", path: "/messages",
       Icon: () => {
         const isMsg = path === "/messages" || activeTab === "notifications";
-        const c = isMsg ? "#22C55E" : "#64748B";
+        const c = isMsg ? "#22C55E" : "#9CA3AF";
         return <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke={c} strokeWidth="1.8" strokeLinejoin="round" fill={isMsg ? "#22C55E" : "none"} fillOpacity={isMsg ? .15 : 0}/></svg>;
       },
     },
@@ -203,7 +203,7 @@ export default function Layout({ children, onNewPost }: Props) {
       id: "marketplace", label: "Notifications", path: "/notifications", badge: unreadNotifs || undefined,
       Icon: () => {
         const active = activeTab === "marketplace" || path === "/notifications";
-        const c = active ? "#22C55E" : "#64748B";
+        const c = active ? "#22C55E" : "#9CA3AF";
         return <svg width="24" height="24" viewBox="0 0 24 24" fill={active ? "#22C55E" : "none"}><path d="M18 8a6 6 0 0 0-12 0c0 4-2 5-2 5h16s-2-1-2-5" stroke={c} strokeWidth="1.8" strokeLinecap="round"/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke={c} strokeWidth="1.8" strokeLinecap="round"/></svg>;
       },
     },
@@ -211,7 +211,7 @@ export default function Layout({ children, onNewPost }: Props) {
       id: "menu", label: "Portefeuille", path: "/wallet",
       Icon: () => {
         const active = activeTab === "menu" || path === "/wallet";
-        const c = active ? "#22C55E" : "#64748B";
+        const c = active ? "#22C55E" : "#9CA3AF";
         return <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="2" y="7" width="20" height="14" rx="2" stroke={c} strokeWidth="1.8"/><path d="M16 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" fill={c}/><path d="M2 10V7a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3" stroke={c} strokeWidth="1.8"/></svg>;
       },
     },
@@ -401,21 +401,21 @@ export default function Layout({ children, onNewPost }: Props) {
             <button onClick={() => navigate("/")} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", gap: 3, borderTop: active ? "3px solid #22C55E" : "3px solid transparent", height: "100%", padding: 0 }}>
               {active
                 ? <svg width="24" height="24" viewBox="0 0 24 24" fill="#22C55E"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-                : <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinejoin="round"><path d="M3 12L12 3l9 9M5 10v9a1 1 0 0 0 1 1h4v-5h4v5h4a1 1 0 0 0 1-1v-9"/></svg>
+                : <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinejoin="round"><path d="M3 12L12 3l9 9M5 10v9a1 1 0 0 0 1 1h4v-5h4v5h4a1 1 0 0 0 1-1v-9"/></svg>
               }
-              <span style={{ fontSize: 10, fontWeight: active ? 700 : 500, color: active ? "#22C55E" : "#64748B" }}>Accueil</span>
+              <span style={{ fontSize: 10, fontWeight: active ? 700 : 500, color: active ? "#22C55E" : "#9CA3AF" }}>Accueil</span>
             </button>
           );
         })()}
         {/* Amis */}
         {(() => {
           const active = path === "/people" || path === "/community";
-          const c = active ? "#22C55E" : "#64748B";
+          const c = active ? "#22C55E" : "#9CA3AF";
           return (
             <button onClick={() => navigate("/people")} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", gap: 3, borderTop: active ? "3px solid #22C55E" : "3px solid transparent", height: "100%", padding: 0, position: "relative" }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="3.5" stroke={c} strokeWidth="1.8"/><circle cx="17" cy="8" r="2.5" stroke={c} strokeWidth="1.8"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6" stroke={c} strokeWidth="1.8" strokeLinecap="round"/><path d="M19 14c2.5.5 4 2 4 4.5" stroke={c} strokeWidth="1.8" strokeLinecap="round"/></svg>
               <span style={{ fontSize: 10, fontWeight: active ? 700 : 500, color: c }}>Amis</span>
-              {pendingRequests > 0 && <span style={{ position:"absolute", top:6, right:"22%", background:"#EF4444", color:"#fff", borderRadius:10, minWidth:14, height:14, fontSize:9, fontWeight:800, display:"flex", alignItems:"center", justifyContent:"center", padding:"0 3px", border:"1.5px solid #fff" }}>{pendingRequests > 9 ? "9+" : pendingRequests}</span>}
+              {pendingRequests > 0 && <span style={{ position:"absolute", top:6, right:"22%", background:"#EF4444", color:"#fff", borderRadius:10, minWidth:14, height:14, fontSize:9, fontWeight:800, display:"flex", alignItems:"center", justifyContent:"center", padding:"0 3px", border:"1.5px solid #111111" }}>{pendingRequests > 9 ? "9+" : pendingRequests}</span>}
             </button>
           );
         })()}
@@ -428,7 +428,7 @@ export default function Layout({ children, onNewPost }: Props) {
         {/* Messages */}
         {(() => {
           const active = path === "/messages";
-          const c = active ? "#22C55E" : "#64748B";
+          const c = active ? "#22C55E" : "#9CA3AF";
           return (
             <button onClick={() => navigate("/messages")} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", gap: 3, borderTop: active ? "3px solid #22C55E" : "3px solid transparent", height: "100%", padding: 0 }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke={c} strokeWidth="1.8" strokeLinejoin="round" fill={active ? "#22C55E" : "none"} fillOpacity={active ? .15 : 0}/></svg>
@@ -439,7 +439,7 @@ export default function Layout({ children, onNewPost }: Props) {
         {/* Profil */}
         {(() => {
           const active = path === "/settings" || path.startsWith("/settings/");
-          const c = active ? "#22C55E" : "#64748B";
+          const c = active ? "#22C55E" : "#9CA3AF";
           return (
             <button onClick={() => navigate("/settings")} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", gap: 3, borderTop: active ? "3px solid #22C55E" : "3px solid transparent", height: "100%", padding: 0 }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke={c} strokeWidth="1.8"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke={c} strokeWidth="1.8" strokeLinecap="round"/></svg>
