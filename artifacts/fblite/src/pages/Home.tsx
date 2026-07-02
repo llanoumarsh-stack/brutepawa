@@ -97,6 +97,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
   // Reaction picker
   const [reactionType, setReactionType] = useState<Record<number, string>>({});
   const [showReactionPicker, setShowReactionPicker] = useState<number | null>(null);
+  const [likeAnimating, setLikeAnimating] = useState<number | null>(null);
   const reactionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const loadComments = useCallback(async (postId: number) => {
@@ -326,6 +327,8 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
     if (showReactionPicker === postId) { setShowReactionPicker(null); return; }
     if (!isLiked) {
       setReactionType(prev => ({ ...prev, [postId]: "like" }));
+      setLikeAnimating(postId);
+      setTimeout(() => setLikeAnimating(null), 400);
     } else {
       setReactionType(prev => { const n = { ...prev }; delete n[postId]; return n; });
     }
@@ -405,7 +408,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
       )}
 
       {/* ─── Create post card ─── */}
-      <div style={{ background: "#0F241D", borderRadius: 12, border: "1px solid rgba(34,197,94,0.15)", boxShadow: "0 1px 4px rgba(0,0,0,0.3)", overflow: "hidden" }}>
+      <div style={{ background: "#0F241D", borderRadius: 12, border: "1px solid rgba(34,197,94,0.15)", boxShadow: "0 4px 20px rgba(0,15,6,0.5), inset 0 1px 0 rgba(34,197,94,0.06)", overflow: "hidden" }}>
         {/* Top row: avatar + input + icons */}
         <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 14px 10px" }}>
           {user.avatarUrl
@@ -462,7 +465,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
 
       {/* ─── Stories Row ─── */}
       <input ref={storyFileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleStoryFileSelect} />
-      <div style={{ background: "#0F241D", borderRadius: 12, border: "1px solid rgba(34,197,94,0.15)", boxShadow: "0 1px 4px rgba(0,0,0,0.3)", padding: "12px 10px 10px" }}>
+      <div style={{ background: "#0F241D", borderRadius: 12, border: "1px solid rgba(34,197,94,0.15)", boxShadow: "0 4px 20px rgba(0,15,6,0.5), inset 0 1px 0 rgba(34,197,94,0.06)", padding: "12px 10px 10px" }}>
         <div style={{ display: "flex", gap: 10, overflowX: "auto", scrollbarWidth: "none" as const, alignItems: "flex-start" }}>
 
           {/* ── Créer une story — circulaire ── */}
@@ -501,7 +504,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 style={{ flex: "0 0 auto", cursor: "pointer", display: "flex", flexDirection: "column" as const, alignItems: "center" as const }}>
                 {/* Circular avatar with colored ring */}
                 <div style={{ width: 76, height: 76, borderRadius: "50%", padding: 3, background: `linear-gradient(135deg, ${ring}, ${ring}99)`, boxSizing: "border-box" as const, position: "relative" }}>
-                  <div style={{ width: "100%", height: "100%", borderRadius: "50%", border: "2.5px solid #1a1a1a", overflow: "hidden", background: avatarBg, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div style={{ width: "100%", height: "100%", borderRadius: "50%", border: "2.5px solid #081C15", overflow: "hidden", background: avatarBg, display: "flex", alignItems: "center", justifyContent: "center" }}>
                     {group.authorAvatarUrl
                       ? <img src={group.authorAvatarUrl} alt={group.authorName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       : (preview?.mediaUrl
@@ -713,8 +716,8 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 const liked = post.liked;
                 return (
                   <button
-                    className="post-btn"
-                    style={{ flex: 1, borderRight: "1px solid rgba(34,197,94,0.15)", color: liked ? rx.color : "#9CA3AF", fontWeight: liked ? 700 : 500, display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}
+                    className={`post-btn${likeAnimating === post.id ? " bp-like-pulse" : ""}`}
+                    style={{ flex: 1, borderRight: "1px solid rgba(34,197,94,0.15)", color: liked ? rx.color : "#9CA3AF", fontWeight: liked ? 700 : 500, display: "flex", alignItems: "center", justifyContent: "center", gap: 5, transition: "color 0.2s" }}
                     onClick={() => quickLike(post.id, liked)}
                     onMouseDown={() => startReactionTimer(post.id)}
                     onMouseUp={cancelReactionTimer}
@@ -1001,7 +1004,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 <div style={{ background:"#132a1f", borderRadius:18, overflow:"hidden" }}>
                   {([
                     { iconBg: savedPosts.has(openMenu.postId)?"#3a2e1e":"#1e3a2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke={savedPosts.has(openMenu.postId)?"#F59E0B":"#22C55E"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>, label: savedPosts.has(openMenu.postId)?"Retirer des enregistrements":"Enregistrer la publication", desc: savedPosts.has(openMenu.postId)?"Retirer de vos éléments enregistrés.":"Ajoutez ceci à vos éléments enregistrés.", action:()=>handleSave(openMenu.postId) },
-                    { iconBg: notifPosts.has(openMenu.postId)?"#2c2c2e":"#1e3a2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke={notifPosts.has(openMenu.postId)?"#9CA3AF":"#22C55E"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>, label: notifPosts.has(openMenu.postId)?"Désactiver les notifications":"Activer les notifications", desc:"Recevez des notifications pour cette publication.", action:()=>handleNotif(openMenu.postId) },
+                    { iconBg: notifPosts.has(openMenu.postId)?"rgba(34,197,94,0.12)":"#1e3a2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke={notifPosts.has(openMenu.postId)?"#9CA3AF":"#22C55E"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>, label: notifPosts.has(openMenu.postId)?"Désactiver les notifications":"Activer les notifications", desc:"Recevez des notifications pour cette publication.", action:()=>handleNotif(openMenu.postId) },
                   ] as const).map((item,i,arr)=>(
                     <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom:i<arr.length-1?"1px solid rgba(34,197,94,0.12)":"none", textAlign:"left" }}>
                       <div style={{ width:42, height:42, borderRadius:"50%", background:item.iconBg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{item.svg}</div>
@@ -1160,7 +1163,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 {value:"private",icon:"🔒",label:"Privé",desc:"Seulement vous pouvez la voir"},
               ] as const).map((opt,i,arr)=>(
                 <button key={opt.value} onClick={()=>handleAudienceChange(audienceSheet.postId, opt.value)} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"14px 16px", borderBottom:i<arr.length-1?"1px solid rgba(34,197,94,0.12)":"none", textAlign:"left" }}>
-                  <div style={{ width:42, height:42, borderRadius:"50%", background:audienceSheet.current===opt.value?"#1e3a2e":"#2c2c2e", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, flexShrink:0 }}>{opt.icon}</div>
+                  <div style={{ width:42, height:42, borderRadius:"50%", background:audienceSheet.current===opt.value?"#1e3a2e":"rgba(34,197,94,0.12)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, flexShrink:0 }}>{opt.icon}</div>
                   <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#f0f0f0" }}>{opt.label}</div><div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:2 }}>{opt.desc}</div></div>
                   {audienceSheet.current===opt.value && <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
                 </button>
