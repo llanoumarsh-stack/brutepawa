@@ -225,29 +225,19 @@ export default function Layout({ children, onNewPost }: Props) {
           FACEBOOK LITE STICKY HEADER — 3 rows
           Hidden on fullscreen-managed pages
       ══════════════════════════════════════════════════ */}
-      <div ref={headerRef} style={{ position: "sticky", top: 0, zIndex: 100, background: "#fff", boxShadow: "0 1px 0 #E5E7EB", display: isFullscreen ? "none" : undefined }}>
-
-        {/* Row 1 — Mode payant */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "7px 14px", borderBottom: "1px solid #F1F5F9" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontWeight: 600, fontSize: 13.5, color: "#111827" }}>Mode payant</span>
-            <div style={{ width: 17, height: 17, borderRadius: "50%", background: "#E5E7EB", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: "#fff", lineHeight: 1 }}>?</div>
-          </div>
-          <button style={{ background: "#E5E7EB", border: "none", borderRadius: 6, padding: "6px 13px", fontWeight: 600, fontSize: 13, cursor: "pointer", color: "#111827" }}>
-            Changer de mode
-          </button>
-        </div>
+      <div ref={headerRef} style={{ position: "sticky", top: 0, zIndex: 100, background: "#111111", boxShadow: "0 1px 0 #2c2c2e", display: isFullscreen ? "none" : undefined }}>
 
         {/* Row 2 — Brand logo + icon buttons */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 14px" }}>
-          <button onClick={() => navigate("/")} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1 }}>
+          <button onClick={() => navigate("/")} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1, display: "flex", alignItems: "center", gap: 8 }}>
             <img src="/logo.png" alt="Brute Pawa" style={{ height: 36, width: 36, borderRadius: 10, objectFit: "cover" }} />
+            <span style={{ fontWeight: 900, fontSize: 18, color: "#22C55E", letterSpacing: -0.5 }}>BrutePawa</span>
           </button>
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             {/* Search */}
             <button onClick={() => setShowSearchOverlay(true)} title="Rechercher"
-              style={{ width: 40, height: 40, borderRadius: "50%", background: "#F1F5F9", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111827" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+              style={{ width: 40, height: 40, borderRadius: "50%", background: "#2a2a2a", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f0f0f0" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
             </button>
             {/* Create — green circle */}
             <button onClick={() => setShowCreate(true)} title="Créer"
@@ -255,29 +245,29 @@ export default function Layout({ children, onNewPost }: Props) {
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
             </button>
             {/* Notifications bell */}
-            <button onClick={() => navigate("/notifications")} title="Notifications" style={{ position: "relative", width: 40, height: 40, borderRadius: "50%", background: "#F1F5F9", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111827" strokeWidth="2" strokeLinecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 4-2 5-2 5h16s-2-1-2-5"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-              {unreadNotifs > 0 && <span style={{ position:"absolute", top:5, right:5, width:8, height:8, background:"#EF4444", borderRadius:"50%", border:"1.5px solid #fff" }} />}
+            <button onClick={() => navigate("/notifications")} title="Notifications" style={{ position: "relative", width: 40, height: 40, borderRadius: "50%", background: "#2a2a2a", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f0f0f0" strokeWidth="2" strokeLinecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 4-2 5-2 5h16s-2-1-2-5"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              {unreadNotifs > 0 && <span style={{ position:"absolute", top:5, right:5, width:8, height:8, background:"#EF4444", borderRadius:"50%", border:"1.5px solid #111111" }} />}
             </button>
             {/* Menu */}
             <button onClick={() => navigate("/menu")} title="Menu"
-              style={{ width: 40, height: 40, borderRadius: "50%", background: "#F1F5F9", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111827" strokeWidth="2.2" strokeLinecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+              style={{ width: 40, height: 40, borderRadius: "50%", background: "#2a2a2a", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f0f0f0" strokeWidth="2.2" strokeLinecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
             </button>
           </div>
         </div>
 
         {/* Row 3 — 5 tab icons + labels */}
-        <div style={{ display: "flex", borderTop: "1px solid #E5E7EB" }}>
+        <div style={{ display: "flex", borderTop: "1px solid #2c2c2e" }}>
           {FB_TABS.map(({ id, label, path: tabPath, badge, Icon }) => {
             const isActive = activeTab === id || (id === "marketplace" && path === "/notifications") || (id === "menu" && path === "/wallet");
             return (
               <button key={id} onClick={() => navigate(tabPath)}
                 style={{ flex: 1, background: "none", border: "none", padding: "8px 0 6px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, position: "relative", borderBottom: isActive ? "3px solid #22C55E" : "3px solid transparent", cursor: "pointer" }}>
                 <Icon />
-                <span style={{ fontSize: 10, fontWeight: isActive ? 700 : 500, color: isActive ? "#22C55E" : "#64748B", lineHeight: 1 }}>{label}</span>
+                <span style={{ fontSize: 10, fontWeight: isActive ? 700 : 500, color: isActive ? "#22C55E" : "#9CA3AF", lineHeight: 1 }}>{label}</span>
                 {badge && badge > 0 && (
-                  <span style={{ position: "absolute", top: 4, right: "18%", background: "#EF4444", color: "#fff", borderRadius: 10, minWidth: 16, height: 16, fontSize: 10, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 3px", border: "1.5px solid #fff" }}>
+                  <span style={{ position: "absolute", top: 4, right: "18%", background: "#EF4444", color: "#fff", borderRadius: 10, minWidth: 16, height: 16, fontSize: 10, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 3px", border: "1.5px solid #111111" }}>
                     {badge > 9 ? "9+" : badge}
                   </span>
                 )}

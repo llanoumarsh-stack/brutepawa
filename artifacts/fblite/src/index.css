@@ -26,19 +26,19 @@ input, textarea, [contenteditable="true"], [contenteditable] {
 :root {
   --fb-blue: #22C55E;
   --fb-blue-dark: #16A34A;
-  --fb-blue-light: #E8FAF0;
+  --fb-blue-light: rgba(34,197,94,0.12);
   --fb-green: #22C55E;
   --fb-green-dark: #16A34A;
-  --fb-text: #111827;
-  --fb-text-secondary: #64748B;
-  --fb-border: #E5E7EB;
-  --fb-bg: #F8FAFC;
-  --fb-white: #FFFFFF;
+  --fb-text: #f0f0f0;
+  --fb-text-secondary: #9CA3AF;
+  --fb-border: #2c2c2e;
+  --fb-bg: #111111;
+  --fb-white: #1a1a1a;
   --bp-primary: #22C55E;
   --bp-primary-dark: #16A34A;
   --bp-danger: #EF4444;
   --bp-premium: #F4C542;
-  --fb-divider: #DADDE1;
+  --fb-divider: #2c2c2e;
   --sidebar-width: 260px;
   --navbar-height: 56px;
   --transition-fast: 0.15s ease;
@@ -91,7 +91,7 @@ img, video, iframe, svg { max-width: 100%; }
   100% { background-position: 600px 0; }
 }
 .bp-skeleton {
-  background: linear-gradient(90deg, #F1F5F9 25%, #e8eaed 50%, #F1F5F9 75%);
+  background: linear-gradient(90deg, #2a2a2a 25%, #333333 50%, #2a2a2a 75%);
   background-size: 1200px 100%;
   animation: bpShimmer 1.5s ease infinite;
   border-radius: 8px;
@@ -340,7 +340,7 @@ select:focus { outline: none !important; box-shadow: none !important; border-col
 .mobile-search-overlay {
   position: fixed;
   inset: 0;
-  background: var(--fb-white);
+  background: #111111;
   z-index: 3000;
   display: flex;
   flex-direction: column;
@@ -466,9 +466,9 @@ select:focus { outline: none !important; box-shadow: none !important; border-col
   left: 0;
   right: 0;
   min-width: min(320px, 100vw);
-  background: #fff;
+  background: #1a1a1a;
   border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.10);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.4);
   overflow: hidden;
   z-index: 2000;
   animation: ddFadeIn 0.15s ease;
@@ -493,7 +493,7 @@ select:focus { outline: none !important; box-shadow: none !important; border-col
   text-align: left;
   transition: background 0.12s;
 }
-.search-dropdown-see-all:hover { background: #f0f4ff; }
+.search-dropdown-see-all:hover { background: #2a2a2a; }
 .search-dropdown-loading {
   display: flex;
   align-items: center;
@@ -767,7 +767,7 @@ select:focus { outline: none !important; box-shadow: none !important; border-col
   cursor: pointer;
   transition: background var(--transition-fast), box-shadow var(--transition-fast);
 }
-.post-input-btn:hover { background: #e4e6e9; box-shadow: inset 0 1px 2px rgba(0,0,0,0.06); }
+.post-input-btn:hover { background: #333333; box-shadow: none; }
 .create-post-actions {
   display: flex;
   border-top: 1px solid var(--fb-divider);
@@ -995,7 +995,7 @@ select:focus { outline: none !important; box-shadow: none !important; border-col
   font-family: inherit;
   transition: background var(--transition-fast);
 }
-.comment-input:focus { background: #e4e6e9; }
+.comment-input:focus { background: #333333; }
 
 /* ===== NOTIFICATION BADGE ===== */
 .badge {
