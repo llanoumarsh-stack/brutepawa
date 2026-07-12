@@ -10,7 +10,6 @@ import {
   apiUploadVoice,
   type PostComment,
 } from "../lib/api";
-import VoiceRecorder from "../components/VoiceRecorder";
 import VoicePlayer from "../components/VoicePlayer";
 
 /* ─── Reactions ─────────────────────────────────────────────── */
@@ -237,15 +236,121 @@ export default function PostDetailPage({ postId }: Props) {
   const [replyingTo, setReplyingTo]   = useState<number | null>(null);
   const [replyName, setReplyName]     = useState("");
   const [voiceMode, setVoiceMode]     = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [recSeconds, setRecSeconds]   = useState(0);
+  const [recLocked, setRecLocked]     = useState(false);
+  const [recPaused, setRecPaused]     = useState(false);
+  const [recLiveBars, setRecLiveBars] = useState<number[]>(Array(28).fill(5));
+  const [recDragX, setRecDragX]       = useState(0);
+  const [recDragY, setRecDragY]       = useState(0);
 
-  const handleVoiceSend = async (blob: Blob, duration: number) => {
-    const { url } = await apiUploadVoice(blob, duration);
-    const parentId = replyingTo ?? undefined;
-    if (parentId) cancelReply();
-    const c = await apiPostVoiceComment(postId, url, duration, parentId);
-    setComments(prev => [...prev, c]);
+  const inputRef            = useRef<HTMLInputElement>(null);
+  const mediaRecorderRef    = useRef<MediaRecorder | null>(null);
+  const audioChunksRef      = useRef<Blob[]>([]);
+  const recTimerRef         = useRef<ReturnType<typeof setInterval> | null>(null);
+  const recSecondsRef       = useRef(0);
+  const recSecsAtStopRef    = useRef(0);
+  const recAudioCtxRef      = useRef<AudioContext | null>(null);
+  const recAnalyserRef      = useRef<AnalyserNode | null>(null);
+  const recAnimFrameRef     = useRef<number>(0);
+  const recCancelledRef     = useRef(false);
+  const recDragStartRef     = useRef<{ x: number; y: number } | null>(null);
+  const recIsDraggingRef    = useRef(false);
+
+  const startVoice = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mr = new MediaRecorder(stream);
+      audioChunksRef.current = [];
+      mr.ondataavailable = (e) => { if (e.data.size > 0) audioChunksRef.current.push(e.data); };
+      mr.onstop = async () => {
+        stream.getTracks().forEach(t => t.stop());
+        if (recCancelledRef.current) { recCancelledRef.current = false; return; }
+        const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        const secs = recSecsAtStopRef.current || recSecondsRef.current || 1;
+        if (blob.size < 1000) return;
+        try {
+          const { url } = await apiUploadVoice(blob, secs);
+          const parentId = replyingTo ?? undefined;
+          if (parentId) cancelReply();
+          const c = await apiPostVoiceComment(postId, url, secs, parentId);
+          setComments(prev => [...prev, c]);
+        } catch { /* ignore upload error */ }
+        setVoiceMode(false);
+      };
+      mr.start(100);
+      mediaRecorderRef.current = mr;
+      try {
+        const ctx = new AudioContext();
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 64;
+        ctx.createMediaStreamSource(stream).connect(analyser);
+        recAudioCtxRef.current = ctx;
+        recAnalyserRef.current = analyser;
+        const data = new Uint8Array(analyser.frequencyBinCount);
+        const drawBars = () => {
+          analyser.getByteFrequencyData(data);
+          const step = Math.max(1, Math.floor(data.length / 28));
+          const bars = Array.from({ length: 28 }, (_, i) =>
+            Math.max(4, Math.round(((data[i * step] ?? 0) / 255) * 96))
+          );
+          setRecLiveBars(bars);
+          recAnimFrameRef.current = requestAnimationFrame(drawBars);
+        };
+        recAnimFrameRef.current = requestAnimationFrame(drawBars);
+      } catch { /* AudioContext unavailable */ }
+      document.body.style.userSelect = "none";
+      (document.body.style as any).webkitUserSelect = "none";
+      setIsRecording(true);
+      recSecondsRef.current = 0;
+      setRecSeconds(0);
+      recTimerRef.current = setInterval(() => {
+        recSecondsRef.current += 1;
+        setRecSeconds(recSecondsRef.current);
+      }, 1000);
+    } catch {
+      alert("Accès au microphone refusé.");
+    }
+  };
+
+  const stopVoice = () => {
+    recSecsAtStopRef.current = recSecondsRef.current;
+    if (recTimerRef.current) { clearInterval(recTimerRef.current); recTimerRef.current = null; }
+    if (recAnimFrameRef.current) { cancelAnimationFrame(recAnimFrameRef.current); recAnimFrameRef.current = 0; }
+    recAudioCtxRef.current?.close();
+    recAudioCtxRef.current = null;
+    recAnalyserRef.current = null;
+    mediaRecorderRef.current?.stop();
+    mediaRecorderRef.current = null;
+    document.body.style.userSelect = "";
+    (document.body.style as any).webkitUserSelect = "";
+    setIsRecording(false);
+    setRecLocked(false);
+    setRecDragX(0); setRecDragY(0);
+    recSecondsRef.current = 0; setRecSeconds(0);
+    setRecLiveBars(Array(28).fill(5));
+  };
+
+  const cancelVoice = () => {
+    recCancelledRef.current = true;
+    setRecPaused(false);
+    stopVoice();
     setVoiceMode(false);
+  };
+
+  const pauseVoice = () => {
+    try { mediaRecorderRef.current?.pause(); } catch { /* unsupported */ }
+    if (recTimerRef.current) { clearInterval(recTimerRef.current); recTimerRef.current = null; }
+    setRecPaused(true);
+  };
+
+  const resumeVoice = () => {
+    try { mediaRecorderRef.current?.resume(); } catch { /* unsupported */ }
+    recTimerRef.current = setInterval(() => {
+      recSecondsRef.current += 1;
+      setRecSeconds(recSecondsRef.current);
+    }, 1000);
+    setRecPaused(false);
   };
 
   useEffect(() => {
@@ -624,58 +729,255 @@ export default function PostDetailPage({ postId }: Props) {
           </div>
         )}
 
-        <div style={{ display:"flex", alignItems: voiceMode ? "flex-start" : "center", gap:10, padding:"10px 14px 16px" }}>
+        {/* ── LOCKED RECORDING — full capsule ── */}
+        {isRecording && recLocked && (
+          <div style={{ margin:"6px 14px 2px", display:"flex", alignItems:"center", gap:8,
+            background:"rgba(255,255,255,0.97)",
+            backdropFilter:"blur(24px)", WebkitBackdropFilter:"blur(24px)",
+            borderRadius:28, padding:"9px 10px 9px 12px",
+            boxShadow:"0 8px 32px rgba(0,0,0,0.13), 0 2px 8px rgba(0,0,0,0.07)",
+            border:"1px solid rgba(226,232,240,0.8)" }}>
+
+            {/* Trash */}
+            <button onClick={cancelVoice} style={{ width:40, height:40, borderRadius:"50%", border:"none",
+              background:"#FEE2E2", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center",
+              flexShrink:0, boxShadow:"0 2px 8px rgba(0,0,0,0.08)" }}>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+              </svg>
+            </button>
+
+            {/* Timer + waveform */}
+            <div style={{ flex:1, display:"flex", alignItems:"center", gap:8, overflow:"hidden" }}>
+              <div style={{ width:9, height:9, borderRadius:"50%", background:"#EF4444", flexShrink:0,
+                animation: recPaused ? "none" : "fbl-rec-pulse 1s ease-in-out infinite",
+                opacity: recPaused ? 0.4 : 1 }} />
+              <span style={{ fontSize:15, fontWeight:800, color:"#EF4444", fontVariantNumeric:"tabular-nums", flexShrink:0, minWidth:44 }}>
+                {`${Math.floor(recSeconds/60).toString().padStart(2,"0")}:${(recSeconds%60).toString().padStart(2,"0")}`}
+              </span>
+              <div style={{ flex:1, display:"flex", alignItems:"center", gap:1.5, height:34 }}>
+                {recLiveBars.map((h, i) => (
+                  <div key={i} style={{ flex:1, borderRadius:2,
+                    background: recPaused ? "#E5E7EB" : "#22C55E",
+                    height: recPaused ? "30%" : `${h}%`,
+                    transition:"height 0.07s ease",
+                    opacity: recPaused ? 0.5 : 0.6 + Math.min(0.4, (h / 96) * 0.4) }} />
+                ))}
+              </div>
+            </div>
+
+            {/* Pause / Resume */}
+            <button onClick={recPaused ? resumeVoice : pauseVoice}
+              style={{ width:40, height:40, borderRadius:"50%", border:"none", flexShrink:0,
+                background: recPaused ? "#EDE9FE" : "#F8FAFC", cursor:"pointer",
+                display:"flex", alignItems:"center", justifyContent:"center",
+                boxShadow:"0 2px 8px rgba(0,0,0,0.08)" }}>
+              {recPaused ? (
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="#22C55E"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              ) : (
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="#64748B"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+              )}
+            </button>
+
+            {/* Send */}
+            <button onClick={stopVoice}
+              style={{ width:48, height:48, borderRadius:"50%", border:"none", flexShrink:0,
+                background:"linear-gradient(135deg,#22C55E 0%,#22C55E 100%)",
+                display:"flex", alignItems:"center", justifyContent:"center",
+                cursor:"pointer", boxShadow:"0 4px 20px rgba(22,194,74,0.5)" }}>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2" fill="#fff" stroke="none"/>
+              </svg>
+            </button>
+          </div>
+        )}
+
+        <div style={{ display:"flex", alignItems:"center", gap:10, padding:"10px 14px 16px" }}>
           {/* Current user avatar */}
           <Avatar url={user.avatarUrl} name={user.name} size={40} borderWidth={2} online />
 
-          {voiceMode ? (
-            <VoiceRecorder onSend={handleVoiceSend} onCancel={() => setVoiceMode(false)} />
-          ) : (
-            <div
-              className="bp-input-wrap"
-              style={{ flex:1, background:"#fff", borderRadius:24, display:"flex", alignItems:"center", padding:"0 8px 0 16px", gap:2, border:"1.5px solid #E5E7EB", transition:"border-color .15s,box-shadow .15s" }}
-            >
-              <input
-                ref={inputRef}
-                style={{ flex:1, background:"transparent", border:"none", padding:"11px 0", fontSize:14, outline:"none", color:"#1E293B", minWidth:0 }}
-                placeholder={replyingTo != null ? `Répondre à ${replyName.split(" ")[0]}…` : "Écrire un commentaire..."}
-                value={newComment}
-                onChange={e => setNewComment(e.target.value)}
-                onKeyDown={e => { if (e.key === "Enter") submit(); if (e.key === "Escape" && replyingTo) cancelReply(); }}
-                disabled={submitting}
-              />
-              {!newComment.trim() ? (
-                <div style={{ display:"flex", gap:0, flexShrink:0, alignItems:"center" }}>
-                  {/* Emoji */}
-                  <button style={{ background:"none", border:"none", padding:"7px 7px", cursor:"pointer", display:"flex", alignItems:"center" }}>
-                    <svg viewBox="0 0 24 24" width="21" height="21" fill="none"><circle cx="12" cy="12" r="10" stroke="#E5E7EB" strokeWidth="1.8"/><path d="M8.5 11a1 1 0 1 1 0-2 1 1 0 0 1 0 2zM15.5 11a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" fill="#E5E7EB"/><path d="M8 15c.667 1.333 2 2 4 2s3.333-.667 4-2" stroke="#E5E7EB" strokeWidth="1.7" strokeLinecap="round"/></svg>
-                  </button>
-                  {/* GIF */}
-                  <button style={{ background:"none", border:"none", padding:"7px 5px", cursor:"pointer", display:"flex", alignItems:"center" }}>
-                    <div style={{ background:"#F1F5F9", borderRadius:5, padding:"2px 5px", fontSize:10, fontWeight:900, color:"#9CA3AF", letterSpacing:0.5 }}>GIF</div>
-                  </button>
-                  {/* Mic */}
-                  <button onClick={() => setVoiceMode(true)} style={{ background:"none", border:"none", padding:"7px 7px", cursor:"pointer", display:"flex", alignItems:"center" }}>
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#E5E7EB" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
-                  </button>
-                  {/* Photo */}
-                  <button style={{ background:"none", border:"none", padding:"7px 7px", cursor:"pointer", display:"flex", alignItems:"center" }}>
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#E5E7EB" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-                  </button>
+          {/* ── FLOATING GLASS PILL ── */}
+          <div style={{ flex:1, alignItems:"center",
+            background:"rgba(255,255,255,0.97)", backdropFilter:"blur(20px)", WebkitBackdropFilter:"blur(20px)",
+            borderRadius:32, boxShadow:"0 4px 28px rgba(0,0,0,0.13), 0 1px 6px rgba(0,0,0,0.07)",
+            padding:"6px 10px 6px 14px", minHeight:52,
+            border:"1px solid rgba(255,255,255,0.85)", overflow:"visible", position:"relative",
+            display: recLocked ? "none" : "flex" }}>
+
+            {/* Unlocked recording: waveform inside pill */}
+            {isRecording && !recLocked && (
+              <div style={{ flex:1, display:"flex", alignItems:"center", gap:8, overflow:"hidden", padding:"0 4px" }}>
+                <div style={{ width:9, height:9, borderRadius:"50%", background:"#EF4444", flexShrink:0,
+                  animation:"fbl-rec-pulse 1s ease-in-out infinite" }} />
+                <span style={{ fontSize:15, fontWeight:800, color:"#EF4444", fontVariantNumeric:"tabular-nums", flexShrink:0, minWidth:44 }}>
+                  {`${Math.floor(recSeconds/60).toString().padStart(2,"0")}:${(recSeconds%60).toString().padStart(2,"0")}`}
+                </span>
+                <div style={{ flex:1, display:"flex", alignItems:"center", gap:2, height:30, overflow:"hidden" }}>
+                  {recLiveBars.map((h, i) => (
+                    <div key={i} style={{ flex:1, borderRadius:2,
+                      background:"#22C55E",
+                      height:`${h}%`,
+                      transition:"height 0.07s ease",
+                      opacity: 0.6 + Math.min(0.4, (h / 96) * 0.4) }} />
+                  ))}
                 </div>
-              ) : (
-                <button
-                  onClick={submit}
-                  disabled={submitting}
-                  style={{ width:36, height:36, borderRadius:"50%", background:"linear-gradient(135deg,#22C55E,#16A34A)", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", opacity: submitting ? 0.6 : 1, boxShadow:"0 3px 12px rgba(34,197,94,0.45)", flexShrink:0, transition:"transform .1s,opacity .1s" }}
-                  onMouseDown={e => (e.currentTarget.style.transform = "scale(.9)")}
-                  onMouseUp={e => (e.currentTarget.style.transform = "scale(1)")}
-                >
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="#fff"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                {/* Cancel (X) */}
+                <button onClick={cancelVoice}
+                  style={{ background:"none", border:"none", cursor:"pointer", padding:"6px 8px", flexShrink:0, display:"flex", alignItems:"center" }}>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9CA3AF" strokeWidth="2.2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
-              )}
-            </div>
-          )}
+              </div>
+            )}
+
+            {/* Normal: text input */}
+            {!isRecording && (
+              <>
+                <input
+                  ref={inputRef}
+                  style={{ flex:1, background:"transparent", border:"none", padding:"11px 0", fontSize:14, outline:"none", color:"#1E293B", minWidth:0 }}
+                  placeholder={replyingTo != null ? `Répondre à ${replyName.split(" ")[0]}…` : "Écrire un commentaire..."}
+                  value={newComment}
+                  onChange={e => setNewComment(e.target.value)}
+                  onKeyDown={e => { if (e.key === "Enter") submit(); if (e.key === "Escape" && replyingTo) cancelReply(); }}
+                  disabled={submitting}
+                />
+                {!newComment.trim() && (
+                  <div style={{ display:"flex", gap:0, flexShrink:0, alignItems:"center" }}>
+                    <button style={{ background:"none", border:"none", padding:"7px 7px", cursor:"pointer", display:"flex", alignItems:"center" }}>
+                      <svg viewBox="0 0 24 24" width="21" height="21" fill="none"><circle cx="12" cy="12" r="10" stroke="#9CA3AF" strokeWidth="1.8"/><path d="M8.5 11a1 1 0 1 1 0-2 1 1 0 0 1 0 2zM15.5 11a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" fill="#9CA3AF"/><path d="M8 15c.667 1.333 2 2 4 2s3.333-.667 4-2" stroke="#9CA3AF" strokeWidth="1.7" strokeLinecap="round"/></svg>
+                    </button>
+                    <button style={{ background:"none", border:"none", padding:"7px 5px", cursor:"pointer", display:"flex", alignItems:"center" }}>
+                      <div style={{ background:"#F1F5F9", borderRadius:5, padding:"2px 5px", fontSize:10, fontWeight:900, color:"#9CA3AF", letterSpacing:0.5 }}>GIF</div>
+                    </button>
+                    <button style={{ background:"none", border:"none", padding:"7px 7px", cursor:"pointer", display:"flex", alignItems:"center" }}>
+                      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#9CA3AF" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                    </button>
+                  </div>
+                )}
+                {newComment.trim() && (
+                  <button
+                    onClick={submit}
+                    disabled={submitting}
+                    style={{ width:36, height:36, borderRadius:"50%", background:"linear-gradient(135deg,#22C55E,#16A34A)", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", opacity: submitting ? 0.6 : 1, boxShadow:"0 3px 12px rgba(34,197,94,0.45)", flexShrink:0, transition:"transform .1s,opacity .1s" }}
+                    onMouseDown={e => (e.currentTarget.style.transform = "scale(.9)")}
+                    onMouseUp={e => (e.currentTarget.style.transform = "scale(1)")}
+                  >
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="#fff"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* ── MIC BUTTON (with lock + drag gesture) ── */}
+          {(() => {
+            const LOCK_DIST = 110;
+            const LOCK_RADIUS = 24;
+            const isAtLock   = recDragY < -(LOCK_DIST - LOCK_RADIUS);
+            const isNearLock = recDragY < -(LOCK_DIST - LOCK_RADIUS - 8);
+            const micDy      = Math.max(-LOCK_DIST, recDragY);
+            const visualDy   = micDy < -70 ? micDy + (micDy + 70) * 0.18 : micDy;
+            const visualDx   = Math.max(-100, recDragX) * 0.35;
+            const SIZE       = isRecording ? 56 : 52;
+            return (
+              <div style={{ position:"relative", flexShrink:0, width:SIZE, height:SIZE, overflow:"visible", display: recLocked ? "none" : "block" }}>
+
+                {/* Lock icon above mic */}
+                {isRecording && (
+                  <div style={{
+                    position:"absolute",
+                    top: -(LOCK_DIST - SIZE/2 + 22),
+                    left:"50%", transform:"translateX(-50%)",
+                    width:44, height:44, borderRadius:"50%",
+                    background: isAtLock ? "#22C55E" : isNearLock ? "#EDE9FE" : "#fff",
+                    boxShadow: isAtLock
+                      ? "0 0 0 8px rgba(34,197,94,0.18), 0 6px 24px rgba(34,197,94,0.45)"
+                      : "0 6px 24px rgba(0,0,0,0.14)",
+                    display:"flex", alignItems:"center", justifyContent:"center",
+                    transition:"background 0.15s, box-shadow 0.15s",
+                    pointerEvents:"none", zIndex:10,
+                    animation:"fbl-fade-in 0.18s ease",
+                  }}>
+                    {isAtLock ? (
+                      <svg viewBox="0 0 24 24" width="20" height="20">
+                        <rect x="5" y="11" width="14" height="10" rx="2" fill="#fff"/>
+                        <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="#fff" strokeWidth="2.2" fill="none" strokeLinecap="round"/>
+                      </svg>
+                    ) : (
+                      <svg viewBox="0 0 24 24" width="20" height="20">
+                        <rect x="5" y="11" width="14" height="10" rx="2" fill={isNearLock ? "#22C55E" : "#9CA3AF"}/>
+                        <path d="M8 11V7a4 4 0 0 1 7-1.7" stroke={isNearLock ? "#22C55E" : "#9CA3AF"} strokeWidth="2.2" fill="none" strokeLinecap="round"/>
+                      </svg>
+                    )}
+                  </div>
+                )}
+
+                {/* Mic button */}
+                <button
+                  onPointerDown={e => {
+                    if (isRecording) return;
+                    e.preventDefault();
+                    document.body.style.userSelect = "none";
+                    (document.body.style as any).webkitUserSelect = "none";
+                    recDragStartRef.current = { x: e.clientX, y: e.clientY };
+                    recIsDraggingRef.current = true;
+                    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+                    setVoiceMode(true);
+                    startVoice();
+                  }}
+                  onPointerMove={e => {
+                    if (!recDragStartRef.current) return;
+                    setRecDragX(Math.min(0, e.clientX - recDragStartRef.current.x));
+                    setRecDragY(Math.min(0, e.clientY - recDragStartRef.current.y));
+                  }}
+                  onPointerUp={() => {
+                    const dx = recDragX; const dy = recDragY;
+                    setRecDragX(0); setRecDragY(0);
+                    recDragStartRef.current = null;
+                    recIsDraggingRef.current = false;
+                    if (!isRecording) return;
+                    if (dy < -(LOCK_DIST - LOCK_RADIUS)) { setRecLocked(true); }
+                    else if (dx < -100) { cancelVoice(); }
+                    else { stopVoice(); }
+                  }}
+                  onPointerCancel={() => {
+                    setRecDragX(0); setRecDragY(0);
+                    recDragStartRef.current = null;
+                    recIsDraggingRef.current = false;
+                    if (isRecording) stopVoice();
+                  }}
+                  onContextMenu={e => e.preventDefault()}
+                  style={{
+                    position:"absolute", top:0, left:0,
+                    background:"linear-gradient(135deg,#22C55E 0%,#16a34a 100%)",
+                    border:"none", borderRadius:"50%",
+                    width:SIZE, height:SIZE,
+                    display:"flex", alignItems:"center", justifyContent:"center",
+                    cursor:"pointer", touchAction:"none",
+                    userSelect:"none", WebkitUserSelect:"none",
+                    boxShadow: isRecording
+                      ? "0 0 0 10px rgba(22,194,74,0.18), 0 4px 20px rgba(22,194,74,0.55)"
+                      : "0 3px 12px rgba(22,194,74,0.45)",
+                    transform: isRecording
+                      ? `translateY(${visualDy}px) translateX(${visualDx}px)`
+                      : "none",
+                    transition: recIsDraggingRef.current
+                      ? "box-shadow 0.1s, width 0.2s, height 0.2s"
+                      : "transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s, width 0.2s, height 0.2s",
+                    zIndex:20,
+                  }}>
+                  <svg viewBox="0 0 24 24" width={isRecording ? 24 : 22} height={isRecording ? 24 : 22}
+                    fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                    <line x1="12" y1="19" x2="12" y2="23"/>
+                    <line x1="8" y1="23" x2="16" y2="23"/>
+                  </svg>
+                </button>
+              </div>
+            );
+          })()}
         </div>
       </div>
     </div>
