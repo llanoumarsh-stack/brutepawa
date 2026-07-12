@@ -1,0 +1,453 @@
+🚨 PROJET CRITIQUE - BRUTEPAWA
+
+MISSION :
+
+Reconstruire intégralement le système présenté dans les maquettes jointes avec une fidélité visuelle comprise entre 98% et 100%.
+
+Toute simplification, suppression de fonctionnalité, modification d'espacement, changement de couleur, remplacement d'animation ou approximation graphique est considérée comme un ÉCHEC.
+
+Ne pas proposer une alternative.
+
+Ne pas interpréter.
+
+Ne pas réinventer.
+
+Reproduire.
+
+====================================================
+ANALYSE OBLIGATOIRE DES MAQUETTES
+====================================================
+
+Analyser pixel par pixel :
+
+- couleurs
+- tailles
+- espacements
+- bordures
+- ombres
+- animations
+- hiérarchie
+- interactions
+- navigation
+- comportement dynamique
+
+Toutes les pages visibles dans les maquettes doivent être reproduites.
+
+====================================================
+STACK TECHNIQUE
+====================================================
+
+Frontend :
+React
+TypeScript
+TailwindCSS
+Framer Motion
+
+Mobile :
+React Native Expo
+
+Backend :
+Supabase
+
+Database :
+PostgreSQL
+
+Storage :
+Cloudflare R2
+
+Realtime :
+Supabase Realtime
+
+Notifications :
+FCM
+
+Streaming :
+WebRTC
+
+Maps :
+Google Maps + OpenStreetMap fallback
+
+====================================================
+DESIGN SYSTEM
+====================================================
+
+Couleur principale :
+
+#22C55E
+
+Couleur secondaire :
+
+#16A34A
+
+Fond :
+
+#F8FAFC
+
+Cartes :
+
+#FFFFFF
+
+Texte :
+
+#0F172A
+
+Texte secondaire :
+
+#64748B
+
+Coins :
+
+24px
+20px
+16px
+12px
+
+Police :
+
+Inter
+
+Ombres :
+
+0 10px 40px rgba(0,0,0,.08)
+
+Glass effect :
+
+backdrop-filter: blur(20px)
+
+====================================================
+POST DETAIL SCREEN
+====================================================
+
+Reproduire exactement :
+
+- avatar
+- badge dynamique
+- nom utilisateur
+- date
+- confidentialité
+- menu trois points
+- texte publication
+- réactions
+- compteur
+- commentaires
+- partage
+- sauvegarde
+
+====================================================
+BADGES DYNAMIQUES
+====================================================
+
+INTERDICTION :
+
+Ne jamais afficher un badge générique.
+
+Chaque badge dépend de users.badge_type.
+
+Types :
+
+verified
+
+premium
+
+creator
+
+vip
+
+business
+
+moderator
+
+admin
+
+partner
+
+Chaque badge :
+
+- icône unique
+- couleur unique
+- animation unique
+- tooltip unique
+
+====================================================
+CLIC SUR PHOTO DE PROFIL
+====================================================
+
+Quand utilisateur clique sur avatar :
+
+Afficher Bottom Sheet Premium.
+
+Animation spring.
+
+Options :
+
+Voir la photo
+
+Voir le profil
+
+Annuler
+
+====================================================
+VOIR LA PHOTO
+====================================================
+
+Plein écran.
+
+Fond noir.
+
+Zoom.
+
+Pinch Zoom.
+
+Téléchargement.
+
+Partage.
+
+Swipe pour fermer.
+
+====================================================
+VOIR LE PROFIL
+====================================================
+
+Profil complet.
+
+Photo couverture.
+
+Photo profil.
+
+Badge dynamique.
+
+Compteurs :
+
+Publications
+
+Abonnés
+
+Abonnements
+
+Likes reçus
+
+Commentaires reçus
+
+Navigation :
+
+Publications
+
+Photos
+
+Vidéos
+
+Marketplace
+
+Services
+
+À propos
+
+====================================================
+SYSTÈME DE COMMENTAIRES
+====================================================
+
+Commentaires imbriqués.
+
+Réponses.
+
+Mentions.
+
+Likes.
+
+Édition.
+
+Suppression.
+
+Signalement.
+
+Traduction.
+
+Audio.
+
+Images.
+
+GIF.
+
+====================================================
+ENREGISTREMENT VOCAL PREMIUM
+====================================================
+
+Ne jamais utiliser une barre simple.
+
+Créer :
+
+- onde audio temps réel
+- verrouillage vertical
+- glisser pour annuler
+- timer premium
+- animation fluide
+- aperçu audio
+
+Style proche Telegram Premium.
+
+====================================================
+BASE DE DONNÉES
+====================================================
+
+users
+
+profiles
+
+posts
+
+post_media
+
+post_visibility
+
+post_reactions
+
+comments
+
+comment_reactions
+
+comment_replies
+
+bookmarks
+
+shares
+
+followers
+
+notifications
+
+messages
+
+conversations
+
+voice_messages
+
+events
+
+event_participants
+
+livestreams
+
+livestream_viewers
+
+polls
+
+poll_options
+
+poll_votes
+
+marketplace_products
+
+marketplace_categories
+
+services
+
+service_reviews
+
+service_bookings
+
+jobs
+
+job_applications
+
+reports
+
+moderation_actions
+
+badges
+
+user_badges
+
+locations
+
+drafts
+
+====================================================
+API COMPLÈTES
+====================================================
+
+POST /posts/create
+
+POST /posts/update
+
+POST /posts/delete
+
+POST /posts/react
+
+POST /comments/create
+
+POST /comments/reply
+
+POST /comments/react
+
+POST /follow
+
+POST /unfollow
+
+POST /message/send
+
+POST /voice/upload
+
+POST /events/create
+
+POST /livestream/start
+
+POST /livestream/end
+
+POST /services/create
+
+POST /jobs/create
+
+POST /marketplace/create
+
+====================================================
+TEMPS RÉEL
+====================================================
+
+Commentaires instantanés.
+
+Likes instantanés.
+
+Messages instantanés.
+
+Notifications instantanées.
+
+Réactions instantanées.
+
+Streaming instantané.
+
+====================================================
+PERFORMANCES
+====================================================
+
+Lazy Loading.
+
+Pagination.
+
+Virtualisation.
+
+Compression image.
+
+Compression vidéo.
+
+Cache intelligent.
+
+Optimisation PWA.
+
+====================================================
+LIVRABLE OBLIGATOIRE
+====================================================
+
+1. Frontend complet.
+2. Backend complet.
+3. Schéma SQL complet.
+4. API complètes.
+5. Realtime complet.
+6. Responsive complet.
+7. Toutes les sous-pages.
+8. Toutes les animations.
+9. Tous les flux utilisateurs.
+10. Reproduction fidèle des maquettes.
+
+Ne jamais retourner une version simplifiée.
+
+Toute différence visible avec les maquettes est considérée comme un bug à corriger.

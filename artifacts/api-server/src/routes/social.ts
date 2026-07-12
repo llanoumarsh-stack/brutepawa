@@ -128,6 +128,7 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
       authorAvatarUrl: usersTable.avatarUrl,
       authorCountry: usersTable.country,
       authorProfileLocked: usersTable.profileLocked,
+      authorBadgeType: usersTable.badgeType,
     })
     .from(postsTable)
     .leftJoin(usersTable, eq(postsTable.authorId, usersTable.id))
@@ -255,6 +256,7 @@ router.get("/posts/:id", requireAuth, async (req, res): Promise<void> => {
     authorFirstName: usersTable.firstName,
     authorLastName:  usersTable.lastName,
     authorAvatarUrl: usersTable.avatarUrl,
+    authorBadgeType: usersTable.badgeType,
   }).from(postsTable)
     .leftJoin(usersTable, eq(postsTable.authorId, usersTable.id))
     .where(eq(postsTable.id, params.data.id));

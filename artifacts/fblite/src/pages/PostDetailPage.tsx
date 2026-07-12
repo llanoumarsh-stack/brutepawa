@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { BADGE_CONFIG, UserBadge } from "../components/UserBadge";
 import { useNavigate } from "../router";
 import { openImageViewer } from "../components/ImageViewer";
 import {
@@ -108,7 +109,9 @@ interface PostData {
   musicTrackName: string | null; musicArtist: string | null;
   musicUrl: string | null; musicArtworkUrl: string | null; musicDuration: string | null;
   likesCount: number; commentsCount: number; createdAt: string; liked: boolean;
+  authorBadgeType?: string | null;
 }
+
 
 /* ─── Music Player Card (white, premium) ────────────────────── */
 function MusicPlayer({ trackName, artist, artworkUrl, url, duration }: {
@@ -236,8 +239,10 @@ export default function PostDetailPage({ postId }: Props) {
   const [submitting, setSubmitting]   = useState(false);
   const [replyingTo, setReplyingTo]   = useState<number | null>(null);
   const [replyName, setReplyName]     = useState("");
-  const [voiceMode, setVoiceMode]     = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
+  const [voiceMode, setVoiceMode]       = useState(false);
+  const [avatarSheet, setAvatarSheet]   = useState(false);
+  const [avatarViewer, setAvatarViewer] = useState(false);
+  const [isRecording, setIsRecording]   = useState(false);
   const [recSeconds, setRecSeconds]   = useState(0);
   const [recLocked, setRecLocked]     = useState(false);
   const [recPaused, setRecPaused]     = useState(false);
@@ -472,13 +477,19 @@ export default function PostDetailPage({ postId }: Props) {
 
         {/* Author row */}
         <div style={{ display:"flex", alignItems:"center", gap:13, padding:"16px 16px 12px" }}>
-          <Avatar url={post.authorAvatarUrl} name={post.authorName} size={52} borderWidth={3} online />
+          {/* Clickable avatar */}
+          <div role="button" style={{ cursor:"pointer", position:"relative", flexShrink:0 }} onClick={() => setAvatarSheet(true)}>
+            <Avatar url={post.authorAvatarUrl} name={post.authorName} size={52} borderWidth={3} online />
+          </div>
           <div style={{ flex:1, minWidth:0 }}>
             <div style={{ display:"flex", alignItems:"center", gap:6, flexWrap:"wrap" }}>
               <span style={{ fontWeight:900, fontSize:16.5, color:"#111827" }}>{post.authorName}</span>
-              <div style={{ width:18, height:18, borderRadius:"50%", background:"linear-gradient(135deg,#22C55E,#16A34A)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-                <svg viewBox="0 0 12 12" width="10" height="10" fill="none"><path d="M2 6l2.5 2.5L10 3.5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </div>
+              <UserBadge type={post.authorBadgeType} />
+              {post.authorBadgeType && BADGE_CONFIG[post.authorBadgeType] && (
+                <span style={{ fontSize:11, fontWeight:700, color: BADGE_CONFIG[post.authorBadgeType].color }}>
+                  {BADGE_CONFIG[post.authorBadgeType].label}
+                </span>
+              )}
             </div>
             <div style={{ display:"flex", alignItems:"center", gap:5, marginTop:3 }}>
               <span style={{ fontSize:12, color:"#9CA3AF", fontWeight:500 }}>{timeAgo(post.createdAt)}</span>
@@ -985,6 +996,174 @@ export default function PostDetailPage({ postId }: Props) {
           })()}
         </div>
       </div>
+
+      {/* ── Avatar Bottom Sheet ──────────────────────────────────────── */}
+      {avatarSheet && (
+        <div
+          onClick={() => setAvatarSheet(false)}
+          style={{
+            position:"fixed", inset:0, zIndex:9998,
+            background:"rgba(0,0,0,0.45)",
+            animation:"fadeIn 0.18s ease",
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              position:"absolute", bottom:0, left:0, right:0,
+              background:"#fff",
+              borderRadius:"24px 24px 0 0",
+              padding:"0 0 max(20px,env(safe-area-inset-bottom))",
+              animation:"slideUp 0.28s cubic-bezier(0.34,1.56,0.64,1)",
+            }}
+          >
+            {/* Handle */}
+            <div style={{ display:"flex", justifyContent:"center", paddingTop:12, paddingBottom:6 }}>
+              <div style={{ width:40, height:4, borderRadius:9, background:"#E5E7EB" }} />
+            </div>
+
+            {/* Preview avatar */}
+            <div style={{ display:"flex", flexDirection:"column", alignItems:"center", padding:"8px 0 20px" }}>
+              <div style={{ width:80, height:80, borderRadius:"50%", overflow:"hidden", border:"3px solid #22C55E", boxShadow:"0 4px 16px rgba(34,197,94,0.3)" }}>
+                {post.authorAvatarUrl
+                  ? <img src={post.authorAvatarUrl} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                  : <div style={{ width:"100%", height:"100%", background:"linear-gradient(135deg,#22C55E,#16A34A)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                      <span style={{ fontSize:28, fontWeight:900, color:"#fff" }}>{post.authorName.charAt(0).toUpperCase()}</span>
+                    </div>
+                }
+              </div>
+              <div style={{ marginTop:10, fontWeight:800, fontSize:16, color:"#111827" }}>{post.authorName}</div>
+              {post.authorBadgeType && BADGE_CONFIG[post.authorBadgeType] && (
+                <div style={{ marginTop:4, display:"flex", alignItems:"center", gap:5 }}>
+                  <UserBadge type={post.authorBadgeType} />
+                  <span style={{ fontSize:12, fontWeight:600, color: BADGE_CONFIG[post.authorBadgeType].color }}>
+                    {BADGE_CONFIG[post.authorBadgeType].label}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div style={{ height:1, background:"#F3F4F6", margin:"0 16px" }} />
+
+            {/* Actions */}
+            <button
+              onClick={() => { setAvatarSheet(false); setTimeout(() => setAvatarViewer(true), 100); }}
+              style={{ width:"100%", display:"flex", alignItems:"center", gap:14, padding:"16px 24px", background:"none", border:"none", cursor:"pointer", textAlign:"left" }}
+            >
+              <div style={{ width:44, height:44, borderRadius:14, background:"#F0FDF4", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="4"/><path d="M2 12c2.5-5 5.5-8 10-8s7.5 3 10 8c-2.5 5-5.5 8-10 8S4.5 17 2 12z"/></svg>
+              </div>
+              <div>
+                <div style={{ fontWeight:700, fontSize:15, color:"#111827" }}>Voir la photo</div>
+                <div style={{ fontSize:12, color:"#9CA3AF", marginTop:1 }}>Afficher la photo de profil en grand</div>
+              </div>
+            </button>
+
+            <button
+              onClick={() => { setAvatarSheet(false); navigate(`/profile/${post.authorId}`); }}
+              style={{ width:"100%", display:"flex", alignItems:"center", gap:14, padding:"16px 24px", background:"none", border:"none", cursor:"pointer", textAlign:"left" }}
+            >
+              <div style={{ width:44, height:44, borderRadius:14, background:"#EFF6FF", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+              </div>
+              <div>
+                <div style={{ fontWeight:700, fontSize:15, color:"#111827" }}>Voir le profil</div>
+                <div style={{ fontSize:12, color:"#9CA3AF", marginTop:1 }}>Accéder au profil complet</div>
+              </div>
+            </button>
+
+            <div style={{ height:1, background:"#F3F4F6", margin:"8px 16px" }} />
+
+            <button
+              onClick={() => setAvatarSheet(false)}
+              style={{ width:"100%", display:"flex", alignItems:"center", justifyContent:"center", padding:"16px 24px", background:"none", border:"none", cursor:"pointer" }}
+            >
+              <span style={{ fontWeight:700, fontSize:15, color:"#EF4444" }}>Annuler</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Avatar Fullscreen Viewer ──────────────────────────────────── */}
+      {avatarViewer && (
+        <div
+          style={{
+            position:"fixed", inset:0, zIndex:9999,
+            background:"#000",
+            display:"flex", flexDirection:"column",
+            animation:"fadeIn 0.2s ease",
+          }}
+        >
+          {/* Top bar */}
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"16px 16px", paddingTop:"max(16px,env(safe-area-inset-top))", zIndex:1 }}>
+            <button
+              onClick={() => setAvatarViewer(false)}
+              style={{ width:40, height:40, borderRadius:"50%", background:"rgba(255,255,255,0.12)", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}
+            >
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <span style={{ fontWeight:700, fontSize:15, color:"#fff" }}>{post.authorName}</span>
+            <div style={{ display:"flex", gap:8 }}>
+              {post.authorAvatarUrl && (
+                <a
+                  href={post.authorAvatarUrl}
+                  download
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ width:40, height:40, borderRadius:"50%", background:"rgba(255,255,255,0.12)", display:"flex", alignItems:"center", justifyContent:"center" }}
+                >
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                </a>
+              )}
+              <button
+                onClick={() => navigator.share?.({ url: post.authorAvatarUrl ?? undefined, title: post.authorName }).catch(() => {})}
+                style={{ width:40, height:40, borderRadius:"50%", background:"rgba(255,255,255,0.12)", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Photo centrée */}
+          <div style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", padding:16 }}>
+            {post.authorAvatarUrl ? (
+              <img
+                src={post.authorAvatarUrl}
+                alt={post.authorName}
+                style={{ maxWidth:"100%", maxHeight:"100%", borderRadius:12, objectFit:"contain", boxShadow:"0 8px 48px rgba(0,0,0,0.6)" }}
+              />
+            ) : (
+              <div style={{ width:220, height:220, borderRadius:"50%", background:"linear-gradient(135deg,#22C55E,#16A34A)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <span style={{ fontSize:88, fontWeight:900, color:"#fff" }}>{post.authorName.charAt(0).toUpperCase()}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Bottom info */}
+          <div style={{ padding:"16px 20px", paddingBottom:"max(20px,env(safe-area-inset-bottom))", textAlign:"center" }}>
+            <div style={{ fontWeight:800, fontSize:17, color:"#fff" }}>{post.authorName}</div>
+            {post.authorBadgeType && BADGE_CONFIG[post.authorBadgeType] && (
+              <div style={{ marginTop:6, display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
+                <UserBadge type={post.authorBadgeType} />
+                <span style={{ fontSize:13, fontWeight:600, color: BADGE_CONFIG[post.authorBadgeType].color }}>
+                  {BADGE_CONFIG[post.authorBadgeType].label}
+                </span>
+              </div>
+            )}
+            <button
+              onClick={() => { setAvatarViewer(false); navigate(`/profile/${post.authorId}`); }}
+              style={{ marginTop:14, padding:"10px 28px", borderRadius:12, background:"linear-gradient(135deg,#22C55E,#16A34A)", border:"none", cursor:"pointer", fontWeight:700, fontSize:14, color:"#fff" }}
+            >
+              Voir le profil
+            </button>
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
+        @keyframes slideUp { from { transform:translateY(100%) } to { transform:translateY(0) } }
+      `}</style>
     </div>
   );
 }

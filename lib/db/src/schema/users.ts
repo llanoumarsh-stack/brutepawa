@@ -14,6 +14,7 @@ export const usersTable = pgTable("users", {
   coverUrl: text("cover_url"),
   bio: text("bio"),
   role: text("role").notNull().default("user"),
+  badgeType: text("badge_type"),
   status: text("status").notNull().default("active"),
   totalStorageBytes: bigint("total_storage_bytes", { mode: "number" }).notNull().default(0),
   profileLocked: boolean("profile_locked").notNull().default(false),

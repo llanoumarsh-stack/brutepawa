@@ -143,6 +143,7 @@ export interface FeedPost {
   isPinned?: boolean;
   commentsDisabled?: boolean;
   audience?: string;
+  authorBadgeType?: string | null;
 }
 
 export interface PublicUser {

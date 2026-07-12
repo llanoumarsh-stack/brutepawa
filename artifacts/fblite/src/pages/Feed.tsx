@@ -6,6 +6,7 @@ import { openImageViewer } from "../components/ImageViewer";
 import { apiGetPosts, apiCreatePost, apiLikePost, apiGetStories, apiToggleSaved, apiFollow, apiCheckFollowing, apiDeletePost, apiArchivePost, apiPinPost, type FeedPost, type StoryGroup } from "../lib/api";
 import StoryViewer from "../components/StoryViewer";
 import { storyDraftStore } from "../lib/storyDraft";
+import { UserBadge } from "../components/UserBadge";
 
 /* ── Premium Music Card ─────────────────────────────────────── */
 const WAVE_HEIGHTS = [5,10,7,14,9,12,6,15,8,11,5,13,9,7,12,6,14,10,8,5,11,9,13,7,10,6,14,8,12,5,8,11];
@@ -665,6 +666,7 @@ export default function Feed() {
                       {post.authorName}
                     </span>
                     {flag && <span style={{ fontSize: 14 }}>{flag}</span>}
+                    <UserBadge type={post.authorBadgeType} />
                     {followedIds.has(post.authorId)
                       ? <span
                           onClick={(e) => handleFollow(post.authorId, e)}
