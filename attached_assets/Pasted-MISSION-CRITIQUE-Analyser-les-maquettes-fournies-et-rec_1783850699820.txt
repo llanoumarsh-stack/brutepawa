@@ -1,0 +1,381 @@
+MISSION CRITIQUE
+
+Analyser les maquettes fournies et reconstruire l'intégralité du système de création de publication BrutePawa avec une fidélité visuelle comprise entre 98% et 100%.
+
+INTERDICTION ABSOLUE :
+
+- Ne pas réinventer le design.
+- Ne pas changer les espacements.
+- Ne pas changer les proportions.
+- Ne pas remplacer les couleurs.
+- Ne pas simplifier les composants.
+- Ne pas utiliser un design alternatif.
+
+L'objectif est une reproduction pixel-perfect.
+
+====================================================
+DESIGN SYSTEM
+====================================================
+
+Couleur primaire :
+#22C55E
+
+Couleur secondaire :
+#16A34A
+
+Fond :
+#FFFFFF
+
+Cartes :
+#FFFFFF
+
+Ombres :
+
+box-shadow:
+0 8px 30px rgba(0,0,0,0.06)
+
+Coins :
+
+24px
+20px
+16px
+
+selon les composants.
+
+Typographie :
+
+Inter
+
+Poids :
+
+400
+500
+600
+700
+
+====================================================
+PAGE PRINCIPALE
+====================================================
+
+Créer exactement :
+
+Créer une publication
+
+avec :
+
+- Header vert
+- Bouton retour
+- Bouton publier
+- Avatar utilisateur
+- Nom utilisateur
+- Sélecteur de confidentialité
+
+Champ de publication :
+
+AUTO EXPAND
+
+IMPORTANT :
+
+Le champ doit augmenter automatiquement sa hauteur selon le texte.
+
+Exemples :
+
+1 ligne
+=> hauteur minimale
+
+5 lignes
+=> agrandissement automatique
+
+20 lignes
+=> agrandissement automatique
+
+50 lignes
+=> agrandissement automatique
+
+Aucun scrollbar interne.
+
+Animation fluide.
+
+Limite :
+
+5000 caractères
+
+Compteur dynamique.
+
+====================================================
+BARRE RAPIDE
+====================================================
+
+Créer exactement :
+
+Photo
+Vidéo
+Musique
+Lieu
+Humeur
+Plus
+
+Cartes compactes.
+
+Même taille que la maquette.
+
+====================================================
+SÉLECTEUR DE COULEURS
+====================================================
+
+Reproduire exactement :
+
+- Blanc
+- Violet
+- Rouge
+- Noir
+- Dégradé Instagram
+- Dégradé rose
+- Dégradé orange
+- Bleu nuit
+
+Effets identiques.
+
+====================================================
+SOUS PAGE 1
+VISIBILITÉ
+====================================================
+
+Public
+Amis
+Abonnés
+Groupes
+Privé
+
+Base de données :
+
+publication_visibility
+
+id
+user_id
+visibility
+created_at
+
+====================================================
+SOUS PAGE 2
+PLUS D'OPTIONS
+====================================================
+
+Sondage
+Offre emploi
+Marketplace
+Service professionnel
+Article
+Collecte de fonds
+Promotion
+PDF
+Audio
+Document
+
+Chaque option ouvre son propre écran.
+
+====================================================
+SOUS PAGE 3
+MESSAGES
+====================================================
+
+Autoriser messages
+
+Désactiver messages
+
+Amis uniquement
+
+Abonnés uniquement
+
+Réponse automatique
+
+Base de données complète.
+
+====================================================
+SOUS PAGE 4
+AJOUTER UN LIEU
+====================================================
+
+Recherche temps réel.
+
+Historique.
+
+Lieux populaires.
+
+GPS.
+
+Google Maps.
+
+OpenStreetMap fallback.
+
+====================================================
+SOUS PAGE 5
+HUMEUR / ACTIVITÉ
+====================================================
+
+Recherche.
+
+Catégories.
+
+Emojis.
+
+Activités.
+
+Base dynamique.
+
+====================================================
+SOUS PAGE 6
+CRÉER UN ÉVÈNEMENT
+====================================================
+
+Nom
+
+Description
+
+Date
+
+Heure
+
+Lieu
+
+Bannière
+
+Participants
+
+Évènement payant
+
+Paiement Mobile Money
+
+====================================================
+SOUS PAGE 7
+LANCER UN DIRECT
+====================================================
+
+Titre
+
+Description
+
+Miniature
+
+Catégorie
+
+Public
+
+Commentaires
+
+Cadeaux
+
+Monétisation
+
+Backend complet.
+
+WebRTC.
+
+Streaming temps réel.
+
+====================================================
+SOUS PAGE 8
+IDENTIFIER DES PERSONNES
+====================================================
+
+Recherche utilisateurs.
+
+Suggestions.
+
+Sélection multiple.
+
+Validation.
+
+====================================================
+BACKEND COMPLET
+====================================================
+
+Créer :
+
+Supabase PostgreSQL
+
+Tables :
+
+users
+
+posts
+
+post_media
+
+post_visibility
+
+post_locations
+
+post_moods
+
+post_tags
+
+events
+
+event_participants
+
+livestreams
+
+livestream_viewers
+
+polls
+
+poll_options
+
+documents
+
+audios
+
+comments
+
+likes
+
+notifications
+
+messages
+
+conversations
+
+====================================================
+FLUX DYNAMIQUE
+====================================================
+
+Création publication
+
+Sauvegarde brouillon
+
+Publication
+
+Modification
+
+Suppression
+
+Notifications
+
+Temps réel
+
+Mise à jour instantanée
+
+====================================================
+RESPONSIVE
+====================================================
+
+Android
+
+iPhone
+
+PWA
+
+Web
+
+Tablette
+
+====================================================
+OBJECTIF FINAL
+====================================================
+
+Le résultat doit correspondre visuellement à 98%-100% des maquettes fournies.
+
+Toute différence visible de couleur, taille, espacement, texture, ombre, rayon, police ou comportement dynamique est considérée comme un échec.
+
+Construire le frontend, backend, schéma SQL, API, logique métier et navigation complète.
