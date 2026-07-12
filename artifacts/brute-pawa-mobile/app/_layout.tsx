@@ -132,6 +132,56 @@ function RootLayoutNav() {
         name="chat/[userId]"
         options={{ headerShown: false, presentation: "card" }}
       />
+
+      {/* ── Contact info screens ────────────────────────────────── */}
+      <Stack.Screen
+        name="contact/[userId]/index"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="contact/[userId]/profile"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="contact/[userId]/search"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="contact/[userId]/mute"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="contact/[userId]/pin"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="contact/[userId]/favorites"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="contact/[userId]/add-friend"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="contact/[userId]/add-to-group"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="contact/[userId]/share"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="contact/[userId]/block"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="contact/[userId]/report"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen
+        name="contact/[userId]/delete"
+        options={{ headerShown: false, presentation: "card" }}
+      />
       <Stack.Screen
         name="notifications"
         options={{ headerShown: false, presentation: "card" }}

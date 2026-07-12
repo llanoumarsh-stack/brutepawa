@@ -1,0 +1,329 @@
+Créer un système professionnel de gestion des contacts pour BrutePawa.
+
+STACK :
+- React Native Expo
+- TypeScript
+- Supabase PostgreSQL
+- Zustand
+- React Query
+- NativeWind/Tailwind
+- Cloudflare R2
+
+STYLE BRUTEPAWA :
+
+Couleur primaire : #22C55E
+Couleur secondaire : #16A34A
+Fond : #F8FAF8
+Texte : #0F172A
+Danger : #EF4444
+
+Design :
+- Premium
+- Moderne 2027
+- Facebook Messenger + Telegram + WhatsApp
+- Coins 24px
+- Glassmorphism léger
+- Ombres douces
+- Animations fluides 60fps
+- Responsive Android/iOS
+
+═══════════════════════════
+MENU CONTACT
+═══════════════════════════
+
+Au clic sur les 3 points :
+
+Bottom Sheet Premium
+
+1. Voir le profil
+2. Rechercher dans la conversation
+3. Mettre en sourdine
+4. Épingler la conversation
+5. Ajouter aux favoris
+6. Ajouter aux amis
+7. Ajouter à un groupe
+8. Partager le profil
+9. Bloquer le contact
+10. Signaler l'utilisateur
+11. Supprimer la conversation
+
+═══════════════════════════
+PAGE : VOIR LE PROFIL
+═══════════════════════════
+
+Afficher :
+
+- Photo de profil HD
+- Badge vérifié
+- Nom complet
+- Username
+- Bio
+- Pays
+- Nombre d'amis
+- Abonnés
+- Publications
+- Date d'inscription
+
+Boutons :
+
+- Message
+- Appel audio
+- Appel vidéo
+- Ajouter aux amis
+
+Backend :
+
+Table profiles
+
+id
+username
+fullname
+bio
+avatar
+country
+verified
+friends_count
+followers_count
+posts_count
+
+API :
+
+GET /profile/:id
+
+═══════════════════════════
+PAGE : RECHERCHER DANS LA CONVERSATION
+═══════════════════════════
+
+Recherche temps réel.
+
+Filtres :
+
+- Messages
+- Médias
+- Liens
+- Documents
+
+Backend :
+
+Table messages
+
+id
+conversation_id
+sender_id
+content
+type
+created_at
+
+Index Full Text Search PostgreSQL.
+
+═══════════════════════════
+PAGE : METTRE EN SOURDINE
+═══════════════════════════
+
+Choix :
+
+- 8 heures
+- 1 semaine
+- 1 mois
+- Toujours
+
+Backend :
+
+Table muted_conversations
+
+id
+user_id
+conversation_id
+expires_at
+
+Middleware notifications.
+
+═══════════════════════════
+PAGE : ÉPINGLER LA CONVERSATION
+═══════════════════════════
+
+Actions :
+
+- Épingler
+- Désépingler
+
+Maximum :
+
+5 conversations épinglées.
+
+Backend :
+
+Table pinned_conversations
+
+id
+user_id
+conversation_id
+position
+
+═══════════════════════════
+PAGE : FAVORIS
+═══════════════════════════
+
+Actions :
+
+- Ajouter
+- Retirer
+
+Backend :
+
+Table favorite_contacts
+
+id
+user_id
+contact_id
+
+═══════════════════════════
+PAGE : AJOUTER AUX AMIS
+═══════════════════════════
+
+Fonctionnalités :
+
+- Envoyer demande
+- Annuler demande
+- Accepter
+- Refuser
+
+Backend :
+
+Table friend_requests
+
+id
+sender_id
+receiver_id
+status
+
+Table friendships
+
+id
+user1_id
+user2_id
+
+═══════════════════════════
+PAGE : AJOUTER À UN GROUPE
+═══════════════════════════
+
+Lister tous les groupes.
+
+Backend :
+
+groups
+
+group_members
+
+group_invitations
+
+═══════════════════════════
+PAGE : PARTAGER LE PROFIL
+═══════════════════════════
+
+Options :
+
+- BrutePawa
+- WhatsApp
+- Facebook
+- Telegram
+- Copier le lien
+
+Backend :
+
+Dynamic Share Links
+
+https://brutepawa.com/u/username
+
+═══════════════════════════
+PAGE : BLOQUER
+═══════════════════════════
+
+Actions :
+
+- Bloquer
+- Débloquer
+
+Backend :
+
+blocked_users
+
+id
+blocker_id
+blocked_id
+
+Bloquer :
+
+- messages
+- appels
+- demandes
+
+═══════════════════════════
+PAGE : SIGNALER
+═══════════════════════════
+
+Motifs :
+
+- Spam
+- Arnaque
+- Harcèlement
+- Usurpation
+- Nudité
+- Violence
+- Autre
+
+Backend :
+
+reports
+
+id
+reporter_id
+reported_id
+reason
+description
+status
+
+Dashboard admin complet.
+
+═══════════════════════════
+PAGE : SUPPRIMER LA CONVERSATION
+═══════════════════════════
+
+Modal premium.
+
+Message :
+
+"Cette action supprimera définitivement cette conversation."
+
+Boutons :
+
+Annuler
+Supprimer
+
+Backend :
+
+Soft Delete
+
+deleted_conversations
+
+user_id
+conversation_id
+deleted_at
+
+Les messages restent visibles pour l'autre participant.
+
+═══════════════════════════
+EXIGENCES FINALES
+═══════════════════════════
+
+- Générer toutes les pages React Native.
+- Générer tous les composants.
+- Générer tous les hooks.
+- Générer toutes les migrations PostgreSQL.
+- Générer toutes les API Supabase.
+- Générer les politiques RLS.
+- Générer les animations.
+- Générer les états Zustand.
+- Générer les tests.
+- Code production ready.
+- Architecture évolutive pour 10 millions d'utilisateurs.
