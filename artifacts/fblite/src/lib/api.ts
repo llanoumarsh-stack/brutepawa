@@ -144,6 +144,7 @@ export interface FeedPost {
   commentsDisabled?: boolean;
   audience?: string;
   authorBadgeType?: string | null;
+  location?: string | null;
 }
 
 export interface PublicUser {
@@ -524,6 +525,7 @@ export async function apiCreatePost(
   imageUrl?: string,
   thumbnailUrl?: string,
   music?: { trackName: string; artist: string; url: string | null; artworkUrl: string | null; duration: string | null },
+  location?: string,
 ): Promise<void> {
   const res = await apiFetch("/posts", {
     method: "POST",
@@ -536,12 +538,51 @@ export async function apiCreatePost(
       musicUrl:        music?.url        ?? null,
       musicArtworkUrl: music?.artworkUrl ?? null,
       musicDuration:   music?.duration   ?? null,
+      location:        location ?? null,
     }),
   });
   if (!res.ok) {
     const body = await res.json().catch(() => ({})) as { error?: string };
     throw new Error(body.error ?? `Erreur ${res.status}`);
   }
+}
+
+/* ── Location API ─────────────────────────────────────────────────────────── */
+
+export interface LocationResult {
+  id: number; name: string; city: string | null; region: string | null;
+  country: string; countryCode: string; lat: number | null; lng: number | null;
+  placeType: string; display: string; flag: string;
+}
+export interface SavedLocationResult extends LocationResult {
+  savedId: number; label: string | null; icon: string;
+}
+
+export async function apiSearchLocations(q: string, limit = 15): Promise<LocationResult[]> {
+  const r = await apiFetch(`/location/search?q=${encodeURIComponent(q)}&limit=${limit}`);
+  return r.ok ? (r.json() as Promise<LocationResult[]>) : [];
+}
+export async function apiGetPopularLocations(countryCode = "BJ", limit = 10): Promise<LocationResult[]> {
+  const r = await apiFetch(`/location/popular?country=${countryCode}&limit=${limit}`);
+  return r.ok ? (r.json() as Promise<LocationResult[]>) : [];
+}
+export async function apiGetRecentLocations(): Promise<LocationResult[]> {
+  const r = await apiFetch("/location/recent");
+  return r.ok ? (r.json() as Promise<LocationResult[]>) : [];
+}
+export async function apiGetSavedLocations(): Promise<SavedLocationResult[]> {
+  const r = await apiFetch("/location/saved");
+  return r.ok ? (r.json() as Promise<SavedLocationResult[]>) : [];
+}
+export async function apiReverseGeocode(lat: number, lng: number): Promise<(LocationResult & { neighborhood: string }) | null> {
+  const r = await apiFetch("/location/current", { method: "POST", body: JSON.stringify({ lat, lng }) });
+  return r.ok ? (r.json() as Promise<LocationResult & { neighborhood: string }>) : null;
+}
+export async function apiSaveLocation(data: Partial<LocationResult> & { label?: string; icon?: string }): Promise<void> {
+  await apiFetch("/location/save", { method: "POST", body: JSON.stringify(data) });
+}
+export async function apiDeleteSavedLocation(savedId: number): Promise<void> {
+  await apiFetch(`/location/save/${savedId}`, { method: "DELETE" });
 }
 
 export async function apiLikePost(id: number, action: "like" | "unlike"): Promise<void> {

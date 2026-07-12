@@ -28,6 +28,7 @@ import { peopleRouter } from "./people";
 import pagesRouter from "./pages";
 import contactsRouter from "./contacts";
 import searchRouter from "./search";
+import locationRouter from "./location";
 
 const router: IRouter = Router();
 
@@ -60,5 +61,6 @@ router.use(peopleRouter);
 router.use(pagesRouter);
 router.use(contactsRouter);
 router.use(searchRouter);
+router.use(locationRouter);
 
 export default router;

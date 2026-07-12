@@ -34,6 +34,7 @@ import SearchPage from "./pages/SearchPage";
 import GroupDetailPage from "./pages/GroupDetailPage";
 import EventsPage from "./pages/EventsPage";
 import SavedPage from "./pages/SavedPage";
+import SavedLocationsPage from "./pages/SavedLocationsPage";
 import MemoriesPage from "./pages/MemoriesPage";
 import JobInboxPage from "./pages/JobInboxPage";
 import CreateListingPage from "./pages/CreateListingPage";
@@ -318,6 +319,7 @@ function AppContent() {
   if (path === "/saved") return (
     <Layout onNewPost={handleNewPost}><SavedPage /></Layout>
   );
+  if (path === "/saved-locations") return <SavedLocationsPage />;
   if (path === "/memories") return (
     <Layout onNewPost={handleNewPost}><MemoriesPage /></Layout>
   );

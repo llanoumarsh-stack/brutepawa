@@ -217,6 +217,16 @@ export default function CreatePostPage({ onPublish }: Props) {
   const [showVoiceRecorder, setShowVoiceRecorder] = useState(false);
   const [allUsers, setAllUsers] = useState<PublicUser[]>([]);
 
+  /* ─── Location multi-step flow ────────────────────── */
+  type LocStep = "select" | "gps-authorize" | "gps-detecting" | "gps-confirm" | "map" | "privacy" | "success";
+  const [locStep, setLocStep] = useState<LocStep>("select");
+  const [detectedLoc, setDetectedLoc] = useState<{
+    name: string; city: string; region: string; country: string;
+    countryCode: string; lat: number; lng: number; neighborhood: string;
+  } | null>(null);
+  const [locPrivacy, setLocPrivacy] = useState<"public" | "followers" | "friends" | "private">("public");
+  const closeLocation = () => { setShowLocation(false); setLocStep("select"); };
+
   /* ─── Effects ─────────────────────────────────────── */
   useEffect(() => { setMounted(true); }, []);
   useEffect(() => { setLocationResults(searchPlaces(locationQuery)); }, [locationQuery]);
@@ -289,7 +299,6 @@ export default function CreatePostPage({ onPublish }: Props) {
     if (!canPublish || publishingRef.current) return;
     publishingRef.current = true;
     let finalContent = content.trim();
-    if (selectedLocation) finalContent += `\n📍 ${selectedLocation.city}, ${selectedLocation.country}`;
     const firstMedia = medias[0];
     try {
       await apiCreatePost(
@@ -297,6 +306,7 @@ export default function CreatePostPage({ onPublish }: Props) {
         firstMedia?.url ?? undefined,
         firstMedia?.thumbnailUrl ?? undefined,
         selectedTrack ? { trackName: selectedTrack.title, artist: selectedTrack.artist, url: selectedTrack.previewUrl, artworkUrl: selectedTrack.artworkUrl, duration: selectedTrack.duration } : undefined,
+        selectedLocation ? `${selectedLocation.city}, ${selectedLocation.country}` : undefined,
       );
     } catch (err) {
       publishingRef.current = false;
@@ -605,12 +615,14 @@ export default function CreatePostPage({ onPublish }: Props) {
               )}
             </div>
 
-            {/* Location tag */}
+            {/* Location chip — Screen 11 */}
             {selectedLocation && (
-              <div style={{ fontSize: 12.5, color: "#64748B", marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
-                <MapPin size={11} color="#F97316" />
-                <span>{selectedLocation.city}, {selectedLocation.country}</span>
-                <button onClick={() => setSelectedLocation(null)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 11, color: "#9CA3AF" }}>✕</button>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 8, background: "#F0FDF4", border: "1.5px solid rgba(34,197,94,.3)", borderRadius: 20, padding: "5px 10px 5px 8px" }}>
+                <MapPin size={12} color={G} />
+                <span style={{ fontSize: 12.5, fontWeight: 600, color: GD }}>{selectedLocation.city}, {selectedLocation.country}</span>
+                <button onClick={() => setSelectedLocation(null)} style={{ background: "rgba(0,0,0,.08)", border: "none", cursor: "pointer", width: 18, height: 18, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#374151" strokeWidth="3"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                </button>
               </div>
             )}
 
@@ -963,95 +975,281 @@ export default function CreatePostPage({ onPublish }: Props) {
         </SubPage>
       )}
 
-      {/* ══ SOUS-PAGE : LIEU ══ */}
-      {showLocation && (
-        <SubPage title="Ajouter un lieu" onClose={() => setShowLocation(false)}>
+      {/* ══ LIEU : Écran 2 — Sélection ══ */}
+      {showLocation && locStep === "select" && (
+        <SubPage title="Ajouter un lieu" onClose={closeLocation}>
           <div style={{ padding: "12px 16px 0" }}>
             <div style={{ position: "relative" }}>
               <input value={locationQuery} onChange={e => setLocationQuery(e.target.value)} placeholder="Rechercher un lieu"
-                style={{ width: "100%", padding: "12px 36px 12px 42px", border: "1.5px solid #E5E7EB", borderRadius: 24, fontSize: 14, outline: "none", background: "#F8FAFC", boxSizing: "border-box" }}
+                style={{ width: "100%", padding: "12px 42px 12px 42px", border: "1.5px solid #E5E7EB", borderRadius: 24, fontSize: 14, outline: "none", background: "#F8FAFC", boxSizing: "border-box" }}
                 onFocus={e => (e.currentTarget.style.borderColor = G)}
                 onBlur={e => (e.currentTarget.style.borderColor = "#E5E7EB")} />
-              <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)" }}>🔍</span>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9CA3AF" strokeWidth="2" style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)" }}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
               {locationQuery && <button onClick={() => setLocationQuery("")} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", width: 22, height: 22, borderRadius: "50%", background: "#9CA3AF", border: "none", color: "#fff", fontSize: 12, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>}
             </div>
           </div>
 
-          {/* GPS */}
-          <div onClick={() => navigator.geolocation?.getCurrentPosition(p => fetchNearbyPlaces(p.coords.latitude, p.coords.longitude))}
-            style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 20px", cursor: "pointer", borderBottom: "1px solid #F8FAFC" }}>
-            <div style={{ width: 40, height: 40, borderRadius: 12, background: "#FFF7ED", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <MapPin size={20} color="#F97316" />
+          {/* GPS option */}
+          <div onClick={() => setLocStep("gps-authorize")}
+            style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 20px", borderBottom: "1px solid #F8FAFC", cursor: "pointer", marginTop: 8 }}>
+            <div style={{ width: 44, height: 44, borderRadius: 14, background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke={G} strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg>
             </div>
-            <div>
-              <div style={{ fontWeight: 700, fontSize: 14, color: "#111827" }}>Ma position actuelle</div>
-              <div style={{ fontSize: 12, color: "#9CA3AF" }}>Utiliser ma localisation</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 700, fontSize: 15, color: "#111827" }}>Ma position actuelle</div>
+              <div style={{ fontSize: 12.5, color: "#9CA3AF" }}>Utiliser ma localisation</div>
             </div>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#D1D5DB" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
           </div>
 
-          {nearbyCity && (
-            <div style={{ padding: "4px 20px 6px", fontSize: 12, fontWeight: 700, color: "#F97316", display: "flex", alignItems: "center", gap: 5 }}>
-              📍 {nearbyCity}
-            </div>
-          )}
-          {nearbyLoading && <div style={{ padding: "20px", textAlign: "center", color: "#F97316", fontSize: 13 }}>📍 Chargement…</div>}
-
-          {nearbyPlaces.length > 0 && !locationQuery && (
+          {/* Search results (Screen 8) OR Popular places */}
+          {locationQuery ? (
             <>
-              <div style={{ padding: "8px 20px 4px", fontSize: 12, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: ".04em" }}>Lieux proches</div>
-              {nearbyPlaces.map((p, i) => (
-                <div key={i} onClick={() => { setSelectedLocation({ city: p.name, country: nearbyCity?.split(", ").slice(1).join(", ") ?? "", flag: "📍" }); setShowLocation(false); }}
-                  style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 20px", cursor: "pointer", borderBottom: "1px solid #F8FAFC" }}>
-                  <div style={{ width: 38, height: 38, borderRadius: 10, background: "#FFF7ED", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 16 }}>📌</div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 700, fontSize: 14, color: "#111827" }}>{p.name}</div>
-                    <div style={{ fontSize: 11, color: "#9CA3AF" }}>{p.dist < 1000 ? `${p.dist} m` : `${(p.dist / 1000).toFixed(1)} km`}</div>
+              <div style={{ padding: "8px 20px 4px", fontSize: 11, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: ".06em" }}>RÉSULTATS</div>
+              {locationResults.length === 0 && <div style={{ padding: "24px", textAlign: "center", color: "#9CA3AF", fontSize: 13 }}>Aucun résultat</div>}
+              {locationResults.slice(0, 12).map((place, i) => {
+                const isSel = selectedLocation?.city === place.city && selectedLocation?.country === place.country;
+                return (
+                  <div key={i} onClick={() => { setSelectedLocation(place); setLocStep("privacy"); setLocationQuery(""); }}
+                    style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 20px", cursor: "pointer", borderBottom: "1px solid #F8FAFC", background: isSel ? "#F0FDF4" : "#fff" }}>
+                    <div style={{ width: 10, height: 10, borderRadius: "50%", background: isSel ? G : "#D1FAE5", flexShrink: 0 }} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 600, fontSize: 14, color: isSel ? GD : "#111827" }}>{place.city}</div>
+                      <div style={{ fontSize: 12, color: "#9CA3AF" }}>{place.country}</div>
+                    </div>
+                    {isSel && <div style={{ width: 22, height: 22, borderRadius: "50%", background: G, display: "flex", alignItems: "center", justifyContent: "center" }}><Check size={12} color="#fff" /></div>}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </>
-          )}
-
-          {locationQuery && (
+          ) : (
             <>
-              <div style={{ padding: "8px 20px 4px", fontSize: 12, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: ".04em" }}>Villes & pays</div>
-              {locationResults.map((place, i) => (
-                <div key={i} onClick={() => { setSelectedLocation(place); setShowLocation(false); setLocationQuery(""); }}
-                  style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 20px", cursor: "pointer", borderBottom: "1px solid #F8FAFC", background: selectedLocation?.city === place.city ? "#F0FDF4" : "#fff" }}>
-                  <span style={{ fontSize: 22, flexShrink: 0 }}>{place.flag}</span>
+              <div style={{ padding: "8px 20px 4px", fontSize: 11, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: ".06em" }}>LIEUX POPULAIRES</div>
+              {locationResults.slice(0, 6).map((place, i) => (
+                <div key={i} onClick={() => { setSelectedLocation(place); setLocStep("privacy"); }}
+                  style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 20px", cursor: "pointer", borderBottom: "1px solid #F8FAFC" }}>
+                  <div style={{ width: 10, height: 10, borderRadius: "50%", background: ["#22C55E","#F97316","#3B82F6","#8B5CF6","#EC4899","#EAB308"][i % 6], flexShrink: 0 }} />
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 600, fontSize: 14 }}>{place.city}</div>
+                    <div style={{ fontWeight: 600, fontSize: 14, color: "#111827" }}>{place.city}</div>
                     <div style={{ fontSize: 12, color: "#9CA3AF" }}>{place.country}</div>
                   </div>
-                  <MapPin size={16} color={selectedLocation?.city === place.city ? G : "#E5E7EB"} />
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#D1D5DB" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
                 </div>
               ))}
-            </>
-          )}
-
-          {!locationQuery && !nearbyLoading && nearbyPlaces.length === 0 && (
-            <>
-              <div style={{ padding: "8px 20px 4px", fontSize: 12, fontWeight: 700, color: "#9CA3AF", textTransform: "uppercase", letterSpacing: ".04em" }}>Lieux populaires</div>
-              {locationResults.slice(0, 10).map((place, i) => (
-                <div key={i} onClick={() => { setSelectedLocation(place); setShowLocation(false); }}
-                  style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 20px", cursor: "pointer", borderBottom: "1px solid #F8FAFC" }}>
-                  <span style={{ fontSize: 22 }}>{place.flag}</span>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 600, fontSize: 14 }}>{place.city}</div>
-                    <div style={{ fontSize: 12, color: "#9CA3AF" }}>{place.country}</div>
-                  </div>
-                </div>
-              ))}
+              <div style={{ padding: "12px 20px", textAlign: "center" }}>
+                <span style={{ fontSize: 13, color: G, fontWeight: 600, cursor: "pointer" }}>Voir plus</span>
+              </div>
             </>
           )}
 
           {selectedLocation && (
-            <div onClick={() => { setSelectedLocation(null); setShowLocation(false); }}
-              style={{ padding: "14px 20px", cursor: "pointer", fontSize: 14, fontWeight: 600, color: "#EF4444", borderTop: "1px solid #FEF2F2" }}>
+            <div onClick={() => setSelectedLocation(null)} style={{ padding: "14px 20px", cursor: "pointer", fontSize: 14, fontWeight: 600, color: "#EF4444", borderTop: "1px solid #FEF2F2" }}>
               ✕ Supprimer le lieu
             </div>
           )}
         </SubPage>
+      )}
+
+      {/* ══ LIEU : Écran 3 — Autorisation GPS ══ */}
+      {showLocation && locStep === "gps-authorize" && (
+        <div style={{ position: "fixed", inset: 0, background: "#fff", zIndex: 200, display: "flex", flexDirection: "column", fontFamily: "'Inter',-apple-system,sans-serif", alignItems: "center", justifyContent: "space-between", padding: "24px 24px 40px" }}>
+          <div style={{ width: "100%", display: "flex", alignItems: "center" }}>
+            <button onClick={() => setLocStep("select")} style={{ width: 38, height: 38, borderRadius: "50%", border: "none", background: "#F8FAFC", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><ArrowLeft size={20} strokeWidth={2.5} /></button>
+            <div style={{ flex: 1, fontWeight: 700, fontSize: 17, color: "#111827", textAlign: "center" }}>Localisation</div>
+            <div style={{ width: 38 }} />
+          </div>
+
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 24 }}>
+            <div style={{ position: "relative", width: 140, height: 140 }}>
+              {[100, 120, 140].map((size, i) => (
+                <div key={i} style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: size, height: size, borderRadius: "50%", border: `2px solid rgba(34,197,94,${0.15 - i * 0.04})`, background: `rgba(34,197,94,${0.06 - i * 0.015})` }} />
+              ))}
+              <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 60, height: 60, borderRadius: "50%", background: `linear-gradient(135deg,${G},${GD})`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 20px rgba(34,197,94,.4)" }}>
+                <MapPin size={30} color="#fff" />
+              </div>
+            </div>
+            <div style={{ textAlign: "center" }}>
+              <div style={{ fontWeight: 800, fontSize: 21, color: "#111827", marginBottom: 8 }}>BrutePawa souhaite<br/>accéder à votre position</div>
+              <div style={{ fontSize: 14, color: "#64748B", lineHeight: 1.5 }}>Cela nous permet de proposer des lieux<br/>à proximité et améliorer votre expérience.</div>
+            </div>
+            <div style={{ width: "100%", background: "#F8FAFC", borderRadius: 16, padding: "16px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
+              {["Trouver des lieux proches", "Personnaliser votre expérience", "Jamais partagée sans votre accord"].map((b, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ width: 22, height: 22, borderRadius: "50%", background: G, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Check size={12} color="#fff" /></div>
+                  <span style={{ fontSize: 14, color: "#374151", fontWeight: 500 }}>{b}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 12 }}>
+            <button onClick={() => {
+              setLocStep("gps-detecting");
+              navigator.geolocation?.getCurrentPosition(
+                async pos => {
+                  try {
+                    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json&accept-language=fr`, { headers: { "User-Agent": "BrutePawa/1.0" } });
+                    const data = await r.json() as { address?: Record<string, string> };
+                    const addr = data.address ?? {};
+                    const city = addr.city ?? addr.town ?? addr.village ?? addr.county ?? "Votre position";
+                    setDetectedLoc({ name: city, city, region: addr.state ?? addr.county ?? "", country: addr.country ?? "Bénin", countryCode: (addr.country_code ?? "bj").toUpperCase(), lat: pos.coords.latitude, lng: pos.coords.longitude, neighborhood: addr.suburb ?? addr.neighbourhood ?? addr.quarter ?? "" });
+                    setLocStep("gps-confirm");
+                  } catch { setLocStep("select"); }
+                },
+                () => setLocStep("select")
+              );
+            }} style={{ width: "100%", padding: 16, borderRadius: 16, border: "none", background: `linear-gradient(135deg,${G},${GD})`, color: "#fff", fontWeight: 700, fontSize: 16, cursor: "pointer", boxShadow: "0 4px 16px rgba(34,197,94,.4)" }}>
+              Autoriser la localisation
+            </button>
+            <button onClick={() => setLocStep("select")} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 15, fontWeight: 600, color: "#64748B", padding: 8 }}>Plus tard</button>
+            <div style={{ textAlign: "center", fontSize: 12, color: "#9CA3AF" }}>🔒 Votre localisation est sécurisée</div>
+          </div>
+        </div>
+      )}
+
+      {/* ══ LIEU : Écran 4 — Détection ══ */}
+      {showLocation && locStep === "gps-detecting" && (
+        <div style={{ position: "fixed", inset: 0, background: "#fff", zIndex: 200, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 24 }}>
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg,#e8f5e9 0%,#f1f8e9 100%)", opacity: .5 }} />
+          <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 24 }}>
+            <div style={{ position: "relative", width: 160, height: 160, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <style>{`@keyframes lRadar{from{transform:scale(.5);opacity:.8}to{transform:scale(1.4);opacity:0}}`}</style>
+              {[0, 400, 800].map((delay, i) => (
+                <div key={i} style={{ position: "absolute", width: 140, height: 140, borderRadius: "50%", border: `3px solid rgba(34,197,94,${0.6 - i * 0.15})`, animation: `lRadar 1.5s ease-out ${delay}ms infinite` }} />
+              ))}
+              <div style={{ width: 56, height: 56, borderRadius: "50%", background: `linear-gradient(135deg,${G},${GD})`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 20px rgba(34,197,94,.4)" }}>
+                <MapPin size={28} color="#fff" />
+              </div>
+            </div>
+            <div style={{ textAlign: "center" }}>
+              <div style={{ fontWeight: 700, fontSize: 18, color: "#111827", marginBottom: 6 }}>Détection en cours</div>
+              <div style={{ fontSize: 14, color: "#64748B" }}>Recherche de votre position...</div>
+              <div style={{ fontSize: 13, color: "#9CA3AF", marginTop: 4 }}>Veuillez patienter quelques secondes</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ══ LIEU : Écran 5 — Confirmation GPS ══ */}
+      {showLocation && locStep === "gps-confirm" && detectedLoc && (
+        <SubPage title="Confirmer le lieu" onClose={() => setLocStep("select")}>
+          <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "16px 20px", borderBottom: "1px solid #F1F5F9" }}>
+            <div style={{ width: 48, height: 48, borderRadius: 14, background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <MapPin size={24} color={G} />
+            </div>
+            <div>
+              <div style={{ fontWeight: 800, fontSize: 17, color: "#111827" }}>{detectedLoc.name}, {detectedLoc.country}</div>
+              {detectedLoc.region && <div style={{ fontSize: 13, color: "#64748B" }}>{detectedLoc.region}, {detectedLoc.country}</div>}
+            </div>
+          </div>
+          <div style={{ padding: "4px 0" }}>
+            {([["Quartier", detectedLoc.neighborhood || "—"], ["Ville", detectedLoc.city], ["Pays", `${detectedLoc.countryCode === "BJ" ? "🇧🇯" : detectedLoc.countryCode === "CI" ? "🇨🇮" : detectedLoc.countryCode === "SN" ? "🇸🇳" : detectedLoc.countryCode === "TG" ? "🇹🇬" : "📍"} ${detectedLoc.country}`], ["Coordonnées", `${detectedLoc.lat.toFixed(4)}° N, ${detectedLoc.lng.toFixed(4)}° E`]] as [string, string][]).map(([label, val], i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 20px", borderBottom: "1px solid #F8FAFC" }}>
+                <span style={{ fontSize: 14, color: "#64748B", fontWeight: 500 }}>{label}</span>
+                <span style={{ fontSize: 14, fontWeight: 600, color: "#111827" }}>{val}</span>
+              </div>
+            ))}
+          </div>
+          <div onClick={() => setLocStep("map")} style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 20px", borderBottom: "1px solid #F1F5F9", cursor: "pointer" }}>
+            <div style={{ width: 38, height: 38, borderRadius: 10, background: "#EFF6FF", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Eye size={18} color="#3B82F6" /></div>
+            <span style={{ fontSize: 14, fontWeight: 600, color: "#3B82F6" }}>Voir sur la carte</span>
+          </div>
+          <div style={{ padding: "16px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
+            <button onClick={() => { setSelectedLocation({ city: detectedLoc.name, country: detectedLoc.country, flag: "📍" }); setLocStep("privacy"); }}
+              style={{ width: "100%", padding: 16, borderRadius: 16, border: "none", background: `linear-gradient(135deg,${G},${GD})`, color: "#fff", fontWeight: 700, fontSize: 16, cursor: "pointer", boxShadow: "0 4px 16px rgba(34,197,94,.3)" }}>
+              Confirmer ce lieu
+            </button>
+            <button onClick={() => setLocStep("select")} style={{ width: "100%", padding: 14, borderRadius: 16, border: "2px solid #E5E7EB", background: "#fff", color: "#374151", fontWeight: 700, fontSize: 15, cursor: "pointer" }}>
+              Choisir un autre lieu
+            </button>
+          </div>
+        </SubPage>
+      )}
+
+      {/* ══ LIEU : Écran 6 — Carte interactive ══ */}
+      {showLocation && locStep === "map" && detectedLoc && (
+        <SubPage title="Choisir sur la carte" onClose={() => setLocStep("gps-confirm")}>
+          <div style={{ padding: "10px 16px" }}>
+            <div style={{ position: "relative" }}>
+              <input placeholder="Rechercher un lieu ici" style={{ width: "100%", padding: "11px 16px 11px 42px", border: "1.5px solid #E5E7EB", borderRadius: 24, fontSize: 14, outline: "none", background: "#fff", boxSizing: "border-box", boxShadow: "0 2px 8px rgba(0,0,0,.06)" }}
+                onFocus={e => (e.currentTarget.style.borderColor = G)} onBlur={e => (e.currentTarget.style.borderColor = "#E5E7EB")} />
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9CA3AF" strokeWidth="2" style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)" }}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            </div>
+          </div>
+          <iframe title="map"
+            src={`https://www.openstreetmap.org/export/embed.html?bbox=${detectedLoc.lng - 0.05},${detectedLoc.lat - 0.04},${detectedLoc.lng + 0.05},${detectedLoc.lat + 0.04}&layer=mapnik&marker=${detectedLoc.lat},${detectedLoc.lng}`}
+            style={{ width: "100%", height: 300, border: "none", display: "block" }} loading="lazy" />
+          <div style={{ background: "#fff", padding: "14px 20px", boxShadow: "0 -4px 16px rgba(0,0,0,.07)" }}>
+            <div style={{ fontWeight: 700, fontSize: 15, color: "#111827", marginBottom: 2 }}>{detectedLoc.name}{detectedLoc.region ? `, ${detectedLoc.region}` : ""}</div>
+            {detectedLoc.neighborhood && <div style={{ fontSize: 13, color: "#64748B", marginBottom: 2 }}>{detectedLoc.neighborhood}</div>}
+            <div style={{ fontSize: 12, color: "#9CA3AF", marginBottom: 12 }}>{detectedLoc.lat.toFixed(4)}° N, {detectedLoc.lng.toFixed(4)}° E</div>
+            <button onClick={() => { setSelectedLocation({ city: detectedLoc.name, country: detectedLoc.country, flag: "📍" }); setLocStep("privacy"); }}
+              style={{ width: "100%", padding: 14, borderRadius: 14, border: "none", background: `linear-gradient(135deg,${G},${GD})`, color: "#fff", fontWeight: 700, fontSize: 15, cursor: "pointer" }}>
+              Sélectionner ce lieu
+            </button>
+          </div>
+        </SubPage>
+      )}
+
+      {/* ══ LIEU : Écran 9 — Confidentialité ══ */}
+      {showLocation && locStep === "privacy" && selectedLocation && (
+        <SubPage title="Confidentialité du lieu" onClose={closeLocation}>
+          <div style={{ padding: "16px 20px 8px" }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: "#111827", marginBottom: 2 }}>Qui peut voir votre lieu ?</div>
+          </div>
+          {(["public", "followers", "friends", "private"] as const).map(opt => {
+            const cfg = { public: { label: "Tout le monde", sub: "Tous les membres de BrutePawa", icon: "🌍" }, followers: { label: "Mes abonnés", sub: "Tous mes abonnés", icon: "📣" }, friends: { label: "Mes amis", sub: "Uniquement mes amis", icon: "👥" }, private: { label: "Personne", sub: "Lieu visible seulement par moi", icon: "🔒" } }[opt];
+            const sel = locPrivacy === opt;
+            return (
+              <div key={opt} onClick={() => setLocPrivacy(opt)} style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 20px", borderBottom: "1px solid #F8FAFC", cursor: "pointer", background: sel ? "#F0FDF4" : "#fff" }}>
+                <div style={{ width: 44, height: 44, borderRadius: 14, background: sel ? "#DCFCE7" : "#F1F5F9", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>{cfg.icon}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 700, fontSize: 15, color: sel ? GD : "#111827" }}>{cfg.label}</div>
+                  <div style={{ fontSize: 12.5, color: "#9CA3AF" }}>{cfg.sub}</div>
+                </div>
+                <div style={{ width: 22, height: 22, borderRadius: "50%", border: sel ? "none" : "2px solid #E5E7EB", background: sel ? G : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  {sel && <Check size={13} color="#fff" />}
+                </div>
+              </div>
+            );
+          })}
+          <div style={{ padding: "16px 20px" }}>
+            <button onClick={() => setLocStep("success")} style={{ width: "100%", padding: 16, borderRadius: 16, border: "none", background: `linear-gradient(135deg,${G},${GD})`, color: "#fff", fontWeight: 700, fontSize: 16, cursor: "pointer" }}>Enregistrer</button>
+            <div style={{ textAlign: "center", marginTop: 10, fontSize: 12, color: "#9CA3AF" }}>Vous pouvez changer cela à tout moment</div>
+          </div>
+        </SubPage>
+      )}
+
+      {/* ══ LIEU : Écran 10 — Succès ══ */}
+      {showLocation && locStep === "success" && selectedLocation && (
+        <div style={{ position: "fixed", inset: 0, background: "#fff", zIndex: 200, display: "flex", flexDirection: "column", fontFamily: "'Inter',-apple-system,sans-serif" }}>
+          <div style={{ display: "flex", alignItems: "center", padding: "14px 16px", borderBottom: "1.5px solid #F1F5F9" }}>
+            <button onClick={closeLocation} style={{ width: 38, height: 38, borderRadius: "50%", border: "none", background: "#F8FAFC", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><ArrowLeft size={20} strokeWidth={2.5} /></button>
+            <div style={{ flex: 1 }} />
+          </div>
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 24px", gap: 20 }}>
+            <div style={{ position: "relative", width: 120, height: 120 }}>
+              {[80, 100, 120].map((s, i) => (
+                <div key={i} style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: s, height: s, borderRadius: "50%", background: `rgba(34,197,94,${0.08 - i * 0.02})` }} />
+              ))}
+              <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 72, height: 72, borderRadius: "50%", background: `linear-gradient(135deg,${G},${GD})`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 24px rgba(34,197,94,.4)" }}>
+                <Check size={36} color="#fff" strokeWidth={3} />
+              </div>
+            </div>
+            <div style={{ textAlign: "center" }}>
+              <div style={{ fontWeight: 800, fontSize: 22, color: "#111827", marginBottom: 6 }}>{selectedLocation.city}, {selectedLocation.country}</div>
+              <div style={{ fontSize: 14, color: "#64748B" }}>a été ajouté à votre publication</div>
+            </div>
+            <div style={{ background: "#F0FDF4", borderRadius: 16, padding: "14px 20px", display: "flex", alignItems: "center", gap: 12, width: "100%", boxSizing: "border-box" }}>
+              <MapPin size={20} color={G} />
+              <span style={{ fontSize: 14, fontWeight: 600, color: GD }}>{selectedLocation.city}, {selectedLocation.country}</span>
+            </div>
+          </div>
+          <div style={{ padding: "16px 20px 32px", display: "flex", flexDirection: "column", gap: 12 }}>
+            <button onClick={closeLocation} style={{ width: "100%", padding: 16, borderRadius: 16, border: "none", background: `linear-gradient(135deg,${G},${GD})`, color: "#fff", fontWeight: 700, fontSize: 16, cursor: "pointer" }}>Voir ma publication</button>
+            <button onClick={closeLocation} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 14, fontWeight: 600, color: "#64748B", padding: 8 }}>Continuer à modifier</button>
+          </div>
+        </div>
       )}
 
       {/* ══ SOUS-PAGE : MUSIQUE ══ */}

@@ -681,6 +681,12 @@ export default function Feed() {
                     <span>·</span>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="#64748B"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6l5 3-1 1.73-6-3.5V7z"/></svg>
                   </div>
+                  {post.location && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#22C55E", marginTop: 2 }}>
+                      <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                      <span>{post.location}</span>
+                    </div>
+                  )}
                 </div>
                 {/* ··· */}
                 <button

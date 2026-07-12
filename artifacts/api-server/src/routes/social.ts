@@ -129,6 +129,7 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
       authorCountry: usersTable.country,
       authorProfileLocked: usersTable.profileLocked,
       authorBadgeType: usersTable.badgeType,
+      location: postsTable.location,
     })
     .from(postsTable)
     .leftJoin(usersTable, eq(postsTable.authorId, usersTable.id))
@@ -183,6 +184,7 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
     isPinned: r.isPinned ?? false,
     commentsDisabled: r.commentsDisabled ?? false,
     audience: r.audience ?? "public",
+    location: (r as { location?: string | null }).location ?? null,
   })));
 });
 
@@ -212,6 +214,7 @@ router.post("/posts", requireAuth, async (req, res): Promise<void> => {
   const musicUrl        = typeof req.body.musicUrl        === "string" && req.body.musicUrl        ? req.body.musicUrl        : null;
   const musicArtworkUrl = typeof req.body.musicArtworkUrl === "string" && req.body.musicArtworkUrl ? req.body.musicArtworkUrl : null;
   const musicDuration   = typeof req.body.musicDuration   === "string" && req.body.musicDuration   ? req.body.musicDuration   : null;
+  const location        = typeof req.body.location        === "string" && req.body.location        ? req.body.location        : null;
 
   try {
     const [post] = await db.insert(postsTable).values({
@@ -224,6 +227,7 @@ router.post("/posts", requireAuth, async (req, res): Promise<void> => {
       musicUrl,
       musicArtworkUrl,
       musicDuration,
+      location,
     }).returning();
     res.status(201).json(post);
   } catch (dbErr: unknown) {
