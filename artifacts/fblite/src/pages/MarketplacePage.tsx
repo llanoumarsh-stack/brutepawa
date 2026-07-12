@@ -236,17 +236,20 @@ export default function MarketplacePage() {
 
   return (
     <div style={{ background: BG, minHeight: "100vh", paddingBottom: 90,
-      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
+      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      overflowX: "hidden", boxSizing: "border-box", width: "100%", maxWidth: "100vw" }}>
       <input ref={mediaRef} type="file" accept="image/*,video/*" multiple style={{ display: "none" }} onChange={handleMedia} />
 
       {/* ── Tab bar ─────────────────────────────────────────── */}
       <div style={{
         background: "#fff", borderBottom: "1px solid #E5E7EB",
-        display: "flex", padding: "0 8px", position: "sticky", top: 0, zIndex: 20,
+        display: "flex", padding: "0 4px", position: "sticky", top: 0, zIndex: 20,
+        overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" as any,
+        width: "100%", boxSizing: "border-box",
       }}>
         {TABS.map(tab => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
-            flex: "0 0 auto", display: "flex", alignItems: "center", gap: 5, padding: "12px 12px",
+            flex: "0 0 auto", display: "flex", alignItems: "center", gap: 5, padding: "12px 14px",
             background: "none", border: "none", cursor: "pointer", whiteSpace: "nowrap",
             borderBottom: activeTab === tab.id ? `2.5px solid ${G}` : "2.5px solid transparent",
             color: activeTab === tab.id ? G : "#64748B",
@@ -259,12 +262,12 @@ export default function MarketplacePage() {
         ))}
       </div>
 
-      <div style={{ padding: "16px 14px 0" }}>
+      <div style={{ padding: "16px 14px 0", boxSizing: "border-box", width: "100%", overflowX: "hidden" }}>
 
         {/* ── Search + Filtres ─────────────────────────────── */}
         <div style={{ display: "flex", gap: 10, marginBottom: 14, alignItems: "center" }}>
           <div style={{
-            flex: 1, display: "flex", alignItems: "center", gap: 8,
+            flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 8,
             background: "#fff", border: "1px solid #E5E7EB", borderRadius: 24, height: 44, padding: "0 14px",
             boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
           }}>
