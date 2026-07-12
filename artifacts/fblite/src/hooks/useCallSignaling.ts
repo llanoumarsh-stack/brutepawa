@@ -272,12 +272,14 @@ export function useCallSignaling(
 
     const remote = new MediaStream();
     pc.ontrack = e => {
-      e.streams[0]?.getTracks().forEach(t => {
-        if (!remote.getTracks().find(x => x.id === t.id)) remote.addTrack(t);
-      });
+      const newTrack = e.track;
+      // Replace any existing track of the same kind (camera→screen or screen→camera)
+      const oldTrack = remote.getTracks().find(t => t.kind === newTrack.kind && t.id !== newTrack.id);
+      if (oldTrack) remote.removeTrack(oldTrack);
+      if (!remote.getTracks().find(t => t.id === newTrack.id)) remote.addTrack(newTrack);
       // Keep the SAME MediaStream object — React will only trigger a re-render
-      // on the first call (null → remote). Subsequent ontrack events (audio/video)
-      // mutate `remote` in-place; the <video> srcObject picks up new tracks
+      // on the first call (null → remote). Subsequent ontrack events mutate
+      // `remote` in-place; the <video> srcObject picks up new/replaced tracks
       // automatically without needing a re-assignment, preventing black flashes.
       setRemoteStream(prev => (prev === remote ? remote : remote));
     };
@@ -583,7 +585,8 @@ export function useCallSignaling(
     });
   }, []);
 
-  // ─── Mid-call renegotiation (only used when ADDING a new track, not replacing) ──
+  // ─── Mid-call renegotiation ───────────────────────────────────────────────
+  // Used after removeTrack+addTrack so the remote's ontrack fires with the new track.
   const renegotiate = useCallback(async () => {
     const pc = pcRef.current;
     const peerId = callPeerIdRef.current;
@@ -595,12 +598,6 @@ export function useCallSignaling(
     } catch { /* ignore */ }
   }, []);
 
-  // ─── Signal remote to force-refresh their video element ──────────────────
-  const signalScreenRefresh = useCallback(() => {
-    const peerId = callPeerIdRef.current;
-    if (peerId !== null) postSignal(peerId, "call:screen-refresh", {}).catch(() => {});
-  }, []);
-
   // ─── Restore camera after screen share ends ───────────────────────────────
   const restoreCamera = useCallback(async () => {
     try {
@@ -609,13 +606,16 @@ export function useCallSignaling(
         audio: false,
       });
       const camTrack = camStream.getVideoTracks()[0];
-      // Find sender — include null-track senders (screen track may have ended)
-      const sender = pcRef.current?.getSenders().find(
-        s => s.track?.kind === "video" || s.track === null
-      );
-      if (sender && camTrack) {
-        await sender.replaceTrack(camTrack);
-        signalScreenRefresh();
+      const pc = pcRef.current;
+      if (pc && camTrack) {
+        // Remove the screen video sender, then add the camera as a new sender.
+        // This triggers ontrack on the remote side with the new camera track,
+        // which is more reliable than replaceTrack across all browser/TURN combinations.
+        pc.getSenders()
+          .filter(s => s.track?.kind === "video" || s.track === null)
+          .forEach(s => pc.removeTrack(s));
+        pc.addTrack(camTrack);
+        await renegotiate();
       }
       const audioTracks = localStreamRef.current?.getAudioTracks() ?? [];
       const combined = new MediaStream([...audioTracks, camTrack]);
@@ -623,7 +623,7 @@ export function useCallSignaling(
       setLocalStream(combined);
     } catch { /* camera access denied or not available */ }
     setIsScreenSharing(false);
-  }, [signalScreenRefresh]);
+  }, [renegotiate]);
 
   const toggleScreenShare = useCallback(async () => {
     if (isScreenSharing) {
@@ -638,18 +638,17 @@ export function useCallSignaling(
         const screenTrack = screenStream.getVideoTracks()[0];
         if (!screenTrack) return;
 
-        const sender = pcRef.current?.getSenders().find(s => s.track?.kind === "video");
+        const pc = pcRef.current;
+        if (!pc) return;
 
-        if (sender) {
-          // replaceTrack swaps the content on the SAME RTP stream — no renegotiation needed
-          await sender.replaceTrack(screenTrack);
-          // Tell the remote to re-bind their <video> srcObject so it picks up new frames
-          signalScreenRefresh();
-        } else if (pcRef.current) {
-          // No video sender yet (audio-only call upgraded) → add new track + renegotiate
-          pcRef.current.addTrack(screenTrack);
-          await renegotiate();
-        }
+        // Remove the camera video sender, then add the screen as a new sender.
+        // removeTrack + addTrack + renegotiate triggers ontrack on the remote,
+        // guaranteeing the remote's video element displays the screen content.
+        pc.getSenders()
+          .filter(s => s.track?.kind === "video")
+          .forEach(s => pc.removeTrack(s));
+        pc.addTrack(screenTrack);
+        await renegotiate();
 
         const audioTracks = localStreamRef.current?.getAudioTracks() ?? [];
         const combined = new MediaStream([...audioTracks, screenTrack]);
@@ -662,7 +661,7 @@ export function useCallSignaling(
         setIsScreenSharing(true);
       } catch { /* user cancelled picker or permission denied */ }
     }
-  }, [isScreenSharing, renegotiate, restoreCamera, signalScreenRefresh]);
+  }, [isScreenSharing, renegotiate, restoreCamera]);
 
   const toggleSpeaker = useCallback(async (audioEl: HTMLAudioElement | null) => {
     const next = !isSpeaker;
