@@ -17,41 +17,32 @@ import ExpandableText from "../components/ExpandableText";
 /* ─── Reactions ─────────────────────────────────────────────── */
 const REACTIONS = [
   {
-    id: "like", label: "J'aime", color: "#22C55E",
-    icon: (active: boolean) => (
-      <svg viewBox="0 0 24 24" width="20" height="20" fill={active ? "#22C55E" : "none"} stroke={active ? "#22C55E" : "#64748B"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M7 10v12M15 5.88L14 10h5.83A2 2 0 0 1 21.83 12.49L19.04 19.5A2 2 0 0 1 17.12 21H7a2 2 0 0 1-2-2v-8.5a2 2 0 0 1 .586-1.414L10 5H13a2 2 0 0 1 2 2v-.12z"/>
-      </svg>
-    ),
-    badge: <svg viewBox="0 0 24 24" width="14" height="14" fill="#22C55E"><path d="M7 10v12M15 5.88L14 10h5.83A2 2 0 0 1 21.83 12.49L19.04 19.5A2 2 0 0 1 17.12 21H7a2 2 0 0 1-2-2v-8.5a2 2 0 0 1 .586-1.414L10 5H13a2 2 0 0 1 2 2v-.12z"/></svg>,
+    id: "like",  label: "J'aime",  color: "#1877F2", emoji: "👍",
+    icon: (active: boolean) => active
+      ? <span style={{ fontSize:20, lineHeight:1 }}>👍</span>
+      : <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#64748B" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M7 10v12M15 5.88L14 10h5.83A2 2 0 0 1 21.83 12.49L19.04 19.5A2 2 0 0 1 17.12 21H7a2 2 0 0 1-2-2v-8.5a2 2 0 0 1 .586-1.414L10 5H13a2 2 0 0 1 2 2v-.12z"/></svg>,
+    badge: <span style={{ fontSize:11, lineHeight:1 }}>👍</span>,
   },
   {
-    id: "adore", label: "J'adore", color: "#F43F5E",
-    icon: (active: boolean) => (
-      <svg viewBox="0 0 24 24" width="20" height="20" fill={active ? "#F43F5E" : "none"} stroke={active ? "#F43F5E" : "#64748B"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-      </svg>
-    ),
-    badge: <svg viewBox="0 0 24 24" width="14" height="14" fill="#F43F5E"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>,
+    id: "adore", label: "J'adore", color: "#F43F5E", emoji: "❤️",
+    icon: (active: boolean) => active
+      ? <span style={{ fontSize:20, lineHeight:1 }}>❤️</span>
+      : <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#64748B" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>,
+    badge: <span style={{ fontSize:11, lineHeight:1 }}>❤️</span>,
   },
   {
-    id: "top", label: "Top", color: "#F97316",
-    icon: (active: boolean) => (
-      <svg viewBox="0 0 24 24" width="20" height="20" fill={active ? "#F97316" : "none"} stroke={active ? "#F97316" : "#64748B"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2c0 0-6 6-6 11a6 6 0 0 0 12 0c0-5-6-11-6-11z"/><path d="M12 12c0 0-3 2-3 4a3 3 0 0 0 6 0c0-2-3-4-3-4z" strokeWidth="1.5"/>
-      </svg>
-    ),
-    badge: <svg viewBox="0 0 24 24" width="14" height="14" fill="#F97316"><path d="M12 2c0 0-6 6-6 11a6 6 0 0 0 12 0c0-5-6-11-6-11z"/></svg>,
+    id: "top",   label: "Top",     color: "#F97316", emoji: "🔥",
+    icon: (active: boolean) => active
+      ? <span style={{ fontSize:20, lineHeight:1 }}>🔥</span>
+      : <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#64748B" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2c0 0-6 6-6 11a6 6 0 0 0 12 0c0-5-6-11-6-11z"/></svg>,
+    badge: <span style={{ fontSize:11, lineHeight:1 }}>🔥</span>,
   },
   {
-    id: "bravo", label: "Bravo", color: "#8B5CF6",
-    icon: (active: boolean) => (
-      <svg viewBox="0 0 24 24" width="20" height="20" fill={active ? "#8B5CF6" : "none"} stroke={active ? "#8B5CF6" : "#64748B"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M8.5 14.5l-2-2a2 2 0 0 0-2.828 2.828L8 19.657A8 8 0 0 0 20 12c0-4.418-3.582-8-8-8a8 8 0 0 0-3.5.804"/>
-        <path d="M7.5 10.5l4 4M10.5 7.5l4 4M13.5 4.5l4 4" strokeWidth="1.7"/>
-      </svg>
-    ),
-    badge: <svg viewBox="0 0 24 24" width="14" height="14" fill="#8B5CF6"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>,
+    id: "bravo", label: "Bravo",   color: "#8B5CF6", emoji: "👏",
+    icon: (active: boolean) => active
+      ? <span style={{ fontSize:20, lineHeight:1 }}>👏</span>
+      : <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#64748B" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M8.5 14.5l-2-2a2 2 0 0 0-2.828 2.828L8 19.657A8 8 0 0 0 20 12c0-4.418-3.582-8-8-8a8 8 0 0 0-3.5.804"/><path d="M7.5 10.5l4 4M10.5 7.5l4 4M13.5 4.5l4 4" strokeWidth="1.7"/></svg>,
+    badge: <span style={{ fontSize:11, lineHeight:1 }}>👏</span>,
   },
 ];
 
@@ -640,17 +631,34 @@ export default function PostDetailPage({ postId }: Props) {
         {/* ── 4 Action buttons — equal width, no text cut ─────── */}
         <div style={{ display:"flex", position:"relative" }}>
 
-          {/* Reactions popup */}
+          {/* Reactions popup — Facebook-style 3D emoji bubbles */}
           {showReactions && (
-            <div style={{ position:"absolute", bottom:"calc(100% + 8px)", left:0, background:"#fff", borderRadius:28, boxShadow:"0 8px 32px rgba(0,0,0,0.14)", padding:"12px 16px", display:"flex", gap:10, zIndex:200, animation:"bp-pop .18s cubic-bezier(.22,1,.36,1)", border:"1px solid rgba(0,0,0,0.05)" }}>
-              {REACTIONS.map(r => (
+            <div style={{ position:"absolute", bottom:"calc(100% + 10px)", left:0, background:"#fff", borderRadius:40, boxShadow:"0 8px 36px rgba(0,0,0,0.18)", padding:"12px 14px", display:"flex", gap:6, zIndex:200, animation:"bp-pop .2s cubic-bezier(.22,1,.36,1)", border:"1px solid rgba(0,0,0,0.06)" }}>
+              <style>{`
+                @keyframes bp-bubble-in { 0%{transform:scale(0) translateY(10px);opacity:0} 80%{transform:scale(1.12) translateY(-2px)} 100%{transform:scale(1) translateY(0);opacity:1} }
+                .bp-rbubble { animation: bp-bubble-in .22s ease both; }
+                .bp-rbubble:hover { transform: scale(1.28) translateY(-6px) !important; transition: transform .12s !important; }
+                .bp-rbubble:active { transform: scale(0.92) !important; }
+              `}</style>
+              {REACTIONS.map((r, i) => (
                 <button key={r.id} onClick={() => pickReaction(r.id)} title={r.label}
-                  style={{ background: userReaction === r.id ? r.color + "18" : "none", border:"none", cursor:"pointer", padding:"6px 8px", borderRadius:12, display:"flex", flexDirection:"column", alignItems:"center", gap:4, transition:"transform .12s,background .12s" }}
-                  onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.25)")}
-                  onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}
+                  className="bp-rbubble"
+                  style={{ background:"none", border:"none", cursor:"pointer", padding:0, display:"flex", flexDirection:"column", alignItems:"center", gap:5, animationDelay:`${i * 0.04}s` }}
                 >
-                  {r.icon(userReaction === r.id)}
-                  <span style={{ fontSize:9, fontWeight:700, color:r.color }}>{r.label}</span>
+                  {/* 3D sphere */}
+                  <div style={{
+                    width:54, height:54, borderRadius:"50%",
+                    background: `radial-gradient(circle at 38% 32%, ${r.color}ff 0%, ${r.color}cc 45%, ${r.color}99 100%)`,
+                    boxShadow: `0 6px 18px ${r.color}55, inset 0 -3px 6px rgba(0,0,0,0.18), inset 0 3px 8px rgba(255,255,255,0.38)`,
+                    display:"flex", alignItems:"center", justifyContent:"center",
+                    fontSize:28,
+                    outline: userReaction === r.id ? `3px solid ${r.color}` : "none",
+                    outlineOffset: 2,
+                    transition:"outline .1s",
+                  }}>
+                    {r.emoji}
+                  </div>
+                  <span style={{ fontSize:10, fontWeight:700, color: userReaction === r.id ? r.color : "#374151", whiteSpace:"nowrap" }}>{r.label}</span>
                 </button>
               ))}
             </div>
