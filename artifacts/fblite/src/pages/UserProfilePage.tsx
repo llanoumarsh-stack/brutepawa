@@ -7,7 +7,7 @@ import {
   apiSendFriendRequest, apiAcceptFriendRequest, apiRejectFriendRequest,
   apiBlockUser, apiUnblockUser, apiCheckBlock, apiReportUser, apiGetUserStats,
   apiGetMutualFriends, apiGetMutualGroups, apiHideUser,
-  apiToggleSaved, apiHidePost, apiReportPost, apiGetUserPresence,
+  apiToggleSaved, apiHidePost, apiReportPost, apiGetUserPresence, apiLikePost,
   type PublicUser, type PublicUserWithStatus, type FriendRequest, type FeedPost,
 } from "../lib/api";
 
@@ -255,6 +255,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
 
   const [postMenu, setPostMenu] = useState<number | null>(null);
   const [savedPostIds, setSavedPostIds] = useState<Set<number>>(new Set());
+  const [likedPostIds, setLikedPostIds] = useState<Set<number>>(new Set());
   const [postReportSheet, setPostReportSheet] = useState<number | null>(null);
   const [postReportReason, setPostReportReason] = useState("");
 
@@ -295,7 +296,9 @@ export default function UserProfilePage({ userId }: { userId: number }) {
       } else {
         setUser(null);
       }
-      setPosts(userPosts as FeedPost[]);
+      const fp = userPosts as FeedPost[];
+      setPosts(fp);
+      setLikedPostIds(new Set(fp.filter(p => p.likedByMe).map(p => p.id)));
       const req = (requests as FriendRequest[]).find(r => r.fromUser.id === userId);
       setPendingRequest(req ?? null);
       setIsBlocked(blocked as boolean);
@@ -304,6 +307,22 @@ export default function UserProfilePage({ userId }: { userId: number }) {
   }, [userId]);
 
   /* ── HANDLERS ──────────────────────────────────────── */
+  const handleLike = async (postId: number) => {
+    const isLiked = likedPostIds.has(postId);
+    setLikedPostIds(prev => { const s = new Set(prev); isLiked ? s.delete(postId) : s.add(postId); return s; });
+    setPosts(ps => ps.map(p => p.id === postId ? { ...p, likesCount: p.likesCount + (isLiked ? -1 : 1) } : p));
+    try { await apiLikePost(postId, isLiked ? "unlike" : "like"); } catch {
+      setLikedPostIds(prev => { const s = new Set(prev); isLiked ? s.add(postId) : s.delete(postId); return s; });
+      setPosts(ps => ps.map(p => p.id === postId ? { ...p, likesCount: p.likesCount + (isLiked ? 1 : -1) } : p));
+    }
+  };
+
+  const handleShare = (postId: number) => {
+    const url = `${window.location.origin}${import.meta.env.BASE_URL ?? ""}post/${postId}`;
+    if (navigator.share) navigator.share({ url }).catch(() => {});
+    else navigator.clipboard?.writeText(url).catch(() => {});
+  };
+
   const openMenu = () => setMenuPanel("menu");
   const closeAll = () => setMenuPanel(null);
 
@@ -1099,19 +1118,36 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                 <div style={{ fontSize: 14.5, color: "#64748B", lineHeight: 1.65 }}>{post.content}</div>
                 {post.imageUrl && <img src={post.imageUrl} alt="" onClick={() => openImageViewer(post.imageUrl!)} style={{ width: "100%", maxHeight: 320, objectFit: "cover", borderRadius: 14, marginTop: 12, cursor: "zoom-in" }} />}
                 <div style={{ display: "flex", gap: 2, marginTop: 12, paddingTop: 10, borderTop: "1px solid #F8FAFC" }}>
-                  {[
-                    { icon: <IcoLike />, label: `${post.likesCount}`, suffix: "J'aime" },
-                    { icon: <IcoComment />, label: `${post.commentsCount}`, suffix: "Commenter" },
-                    { icon: <IcoShareFeed />, label: "", suffix: "Partager" },
-                  ].map((btn, i) => (
-                    <button key={i} style={{ flex: 1, padding: "8px 4px", background: "none", border: "none", cursor: "pointer", fontWeight: 600, color: "#64748B", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, borderRadius: 10, fontSize: 12.5 }}
-                      onPointerDown={e => (e.currentTarget.style.background = "#F8FAFC")}
-                      onPointerUp={e => (e.currentTarget.style.background = "none")}
-                      onPointerLeave={e => (e.currentTarget.style.background = "none")}
-                    >
-                      {btn.icon}<span>{btn.label ? `${btn.label} ` : ""}{btn.suffix}</span>
-                    </button>
-                  ))}
+                  {/* J'aime */}
+                  <button onClick={() => handleLike(post.id)}
+                    style={{ flex: 1, padding: "8px 4px", background: "none", border: "none", cursor: "pointer", fontWeight: 600, color: likedPostIds.has(post.id) ? "#22C55E" : "#64748B", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, borderRadius: 10, fontSize: 12.5, transition: "color .15s" }}
+                    onPointerDown={e => (e.currentTarget.style.background = "#F8FAFC")}
+                    onPointerUp={e => (e.currentTarget.style.background = "none")}
+                    onPointerLeave={e => (e.currentTarget.style.background = "none")}
+                  >
+                    <IcoLike active={likedPostIds.has(post.id)} />
+                    <span>{post.likesCount > 0 ? `${post.likesCount} ` : ""}J'aime</span>
+                  </button>
+                  {/* Commenter */}
+                  <button onClick={() => navigate(`/post/${post.id}`)}
+                    style={{ flex: 1, padding: "8px 4px", background: "none", border: "none", cursor: "pointer", fontWeight: 600, color: "#64748B", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, borderRadius: 10, fontSize: 12.5 }}
+                    onPointerDown={e => (e.currentTarget.style.background = "#F8FAFC")}
+                    onPointerUp={e => (e.currentTarget.style.background = "none")}
+                    onPointerLeave={e => (e.currentTarget.style.background = "none")}
+                  >
+                    <IcoComment />
+                    <span>{post.commentsCount > 0 ? `${post.commentsCount} ` : ""}Commenter</span>
+                  </button>
+                  {/* Partager */}
+                  <button onClick={() => handleShare(post.id)}
+                    style={{ flex: 1, padding: "8px 4px", background: "none", border: "none", cursor: "pointer", fontWeight: 600, color: "#64748B", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, borderRadius: 10, fontSize: 12.5 }}
+                    onPointerDown={e => (e.currentTarget.style.background = "#F8FAFC")}
+                    onPointerUp={e => (e.currentTarget.style.background = "none")}
+                    onPointerLeave={e => (e.currentTarget.style.background = "none")}
+                  >
+                    <IcoShareFeed />
+                    <span>Partager</span>
+                  </button>
                 </div>
               </div>
             ))}
