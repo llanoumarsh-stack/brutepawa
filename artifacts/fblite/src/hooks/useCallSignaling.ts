@@ -277,12 +277,21 @@ export function useCallSignaling(
       const oldTrack = remote.getTracks().find(t => t.kind === newTrack.kind && t.id !== newTrack.id);
       if (oldTrack) remote.removeTrack(oldTrack);
       if (!remote.getTracks().find(t => t.id === newTrack.id)) remote.addTrack(newTrack);
-      // Keep the SAME MediaStream object — React will only trigger a re-render
-      // on the first call (null → remote). Subsequent ontrack events mutate
-      // `remote` in-place; the <video> srcObject picks up new/replaced tracks
-      // automatically without needing a re-assignment, preventing black flashes.
-      setRemoteStream(prev => (prev === remote ? remote : remote));
+      if (oldTrack) {
+        // Track was replaced: force a new MediaStream reference so React's useEffect
+        // re-runs and re-assigns <video>.srcObject — ensuring the element binds to
+        // the screen track (or restored camera) instead of keeping the stale one.
+        setRemoteStream(new MediaStream(remote.getTracks()));
+      } else {
+        // First-time track (audio or video on call start): mutate in-place to avoid flicker
+        setRemoteStream(prev => (prev === remote ? remote : remote));
+      }
     };
+
+    // Suppress Chrome's automatic re-negotiation on removeTrack/addTrack.
+    // We manage offer/answer exchange explicitly via renegotiate() to avoid
+    // concurrent offer collisions that cause silent failures.
+    pc.onnegotiationneeded = () => {};
 
     pc.onconnectionstatechange = () => {
       if (pc.connectionState === "connected") applyBitrateLimit(pc);
