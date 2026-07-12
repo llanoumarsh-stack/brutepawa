@@ -26,7 +26,7 @@ const REACTIONS = [
     badge: <svg viewBox="0 0 24 24" width="14" height="14" fill="#22C55E"><path d="M7 10v12M15 5.88L14 10h5.83A2 2 0 0 1 21.83 12.49L19.04 19.5A2 2 0 0 1 17.12 21H7a2 2 0 0 1-2-2v-8.5a2 2 0 0 1 .586-1.414L10 5H13a2 2 0 0 1 2 2v-.12z"/></svg>,
   },
   {
-    id: "love", label: "J'adore", color: "#F43F5E",
+    id: "adore", label: "J'adore", color: "#F43F5E",
     icon: (active: boolean) => (
       <svg viewBox="0 0 24 24" width="20" height="20" fill={active ? "#F43F5E" : "none"} stroke={active ? "#F43F5E" : "#64748B"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
@@ -35,7 +35,7 @@ const REACTIONS = [
     badge: <svg viewBox="0 0 24 24" width="14" height="14" fill="#F43F5E"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>,
   },
   {
-    id: "fire", label: "Top", color: "#F97316",
+    id: "top", label: "Top", color: "#F97316",
     icon: (active: boolean) => (
       <svg viewBox="0 0 24 24" width="20" height="20" fill={active ? "#F97316" : "none"} stroke={active ? "#F97316" : "#64748B"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
         <path d="M12 2c0 0-6 6-6 11a6 6 0 0 0 12 0c0-5-6-11-6-11z"/><path d="M12 12c0 0-3 2-3 4a3 3 0 0 0 6 0c0-2-3-4-3-4z" strokeWidth="1.5"/>
@@ -44,7 +44,7 @@ const REACTIONS = [
     badge: <svg viewBox="0 0 24 24" width="14" height="14" fill="#F97316"><path d="M12 2c0 0-6 6-6 11a6 6 0 0 0 12 0c0-5-6-11-6-11z"/></svg>,
   },
   {
-    id: "clap", label: "Bravo", color: "#8B5CF6",
+    id: "bravo", label: "Bravo", color: "#8B5CF6",
     icon: (active: boolean) => (
       <svg viewBox="0 0 24 24" width="20" height="20" fill={active ? "#8B5CF6" : "none"} stroke={active ? "#8B5CF6" : "#64748B"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
         <path d="M8.5 14.5l-2-2a2 2 0 0 0-2.828 2.828L8 19.657A8 8 0 0 0 20 12c0-4.418-3.582-8-8-8a8 8 0 0 0-3.5.804"/>
@@ -110,6 +110,8 @@ interface PostData {
   musicUrl: string | null; musicArtworkUrl: string | null; musicDuration: string | null;
   likesCount: number; commentsCount: number; createdAt: string; liked: boolean;
   authorBadgeType?: string | null;
+  userReactionType?: string | null;
+  reactionSummary?: { type: string; count: number }[];
 }
 
 
@@ -228,10 +230,10 @@ export default function PostDetailPage({ postId }: Props) {
   const [post, setPost]               = useState<PostData | null>(null);
   const [loading, setLoading]         = useState(true);
   const [error, setError]             = useState<string | null>(null);
-  const [liked, setLiked]             = useState(false);
-  const [likesCount, setLikesCount]   = useState(0);
-  const [reaction, setReaction]       = useState<string>("like");
-  const [showReactions, setShowReactions] = useState(false);
+  const [userReaction, setUserReaction]     = useState<string | null>(null);
+  const [reactionSummary, setReactionSummary] = useState<{ type: string; count: number }[]>([]);
+  const [reactionsTotal, setReactionsTotal] = useState(0);
+  const [showReactions, setShowReactions]   = useState(false);
   const reactionTimer                 = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [saved, setSaved]             = useState(false);
   const [comments, setComments]       = useState<PostComment[]>([]);
@@ -362,7 +364,10 @@ export default function PostDetailPage({ postId }: Props) {
   useEffect(() => {
     apiFetch(`/posts/${postId}`).then(r => r.json()).then((data: PostData & { error?: string }) => {
       if (data.error) { setError(data.error); return; }
-      setPost(data); setLiked(data.liked); setLikesCount(data.likesCount);
+      setPost(data);
+      setUserReaction(data.userReactionType ?? null);
+      setReactionSummary(data.reactionSummary ?? []);
+      setReactionsTotal(data.likesCount ?? 0);
     }).catch(() => setError("Impossible de charger cette publication.")).finally(() => setLoading(false));
   }, [postId]);
 
@@ -372,17 +377,47 @@ export default function PostDetailPage({ postId }: Props) {
   useEffect(() => { loadComments(); }, [loadComments]);
   useEffect(() => { setTimeout(() => inputRef.current?.focus(), 300); }, []);
 
-  const toggleLike = () => {
-    const action = liked ? "unlike" : "like";
-    setLiked(!liked); setLikesCount(c => liked ? Math.max(0, c - 1) : c + 1);
-    apiFetch(`/posts/${postId}/like`, { method:"POST", body:JSON.stringify({ action }) }).catch(() => {
-      setLiked(liked); setLikesCount(c => liked ? c + 1 : Math.max(0, c - 1));
-    });
+  const reactWith = (type: string | null) => {
+    const wasActive = userReaction === type;
+    const newType = wasActive ? null : type;
+    const prevReaction = userReaction;
+    const prevSummary = reactionSummary;
+    const prevTotal = reactionsTotal;
+    // Optimistic update
+    setUserReaction(newType);
+    if (wasActive) {
+      setReactionSummary(prev => prev.map(r => r.type === type ? { ...r, count: r.count - 1 } : r).filter(r => r.count > 0));
+      setReactionsTotal(t => Math.max(0, t - 1));
+    } else if (userReaction) {
+      setReactionSummary(prev => {
+        const updated = prev.map(r => r.type === userReaction ? { ...r, count: r.count - 1 } : r).filter(r => r.count > 0);
+        const exists = updated.find(r => r.type === type!);
+        return exists
+          ? updated.map(r => r.type === type ? { ...r, count: r.count + 1 } : r)
+          : [...updated, { type: type!, count: 1 }].sort((a, b) => b.count - a.count);
+      });
+    } else {
+      setReactionSummary(prev => {
+        const exists = prev.find(r => r.type === type!);
+        return exists
+          ? prev.map(r => r.type === type ? { ...r, count: r.count + 1 } : r)
+          : [...prev, { type: type!, count: 1 }].sort((a, b) => b.count - a.count);
+      });
+      setReactionsTotal(t => t + 1);
+    }
+    apiFetch(`/posts/${postId}/react`, { method:"POST", body:JSON.stringify({ reactionType: newType }) })
+      .then(r => r.json()).then((data: { userReactionType: string | null; reactionSummary: { type: string; count: number }[]; likesCount: number }) => {
+        setUserReaction(data.userReactionType ?? null);
+        setReactionSummary(data.reactionSummary ?? []);
+        setReactionsTotal(data.likesCount ?? 0);
+      }).catch(() => {
+        setUserReaction(prevReaction); setReactionSummary(prevSummary); setReactionsTotal(prevTotal);
+      });
   };
 
   const startReactionTimer = () => { reactionTimer.current = setTimeout(() => setShowReactions(true), 500); };
   const cancelReactionTimer = () => { if (reactionTimer.current) { clearTimeout(reactionTimer.current); reactionTimer.current = null; } };
-  const pickReaction = (id: string) => { setReaction(id); setLiked(true); setShowReactions(false); };
+  const pickReaction = (id: string) => { setShowReactions(false); reactWith(id); };
 
   const startReply = (c: PostComment) => {
     setReplyingTo(c.id); setReplyName(`${c.authorFirstName} ${c.authorLastName}`);
@@ -420,7 +455,7 @@ export default function PostDetailPage({ postId }: Props) {
 
   const topLevel = comments.filter(c => !c.parentId);
   const replies  = (pid: number) => comments.filter(c => c.parentId === pid);
-  const activeReaction = REACTIONS.find(r => r.id === reaction) ?? REACTIONS[0];
+  const activeReaction = REACTIONS.find(r => r.id === (userReaction ?? "like")) ?? REACTIONS[0];
 
   if (loading) return (
     <div style={{ background:"#F8FAFC", minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center" }}>
@@ -482,16 +517,25 @@ export default function PostDetailPage({ postId }: Props) {
             <Avatar url={post.authorAvatarUrl} name={post.authorName} size={52} borderWidth={3} online />
           </div>
           <div style={{ flex:1, minWidth:0 }}>
-            <div style={{ display:"flex", alignItems:"center", gap:6, flexWrap:"wrap" }}>
+            {/* Line 1: name + badge icon */}
+            <div style={{ display:"flex", alignItems:"center", gap:6 }}>
               <span style={{ fontWeight:900, fontSize:16.5, color:"#111827" }}>{post.authorName}</span>
-              <UserBadge type={post.authorBadgeType} />
-              {post.authorBadgeType && BADGE_CONFIG[post.authorBadgeType] && (
-                <span style={{ fontSize:11, fontWeight:700, color: BADGE_CONFIG[post.authorBadgeType].color }}>
-                  {BADGE_CONFIG[post.authorBadgeType].label}
-                </span>
-              )}
+              {post.authorBadgeType && <UserBadge type={post.authorBadgeType} />}
             </div>
-            <div style={{ display:"flex", alignItems:"center", gap:5, marginTop:3 }}>
+            {/* Line 2: badge label pill + time + globe */}
+            <div style={{ display:"flex", alignItems:"center", gap:5, marginTop:3, flexWrap:"wrap" }}>
+              {post.authorBadgeType && BADGE_CONFIG[post.authorBadgeType] && (
+                <>
+                  <span style={{
+                    fontSize:11, fontWeight:700, color: BADGE_CONFIG[post.authorBadgeType].color,
+                    background: BADGE_CONFIG[post.authorBadgeType].color + "18",
+                    borderRadius:20, padding:"2px 9px", lineHeight:"16px",
+                  }}>
+                    {BADGE_CONFIG[post.authorBadgeType].label}
+                  </span>
+                  <span style={{ color:"#E5E7EB", fontSize:10 }}>·</span>
+                </>
+              )}
               <span style={{ fontSize:12, color:"#9CA3AF", fontWeight:500 }}>{timeAgo(post.createdAt)}</span>
               <span style={{ color:"#E5E7EB", fontSize:10 }}>·</span>
               <svg viewBox="0 0 24 24" width="13" height="13" fill="#9CA3AF"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
@@ -548,20 +592,24 @@ export default function PostDetailPage({ postId }: Props) {
           </div>
         )}
 
-        {/* Reactions summary bar */}
-        {(liked || likesCount > 0) && (
+        {/* Reactions summary bar — only shows types actually in DB */}
+        {reactionsTotal > 0 && (
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"4px 16px 10px" }}>
             <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-              {/* Stacked badge circles */}
+              {/* Stacked circles from real DB reaction types */}
               <div style={{ display:"flex" }}>
-                {[activeReaction, REACTIONS[1], REACTIONS[2]].slice(0, liked ? 3 : 2).map((r, i) => (
-                  <div key={r.id} style={{ width:22, height:22, borderRadius:"50%", background:r.color, border:"2px solid #fff", display:"flex", alignItems:"center", justifyContent:"center", marginLeft: i === 0 ? 0 : -7, zIndex: 3 - i, boxShadow:"0 1px 4px rgba(0,0,0,0.1)" }}>
-                    {r.badge}
-                  </div>
-                ))}
+                {reactionSummary.slice(0, 3).map((rs, i) => {
+                  const r = REACTIONS.find(rx => rx.id === rs.type);
+                  if (!r) return null;
+                  return (
+                    <div key={rs.type} style={{ width:22, height:22, borderRadius:"50%", background:r.color, border:"2px solid #fff", display:"flex", alignItems:"center", justifyContent:"center", marginLeft: i === 0 ? 0 : -7, zIndex: 3 - i, boxShadow:"0 1px 4px rgba(0,0,0,0.1)" }}>
+                      {r.badge}
+                    </div>
+                  );
+                })}
               </div>
               <span style={{ fontSize:13, color:"#64748B", fontWeight:600 }}>
-                {likesCount} réaction{likesCount > 1 ? "s" : ""}
+                {reactionsTotal} réaction{reactionsTotal > 1 ? "s" : ""}
               </span>
             </div>
             {/* Mini-avatar stack + chevron */}
@@ -597,11 +645,11 @@ export default function PostDetailPage({ postId }: Props) {
             <div style={{ position:"absolute", bottom:"calc(100% + 8px)", left:0, background:"#fff", borderRadius:28, boxShadow:"0 8px 32px rgba(0,0,0,0.14)", padding:"12px 16px", display:"flex", gap:10, zIndex:200, animation:"bp-pop .18s cubic-bezier(.22,1,.36,1)", border:"1px solid rgba(0,0,0,0.05)" }}>
               {REACTIONS.map(r => (
                 <button key={r.id} onClick={() => pickReaction(r.id)} title={r.label}
-                  style={{ background: reaction === r.id ? r.color + "18" : "none", border:"none", cursor:"pointer", padding:"6px 8px", borderRadius:12, display:"flex", flexDirection:"column", alignItems:"center", gap:4, transition:"transform .12s,background .12s" }}
+                  style={{ background: userReaction === r.id ? r.color + "18" : "none", border:"none", cursor:"pointer", padding:"6px 8px", borderRadius:12, display:"flex", flexDirection:"column", alignItems:"center", gap:4, transition:"transform .12s,background .12s" }}
                   onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.25)")}
                   onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}
                 >
-                  {r.icon(reaction === r.id)}
+                  {r.icon(userReaction === r.id)}
                   <span style={{ fontSize:9, fontWeight:700, color:r.color }}>{r.label}</span>
                 </button>
               ))}
@@ -610,16 +658,16 @@ export default function PostDetailPage({ postId }: Props) {
 
           {/* J'aime */}
           <button
-            className={`bp-action${liked ? " bp-action-active" : ""}`}
-            style={{ color: liked ? activeReaction.color : "#64748B", animation: liked ? "bp-like .3s ease" : undefined, borderRadius:"0 0 0 24px" }}
-            onClick={() => { cancelReactionTimer(); toggleLike(); }}
+            className={`bp-action${userReaction ? " bp-action-active" : ""}`}
+            style={{ color: userReaction ? activeReaction.color : "#64748B", animation: userReaction ? "bp-like .3s ease" : undefined, borderRadius:"0 0 0 24px" }}
+            onClick={() => { cancelReactionTimer(); reactWith("like"); }}
             onMouseDown={startReactionTimer} onMouseUp={cancelReactionTimer}
             onTouchStart={startReactionTimer} onTouchEnd={cancelReactionTimer}
           >
-            {activeReaction.icon(liked)}
+            {activeReaction.icon(!!userReaction)}
             <span style={{ fontSize:13, fontWeight:700 }}>
-              {liked ? activeReaction.label : "J'aime"}
-              {likesCount > 0 ? ` ${likesCount}` : ""}
+              {userReaction ? activeReaction.label : "J'aime"}
+              {reactionsTotal > 0 ? ` ${reactionsTotal}` : ""}
             </span>
           </button>
 

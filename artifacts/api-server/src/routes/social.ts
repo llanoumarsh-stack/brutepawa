@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { createHmac } from "node:crypto";
-import { db, postsTable, postLikesTable, messagesTable, usersTable, storiesTable, userBlocksTable, notificationsTable, commentsTable, commentLikesTable, savedPostsTable, postReportsTable, friendRequestsTable, hiddenPostsTable } from "@workspace/db";
+import { db, postsTable, postLikesTable, postReactionsTable, messagesTable, usersTable, storiesTable, userBlocksTable, notificationsTable, commentsTable, commentLikesTable, savedPostsTable, postReportsTable, friendRequestsTable, hiddenPostsTable } from "@workspace/db";
 import { eq, and, or, desc, sql, gt, lt } from "drizzle-orm";
 import { CreatePostBody, GetPostParams, DeletePostParams, LikePostParams, LikePostBody, SendMessageBody, GetConversationParams, ListPostsQueryParams } from "@workspace/api-zod";
 import { requireAuth } from "../middlewares/requireAuth";
@@ -267,12 +267,27 @@ router.get("/posts/:id", requireAuth, async (req, res): Promise<void> => {
     .from(postLikesTable)
     .where(and(eq(postLikesTable.postId, params.data.id), eq(postLikesTable.userId, req.userId!)));
 
+  // Reaction summary
+  const reactionRows = await db.select({
+    reactionType: postReactionsTable.reactionType,
+    count: sql<number>`COUNT(*)::int`,
+  }).from(postReactionsTable)
+    .where(eq(postReactionsTable.postId, params.data.id))
+    .groupBy(postReactionsTable.reactionType)
+    .orderBy(desc(sql<number>`COUNT(*)`));
+
+  const [myReactionRow] = await db.select({ reactionType: postReactionsTable.reactionType })
+    .from(postReactionsTable)
+    .where(and(eq(postReactionsTable.postId, params.data.id), eq(postReactionsTable.userId, req.userId!)));
+
   res.json({
     ...row,
     authorName: row.authorFirstName && row.authorLastName
       ? `${row.authorFirstName} ${row.authorLastName}`
       : "Utilisateur",
     liked: !!likeRow,
+    userReactionType: myReactionRow?.reactionType ?? null,
+    reactionSummary: reactionRows.map(r => ({ type: r.reactionType, count: r.count })),
   });
 });
 
@@ -337,6 +352,66 @@ router.post("/posts/:id/like", requireAuth, async (req, res): Promise<void> => {
   }
 
   res.json(post);
+});
+
+router.post("/posts/:id/react", requireAuth, async (req, res): Promise<void> => {
+  const params = LikePostParams.safeParse({ id: Number(req.params.id) });
+  if (!params.success) { res.status(400).json({ error: "Invalid input" }); return; }
+
+  const VALID_TYPES = ["like", "adore", "top", "bravo"];
+  const reactionType: string | null = req.body?.reactionType ?? null;
+  if (reactionType !== null && !VALID_TYPES.includes(reactionType)) {
+    res.status(400).json({ error: "Invalid reaction type" }); return;
+  }
+
+  const [existing] = await db.select({ id: postReactionsTable.id, reactionType: postReactionsTable.reactionType })
+    .from(postReactionsTable)
+    .where(and(eq(postReactionsTable.postId, params.data.id), eq(postReactionsTable.userId, req.userId!)));
+
+  if (!reactionType || existing?.reactionType === reactionType) {
+    // Unreact (toggle off)
+    if (existing) {
+      await db.delete(postReactionsTable)
+        .where(and(eq(postReactionsTable.postId, params.data.id), eq(postReactionsTable.userId, req.userId!)));
+      await db.update(postsTable)
+        .set({ likesCount: sql`GREATEST(${postsTable.likesCount} - 1, 0)` })
+        .where(eq(postsTable.id, params.data.id));
+    }
+  } else if (existing) {
+    // Change reaction type — no count change
+    await db.update(postReactionsTable)
+      .set({ reactionType })
+      .where(and(eq(postReactionsTable.postId, params.data.id), eq(postReactionsTable.userId, req.userId!)));
+  } else {
+    // New reaction
+    await db.insert(postReactionsTable).values({ postId: params.data.id, userId: req.userId!, reactionType });
+    await db.update(postsTable)
+      .set({ likesCount: sql`${postsTable.likesCount} + 1` })
+      .where(eq(postsTable.id, params.data.id));
+    // Notification
+    const [post] = await db.select({ authorId: postsTable.authorId }).from(postsTable).where(eq(postsTable.id, params.data.id));
+    if (post && post.authorId !== req.userId!) {
+      const [reactor] = await db.select({ firstName: usersTable.firstName, lastName: usersTable.lastName })
+        .from(usersTable).where(eq(usersTable.id, req.userId!));
+      const reactorName = reactor ? `${reactor.firstName} ${reactor.lastName}`.trim() : "Quelqu'un";
+      const labels: Record<string, string> = { like: "aimé", adore: "adoré", top: "trouvé top", bravo: "applaudi" };
+      pushToUserDevice(post.authorId, { title: "Brute Pawa", body: `${reactorName} a ${labels[reactionType] ?? "réagi à"} votre publication`, tag: `react-${params.data.id}`, data: { url: "/" } }).catch(() => {});
+      db.insert(notificationsTable).values({ userId: post.authorId, type: "like", actorId: req.userId!, actorName: reactorName, action: `a ${labels[reactionType] ?? "réagi à"} votre publication`, link: `/profile/${req.userId!}` }).catch(() => {});
+    }
+  }
+
+  const [updatedPost] = await db.select({ likesCount: postsTable.likesCount }).from(postsTable).where(eq(postsTable.id, params.data.id));
+  const reactionRows = await db.select({ reactionType: postReactionsTable.reactionType, count: sql<number>`COUNT(*)::int` })
+    .from(postReactionsTable).where(eq(postReactionsTable.postId, params.data.id))
+    .groupBy(postReactionsTable.reactionType).orderBy(desc(sql<number>`COUNT(*)`));
+  const [myReactionRow] = await db.select({ reactionType: postReactionsTable.reactionType })
+    .from(postReactionsTable).where(and(eq(postReactionsTable.postId, params.data.id), eq(postReactionsTable.userId, req.userId!)));
+
+  res.json({
+    userReactionType: myReactionRow?.reactionType ?? null,
+    reactionSummary: reactionRows.map(r => ({ type: r.reactionType, count: r.count })),
+    likesCount: updatedPost?.likesCount ?? 0,
+  });
 });
 
 router.get("/messages", requireAuth, async (req, res): Promise<void> => {

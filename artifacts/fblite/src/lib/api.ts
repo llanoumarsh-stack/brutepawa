@@ -551,6 +551,20 @@ export async function apiLikePost(id: number, action: "like" | "unlike"): Promis
   });
 }
 
+export interface ReactionSummaryItem { type: string; count: number; }
+export interface ReactPostResult {
+  userReactionType: string | null;
+  reactionSummary: ReactionSummaryItem[];
+  likesCount: number;
+}
+export async function apiReactPost(id: number, reactionType: string | null): Promise<ReactPostResult> {
+  const r = await apiFetch(`/posts/${id}/react`, {
+    method: "POST",
+    body: JSON.stringify({ reactionType }),
+  });
+  return r.json();
+}
+
 export async function apiDeletePost(id: number): Promise<void> {
   await apiFetch(`/posts/${id}`, { method: "DELETE" });
 }
