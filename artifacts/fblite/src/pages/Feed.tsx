@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import ExpandableText from "../components/ExpandableText";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { openImageViewer } from "../components/ImageViewer";
@@ -713,20 +714,20 @@ export default function Feed() {
                   <>
                     {/* Pure music tag — don't show as text */}
                     {post.content && !isMusicContent && !post.musicTrackName && !parsedLine && (
-                      <div style={{ padding: "0 14px 10px", fontSize: 15, color: "#111827", lineHeight: 1.5 }}>
-                        {post.content}
+                      <div style={{ padding: "0 14px 10px" }}>
+                        <ExpandableText text={post.content} maxChars={220} fontSize={15} color="#111827" lineHeight={1.5} />
                       </div>
                     )}
                     {/* Caption from DB musicTrackName posts */}
                     {post.content && post.musicTrackName && (
-                      <div style={{ padding: "0 14px 10px", fontSize: 15, color: "#111827", lineHeight: 1.5 }}>
-                        {post.content}
+                      <div style={{ padding: "0 14px 10px" }}>
+                        <ExpandableText text={post.content} maxChars={220} fontSize={15} color="#111827" lineHeight={1.5} />
                       </div>
                     )}
                     {/* Caption when music tag is the last line */}
                     {captionLines && (
-                      <div style={{ padding: "0 14px 10px", fontSize: 15, color: "#111827", lineHeight: 1.5 }}>
-                        {captionLines}
+                      <div style={{ padding: "0 14px 10px" }}>
+                        <ExpandableText text={captionLines} maxChars={220} fontSize={15} color="#111827" lineHeight={1.5} />
                       </div>
                     )}
                     {/* Music card — from music_* fields OR parsed from content */}
