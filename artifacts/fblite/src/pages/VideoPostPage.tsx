@@ -228,7 +228,7 @@ export default function VideoPostPage({ postId }: Props) {
   const isVideo = isVideoUrl(post.imageUrl);
 
   return (
-    <div style={{ background: "#000", minHeight: "100vh", color: "#fff", maxWidth: 480, margin: "0 auto", position: "relative", overflow: "hidden" }}>
+    <div style={{ background: "#081C15", minHeight: "100vh", color: "#fff", maxWidth: 480, margin: "0 auto", position: "relative", overflow: "hidden" }}>
 
       {/* ── Top bar ── */}
       <div style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 30, background: "linear-gradient(to bottom,rgba(0,0,0,0.7),transparent)", padding: "14px 16px 24px", display: "flex", alignItems: "center", gap: 10 }}>
@@ -236,12 +236,15 @@ export default function VideoPostPage({ postId }: Props) {
           <svg viewBox="0 0 24 24" width="20" height="20" fill="#fff"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
         </button>
         <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700 }}>
+          <div style={{ width: 38, height: 38, borderRadius: "50%", background: "linear-gradient(135deg,#22C55E,#16A34A)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 800, border: "2px solid rgba(34,197,94,0.5)", flexShrink: 0 }}>
             {post.authorName.slice(0,2).toUpperCase()}
           </div>
           <div>
-            <div style={{ fontWeight: 700, fontSize: 14 }}>{post.authorName} {post.authorFlag ?? ""}</div>
-            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.55)" }}>Publié {timeAgo(post.createdAt)}</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <span style={{ fontWeight: 800, fontSize: 14 }}>{post.authorName} {post.authorFlag ?? ""}</span>
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="#22C55E"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)" }}>Publié {timeAgo(post.createdAt)}</div>
           </div>
         </div>
         {/* Token badge */}
@@ -267,7 +270,7 @@ export default function VideoPostPage({ postId }: Props) {
                 poster={post.thumbnailUrl ?? undefined}
                 onPlay={() => setIsPlaying(true)}
                 onPause={() => setIsPlaying(false)}
-                style={{ width: "100%", maxHeight: "75vh", minHeight: "56vw", objectFit: "contain", display: "block", background: "#000" }}
+                style={{ width: "100%", height: "72svh", minHeight: "56vw", objectFit: "contain", display: "block", background: "#000" }}
               />
               {/* Dark gradient overlay top/bottom */}
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 80, background: "linear-gradient(to bottom,rgba(0,0,0,0.5),transparent)", pointerEvents: "none" }} />
@@ -300,7 +303,7 @@ export default function VideoPostPage({ postId }: Props) {
             </div>
           ) : (
             <div style={{ position: "relative" }}>
-              <img src={post.imageUrl} alt="" style={{ width: "100%", maxHeight: "75vh", objectFit: "contain", display: "block", background: "#000" }} />
+              <img src={post.imageUrl} alt="" style={{ width: "100%", height: "72svh", objectFit: "contain", display: "block", background: "#000" }} />
               <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 80, background: "linear-gradient(to bottom,rgba(0,0,0,0.5),transparent)", pointerEvents: "none" }} />
               <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 80, background: "linear-gradient(to top,rgba(0,0,0,0.5),transparent)", pointerEvents: "none" }} />
               {floatingGifts.map(g => (
@@ -363,24 +366,30 @@ export default function VideoPostPage({ postId }: Props) {
       </div>
 
       {/* ── Stats bar ── */}
-      <div style={{ background: "#111", padding: "12px 16px", display: "flex", gap: 20, borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+      <div style={{ background: "#0F241D", padding: "14px 10px", display: "flex", gap: 6, borderBottom: "1px solid rgba(34,197,94,0.1)", borderTop: "1px solid rgba(34,197,94,0.1)" }}>
         {[
-          { icon: <svg viewBox="0 0 24 24" width="16" height="16" fill="#fff"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>, label: "J'aime", value: likesCount },
-          { icon: <svg viewBox="0 0 24 24" width="16" height="16" fill="#fff"><path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z"/></svg>, label: "Commentaires", value: post.commentsCount ?? 0 },
-          { icon: <svg viewBox="0 0 24 24" width="16" height="16" fill="#fff"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>, label: "Partages", value: post.sharesCount ?? 0 },
-          { icon: <svg viewBox="0 0 24 24" width="16" height="16" fill="#fff"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>, label: "Vues", value: post.viewsCount ?? 0 },
-        ].map(s => (
-          <div key={s.label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, flex: 1 }}>
+          { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill={liked ? "#EC4899" : "#22C55E"}><path d={liked ? "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" : "M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"}/></svg>, label: "J'aime", value: likesCount, accent: liked ? "#EC4899" : "#fff" },
+          { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="#22C55E"><path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z"/></svg>, label: "Commentaires", value: post.commentsCount ?? 0, accent: "#fff" },
+          { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="#22C55E"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>, label: "Partages", value: post.sharesCount ?? 0, accent: "#fff" },
+          { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="#22C55E"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>, label: "Vues", value: post.viewsCount ?? 0, accent: "#fff" },
+        ].map((s, i, arr) => (
+          <div key={s.label} style={{
+            display: "flex", flexDirection: "column", alignItems: "center", gap: 4, flex: 1,
+            padding: "8px 0",
+            background: "rgba(34,197,94,0.05)",
+            borderRadius: 12,
+            borderRight: i < arr.length - 1 ? "1px solid rgba(34,197,94,0.1)" : "none",
+          }}>
             {s.icon}
-            <span style={{ fontWeight: 800, fontSize: 13 }}>{fmtCount(s.value)}</span>
-            <span style={{ fontSize: 10, color: "rgba(255,255,255,0.45)" }}>{s.label}</span>
+            <span style={{ fontWeight: 900, fontSize: 15, color: s.accent }}>{fmtCount(s.value)}</span>
+            <span style={{ fontSize: 9, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{s.label}</span>
           </div>
         ))}
       </div>
 
       {/* ── Top donors panel (slide in) ── */}
       {showDonors && topDonors.length > 0 && (
-        <div style={{ background: "linear-gradient(135deg,#1e1e2e,#1E293B)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "14px 16px" }}>
+        <div style={{ background: "#0F241D", borderBottom: "1px solid rgba(34,197,94,0.1)", padding: "14px 16px" }}>
           <div style={{ fontWeight: 800, fontSize: 13, color: "#FBBF24", marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>
             <svg viewBox="0 0 24 24" width="16" height="16" fill="#FBBF24"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0 0 11 15.9V18H9v2h6v-2h-2v-2.1a5.01 5.01 0 0 0 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.86 10.4 5 9.3 5 8zm14 0c0 1.3-.86 2.4-2 2.82V7h2v1z"/></svg>
             Top Donateurs
@@ -400,28 +409,44 @@ export default function VideoPostPage({ postId }: Props) {
       {/* ── Gift banner ── */}
       <div
         onClick={() => setShowGiftPicker(true)}
-        style={{ background: "linear-gradient(135deg,#1e1e2e,#1e1e2e)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, cursor: "pointer" }}
+        style={{
+          margin: "10px 12px",
+          background: "linear-gradient(135deg,rgba(34,197,94,0.08) 0%,rgba(8,28,21,0.95) 100%)",
+          border: "1.5px solid rgba(34,197,94,0.25)",
+          borderRadius: 18,
+          padding: "14px 16px",
+          display: "flex", alignItems: "center", gap: 14,
+          cursor: "pointer",
+          boxShadow: "0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(34,197,94,0.1)",
+        }}
       >
-        <div style={{ width: 44, height: 44, borderRadius: 14, background: "linear-gradient(135deg,#22C55E,#22C55E)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 18px rgba(22,194,74,0.5)", flexShrink: 0 }}>
-          <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M20 6h-2.18c.07-.31.18-.59.18-.9C18 3.4 16.6 2 14.9 2c-.92 0-1.73.42-2.3 1.08L12 3.7l-.6-.62C10.83 2.42 10.02 2 9.1 2 7.4 2 6 3.4 6 5.1c0 .31.11.59.18.9H4c-1.11 0-2 .89-2 2v13c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2z"/></svg>
+        <div style={{
+          width: 48, height: 48, borderRadius: 16,
+          background: "linear-gradient(135deg,#22C55E,#16A34A)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          boxShadow: "0 0 22px rgba(34,197,94,0.5), 0 4px 12px rgba(0,0,0,0.4)",
+          flexShrink: 0,
+        }}>
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="#fff"><path d="M20 6h-2.18c.07-.31.18-.59.18-.9C18 3.4 16.6 2 14.9 2c-.92 0-1.73.42-2.3 1.08L12 3.7l-.6-.62C10.83 2.42 10.02 2 9.1 2 7.4 2 6 3.4 6 5.1c0 .31.11.59.18.9H4c-1.11 0-2 .89-2 2v13c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2z"/></svg>
         </div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 800, fontSize: 14, color: "#fff" }}>Envoyer un cadeau à {post.authorName.split(" ")[0]}</div>
-          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", marginTop: 2 }}>Soutenez ce créateur avec vos jetons BrutePawa</div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontWeight: 800, fontSize: 14, color: "#fff" }}>Envoyer un cadeau</div>
+          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginTop: 2 }}>à {post.authorName.split(" ")[0]} • Solde : <span style={{ color: "#FBBF24", fontWeight: 700 }}>{tokenBalance.toLocaleString()} jetons</span></div>
         </div>
-        <div style={{ display: "flex", flex: "column", alignItems: "center", gap: 2 }}>
-          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)", textAlign: "right" }}>Solde disponible</div>
-          <div style={{ display: "flex", alignItems: "center", gap: 4, justifyContent: "flex-end" }}>
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="#FBBF24"><circle cx="12" cy="12" r="10"/></svg>
-            <span style={{ fontWeight: 800, fontSize: 13, color: "#FBBF24" }}>{tokenBalance} jeton{tokenBalance !== 1 ? "s" : ""}</span>
-          </div>
+        <div style={{
+          background: "rgba(34,197,94,0.15)", border: "1.5px solid rgba(34,197,94,0.4)",
+          borderRadius: 22, padding: "6px 14px",
+          color: "#22C55E", fontWeight: 800, fontSize: 13,
+          display: "flex", alignItems: "center", gap: 5, flexShrink: 0,
+        }}>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="#22C55E"><path d="M20 6h-2.18c.07-.31.18-.59.18-.9C18 3.4 16.6 2 14.9 2c-.92 0-1.73.42-2.3 1.08L12 3.7l-.6-.62C10.83 2.42 10.02 2 9.1 2 7.4 2 6 3.4 6 5.1c0 .31.11.59.18.9H4c-1.11 0-2 .89-2 2v13c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2z"/></svg>
+          Offrir
         </div>
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="rgba(255,255,255,0.3)"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
       </div>
 
       {/* ── Comments section ── */}
       {showComments && (
-        <div style={{ background: "#111" }}>
+        <div style={{ background: "#0F241D", borderTop: "1px solid rgba(34,197,94,0.1)" }}>
           <div style={{ padding: "12px 16px 8px", fontWeight: 800, fontSize: 14, display: "flex", alignItems: "center", gap: 6 }}>
             <svg viewBox="0 0 24 24" width="16" height="16" fill="#fff"><path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z"/></svg>
             Commentaires ({post.commentsCount ?? comments.length})

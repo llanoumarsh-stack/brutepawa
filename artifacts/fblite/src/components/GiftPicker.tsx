@@ -211,7 +211,7 @@ export default function GiftPicker({
           onClick={e => e.stopPropagation()}
           style={{
             position: "absolute", bottom: 0, left: 0, right: 0,
-            background: "linear-gradient(180deg,#111827 0%,#0D0D1E 100%)",
+            background: "linear-gradient(180deg,#060e08 0%,#040a06 100%)",
             borderRadius: "22px 22px 0 0",
             maxHeight: "90vh",
             display: "flex", flexDirection: "column",
@@ -311,7 +311,7 @@ export default function GiftPicker({
                 Chargement…
               </div>
             ) : (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 7 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
                 {filtered.map(g => {
                   const canAfford = balance >= g.tokenCost;
                   const isSel    = selected?.id === g.id;
@@ -371,19 +371,19 @@ export default function GiftPicker({
                       )}
 
                       {/* Name + price at bottom */}
-                      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 5px 5px" }}>
+                      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 7px 7px" }}>
                         <div style={{
-                          color: isSel ? "#22C55E" : "#fff", fontWeight: 700, fontSize: 9,
+                          color: isSel ? "#22C55E" : "#fff", fontWeight: 700, fontSize: 11,
                           overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                          marginBottom: 2, lineHeight: 1.2, transition: "color 0.15s",
+                          marginBottom: 4, lineHeight: 1.2, transition: "color 0.15s",
                         }}>{g.name}</div>
                         <div style={{
-                          display: "inline-flex", alignItems: "center", gap: 2,
+                          display: "inline-flex", alignItems: "center", gap: 3,
                           background: "rgba(255,215,0,0.15)", border: "1px solid rgba(255,215,0,0.35)",
-                          borderRadius: 20, padding: "1px 5px",
+                          borderRadius: 20, padding: "2px 7px",
                         }}>
-                          <svg viewBox="0 0 20 20" width="9" height="9" fill="#FBBF24"><circle cx="10" cy="10" r="9"/></svg>
-                          <span style={{ color: "#FBBF24", fontWeight: 800, fontSize: 9 }}>{price}</span>
+                          <svg viewBox="0 0 20 20" width="11" height="11" fill="#FBBF24"><circle cx="10" cy="10" r="9"/></svg>
+                          <span style={{ color: "#FBBF24", fontWeight: 800, fontSize: 11 }}>{price}</span>
                         </div>
                       </div>
                     </button>
@@ -524,37 +524,37 @@ export default function GiftPicker({
                 </div>
               ) : selected ? (
                 <div style={{ position: "relative", borderRadius: 50, overflow: "hidden" }}>
-                  <img
-                    src="/btn-envoyer-cadeau.jpg"
-                    alt="Envoyer le cadeau"
-                    style={{ width: "100%", display: "block", borderRadius: 50 }}
-                  />
-                  {/* Real token cost overlay on top of the image badge */}
                   <div style={{
-                    position: "absolute", bottom: "16%", left: "50%",
-                    transform: "translateX(-50%)",
-                    background: "rgba(0,0,0,0.6)",
-                    border: "1px solid rgba(255,215,0,0.5)",
-                    borderRadius: 20, padding: "2px 12px",
-                    display: "flex", alignItems: "center", gap: 5,
-                    whiteSpace: "nowrap",
+                    borderRadius: 50, padding: "15px 20px",
+                    background: canAffordSel
+                      ? "linear-gradient(135deg,#22C55E 0%,#16A34A 100%)"
+                      : "rgba(255,255,255,0.08)",
+                    border: canAffordSel ? "none" : "1.5px solid rgba(255,255,255,0.12)",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+                    boxShadow: canAffordSel ? "0 0 30px rgba(34,197,94,0.55), inset 0 1px 0 rgba(255,255,255,0.2)" : "none",
                   }}>
-                    <svg viewBox="0 0 20 20" width="14" height="14">
-                      <circle cx="10" cy="10" r="9" fill="#FBBF24"/>
-                      <circle cx="10" cy="10" r="7" fill="#FBBF24"/>
-                      <text x="10" y="14" textAnchor="middle" fontSize="8" fontWeight="bold" fill="#D97706">J</text>
-                    </svg>
-                    <span style={{ color: "#FBBF24", fontWeight: 800, fontSize: 13 }}>
-                      {totalCost.toLocaleString()} Jetons
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill={canAffordSel ? "#fff" : "rgba(255,255,255,0.4)"}><path d="M20 6h-2.18c.07-.31.18-.59.18-.9C18 3.4 16.6 2 14.9 2c-.92 0-1.73.42-2.3 1.08L12 3.7l-.6-.62C10.83 2.42 10.02 2 9.1 2 7.4 2 6 3.4 6 5.1c0 .31.11.59.18.9H4c-1.11 0-2 .89-2 2v13c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2z"/></svg>
+                    <span style={{ color: canAffordSel ? "#fff" : "rgba(255,255,255,0.35)", fontWeight: 900, fontSize: 16 }}>
+                      {canAffordSel ? "Envoyer le cadeau" : "Solde insuffisant"}
                     </span>
+                    {canAffordSel && (
+                      <div style={{ display: "flex", alignItems: "center", gap: 4, background: "rgba(0,0,0,0.2)", borderRadius: 20, padding: "3px 9px" }}>
+                        <svg viewBox="0 0 20 20" width="12" height="12" fill="#FBBF24"><circle cx="10" cy="10" r="9"/></svg>
+                        <span style={{ color: "#FBBF24", fontWeight: 800, fontSize: 13 }}>{totalCost.toLocaleString()}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (
-                <img
-                  src="/btn-envoyer-jeton.jpg"
-                  alt="Envoyer un jeton"
-                  style={{ width: "100%", display: "block", borderRadius: 50 }}
-                />
+                <div style={{
+                  borderRadius: 50, padding: "15px 20px",
+                  background: "linear-gradient(135deg,rgba(34,197,94,0.15) 0%,rgba(34,197,94,0.05) 100%)",
+                  border: "1.5px solid rgba(34,197,94,0.3)",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+                }}>
+                  <svg viewBox="0 0 20 20" width="18" height="18" fill="#FBBF24"><circle cx="10" cy="10" r="9"/></svg>
+                  <span style={{ color: "rgba(255,255,255,0.6)", fontWeight: 800, fontSize: 16 }}>Envoyer un jeton</span>
+                </div>
               )}
             </button>
 

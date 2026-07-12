@@ -1,0 +1,121 @@
+Créer un design mobile UI/UX PREMIUM pour BrutePawa, inspiré de TikTok Live, Bigo Live et Facebook Gaming, avec une identité visuelle moderne africaine haut de gamme.
+
+COULEURS OFFICIELLES :
+- Vert BrutePawa : #22C55E
+- Vert premium lumineux : #16A34A
+- Noir profond : #050505
+- Gris foncé : #111827
+- Blanc : #FFFFFF
+- Or jetons : #FBBF24
+
+STYLE GÉNÉRAL :
+- Ultra moderne 2027
+- Glassmorphism léger
+- Effets néon verts subtils
+- Coins arrondis 24px
+- Ombres douces premium
+- Animations fluides
+- Aucun élément pixelisé
+- Apparence application valorisée à plus de 100 millions $
+
+====================================
+ÉCRAN 1 : ENVOI DE CADEAUX
+====================================
+
+Créer une fenêtre flottante premium qui apparaît au-dessus d'une vidéo.
+
+HEADER :
+- Icône cadeau 3D verte lumineuse
+- Texte "Envoyer un cadeau"
+- Nom du créateur avec badge vérifié vert
+- Carte affichant le solde actuel des jetons
+- Bouton "Recharger" avec contour néon vert
+
+CATÉGORIES :
+- Populaires
+- Amour
+- Prestige
+- Fun
+- Luxe
+
+La catégorie active doit être en vert BrutePawa avec effet lumineux.
+
+CADEAUX PREMIUM :
+
+🌹 Rose — 10 jetons
+❤️ Cœur — 50 jetons
+🧸 Ours — 100 jetons
+🎂 Gâteau — 250 jetons
+👑 Couronne — 500 jetons
+🏎️ Voiture Sport — 1000 jetons
+💎 Diamant Royal — 2000 jetons
+✈️ Jet Privé — 5000 jetons
+🦁 Lion Royal — 10000 jetons
+🏰 Château Royal — 25000 jetons
+🌍 Afrique d'Or — 50000 jetons
+
+Chaque cadeau doit :
+- Être en 3D réaliste
+- Avoir son propre halo lumineux
+- Avoir une animation au survol
+- Être présenté dans une carte noire premium
+
+BOUTON PRINCIPAL :
+- Très grand bouton vert néon
+- Texte : "Envoyer maintenant"
+- Icône cadeau animée
+- Effet lumineux premium
+- Apparence digne d'une application licorne
+
+====================================
+ÉCRAN 2 : LECTURE VIDÉO
+====================================
+
+Vidéo verticale plein écran.
+
+TOP BAR :
+- Photo profil ronde
+- Nom du créateur
+- Badge vérifié BrutePawa
+- Nombre d'abonnés
+- Solde jetons
+- Menu options
+
+VIDÉO :
+- Qualité HD
+- Interface discrète
+- Aucun élément qui masque excessivement la vidéo
+
+BARRE D'ACTIONS DROITE :
+
+❤️ J'aime
+💬 Commentaires
+🔄 Partages
+👁️ Vues
+🎁 Cadeaux
+
+Icônes blanches avec effet lumineux vert au clic.
+
+BAS DE L'ÉCRAN :
+
+Carte premium :
+"Envoyer un cadeau à ce créateur"
+
+Afficher :
+- Icône cadeau verte
+- Solde disponible
+- Bouton rapide d'envoi
+
+EFFETS PREMIUM :
+
+- Dégradés verts élégants
+- Reflets verre
+- Glow subtil
+- Ombres réalistes
+- Design comparable à TikTok, Instagram et Bigo Live
+- Interface propre, équilibrée et professionnelle
+- Aucun espace vide inutile
+- Hiérarchie visuelle parfaite
+
+RÉSULTAT ATTENDU :
+Une maquette mobile ultra premium, moderne, crédible pour une levée de fonds de plusieurs millions de dollars, avec l'identité visuelle officielle BrutePawa.
