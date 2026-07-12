@@ -4,8 +4,8 @@ import { COUNTRIES } from "../data/mock";
 import ServiceFilterSheet, { type ServiceFilters } from "../components/ServiceFilterSheet";
 import {
   apiGetProducts, apiGetJobs, apiGetMarketplaceServices, apiToggleMarketplaceFavorite, apiGetMarketplaceFavorites,
-  apiCreateMarketplaceService,
-  type ApiProduct, type ApiJob, type ApiMarketplaceService,
+  apiCreateMarketplaceService, apiGetServiceProviders,
+  type ApiProduct, type ApiJob, type ApiMarketplaceService, type ApiServiceProvider,
 } from "../lib/api";
 import { useR2Upload } from "../hooks/useR2Upload";
 
@@ -90,6 +90,8 @@ export default function MarketplacePage() {
   const [apiProducts,   setApiProducts]   = useState<ApiProduct[]>([]);
   const [apiServices,   setApiServices]   = useState<ApiMarketplaceService[]>([]);
   const [apiJobs,       setApiJobs]       = useState<ApiJob[]>([]);
+  const [providers,     setProviders]     = useState<ApiServiceProvider[]>([]);
+  const [loadingProviders, setLoadingProviders] = useState(true);
   const [loading,       setLoading]       = useState(true);
   const [showCreate,    setShowCreate]    = useState(false);
   const [createType,    setCreateType]    = useState<ListingType>("service");
@@ -110,29 +112,30 @@ export default function MarketplacePage() {
   /* Load data */
   useEffect(() => {
     setLoading(true);
-    Promise.all([apiGetProducts(), apiGetMarketplaceServices(), apiGetJobs(), apiGetMarketplaceFavorites()])
-      .then(([p, s, j, favs]) => {
+    setLoadingProviders(true);
+    Promise.all([apiGetProducts(), apiGetMarketplaceServices(), apiGetJobs(), apiGetMarketplaceFavorites(), apiGetServiceProviders()])
+      .then(([p, s, j, favs, prov]) => {
         setApiProducts(p);
-        setApiServices(s.length > 0 ? s : MOCK_SERVICES);
+        setApiServices(s);
         setApiJobs(j);
+        setProviders(prov);
         const favSet = new Set(favs.map(f => `${f.itemType}:${f.itemId}`));
         setFavorites(favSet);
       })
-      .catch(() => {
-        setApiServices(MOCK_SERVICES);
-      })
-      .finally(() => setLoading(false));
+      .catch(() => {})
+      .finally(() => { setLoading(false); setLoadingProviders(false); });
   }, []);
 
-  /* Poll for new listings every 15s */
+  /* Poll for new listings every 30s */
   useEffect(() => {
     const id = setInterval(() => {
-      Promise.all([apiGetProducts(), apiGetMarketplaceServices(), apiGetJobs()]).then(([p, s, j]) => {
+      Promise.all([apiGetProducts(), apiGetMarketplaceServices(), apiGetJobs(), apiGetServiceProviders()]).then(([p, s, j, prov]) => {
         if (p.length > 0) setApiProducts(p);
         if (s.length > 0) setApiServices(s);
         if (j.length > 0) setApiJobs(j);
+        if (prov.length > 0) setProviders(prov);
       }).catch(() => {});
-    }, 15000);
+    }, 30000);
     return () => clearInterval(id);
   }, []);
 
@@ -348,13 +351,36 @@ export default function MarketplacePage() {
               </>
             )}
 
-            {/* Services recommandés */}
+            {/* Services recommandés — données réelles */}
             <SectionHeader icon="services" title="Services recommandés" onSeeAll={() => setActiveTab("services")} />
-            <div style={{ display: "flex", gap: 12, overflowX: "auto", scrollbarWidth: "none", marginBottom: 28, paddingBottom: 4 }}>
-              {displayServices.map(s => (
-                <ServiceCard key={s.id} service={s} />
-              ))}
-            </div>
+            {loadingProviders ? (
+              <div style={{ display: "flex", gap: 12, overflowX: "auto", scrollbarWidth: "none", marginBottom: 28, paddingBottom: 4 }}>
+                {[0,1,2].map(i => (
+                  <div key={i} style={{ flex: "0 0 140px", background: "#fff", borderRadius: 16, padding: 14, boxShadow: "0 2px 8px rgba(0,0,0,0.07)" }}>
+                    <div style={{ width: 56, height: 56, borderRadius: "50%", background: "#F1F5F9", margin: "0 auto 10px" }} />
+                    <div style={{ height: 12, background: "#F1F5F9", borderRadius: 6, marginBottom: 6 }} />
+                    <div style={{ height: 10, background: "#F1F5F9", borderRadius: 6, width: "70%", margin: "0 auto 10px" }} />
+                    <div style={{ height: 32, background: "#F1F5F9", borderRadius: 8 }} />
+                  </div>
+                ))}
+              </div>
+            ) : providers.length === 0 ? (
+              <div style={{ textAlign: "center", padding: "28px 0 36px", color: "#94A3B8" }}>
+                <svg viewBox="0 0 64 64" width="52" height="52" fill="none" style={{ margin: "0 auto 12px", display: "block" }}>
+                  <circle cx="32" cy="32" r="30" fill="#F1F5F9"/>
+                  <path d="M20 42c0-6.627 5.373-12 12-12s12 5.373 12 12" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"/>
+                  <circle cx="32" cy="24" r="7" stroke="#CBD5E1" strokeWidth="2.5"/>
+                </svg>
+                <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: "#64748B" }}>Aucun prestataire disponible</p>
+                <p style={{ margin: "4px 0 0", fontSize: 12, color: "#94A3B8" }}>Proposez votre service en premier !</p>
+              </div>
+            ) : (
+              <div style={{ display: "flex", gap: 12, overflowX: "auto", scrollbarWidth: "none", marginBottom: 28, paddingBottom: 4, WebkitOverflowScrolling: "touch" as any }}>
+                {providers.map(p => (
+                  <ProviderCard key={p.userId} provider={p} onContact={() => navigate(`/messages?userId=${p.userId}`)} />
+                ))}
+              </div>
+            )}
 
             {/* Emplois récents */}
             <SectionHeader icon="jobs" title="Emplois récents" onSeeAll={() => setActiveTab("emplois")} />
@@ -696,6 +722,81 @@ function ServiceCard({ service }: { service: ApiMarketplaceService }) {
         width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
         boxShadow: `0 3px 10px ${G}40`, fontFamily: "inherit",
       }}>
+        <IcoPhone />
+        Contacter
+      </button>
+    </div>
+  );
+}
+
+/* ─── Provider card (real data, with Contacter button) ─────── */
+function ProviderCard({ provider, onContact }: { provider: ApiServiceProvider; onContact: () => void }) {
+  const initials = provider.name.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase();
+  return (
+    <div style={{
+      background: "#fff", borderRadius: 16, padding: "16px 12px", flexShrink: 0,
+      width: 136, display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
+      boxShadow: "0 2px 12px rgba(0,0,0,0.08)", border: "1px solid #F1F5F9",
+    }}>
+      {/* Avatar */}
+      <div style={{ position: "relative" }}>
+        <div style={{
+          width: 60, height: 60, borderRadius: "50%", overflow: "hidden",
+          background: provider.coverColor || G,
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          {provider.avatarUrl
+            ? <img src={provider.avatarUrl} alt={provider.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+            : <span style={{ color: "#fff", fontWeight: 700, fontSize: 22 }}>{initials}</span>
+          }
+        </div>
+        {provider.isVerified && (
+          <div style={{
+            position: "absolute", bottom: 1, right: 1,
+            width: 18, height: 18, borderRadius: "50%",
+            background: G, border: "2.5px solid #fff",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <svg viewBox="0 0 10 10" width="9" height="9" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round">
+              <path d="M2 5l2 2 4-4"/>
+            </svg>
+          </div>
+        )}
+      </div>
+
+      {/* Info */}
+      <div style={{ textAlign: "center", width: "100%" }}>
+        <div style={{ fontWeight: 700, fontSize: 12.5, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{provider.name}</div>
+        <div style={{ fontSize: 11, color: "#64748B", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{provider.profession}</div>
+
+        {/* Rating */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, marginTop: 6 }}>
+          <IcoStar />
+          <span style={{ fontWeight: 700, fontSize: 11.5, color: "#111827" }}>{provider.rating.toFixed(1)}</span>
+          <span style={{ fontSize: 10, color: "#9CA3AF" }}>({provider.reviewsCount})</span>
+        </div>
+
+        {/* Services count */}
+        {provider.servicesCount > 1 && (
+          <div style={{ fontSize: 10, color: "#94A3B8", marginTop: 3 }}>
+            {provider.servicesCount} service{provider.servicesCount > 1 ? "s" : ""}
+          </div>
+        )}
+      </div>
+
+      {/* Contact button */}
+      <button
+        onClick={onContact}
+        style={{
+          background: G, color: "#fff", border: "none", borderRadius: 10,
+          padding: "8px 0", fontWeight: 700, fontSize: 11.5, cursor: "pointer",
+          width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
+          boxShadow: `0 3px 10px ${G}40`, fontFamily: "inherit",
+          transition: "opacity .15s",
+        }}
+        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "0.85"; }}
+        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = "1"; }}
+      >
         <IcoPhone />
         Contacter
       </button>

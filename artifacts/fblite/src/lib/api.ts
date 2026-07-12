@@ -1111,6 +1111,27 @@ export interface ApiMarketplaceService {
   createdAt: string;
 }
 
+export interface ApiServiceProvider {
+  userId: number;
+  name: string;
+  profession: string;
+  avatarUrl: string | null;
+  isVerified: boolean;
+  rating: number;
+  reviewsCount: number;
+  servicesCount: number;
+  city: string | null;
+  country: string | null;
+  coverColor: string;
+  createdAt: string;
+}
+
+export async function apiGetServiceProviders(): Promise<ApiServiceProvider[]> {
+  const res = await apiFetch("/marketplace/services/providers");
+  if (!res.ok) return [];
+  return res.json() as Promise<ApiServiceProvider[]>;
+}
+
 export async function apiGetProducts(params?: { category?: string; search?: string; country?: string }): Promise<ApiProduct[]> {
   const q = new URLSearchParams();
   if (params?.category) q.set("category", params.category);

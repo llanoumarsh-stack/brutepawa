@@ -1,0 +1,81 @@
+Transforme entièrement la section "Services recommandés" pour qu'elle affiche uniquement des données réelles provenant de la base de données BrutePawa.
+
+EXIGENCES :
+
+1. Supprimer tous les profils fictifs (Martin D., Aminata C., Yacine B., etc.).
+
+2. Récupérer automatiquement les utilisateurs ayant publié au moins un service actif.
+
+3. Trier les prestataires selon :
+   - Note moyenne la plus élevée
+   - Nombre d'avis
+   - Activité récente
+   - Nombre de prestations réalisées
+
+4. Chaque carte prestataire doit afficher :
+
+   - Photo de profil réelle
+   - Badge vérifié si compte vérifié
+   - Nom complet
+   - Métier ou catégorie de service
+   - Note moyenne (étoiles)
+   - Nombre total d'avis
+   - Nombre total de commentaires
+   - Nombre de prestations réalisées (optionnel)
+
+Exemple :
+
+⭐ 4.8 (124 avis)
+💬 87 commentaires
+
+5. Bouton "Contacter"
+
+Lorsqu'un utilisateur clique sur "Contacter" :
+
+   - Vérifier qu'il est connecté
+   - Créer automatiquement une conversation si elle n'existe pas
+   - Ouvrir immédiatement la messagerie BrutePawa
+   - Afficher directement la discussion avec le prestataire concerné
+   - Pré-remplir les informations du prestataire dans l'en-tête de la conversation
+
+Exemple :
+
+Jean K. ✅
+Plombier
+⭐ 4.8 (124 avis)
+
+6. Si aucun service n'existe :
+
+Afficher :
+
+"Aucun prestataire disponible actuellement"
+
+avec une illustration moderne.
+
+7. Optimisation :
+
+   - Chargement rapide
+   - Pagination
+   - Cache intelligent
+   - Compatible Web, PWA et Mobile
+
+8. Interface premium :
+
+   - Respecter strictement les couleurs officielles BrutePawa
+   - Vert principal #22C55E
+   - Coins arrondis
+   - Ombres douces
+   - Design moderne type LinkedIn Marketplace / Fiverr Premium
+
+9. Base de données :
+
+Créer les requêtes SQL nécessaires pour récupérer :
+
+   - moyenne des notes
+   - nombre d'avis
+   - nombre de commentaires
+   - statut vérifié
+   - nombre de services publiés
+   - nombre de prestations réalisées
+
+10. Aucun contenu fictif ne doit être affiché. Toutes les données doivent provenir de la base de données réelle.

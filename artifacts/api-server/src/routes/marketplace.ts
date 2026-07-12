@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db, productsTable, ordersTable, marketplaceServicesTable, marketplaceFavoritesTable } from "@workspace/db";
-import { eq, ilike, and, desc, or } from "drizzle-orm";
+import { eq, ilike, and, desc, or, sql } from "drizzle-orm";
 import {
   CreateProductBody, GetProductParams, UpdateProductParams, UpdateProductBody,
   DeleteProductParams, ListProductsQueryParams, CreateOrderBody, GetOrderParams
@@ -158,6 +158,70 @@ router.get("/orders/:id", requireAuth, async (req, res): Promise<void> => {
     .where(and(eq(ordersTable.id, params.data.id), eq(ordersTable.buyerId, req.userId!)));
   if (!order) { res.status(404).json({ error: "Order not found" }); return; }
   res.json({ ...order, amount: Number(order.amount) });
+});
+
+/* ── Marketplace Service Providers ─────────────────────────── */
+
+router.get("/marketplace/services/providers", requireAuth, async (req, res): Promise<void> => {
+  try {
+    const result = await db.execute(sql`
+      WITH ranked AS (
+        SELECT
+          ms.id,
+          ms.user_id,
+          ms.profession,
+          ms.rating,
+          ms.reviews_count,
+          ms.avatar_url     AS service_avatar,
+          ms.cover_color,
+          ms.city,
+          ms.country,
+          ms.created_at,
+          ms.description,
+          ms.price,
+          ms.currency,
+          u.first_name,
+          u.last_name,
+          u.avatar_url      AS user_avatar,
+          u.verified        AS user_verified,
+          ROW_NUMBER() OVER (
+            PARTITION BY ms.user_id
+            ORDER BY ms.rating DESC NULLS LAST, ms.reviews_count DESC NULLS LAST
+          ) AS rn,
+          COUNT(*) OVER (PARTITION BY ms.user_id) AS services_count
+        FROM marketplace_services ms
+        JOIN users u ON u.id = ms.user_id
+        WHERE ms.status = 'active'
+      )
+      SELECT
+        user_id           AS "userId",
+        first_name || ' ' || last_name AS name,
+        profession,
+        COALESCE(user_avatar, service_avatar) AS "avatarUrl",
+        user_verified     AS "isVerified",
+        ROUND(rating::numeric, 1)  AS rating,
+        reviews_count     AS "reviewsCount",
+        services_count::int AS "servicesCount",
+        city,
+        country,
+        cover_color       AS "coverColor",
+        created_at        AS "createdAt"
+      FROM ranked
+      WHERE rn = 1
+      ORDER BY rating DESC NULLS LAST, reviews_count DESC NULLS LAST, created_at DESC
+      LIMIT 20
+    `);
+    res.json(result.rows.map((r: any) => ({
+      ...r,
+      rating: r.rating != null ? Number(r.rating) : 5.0,
+      reviewsCount: r.reviewsCount != null ? Number(r.reviewsCount) : 0,
+      servicesCount: r.servicesCount != null ? Number(r.servicesCount) : 1,
+      isVerified: r.isVerified === true || r.isVerified === "true",
+    })));
+  } catch (err) {
+    console.error("[providers]", err);
+    res.json([]);
+  }
 });
 
 /* ── Marketplace Services ──────────────────────────────────── */
