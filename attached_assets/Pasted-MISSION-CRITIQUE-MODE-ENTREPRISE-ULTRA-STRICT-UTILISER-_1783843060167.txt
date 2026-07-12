@@ -1,0 +1,653 @@
+MISSION CRITIQUE – MODE ENTREPRISE ULTRA STRICT
+
+UTILISER EXCLUSIVEMENT LES MAQUETTES FOURNIES COMME SOURCE DE VÉRITÉ.
+
+OBJECTIF :
+
+Créer le module Communication BrutePawa complet (Messagerie, Contacts, Appels Audio, Appels Vidéo, Partage d'écran, Groupes, Notifications et Backend) en reproduisant exactement les maquettes fournies.
+
+INTERDICTIONS :
+
+- Ne jamais simplifier.
+- Ne jamais interpréter.
+- Ne jamais remplacer un composant.
+- Ne jamais omettre un composant.
+- Ne jamais utiliser de placeholders.
+- Ne jamais générer d'écrans vides.
+- Ne jamais créer une version approximative.
+
+Tout élément manquant ou différent = ÉCHEC.
+
+══════════════════════════════
+STACK OBLIGATOIRE
+══════════════════════════════
+
+Frontend :
+
+- React Native Expo
+- TypeScript
+- NativeWind
+- Zustand
+- React Query
+- React Navigation
+- React Native Reanimated
+- React Native Gesture Handler
+- Expo Router
+
+Backend :
+
+- Supabase
+- PostgreSQL
+- Realtime
+- Storage
+- Edge Functions
+- Row Level Security
+
+══════════════════════════════
+MODULE CONTACTS
+══════════════════════════════
+
+Créer exactement :
+
+ContactInfoScreen
+
+Contenu :
+
+- Bouton retour
+- Avatar utilisateur
+- Nom complet
+- Statut en ligne/hors ligne
+- Message
+- Appel audio
+- Appel vidéo
+- Informations utilisateur
+- Bouton menu 3 points
+
+══════════════════════════════
+BOTTOM SHEET OPTIONS
+══════════════════════════════
+
+Créer exactement :
+
+- Voir le profil
+- Rechercher dans la conversation
+- Mettre en sourdine
+- Épingler la conversation
+- Ajouter aux favoris
+- Ajouter aux amis
+- Ajouter à un groupe
+- Partager le profil
+- Bloquer le contact
+- Signaler l'utilisateur
+- Supprimer la conversation
+
+Animation :
+
+- Slide Up
+- Backdrop Blur
+- Drag Down
+- Fermeture tactile extérieure
+
+══════════════════════════════
+SOUS-PAGES OBLIGATOIRES
+══════════════════════════════
+
+01 ContactProfileScreen
+
+Afficher :
+
+- Avatar
+- Bannière
+- Nom
+- Username
+- Badge vérifié
+- Pays
+- Ville
+- Bio
+- Publications
+- Amis
+- Abonnés
+- Date d'inscription
+
+Boutons :
+
+- Message
+- Ajouter aux amis
+- Appel audio
+- Appel vidéo
+
+────────────────────────────
+
+02 SearchConversationScreen
+
+Fonctions :
+
+- Recherche temps réel
+- Recherche messages
+- Recherche médias
+- Recherche liens
+- Recherche documents
+
+────────────────────────────
+
+03 MuteConversationScreen
+
+Options :
+
+- 8 heures
+- 1 semaine
+- 1 mois
+- Toujours
+
+────────────────────────────
+
+04 PinConversationScreen
+
+Actions :
+
+- Épingler
+- Désépingler
+
+────────────────────────────
+
+05 FavoriteContactScreen
+
+Actions :
+
+- Ajouter favori
+- Retirer favori
+
+────────────────────────────
+
+06 AddFriendScreen
+
+Actions :
+
+- Envoyer demande
+- Annuler demande
+- Accepter demande
+- Refuser demande
+
+────────────────────────────
+
+07 AddToGroupScreen
+
+Fonctions :
+
+- Liste groupes
+- Recherche groupe
+- Ajouter utilisateur
+
+────────────────────────────
+
+08 ShareProfileScreen
+
+Options :
+
+- BrutePawa
+- WhatsApp
+- Facebook
+- Telegram
+- Copier le lien
+
+────────────────────────────
+
+09 BlockUserScreen
+
+Actions :
+
+- Bloquer
+- Débloquer
+
+────────────────────────────
+
+10 ReportUserScreen
+
+Motifs :
+
+- Spam
+- Arnaque
+- Harcèlement
+- Usurpation
+- Violence
+- Nudité
+- Autre
+
+────────────────────────────
+
+11 DeleteConversationScreen
+
+Actions :
+
+- Confirmer suppression
+- Annuler
+
+══════════════════════════════
+MODULE MESSAGERIE
+══════════════════════════════
+
+Créer :
+
+- Texte
+- Image
+- Vidéo
+- Audio
+- Document
+- Message vocal
+- Localisation
+- Contact
+- GIF
+- Stickers
+
+Statuts :
+
+- Envoi
+- Envoyé
+- Reçu
+- Lu
+- Supprimé
+- Modifié
+
+Réactions :
+
+❤️ 👍 😂 😮 😢 😡
+
+══════════════════════════════
+MODULE APPELS AUDIO
+══════════════════════════════
+
+Créer :
+
+- Appel individuel
+- Appel groupe
+- Muet
+- Haut-parleur
+- Bluetooth
+- Attente
+- Historique
+
+États :
+
+- Sonnerie
+- Connexion
+- En cours
+- Refusé
+- Occupé
+- Manqué
+- Terminé
+
+══════════════════════════════
+MODULE APPELS VIDÉO
+══════════════════════════════
+
+Créer exactement :
+
+VideoCallScreen
+
+Contenu :
+
+- Grande vidéo distante
+- Mini vidéo locale flottante
+- Nom utilisateur
+- Statut connexion
+- Chiffrement bout en bout
+- Qualité réseau
+- Durée appel
+
+Boutons :
+
+- Désactiver vidéo
+- Muet
+- Partager écran
+- Basculer caméra
+- Raccrocher
+
+══════════════════════════════
+ANIMATION DÉSACTIVER VIDÉO
+══════════════════════════════
+
+État 1 :
+
+Caméra active
+
+État 2 :
+
+Tap
+
+Animation :
+
+Scale 1 → 0.95 → 1
+
+État 3 :
+
+Caméra coupée
+
+- Icône rouge
+- Avatar affiché
+
+══════════════════════════════
+ANIMATION MUET
+══════════════════════════════
+
+État 1 :
+
+Micro actif
+
+État 2 :
+
+Tap
+
+Animation :
+
+Pulse
+
+État 3 :
+
+Micro barré
+
+══════════════════════════════
+ANIMATION BASCULER CAMÉRA
+══════════════════════════════
+
+État 1 :
+
+Caméra avant
+
+Tap
+
+Animation :
+
+Rotation 180°
+
+État 2 :
+
+Caméra arrière
+
+══════════════════════════════
+ANIMATION PARTAGE ÉCRAN
+══════════════════════════════
+
+Créer exactement :
+
+Écran 1 :
+
+Bottom Sheet
+
+Titre :
+
+Partager l'écran
+
+Boutons :
+
+- Démarrer le partage
+- Annuler
+
+Animation :
+
+Slide Up
+
+────────────────────────────
+
+Écran 2 :
+
+Modal système
+
+Titre :
+
+Diffuser l'écran avec BrutePawa
+
+Options :
+
+- Diffuser le son
+- Afficher les touches
+
+Boutons :
+
+- Annuler
+- Démarrer
+
+────────────────────────────
+
+Écran 3 :
+
+Transition
+
+Animation :
+
+- Fade
+- Zoom
+- Mini caméra flottante
+
+────────────────────────────
+
+Écran 4 :
+
+Partage actif
+
+Afficher :
+
+- Bandeau vert
+- Texte : Partage d'écran en cours
+- Bouton arrêter
+
+────────────────────────────
+
+Écran 5 :
+
+Arrêt partage
+
+Modal :
+
+Arrêter le partage d'écran ?
+
+Boutons :
+
+- Annuler
+- Arrêter
+
+Animation :
+
+Fade Out
+
+══════════════════════════════
+ANIMATION RACROCHER
+══════════════════════════════
+
+Animation :
+
+- Ripple rouge
+- Fade Out
+- Retour historique
+
+══════════════════════════════
+GROUPES
+══════════════════════════════
+
+Créer :
+
+- Création groupe
+- Suppression groupe
+- Modification groupe
+- Invitation membre
+- Recherche groupe
+
+Rôles :
+
+- Propriétaire
+- Administrateur
+- Modérateur
+- Membre
+
+══════════════════════════════
+NOTIFICATIONS
+══════════════════════════════
+
+Créer :
+
+- Message reçu
+- Appel entrant
+- Demande d'ami
+- Mention
+- Groupe
+
+Temps réel obligatoire.
+
+══════════════════════════════
+WEBRTC
+══════════════════════════════
+
+Créer :
+
+- STUN
+- TURN
+- ICE
+
+Gestion :
+
+- Reconnexion automatique
+- Wifi → 4G
+- 4G → Wifi
+- Perte connexion
+- Retour connexion
+
+══════════════════════════════
+BASE DE DONNÉES
+══════════════════════════════
+
+Créer tables :
+
+profiles
+
+friends
+
+friend_requests
+
+conversations
+
+conversation_members
+
+messages
+
+message_reads
+
+message_reactions
+
+calls
+
+call_participants
+
+screen_shares
+
+groups
+
+group_members
+
+favorites
+
+blocked_users
+
+reports
+
+notifications
+
+activity_logs
+
+muted_conversations
+
+pinned_conversations
+
+══════════════════════════════
+BACKEND OBLIGATOIRE
+══════════════════════════════
+
+Créer :
+
+- SQL complet
+- Migrations
+- Indexes
+- RLS
+- Triggers
+- Edge Functions
+- Hooks
+- Services
+- API
+- Types TypeScript
+- Validation Zod
+- Stores Zustand
+- React Query
+- Logs
+- Analytics
+- Monitoring
+
+══════════════════════════════
+SÉCURITÉ
+══════════════════════════════
+
+Créer :
+
+- Chiffrement E2EE
+- Anti Spam
+- Anti Flood
+- Anti Bot
+- Signalement
+- Blocage utilisateur
+- Protection brute force
+
+══════════════════════════════
+PRODUCTION
+══════════════════════════════
+
+Compatibilité :
+
+- Android
+- iOS
+- Dark Mode
+- Light Mode
+- Offline Mode
+
+Performance :
+
+- Support 10 000 000 utilisateurs
+- Temps réel
+- Cache local
+- Reconnexion automatique
+
+══════════════════════════════
+VALIDATION FINALE
+══════════════════════════════
+
+Avant de terminer vérifier :
+
+✓ Toutes les pages existent
+
+✓ Toutes les sous-pages existent
+
+✓ Toutes les animations existent
+
+✓ Tous les boutons fonctionnent
+
+✓ Toutes les tables existent
+
+✓ Toutes les API existent
+
+✓ Toutes les routes existent
+
+✓ Toutes les permissions sont gérées
+
+✓ Toutes les erreurs sont gérées
+
+✓ Toutes les notifications fonctionnent
+
+✓ Tous les appels fonctionnent
+
+✓ Tous les partages d'écran fonctionnent
+
+✓ Toutes les maquettes sont respectées
+
+Si UNE SEULE condition échoue :
+
+AFFICHER :
+
+"ECHEC DE GENERATION – SPECIFICATION NON RESPECTEE"
+
+et considérer le projet comme non terminé.

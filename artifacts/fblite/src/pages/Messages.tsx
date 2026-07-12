@@ -530,6 +530,17 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [addGroupLoading, setAddGroupLoading]     = useState(false);
   const [addGroupSearch, setAddGroupSearch]       = useState("");
 
+  const [callOverlay, setCallOverlay]             = useState<"none"|"options"|"mute"|"search"|"addfriend"|"addgroup"|"block"|"report"|"delete">("none");
+  const [callMuteChoice, setCallMuteChoice]       = useState<"8h"|"1w"|"always">("8h");
+  const [callReportReason, setCallReportReason]   = useState("");
+  const [callReportDesc, setCallReportDesc]       = useState("");
+  const [callReportSending, setCallReportSending] = useState(false);
+  const [callAddGroupList, setCallAddGroupList]   = useState<{id:number;name:string;avatarUrl:string|null}[]>([]);
+  const [callAddGroupSearch, setCallAddGroupSearch] = useState("");
+  const [screenShareStep, setScreenShareStep]     = useState<"none"|"confirm"|"settings"|"stop-confirm">("none");
+  const [screenShareSound, setScreenShareSound]   = useState(true);
+  const [screenShareTouches, setScreenShareTouches] = useState(false);
+
   const [chatGroups, setChatGroups]         = useState<ChatGroupConv[]>([]);
   const [activeGroupId, setActiveGroupId]   = useState<number | null>(null);
   const [groupMsgs, setGroupMsgs]           = useState<Record<number, GroupMsg[]>>({});
@@ -1491,12 +1502,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   void presenceTick;
 
   useEffect(() => {
-    if (!activeConv || overlay !== "info") return;
-    setContactInfoLoading(true);
-    apiGetContactInfo(activeConv)
-      .then(info => { if (info) setContactInfo(info); })
-      .finally(() => setContactInfoLoading(false));
-  }, [activeConv, overlay]);
+    if (!activeConv) { setContactInfo(null); return; }
+    apiGetContactInfo(activeConv).then(info => { if (info) setContactInfo(info); }).catch(() => {});
+  }, [activeConv]);
+  void contactInfoLoading; void setContactInfoLoading;
 
   useEffect(() => {
     if (!activeConv) return;
@@ -2262,11 +2271,18 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     </div>
                   </div>
                 </div>
-                {/* Speaker button */}
-                <button onClick={() => sig.toggleSpeaker(remoteAudioRef.current)}
-                  style={{ width:44, height:44, borderRadius:"50%", background:sig.isSpeaker ? "rgba(34,197,94,0.35)" : "rgba(255,255,255,0.12)", border:`1.5px solid ${sig.isSpeaker ? "rgba(34,197,94,0.65)" : "rgba(255,255,255,0.22)"}`, backdropFilter:"blur(12px)", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 4px 14px rgba(0,0,0,0.4)", flexShrink:0 }}>
-                  <svg viewBox="0 0 24 24" width="20" height="20" fill={sig.isSpeaker ? "#22C55E" : "rgba(255,255,255,.8)"}><path d={sig.isSpeaker ? "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" : "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"}/></svg>
-                </button>
+                <div style={{ display:"flex", gap:8, alignItems:"center" }}>
+                  {/* Speaker button */}
+                  <button onClick={() => sig.toggleSpeaker(remoteAudioRef.current)}
+                    style={{ width:44, height:44, borderRadius:"50%", background:sig.isSpeaker ? "rgba(34,197,94,0.35)" : "rgba(255,255,255,0.12)", border:`1.5px solid ${sig.isSpeaker ? "rgba(34,197,94,0.65)" : "rgba(255,255,255,0.22)"}`, backdropFilter:"blur(12px)", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 4px 14px rgba(0,0,0,0.4)", flexShrink:0 }}>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill={sig.isSpeaker ? "#22C55E" : "rgba(255,255,255,.8)"}><path d={sig.isSpeaker ? "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" : "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"}/></svg>
+                  </button>
+                  {/* Plus d'options */}
+                  <button onClick={() => setCallOverlay("options")}
+                    style={{ width:44, height:44, borderRadius:"50%", background:"rgba(255,255,255,0.12)", border:"1.5px solid rgba(255,255,255,0.22)", backdropFilter:"blur(12px)", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 4px 14px rgba(0,0,0,0.4)", flexShrink:0 }}>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="rgba(255,255,255,.85)"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -2316,7 +2332,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     {
                       label: sig.isScreenSharing ? "Arrêter\npartage" : "Partager\nécran",
                       icon:<svg viewBox="0 0 24 24" width="24" height="24" fill={sig.isScreenSharing ? "#052e16" : "rgba(255,255,255,.9)"}><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zm-7-3.53v-2.19c-2.78.48-4.34 1.71-5.5 3.72.14-1.39.73-4.47 3.93-5.81L9.5 8.47C11.27 7.28 13.8 6.86 16 9.5l1.5-1.5v4.47H13z"/></svg>,
-                      action:() => sig.toggleScreenShare(), active:sig.isScreenSharing,
+                      action:() => sig.isScreenSharing ? setScreenShareStep("stop-confirm") : setScreenShareStep("confirm"), active:sig.isScreenSharing,
                     },
                     {
                       label:"Basculer\ncaméra",
@@ -2343,6 +2359,340 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 </div>
               </div>
             </div>
+
+            {/* ── SCREEN SHARE ACTIVE BANNER ── */}
+            {sig.isScreenSharing && sig.callState === "active" && screenShareStep === "none" && (
+              <div style={{ position:"absolute", top:0, left:0, right:0, zIndex:25, background:"#16a34a", padding:"10px 16px", display:"flex", alignItems:"center", gap:8 }}>
+                <style>{`@keyframes bpvblink{0%,100%{opacity:1}50%{opacity:.35}}`}</style>
+                <div style={{ width:8, height:8, borderRadius:"50%", background:"#fff", animation:"bpvblink 1.2s infinite", flexShrink:0 }} />
+                <span style={{ color:"#fff", fontWeight:700, fontSize:14, flex:1 }}>Partage d'écran en cours</span>
+                <button onClick={() => setScreenShareStep("stop-confirm")}
+                  style={{ background:"rgba(0,0,0,0.25)", border:"1px solid rgba(255,255,255,0.4)", borderRadius:8, padding:"5px 14px", color:"#fff", fontWeight:700, fontSize:13, cursor:"pointer" }}>
+                  Arrêter
+                </button>
+              </div>
+            )}
+
+            {/* ── SCREEN SHARE — ÉTAPE 1: CONFIRM ── */}
+            {screenShareStep === "confirm" && (
+              <div style={{ position:"absolute", inset:0, zIndex:30, background:"rgba(0,0,0,0.65)", display:"flex", flexDirection:"column", justifyContent:"flex-end" }}
+                onClick={() => setScreenShareStep("none")}>
+                <div style={{ background:"#0a1a10", borderRadius:"24px 24px 0 0", paddingBottom:34, border:"1px solid rgba(34,197,94,0.2)" }}
+                  onClick={e => e.stopPropagation()}>
+                  <div style={{ display:"flex", justifyContent:"center", padding:"12px 0 8px" }}>
+                    <div style={{ width:40, height:4, borderRadius:2, background:"rgba(255,255,255,0.2)" }} />
+                  </div>
+                  <div style={{ display:"flex", justifyContent:"center", marginBottom:14 }}>
+                    <div style={{ width:68, height:68, borderRadius:22, background:"rgba(34,197,94,0.15)", border:"1px solid rgba(34,197,94,0.35)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                      <svg viewBox="0 0 24 24" width="34" height="34" fill="#22C55E"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zm-7-3.53v-2.19c-2.78.48-4.34 1.71-5.5 3.72.14-1.39.73-4.47 3.93-5.81L9.5 8.47C11.27 7.28 13.8 6.86 16 9.5l1.5-1.5v4.47H13z"/></svg>
+                    </div>
+                  </div>
+                  <div style={{ textAlign:"center", padding:"0 24px", marginBottom:4 }}>
+                    <div style={{ fontWeight:900, fontSize:21, color:"#fff" }}>Partager l'écran</div>
+                    <div style={{ fontSize:14, color:"rgba(255,255,255,.52)", marginTop:8, lineHeight:1.55 }}>
+                      Tout le contenu de votre écran sera accessible par <strong style={{ color:"rgba(255,255,255,.8)" }}>{peer?.name}</strong> pendant la diffusion.
+                    </div>
+                  </div>
+                  <div style={{ padding:"20px 16px 0", display:"flex", flexDirection:"column", gap:12 }}>
+                    <button onClick={() => setScreenShareStep("settings")}
+                      style={{ width:"100%", padding:"15px", borderRadius:16, background:"#22C55E", border:"none", color:"#fff", fontWeight:800, fontSize:16, cursor:"pointer", boxShadow:"0 4px 18px rgba(34,197,94,0.38)" }}>
+                      Démarrer le partage
+                    </button>
+                    <button onClick={() => setScreenShareStep("none")}
+                      style={{ width:"100%", padding:"14px", borderRadius:16, background:"rgba(255,255,255,0.07)", border:"1px solid rgba(255,255,255,0.14)", color:"rgba(255,255,255,.78)", fontWeight:700, fontSize:15, cursor:"pointer" }}>
+                      Annuler
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── SCREEN SHARE — ÉTAPE 2: PARAMÈTRES ── */}
+            {screenShareStep === "settings" && (
+              <div style={{ position:"absolute", inset:0, zIndex:30, background:"rgba(0,0,0,0.72)", display:"flex", alignItems:"center", justifyContent:"center", padding:"0 20px" }}>
+                <div style={{ background:"#111c15", borderRadius:22, padding:"26px 20px 22px", width:"100%", maxWidth:380, border:"1px solid rgba(34,197,94,0.18)" }}>
+                  <div style={{ textAlign:"center", marginBottom:18 }}>
+                    <div style={{ width:52, height:52, borderRadius:16, background:"rgba(34,197,94,0.12)", border:"1px solid rgba(34,197,94,0.3)", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 12px" }}>
+                      <svg viewBox="0 0 24 24" width="26" height="26" fill="#22C55E"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4z"/></svg>
+                    </div>
+                    <div style={{ fontWeight:800, fontSize:17, color:"#fff" }}>Diffuser l'écran avec BrutePawa</div>
+                    <div style={{ fontSize:13, color:"rgba(255,255,255,.45)", marginTop:7, lineHeight:1.5 }}>BrutePawa aura accès à tout le contenu de votre écran ou de l'onglet sélectionné pendant la diffusion.</div>
+                  </div>
+                  <div style={{ background:"rgba(255,255,255,0.05)", borderRadius:16, overflow:"hidden", marginBottom:20 }}>
+                    {([
+                      { label:"Diffuser le son", sub:"Le son de l'appareil sera diffusé", val:screenShareSound, set:setScreenShareSound },
+                      { label:"Afficher les touches", sub:"Afficher les interactions tactiles sur l'écran", val:screenShareTouches, set:setScreenShareTouches },
+                    ] as {label:string;sub:string;val:boolean;set:(v:boolean)=>void}[]).map((item, i) => (
+                      <div key={item.label} style={{ display:"flex", alignItems:"center", gap:12, padding:"14px 16px", borderBottom:i===0?"1px solid rgba(255,255,255,0.06)":"none" }}>
+                        <div style={{ flex:1 }}>
+                          <div style={{ fontWeight:600, fontSize:14.5, color:"#fff" }}>{item.label}</div>
+                          <div style={{ fontSize:12, color:"rgba(255,255,255,.38)", marginTop:2 }}>{item.sub}</div>
+                        </div>
+                        <div onClick={() => item.set(!item.val)} style={{ width:46, height:26, borderRadius:13, background:item.val?"#22C55E":"rgba(255,255,255,0.18)", cursor:"pointer", position:"relative", transition:"background .2s", flexShrink:0 }}>
+                          <div style={{ position:"absolute", top:3, left:item.val?23:3, width:20, height:20, borderRadius:"50%", background:"#fff", transition:"left .2s", boxShadow:"0 1px 4px rgba(0,0,0,0.3)" }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ display:"flex", gap:10 }}>
+                    <button onClick={() => setScreenShareStep("confirm")}
+                      style={{ flex:1, padding:"13px", borderRadius:14, background:"rgba(255,255,255,0.07)", border:"1px solid rgba(255,255,255,0.13)", color:"rgba(255,255,255,.78)", fontWeight:700, fontSize:15, cursor:"pointer" }}>
+                      Annuler
+                    </button>
+                    <button onClick={() => { sig.toggleScreenShare(); setScreenShareStep("none"); }}
+                      style={{ flex:1, padding:"13px", borderRadius:14, background:"#22C55E", border:"none", color:"#fff", fontWeight:800, fontSize:15, cursor:"pointer", boxShadow:"0 3px 14px rgba(34,197,94,0.3)" }}>
+                      Démarrer
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── SCREEN SHARE — ÉTAPE 5: ARRÊTER ── */}
+            {screenShareStep === "stop-confirm" && (
+              <div style={{ position:"absolute", inset:0, zIndex:30, background:"rgba(0,0,0,0.72)", display:"flex", alignItems:"center", justifyContent:"center", padding:"0 20px" }}>
+                <div style={{ background:"#111c15", borderRadius:22, padding:"26px 20px 22px", width:"100%", maxWidth:380, border:"1px solid rgba(255,255,255,0.1)" }}>
+                  <div style={{ textAlign:"center", marginBottom:18 }}>
+                    <div style={{ width:52, height:52, borderRadius:16, background:"rgba(239,68,68,0.12)", border:"1px solid rgba(239,68,68,0.3)", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 14px" }}>
+                      <svg viewBox="0 0 24 24" width="26" height="26" fill="#EF4444"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4z"/></svg>
+                    </div>
+                    <div style={{ fontWeight:800, fontSize:17, color:"#fff" }}>Arrêter le partage d'écran ?</div>
+                    <div style={{ fontSize:13.5, color:"rgba(255,255,255,.48)", marginTop:8, lineHeight:1.5 }}>Le partage d'écran sera arrêté pour vous et <strong style={{ color:"rgba(255,255,255,.7)" }}>{peer?.name}</strong>.</div>
+                  </div>
+                  <div style={{ display:"flex", gap:10 }}>
+                    <button onClick={() => setScreenShareStep("none")}
+                      style={{ flex:1, padding:"13px", borderRadius:14, background:"rgba(255,255,255,0.07)", border:"1px solid rgba(255,255,255,0.13)", color:"rgba(255,255,255,.78)", fontWeight:700, fontSize:15, cursor:"pointer" }}>
+                      Annuler
+                    </button>
+                    <button onClick={() => { sig.toggleScreenShare(); setScreenShareStep("none"); }}
+                      style={{ flex:1, padding:"13px", borderRadius:14, background:"#EF4444", border:"none", color:"#fff", fontWeight:800, fontSize:15, cursor:"pointer", boxShadow:"0 3px 14px rgba(239,68,68,0.3)" }}>
+                      Arrêter
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── CALL OPTIONS + SOUS-PAGES ── */}
+            {callOverlay !== "none" && (
+              <div style={{ position:"absolute", inset:0, zIndex:31, background:"rgba(0,0,0,0.68)", display:"flex", flexDirection:"column", justifyContent:"flex-end" }}
+                onClick={() => setCallOverlay("none")}>
+                <div style={{ background:"#0a1a10", borderRadius:"24px 24px 0 0", paddingBottom:34, border:"1px solid rgba(34,197,94,0.2)", maxHeight:"90vh", overflowY:"auto" }}
+                  onClick={e => e.stopPropagation()}>
+                  <div style={{ display:"flex", justifyContent:"center", padding:"12px 0 8px", position:"sticky", top:0, background:"#0a1a10", zIndex:1 }}>
+                    <div style={{ width:40, height:4, borderRadius:2, background:"rgba(255,255,255,0.2)" }} />
+                  </div>
+
+                  {/* ── OPTIONS MAIN ── */}
+                  {callOverlay === "options" && (<>
+                    <div style={{ display:"flex", alignItems:"center", gap:12, padding:"4px 20px 16px", borderBottom:"1px solid rgba(255,255,255,0.06)" }}>
+                      {peer?.avatarUrl
+                        ? <img src={peer.avatarUrl} alt={peer?.name} style={{ width:46, height:46, borderRadius:"50%", objectFit:"cover", border:"2px solid #22C55E" }} />
+                        : <div style={{ width:46, height:46, borderRadius:"50%", background:"#1a3a20", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:800, fontSize:18, color:"#22C55E", border:"2px solid #22C55E" }}>{peer?.name?.[0]?.toUpperCase() ?? "?"}</div>}
+                      <div>
+                        <div style={{ fontWeight:800, fontSize:17, color:"#fff" }}>{peer?.name ?? "Contact"}</div>
+                        <div style={{ fontSize:13, color:"#22C55E", fontWeight:600 }}>● Appel en cours · {fmtTime(sig.callDuration)}</div>
+                      </div>
+                    </div>
+                    {([
+                      { label:"Voir le profil", sub:"Afficher le profil complet", color:"#22C55E", icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>, action:() => { setCallOverlay("none"); navigate(`/profile/${callPeerUser?.id ?? activeConv}`); } },
+                      { label:"Rechercher dans la conversation", sub:"Messages, médias, liens et fichiers", color:"#3B82F6", icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>, action:() => setCallOverlay("search") },
+                      { label:(contactInfo?.isMuted ? "Activer le son" : "Mettre en sourdine"), sub:(contactInfo?.isMuted ? "Recevoir à nouveau les notifications" : "Ne plus recevoir de notifications"), color:"#F59E0B", icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/>{contactInfo?.isMuted ? <><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></> : <><path d="M19.07 4.93a10 10 0 010 14.14"/><path d="M15.54 8.46a5 5 0 010 7.07"/></>}</svg>, action:() => contactInfo?.isMuted ? apiMuteContact(activeConv!, "none").then(() => apiGetContactInfo(activeConv!).then(i => { if(i) setContactInfo(i); })).then(()=>setCallOverlay("none")) : setCallOverlay("mute") },
+                      { label:(contactInfo?.isPinned ? "Désépingler" : "Épingler la conversation"), sub:(contactInfo?.isPinned ? "Retirer des conversations épinglées" : "Garder en haut de votre liste"), color:"#8B5CF6", icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 00-1.11-1.79l-1.78-.9A2 2 0 0115 10.76V6h1a2 2 0 000-4H8a2 2 0 000 4h1v4.76a2 2 0 01-1.11 1.79l-1.78.9A2 2 0 005 15.24V17z"/></svg>, action:() => (contactInfo?.isPinned ? apiUnpinContact(activeConv!) : apiPinContact(activeConv!)).then(() => apiGetContactInfo(activeConv!).then(i => { if(i) setContactInfo(i); })).then(()=>setCallOverlay("none")) },
+                      { label:(contactInfo?.isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"), sub:(contactInfo?.isFavorite ? "Supprimer de vos contacts favoris" : "Retrouver facilement ce contact"), color:"#F59E0B", icon:<svg viewBox="0 0 24 24" width="20" height="20" fill={contactInfo?.isFavorite?"#F59E0B":"none"} stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>, action:() => (contactInfo?.isFavorite ? apiUnfavoriteContact(activeConv!) : apiFavoriteContact(activeConv!)).then(() => apiGetContactInfo(activeConv!).then(i => { if(i) setContactInfo(i); })).then(()=>setCallOverlay("none")) },
+                      { label:"Ajouter aux amis", sub:(contactInfo?.friendStatus==="pending"?"Demande envoyée":"Envoyer une demande d'amitié"), color:"#22C55E", icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>, action:()=>setCallOverlay("addfriend"), hidden:contactInfo?.friendStatus==="accepted" },
+                      { label:"Ajouter à un groupe", sub:"Ajouter ce contact à l'un de vos groupes", color:"#3B82F6", icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>, action:()=>{ apiGetMyGroups().then(gs=>{setCallAddGroupList(gs);setCallAddGroupSearch("");setCallOverlay("addgroup");}); } },
+                      { label:"Partager le profil", sub:`Partager le profil de ${peer?.name??"ce contact"} avec vos amis`, color:"#22C55E", icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>, action:()=>{ const url=`${window.location.origin}/profile/${callPeerUser?.id??activeConv}`; if(navigator.share){navigator.share({title:peer?.name??"BrutePawa",url});}else{navigator.clipboard.writeText(url);} setCallOverlay("none"); } },
+                      { label:(contactInfo?.isBlocked?"Débloquer le contact":"Bloquer le contact"), sub:(contactInfo?.isBlocked?"Permettre à nouveau ce contact de vous contacter":"Ce contact ne pourra plus vous contacter"), color:"#EF4444", icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>, action:()=>setCallOverlay("block") },
+                      { label:"Signaler l'utilisateur", sub:"Signalez ce contact s'il enfreint nos règles", color:"#F97316", icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>, action:()=>{setCallReportReason("");setCallReportDesc("");setCallOverlay("report");} },
+                      { label:"Supprimer la conversation", sub:"Cette action supprimera tous les messages", color:"#EF4444", danger:true, icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>, action:()=>setCallOverlay("delete") },
+                    ] as {label:string;sub:string;color:string;icon:JSX.Element;action:()=>void;hidden?:boolean;danger?:boolean}[])
+                      .filter(o => !o.hidden)
+                      .map((opt, i, arr) => (
+                        <div key={i} onClick={opt.action}
+                          style={{ display:"flex", alignItems:"center", gap:14, padding:"13px 20px", cursor:"pointer", borderBottom:i<arr.length-1?"1px solid rgba(255,255,255,0.04)":"none" }}>
+                          <div style={{ width:42, height:42, borderRadius:13, background:`${opt.color}1a`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{opt.icon}</div>
+                          <div style={{ flex:1, minWidth:0 }}>
+                            <div style={{ fontWeight:700, fontSize:15, color:opt.danger?"#EF4444":"#fff" }}>{opt.label}</div>
+                            <div style={{ fontSize:12.5, color:"rgba(255,255,255,.36)", marginTop:1 }}>{opt.sub}</div>
+                          </div>
+                          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="rgba(255,255,255,.18)" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                        </div>
+                      ))}
+                  </>)}
+
+                  {/* ── SOURDINE ── */}
+                  {callOverlay === "mute" && (
+                    <div style={{ padding:"0 20px 4px" }}>
+                      <button onClick={()=>setCallOverlay("options")} style={{ background:"none",border:"none",color:"rgba(255,255,255,.5)",cursor:"pointer",padding:"4px 0 16px",display:"flex",alignItems:"center",gap:6,fontSize:14 }}>
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg> Retour
+                      </button>
+                      <div style={{ textAlign:"center", marginBottom:20 }}>
+                        <div style={{ width:64,height:64,borderRadius:20,background:"rgba(245,158,11,0.12)",border:"1px solid rgba(245,158,11,0.3)",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 12px" }}>
+                          <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/></svg>
+                        </div>
+                        <div style={{ fontWeight:800,fontSize:19,color:"#fff" }}>Notifications</div>
+                        <div style={{ fontSize:13.5,color:"rgba(255,255,255,.45)",marginTop:6,lineHeight:1.5 }}>Vous ne recevrez plus de<br/>notifications de ce contact.</div>
+                      </div>
+                      <div style={{ background:"rgba(255,255,255,0.05)",borderRadius:16,overflow:"hidden",marginBottom:20 }}>
+                        {(["8h","1w","always"] as const).map((v,i,arr)=>(
+                          <div key={v} onClick={()=>setCallMuteChoice(v)}
+                            style={{ display:"flex",alignItems:"center",padding:"15px 18px",cursor:"pointer",borderBottom:i<arr.length-1?"1px solid rgba(255,255,255,0.05)":"none" }}>
+                            <span style={{ flex:1,color:"#fff",fontSize:15,fontWeight:500 }}>{v==="8h"?"8 heures":v==="1w"?"1 semaine":"Toujours"}</span>
+                            <div style={{ width:22,height:22,borderRadius:"50%",border:`2px solid ${callMuteChoice===v?"#22C55E":"rgba(255,255,255,0.3)"}`,background:callMuteChoice===v?"#22C55E":"transparent",display:"flex",alignItems:"center",justifyContent:"center" }}>
+                              {callMuteChoice===v&&<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <button onClick={()=>apiMuteContact(activeConv!,callMuteChoice).then(()=>apiGetContactInfo(activeConv!).then(i=>{if(i)setContactInfo(i);})).then(()=>setCallOverlay("none"))}
+                        style={{ width:"100%",padding:"15px",borderRadius:16,background:"#22C55E",border:"none",color:"#fff",fontWeight:800,fontSize:16,cursor:"pointer" }}>
+                        OK
+                      </button>
+                    </div>
+                  )}
+
+                  {/* ── RECHERCHER ── */}
+                  {callOverlay === "search" && (
+                    <div style={{ padding:"0 20px 4px" }}>
+                      <button onClick={()=>setCallOverlay("options")} style={{ background:"none",border:"none",color:"rgba(255,255,255,.5)",cursor:"pointer",padding:"4px 0 16px",display:"flex",alignItems:"center",gap:6,fontSize:14 }}>
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg> Retour
+                      </button>
+                      <div style={{ fontWeight:800,fontSize:19,color:"#fff",marginBottom:14 }}>Rechercher dans la conversation</div>
+                      <div style={{ position:"relative",marginBottom:16 }}>
+                        <svg style={{ position:"absolute",left:14,top:"50%",transform:"translateY(-50%)" }} viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="rgba(255,255,255,.4)" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                        <input value={contactSearchQ} onChange={e=>setContactSearchQ(e.target.value)} placeholder="Rechercher…"
+                          style={{ width:"100%",boxSizing:"border-box",background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:14,padding:"12px 14px 12px 42px",color:"#fff",fontSize:15,outline:"none" }} />
+                      </div>
+                      <div style={{ color:"rgba(255,255,255,.32)",fontSize:13,textAlign:"center",paddingTop:20 }}>Tapez pour rechercher dans la conversation</div>
+                    </div>
+                  )}
+
+                  {/* ── AJOUTER AMI ── */}
+                  {callOverlay === "addfriend" && (
+                    <div style={{ padding:"0 20px 4px" }}>
+                      <button onClick={()=>setCallOverlay("options")} style={{ background:"none",border:"none",color:"rgba(255,255,255,.5)",cursor:"pointer",padding:"4px 0 16px",display:"flex",alignItems:"center",gap:6,fontSize:14 }}>
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg> Retour
+                      </button>
+                      <div style={{ textAlign:"center",marginBottom:22 }}>
+                        <div style={{ width:64,height:64,borderRadius:20,background:"rgba(34,197,94,0.12)",border:"1px solid rgba(34,197,94,0.3)",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 12px" }}>
+                          <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                        </div>
+                        <div style={{ fontWeight:800,fontSize:19,color:"#fff" }}>Ajouter aux amis</div>
+                        <div style={{ fontSize:13.5,color:"rgba(255,255,255,.45)",marginTop:8,lineHeight:1.5 }}>
+                          {contactInfo?.friendStatus==="pending"&&contactInfo?.friendDirection==="sent"
+                            ?"Demande d'amitié déjà envoyée."
+                            :`Envoyez une demande d'amitié à ${peer?.name??"ce contact"}.`}
+                        </div>
+                      </div>
+                      {contactInfo?.friendStatus==="pending"&&contactInfo?.friendDirection==="sent"
+                        ?<div style={{ color:"rgba(255,255,255,.4)",textAlign:"center",fontSize:14 }}>En attente de réponse…</div>
+                        :<button onClick={()=>apiSendFriendRequest(callPeerUser?.id??0).then(()=>apiGetContactInfo(activeConv!).then(i=>{if(i)setContactInfo(i);})).then(()=>setCallOverlay("none"))}
+                            style={{ width:"100%",padding:"15px",borderRadius:16,background:"#22C55E",border:"none",color:"#fff",fontWeight:800,fontSize:16,cursor:"pointer" }}>
+                            Envoyer une demande
+                          </button>}
+                    </div>
+                  )}
+
+                  {/* ── AJOUTER GROUPE ── */}
+                  {callOverlay === "addgroup" && (
+                    <div style={{ padding:"0 20px 4px" }}>
+                      <button onClick={()=>setCallOverlay("options")} style={{ background:"none",border:"none",color:"rgba(255,255,255,.5)",cursor:"pointer",padding:"4px 0 16px",display:"flex",alignItems:"center",gap:6,fontSize:14 }}>
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg> Retour
+                      </button>
+                      <div style={{ fontWeight:800,fontSize:19,color:"#fff",marginBottom:14 }}>Ajouter à un groupe</div>
+                      <div style={{ position:"relative",marginBottom:16 }}>
+                        <svg style={{ position:"absolute",left:14,top:"50%",transform:"translateY(-50%)" }} viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="rgba(255,255,255,.4)" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                        <input value={callAddGroupSearch} onChange={e=>setCallAddGroupSearch(e.target.value)} placeholder="Rechercher un groupe…"
+                          style={{ width:"100%",boxSizing:"border-box",background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:14,padding:"12px 14px 12px 42px",color:"#fff",fontSize:15,outline:"none" }} />
+                      </div>
+                      {callAddGroupList.filter(g=>!callAddGroupSearch||g.name.toLowerCase().includes(callAddGroupSearch.toLowerCase())).length===0
+                        ?<div style={{ color:"rgba(255,255,255,.32)",textAlign:"center",padding:"24px 0" }}>Aucun groupe trouvé</div>
+                        :callAddGroupList.filter(g=>!callAddGroupSearch||g.name.toLowerCase().includes(callAddGroupSearch.toLowerCase())).map(g=>(
+                          <div key={g.id} onClick={()=>apiAddContactToGroup(g.id,callPeerUser?.id??0).then(()=>setCallOverlay("none"))}
+                            style={{ display:"flex",alignItems:"center",gap:12,padding:"12px 4px",cursor:"pointer",borderBottom:"1px solid rgba(255,255,255,0.05)" }}>
+                            {g.avatarUrl
+                              ?<img src={g.avatarUrl} alt={g.name} style={{ width:44,height:44,borderRadius:14,objectFit:"cover" }}/>
+                              :<div style={{ width:44,height:44,borderRadius:14,background:"#1a3a20",display:"flex",alignItems:"center",justifyContent:"center",color:"#22C55E",fontWeight:800,fontSize:16 }}>{g.name[0]?.toUpperCase()}</div>}
+                            <div style={{ fontWeight:600,fontSize:15,color:"#fff" }}>{g.name}</div>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+
+                  {/* ── BLOQUER ── */}
+                  {callOverlay === "block" && (
+                    <div style={{ padding:"0 20px 4px" }}>
+                      <div style={{ textAlign:"center",marginBottom:22,paddingTop:8 }}>
+                        <div style={{ width:64,height:64,borderRadius:20,background:"rgba(239,68,68,0.12)",border:"1px solid rgba(239,68,68,0.3)",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 12px" }}>
+                          <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                        </div>
+                        <div style={{ fontWeight:800,fontSize:19,color:"#fff" }}>{contactInfo?.isBlocked?"Débloquer le contact":"Bloquer le contact"}</div>
+                        <div style={{ fontSize:13.5,color:"rgba(255,255,255,.45)",marginTop:8,lineHeight:1.5 }}>
+                          {contactInfo?.isBlocked?`${peer?.name} pourra à nouveau vous contacter.`:`${peer?.name} ne pourra plus vous contacter.`}
+                        </div>
+                      </div>
+                      <div style={{ display:"flex",gap:10 }}>
+                        <button onClick={()=>setCallOverlay("options")} style={{ flex:1,padding:"13px",borderRadius:14,background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.12)",color:"rgba(255,255,255,.78)",fontWeight:700,fontSize:15,cursor:"pointer" }}>Annuler</button>
+                        <button onClick={()=>(contactInfo?.isBlocked?apiUnblockUser(callPeerUser?.id??0):apiBlockUser(callPeerUser?.id??0)).then(()=>apiGetContactInfo(activeConv!).then(i=>{if(i)setContactInfo(i);})).then(()=>setCallOverlay("none"))}
+                          style={{ flex:1,padding:"13px",borderRadius:14,background:"#EF4444",border:"none",color:"#fff",fontWeight:800,fontSize:15,cursor:"pointer" }}>
+                          {contactInfo?.isBlocked?"Débloquer":"Bloquer"}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ── SIGNALER ── */}
+                  {callOverlay === "report" && (
+                    <div style={{ padding:"0 20px 4px" }}>
+                      <button onClick={()=>setCallOverlay("options")} style={{ background:"none",border:"none",color:"rgba(255,255,255,.5)",cursor:"pointer",padding:"4px 0 16px",display:"flex",alignItems:"center",gap:6,fontSize:14 }}>
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg> Retour
+                      </button>
+                      <div style={{ fontWeight:800,fontSize:19,color:"#fff",marginBottom:4 }}>Signaler l'utilisateur</div>
+                      <div style={{ fontSize:13,color:"rgba(255,255,255,.4)",marginBottom:16 }}>Signalez ce contact s'il enfreint nos règles</div>
+                      <div style={{ background:"rgba(255,255,255,0.05)",borderRadius:16,overflow:"hidden",marginBottom:16 }}>
+                        {["Spam","Contenu inapproprié","Harcèlement","Usurpation d'identité","Violence","Nudité","Autre"].map((r,i,arr)=>(
+                          <div key={r} onClick={()=>setCallReportReason(r)}
+                            style={{ display:"flex",alignItems:"center",padding:"14px 18px",cursor:"pointer",borderBottom:i<arr.length-1?"1px solid rgba(255,255,255,0.05)":"none" }}>
+                            <span style={{ flex:1,color:"#fff",fontSize:15 }}>{r}</span>
+                            {callReportReason===r
+                              ?<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                              :<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="rgba(255,255,255,.2)" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>}
+                          </div>
+                        ))}
+                      </div>
+                      <textarea value={callReportDesc} onChange={e=>setCallReportDesc(e.target.value)} placeholder="Description (optionnel)…" rows={3}
+                        style={{ width:"100%",boxSizing:"border-box",background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.12)",borderRadius:14,padding:"12px 14px",color:"#fff",fontSize:14,outline:"none",resize:"none",marginBottom:16 }} />
+                      <button disabled={!callReportReason||callReportSending}
+                        onClick={()=>{setCallReportSending(true);apiReportUser(callPeerUser?.id??0,callReportReason,callReportDesc||undefined).then(()=>setCallOverlay("none")).finally(()=>setCallReportSending(false));}}
+                        style={{ width:"100%",padding:"15px",borderRadius:16,background:callReportReason?"#F97316":"rgba(255,255,255,0.1)",border:"none",color:"#fff",fontWeight:800,fontSize:16,cursor:callReportReason?"pointer":"not-allowed",opacity:callReportReason?1:0.5 }}>
+                        {callReportSending?"Envoi…":"Envoyer le signalement"}
+                      </button>
+                    </div>
+                  )}
+
+                  {/* ── SUPPRIMER ── */}
+                  {callOverlay === "delete" && (
+                    <div style={{ padding:"0 20px 4px" }}>
+                      <div style={{ textAlign:"center",marginBottom:22,paddingTop:8 }}>
+                        <div style={{ width:64,height:64,borderRadius:20,background:"rgba(239,68,68,0.12)",border:"1px solid rgba(239,68,68,0.3)",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 12px" }}>
+                          <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+                        </div>
+                        <div style={{ fontWeight:800,fontSize:19,color:"#fff" }}>Supprimer la conversation</div>
+                        <div style={{ fontSize:13.5,color:"rgba(255,255,255,.45)",marginTop:8,lineHeight:1.5 }}>Cette action supprimera tous les messages de cette conversation.</div>
+                      </div>
+                      <div style={{ display:"flex",gap:10 }}>
+                        <button onClick={()=>setCallOverlay("options")} style={{ flex:1,padding:"13px",borderRadius:14,background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.12)",color:"rgba(255,255,255,.78)",fontWeight:700,fontSize:15,cursor:"pointer" }}>Annuler</button>
+                        <button onClick={()=>apiDeleteConversationContact(activeConv!).then(()=>{setCallOverlay("none");sig.endCall();})}
+                          style={{ flex:1,padding:"13px",borderRadius:14,background:"#EF4444",border:"none",color:"#fff",fontWeight:800,fontSize:15,cursor:"pointer" }}>
+                          Supprimer
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </>
         ) : (
           /* ── AUDIO CALL — BrutePawa 2026 Premium ── */
@@ -3155,6 +3505,13 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     const friendDirection = ci?.friendDirection;
 
     const options = [
+      {
+        label: "Voir le profil",
+        sub:   "Afficher le profil complet de ce contact",
+        color: "#22C55E",
+        icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+        action: () => { navigate(`/profile/${activeConv}`); setOverlay("none"); },
+      },
       {
         label: isMuted ? "Activer le son" : "Mettre en sourdine",
         sub:   isMuted ? "Recevoir à nouveau les notifications" : "Ne plus recevoir de notifications",
