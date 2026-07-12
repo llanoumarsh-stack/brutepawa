@@ -34,10 +34,14 @@ router.post(
       return;
     }
 
-    const filename = (req.headers["x-filename"] as string) || "upload.bin";
-    const userId   = req.userId!;
-    const kind     = detectKind(filename);
-    const ext      = path.extname(filename).toLowerCase();
+    const filename    = (req.headers["x-filename"] as string) || "upload.bin";
+    const userId      = req.userId!;
+    const contentType = (req.headers["content-type"] as string) ?? "";
+    // If browser sends audio/* Content-Type (e.g. voice recorder sends audio/webm),
+    // treat as audio even if the file extension maps to video (webm).
+    const kindFromExt = detectKind(filename);
+    const kind        = contentType.startsWith("audio/") ? "audio" : kindFromExt;
+    const ext         = path.extname(filename).toLowerCase();
 
     // ── Size limits ───────────────────────────────────────────────────────────
     const sizeLimit =
