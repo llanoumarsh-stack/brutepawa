@@ -378,6 +378,28 @@ export function useCallSignaling(
       cleanup();
       return;
     }
+
+    // ─── Mid-call renegotiation (triggered by screen share replaceTrack) ──────
+    if (type === "call:renego") {
+      const pc = pcRef.current;
+      if (!pc) return;
+      try {
+        await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp as RTCSessionDescriptionInit));
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        await postSignal(from, "call:renego-answer", { sdp: pc.localDescription });
+      } catch { /* ignore */ }
+      return;
+    }
+
+    if (type === "call:renego-answer") {
+      const pc = pcRef.current;
+      if (!pc) return;
+      try {
+        await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp as RTCSessionDescriptionInit));
+      } catch { /* ignore */ }
+      return;
+    }
   }, [buildPC, drainCandidates, startTimer, cleanup]);
 
   useEffect(() => { handleSignalRef.current = handleSignal; }, [handleSignal]);
@@ -551,40 +573,74 @@ export function useCallSignaling(
     });
   }, []);
 
+  // ─── Mid-call renegotiation (needed after replaceTrack on some browsers/TURN) ──
+  const renegotiate = useCallback(async () => {
+    const pc = pcRef.current;
+    const peerId = callPeerIdRef.current;
+    if (!pc || peerId === null) return;
+    try {
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      await postSignal(peerId, "call:renego", { sdp: pc.localDescription });
+    } catch { /* ignore */ }
+  }, []);
+
+  // ─── Restore camera after screen share ends ───────────────────────────────
+  const restoreCamera = useCallback(async () => {
+    try {
+      const camStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } },
+        audio: false,
+      });
+      const camTrack = camStream.getVideoTracks()[0];
+      // Find sender — may have null track if screen track ended
+      const sender = pcRef.current?.getSenders().find(
+        s => s.track?.kind === "video" || s.track === null
+      );
+      if (sender && camTrack) {
+        await sender.replaceTrack(camTrack);
+        await renegotiate();
+      }
+      const audioTracks = localStreamRef.current?.getAudioTracks() ?? [];
+      const combined = new MediaStream([...audioTracks, camTrack]);
+      localStreamRef.current = combined;
+      setLocalStream(combined);
+    } catch { /* camera access denied or not available */ }
+    setIsScreenSharing(false);
+  }, [renegotiate]);
+
   const toggleScreenShare = useCallback(async () => {
     if (isScreenSharing) {
-      // Stop screen share — re-acquire camera
-      try {
-        const camStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } },
-          audio: false,
-        });
-        const camTrack = camStream.getVideoTracks()[0];
-        const sender = pcRef.current?.getSenders().find(s => s.track?.kind === "video");
-        if (sender && camTrack) await sender.replaceTrack(camTrack);
-        const audioTracks = localStreamRef.current?.getAudioTracks() ?? [];
-        const combined = new MediaStream([...audioTracks, camTrack]);
-        localStreamRef.current = combined;
-        setLocalStream(combined);
-      } catch { /* ignore */ }
-      setIsScreenSharing(false);
+      await restoreCamera();
     } else {
       // Start screen share
       try {
-        const screenStream = await (navigator.mediaDevices as MediaDevices & { getDisplayMedia: (c: object) => Promise<MediaStream> }).getDisplayMedia({ video: true, audio: false });
+        const screenStream = await (navigator.mediaDevices as MediaDevices & {
+          getDisplayMedia: (c: object) => Promise<MediaStream>;
+        }).getDisplayMedia({ video: true, audio: false });
+
         const screenTrack = screenStream.getVideoTracks()[0];
+        if (!screenTrack) return;
+
         const sender = pcRef.current?.getSenders().find(s => s.track?.kind === "video");
-        if (sender && screenTrack) await sender.replaceTrack(screenTrack);
+        if (sender) {
+          await sender.replaceTrack(screenTrack);
+          // Renegotiate so the remote peer's browser updates the track
+          await renegotiate();
+        }
+
         const audioTracks = localStreamRef.current?.getAudioTracks() ?? [];
         const combined = new MediaStream([...audioTracks, screenTrack]);
         localStreamRef.current = combined;
         setLocalStream(combined);
-        // Auto-stop when user ends share via browser UI
-        screenTrack.onended = () => setIsScreenSharing(false);
+
+        // When user clicks "Stop sharing" in the browser's native bar → restore camera
+        screenTrack.onended = () => { restoreCamera(); };
+
         setIsScreenSharing(true);
-      } catch { /* user cancelled or unsupported */ }
+      } catch { /* user cancelled picker or permission denied */ }
     }
-  }, [isScreenSharing]);
+  }, [isScreenSharing, renegotiate, restoreCamera]);
 
   const toggleSpeaker = useCallback(async (audioEl: HTMLAudioElement | null) => {
     const next = !isSpeaker;
