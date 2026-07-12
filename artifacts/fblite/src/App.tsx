@@ -219,16 +219,8 @@ function AppContent() {
     else setPostsLoading(false);
   }, [isAuth]);
 
-  const handleNewPost = async (content: string) => {
-    const token = getBpToken();
-    if (token) {
-      try {
-        await apiCreatePost(content);
-        await loadPosts();
-      } catch {
-        // silent fallback — post added locally
-      }
-    }
+  const handleNewPost = async (_content?: string) => {
+    try { await loadPosts(); } catch { /* silent */ }
     navigate("/");
   };
 

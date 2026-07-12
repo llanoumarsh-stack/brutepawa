@@ -284,8 +284,10 @@ export default function CreatePostPage({ onPublish }: Props) {
   };
 
   /* ─── Handlers ────────────────────────────────────── */
+  const publishingRef = useRef(false);
   const handlePublish = async () => {
-    if (!canPublish) return;
+    if (!canPublish || publishingRef.current) return;
+    publishingRef.current = true;
     let finalContent = content.trim();
     if (selectedLocation) finalContent += `\n📍 ${selectedLocation.city}, ${selectedLocation.country}`;
     const firstMedia = medias[0];
@@ -297,6 +299,7 @@ export default function CreatePostPage({ onPublish }: Props) {
         selectedTrack ? { trackName: selectedTrack.title, artist: selectedTrack.artist, url: selectedTrack.previewUrl, artworkUrl: selectedTrack.artworkUrl, duration: selectedTrack.duration } : undefined,
       );
     } catch (err) {
+      publishingRef.current = false;
       alert((err as Error).message ?? "Erreur lors de la publication.");
       return;
     }
