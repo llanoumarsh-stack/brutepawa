@@ -2017,3 +2017,91 @@ export async function apiGetMyGroups(): Promise<{ id: number; name: string; avat
 export async function apiAddContactToGroup(userId: number, groupId: number): Promise<void> {
   await apiFetch(`/contacts/${userId}/add-to-group/${groupId}`, { method: "POST" });
 }
+
+// ── Unified Search ──────────────────────────────────────────────────────────
+
+export interface SearchUserDTO {
+  id: number;
+  firstName: string;
+  lastName: string;
+  avatarUrl: string | null;
+  country: string | null;
+  bio: string | null;
+  verified: boolean;
+  followersCount: number;
+  friendshipStatus: "none" | "friends" | "pending_sent" | "pending_received";
+}
+export interface SearchGroupDTO {
+  id: number;
+  name: string;
+  emoji: string;
+  description: string | null;
+  membersCount: number;
+  privacy: string;
+  country: string | null;
+  coverUrl: string | null;
+  isMember: boolean;
+}
+export interface SearchPostDTO {
+  id: number;
+  authorId: number;
+  authorName: string;
+  authorAvatarUrl: string | null;
+  content: string;
+  imageUrl: string | null;
+  thumbnailUrl: string | null;
+  likesCount: number;
+  commentsCount: number;
+  createdAt: string;
+}
+export interface SearchArticleDTO {
+  id: number;
+  title: string;
+  description: string | null;
+  imageUrl: string | null;
+  price: number;
+  currency: string;
+  category: string | null;
+  location: string | null;
+}
+export interface SearchStatsDTO {
+  users: number;
+  posts: number;
+  groups: number;
+  articles: number;
+}
+export interface SearchResponseDTO {
+  query: string;
+  stats: SearchStatsDTO;
+  users: SearchUserDTO[];
+  groups: SearchGroupDTO[];
+  posts: SearchPostDTO[];
+  articles: SearchArticleDTO[];
+  pagination: { page: number; limit: number; hasMore: boolean };
+  durationMs: number;
+}
+
+export async function apiSearch(
+  q: string,
+  options?: {
+    country?: string;
+    region?: "all" | "afrique" | "amerique" | "europe" | "asie" | "oceanie";
+    type?: "all" | "users" | "groups" | "posts" | "articles";
+    page?: number;
+    limit?: number;
+  },
+): Promise<SearchResponseDTO> {
+  const params = new URLSearchParams({ q });
+  if (options?.country) params.set("country", options.country);
+  if (options?.region)  params.set("region",  options.region);
+  if (options?.type)    params.set("type",    options.type);
+  if (options?.page)    params.set("page",    String(options.page));
+  if (options?.limit)   params.set("limit",   String(options.limit));
+  const res = await apiFetch(`/search?${params.toString()}`);
+  if (!res.ok) return {
+    query: q, stats: { users: 0, posts: 0, groups: 0, articles: 0 },
+    users: [], groups: [], posts: [], articles: [],
+    pagination: { page: 1, limit: 20, hasMore: false }, durationMs: 0,
+  };
+  return res.json() as Promise<SearchResponseDTO>;
+}
