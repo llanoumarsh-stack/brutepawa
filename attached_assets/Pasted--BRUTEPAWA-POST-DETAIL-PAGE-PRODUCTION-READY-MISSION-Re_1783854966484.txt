@@ -1,0 +1,427 @@
+🚨 BRUTEPAWA - POST DETAIL PAGE (PRODUCTION READY)
+
+MISSION :
+
+Reconstruire exactement la page Publication de BrutePawa visible dans les maquettes.
+
+Ne pas créer une variante.
+
+Ne pas interpréter.
+
+Ne pas simplifier.
+
+Reproduire fidèlement le design, les interactions, les animations, le backend et les flux temps réel.
+
+==================================================
+DESIGN
+==================================================
+
+Couleur principale :
+
+#22C55E
+
+Couleur secondaire :
+
+#16A34A
+
+Fond :
+
+#F8FAFC
+
+Cartes :
+
+#FFFFFF
+
+Police :
+
+Inter
+
+Coins :
+
+24px
+
+Ombres :
+
+0 12px 40px rgba(0,0,0,.06)
+
+==================================================
+HEADER
+==================================================
+
+Afficher :
+
+← Retour
+
+Titre :
+Publication de [Nom utilisateur]
+
+Recherche
+
+==================================================
+POST CARD
+==================================================
+
+Afficher :
+
+Photo profil
+
+Badge dynamique
+
+Nom utilisateur
+
+Date
+
+Confidentialité
+
+Menu ...
+
+Contenu
+
+Médias
+
+Réactions
+
+Commentaires
+
+Partages
+
+Sauvegardes
+
+==================================================
+BADGES DYNAMIQUES
+==================================================
+
+Ne jamais afficher un badge générique.
+
+Source :
+
+users.badge_type
+
+Types :
+
+verified
+creator
+premium
+vip
+business
+moderator
+admin
+
+Chaque badge :
+
+- icône unique
+- couleur unique
+- animation unique
+
+==================================================
+REACTIONS PREMIUM
+==================================================
+
+Maintien sur J'aime :
+
+Afficher menu réaction animé.
+
+Réactions :
+
+👍 J'aime
+❤️ J'adore
+🔥 Top
+💜 Bravo
+
+Animation :
+
+scale
+bounce
+haptic
+
+==================================================
+LOGIQUE DES RÉACTIONS
+==================================================
+
+BUG À ÉVITER :
+
+Ne jamais afficher une réaction inexistante.
+
+Exemple :
+
+Si utilisateur choisit Bravo :
+
+Afficher :
+
+💜 Bravo
+1 réaction
+
+Ne jamais afficher :
+
+💜 ❤️ 🔥
+1 réaction
+
+Les icônes affichées doivent provenir directement de la base.
+
+==================================================
+TABLE REACTIONS
+==================================================
+
+post_reactions
+
+id
+post_id
+user_id
+reaction_type
+created_at
+
+==================================================
+RÉSUMÉ DES RÉACTIONS
+==================================================
+
+Cas 1 :
+
+1 seule réaction Bravo
+
+Afficher :
+
+💜
+1 réaction
+
+Cas 2 :
+
+Bravo=3
+Like=5
+Top=2
+
+Afficher :
+
+💜 👍 🔥
+
+10 réactions
+
+==================================================
+PHOTO DE PROFIL
+==================================================
+
+Clique sur avatar :
+
+Afficher Bottom Sheet Premium.
+
+Options :
+
+🖼 Voir la photo
+
+👤 Voir le profil
+
+❌ Annuler
+
+==================================================
+VOIR LA PHOTO
+==================================================
+
+Plein écran.
+
+Fond noir.
+
+Zoom.
+
+Swipe fermeture.
+
+Téléchargement.
+
+Partager.
+
+==================================================
+VOIR LE PROFIL
+==================================================
+
+Profil complet.
+
+Couverture.
+
+Avatar.
+
+Badge.
+
+Bio.
+
+Compteurs :
+
+publications
+abonnés
+abonnements
+likes reçus
+
+Onglets :
+
+Publications
+Photos
+Vidéos
+Marketplace
+Services
+À propos
+
+==================================================
+COMMENTAIRES
+==================================================
+
+Commentaires imbriqués.
+
+Réponses.
+
+Mentions.
+
+Likes.
+
+Images.
+
+GIF.
+
+Audio.
+
+Modification.
+
+Suppression.
+
+Signalement.
+
+==================================================
+BARRE COMMENTAIRE
+==================================================
+
+Avatar.
+
+Champ dynamique.
+
+Emoji.
+
+GIF.
+
+Image.
+
+Micro.
+
+Le champ doit grandir automatiquement.
+
+==================================================
+ENREGISTREMENT VOCAL
+==================================================
+
+Version premium.
+
+Pas de barre simple.
+
+Créer :
+
+- onde temps réel
+- minuterie
+- verrouillage vertical
+- glisser pour annuler
+- prévisualisation audio
+
+Style Telegram Premium.
+
+==================================================
+TABLES SQL
+==================================================
+
+users
+
+profiles
+
+posts
+
+post_media
+
+post_reactions
+
+comments
+
+comment_reactions
+
+comment_replies
+
+followers
+
+notifications
+
+messages
+
+conversations
+
+voice_messages
+
+bookmarks
+
+shares
+
+reports
+
+badges
+
+user_badges
+
+==================================================
+API
+==================================================
+
+POST /posts/create
+
+POST /posts/react
+
+POST /posts/bookmark
+
+POST /comments/create
+
+POST /comments/reply
+
+POST /comments/react
+
+POST /profile/view
+
+POST /profile/follow
+
+POST /message/send
+
+POST /voice/upload
+
+==================================================
+REALTIME
+==================================================
+
+Likes instantanés
+
+Commentaires instantanés
+
+Messages instantanés
+
+Notifications instantanées
+
+Réactions instantanées
+
+==================================================
+PERFORMANCES
+==================================================
+
+Pagination
+
+Lazy loading
+
+Cache intelligent
+
+Compression image
+
+Compression audio
+
+PWA optimisée
+
+==================================================
+LIVRABLE
+==================================================
+
+1. Frontend complet
+2. Backend complet
+3. SQL complet
+4. API complètes
+5. Temps réel complet
+6. Toutes les animations
+7. Tous les flux utilisateurs
+8. Aucune donnée fictive
+9. Données dynamiques uniquement
+10. Fidélité visuelle 98%-100% avec les maquettes fournies
