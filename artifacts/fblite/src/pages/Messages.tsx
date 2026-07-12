@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback, Fragment } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { openImageViewer } from "../components/ImageViewer";
-import { apiFetch, apiGetConversations, apiGetMessages, apiMarkMessagesRead, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiUpdateChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadFileXHR, apiUploadVoice, apiDeleteConversation, apiDeleteMessage, apiGetLinkPreview, apiGetMessagingSettings, apiUpdateMessagingSettings, apiGetMessageRequests, apiUpdateMessageRequest, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview, type MessageRequest } from "../lib/api";
+import { apiFetch, apiGetConversations, apiGetMessages, apiMarkMessagesRead, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiUpdateChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadFileXHR, apiUploadVoice, apiDeleteConversation, apiDeleteMessage, apiGetLinkPreview, apiGetMessagingSettings, apiUpdateMessagingSettings, apiGetMessageRequests, apiUpdateMessageRequest, apiGetContactInfo, apiMuteContact, apiUnmuteContact, apiPinContact, apiUnpinContact, apiFavoriteContact, apiUnfavoriteContact, apiBlockUser, apiUnblockUser, apiReportUser, apiSendFriendRequest, apiSearchInConversation, apiDeleteConversationContact, apiGetMyGroups, apiAddContactToGroup, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview, type MessageRequest, type ContactInfo } from "../lib/api";
 import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignaling";
 
 void ({} as ApiChatGroup);
@@ -487,7 +487,7 @@ function voiceWaveform(seed: number, bars = 36): number[] {
   });
 }
 
-type Overlay = "none" | "info" | "attach";
+type Overlay = "none" | "info" | "attach" | "contact-options" | "contact-mute" | "contact-search" | "contact-delete" | "contact-block" | "contact-report" | "contact-addfriend" | "contact-addgroup";
 
 /* ── Module-level caches: survive component unmount/remount (navigation) ── */
 const _msgCache: Record<number, Message[]> = {};
@@ -516,6 +516,19 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [dustingMsgs, setDustingMsgs]           = useState<Map<number, DustRect>>(new Map());
   const [presence, setPresence] = useState<{ online: boolean; lastSeenAt: string | null }>({ online: false, lastSeenAt: null });
   const [presenceTick, setPresenceTick] = useState(0);
+
+  const [contactInfo, setContactInfo]             = useState<ContactInfo | null>(null);
+  const [contactInfoLoading, setContactInfoLoading] = useState(false);
+  const [muteChoice, setMuteChoice]               = useState<"8h" | "1w" | "always">("8h");
+  const [reportReason, setReportReason]           = useState("");
+  const [reportDesc, setReportDesc]               = useState("");
+  const [reportSending, setReportSending]         = useState(false);
+  const [contactSearchQ, setContactSearchQ]       = useState("");
+  const [contactSearchResults, setContactSearchResults] = useState<{ id: number; text: string; createdAt: string; fromMe: boolean }[]>([]);
+  const [contactSearchLoading, setContactSearchLoading] = useState(false);
+  const [addGroupList, setAddGroupList]           = useState<{ id: number; name: string; avatarUrl: string | null }[]>([]);
+  const [addGroupLoading, setAddGroupLoading]     = useState(false);
+  const [addGroupSearch, setAddGroupSearch]       = useState("");
 
   const [chatGroups, setChatGroups]         = useState<ChatGroupConv[]>([]);
   const [activeGroupId, setActiveGroupId]   = useState<number | null>(null);
@@ -1476,6 +1489,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
   const presText = presenceLabel(presence.online, presence.lastSeenAt);
   void presenceTick;
+
+  useEffect(() => {
+    if (!activeConv || overlay !== "info") return;
+    setContactInfoLoading(true);
+    apiGetContactInfo(activeConv)
+      .then(info => { if (info) setContactInfo(info); })
+      .finally(() => setContactInfoLoading(false));
+  }, [activeConv, overlay]);
 
   useEffect(() => {
     if (!activeConv) return;
@@ -3050,7 +3071,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             </svg>
           </button>
           <div style={{ flex: 1, fontWeight: 800, fontSize: 17, color: "#111827" }}>Infos du contact</div>
-          <button style={{ width: 38, height: 38, borderRadius: "50%", background: "#F0FDF4", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <button onClick={() => setOverlay("contact-options")} style={{ width: 38, height: 38, borderRadius: "50%", background: "#F0FDF4", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="#22C55E">
               <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
             </svg>
@@ -3113,6 +3134,472 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               </svg>
             </div>
           ))}
+        </div>
+      </div>
+    , document.body);
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     CONTACT MANAGEMENT OVERLAYS
+  ══════════════════════════════════════════════════════════════ */
+
+  /* ── contact-options: feuille du bas ── */
+  if (activeConv && activeUser && overlay === "contact-options") {
+    const goInfo = () => setOverlay("info");
+    const ci = contactInfo;
+    const isMuted    = ci?.isMuted ?? false;
+    const isPinned   = ci?.isPinned ?? false;
+    const isFavorite = ci?.isFavorite ?? false;
+    const isBlocked  = ci?.isBlocked ?? false;
+    const friendStatus    = ci?.friendStatus;
+    const friendDirection = ci?.friendDirection;
+
+    const options = [
+      {
+        label: isMuted ? "Activer le son" : "Mettre en sourdine",
+        sub:   isMuted ? "Recevoir à nouveau les notifications" : "Ne plus recevoir de notifications",
+        color: "#F59E0B",
+        icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{isMuted ? <><path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></> : <><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 010 7.07"/><path d="M19.07 4.93a10 10 0 010 14.14"/></>}</svg>,
+        action: () => isMuted
+          ? apiUnmuteContact(activeConv).then(() => { setContactInfo(p => p ? { ...p, isMuted: false, muteExpiresAt: null } : p); goInfo(); }).catch(() => {})
+          : setOverlay("contact-mute"),
+      },
+      {
+        label: isPinned ? "Désépingler" : "Épingler la conversation",
+        sub:   isPinned ? "Retirer de vos conversations épinglées" : "Garder cette conversation en haut",
+        color: "#3B82F6",
+        icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 00-1.11-1.79l-1.78-.9A2 2 0 0115 10.76V6h1a2 2 0 000-4H8a2 2 0 000 4h1v4.76a2 2 0 01-1.11 1.79l-1.78.9A2 2 0 005 15.24V17z"/></svg>,
+        action: () => {
+          (isPinned ? apiUnpinContact(activeConv) : apiPinContact(activeConv))
+            .then(() => { setContactInfo(p => p ? { ...p, isPinned: !isPinned } : p); goInfo(); })
+            .catch(() => {});
+        },
+      },
+      {
+        label: isFavorite ? "Retirer des favoris" : "Ajouter aux favoris",
+        sub:   isFavorite ? "Ne plus voir dans vos favoris" : "Accéder rapidement à ce contact",
+        color: "#EAB308",
+        icon: <svg viewBox="0 0 24 24" width="20" height="20" fill={isFavorite ? "#EAB308" : "none"} stroke="#EAB308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
+        action: () => {
+          (isFavorite ? apiUnfavoriteContact(activeConv) : apiFavoriteContact(activeConv))
+            .then(() => { setContactInfo(p => p ? { ...p, isFavorite: !isFavorite } : p); goInfo(); })
+            .catch(() => {});
+        },
+      },
+      {
+        label: "Rechercher dans la discussion",
+        sub:   "Trouver des messages dans cette conversation",
+        color: "#22C55E",
+        icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
+        action: () => { setContactSearchQ(""); setContactSearchResults([]); setOverlay("contact-search"); },
+      },
+      ...(!friendStatus || friendStatus === "rejected" ? [{
+        label: "Envoyer une demande d'ami",
+        sub:   "Connectez-vous avec ce contact",
+        color: "#8B5CF6",
+        icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>,
+        action: () => setOverlay("contact-addfriend"),
+      }] : friendStatus === "pending" && friendDirection === "sent" ? [{
+        label: "Demande d'ami envoyée",
+        sub:   "En attente de réponse",
+        color: "#9CA3AF",
+        icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/><polyline points="20 6 9 17 4 12"/></svg>,
+        action: () => {},
+      }] : []),
+      {
+        label: "Ajouter à un groupe",
+        sub:   "Inviter ce contact dans l'un de vos groupes",
+        color: "#06B6D4",
+        icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#06B6D4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>,
+        action: () => { setAddGroupSearch(""); setAddGroupLoading(true); apiGetMyGroups().then(g => { setAddGroupList(g); setAddGroupLoading(false); }); setOverlay("contact-addgroup"); },
+      },
+      {
+        label: "Partager le profil",
+        sub:   "Envoyer le lien du profil à quelqu'un",
+        color: "#10B981",
+        icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>,
+        action: () => {
+          const url = `${window.location.origin}${import.meta.env.BASE_URL}profile/${activeConv}`;
+          if (navigator.share) {
+            navigator.share({ title: activeUser.name, url }).catch(() => {});
+          } else {
+            navigator.clipboard.writeText(url).then(() => {
+              import("sonner").then(({ toast }) => toast.success("Lien copié !"));
+            }).catch(() => {});
+          }
+          goInfo();
+        },
+      },
+      {
+        label: isBlocked ? "Débloquer" : "Bloquer",
+        sub:   isBlocked ? "Autoriser à nouveau ce contact" : "Empêcher ce contact de vous contacter",
+        color: "#EF4444",
+        icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>,
+        action: () => setOverlay("contact-block"),
+      },
+      {
+        label: "Signaler",
+        sub:   "Signaler un comportement inapproprié",
+        color: "#F97316",
+        icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
+        action: () => { setReportReason(""); setReportDesc(""); setOverlay("contact-report"); },
+      },
+      {
+        label: "Supprimer la discussion",
+        sub:   "Effacer tous les messages de cette conversation",
+        color: "#DC2626",
+        icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#DC2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>,
+        action: () => setOverlay("contact-delete"),
+      },
+    ];
+
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, zIndex:10001, background:"rgba(0,0,0,0.45)", display:"flex", flexDirection:"column", justifyContent:"flex-end" }}
+        onClick={goInfo}>
+        <div style={{ background:"#fff", borderRadius:"24px 24px 0 0", maxHeight:"92vh", overflowY:"auto", paddingBottom:24 }}
+          onClick={e => e.stopPropagation()}>
+          <div style={{ display:"flex", justifyContent:"center", padding:"12px 0 8px" }}>
+            <div style={{ width:40, height:4, borderRadius:2, background:"#E5E7EB" }} />
+          </div>
+          <div style={{ display:"flex", alignItems:"center", gap:12, padding:"4px 20px 16px", borderBottom:"1px solid #F3F4F6" }}>
+            {activeUser.avatarUrl
+              ? <img src={activeUser.avatarUrl} alt={activeUser.name} style={{ width:44, height:44, borderRadius:"50%", objectFit:"cover", border:"2px solid #22C55E" }} />
+              : <div style={{ width:44, height:44, borderRadius:"50%", background:activeUser.color, display:"flex", alignItems:"center", justifyContent:"center", fontWeight:800, fontSize:17, color:"#fff", border:"2px solid #22C55E" }}>{activeUser.initials}</div>}
+            <div>
+              <div style={{ fontWeight:800, fontSize:16, color:"#111827" }}>{activeUser.name}</div>
+              <div style={{ fontSize:12.5, color:presence.online ? "#22C55E" : "#9CA3AF", fontWeight:600 }}>{presence.online ? "En ligne" : presText}</div>
+            </div>
+          </div>
+          {options.map((opt, i) => (
+            <div key={i} onClick={opt.action}
+              style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 20px", cursor:"pointer", borderBottom: i < options.length - 1 ? "1px solid #F9FAFB" : "none" }}
+              onPointerDown={e => (e.currentTarget.style.background = "#F9FAFB")}
+              onPointerUp={e => (e.currentTarget.style.background = "transparent")}
+              onPointerLeave={e => (e.currentTarget.style.background = "transparent")}>
+              <div style={{ width:40, height:40, borderRadius:12, background:`${opt.color}18`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                {opt.icon}
+              </div>
+              <div style={{ flex:1, minWidth:0 }}>
+                <div style={{ fontWeight:700, fontSize:15, color:"#111827" }}>{opt.label}</div>
+                <div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:1 }}>{opt.sub}</div>
+              </div>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#D1D5DB" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          ))}
+        </div>
+      </div>
+    , document.body);
+  }
+
+  /* ── contact-mute: durée ── */
+  if (activeConv && activeUser && overlay === "contact-mute") {
+    const durations: { key: "8h" | "1w" | "always"; label: string; sub: string }[] = [
+      { key:"8h",     label:"8 heures",  sub:"Les notifications reprennent dans 8 heures" },
+      { key:"1w",     label:"1 semaine", sub:"Les notifications reprennent dans 7 jours" },
+      { key:"always", label:"Toujours",  sub:"Jusqu'à ce que vous réactiviez manuellement" },
+    ];
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, zIndex:10001, background:"linear-gradient(160deg,#f0fdf4 0%,#fff 100%)", overflowY:"auto" }}>
+        <div style={{ position:"sticky", top:0, zIndex:10, background:"rgba(255,255,255,0.92)", backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)", borderBottom:"1px solid rgba(34,197,94,0.12)", padding:"12px 16px", display:"flex", alignItems:"center", gap:12 }}>
+          <button onClick={() => setOverlay("contact-options")} style={{ width:38, height:38, borderRadius:"50%", background:"#F0FDF4", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div style={{ flex:1, fontWeight:800, fontSize:17, color:"#111827" }}>Mettre en sourdine</div>
+        </div>
+        <div style={{ padding:"24px 16px 0" }}>
+          <p style={{ fontSize:14, color:"#6B7280", marginBottom:20, lineHeight:1.6 }}>
+            Choisissez la durée pendant laquelle les notifications de <strong>{activeUser.name}</strong> seront silencieuses.
+          </p>
+          <div style={{ background:"#fff", borderRadius:20, overflow:"hidden", boxShadow:"0 2px 12px rgba(0,0,0,0.05)", border:"1px solid rgba(34,197,94,0.07)" }}>
+            {durations.map((d, i) => (
+              <div key={d.key} onClick={() => setMuteChoice(d.key)}
+                style={{ display:"flex", alignItems:"center", gap:14, padding:"16px 18px", borderBottom: i < durations.length - 1 ? "1px solid #F0FDF4" : "none", cursor:"pointer", background: muteChoice === d.key ? "#F0FDF4" : "#fff" }}>
+                <div style={{ width:38, height:38, borderRadius:12, background: muteChoice === d.key ? "#22C55E" : "#F3F4F6", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, transition:"background 0.15s" }}>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke={muteChoice === d.key ? "#fff" : "#9CA3AF"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M23 9l-6 6"/><path d="M17 9l6 6"/>
+                  </svg>
+                </div>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontWeight:700, fontSize:15, color:"#111827" }}>{d.label}</div>
+                  <div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:2 }}>{d.sub}</div>
+                </div>
+                {muteChoice === d.key && (
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                )}
+              </div>
+            ))}
+          </div>
+          <button
+            onClick={() => apiMuteContact(activeConv, muteChoice).then(() => {
+              setContactInfo(p => p ? { ...p, isMuted: true } : p);
+              setOverlay("info");
+            }).catch(() => {})}
+            style={{ width:"100%", marginTop:24, padding:"15px", borderRadius:16, background:"#22C55E", border:"none", color:"#fff", fontWeight:800, fontSize:16, cursor:"pointer", boxShadow:"0 4px 16px rgba(34,197,94,0.30)" }}>
+            Confirmer la mise en sourdine
+          </button>
+        </div>
+      </div>
+    , document.body);
+  }
+
+  /* ── contact-search: rechercher dans la discussion ── */
+  if (activeConv && activeUser && overlay === "contact-search") {
+    const runSearch = (q: string) => {
+      if (!q.trim()) { setContactSearchResults([]); return; }
+      setContactSearchLoading(true);
+      apiSearchInConversation(activeConv, q)
+        .then(r => setContactSearchResults(r))
+        .finally(() => setContactSearchLoading(false));
+    };
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, zIndex:10001, background:"#fff", display:"flex", flexDirection:"column" }}>
+        <div style={{ background:"#fff", padding:"8px", display:"flex", alignItems:"center", gap:8, borderBottom:"1px solid #E5E7EB", flexShrink:0 }}>
+          <button onClick={() => setOverlay("contact-options")} style={{ background:"none", border:"none", cursor:"pointer", width:40, height:44, display:"flex", alignItems:"center", justifyContent:"center" }}>
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <input
+            autoFocus
+            value={contactSearchQ}
+            onChange={e => { setContactSearchQ(e.target.value); runSearch(e.target.value); }}
+            placeholder="Rechercher dans la discussion..."
+            style={{ flex:1, border:"none", outline:"none", fontSize:16, color:"#111827", background:"transparent", fontFamily:"inherit" }}
+          />
+          {contactSearchQ && (
+            <button onClick={() => { setContactSearchQ(""); setContactSearchResults([]); }} style={{ background:"none", border:"none", cursor:"pointer", padding:6 }}>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9CA3AF" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          )}
+        </div>
+        <div style={{ flex:1, overflowY:"auto" }}>
+          {contactSearchLoading && (
+            <div style={{ padding:32, textAlign:"center", color:"#9CA3AF" }}>Recherche en cours…</div>
+          )}
+          {!contactSearchLoading && contactSearchQ.trim() && contactSearchResults.length === 0 && (
+            <div style={{ padding:40, textAlign:"center" }}>
+              <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#D1D5DB" strokeWidth="1.5" style={{ margin:"0 auto 12px", display:"block" }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <div style={{ color:"#9CA3AF", fontSize:15 }}>Aucun message trouvé</div>
+            </div>
+          )}
+          {contactSearchResults.map(r => (
+            <div key={r.id} style={{ padding:"14px 16px", borderBottom:"1px solid #F3F4F6" }}>
+              <div style={{ fontSize:12, color: r.fromMe ? "#22C55E" : "#9CA3AF", fontWeight:600, marginBottom:4 }}>
+                {r.fromMe ? "Vous" : activeUser.name}
+              </div>
+              <div style={{ fontSize:14.5, color:"#111827", lineHeight:1.5 }}
+                dangerouslySetInnerHTML={{ __html: r.text.replace(new RegExp(`(${contactSearchQ.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")})`, "gi"), "<mark style='background:#FEF9C3;border-radius:2px'>$1</mark>") }} />
+              <div style={{ fontSize:11.5, color:"#9CA3AF", marginTop:4 }}>
+                {new Date(r.createdAt).toLocaleDateString("fr-FR", { day:"numeric", month:"short", year:"numeric" })}
+              </div>
+            </div>
+          ))}
+          {!contactSearchQ.trim() && (
+            <div style={{ padding:"60px 24px", textAlign:"center" }}>
+              <svg viewBox="0 0 24 24" width="52" height="52" fill="none" stroke="#D1D5DB" strokeWidth="1.5" style={{ margin:"0 auto 16px", display:"block" }}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <div style={{ color:"#9CA3AF", fontSize:15 }}>Tapez pour rechercher dans vos messages avec <strong style={{ color:"#374151" }}>{activeUser.name}</strong></div>
+            </div>
+          )}
+        </div>
+      </div>
+    , document.body);
+  }
+
+  /* ── contact-delete: confirmer suppression ── */
+  if (activeConv && activeUser && overlay === "contact-delete") {
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, zIndex:10001, background:"rgba(0,0,0,0.5)", display:"flex", alignItems:"center", justifyContent:"center", padding:"0 24px" }}>
+        <div style={{ background:"#fff", borderRadius:24, padding:"28px 24px 20px", maxWidth:380, width:"100%", boxShadow:"0 20px 60px rgba(0,0,0,0.2)" }}>
+          <div style={{ width:56, height:56, borderRadius:"50%", background:"#FEE2E2", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 16px" }}>
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#DC2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </div>
+          <div style={{ fontWeight:800, fontSize:18, color:"#111827", textAlign:"center", marginBottom:10 }}>Supprimer la discussion</div>
+          <div style={{ fontSize:14, color:"#6B7280", textAlign:"center", lineHeight:1.6, marginBottom:24 }}>
+            Tous les messages échangés avec <strong>{activeUser.name}</strong> seront supprimés de votre côté. Cette action est irréversible.
+          </div>
+          <div style={{ display:"flex", gap:10 }}>
+            <button onClick={() => setOverlay("contact-options")}
+              style={{ flex:1, padding:"13px", borderRadius:12, border:"1.5px solid #E5E7EB", background:"#fff", fontWeight:700, fontSize:15, color:"#374151", cursor:"pointer" }}>
+              Annuler
+            </button>
+            <button onClick={() => apiDeleteConversationContact(activeConv).then(() => { setActiveConv(null); setOverlay("none"); }).catch(() => {})}
+              style={{ flex:1, padding:"13px", borderRadius:12, border:"none", background:"#DC2626", fontWeight:700, fontSize:15, color:"#fff", cursor:"pointer" }}>
+              Supprimer
+            </button>
+          </div>
+        </div>
+      </div>
+    , document.body);
+  }
+
+  /* ── contact-block: bloquer / débloquer ── */
+  if (activeConv && activeUser && overlay === "contact-block") {
+    const isBlocked = contactInfo?.isBlocked ?? false;
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, zIndex:10001, background:"rgba(0,0,0,0.5)", display:"flex", alignItems:"center", justifyContent:"center", padding:"0 24px" }}>
+        <div style={{ background:"#fff", borderRadius:24, padding:"28px 24px 20px", maxWidth:380, width:"100%", boxShadow:"0 20px 60px rgba(0,0,0,0.2)" }}>
+          <div style={{ width:56, height:56, borderRadius:"50%", background:"#FEE2E2", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 16px" }}>
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+          </div>
+          <div style={{ fontWeight:800, fontSize:18, color:"#111827", textAlign:"center", marginBottom:10 }}>
+            {isBlocked ? `Débloquer ${activeUser.name}` : `Bloquer ${activeUser.name}`}
+          </div>
+          <div style={{ fontSize:14, color:"#6B7280", textAlign:"center", lineHeight:1.6, marginBottom:24 }}>
+            {isBlocked
+              ? `${activeUser.name} pourra à nouveau vous contacter et voir votre profil.`
+              : `${activeUser.name} ne pourra plus vous envoyer de messages ni voir votre profil.`}
+          </div>
+          <div style={{ display:"flex", gap:10 }}>
+            <button onClick={() => setOverlay("contact-options")}
+              style={{ flex:1, padding:"13px", borderRadius:12, border:"1.5px solid #E5E7EB", background:"#fff", fontWeight:700, fontSize:15, color:"#374151", cursor:"pointer" }}>
+              Annuler
+            </button>
+            <button onClick={() => {
+                (isBlocked ? apiUnblockUser(activeConv) : apiBlockUser(activeConv))
+                  .then(() => { setContactInfo(p => p ? { ...p, isBlocked: !isBlocked } : p); setOverlay("info"); })
+                  .catch(() => {});
+              }}
+              style={{ flex:1, padding:"13px", borderRadius:12, border:"none", background: isBlocked ? "#22C55E" : "#EF4444", fontWeight:700, fontSize:15, color:"#fff", cursor:"pointer" }}>
+              {isBlocked ? "Débloquer" : "Bloquer"}
+            </button>
+          </div>
+        </div>
+      </div>
+    , document.body);
+  }
+
+  /* ── contact-report: signalement ── */
+  if (activeConv && activeUser && overlay === "contact-report") {
+    const reasons = ["Spam", "Fausse identité", "Contenu inapproprié", "Harcèlement", "Incitation à la haine", "Autre"];
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, zIndex:10001, background:"linear-gradient(160deg,#f0fdf4 0%,#fff 100%)", overflowY:"auto" }}>
+        <div style={{ position:"sticky", top:0, zIndex:10, background:"rgba(255,255,255,0.92)", backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)", borderBottom:"1px solid rgba(34,197,94,0.12)", padding:"12px 16px", display:"flex", alignItems:"center", gap:12 }}>
+          <button onClick={() => setOverlay("contact-options")} style={{ width:38, height:38, borderRadius:"50%", background:"#F0FDF4", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div style={{ flex:1, fontWeight:800, fontSize:17, color:"#111827" }}>Signaler</div>
+        </div>
+        <div style={{ padding:"20px 16px 32px" }}>
+          <p style={{ fontSize:14, color:"#6B7280", marginBottom:20, lineHeight:1.6 }}>
+            Choisissez la raison pour laquelle vous signalez <strong>{activeUser.name}</strong>.
+          </p>
+          <div style={{ background:"#fff", borderRadius:20, overflow:"hidden", boxShadow:"0 2px 12px rgba(0,0,0,0.05)", border:"1px solid rgba(34,197,94,0.07)", marginBottom:16 }}>
+            {reasons.map((r, i) => (
+              <div key={r} onClick={() => setReportReason(r)}
+                style={{ display:"flex", alignItems:"center", gap:12, padding:"15px 18px", borderBottom: i < reasons.length - 1 ? "1px solid #F0FDF4" : "none", cursor:"pointer", background: reportReason === r ? "#F0FDF4" : "#fff" }}>
+                <div style={{ width:20, height:20, borderRadius:"50%", border:`2px solid ${reportReason === r ? "#22C55E" : "#D1D5DB"}`, background: reportReason === r ? "#22C55E" : "#fff", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                  {reportReason === r && <div style={{ width:8, height:8, borderRadius:"50%", background:"#fff" }} />}
+                </div>
+                <span style={{ fontSize:15, color:"#111827", fontWeight: reportReason === r ? 700 : 500 }}>{r}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ background:"#fff", borderRadius:16, border:"1.5px solid #E5E7EB", marginBottom:20, overflow:"hidden" }}>
+            <textarea
+              value={reportDesc}
+              onChange={e => setReportDesc(e.target.value)}
+              placeholder="Description supplémentaire (optionnelle)…"
+              rows={4}
+              style={{ width:"100%", border:"none", outline:"none", padding:"14px 16px", fontSize:14.5, color:"#374151", fontFamily:"inherit", resize:"none", background:"transparent", boxSizing:"border-box" }}
+            />
+          </div>
+          <button
+            disabled={!reportReason || reportSending}
+            onClick={() => {
+              if (!reportReason) return;
+              setReportSending(true);
+              apiReportUser(activeConv, reportReason, reportDesc || undefined)
+                .then(() => { import("sonner").then(({ toast }) => toast.success("Signalement envoyé")); setOverlay("info"); })
+                .catch(() => {})
+                .finally(() => setReportSending(false));
+            }}
+            style={{ width:"100%", padding:"15px", borderRadius:16, background: reportReason ? "#22C55E" : "#E5E7EB", border:"none", color: reportReason ? "#fff" : "#9CA3AF", fontWeight:800, fontSize:16, cursor: reportReason ? "pointer" : "default", boxShadow: reportReason ? "0 4px 16px rgba(34,197,94,0.30)" : "none", transition:"all 0.2s" }}>
+            {reportSending ? "Envoi en cours…" : "Envoyer le signalement"}
+          </button>
+        </div>
+      </div>
+    , document.body);
+  }
+
+  /* ── contact-addfriend: demande d'ami ── */
+  if (activeConv && activeUser && overlay === "contact-addfriend") {
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, zIndex:10001, background:"rgba(0,0,0,0.5)", display:"flex", alignItems:"center", justifyContent:"center", padding:"0 24px" }}>
+        <div style={{ background:"#fff", borderRadius:24, padding:"28px 24px 20px", maxWidth:380, width:"100%", boxShadow:"0 20px 60px rgba(0,0,0,0.2)", textAlign:"center" }}>
+          {activeUser.avatarUrl
+            ? <img src={activeUser.avatarUrl} alt={activeUser.name} style={{ width:72, height:72, borderRadius:"50%", objectFit:"cover", border:"3px solid #22C55E", margin:"0 auto 16px", display:"block" }} />
+            : <div style={{ width:72, height:72, borderRadius:"50%", background:activeUser.color, display:"flex", alignItems:"center", justifyContent:"center", fontSize:26, fontWeight:900, color:"#fff", border:"3px solid #22C55E", margin:"0 auto 16px" }}>{activeUser.initials}</div>}
+          <div style={{ fontWeight:800, fontSize:18, color:"#111827", marginBottom:8 }}>Ajouter {activeUser.name}</div>
+          <div style={{ fontSize:14, color:"#6B7280", lineHeight:1.6, marginBottom:24 }}>
+            Envoyez une demande d'ami à <strong>{activeUser.name}</strong> pour vous connecter sur BrutePawa.
+          </div>
+          <div style={{ display:"flex", gap:10 }}>
+            <button onClick={() => setOverlay("contact-options")}
+              style={{ flex:1, padding:"13px", borderRadius:12, border:"1.5px solid #E5E7EB", background:"#fff", fontWeight:700, fontSize:15, color:"#374151", cursor:"pointer" }}>
+              Annuler
+            </button>
+            <button onClick={() => apiSendFriendRequest(activeConv)
+                .then(() => { setContactInfo(p => p ? { ...p, friendStatus:"pending", friendDirection:"sent" } : p); import("sonner").then(({ toast }) => toast.success("Demande envoyée !")); setOverlay("info"); })
+                .catch(() => {})}
+              style={{ flex:1, padding:"13px", borderRadius:12, border:"none", background:"#22C55E", fontWeight:700, fontSize:15, color:"#fff", cursor:"pointer", boxShadow:"0 4px 16px rgba(34,197,94,0.25)" }}>
+              Envoyer
+            </button>
+          </div>
+        </div>
+      </div>
+    , document.body);
+  }
+
+  /* ── contact-addgroup: ajouter à un groupe ── */
+  if (activeConv && activeUser && overlay === "contact-addgroup") {
+    const filtered = addGroupList.filter(g => g.name.toLowerCase().includes(addGroupSearch.toLowerCase()));
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, zIndex:10001, background:"linear-gradient(160deg,#f0fdf4 0%,#fff 100%)", display:"flex", flexDirection:"column" }}>
+        <div style={{ position:"sticky", top:0, zIndex:10, background:"rgba(255,255,255,0.92)", backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)", borderBottom:"1px solid rgba(34,197,94,0.12)", padding:"12px 16px", display:"flex", alignItems:"center", gap:12, flexShrink:0 }}>
+          <button onClick={() => setOverlay("contact-options")} style={{ width:38, height:38, borderRadius:"50%", background:"#F0FDF4", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div style={{ flex:1, fontWeight:800, fontSize:17, color:"#111827" }}>Ajouter à un groupe</div>
+        </div>
+        <div style={{ padding:"12px 16px", flexShrink:0 }}>
+          <div style={{ display:"flex", alignItems:"center", gap:10, background:"#F3F4F6", borderRadius:14, padding:"10px 14px" }}>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input
+              value={addGroupSearch}
+              onChange={e => setAddGroupSearch(e.target.value)}
+              placeholder="Chercher un groupe…"
+              style={{ flex:1, border:"none", outline:"none", background:"transparent", fontSize:14.5, color:"#111827", fontFamily:"inherit" }}
+            />
+          </div>
+        </div>
+        <div style={{ flex:1, overflowY:"auto", padding:"0 16px 24px" }}>
+          {addGroupLoading && <div style={{ padding:32, textAlign:"center", color:"#9CA3AF" }}>Chargement des groupes…</div>}
+          {!addGroupLoading && filtered.length === 0 && (
+            <div style={{ padding:40, textAlign:"center" }}>
+              <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#D1D5DB" strokeWidth="1.5" style={{ margin:"0 auto 12px", display:"block" }}><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+              <div style={{ color:"#9CA3AF", fontSize:15 }}>Aucun groupe disponible</div>
+            </div>
+          )}
+          {filtered.map(g => {
+            const col = ["#22C55E","#3B82F6","#8B5CF6","#F97316","#EC4899"][g.id % 5];
+            return (
+              <div key={g.id}
+                onClick={() => apiAddContactToGroup(activeConv, g.id)
+                  .then(() => { import("sonner").then(({ toast }) => toast.success(`${activeUser.name} ajouté au groupe`)); setOverlay("info"); })
+                  .catch(() => {})}
+                style={{ display:"flex", alignItems:"center", gap:12, padding:"13px 16px", background:"#fff", borderRadius:16, marginBottom:8, cursor:"pointer", boxShadow:"0 1px 6px rgba(0,0,0,0.05)", border:"1px solid rgba(34,197,94,0.07)" }}
+                onPointerDown={e => (e.currentTarget.style.background = "#F0FDF4")}
+                onPointerUp={e => (e.currentTarget.style.background = "#fff")}
+                onPointerLeave={e => (e.currentTarget.style.background = "#fff")}>
+                {g.avatarUrl
+                  ? <img src={g.avatarUrl} alt={g.name} style={{ width:44, height:44, borderRadius:"50%", objectFit:"cover", flexShrink:0 }} />
+                  : <div style={{ width:44, height:44, borderRadius:"50%", background:col, display:"flex", alignItems:"center", justifyContent:"center", fontWeight:800, fontSize:17, color:"#fff", flexShrink:0 }}>{g.name[0].toUpperCase()}</div>}
+                <div style={{ flex:1 }}>
+                  <div style={{ fontWeight:700, fontSize:15, color:"#111827" }}>{g.name}</div>
+                  <div style={{ fontSize:12.5, color:"#9CA3AF" }}>Appuyez pour ajouter</div>
+                </div>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </div>
+            );
+          })}
         </div>
       </div>
     , document.body);

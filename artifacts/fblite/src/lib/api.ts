@@ -1905,3 +1905,79 @@ export async function apiAcceptPageInvitation(invId: number): Promise<void> {
 export async function apiDeclinePageInvitation(invId: number): Promise<void> {
   await apiFetch(`/pages/invitations/${invId}/decline`, { method: "POST" });
 }
+
+// ── Contact Management ────────────────────────────────────────────────────────
+export interface ContactInfo {
+  id: number;
+  firstName: string;
+  lastName: string;
+  bio: string | null;
+  country: string | null;
+  avatarUrl: string | null;
+  verified: boolean;
+  friendsCount: number;
+  followersCount: number;
+  postsCount: number;
+  createdAt: string;
+  presence: { online: boolean; lastSeen: string | null };
+  isMuted: boolean;
+  muteExpiresAt: string | null;
+  isPinned: boolean;
+  isFavorite: boolean;
+  isBlocked: boolean;
+  friendStatus: "pending" | "accepted" | "rejected" | null;
+  friendDirection: "sent" | "received" | null;
+}
+
+export async function apiGetContactInfo(userId: number): Promise<ContactInfo | null> {
+  const res = await apiFetch(`/contacts/${userId}`);
+  if (!res.ok) return null;
+  return res.json() as Promise<ContactInfo>;
+}
+
+export async function apiMuteContact(userId: number, duration: "8h" | "1w" | "always"): Promise<void> {
+  await apiFetch(`/contacts/${userId}/mute`, { method: "POST", body: JSON.stringify({ duration }) });
+}
+
+export async function apiUnmuteContact(userId: number): Promise<void> {
+  await apiFetch(`/contacts/${userId}/mute`, { method: "DELETE" });
+}
+
+export async function apiPinContact(userId: number): Promise<void> {
+  await apiFetch(`/contacts/${userId}/pin`, { method: "POST" });
+}
+
+export async function apiUnpinContact(userId: number): Promise<void> {
+  await apiFetch(`/contacts/${userId}/pin`, { method: "DELETE" });
+}
+
+export async function apiFavoriteContact(userId: number): Promise<void> {
+  await apiFetch(`/contacts/${userId}/favorite`, { method: "POST" });
+}
+
+export async function apiUnfavoriteContact(userId: number): Promise<void> {
+  await apiFetch(`/contacts/${userId}/favorite`, { method: "DELETE" });
+}
+
+export async function apiSearchInConversation(
+  userId: number,
+  q: string,
+): Promise<{ id: number; text: string; createdAt: string; fromMe: boolean }[]> {
+  const res = await apiFetch(`/contacts/${userId}/conversation/search?q=${encodeURIComponent(q)}`);
+  if (!res.ok) return [];
+  return res.json() as Promise<{ id: number; text: string; createdAt: string; fromMe: boolean }[]>;
+}
+
+export async function apiDeleteConversationContact(userId: number): Promise<void> {
+  await apiFetch(`/contacts/${userId}/conversation`, { method: "DELETE" });
+}
+
+export async function apiGetMyGroups(): Promise<{ id: number; name: string; avatarUrl: string | null }[]> {
+  const res = await apiFetch("/contacts/me/groups");
+  if (!res.ok) return [];
+  return res.json() as Promise<{ id: number; name: string; avatarUrl: string | null }[]>;
+}
+
+export async function apiAddContactToGroup(userId: number, groupId: number): Promise<void> {
+  await apiFetch(`/contacts/${userId}/add-to-group/${groupId}`, { method: "POST" });
+}
