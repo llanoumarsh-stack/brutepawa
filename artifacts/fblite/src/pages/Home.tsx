@@ -3,7 +3,8 @@ import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { Post } from "../lib/store";
 import { formatNumber } from "../data/mock";
-import { apiGetStories, apiGetComments, apiPostComment, apiPostVoiceComment, apiUploadVoice, apiDeleteComment, apiToggleCommentLike, apiToggleSaved, apiReportPost, apiFollow, apiBlockUser, apiDeletePost, apiHidePost, apiUnpinPost, apiPinPost, apiArchivePost, apiTogglePostComments, apiSetPostAudience, apiGetPostStats, type StoryGroup, type PostComment } from "../lib/api";
+import { apiGetStories, apiGetComments, apiPostComment, apiPostVoiceComment, apiUploadVoice, apiDeleteComment, apiToggleCommentLike, apiToggleSaved, apiReportPost, apiFollow, apiBlockUser, apiDeletePost, apiHidePost, apiUnpinPost, apiPinPost, apiArchivePost, apiTogglePostComments, apiSetPostAudience, apiGetPostStats, apiSearchUsers, type StoryGroup, type PostComment } from "../lib/api";
+import ExpandableText from "../components/ExpandableText";
 import StoryViewer from "../components/StoryViewer";
 import VoiceRecorder from "../components/VoiceRecorder";
 import VoicePlayer from "../components/VoicePlayer";
@@ -617,7 +618,20 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 </button>
               </div>
             </div>
-            {post.content && <div className="post-content">{post.content}</div>}
+            {post.content && (
+              <div className="post-content">
+                <ExpandableText
+                  text={post.content}
+                  maxChars={220}
+                  fontSize={15}
+                  color="#111827"
+                  lineHeight={1.5}
+                  onMentionClick={name => {
+                    apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {});
+                  }}
+                />
+              </div>
+            )}
             {post.emoji && (
               <div className="post-image-emoji" style={{ background: "var(--fb-bg)" }}>{post.emoji}</div>
             )}
