@@ -5,6 +5,7 @@ import { Post } from "../lib/store";
 import { formatNumber } from "../data/mock";
 import { apiGetStories, apiGetComments, apiPostComment, apiPostVoiceComment, apiUploadVoice, apiDeleteComment, apiToggleCommentLike, apiToggleSaved, apiReportPost, apiFollow, apiCheckFollowing, apiBlockUser, apiDeletePost, apiHidePost, apiUnpinPost, apiPinPost, apiArchivePost, apiTogglePostComments, apiSetPostAudience, apiGetPostStats, apiSearchUsers, type StoryGroup, type PostComment } from "../lib/api";
 import ExpandableText from "../components/ExpandableText";
+import MusicPlayerWidget from "../components/MusicPlayerWidget";
 import StoryViewer from "../components/StoryViewer";
 import VoiceRecorder from "../components/VoiceRecorder";
 import VoicePlayer from "../components/VoicePlayer";
@@ -744,19 +745,12 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
             })()}
             {/* ── Music player ── */}
             {post.musicTrackName && (
-              <div style={{ margin: "8px 14px", padding: "10px 14px", background: "rgba(139,92,246,0.12)", borderRadius: 12, display: "flex", alignItems: "center", gap: 12, border: "1px solid rgba(139,92,246,0.25)" }}>
-                {post.musicArtworkUrl && (
-                  <img src={post.musicArtworkUrl} alt="" style={{ width: 44, height: 44, borderRadius: 8, objectFit: "cover", flexShrink: 0 }} />
-                )}
-                {!post.musicArtworkUrl && (
-                  <div style={{ width: 44, height: 44, borderRadius: 8, background: "rgba(139,92,246,0.3)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 22 }}>🎵</div>
-                )}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 700, fontSize: 13, color: "var(--fb-text)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{post.musicTrackName}</div>
-                  {post.musicArtist && <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{post.musicArtist}</div>}
-                </div>
-                <span style={{ fontSize: 20, color: "#8B5CF6", flexShrink: 0 }}>♫</span>
-              </div>
+              <MusicPlayerWidget
+                trackName={post.musicTrackName}
+                artist={post.musicArtist}
+                artworkUrl={post.musicArtworkUrl}
+                duration={post.musicDuration}
+              />
             )}
             {/* ── Stats bar ── */}
             {(post.likes > 0 || (post.comments + postComments.length) > 0 || post.shares > 0) && (
