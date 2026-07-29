@@ -308,6 +308,7 @@ export default function CreatePostPage({ onPublish }: Props) {
         firstMedia?.thumbnailUrl ?? undefined,
         selectedTrack ? { trackName: selectedTrack.title, artist: selectedTrack.artist, url: selectedTrack.previewUrl, artworkUrl: selectedTrack.artworkUrl, duration: selectedTrack.duration } : undefined,
         selectedLocation ? `${selectedLocation.city}, ${selectedLocation.country}` : undefined,
+        taggedUsers.length > 0 ? taggedUsers : undefined,
       );
     } catch (err) {
       publishingRef.current = false;

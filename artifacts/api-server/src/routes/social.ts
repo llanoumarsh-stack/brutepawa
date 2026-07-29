@@ -130,6 +130,7 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
       authorProfileLocked: usersTable.profileLocked,
       authorBadgeType: usersTable.badgeType,
       location: postsTable.location,
+      taggedUserIds: postsTable.taggedUserIds,
     })
     .from(postsTable)
     .leftJoin(usersTable, eq(postsTable.authorId, usersTable.id))
@@ -161,31 +162,63 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
     : [];
   const likedSet = new Set(myLikes.map(l => l.postId));
 
+  // Collect all unique tagged user IDs across all posts
+  const allTaggedIds = new Set<number>();
+  for (const r of rows) {
+    if (r.taggedUserIds) {
+      try {
+        const ids = JSON.parse(r.taggedUserIds) as number[];
+        ids.forEach(id => allTaggedIds.add(id));
+      } catch { /* ignore malformed */ }
+    }
+  }
+  // Fetch tagged users in a single query
+  const taggedUsersMap = new Map<number, string>();
+  if (allTaggedIds.size > 0) {
+    const ids = [...allTaggedIds];
+    const taggedRows = await db.select({ id: usersTable.id, firstName: usersTable.firstName, lastName: usersTable.lastName })
+      .from(usersTable)
+      .where(sql`${usersTable.id} = ANY(ARRAY[${sql.join(ids.map(id => sql`${id}`), sql`, `)}]::int[])`);
+    for (const u of taggedRows) {
+      taggedUsersMap.set(u.id, `${u.firstName} ${u.lastName}`);
+    }
+  }
+
   res.setHeader("Cache-Control", "no-store");
-  res.json(rows.map(r => ({
-    id: r.id,
-    authorId: r.authorId,
-    authorName: r.authorFirstName && r.authorLastName ? `${r.authorFirstName} ${r.authorLastName}` : "Utilisateur",
-    authorAvatarUrl: r.authorAvatarUrl ?? null,
-    authorCountry: r.authorCountry ?? "BJ",
-    content: r.content,
-    imageUrl: r.imageUrl,
-    thumbnailUrl: r.thumbnailUrl ?? null,
-    musicTrackName: r.musicTrackName ?? null,
-    musicArtist: r.musicArtist ?? null,
-    musicUrl: r.musicUrl ?? null,
-    musicArtworkUrl: r.musicArtworkUrl ?? null,
-    musicDuration: r.musicDuration ?? null,
-    likesCount: r.likesCount,
-    commentsCount: r.commentsCount,
-    createdAt: r.createdAt,
-    liked: likedSet.has(r.id),
-    isOwner: r.authorId === req.userId,
-    isPinned: r.isPinned ?? false,
-    commentsDisabled: r.commentsDisabled ?? false,
-    audience: r.audience ?? "public",
-    location: (r as { location?: string | null }).location ?? null,
-  })));
+  res.json(rows.map(r => {
+    let taggedUsers: { id: number; name: string }[] = [];
+    if (r.taggedUserIds) {
+      try {
+        const ids = JSON.parse(r.taggedUserIds) as number[];
+        taggedUsers = ids.map(id => ({ id, name: taggedUsersMap.get(id) ?? "Utilisateur" })).filter(u => taggedUsersMap.has(u.id));
+      } catch { /* ignore */ }
+    }
+    return {
+      id: r.id,
+      authorId: r.authorId,
+      authorName: r.authorFirstName && r.authorLastName ? `${r.authorFirstName} ${r.authorLastName}` : "Utilisateur",
+      authorAvatarUrl: r.authorAvatarUrl ?? null,
+      authorCountry: r.authorCountry ?? "BJ",
+      content: r.content,
+      imageUrl: r.imageUrl,
+      thumbnailUrl: r.thumbnailUrl ?? null,
+      musicTrackName: r.musicTrackName ?? null,
+      musicArtist: r.musicArtist ?? null,
+      musicUrl: r.musicUrl ?? null,
+      musicArtworkUrl: r.musicArtworkUrl ?? null,
+      musicDuration: r.musicDuration ?? null,
+      likesCount: r.likesCount,
+      commentsCount: r.commentsCount,
+      createdAt: r.createdAt,
+      liked: likedSet.has(r.id),
+      isOwner: r.authorId === req.userId,
+      isPinned: r.isPinned ?? false,
+      commentsDisabled: r.commentsDisabled ?? false,
+      audience: r.audience ?? "public",
+      location: (r as { location?: string | null }).location ?? null,
+      taggedUsers,
+    };
+  }));
 });
 
 router.post("/posts", requireAuth, async (req, res): Promise<void> => {
@@ -215,6 +248,10 @@ router.post("/posts", requireAuth, async (req, res): Promise<void> => {
   const musicArtworkUrl = typeof req.body.musicArtworkUrl === "string" && req.body.musicArtworkUrl ? req.body.musicArtworkUrl : null;
   const musicDuration   = typeof req.body.musicDuration   === "string" && req.body.musicDuration   ? req.body.musicDuration   : null;
   const location        = typeof req.body.location        === "string" && req.body.location        ? req.body.location        : null;
+  const rawTaggedIds    = req.body.taggedUserIds;
+  const taggedUserIds   = Array.isArray(rawTaggedIds) && rawTaggedIds.length > 0
+    ? JSON.stringify(rawTaggedIds.map(Number).filter(n => !isNaN(n)))
+    : null;
 
   try {
     const [post] = await db.insert(postsTable).values({
@@ -228,6 +265,7 @@ router.post("/posts", requireAuth, async (req, res): Promise<void> => {
       musicArtworkUrl,
       musicDuration,
       location,
+      taggedUserIds,
     }).returning();
     res.status(201).json(post);
   } catch (dbErr: unknown) {

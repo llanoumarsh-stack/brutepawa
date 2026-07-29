@@ -608,11 +608,27 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
               )}
               <div className="post-meta">
                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <div
-                    className="post-author"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => navigate(post.userId === user.id ? "/profile" : `/user/${post.userId}`)}
-                  >{displayName}</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
+                    <div
+                      className="post-author"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => navigate(post.userId === user.id ? "/profile" : `/user/${post.userId}`)}
+                    >{displayName}</div>
+                    {post.taggedUsers && post.taggedUsers.length > 0 && (
+                      <span style={{ fontSize: 13, color: "var(--fb-text-secondary)" }}>
+                        {" avec "}
+                        {post.taggedUsers.map((u, i) => (
+                          <span key={u.id}>
+                            <span
+                              onClick={e => { e.stopPropagation(); navigate(`/user/${u.id}`); }}
+                              style={{ color: "#22C55E", fontWeight: 700, cursor: "pointer" }}
+                            >{u.name}</span>
+                            {i < post.taggedUsers!.length - 1 && ", "}
+                          </span>
+                        ))}
+                      </span>
+                    )}
+                  </div>
                   {!post.sponsored && post.userId !== (user as { id?: number }).id && !followedUsers.has(post.userId) && (
                     <span
                       onClick={e => { e.stopPropagation(); handleFollow(post.userId, displayName); }}
