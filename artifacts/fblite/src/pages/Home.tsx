@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { Post } from "../lib/store";
 import { formatNumber } from "../data/mock";
-import { apiGetStories, apiGetComments, apiPostComment, apiPostVoiceComment, apiUploadVoice, apiDeleteComment, apiToggleCommentLike, apiToggleSaved, apiReportPost, apiFollow, apiBlockUser, apiDeletePost, apiHidePost, apiUnpinPost, apiPinPost, apiArchivePost, apiTogglePostComments, apiSetPostAudience, apiGetPostStats, apiSearchUsers, type StoryGroup, type PostComment } from "../lib/api";
+import { apiGetStories, apiGetComments, apiPostComment, apiPostVoiceComment, apiUploadVoice, apiDeleteComment, apiToggleCommentLike, apiToggleSaved, apiReportPost, apiFollow, apiCheckFollowing, apiBlockUser, apiDeletePost, apiHidePost, apiUnpinPost, apiPinPost, apiArchivePost, apiTogglePostComments, apiSetPostAudience, apiGetPostStats, apiSearchUsers, type StoryGroup, type PostComment } from "../lib/api";
 import ExpandableText from "../components/ExpandableText";
 import StoryViewer from "../components/StoryViewer";
 import VoiceRecorder from "../components/VoiceRecorder";
@@ -81,6 +81,15 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
   useEffect(() => { loadStories(); }, [loadStories]);
 
   const allPosts = [...newPosts, ...posts];
+
+  // Check which post authors the current user already follows
+  useEffect(() => {
+    const myId = (user as { id?: number }).id;
+    const ids = [...new Set(allPosts.map(p => p.userId).filter(id => id && id !== myId))] as number[];
+    if (ids.length === 0) return;
+    apiCheckFollowing(ids).then(followed => setFollowedUsers(new Set(followed))).catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [posts, newPosts]);
 
   const [showComments, setShowComments] = useState<number | null>(null);
   const [comments, setComments] = useState<Record<number, PostComment[]>>({});
@@ -176,6 +185,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
   const [statsModal, setStatsModal] = useState<{ postId: number; stats: Record<string, unknown> } | null>(null);
   const [audienceSheet, setAudienceSheet] = useState<{ postId: number; current: string } | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [followedUsers, setFollowedUsers] = useState<Set<number>>(new Set());
 
   // Lock body scroll when bottom sheet is open to prevent layout shift
   useEffect(() => {
@@ -265,7 +275,16 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
     closeMenu();
   };
 
+  const handleFollow = (authorId: number, authorName: string) => {
+    setFollowedUsers(prev => new Set([...prev, authorId]));
+    apiFollow(authorId, "follow").catch(() => {
+      setFollowedUsers(prev => { const n = new Set(prev); n.delete(authorId); return n; });
+    });
+    showToast(`✅ Vous suivez maintenant ${authorName}`);
+  };
+
   const handleUnfollow = (authorId: number, authorName: string) => {
+    setFollowedUsers(prev => { const n = new Set(prev); n.delete(authorId); return n; });
     apiFollow(authorId, "unfollow").catch(() => {});
     showToast(`Vous ne suivez plus ${authorName}`);
     closeMenu();
@@ -594,8 +613,11 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                     style={{ cursor: "pointer" }}
                     onClick={() => navigate(post.userId === user.id ? "/profile" : `/user/${post.userId}`)}
                   >{displayName}</div>
-                  {!post.sponsored && (
-                    <span style={{ color: "#22C55E", fontSize: 12, fontWeight: 700, cursor: "pointer", marginLeft: 2 }}>
+                  {!post.sponsored && post.userId !== (user as { id?: number }).id && !followedUsers.has(post.userId) && (
+                    <span
+                      onClick={e => { e.stopPropagation(); handleFollow(post.userId, displayName); }}
+                      style={{ color: "#22C55E", fontSize: 12, fontWeight: 700, cursor: "pointer", marginLeft: 2 }}
+                    >
                       · Suivre
                     </span>
                   )}
