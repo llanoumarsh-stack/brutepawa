@@ -646,7 +646,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                   text={post.content}
                   maxChars={220}
                   fontSize={15}
-                  color="#111827"
+                  color="var(--fb-text)"
                   lineHeight={1.5}
                   onMentionClick={name => {
                     apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {});
