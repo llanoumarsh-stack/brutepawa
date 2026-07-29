@@ -324,9 +324,11 @@ function MapThumbnail({ lat, lng }: { lat: number; lng: number }) {
 
 /* ══════════════════════════════════════════════════════════════
    PIXEL-NOISE DELETE EFFECT — Telegram-style static disintegration
-   Phase 1 (0→0.45): pixel noise invades the bubble (TV static)
-   Phase 2 (0.45→1.0): all pixels dissolve / fade out
-   60 FPS via rAF, canvas portal, hi-DPI aware.
+   Renders as position:absolute overlay INSIDE the bubble —
+   no viewport coordinate math, works on all PWA / mobile browsers.
+   Phase 1 (0→0.45): pixel noise invades (TV static)
+   Phase 2 (0.45→1.0): pixels dissolve out
+   60 FPS rAF, hi-DPI aware.
 ══════════════════════════════════════════════════════════════ */
 type DustRect = { left: number; top: number; width: number; height: number };
 
@@ -339,7 +341,7 @@ function DustEffect({
   mine: boolean;
   onComplete: () => void;
 }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef     = useRef<HTMLCanvasElement>(null);
   const onCompleteRef = useRef(onComplete);
   onCompleteRef.current = onComplete;
 
@@ -347,48 +349,43 @@ function DustEffect({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const dpr   = window.devicePixelRatio || 1;
-    const { width: bw, height: bh } = rect;
+    const dpr = window.devicePixelRatio || 1;
 
-    // Canvas covers exactly the bubble — no extra room needed
-    canvas.width  = bw * dpr;
-    canvas.height = bh * dpr;
-    canvas.style.width  = `${bw}px`;
-    canvas.style.height = `${bh}px`;
-    canvas.style.left   = `${rect.left}px`;
-    canvas.style.top    = `${rect.top}px`;
+    // Measure the actual rendered parent size — more reliable than stored rect
+    const parent = canvas.parentElement;
+    const bw = parent ? parent.offsetWidth  : rect.width;
+    const bh = parent ? parent.offsetHeight : rect.height;
+
+    // Canvas fills the parent exactly (CSS 100%×100% via style)
+    canvas.width  = Math.max(1, bw) * dpr;
+    canvas.height = Math.max(1, bh) * dpr;
 
     const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
     ctx.scale(dpr, dpr);
 
-    const DURATION = 820; // ms
-    const FILL_END = 0.45; // phase 1 ends here
-    const PX       = 3;    // pixel cell size (CSS px) — feels like Telegram static
+    const DURATION = 820;
+    const FILL_END = 0.45;
+    const PX       = 3;
 
     const cols = Math.ceil(bw / PX);
     const rows = Math.ceil(bh / PX);
 
-    // Telegram-style static: mostly black/dark + occasional white/light pixels
     const STATIC_COLORS = [
       "#000000","#000000","#000000","#0a0a0a","#111111","#0d0d0d",
       "#1a1a1a","#222222","#050505","#181818","#080808","#2a2a2a",
       "#ffffff","#f5f5f5","#cccccc","#aaaaaa",
     ];
-    // Accent tint for mine/theirs (subtle, like Telegram's branded color overlay)
-    const tint = mine ? "rgba(34,197,94,0.18)" : "rgba(100,116,139,0.12)";
+    const tint    = mine ? "rgba(34,197,94,0.18)" : "rgba(100,116,139,0.12)";
+    const bubbleC = mine ? "#C8E6B2" : "#ffffff";
 
-    // Pre-compute each pixel's reveal progress (when it first appears)
     type Pix = { col: number; row: number; revealAt: number; color: string };
     const pixels: Pix[] = Array.from({ length: cols * rows }, (_, i) => ({
-      col: i % cols,
-      row: Math.floor(i / cols),
-      revealAt: Math.random() * FILL_END, // spread across phase 1
-      color: STATIC_COLORS[Math.floor(Math.random() * STATIC_COLORS.length)],
+      col:      i % cols,
+      row:      Math.floor(i / cols),
+      revealAt: Math.random() * FILL_END,
+      color:    STATIC_COLORS[Math.floor(Math.random() * STATIC_COLORS.length)],
     }));
-
-    // Bubble background color (behind the noise)
-    const bubbleC = mine ? "#C8E6B2" : "#ffffff";
 
     let t0: number | null = null;
     let raf: number;
@@ -400,7 +397,7 @@ function DustEffect({
 
       ctx.clearRect(0, 0, bw, bh);
 
-      // ── Bubble background fades as noise fills it ──────────────
+      // ── Bubble background fades away as noise fills it ──
       const bAlpha = p < FILL_END ? Math.max(0, 1 - p / FILL_END) : 0;
       if (bAlpha > 0.005) {
         ctx.globalAlpha = bAlpha;
@@ -408,21 +405,19 @@ function DustEffect({
         ctx.fillRect(0, 0, bw, bh);
       }
 
-      // ── Tint overlay ──────────────────────────────────────────
-      ctx.globalAlpha = 0.25;
+      // ── Subtle brand tint ──
+      ctx.globalAlpha = 0.22;
       ctx.fillStyle   = tint;
       ctx.fillRect(0, 0, bw, bh);
 
-      // ── Pixel noise ───────────────────────────────────────────
-      // Phase 1: pixels appear if revealAt <= p  (alpha = 1)
-      // Phase 2: pixels fade out  alpha = 1 − (p-FILL_END)/(1-FILL_END)
+      // ── Pixel noise ──
       const noiseAlpha = p < FILL_END
         ? 1
         : Math.max(0, 1 - (p - FILL_END) / (1 - FILL_END));
 
       if (noiseAlpha > 0.005) {
         pixels.forEach(px => {
-          if (px.revealAt > p) return; // not yet visible
+          if (px.revealAt > p) return;
           ctx.globalAlpha = noiseAlpha;
           ctx.fillStyle   = px.color;
           ctx.fillRect(px.col * PX, px.row * PX, PX, PX);
@@ -442,19 +437,21 @@ function DustEffect({
     return () => { cancelAnimationFrame(raf); if (!done) { done = true; } };
   }, []); // eslint-disable-line
 
-  return createPortal(
+  /* ── Inline overlay — no portal, no viewport maths ── */
+  return (
     <canvas
       ref={canvasRef}
       style={{
-        position:       "fixed",
-        pointerEvents:  "none",
-        zIndex:         9999,
-        borderRadius:   18,
-        willChange:     "opacity",
-        overflow:       "hidden",
+        position:      "absolute",
+        inset:         0,
+        width:         "100%",
+        height:        "100%",
+        borderRadius:  18,
+        pointerEvents: "none",
+        zIndex:        20,
+        display:       "block",
       }}
-    />,
-    document.body,
+    />
   );
 }
 
@@ -4464,11 +4461,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 )}
                 <div
                   data-msgid={msg.id}
-                  style={{ maxWidth:"78%", position:"relative",
-                    opacity: dustingMsgs.has(msg.id) ? 0 : 1,
-                    pointerEvents: dustingMsgs.has(msg.id) ? "none" : undefined,
-                    transition: "opacity 80ms" }}>
-                  {/* ── DUST DELETE ANIMATION ── */}
+                  style={{ maxWidth:"78%", position:"relative", overflow:"hidden",
+                    pointerEvents: dustingMsgs.has(msg.id) ? "none" : undefined }}>
+                  {/* ── PIXEL-NOISE DELETE — inline overlay, no viewport math ── */}
                   {dustingMsgs.has(msg.id) && (() => {
                     const dr = dustingMsgs.get(msg.id)!;
                     return (
