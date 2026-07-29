@@ -215,6 +215,7 @@ function AppContent() {
         musicUrl: p.musicUrl,
         musicArtworkUrl: p.musicArtworkUrl,
         musicDuration: p.musicDuration,
+        musicLikesCount: p.musicLikesCount ?? 0,
       }));
       setPosts(converted);
     } catch {

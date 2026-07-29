@@ -135,6 +135,7 @@ export interface FeedPost {
   musicUrl: string | null;
   musicArtworkUrl: string | null;
   musicDuration: string | null;
+  musicLikesCount: number;
   likesCount: number;
   commentsCount: number;
   createdAt: string;
@@ -554,6 +555,12 @@ export async function apiCreatePost(
     const body = await res.json().catch(() => ({})) as { error?: string };
     throw new Error(body.error ?? `Erreur ${res.status}`);
   }
+}
+
+export async function apiToggleMusicLike(postId: number): Promise<{ liked: boolean; musicLikesCount: number }> {
+  const r = await apiFetch(`/posts/${postId}/music-like`, { method: "POST" });
+  if (!r.ok) throw new Error("music-like failed");
+  return r.json() as Promise<{ liked: boolean; musicLikesCount: number }>;
 }
 
 /* ── Location API ─────────────────────────────────────────────────────────── */

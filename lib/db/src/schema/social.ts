@@ -13,6 +13,7 @@ export const postsTable = pgTable("posts", {
   musicUrl: text("music_url"),
   musicArtworkUrl: text("music_artwork_url"),
   musicDuration: text("music_duration"),
+  musicLikesCount: integer("music_likes_count").notNull().default(0),
   likesCount: integer("likes_count").notNull().default(0),
   commentsCount: integer("comments_count").notNull().default(0),
   isPinned: boolean("is_pinned").notNull().default(false),

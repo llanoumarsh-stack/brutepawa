@@ -704,6 +704,8 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                   artist={post.musicArtist}
                   artworkUrl={post.musicArtworkUrl}
                   duration={post.musicDuration}
+                  audioLikes={post.musicLikesCount ?? 0}
+                  postId={post.id}
                   glassmorphism
                 />
               </div>
@@ -789,6 +791,8 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                     artist={post.musicArtist}
                     artworkUrl={post.musicArtworkUrl}
                     duration={post.musicDuration}
+                    audioLikes={post.musicLikesCount ?? 0}
+                    postId={post.id}
                   />
                 )}
               </>

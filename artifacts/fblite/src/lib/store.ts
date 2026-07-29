@@ -29,6 +29,7 @@ export interface Post {
   musicUrl?: string | null;
   musicArtworkUrl?: string | null;
   musicDuration?: string | null;
+  musicLikesCount?: number;
 }
 
 // ── Posts ──────────────────────────────────────────────────────────────────

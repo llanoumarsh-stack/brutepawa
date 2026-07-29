@@ -117,6 +117,7 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
       musicUrl: postsTable.musicUrl,
       musicArtworkUrl: postsTable.musicArtworkUrl,
       musicDuration: postsTable.musicDuration,
+      musicLikesCount: postsTable.musicLikesCount,
       likesCount: postsTable.likesCount,
       commentsCount: postsTable.commentsCount,
       isPinned: postsTable.isPinned,
@@ -209,6 +210,7 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
       musicUrl: r.musicUrl ?? null,
       musicArtworkUrl: r.musicArtworkUrl ?? null,
       musicDuration: r.musicDuration ?? null,
+      musicLikesCount: (r as { musicLikesCount?: number }).musicLikesCount ?? 0,
       likesCount: r.likesCount,
       commentsCount: r.commentsCount,
       createdAt: r.createdAt,
@@ -360,6 +362,33 @@ router.delete("/posts/:id", requireAuth, async (req, res): Promise<void> => {
   await releaseStorage([extractKeyFromUrl(post.imageUrl), extractKeyFromUrl(post.thumbnailUrl)]);
 
   res.sendStatus(204);
+});
+
+router.post("/posts/:id/music-like", requireAuth, async (req, res): Promise<void> => {
+  const postId = Number(req.params.id);
+  if (!postId) { res.status(400).json({ error: "Invalid post id" }); return; }
+  const userId = req.userId!;
+
+  const existingRows = await db.execute(
+    sql`SELECT id FROM music_post_likes WHERE post_id = ${postId} AND user_id = ${userId} LIMIT 1`
+  );
+  const existing = existingRows.rows.length > 0;
+
+  if (existing) {
+    await db.execute(sql`DELETE FROM music_post_likes WHERE post_id = ${postId} AND user_id = ${userId}`);
+    await db.update(postsTable)
+      .set({ musicLikesCount: sql`GREATEST(${postsTable.musicLikesCount} - 1, 0)` })
+      .where(eq(postsTable.id, postId));
+  } else {
+    await db.execute(sql`INSERT INTO music_post_likes (post_id, user_id) VALUES (${postId}, ${userId}) ON CONFLICT DO NOTHING`);
+    await db.update(postsTable)
+      .set({ musicLikesCount: sql`${postsTable.musicLikesCount} + 1` })
+      .where(eq(postsTable.id, postId));
+  }
+
+  const [updated] = await db.select({ musicLikesCount: postsTable.musicLikesCount })
+    .from(postsTable).where(eq(postsTable.id, postId));
+  res.json({ liked: !existing, musicLikesCount: updated?.musicLikesCount ?? 0 });
 });
 
 router.post("/posts/:id/like", requireAuth, async (req, res): Promise<void> => {
