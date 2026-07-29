@@ -14,6 +14,7 @@ import {
 } from "../lib/api";
 import VoicePlayer from "../components/VoicePlayer";
 import ExpandableText from "../components/ExpandableText";
+import MusicPlayerWidget from "../components/MusicPlayerWidget";
 
 /* ─── Reactions ─────────────────────────────────────────────── */
 const REACTIONS = [
@@ -100,6 +101,8 @@ interface PostData {
   imageUrl: string | null; thumbnailUrl: string | null;
   musicTrackName: string | null; musicArtist: string | null;
   musicUrl: string | null; musicArtworkUrl: string | null; musicDuration: string | null;
+  musicLikesCount?: number | null;
+  bgColor?: string | null;
   likesCount: number; commentsCount: number; createdAt: string; liked: boolean;
   authorBadgeType?: string | null;
   userReactionType?: string | null;
@@ -107,110 +110,6 @@ interface PostData {
 }
 
 
-/* ─── Music Player Card (white, premium) ────────────────────── */
-function MusicPlayer({ trackName, artist, artworkUrl, url, duration }: {
-  trackName: string; artist: string; artworkUrl: string | null; url: string | null; duration: string | null;
-}) {
-  const [playing, setPlaying]   = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [current, setCurrent]   = useState("0:00");
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    if (!url) return;
-    const a = new Audio(url);
-    audioRef.current = a;
-    a.addEventListener("timeupdate", () => {
-      if (!a.duration) return;
-      setProgress((a.currentTime / a.duration) * 100);
-      const m = Math.floor(a.currentTime / 60);
-      const s = Math.floor(a.currentTime % 60);
-      setCurrent(`${m}:${s.toString().padStart(2, "0")}`);
-    });
-    a.addEventListener("ended", () => { setPlaying(false); setProgress(0); setCurrent("0:00"); });
-    return () => { a.pause(); a.src = ""; };
-  }, [url]);
-
-  const toggle = () => {
-    const a = audioRef.current;
-    if (!a) return;
-    if (playing) { a.pause(); setPlaying(false); }
-    else { a.play().catch(() => {}); setPlaying(true); }
-  };
-
-  const total = duration ?? "0:00";
-
-  return (
-    <div style={{ margin:"0 14px 14px", background:"#fff", borderRadius:20, padding:"12px 14px", display:"flex", alignItems:"center", gap:12, border:"1px solid #E5E7EB", boxShadow:"0 2px 12px rgba(0,0,0,0.06)" }}>
-      {/* Album art */}
-      <div style={{ width:56, height:56, borderRadius:12, overflow:"hidden", background:"#F1F5F9", flexShrink:0, position:"relative" }}>
-        {artworkUrl
-          ? <img src={artworkUrl} alt={trackName} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
-          : (
-            <div style={{ width:"100%", height:"100%", display:"flex", alignItems:"center", justifyContent:"center", background:"#E5E7EB" }}>
-              <svg viewBox="0 0 24 24" width="26" height="26" fill="#9CA3AF"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
-            </div>
-          )}
-      </div>
-
-      {/* Info + progress */}
-      <div style={{ flex:1, minWidth:0 }}>
-        {/* Title row */}
-        <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:2 }}>
-          <div style={{ width:17, height:17, borderRadius:"50%", background:"#22C55E", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-            <svg viewBox="0 0 24 24" width="10" height="10" fill="#fff"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
-          </div>
-          <span style={{ fontSize:13, fontWeight:800, color:"#111827", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{trackName}</span>
-        </div>
-        <div style={{ fontSize:11.5, color:"#9CA3AF", marginBottom:8, paddingLeft:23, fontWeight:500 }}>{artist}</div>
-
-        {/* Progress row */}
-        <div style={{ display:"flex", alignItems:"center", gap:7 }}>
-          <span style={{ fontSize:10, color:"#9CA3AF", flexShrink:0, minWidth:26, fontWeight:600 }}>{current}</span>
-          <div
-            style={{ flex:1, height:4, background:"#E5E7EB", borderRadius:4, position:"relative", cursor:"pointer" }}
-            onClick={e => {
-              if (!audioRef.current?.duration) return;
-              const rect = e.currentTarget.getBoundingClientRect();
-              audioRef.current.currentTime = ((e.clientX - rect.left) / rect.width) * audioRef.current.duration;
-            }}
-          >
-            <div style={{ width:`${progress}%`, height:"100%", background:"linear-gradient(90deg,#22C55E,#16A34A)", borderRadius:4, position:"relative" }}>
-              <div style={{ position:"absolute", right:-5, top:"50%", transform:"translateY(-50%)", width:11, height:11, borderRadius:"50%", background:"#22C55E", boxShadow:"0 0 6px rgba(34,197,94,0.5)" }} />
-            </div>
-          </div>
-          <span style={{ fontSize:10, color:"#9CA3AF", flexShrink:0, minWidth:26, textAlign:"right", fontWeight:600 }}>{total}</span>
-        </div>
-      </div>
-
-      {/* Play / Pause button */}
-      <button
-        onClick={toggle}
-        style={{ width:40, height:40, borderRadius:"50%", background:"#111827", border:"none", cursor: url ? "pointer" : "default", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, opacity: url ? 1 : 0.35, boxShadow:"0 2px 8px rgba(0,0,0,0.18)" }}
-      >
-        {playing
-          ? <svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-          : <svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
-        }
-      </button>
-
-      {/* Animated visualizer bars */}
-      <div style={{ display:"flex", alignItems:"flex-end", gap:2, flexShrink:0, height:22 }}>
-        {[10, 18, 14, 20, 12].map((h, i) => (
-          <div
-            key={i}
-            style={{
-              width:3, borderRadius:3, background:"#22C55E",
-              height: playing ? h : 5,
-              transition:`height ${0.2 + i * 0.07}s ease`,
-              animation: playing ? `bp-bar ${0.5 + i * 0.13}s ease-in-out infinite alternate` : undefined,
-            }}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
 
 interface Props { postId: number; }
 
@@ -544,30 +443,60 @@ export default function PostDetailPage({ postId }: Props) {
           const parsed = !post.musicTrackName && post.content ? post.content.match(MUSIC_RE) : null;
           const parsedLine = !post.musicTrackName && !parsed && post.content
             ? (post.content.split("\n").pop() ?? "").match(MUSIC_RE) : null;
-          const trackName  = post.musicTrackName ?? (parsed?.[1]?.trim()) ?? (parsedLine?.[1]?.trim()) ?? null;
+          const trackName   = post.musicTrackName ?? (parsed?.[1]?.trim()) ?? (parsedLine?.[1]?.trim()) ?? null;
           const trackArtist = post.musicArtist ?? (parsed?.[2]?.trim()) ?? (parsedLine?.[2]?.trim()) ?? "Artiste inconnu";
-          const caption = parsedLine ? post.content!.split("\n").slice(0,-1).join("\n").trim() : null;
+          const caption     = parsedLine ? post.content!.split("\n").slice(0,-1).join("\n").trim() : null;
           const showContent = post.content && !parsed && !parsedLine;
           return (
             <>
-              {showContent && (
-                <div style={{ padding:"0 16px 14px" }}>
-                  <ExpandableText text={post.content!} maxChars={300} fontSize={15} color="#1E293B" lineHeight={1.65} onMentionClick={name => { apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {}); }} />
+              {/* ── bgColor + music : lecteur intégré dans le dégradé ── */}
+              {post.bgColor && trackName ? (
+                <div style={{ background: post.bgColor, borderRadius: 12, margin: "0 0 14px", overflow: "hidden" }}>
+                  {post.content && (
+                    <div style={{ padding: "32px 20px 20px", display: "flex", alignItems: "center", justifyContent: "center", minHeight: 120, textAlign: "center" }}>
+                      <ExpandableText
+                        text={post.content}
+                        maxChars={300}
+                        fontSize={20}
+                        color="#ffffff"
+                        lineHeight={1.5}
+                        onMentionClick={name => { apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {}); }}
+                      />
+                    </div>
+                  )}
+                  <MusicPlayerWidget
+                    trackName={trackName}
+                    artist={trackArtist}
+                    artworkUrl={post.musicArtworkUrl}
+                    duration={post.musicDuration}
+                    audioLikes={post.musicLikesCount ?? 0}
+                    postId={post.id}
+                    glassmorphism
+                  />
                 </div>
-              )}
-              {caption && (
-                <div style={{ padding:"0 16px 14px" }}>
-                  <ExpandableText text={caption} maxChars={300} fontSize={15} color="#1E293B" lineHeight={1.65} onMentionClick={name => { apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {}); }} />
-                </div>
-              )}
-              {trackName && (
-                <MusicPlayer
-                  trackName={trackName}
-                  artist={trackArtist}
-                  artworkUrl={post.musicArtworkUrl}
-                  url={post.musicUrl}
-                  duration={post.musicDuration}
-                />
+              ) : (
+                <>
+                  {showContent && (
+                    <div style={{ padding: "0 16px 14px" }}>
+                      <ExpandableText text={post.content!} maxChars={300} fontSize={15} color="#1E293B" lineHeight={1.65} onMentionClick={name => { apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {}); }} />
+                    </div>
+                  )}
+                  {caption && (
+                    <div style={{ padding: "0 16px 14px" }}>
+                      <ExpandableText text={caption} maxChars={300} fontSize={15} color="#1E293B" lineHeight={1.65} onMentionClick={name => { apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {}); }} />
+                    </div>
+                  )}
+                  {trackName && (
+                    <MusicPlayerWidget
+                      trackName={trackName}
+                      artist={trackArtist}
+                      artworkUrl={post.musicArtworkUrl}
+                      duration={post.musicDuration}
+                      audioLikes={post.musicLikesCount ?? 0}
+                      postId={post.id}
+                    />
+                  )}
+                </>
               )}
             </>
           );
