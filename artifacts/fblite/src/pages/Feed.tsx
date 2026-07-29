@@ -3,7 +3,7 @@ import ExpandableText from "../components/ExpandableText";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { openImageViewer } from "../components/ImageViewer";
-import { apiGetPosts, apiCreatePost, apiLikePost, apiGetStories, apiToggleSaved, apiFollow, apiCheckFollowing, apiDeletePost, apiArchivePost, apiPinPost, type FeedPost, type StoryGroup } from "../lib/api";
+import { apiGetPosts, apiCreatePost, apiLikePost, apiGetStories, apiToggleSaved, apiFollow, apiCheckFollowing, apiDeletePost, apiArchivePost, apiPinPost, apiSearchUsers, type FeedPost, type StoryGroup } from "../lib/api";
 import StoryViewer from "../components/StoryViewer";
 import { storyDraftStore } from "../lib/storyDraft";
 import { UserBadge } from "../components/UserBadge";
@@ -723,19 +723,19 @@ export default function Feed() {
                     {/* Pure music tag — don't show as text */}
                     {post.content && !isMusicContent && !post.musicTrackName && !parsedLine && (
                       <div style={{ padding: "0 14px 10px" }}>
-                        <ExpandableText text={post.content} maxChars={220} fontSize={15} color="#111827" lineHeight={1.5} />
+                        <ExpandableText text={post.content} maxChars={220} fontSize={15} color="#111827" lineHeight={1.5} onMentionClick={name => { apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {}); }} />
                       </div>
                     )}
                     {/* Caption from DB musicTrackName posts */}
                     {post.content && post.musicTrackName && (
                       <div style={{ padding: "0 14px 10px" }}>
-                        <ExpandableText text={post.content} maxChars={220} fontSize={15} color="#111827" lineHeight={1.5} />
+                        <ExpandableText text={post.content} maxChars={220} fontSize={15} color="#111827" lineHeight={1.5} onMentionClick={name => { apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {}); }} />
                       </div>
                     )}
                     {/* Caption when music tag is the last line */}
                     {captionLines && (
                       <div style={{ padding: "0 14px 10px" }}>
-                        <ExpandableText text={captionLines} maxChars={220} fontSize={15} color="#111827" lineHeight={1.5} />
+                        <ExpandableText text={captionLines} maxChars={220} fontSize={15} color="#111827" lineHeight={1.5} onMentionClick={name => { apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {}); }} />
                       </div>
                     )}
                     {/* Music card — from music_* fields OR parsed from content */}

@@ -9,6 +9,7 @@ import {
   apiToggleCommentLike,
   apiPostVoiceComment,
   apiUploadVoice,
+  apiSearchUsers,
   type PostComment,
 } from "../lib/api";
 import VoicePlayer from "../components/VoicePlayer";
@@ -551,12 +552,12 @@ export default function PostDetailPage({ postId }: Props) {
             <>
               {showContent && (
                 <div style={{ padding:"0 16px 14px" }}>
-                  <ExpandableText text={post.content!} maxChars={300} fontSize={15} color="#1E293B" lineHeight={1.65} />
+                  <ExpandableText text={post.content!} maxChars={300} fontSize={15} color="#1E293B" lineHeight={1.65} onMentionClick={name => { apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {}); }} />
                 </div>
               )}
               {caption && (
                 <div style={{ padding:"0 16px 14px" }}>
-                  <ExpandableText text={caption} maxChars={300} fontSize={15} color="#1E293B" lineHeight={1.65} />
+                  <ExpandableText text={caption} maxChars={300} fontSize={15} color="#1E293B" lineHeight={1.65} onMentionClick={name => { apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {}); }} />
                 </div>
               )}
               {trackName && (
@@ -730,7 +731,7 @@ export default function PostDetailPage({ postId }: Props) {
                         <div style={{ fontWeight:800, fontSize:13, color:"#111827", marginBottom:3 }}>{cName}</div>
                         {c.audioUrl
                           ? <VoicePlayer url={c.audioUrl} duration={c.audioDuration} />
-                          : <div style={{ fontSize:14, lineHeight:1.55 }}><ExpandableText text={c.content ?? ""} maxChars={150} fontSize={14} color="#111827" lineHeight={1.55} /></div>
+                          : <div style={{ fontSize:14, lineHeight:1.55 }}><ExpandableText text={c.content ?? ""} maxChars={150} fontSize={14} color="#111827" lineHeight={1.55} onMentionClick={name => { apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {}); }} /></div>
                         }
                       </div>
                       {c.likesCount > 0 && (
@@ -760,7 +761,7 @@ export default function PostDetailPage({ postId }: Props) {
                           <div style={{ flex:1 }}>
                             <div style={{ display:"inline-block", background:"#F8FAFC", borderRadius:14, padding:"8px 12px", border:"1px solid rgba(0,0,0,0.04)", maxWidth:"100%" }}>
                               <div style={{ fontWeight:800, fontSize:12, color:"#111827", marginBottom:2 }}>{rName}</div>
-                              <div style={{ fontSize:13 }}><ExpandableText text={r.content ?? ""} maxChars={150} fontSize={13} color="#111827" lineHeight={1.5} /></div>
+                              <div style={{ fontSize:13 }}><ExpandableText text={r.content ?? ""} maxChars={150} fontSize={13} color="#111827" lineHeight={1.5} onMentionClick={name => { apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {}); }} /></div>
                             </div>
                             <div style={{ display:"flex", gap:10, paddingLeft:4, marginTop:5, fontSize:11 }}>
                               <span style={{ color:"#E5E7EB" }}>{timeAgo(r.createdAt)}</span>
