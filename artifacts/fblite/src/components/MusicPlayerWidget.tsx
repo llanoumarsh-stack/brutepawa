@@ -12,6 +12,7 @@ interface Props {
   artist?: string | null;
   artworkUrl?: string | null;
   duration?: string | null; // "3:28"
+  glassmorphism?: boolean;  // embedded inside a bgColor gradient card
 }
 
 function parseTotal(d: string | null | undefined): number {
@@ -26,7 +27,7 @@ function fmt(s: number) {
   return `${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
 }
 
-export default function MusicPlayerWidget({ trackName, artist, artworkUrl, duration }: Props) {
+export default function MusicPlayerWidget({ trackName, artist, artworkUrl, duration, glassmorphism }: Props) {
   const total   = parseTotal(duration);
   const [playing, setPlaying] = useState(false);
   const [cur,     setCur]     = useState(0);
@@ -58,7 +59,17 @@ export default function MusicPlayerWidget({ trackName, artist, artworkUrl, durat
         }
       `}</style>
 
-      <div style={{
+      <div style={glassmorphism ? {
+        margin: "10px 10px 10px",
+        background: "rgba(14,4,30,0.52)",
+        backdropFilter: "blur(18px)",
+        WebkitBackdropFilter: "blur(18px)",
+        borderRadius: 14,
+        border: "1px solid rgba(255,255,255,0.13)",
+        boxShadow: "0 4px 24px rgba(0,0,0,0.40)",
+        padding: "12px 12px 10px",
+        overflow: "hidden",
+      } : {
         margin: "10px 14px 14px",
         background: "#160720",
         borderRadius: 14,

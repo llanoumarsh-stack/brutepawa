@@ -670,87 +670,128 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 </button>
               </div>
             </div>
-            {post.content && (
-              post.bgColor ? (
-                <div style={{
-                  background: post.bgColor,
-                  borderRadius: 12,
-                  padding: "28px 20px",
-                  margin: "8px 0",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  minHeight: 160,
-                  textAlign: "center",
-                }}>
-                  <ExpandableText
-                    text={post.content}
-                    maxChars={220}
-                    fontSize={18}
-                    color="#ffffff"
-                    lineHeight={1.5}
-                    onMentionClick={name => {
-                      apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {});
-                    }}
-                  />
-                </div>
-              ) : (
-                <div className="post-content">
-                  <ExpandableText
-                    text={post.content}
-                    maxChars={220}
-                    fontSize={15}
-                    color="var(--fb-text)"
-                    lineHeight={1.5}
-                    onMentionClick={name => {
-                      apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {});
-                    }}
-                  />
-                </div>
-              )
-            )}
-            {post.emoji && (
-              <div className="post-image-emoji" style={{ background: "var(--fb-bg)" }}>{post.emoji}</div>
-            )}
-            {(post.imageUrl || post.thumbnailUrl) && (() => {
-              const mediaUrl = post.imageUrl ?? "";
-              const thumb    = post.thumbnailUrl;
-              const isVideo  = thumb != null || /\.(mp4|mov|webm|ogg|m4v)(\?.*)?$/i.test(mediaUrl);
-              if (isVideo) {
-                return (
-                  <div
-                    onClick={() => navigate(`/video/${post.id}`)}
-                    style={{ position: "relative", cursor: "pointer", background: "#000", lineHeight: 0 }}
-                  >
-                    {thumb
-                      ? <img src={thumb} alt="" style={{ width: "100%", maxHeight: 420, objectFit: "cover", display: "block" }} />
-                      : <div style={{ width: "100%", height: 260, background: "#111", display: "block" }} />
-                    }
-                    <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <div style={{ width: 58, height: 58, borderRadius: "50%", background: "rgba(0,0,0,0.55)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
-                      </div>
-                    </div>
+            {/* ── bgColor + music : lecteur intégré dans le dégradé ── */}
+            {post.bgColor && post.musicTrackName ? (
+              <div style={{
+                background: post.bgColor,
+                borderRadius: 12,
+                margin: "8px 0",
+                overflow: "hidden",
+              }}>
+                {post.content && (
+                  <div style={{
+                    padding: "32px 20px 20px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    minHeight: 120,
+                    textAlign: "center",
+                  }}>
+                    <ExpandableText
+                      text={post.content}
+                      maxChars={220}
+                      fontSize={20}
+                      color="#ffffff"
+                      lineHeight={1.5}
+                      onMentionClick={name => {
+                        apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {});
+                      }}
+                    />
                   </div>
-                );
-              }
-              return (
-                <img
-                  src={mediaUrl}
-                  alt=""
-                  loading="lazy"
-                  style={{ width: "100%", maxHeight: 420, objectFit: "cover", display: "block", borderRadius: 0 }}
+                )}
+                <MusicPlayerWidget
+                  trackName={post.musicTrackName}
+                  artist={post.musicArtist}
+                  artworkUrl={post.musicArtworkUrl}
+                  duration={post.musicDuration}
+                  glassmorphism
                 />
-              );
-            })()}
-            {/* ── Music player ── */}
-            {post.musicTrackName && (
-              <MusicPlayerWidget
-                trackName={post.musicTrackName}
-                artist={post.musicArtist}
-                artworkUrl={post.musicArtworkUrl}
-                duration={post.musicDuration}
-              />
+              </div>
+            ) : (
+              <>
+                {post.content && (
+                  post.bgColor ? (
+                    <div style={{
+                      background: post.bgColor,
+                      borderRadius: 12,
+                      padding: "28px 20px",
+                      margin: "8px 0",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      minHeight: 160,
+                      textAlign: "center",
+                    }}>
+                      <ExpandableText
+                        text={post.content}
+                        maxChars={220}
+                        fontSize={18}
+                        color="#ffffff"
+                        lineHeight={1.5}
+                        onMentionClick={name => {
+                          apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {});
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="post-content">
+                      <ExpandableText
+                        text={post.content}
+                        maxChars={220}
+                        fontSize={15}
+                        color="var(--fb-text)"
+                        lineHeight={1.5}
+                        onMentionClick={name => {
+                          apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {});
+                        }}
+                      />
+                    </div>
+                  )
+                )}
+                {post.emoji && (
+                  <div className="post-image-emoji" style={{ background: "var(--fb-bg)" }}>{post.emoji}</div>
+                )}
+                {(post.imageUrl || post.thumbnailUrl) && (() => {
+                  const mediaUrl = post.imageUrl ?? "";
+                  const thumb    = post.thumbnailUrl;
+                  const isVideo  = thumb != null || /\.(mp4|mov|webm|ogg|m4v)(\?.*)?$/i.test(mediaUrl);
+                  if (isVideo) {
+                    return (
+                      <div
+                        onClick={() => navigate(`/video/${post.id}`)}
+                        style={{ position: "relative", cursor: "pointer", background: "#000", lineHeight: 0 }}
+                      >
+                        {thumb
+                          ? <img src={thumb} alt="" style={{ width: "100%", maxHeight: 420, objectFit: "cover", display: "block" }} />
+                          : <div style={{ width: "100%", height: 260, background: "#111", display: "block" }} />
+                        }
+                        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <div style={{ width: 58, height: 58, borderRadius: "50%", background: "rgba(0,0,0,0.55)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return (
+                    <img
+                      src={mediaUrl}
+                      alt=""
+                      loading="lazy"
+                      style={{ width: "100%", maxHeight: 420, objectFit: "cover", display: "block", borderRadius: 0 }}
+                    />
+                  );
+                })()}
+                {/* ── Music player standalone ── */}
+                {post.musicTrackName && (
+                  <MusicPlayerWidget
+                    trackName={post.musicTrackName}
+                    artist={post.musicArtist}
+                    artworkUrl={post.musicArtworkUrl}
+                    duration={post.musicDuration}
+                  />
+                )}
+              </>
             )}
             {/* ── Stats bar ── */}
             {(post.likes > 0 || (post.comments + postComments.length) > 0 || post.shares > 0) && (
