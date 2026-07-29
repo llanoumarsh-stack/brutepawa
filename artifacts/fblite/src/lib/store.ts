@@ -22,6 +22,13 @@ export interface Post {
   audience?: string;
   taggedUsers?: { id: number; name: string }[];
   bgColor?: string | null;
+  mood?: string | null;
+  location?: string | null;
+  musicTrackName?: string | null;
+  musicArtist?: string | null;
+  musicUrl?: string | null;
+  musicArtworkUrl?: string | null;
+  musicDuration?: string | null;
 }
 
 // ── Posts ──────────────────────────────────────────────────────────────────

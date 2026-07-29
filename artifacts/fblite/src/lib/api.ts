@@ -147,6 +147,7 @@ export interface FeedPost {
   location?: string | null;
   taggedUsers?: { id: number; name: string }[];
   bgColor?: string | null;
+  mood?: string | null;
 }
 
 export interface PublicUser {
@@ -530,6 +531,7 @@ export async function apiCreatePost(
   location?: string,
   taggedUserIds?: number[],
   bgColor?: string,
+  mood?: string,
 ): Promise<void> {
   const res = await apiFetch("/posts", {
     method: "POST",
@@ -545,6 +547,7 @@ export async function apiCreatePost(
       location:        location ?? null,
       taggedUserIds:   taggedUserIds ?? [],
       bgColor:         bgColor ?? null,
+      mood:            mood ?? null,
     }),
   });
   if (!res.ok) {

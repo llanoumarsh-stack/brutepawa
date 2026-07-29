@@ -208,6 +208,13 @@ function AppContent() {
         audience: p.audience,
         taggedUsers: p.taggedUsers,
         bgColor: p.bgColor,
+        mood: p.mood,
+        location: p.location,
+        musicTrackName: p.musicTrackName,
+        musicArtist: p.musicArtist,
+        musicUrl: p.musicUrl,
+        musicArtworkUrl: p.musicArtworkUrl,
+        musicDuration: p.musicDuration,
       }));
       setPosts(converted);
     } catch {

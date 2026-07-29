@@ -131,6 +131,7 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
       authorBadgeType: usersTable.badgeType,
       location: postsTable.location,
       bgColor: postsTable.bgColor,
+      mood: postsTable.mood,
       taggedUserIds: postsTable.taggedUserIds,
     })
     .from(postsTable)
@@ -218,6 +219,7 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
       audience: r.audience ?? "public",
       location: (r as { location?: string | null }).location ?? null,
       bgColor: (r as { bgColor?: string | null }).bgColor ?? null,
+      mood: (r as { mood?: string | null }).mood ?? null,
       taggedUsers,
     };
   }));
@@ -251,6 +253,7 @@ router.post("/posts", requireAuth, async (req, res): Promise<void> => {
   const musicDuration   = typeof req.body.musicDuration   === "string" && req.body.musicDuration   ? req.body.musicDuration   : null;
   const location        = typeof req.body.location        === "string" && req.body.location        ? req.body.location        : null;
   const bgColor         = typeof req.body.bgColor         === "string" && req.body.bgColor         ? req.body.bgColor         : null;
+  const mood            = typeof req.body.mood            === "string" && req.body.mood            ? req.body.mood            : null;
   const rawTaggedIds    = req.body.taggedUserIds;
   const taggedUserIds   = Array.isArray(rawTaggedIds) && rawTaggedIds.length > 0
     ? JSON.stringify(rawTaggedIds.map(Number).filter(n => !isNaN(n)))
@@ -269,6 +272,7 @@ router.post("/posts", requireAuth, async (req, res): Promise<void> => {
       musicDuration,
       location,
       bgColor,
+      mood,
       taggedUserIds,
     }).returning();
     res.status(201).json(post);

@@ -310,6 +310,7 @@ export default function CreatePostPage({ onPublish }: Props) {
         selectedLocation ? `${selectedLocation.city}, ${selectedLocation.country}` : undefined,
         taggedUsers.length > 0 ? taggedUsers : undefined,
         hasBg ? activeBg?.value : undefined,
+        selectedMood ?? undefined,
       );
     } catch (err) {
       publishingRef.current = false;

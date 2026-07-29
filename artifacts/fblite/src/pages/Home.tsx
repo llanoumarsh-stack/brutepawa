@@ -628,6 +628,12 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                         ))}
                       </span>
                     )}
+                    {post.mood && (
+                      <span style={{ fontSize: 13, color: "var(--fb-text-secondary)", fontWeight: 400 }}>
+                        {" est "}<span style={{ fontSize: 15 }}>{post.mood.split(" ")[0]}</span>{" "}
+                        <em>{post.mood.slice(post.mood.indexOf(" ") + 1)}</em>
+                      </span>
+                    )}
                   </div>
                   {!post.sponsored && post.userId !== (user as { id?: number }).id && !followedUsers.has(post.userId) && (
                     <span
@@ -638,7 +644,14 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                     </span>
                   )}
                 </div>
-                <div className="post-time">🌐 {post.time}</div>
+                <div className="post-time" style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                  <span>🌐 {post.time}</span>
+                  {post.location && (
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 3, fontSize: 12, color: "#22C55E", fontWeight: 600 }}>
+                      · 📍 {post.location}
+                    </span>
+                  )}
+                </div>
               </div>
               <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
                 <button
@@ -729,6 +742,22 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 />
               );
             })()}
+            {/* ── Music player ── */}
+            {post.musicTrackName && (
+              <div style={{ margin: "8px 14px", padding: "10px 14px", background: "rgba(139,92,246,0.12)", borderRadius: 12, display: "flex", alignItems: "center", gap: 12, border: "1px solid rgba(139,92,246,0.25)" }}>
+                {post.musicArtworkUrl && (
+                  <img src={post.musicArtworkUrl} alt="" style={{ width: 44, height: 44, borderRadius: 8, objectFit: "cover", flexShrink: 0 }} />
+                )}
+                {!post.musicArtworkUrl && (
+                  <div style={{ width: 44, height: 44, borderRadius: 8, background: "rgba(139,92,246,0.3)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 22 }}>🎵</div>
+                )}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 700, fontSize: 13, color: "var(--fb-text)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{post.musicTrackName}</div>
+                  {post.musicArtist && <div style={{ fontSize: 12, color: "var(--fb-text-secondary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{post.musicArtist}</div>}
+                </div>
+                <span style={{ fontSize: 20, color: "#8B5CF6", flexShrink: 0 }}>♫</span>
+              </div>
+            )}
             {/* ── Stats bar ── */}
             {(post.likes > 0 || (post.comments + postComments.length) > 0 || post.shares > 0) && (
               <div style={{ padding: "6px 14px 4px", display: "flex", alignItems: "center", gap: 12, fontSize: 13.5, color: "#9CA3AF" }}>
