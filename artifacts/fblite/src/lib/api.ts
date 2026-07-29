@@ -146,6 +146,7 @@ export interface FeedPost {
   authorBadgeType?: string | null;
   location?: string | null;
   taggedUsers?: { id: number; name: string }[];
+  bgColor?: string | null;
 }
 
 export interface PublicUser {
@@ -528,6 +529,7 @@ export async function apiCreatePost(
   music?: { trackName: string; artist: string; url: string | null; artworkUrl: string | null; duration: string | null },
   location?: string,
   taggedUserIds?: number[],
+  bgColor?: string,
 ): Promise<void> {
   const res = await apiFetch("/posts", {
     method: "POST",
@@ -542,6 +544,7 @@ export async function apiCreatePost(
       musicDuration:   music?.duration   ?? null,
       location:        location ?? null,
       taggedUserIds:   taggedUserIds ?? [],
+      bgColor:         bgColor ?? null,
     }),
   });
   if (!res.ok) {

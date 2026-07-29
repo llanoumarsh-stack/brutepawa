@@ -657,18 +657,43 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
               </div>
             </div>
             {post.content && (
-              <div className="post-content">
-                <ExpandableText
-                  text={post.content}
-                  maxChars={220}
-                  fontSize={15}
-                  color="var(--fb-text)"
-                  lineHeight={1.5}
-                  onMentionClick={name => {
-                    apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {});
-                  }}
-                />
-              </div>
+              post.bgColor ? (
+                <div style={{
+                  background: post.bgColor,
+                  borderRadius: 12,
+                  padding: "28px 20px",
+                  margin: "8px 0",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  minHeight: 110,
+                  textAlign: "center",
+                }}>
+                  <ExpandableText
+                    text={post.content}
+                    maxChars={220}
+                    fontSize={18}
+                    color="#ffffff"
+                    lineHeight={1.5}
+                    onMentionClick={name => {
+                      apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {});
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className="post-content">
+                  <ExpandableText
+                    text={post.content}
+                    maxChars={220}
+                    fontSize={15}
+                    color="var(--fb-text)"
+                    lineHeight={1.5}
+                    onMentionClick={name => {
+                      apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {});
+                    }}
+                  />
+                </div>
+              )
             )}
             {post.emoji && (
               <div className="post-image-emoji" style={{ background: "var(--fb-bg)" }}>{post.emoji}</div>

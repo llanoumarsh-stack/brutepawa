@@ -21,6 +21,7 @@ export interface Post {
   commentsDisabled?: boolean;
   audience?: string;
   taggedUsers?: { id: number; name: string }[];
+  bgColor?: string | null;
 }
 
 // ── Posts ──────────────────────────────────────────────────────────────────

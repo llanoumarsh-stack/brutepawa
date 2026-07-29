@@ -207,6 +207,7 @@ function AppContent() {
         commentsDisabled: p.commentsDisabled,
         audience: p.audience,
         taggedUsers: p.taggedUsers,
+        bgColor: p.bgColor,
       }));
       setPosts(converted);
     } catch {

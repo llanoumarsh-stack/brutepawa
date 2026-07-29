@@ -21,6 +21,7 @@ export const postsTable = pgTable("posts", {
   commentsDisabled: boolean("comments_disabled").notNull().default(false),
   audience: text("audience").notNull().default("public"),
   location: text("location"),
+  bgColor: text("bg_color"),
   taggedUserIds: text("tagged_user_ids"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),

@@ -130,6 +130,7 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
       authorProfileLocked: usersTable.profileLocked,
       authorBadgeType: usersTable.badgeType,
       location: postsTable.location,
+      bgColor: postsTable.bgColor,
       taggedUserIds: postsTable.taggedUserIds,
     })
     .from(postsTable)
@@ -216,6 +217,7 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
       commentsDisabled: r.commentsDisabled ?? false,
       audience: r.audience ?? "public",
       location: (r as { location?: string | null }).location ?? null,
+      bgColor: (r as { bgColor?: string | null }).bgColor ?? null,
       taggedUsers,
     };
   }));
@@ -248,6 +250,7 @@ router.post("/posts", requireAuth, async (req, res): Promise<void> => {
   const musicArtworkUrl = typeof req.body.musicArtworkUrl === "string" && req.body.musicArtworkUrl ? req.body.musicArtworkUrl : null;
   const musicDuration   = typeof req.body.musicDuration   === "string" && req.body.musicDuration   ? req.body.musicDuration   : null;
   const location        = typeof req.body.location        === "string" && req.body.location        ? req.body.location        : null;
+  const bgColor         = typeof req.body.bgColor         === "string" && req.body.bgColor         ? req.body.bgColor         : null;
   const rawTaggedIds    = req.body.taggedUserIds;
   const taggedUserIds   = Array.isArray(rawTaggedIds) && rawTaggedIds.length > 0
     ? JSON.stringify(rawTaggedIds.map(Number).filter(n => !isNaN(n)))
@@ -265,6 +268,7 @@ router.post("/posts", requireAuth, async (req, res): Promise<void> => {
       musicArtworkUrl,
       musicDuration,
       location,
+      bgColor,
       taggedUserIds,
     }).returning();
     res.status(201).json(post);
