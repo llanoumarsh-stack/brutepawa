@@ -20,6 +20,7 @@ export interface Post {
   isPinned?: boolean;
   commentsDisabled?: boolean;
   audience?: string;
+  taggedUsers?: { id: number; name: string }[];
 }
 
 // ── Posts ──────────────────────────────────────────────────────────────────
