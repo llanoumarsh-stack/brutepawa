@@ -458,18 +458,22 @@ function DustEffect({
   );
 }
 
+/* Module-level cache — waveform is pure/deterministic, no need to recompute */
+const _wfCache = new Map<number, number[]>();
 function voiceWaveform(seed: number, bars = 36): number[] {
-  return Array.from({ length: bars }, (_, i) => {
+  const key = seed * 1000 + bars;
+  if (_wfCache.has(key)) return _wfCache.get(key)!;
+  const result = Array.from({ length: bars }, (_, i) => {
     const t = i / bars;
-    // Envelope: voice energy is bell-shaped, higher in the middle, lower at edges
     const envelope = 0.35 + 0.65 * Math.pow(Math.sin(t * Math.PI), 0.65);
-    // Multiple harmonics for natural, realistic voice pattern
     const v = Math.abs(Math.sin(seed * 0.071 + i * 1.31)) * 0.38
-            + Math.abs(Math.sin(i * 0.87 + seed * 0.193)) * 0.32
-            + Math.abs(Math.sin(i * 2.13 + seed * 0.051)) * 0.18
-            + Math.abs(Math.sin(i * 3.77 + seed * 0.11)) * 0.12;
+            + Math.abs(Math.sin(i * 0.87  + seed * 0.193)) * 0.32
+            + Math.abs(Math.sin(i * 2.13  + seed * 0.051)) * 0.18
+            + Math.abs(Math.sin(i * 3.77  + seed * 0.11))  * 0.12;
     return Math.max(0.07, Math.min(1, v * envelope + 0.06));
   });
+  _wfCache.set(key, result);
+  return result;
 }
 
 type Overlay = "none" | "info" | "attach" | "contact-options" | "contact-mute" | "contact-search" | "contact-delete" | "contact-block" | "contact-report" | "contact-addfriend" | "contact-addgroup";

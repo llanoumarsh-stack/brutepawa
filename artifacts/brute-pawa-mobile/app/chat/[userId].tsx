@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import {
   useGetConversation,
+  useGetUser,
   useSendMessage,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -10,6 +11,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
   Animated,
   FlatList,
+  Image,
   Modal,
   Platform,
   Pressable,
@@ -19,6 +21,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
+const AVATAR_COLORS = [
+  "#22C55E","#EC4899","#8B5CF6","#D97706","#388E3C","#00838F","#D32F2F","#0EA5E9","#F59E0B",
+];
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useColors } from "@/hooks/useColors";
@@ -128,6 +134,17 @@ export default function ChatScreen() {
 
   const targetId = parseInt(userId ?? "0", 10);
 
+  // Fetch other user's profile for the header
+  const otherUserQuery = useGetUser(targetId, { query: { enabled: targetId > 0 } });
+  const otherUser      = otherUserQuery.data as any;
+  const otherName      = otherUser
+    ? `${otherUser.firstName ?? ""} ${otherUser.lastName ?? ""}`.trim() || `#${targetId}`
+    : `…`;
+  const otherAvatar    = otherUser?.avatarUrl as string | null | undefined;
+  const otherInitials  = otherName !== "…"
+    ? otherName.split(" ").slice(0,2).map((w: string) => w[0] ?? "").join("").toUpperCase()
+    : "?";
+
   const messagesQuery = useGetConversation(targetId, { query: {} });
   const rawMessages   = (messagesQuery.data ?? []) as any[];
   const messages      = rawMessages.filter(m => !localDeleted.has(m.id));
@@ -203,12 +220,22 @@ export default function ChatScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={24} color={colors.foreground} />
         </TouchableOpacity>
-        <View style={[styles.headerAvatar, { backgroundColor: colors.primary }]}>
-          <Text style={[styles.headerAvatarText, { color: colors.primaryForeground }]}>U</Text>
+        <View style={[styles.headerAvatar, { backgroundColor: AVATAR_COLORS[targetId % AVATAR_COLORS.length] }]}>
+          {otherAvatar
+            ? <Image source={{ uri: otherAvatar }} style={StyleSheet.absoluteFillObject as any} resizeMode="cover" />
+            : <Text style={[styles.headerAvatarText, { color: "#fff" }]}>{otherInitials}</Text>
+          }
         </View>
-        <Text style={[styles.headerName, { color: colors.foreground }]}>
-          Utilisateur #{userId}
-        </Text>
+        <View style={{ flex: 1 }}>
+          <Text style={[styles.headerName, { color: colors.foreground }]} numberOfLines={1}>
+            {otherName}
+          </Text>
+          {otherUser?.role === "creator" && (
+            <Text style={{ fontSize: 11, color: colors.primary, fontFamily: "Inter_500Medium" }}>
+              Créateur ✓
+            </Text>
+          )}
+        </View>
       </View>
 
       <KeyboardAvoidingView style={styles.flex} behavior="padding" keyboardVerticalOffset={0}>
