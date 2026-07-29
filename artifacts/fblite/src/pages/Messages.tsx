@@ -323,28 +323,11 @@ function MapThumbnail({ lat, lng }: { lat: number; lng: number }) {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   DUST DELETE EFFECT — GPU-accelerated Canvas particle animation
-   Triggered when user deletes their own message. The bubble
-   fragments into ~220 green particles drifting rightward, then
-   the message is removed from React state. 60 FPS via rAF.
+   PIXEL-NOISE DELETE EFFECT — Telegram-style static disintegration
+   Phase 1 (0→0.45): pixel noise invades the bubble (TV static)
+   Phase 2 (0.45→1.0): all pixels dissolve / fade out
+   60 FPS via rAF, canvas portal, hi-DPI aware.
 ══════════════════════════════════════════════════════════════ */
-function dustRoundRect(
-  ctx: CanvasRenderingContext2D,
-  x: number, y: number, w: number, h: number, r: number,
-) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.lineTo(x + w - r, y);
-  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-  ctx.lineTo(x + w, y + h - r);
-  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-  ctx.lineTo(x + r, y + h);
-  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-  ctx.lineTo(x, y + r);
-  ctx.quadraticCurveTo(x, y, x + r, y);
-  ctx.closePath();
-}
-
 type DustRect = { left: number; top: number; width: number; height: number };
 
 function DustEffect({
@@ -364,53 +347,48 @@ function DustEffect({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const dpr = window.devicePixelRatio || 1;
+    const dpr   = window.devicePixelRatio || 1;
     const { width: bw, height: bh } = rect;
-    const EXTRA_W = 320; // room for particles to drift right
-    const EXTRA_H = 60;
-    // CSS dimensions
-    const cssW = bw + EXTRA_W;
-    const cssH = bh + EXTRA_H;
-    // Physical canvas resolution (sharp on hi-DPI)
-    canvas.width  = cssW  * dpr;
-    canvas.height = cssH  * dpr;
-    canvas.style.width  = `${cssW}px`;
-    canvas.style.height = `${cssH}px`;
+
+    // Canvas covers exactly the bubble — no extra room needed
+    canvas.width  = bw * dpr;
+    canvas.height = bh * dpr;
+    canvas.style.width  = `${bw}px`;
+    canvas.style.height = `${bh}px`;
     canvas.style.left   = `${rect.left}px`;
-    canvas.style.top    = `${rect.top - EXTRA_H / 2}px`;
+    canvas.style.top    = `${rect.top}px`;
 
     const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
-    ctx.scale(dpr, dpr); // all drawing in CSS px
+    ctx.scale(dpr, dpr);
 
-    const DURATION  = 950; // ms
-    const PARTICLES = 240;
+    const DURATION = 820; // ms
+    const FILL_END = 0.45; // phase 1 ends here
+    const PX       = 3;    // pixel cell size (CSS px) — feels like Telegram static
 
-    const greens  = ["#22C55E", "#86EFAC", "#4ADE80", "#A7F3D0", "#DCFCE7", "#16A34A", "#BBF7D0"];
-    const grays   = ["#E5E7EB", "#D1D5DB", "#CBD5E1", "#94A3B8", "#F3F4F6"];
-    const colors  = mine ? greens : grays;
-    const bubbleC = mine ? "#C8E6B2" : "#ffffff";
+    const cols = Math.ceil(bw / PX);
+    const rows = Math.ceil(bh / PX);
 
-    type Pt = {
-      x: number; y: number;
-      vx: number; vy: number;
-      r: number; alpha: number;
-      color: string; decay: number;
-    };
+    // Telegram-style static: mostly black/dark + occasional white/light pixels
+    const STATIC_COLORS = [
+      "#000000","#000000","#000000","#0a0a0a","#111111","#0d0d0d",
+      "#1a1a1a","#222222","#050505","#181818","#080808","#2a2a2a",
+      "#ffffff","#f5f5f5","#cccccc","#aaaaaa",
+    ];
+    // Accent tint for mine/theirs (subtle, like Telegram's branded color overlay)
+    const tint = mine ? "rgba(34,197,94,0.18)" : "rgba(100,116,139,0.12)";
 
-    // Particles start inside the bubble bounds, positioned in canvas CSS space
-    // The canvas top is offset by EXTRA_H/2, so bubble top in canvas = EXTRA_H/2
-    const offsetY = EXTRA_H / 2;
-    const pts: Pt[] = Array.from({ length: PARTICLES }, () => ({
-      x:     Math.random() * bw,
-      y:     offsetY + Math.random() * bh,
-      vx:    0.8 + Math.random() * 4.8,
-      vy:    (Math.random() - 0.5) * 2.4,
-      r:     1.2 + Math.random() * 2.8,   // bigger so they show on mobile
-      alpha: 0.9 + Math.random() * 0.1,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      decay: 0.010 + Math.random() * 0.016,
+    // Pre-compute each pixel's reveal progress (when it first appears)
+    type Pix = { col: number; row: number; revealAt: number; color: string };
+    const pixels: Pix[] = Array.from({ length: cols * rows }, (_, i) => ({
+      col: i % cols,
+      row: Math.floor(i / cols),
+      revealAt: Math.random() * FILL_END, // spread across phase 1
+      color: STATIC_COLORS[Math.floor(Math.random() * STATIC_COLORS.length)],
     }));
+
+    // Bubble background color (behind the noise)
+    const bubbleC = mine ? "#C8E6B2" : "#ffffff";
 
     let t0: number | null = null;
     let raf: number;
@@ -418,32 +396,38 @@ function DustEffect({
 
     const step = (ts: number) => {
       if (!t0) t0 = ts;
-      const p = Math.min((ts - t0) / DURATION, 1); // 0→1
+      const p = Math.min((ts - t0) / DURATION, 1);
 
-      ctx.clearRect(0, 0, cssW, cssH);
+      ctx.clearRect(0, 0, bw, bh);
 
-      // 1. Fading bubble outline
-      const bAlpha = Math.max(0, 1 - p * 2.8);
-      if (bAlpha > 0.01) {
+      // ── Bubble background fades as noise fills it ──────────────
+      const bAlpha = p < FILL_END ? Math.max(0, 1 - p / FILL_END) : 0;
+      if (bAlpha > 0.005) {
         ctx.globalAlpha = bAlpha;
         ctx.fillStyle   = bubbleC;
-        dustRoundRect(ctx, 0, offsetY, bw, bh, 18);
-        ctx.fill();
+        ctx.fillRect(0, 0, bw, bh);
       }
 
-      // 2. Move + fade particles
-      const speedMult = 1 + p * 3.5;
-      pts.forEach(pt => {
-        pt.x += pt.vx * speedMult;
-        pt.y += pt.vy;
-        pt.alpha = Math.max(0, pt.alpha - pt.decay * speedMult * 0.8);
-        if (pt.alpha < 0.01) return;
-        ctx.globalAlpha = pt.alpha;
-        ctx.fillStyle   = pt.color;
-        ctx.beginPath();
-        ctx.arc(pt.x, pt.y, pt.r, 0, Math.PI * 2);
-        ctx.fill();
-      });
+      // ── Tint overlay ──────────────────────────────────────────
+      ctx.globalAlpha = 0.25;
+      ctx.fillStyle   = tint;
+      ctx.fillRect(0, 0, bw, bh);
+
+      // ── Pixel noise ───────────────────────────────────────────
+      // Phase 1: pixels appear if revealAt <= p  (alpha = 1)
+      // Phase 2: pixels fade out  alpha = 1 − (p-FILL_END)/(1-FILL_END)
+      const noiseAlpha = p < FILL_END
+        ? 1
+        : Math.max(0, 1 - (p - FILL_END) / (1 - FILL_END));
+
+      if (noiseAlpha > 0.005) {
+        pixels.forEach(px => {
+          if (px.revealAt > p) return; // not yet visible
+          ctx.globalAlpha = noiseAlpha;
+          ctx.fillStyle   = px.color;
+          ctx.fillRect(px.col * PX, px.row * PX, PX, PX);
+        });
+      }
 
       ctx.globalAlpha = 1;
 
@@ -462,11 +446,12 @@ function DustEffect({
     <canvas
       ref={canvasRef}
       style={{
-        position:      "fixed",
-        pointerEvents: "none",
-        zIndex:        9999,
-        willChange:    "transform",
-        // left/top set imperatively in useEffect after measuring
+        position:       "fixed",
+        pointerEvents:  "none",
+        zIndex:         9999,
+        borderRadius:   18,
+        willChange:     "opacity",
+        overflow:       "hidden",
       }}
     />,
     document.body,
