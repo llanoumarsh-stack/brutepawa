@@ -206,6 +206,7 @@ function AppContent() {
         isPinned: p.isPinned,
         commentsDisabled: p.commentsDisabled,
         audience: p.audience,
+        taggedUsers: p.taggedUsers,
       }));
       setPosts(converted);
     } catch {
