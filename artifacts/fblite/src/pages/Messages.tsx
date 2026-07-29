@@ -323,14 +323,19 @@ function MapThumbnail({ lat, lng }: { lat: number; lng: number }) {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   PIXEL-NOISE DELETE EFFECT — Telegram-style static disintegration
-   Renders as position:absolute overlay INSIDE the bubble —
-   no viewport coordinate math, works on all PWA / mobile browsers.
-   Phase 1 (0→0.45): pixel noise invades (TV static)
-   Phase 2 (0.45→1.0): pixels dissolve out
-   60 FPS rAF, hi-DPI aware.
+   GREEN-PARTICLE DELETE EFFECT — matches BrutePawa mockup:
+   particles fly upper-right from the bubble, bubble blurs+fades,
+   then messages reflow naturally.
+   Canvas extends right (+160px) and up (−100px) of the bubble.
+   No viewport math — works on all PWA / mobile browsers.
 ══════════════════════════════════════════════════════════════ */
 type DustRect = { left: number; top: number; width: number; height: number };
+
+// Canvas geometry relative to the bubble (px)
+const _DL  = 24;   // extends left
+const _DR  = 160;  // extends right  (particles go upper-right)
+const _DT  = 110;  // extends above
+const _DB  = 14;   // extends below
 
 function DustEffect({
   rect,
@@ -351,41 +356,60 @@ function DustEffect({
 
     const dpr = window.devicePixelRatio || 1;
 
-    // Measure the actual rendered parent size — more reliable than stored rect
     const parent = canvas.parentElement;
     const bw = parent ? parent.offsetWidth  : rect.width;
     const bh = parent ? parent.offsetHeight : rect.height;
 
-    // Canvas fills the parent exactly (CSS 100%×100% via style)
-    canvas.width  = Math.max(1, bw) * dpr;
-    canvas.height = Math.max(1, bh) * dpr;
+    // Logical canvas dimensions
+    const logW = bw + _DL + _DR;
+    const logH = bh + _DT + _DB;
+
+    canvas.width  = Math.max(1, logW) * dpr;
+    canvas.height = Math.max(1, logH) * dpr;
 
     const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
     ctx.scale(dpr, dpr);
 
-    const DURATION = 820;
-    const FILL_END = 0.45;
-    const PX       = 3;
+    // Bubble top-left corner in canvas space
+    const BX = _DL;
+    const BY = _DT;
 
-    const cols = Math.ceil(bw / PX);
-    const rows = Math.ceil(bh / PX);
-
-    const STATIC_COLORS = [
-      "#000000","#000000","#000000","#0a0a0a","#111111","#0d0d0d",
-      "#1a1a1a","#222222","#050505","#181818","#080808","#2a2a2a",
-      "#ffffff","#f5f5f5","#cccccc","#aaaaaa",
-    ];
-    const tint    = mine ? "rgba(34,197,94,0.18)" : "rgba(100,116,139,0.12)";
     const bubbleC = mine ? "#C8E6B2" : "#ffffff";
+    const GREENS  = [
+      "#22C55E","#22C55E","#16A34A","#4ADE80",
+      "#86EFAC","#BBF7D0","#6EE7A0","#34D399","#dcfce7",
+    ];
 
-    type Pix = { col: number; row: number; revealAt: number; color: string };
-    const pixels: Pix[] = Array.from({ length: cols * rows }, (_, i) => ({
-      col:      i % cols,
-      row:      Math.floor(i / cols),
-      revealAt: Math.random() * FILL_END,
-      color:    STATIC_COLORS[Math.floor(Math.random() * STATIC_COLORS.length)],
-    }));
+    // Total animation time
+    const DURATION = 920;
+
+    type Particle = {
+      ox: number; oy: number;
+      vx: number; vy: number;  // unit: bubble-widths/s (scaled by bw)
+      r:  number;
+      color: string;
+      startAt: number;
+    };
+
+    // 360 particles: mostly upper-right (−135° to +20°, centred ~−45°)
+    const N = 360;
+    const particles: Particle[] = Array.from({ length: N }, () => {
+      const bx = Math.random() * bw;
+      const by = Math.random() * bh;
+      // Centre on −45° (upper-right diagonal) ± 70°
+      const angle = -Math.PI * 0.25 + (Math.random() - 0.5) * Math.PI * 0.85;
+      const speed = 0.28 + Math.random() * 0.95;
+      return {
+        ox:      BX + bx,
+        oy:      BY + by,
+        vx:      Math.cos(angle) * speed,
+        vy:      Math.sin(angle) * speed,
+        r:       0.8 + Math.random() * 2.6,
+        color:   GREENS[Math.floor(Math.random() * GREENS.length)],
+        startAt: Math.random() * 0.42,
+      };
+    });
 
     let t0: number | null = null;
     let raf: number;
@@ -395,34 +419,51 @@ function DustEffect({
       if (!t0) t0 = ts;
       const p = Math.min((ts - t0) / DURATION, 1);
 
-      ctx.clearRect(0, 0, bw, bh);
+      ctx.clearRect(0, 0, logW, logH);
 
-      // ── Bubble background fades away as noise fills it ──
-      const bAlpha = p < FILL_END ? Math.max(0, 1 - p / FILL_END) : 0;
-      if (bAlpha > 0.005) {
+      // ── Bubble: fade + very slight scale-down (matches stage 2→4) ──
+      const bAlpha = Math.max(0, 1 - p / 0.52);
+      if (bAlpha > 0.004) {
+        const scale  = 1 - (1 - bAlpha) * 0.04;        // shrinks ≤4%
+        const cx     = BX + bw / 2;
+        const cy     = BY + bh / 2;
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(scale, scale);
+        ctx.translate(-cx, -cy);
         ctx.globalAlpha = bAlpha;
         ctx.fillStyle   = bubbleC;
-        ctx.fillRect(0, 0, bw, bh);
+        if (ctx.roundRect) {
+          ctx.beginPath();
+          ctx.roundRect(BX, BY, bw, bh, 18);
+          ctx.fill();
+        } else {
+          ctx.beginPath();
+          ctx.rect(BX, BY, bw, bh);
+          ctx.fill();
+        }
+        ctx.restore();
       }
 
-      // ── Subtle brand tint ──
-      ctx.globalAlpha = 0.22;
-      ctx.fillStyle   = tint;
-      ctx.fillRect(0, 0, bw, bh);
-
-      // ── Pixel noise ──
-      const noiseAlpha = p < FILL_END
-        ? 1
-        : Math.max(0, 1 - (p - FILL_END) / (1 - FILL_END));
-
-      if (noiseAlpha > 0.005) {
-        pixels.forEach(px => {
-          if (px.revealAt > p) return;
-          ctx.globalAlpha = noiseAlpha;
-          ctx.fillStyle   = px.color;
-          ctx.fillRect(px.col * PX, px.row * PX, PX, PX);
-        });
-      }
+      // ── Green particles burst upper-right ──
+      particles.forEach(px => {
+        if (p < px.startAt) return;
+        const lp = (p - px.startAt) / (1 - px.startAt);
+        // easeOut distance + fade
+        const dist  = lp * lp * 0.5 + lp * 0.5;       // ease-out
+        const a     = Math.max(0, Math.pow(1 - lp, 0.58));
+        if (a < 0.01) return;
+        ctx.globalAlpha = a;
+        ctx.fillStyle   = px.color;
+        ctx.beginPath();
+        ctx.arc(
+          px.ox + px.vx * bw * dist,
+          px.oy + px.vy * bw * dist,
+          px.r,
+          0, Math.PI * 2,
+        );
+        ctx.fill();
+      });
 
       ctx.globalAlpha = 1;
 
@@ -437,16 +478,15 @@ function DustEffect({
     return () => { cancelAnimationFrame(raf); if (!done) { done = true; } };
   }, []); // eslint-disable-line
 
-  /* ── Inline overlay — no portal, no viewport maths ── */
   return (
     <canvas
       ref={canvasRef}
       style={{
         position:      "absolute",
-        inset:         0,
-        width:         "100%",
-        height:        "100%",
-        borderRadius:  18,
+        left:          -_DL,
+        top:           -_DT,
+        width:         `calc(100% + ${_DL + _DR}px)`,
+        height:        `calc(100% + ${_DT + _DB}px)`,
         pointerEvents: "none",
         zIndex:        20,
         display:       "block",
@@ -4461,9 +4501,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 )}
                 <div
                   data-msgid={msg.id}
-                  style={{ maxWidth:"78%", position:"relative", overflow:"hidden",
+                  style={{ maxWidth:"78%", position:"relative",
+                    overflow: dustingMsgs.has(msg.id) ? "visible" : "hidden",
                     pointerEvents: dustingMsgs.has(msg.id) ? "none" : undefined }}>
-                  {/* ── PIXEL-NOISE DELETE — inline overlay, no viewport math ── */}
+                  {/* ── GREEN-PARTICLE DELETE — canvas extends beyond bubble ── */}
                   {dustingMsgs.has(msg.id) && (() => {
                     const dr = dustingMsgs.get(msg.id)!;
                     return (
