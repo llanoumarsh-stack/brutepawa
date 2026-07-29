@@ -666,7 +666,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  minHeight: 110,
+                  minHeight: 160,
                   textAlign: "center",
                 }}>
                   <ExpandableText
