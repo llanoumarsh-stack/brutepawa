@@ -61,6 +61,7 @@ import MediaQualityPage from "./pages/MediaQualityPage";
 import ChatBackupPage from "./pages/ChatBackupPage";
 import AdvancedSettingsPage from "./pages/AdvancedSettingsPage";
 import AboutPage from "./pages/AboutPage";
+import DeleteShowcasePage from "./pages/DeleteShowcasePage";
 import BroadcastListPage from "./pages/BroadcastListPage";
 import PeoplePage from "./pages/PeoplePage";
 import PagesPage from "./pages/PagesPage";
@@ -142,7 +143,7 @@ function relativeTime(iso: string): string {
   return `Il y a ${Math.floor(h / 24)} j`;
 }
 
-const PUBLIC_PATHS = ["/login", "/register"];
+const PUBLIC_PATHS = ["/login", "/register", "/delete-showcase"];
 const NO_LAYOUT_PATHS = [ADMIN_SECRET_PATH];
 
 function matchDynamic(pattern: string, path: string): Record<string, string> | null {
@@ -466,6 +467,7 @@ function AppContent() {
   if (path === "/settings/messaging/backup") return <ChatBackupPage />;
   if (path === "/settings/messaging/advanced") return <AdvancedSettingsPage />;
   if (path === "/settings/messaging/about") return <AboutPage />;
+  if (path === "/delete-showcase") return <DeleteShowcasePage />;
 
   if (groupMatch) {
     const gid = parseInt(groupMatch.id, 10);
