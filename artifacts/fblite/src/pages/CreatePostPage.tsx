@@ -216,6 +216,7 @@ export default function CreatePostPage({ onPublish }: Props) {
 
   const [showVoiceRecorder, setShowVoiceRecorder] = useState(false);
   const [allUsers, setAllUsers] = useState<PublicUser[]>([]);
+  const [mentionQuery, setMentionQuery] = useState<string | null>(null);
 
   /* ─── Location multi-step flow ────────────────────── */
   type LocStep = "select" | "gps-authorize" | "gps-detecting" | "gps-confirm" | "map" | "privacy" | "success";
@@ -593,15 +594,23 @@ export default function CreatePostPage({ onPublish }: Props) {
                   ref={textareaRef}
                   value={content}
                   onChange={e => {
-                    setContent(e.target.value);
+                    const val = e.target.value;
+                    setContent(val);
                     if (textareaRef.current) {
                       textareaRef.current.style.height = "auto";
                       textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
                     }
+                    // Detect @mention at cursor
+                    const cursor = e.target.selectionStart ?? val.length;
+                    const textToCursor = val.slice(0, cursor);
+                    const atMatch = textToCursor.match(/@(\w*)$/);
+                    setMentionQuery(atMatch ? atMatch[1] : null);
                   }}
                   placeholder="Partagez un moment fort de votre journée..."
                   autoFocus
                   maxLength={5000}
+                  onBlur={() => setTimeout(() => setMentionQuery(null), 150)}
+                  onKeyDown={e => { if (e.key === "Escape") setMentionQuery(null); }}
                   style={{
                     width: "100%", border: "none", outline: "none", resize: "none",
                     fontSize: hasBg ? 20 : 19, fontWeight: 500,
@@ -614,6 +623,67 @@ export default function CreatePostPage({ onPublish }: Props) {
                 />
               )}
             </div>
+
+            {/* @mention dropdown */}
+            {mentionQuery !== null && (
+              (() => {
+                const q = mentionQuery.toLowerCase();
+                const hits = tagUsers.filter(u => !q || u.name.toLowerCase().includes(q)).slice(0, 6);
+                if (hits.length === 0) return null;
+                return (
+                  <div style={{
+                    position: "relative", zIndex: 50,
+                    background: "#fff", borderRadius: 14, marginTop: 6,
+                    boxShadow: "0 4px 24px rgba(0,0,0,.13)", border: "1px solid #E5E7EB",
+                    overflow: "hidden",
+                  }}>
+                    <div style={{ padding: "8px 14px 4px", fontSize: 11, fontWeight: 700, color: "#9CA3AF", letterSpacing: ".5px", textTransform: "uppercase" }}>
+                      Mentionner un ami
+                    </div>
+                    {hits.map(u => (
+                      <div
+                        key={u.id}
+                        onMouseDown={e => {
+                          e.preventDefault();
+                          // Replace @partial with @FullName
+                          const cursor = textareaRef.current?.selectionStart ?? content.length;
+                          const before = content.slice(0, cursor);
+                          const after = content.slice(cursor);
+                          const replaced = before.replace(/@(\w*)$/, `@${u.name} `);
+                          setContent(replaced + after);
+                          setMentionQuery(null);
+                          setTimeout(() => {
+                            if (textareaRef.current) {
+                              const pos = replaced.length;
+                              textareaRef.current.selectionStart = pos;
+                              textareaRef.current.selectionEnd = pos;
+                              textareaRef.current.focus();
+                            }
+                          }, 0);
+                        }}
+                        style={{
+                          display: "flex", alignItems: "center", gap: 10,
+                          padding: "10px 14px", cursor: "pointer", transition: "background .12s",
+                        }}
+                        onMouseEnter={e => (e.currentTarget.style.background = "#F0FDF4")}
+                        onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                      >
+                        <div style={{
+                          width: 36, height: 36, borderRadius: "50%",
+                          background: u.color, flexShrink: 0,
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          color: "#fff", fontWeight: 700, fontSize: 14,
+                        }}>{u.initials}</div>
+                        <div>
+                          <div style={{ fontWeight: 700, fontSize: 14, color: "#111827" }}>{u.name}</div>
+                          {u.country && <div style={{ fontSize: 11, color: "#9CA3AF" }}>{u.country}</div>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()
+            )}
 
             {/* Location chip — Screen 11 */}
             {selectedLocation && (

@@ -20,6 +20,7 @@ export const postsTable = pgTable("posts", {
   archivedAt: timestamp("archived_at", { withTimezone: true }),
   commentsDisabled: boolean("comments_disabled").notNull().default(false),
   audience: text("audience").notNull().default("public"),
+  location: text("location"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });
