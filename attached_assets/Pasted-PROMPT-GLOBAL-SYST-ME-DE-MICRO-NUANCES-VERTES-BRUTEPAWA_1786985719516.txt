@@ -1,0 +1,491 @@
+PROMPT GLOBAL — SYSTÈME DE MICRO-NUANCES VERTES BRUTEPAWA
+APPLICATION À TOUTE LA PLATEFORME
+
+MISSION :
+
+Je veux que tu appliques le jeu de couleurs vert premium observé dans la référence à TOUTE la plateforme BrutePawa.
+
+IMPORTANT :
+Il ne s'agit PAS de modifier une seule page.
+
+Il s'agit de créer une règle visuelle globale et cohérente pour TOUS les éléments de l'interface qui utilisent déjà le vert BrutePawa.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RÈGLE ABSOLUE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Le vert actuel de BrutePawa reste la couleur officielle.
+
+Couleur de référence :
+
+#22C55E
+
+NE CHANGE PAS l'identité verte de BrutePawa.
+
+Je veux uniquement ajouter une profondeur extrêmement subtile à ce vert grâce à de petites variations de luminosité, de saturation et de transparence.
+
+Le résultat doit être cohérent sur TOUTE LA PLATEFORME.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ÉLÉMENTS CONCERNÉS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Applique ce système partout où le vert BrutePawa apparaît actuellement, notamment :
+
+- barres supérieures vertes ;
+- headers ;
+- barres système lorsque l'application les contrôle ;
+- boutons verts ;
+- boutons principaux ;
+- boutons secondaires utilisant le vert ;
+- icônes vertes ;
+- badges verts ;
+- indicateurs de statut ;
+- points « En ligne » ;
+- switches actifs ;
+- liens verts ;
+- textes verts ;
+- chevrons verts ;
+- bordures vertes ;
+- contours verts ;
+- cartes légèrement teintées de vert ;
+- fonds verts ;
+- arrière-plans verts ;
+- éléments de navigation verts ;
+- éléments sélectionnés ;
+- états actifs ;
+- états pressed ;
+- états hover sur web ;
+- focus ;
+- éléments de confirmation ;
+- composants de groupe ;
+- composants de profil ;
+- messagerie ;
+- notifications ;
+- paramètres ;
+- groupes ;
+- pages de profil ;
+- pages de gestion ;
+- formulaires ;
+- écrans d'administration ;
+- statistiques lorsqu'elles utilisent le vert ;
+- éléments de création ;
+- éléments de validation.
+
+Et toute autre zone existante utilisant déjà le vert BrutePawa.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NE PAS MODIFIER LES AUTRES COULEURS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Cette modification concerne UNIQUEMENT le système vert.
+
+NE MODIFIE PAS :
+
+- noir ;
+- blanc ;
+- gris ;
+- rouge ;
+- orange ;
+- bleu ;
+- violet ;
+- autres couleurs fonctionnelles.
+
+Chaque couleur fonctionnelle doit conserver son rôle actuel.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CRÉER UN SYSTÈME DE TOKENS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Ne fais surtout pas des modifications couleur par couleur au hasard.
+
+Crée un véritable système global de design tokens pour le vert.
+
+Par exemple :
+
+Primary Green
+#22C55E
+
+Puis des variantes cohérentes :
+
+- Green Primary
+- Green Soft
+- Green Subtle
+- Green Surface
+- Green Border
+- Green Hover
+- Green Pressed
+- Green Active
+- Green Disabled
+- Green Strong
+
+Les valeurs exactes doivent être choisies à partir du vert BrutePawa existant et rester extrêmement proches de celui-ci.
+
+IMPORTANT :
+
+Ne crée pas une palette avec des verts complètement différents.
+
+Toutes les variantes doivent clairement appartenir à la même famille BrutePawa.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MICRO-NUANCES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Le principe recherché est :
+
+VERT BRUTEPAWA
++
+MICRO-VARIATIONS DE LUMIÈRE
++
+PROFONDEUR TRÈS SUBTILE
+
+Le résultat doit être premium sans être spectaculaire.
+
+Exemple d'intention :
+
+Un bouton vert ne doit plus sembler totalement plat.
+
+Mais il ne doit surtout pas devenir un gros gradient visible.
+
+Même chose pour les headers.
+
+Même chose pour les fonds verts.
+
+Même chose pour les surfaces vert pâle.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+IMPORTANT : PAS DE GRADIENT PARTOUT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+NE transforme PAS tous les éléments verts en gradients.
+
+C'est une règle critique.
+
+Certains éléments doivent rester presque uniformes.
+
+Utilise les micro-nuances en fonction du contexte :
+
+FOND VERT :
+→ peut avoir une profondeur légèrement plus perceptible.
+
+BOUTON :
+→ variation extrêmement légère.
+
+ICÔNE :
+→ généralement couleur uniforme.
+
+TEXTE :
+→ couleur uniforme.
+
+POINT DE STATUT :
+→ couleur uniforme ou variation imperceptible.
+
+SWITCH ACTIF :
+→ variation très légère.
+
+BADGE :
+→ variation très légère.
+
+SURFACE VERT PÂLE :
+→ nuance douce.
+
+Ainsi, la plateforme reste élégante.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+HIÉRARCHIE VISUELLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Les variations doivent respecter une hiérarchie.
+
+Les grands fonds peuvent avoir davantage de profondeur.
+
+Les petits éléments doivent rester plus sobres.
+
+Plus l'élément est petit :
+
+→ moins le gradient doit être perceptible.
+
+Plus la surface est grande :
+
+→ plus une micro-variation peut être utilisée.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+COHÉRENCE ENTRE LES PAGES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Un utilisateur doit reconnaître instantanément le même vert sur :
+
+Accueil
+↓
+Profil
+↓
+Messagerie
+↓
+Groupes
+↓
+Pages
+↓
+Notifications
+↓
+Paramètres
+↓
+Recherche
+↓
+Création
+↓
+Statistiques
+↓
+Administration
+↓
+Toutes les autres interfaces.
+
+Le vert doit avoir la même identité partout.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+INTERDICTION DE MODIFIER LE DESIGN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Cette mission ne donne PAS l'autorisation de :
+
+- déplacer des composants ;
+- changer les tailles ;
+- changer les espacements ;
+- modifier les cartes ;
+- modifier la typographie ;
+- modifier les icônes ;
+- ajouter des composants ;
+- supprimer des composants ;
+- changer la navigation ;
+- changer les fonctionnalités ;
+- changer les textes ;
+- changer la structure ;
+- ajouter des décorations.
+
+Tu modifies UNIQUEMENT le système visuel du vert.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PAS DE SURCHARGE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Je veux un résultat :
+
+premium,
+sobre,
+élégant,
+moderne,
+international,
+durable jusqu'en 2030.
+
+NE PAS ajouter :
+
+- néons ;
+- glow ;
+- particules ;
+- textures ;
+- effets lumineux forts ;
+- animations lumineuses ;
+- effets 3D ;
+- glassmorphism excessif ;
+- couleurs flashy.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ANIMATIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Les couleurs peuvent avoir des transitions extrêmement subtiles lors des états :
+
+normal
+→ hover
+→ pressed
+→ active
+→ disabled
+
+Mais aucune animation permanente du fond.
+
+Aucune lumière qui se déplace continuellement.
+
+Aucune animation qui attire l'attention.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ACCESSIBILITÉ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Le changement de nuances ne doit jamais réduire le contraste du texte.
+
+Vérifie particulièrement :
+
+- texte blanc sur vert ;
+- texte vert sur blanc ;
+- icônes vertes ;
+- badges ;
+- boutons ;
+- switches ;
+- liens.
+
+Si une nuance réduit la lisibilité :
+
+NE L'UTILISE PAS.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PERFORMANCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Utilise le système de tokens/CSS existant lorsque possible.
+
+Évite de créer des images ou ressources lourdes uniquement pour produire les nuances.
+
+Le système doit être :
+
+- léger ;
+- maintenable ;
+- global ;
+- réutilisable ;
+- facilement modifiable.
+
+Si le vert officiel doit être ajusté plus tard, une modification du token principal doit pouvoir se répercuter proprement dans toute la plateforme.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ANALYSE DE TOUT LE PROJET
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Avant de modifier quoi que ce soit :
+
+inspecte toute la plateforme.
+
+Recherche toutes les occurrences du vert existant :
+
+- HEX ;
+- RGB ;
+- RGBA ;
+- variables CSS ;
+- tokens ;
+- classes ;
+- styles inline ;
+- composants ;
+- SVG ;
+- gradients ;
+- backgrounds ;
+- borders ;
+- shadows ;
+- états interactifs.
+
+Identifie les différentes utilisations du vert.
+
+Puis centralise-les progressivement dans le système de design global.
+
+NE CASSE AUCUN COMPOSANT EXISTANT.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+VALIDATION VISUELLE GLOBALE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Après modification, vérifie plusieurs pages représentatives :
+
+- accueil ;
+- profil ;
+- contact ;
+- groupe ;
+- paramètres ;
+- modifier groupe ;
+- liens d'invitation ;
+- messagerie ;
+- notifications ;
+- statistiques ;
+- pages administratives.
+
+Compare le rendu avant/après.
+
+La plateforme doit sembler appartenir au même produit.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TEST FINAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Vérifie :
+
+[ ] Tous les verts ont une identité cohérente.
+[ ] #22C55E reste la référence.
+[ ] Les nuances sont extrêmement subtiles.
+[ ] Aucun gradient agressif.
+[ ] Aucun néon.
+[ ] Aucun glow excessif.
+[ ] Aucun élément non vert n'a été modifié.
+[ ] Aucun composant n'a été déplacé.
+[ ] Aucun texte n'a changé.
+[ ] Aucun espacement n'a changé.
+[ ] Aucun bouton n'a changé de fonction.
+[ ] Aucun élément n'a été supprimé.
+[ ] Aucun nouvel élément inutile n'a été ajouté.
+[ ] Le contraste reste excellent.
+[ ] Le rendu est cohérent sur toute la plateforme.
+[ ] Le rendu reste premium sur mobile.
+[ ] Le rendu reste premium sur tablette.
+[ ] Le rendu reste premium sur web.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CRITÈRE D'ÉCHEC
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Si le résultat ressemble à :
+
+« un site avec des gradients verts »
+
+→ ÉCHEC.
+
+Si le vert semble différent selon chaque page :
+
+→ ÉCHEC.
+
+Si l'effet est trop visible :
+
+→ ÉCHEC.
+
+Si l'effet est totalement invisible :
+
+→ ÉCHEC.
+
+Si tu modifies le design existant :
+
+→ ÉCHEC.
+
+Si tu ajoutes de la décoration inutile :
+
+→ ÉCHEC.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+OBJECTIF FINAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Je veux que toute BrutePawa possède une signature visuelle verte cohérente.
+
+Quand un utilisateur passe d'une page à une autre, il doit ressentir :
+
+« C'est exactement la même identité BrutePawa. »
+
+Le changement doit être subtil mais perceptible dans la qualité générale.
+
+Le résultat doit être :
+
+#22C55E
++
+micro-nuances maîtrisées
++
+profondeur
++
+cohérence globale
++
+sobriété
++
+précision
++
+qualité premium.
+
+UNE SEULE IDENTITÉ VERTE POUR TOUTE LA PLATEFORME.
+
+AUCUNE SURCHARGE.
+
+AUCUNE INTERPRÉTATION.
+
+AUCUN OUBLI.
+
+NIVEAU DE FINITION : 2030.
