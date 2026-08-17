@@ -161,7 +161,7 @@ export default function ProductDetail({ id }: Props) {
               <button onClick={() => setShowContact(false)} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer" }}>✕</button>
             </div>
             {msgSent ? (
-              <div style={{ textAlign: "center", padding: "20px 0", color: "#22C55E", fontWeight: 800, fontSize: 15 }}>
+              <div style={{ textAlign: "center", padding: "20px 0", color: "var(--bp-primary)", fontWeight: 800, fontSize: 15 }}>
                 ✅ Message envoyé ! Le vendeur vous répondra bientôt.
               </div>
             ) : (

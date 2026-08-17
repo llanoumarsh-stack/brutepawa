@@ -27,7 +27,7 @@ function itunesResultToTrack(r: any): MusicTrack {
     artist:     r.artistName || "Artiste inconnu",
     duration:   fmtMs(r.trackTimeMillis),
     genre:      r.primaryGenreName || "Musique",
-    coverColor: "#22C55E",
+    coverColor: "var(--bp-primary)",
     coverEmoji: "🎵",
     coverUrl:   art,
     previewUrl: r.previewUrl || "",
@@ -75,7 +75,7 @@ function EqBars({ playing, size = "md" }: { playing: boolean; size?: "sm" | "md"
     <div style={{ display: "flex", gap: size === "sm" ? 1.5 : 2, alignItems: "flex-end", height: h, flexShrink: 0 }}>
       {bars.map((bh, i) => (
         <div key={i} style={{
-          width: w, borderRadius: 2, background: "#22C55E",
+          width: w, borderRadius: 2, background: "var(--bp-primary)",
           height: playing ? bh : 3,
           transition: `height ${180 + i * 35}ms ease-in-out`,
           animation: playing ? `mlEq ${0.6 + i * 0.07}s ease-in-out infinite alternate` : "none",
@@ -142,7 +142,7 @@ function TrackRow({ track, playing, loading, onPlay, onSelect }: {
         style={{ flex: 1, minWidth: 0, background: "none", border: "none", cursor: "pointer", textAlign: "left", padding: 0 }}
       >
         <div style={{
-          fontSize: 15, fontWeight: 600, color: playing ? "#22C55E" : "#111827",
+          fontSize: 15, fontWeight: 600, color: playing ? "var(--bp-primary)" : "#111827",
           whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginBottom: 3,
         }}>{track.title}</div>
         <div style={{
@@ -151,7 +151,7 @@ function TrackRow({ track, playing, loading, onPlay, onSelect }: {
         }}>{track.artist}</div>
         <span style={{
           display: "inline-block", fontSize: 11, fontWeight: 500,
-          color: "#16A34A", background: "#DCFCE7",
+          color: "var(--bp-primary-dark)", background: "#DCFCE7",
           borderRadius: 20, padding: "2px 8px",
         }}>{track.genre}</span>
       </button>
@@ -166,8 +166,8 @@ function TrackRow({ track, playing, loading, onPlay, onSelect }: {
           disabled={!track.previewUrl}
           style={{
             width: 38, height: 38, borderRadius: "50%", flexShrink: 0,
-            background: playing ? "#22C55E" : "#FFFFFF",
-            border: `2px solid ${track.previewUrl ? "#22C55E" : "#E5E7EB"}`,
+            background: playing ? "var(--bp-primary)" : "#FFFFFF",
+            border: `2px solid ${track.previewUrl ? "var(--bp-primary)" : "#E5E7EB"}`,
             display: "flex", alignItems: "center", justifyContent: "center",
             cursor: track.previewUrl ? "pointer" : "not-allowed",
             boxShadow: playing ? "0 4px 12px rgba(34,197,94,0.35)" : "0 1px 4px rgba(0,0,0,0.08)",
@@ -176,7 +176,7 @@ function TrackRow({ track, playing, loading, onPlay, onSelect }: {
         >
           {loading ? (
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-              stroke={playing ? "#fff" : "#22C55E"} strokeWidth="2.5" strokeLinecap="round"
+              stroke={playing ? "#fff" : "var(--bp-primary)"} strokeWidth="2.5" strokeLinecap="round"
               style={{ animation: "mlSpin 0.8s linear infinite" }}>
               <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0" strokeOpacity="0.3" />
               <path d="M21 12a9 9 0 00-9-9" />
@@ -188,7 +188,7 @@ function TrackRow({ track, playing, loading, onPlay, onSelect }: {
             </svg>
           ) : (
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-              <polygon points="6,4 20,12 6,20" fill={track.previewUrl ? "#22C55E" : "#E5E7EB"} />
+              <polygon points="6,4 20,12 6,20" fill={track.previewUrl ? "var(--bp-primary)" : "#E5E7EB"} />
             </svg>
           )}
         </button>
@@ -220,7 +220,7 @@ function NowPlayingBar({ track, playing, onToggle, onClose }: {
       <CoverImg track={track} size={44} radius={10} />
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
-          fontSize: 13.5, fontWeight: 700, color: "#111827",
+          fontSize: 13.5, fontWeight: 700, color: "var(--theme-text)",
           whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginBottom: 2,
         }}>{track.title}</div>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -240,7 +240,7 @@ function NowPlayingBar({ track, playing, onToggle, onClose }: {
       </button>
       <button onClick={onToggle} style={{
         width: 42, height: 42, borderRadius: "50%", flexShrink: 0,
-        background: "#22C55E", border: "none", cursor: "pointer",
+        background: "var(--bp-primary)", border: "none", cursor: "pointer",
         display: "flex", alignItems: "center", justifyContent: "center",
         boxShadow: "0 4px 16px rgba(34,197,94,0.4)",
       }}>
@@ -448,12 +448,12 @@ export default function MusicLibraryPage({ onSelect, onClose }: Props) {
           <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
             <div style={{
               width: 28, height: 28, borderRadius: "50%",
-              background: "linear-gradient(135deg,#22C55E,#16A34A)",
+              background: "linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))",
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>
             </div>
-            <span style={{ fontWeight: 800, fontSize: 16, color: "#111827" }}>BrutePawa</span>
+            <span style={{ fontWeight: 800, fontSize: 16, color: "var(--theme-text)" }}>BrutePawa</span>
           </div>
           <button onClick={handleClose} style={{
             width: 36, height: 36, borderRadius: "50%", background: "#F1F5F9",
@@ -467,14 +467,14 @@ export default function MusicLibraryPage({ onSelect, onClose }: Props) {
         <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "0 20px 16px" }}>
           <div style={{
             width: 52, height: 52, borderRadius: "50%", flexShrink: 0,
-            background: "linear-gradient(135deg,#22C55E,#16A34A)",
+            background: "linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))",
             display: "flex", alignItems: "center", justifyContent: "center",
             boxShadow: "0 4px 16px rgba(34,197,94,0.3)",
           }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>
           </div>
           <div>
-            <h2 style={{ margin: 0, fontWeight: 800, fontSize: 20, color: "#111827", letterSpacing: "-0.4px" }}>
+            <h2 style={{ margin: 0, fontWeight: 800, fontSize: 20, color: "var(--theme-text)", letterSpacing: "-0.4px" }}>
               Bibliothèque musicale
             </h2>
             <p style={{ margin: "3px 0 0", fontSize: 12.5, color: "#64748B", lineHeight: 1.4 }}>
@@ -499,7 +499,7 @@ export default function MusicLibraryPage({ onSelect, onClose }: Props) {
               placeholder="Rechercher titre, artiste, genre..."
               style={{
                 flex: 1, background: "none", border: "none", outline: "none",
-                fontSize: 14.5, color: "#111827", fontFamily: "inherit",
+                fontSize: 14.5, color: "var(--theme-text)", fontFamily: "inherit",
               }}
             />
             {query && (
@@ -530,7 +530,7 @@ export default function MusicLibraryPage({ onSelect, onClose }: Props) {
                     flex: 1, border: "none", cursor: "pointer",
                     background: active ? "#FFFFFF" : "transparent",
                     borderRadius: 12,
-                    color: active ? "#22C55E" : "#9CA3AF",
+                    color: active ? "var(--bp-primary)" : "#9CA3AF",
                     fontWeight: active ? 700 : 500, fontSize: 13,
                     display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
                     boxShadow: active ? "0 2px 8px rgba(0,0,0,0.08)" : "none",

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "../router";
 import { apiFetch, getBpToken } from "../lib/api";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 /* ─── Types ──────────────────────────────────────────────────────────────── */
 interface PersonUser {
@@ -35,7 +36,7 @@ const COUNTRIES = [
 ];
 
 /* ─── Avatar ─────────────────────────────────────────────────────────────── */
-const COLORS = ["#22C55E","#16A34A","#16A34A","#22C55E","#BBF7D0"];
+const COLORS = ["var(--bp-primary)","var(--bp-primary-dark)","var(--bp-primary-dark)","var(--bp-primary)","#BBF7D0"];
 function Avatar({ user, size=52 }: { user: Pick<PersonUser,"id"|"fullname"|"avatar">, size?: number }) {
   const initials = user.fullname.split(" ").map(p=>p[0]).join("").slice(0,2).toUpperCase();
   const color = COLORS[user.id % COLORS.length];
@@ -57,10 +58,10 @@ function ScoreBadge({ score }: { score: number }) {
   return (
     <div style={{ display:"inline-flex",alignItems:"center",gap:4,background:"#DCFCE7",
       borderRadius:99,padding:"3px 8px" }}>
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
       </svg>
-      <span style={{ fontSize:11,fontWeight:700,color:"#22C55E",fontFamily:"Inter,sans-serif" }}>
+      <span style={{ fontSize:11,fontWeight:700,color:"var(--bp-primary)",fontFamily:"Inter,sans-serif" }}>
         Score BrutePawa {score}
       </span>
     </div>
@@ -112,15 +113,15 @@ function SuggestionCard({ user, onAdd, onDismiss, pending, added }:{
         <button
           onClick={added ? undefined : onAdd}
           disabled={pending}
-          style={{ display:"flex",alignItems:"center",gap:6,background:added?"#22C55E":"#fff",
-            border:"1.5px solid #22C55E",borderRadius:10,padding:"7px 12px",
+          style={{ display:"flex",alignItems:"center",gap:6,background:added?"var(--bp-primary)":"#fff",
+            border:"1.5px solid var(--bp-primary)",borderRadius:10,padding:"7px 12px",
             cursor:added?"default":"pointer",fontFamily:"Inter,sans-serif",
-            fontWeight:600,fontSize:13,color:added?"#fff":"#22C55E",
+            fontWeight:600,fontSize:13,color:added?"#fff":"var(--bp-primary)",
             opacity:pending?0.7:1,transition:"all .15s" }}>
           {added ? (
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
           ) : (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/>
               <path d="M20 8v6m-3-3h6"/>
             </svg>
@@ -155,7 +156,7 @@ function FriendReqCard({ req, onAccept, onReject }:{
         </div>
       </div>
       <div style={{ display:"flex",gap:8 }}>
-        <button onClick={onAccept} style={{ flex:1,background:"#22C55E",color:"#fff",border:"none",
+        <button onClick={onAccept} style={{ flex:1,background:"var(--bp-primary)",color:"#fff",border:"none",
           borderRadius:10,padding:"9px 0",fontWeight:700,fontSize:14,cursor:"pointer",fontFamily:"Inter,sans-serif" }}>
           Confirmer
         </button>
@@ -215,9 +216,9 @@ function FollowCard({ user, isNew, onFollow }:{
         </div>
       </div>
       <button onClick={handleFollow} disabled={loading}
-        style={{ background:following?"#F1F5F9":"#fff",border:"1.5px solid #22C55E",
+        style={{ background:following?"#F1F5F9":"#fff",border:"1.5px solid var(--bp-primary)",
           borderRadius:8,padding:"6px 0",fontWeight:600,fontSize:12,cursor:"pointer",
-          color:following?"#64748B":"#22C55E",fontFamily:"Inter,sans-serif",
+          color:following?"#64748B":"var(--bp-primary)",fontFamily:"Inter,sans-serif",
           width:"100%",opacity:loading?0.7:1,transition:"all .15s" }}>
         {following ? "Abonné" : "Suivre"}
       </button>
@@ -228,7 +229,7 @@ function FollowCard({ user, isNew, onFollow }:{
 /* ─── Invitation Card ────────────────────────────────────────────────────── */
 function InviteCard({ onInvite }: { onInvite: ()=>void }) {
   return (
-    <div style={{ background:"linear-gradient(135deg,#16A34A 0%,#052e16 100%)",borderRadius:20,
+    <div style={{ background:"linear-gradient(135deg,var(--bp-primary-dark) 0%,#052e16 100%)",borderRadius:20,
       padding:"18px 18px 20px",display:"flex",alignItems:"center",gap:14,
       boxShadow:"0 4px 18px rgba(22,101,52,0.35)",margin:"4px 0" }}>
       <div style={{ width:52,height:52,borderRadius:"50%",background:"rgba(255,255,255,0.18)",
@@ -285,7 +286,7 @@ export default function PeoplePage() {
   const [friendsTab, setFriendsTab]     = useState<"requests"|"list">("requests");
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const me = (() => { try { return JSON.parse(localStorage.getItem("fb_user")??"{}") as {id?:number;name?:string}; } catch { return {}; } })();
+  const me = useCurrentUser();
 
   const loadMain = useCallback(async () => {
     setLoading(true);
@@ -385,7 +386,7 @@ export default function PeoplePage() {
       fontFamily:"Inter,sans-serif",overflowY:"hidden" }}>
 
       {/* ── Header ────────────────────────────────────────────────────────── */}
-      <div style={{ background:"#22C55E",padding:"12px 16px 10px",flexShrink:0,
+      <div style={{ background:"var(--bp-primary)",padding:"12px 16px 10px",flexShrink:0,
         paddingTop:`calc(12px + env(safe-area-inset-top, 0px))` }}>
         <div style={{ display:"flex",alignItems:"center",justifyContent:"space-between" }}>
           <div style={{ display:"flex",alignItems:"center",gap:6 }}>
@@ -412,7 +413,7 @@ export default function PeoplePage() {
               {pendingCount > 0 && (
                 <span style={{ position:"absolute",top:2,right:2,background:"#EF4444",color:"#fff",
                   borderRadius:99,minWidth:16,height:16,fontSize:9,fontWeight:800,
-                  display:"flex",alignItems:"center",justifyContent:"center",padding:"0 3px",border:"1.5px solid #22C55E" }}>
+                  display:"flex",alignItems:"center",justifyContent:"center",padding:"0 3px",border:"1.5px solid var(--bp-primary)" }}>
                   {pendingCount > 9 ? "9+" : pendingCount}
                 </span>
               )}
@@ -456,7 +457,7 @@ export default function PeoplePage() {
       {/* ── Search + Filters ──────────────────────────────────────────────── */}
       <div style={{ background:"#fff",borderBottom:"1px solid #E5E7EB",padding:"10px 16px 8px",flexShrink:0 }}>
         <div style={{ display:"flex",alignItems:"center",gap:10,background:"#F1F5F9",borderRadius:12,
-          padding:"9px 12px",border:`1.5px solid ${searchFocus?"#22C55E":"transparent"}`,transition:"border .15s" }}>
+          padding:"9px 12px",border:`1.5px solid ${searchFocus?"var(--bp-primary)":"transparent"}`,transition:"border .15s" }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round">
             <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
           </svg>
@@ -483,8 +484,8 @@ export default function PeoplePage() {
             if (c.code === "" && !showMoreCountries) {
               return (
                 <button key="all" onClick={()=>{ setCountryFilter(""); }}
-                  style={{ flexShrink:0,background:active?"#22C55E":"#fff",
-                    border:`1.5px solid ${active?"#22C55E":"#E5E7EB"}`,borderRadius:99,
+                  style={{ flexShrink:0,background:active?"var(--bp-primary)":"#fff",
+                    border:`1.5px solid ${active?"var(--bp-primary)":"#E5E7EB"}`,borderRadius:99,
                     padding:"5px 13px",cursor:"pointer",fontSize:13,fontWeight:active?700:500,
                     color:active?"#fff":"#64748B",fontFamily:"Inter,sans-serif",transition:"all .15s" }}>
                   Tous
@@ -494,8 +495,8 @@ export default function PeoplePage() {
             return (
               <button key={c.code || "tous"} onClick={()=>{ setCountryFilter(c.code); }}
                 style={{ flexShrink:0,display:"flex",alignItems:"center",gap:4,
-                  background:active?"#22C55E":"#fff",
-                  border:`1.5px solid ${active?"#22C55E":"#E5E7EB"}`,borderRadius:99,
+                  background:active?"var(--bp-primary)":"#fff",
+                  border:`1.5px solid ${active?"var(--bp-primary)":"#E5E7EB"}`,borderRadius:99,
                   padding:"5px 11px",cursor:"pointer",fontSize:13,fontWeight:active?700:500,
                   color:active?"#fff":"#64748B",fontFamily:"Inter,sans-serif",transition:"all .15s" }}>
                 {c.code ? <>{f(c.code)} {c.name}</> : "Tous"}
@@ -544,7 +545,7 @@ export default function PeoplePage() {
               paddingTop:14,marginBottom:4 }}>
               <span style={{ fontWeight:800,fontSize:16,color:"#111827" }}>Suggestions pour vous</span>
               <button style={{ background:"none",border:"none",cursor:"pointer",
-                fontSize:13,fontWeight:700,color:"#22C55E",fontFamily:"Inter,sans-serif" }}>
+                fontSize:13,fontWeight:700,color:"var(--bp-primary)",fontFamily:"Inter,sans-serif" }}>
                 Voir tout
               </button>
             </div>
@@ -581,7 +582,7 @@ export default function PeoplePage() {
               <div>
                 <div style={{ display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10 }}>
                   <span style={{ fontWeight:800,fontSize:13.5,color:"#111827" }}>Personnes populaires</span>
-                  <button style={{ background:"none",border:"none",cursor:"pointer",fontSize:11,fontWeight:700,color:"#22C55E",fontFamily:"Inter,sans-serif" }}>Voir tout</button>
+                  <button style={{ background:"none",border:"none",cursor:"pointer",fontSize:11,fontWeight:700,color:"var(--bp-primary)",fontFamily:"Inter,sans-serif" }}>Voir tout</button>
                 </div>
                 <div style={{ display:"flex",flexDirection:"column",gap:8 }}>
                   {(loading ? [1,2,3,4] : popular.slice(0,4)).map((item,i)=>
@@ -598,7 +599,7 @@ export default function PeoplePage() {
               <div>
                 <div style={{ display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10 }}>
                   <span style={{ fontWeight:800,fontSize:13.5,color:"#111827" }}>Nouveaux membres</span>
-                  <button style={{ background:"none",border:"none",cursor:"pointer",fontSize:11,fontWeight:700,color:"#22C55E",fontFamily:"Inter,sans-serif" }}>Voir tout</button>
+                  <button style={{ background:"none",border:"none",cursor:"pointer",fontSize:11,fontWeight:700,color:"var(--bp-primary)",fontFamily:"Inter,sans-serif" }}>Voir tout</button>
                 </div>
                 <div style={{ display:"flex",flexDirection:"column",gap:8 }}>
                   {(loading ? [1,2,3,4] : newMembers.slice(0,4)).map((item,i)=>
@@ -621,8 +622,8 @@ export default function PeoplePage() {
             <div style={{ display:"flex",gap:8,marginBottom:16 }}>
               {([{id:"requests",label:"Demandes"},{id:"list",label:"Mes amis"}] as const).map(t=>(
                 <button key={t.id} onClick={()=>setFriendsTab(t.id)}
-                  style={{ flex:1,background:friendsTab===t.id?"#22C55E":"#fff",color:friendsTab===t.id?"#fff":"#64748B",
-                    border:`1.5px solid ${friendsTab===t.id?"#22C55E":"#E5E7EB"}`,borderRadius:12,
+                  style={{ flex:1,background:friendsTab===t.id?"var(--bp-primary)":"#fff",color:friendsTab===t.id?"#fff":"#64748B",
+                    border:`1.5px solid ${friendsTab===t.id?"var(--bp-primary)":"#E5E7EB"}`,borderRadius:12,
                     padding:"9px 0",fontWeight:700,fontSize:14,cursor:"pointer",fontFamily:"Inter,sans-serif",transition:"all .15s" }}>
                   {t.label} {t.id==="requests" && friendRequests.length>0 ? `(${friendRequests.length})` : ""}
                 </button>
@@ -653,7 +654,7 @@ export default function PeoplePage() {
                   </svg>
                   <div style={{ fontSize:15,fontWeight:700,color:"#64748B",marginBottom:6 }}>Vous n'avez pas encore d'amis</div>
                   <div style={{ fontSize:13,color:"#9CA3AF" }}>Consultez les suggestions pour commencer.</div>
-                  <button onClick={()=>setTab("personnes")} style={{ marginTop:14,background:"#22C55E",color:"#fff",border:"none",
+                  <button onClick={()=>setTab("personnes")} style={{ marginTop:14,background:"var(--bp-primary)",color:"#fff",border:"none",
                     borderRadius:12,padding:"10px 24px",fontWeight:700,fontSize:14,cursor:"pointer",fontFamily:"Inter,sans-serif" }}>
                     Voir les suggestions
                   </button>
@@ -682,8 +683,8 @@ export default function PeoplePage() {
             <div style={{ display:"flex",gap:8,marginBottom:16 }}>
               {([{id:"followers",label:"Abonnés"},{id:"following",label:"Abonnements"}] as const).map(t=>(
                 <button key={t.id} onClick={()=>setFollowersTab(t.id)}
-                  style={{ flex:1,background:followersTab===t.id?"#22C55E":"#fff",color:followersTab===t.id?"#fff":"#64748B",
-                    border:`1.5px solid ${followersTab===t.id?"#22C55E":"#E5E7EB"}`,borderRadius:12,
+                  style={{ flex:1,background:followersTab===t.id?"var(--bp-primary)":"#fff",color:followersTab===t.id?"#fff":"#64748B",
+                    border:`1.5px solid ${followersTab===t.id?"var(--bp-primary)":"#E5E7EB"}`,borderRadius:12,
                     padding:"9px 0",fontWeight:700,fontSize:14,cursor:"pointer",fontFamily:"Inter,sans-serif",transition:"all .15s" }}>
                   {t.label}
                 </button>
@@ -733,15 +734,15 @@ export default function PeoplePage() {
         {/* Amis — active */}
         <button style={{ flex:1,display:"flex",flexDirection:"column",alignItems:"center",
           justifyContent:"center",background:"none",border:"none",cursor:"pointer",gap:3,
-          borderTop:"3px solid #22C55E",padding:0,position:"relative" }}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="3.5" stroke="#22C55E" strokeWidth="1.8"/><circle cx="17" cy="8" r="2.5" stroke="#22C55E" strokeWidth="1.8"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"/><path d="M19 14c2.5.5 4 2 4 4.5" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"/></svg>
-          <span style={{ fontSize:10,color:"#22C55E",fontWeight:700 }}>Amis</span>
+          borderTop:"3px solid var(--bp-primary)",padding:0,position:"relative" }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="3.5" stroke="var(--bp-primary)" strokeWidth="1.8"/><circle cx="17" cy="8" r="2.5" stroke="var(--bp-primary)" strokeWidth="1.8"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round"/><path d="M19 14c2.5.5 4 2 4 4.5" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round"/></svg>
+          <span style={{ fontSize:10,color:"var(--bp-primary)",fontWeight:700 }}>Amis</span>
           {pendingCount > 0 && <span style={{ position:"absolute",top:4,right:"18%",background:"#EF4444",color:"#fff",borderRadius:10,minWidth:14,height:14,fontSize:9,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",padding:"0 3px",border:"1.5px solid #fff" }}>{pendingCount > 9?"9+":pendingCount}</span>}
         </button>
         {/* Créer */}
         <button onClick={()=>navigate("/")} style={{ flex:"0 0 56px",display:"flex",flexDirection:"column",
           alignItems:"center",justifyContent:"center",background:"none",border:"none",cursor:"pointer",padding:0 }}>
-          <div style={{ width:46,height:46,borderRadius:"50%",background:"#22C55E",display:"flex",
+          <div style={{ width:46,height:46,borderRadius:"50%",background:"var(--bp-primary)",display:"flex",
             alignItems:"center",justifyContent:"center",boxShadow:"0 4px 14px rgba(34,197,94,0.4)" }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
           </div>

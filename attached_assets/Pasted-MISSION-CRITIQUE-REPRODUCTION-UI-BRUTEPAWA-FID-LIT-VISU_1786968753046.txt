@@ -1,0 +1,291 @@
+MISSION CRITIQUE — REPRODUCTION UI BRUTEPAWA
+FIDÉLITÉ VISUELLE ABSOLUE À L'IMAGE DE RÉFÉRENCE
+
+L'image fournie avec cette demande est LA RÉFÉRENCE ABSOLUE.
+
+Je veux reproduire cette interface BrutePawa aussi fidèlement que techniquement possible.
+
+RÈGLE PRINCIPALE :
+
+200 % de fidélité recherchée.
+199 % = ÉCHEC.
+
+Tu ne dois PAS créer une nouvelle interprétation de cette interface.
+
+Tu dois REPRODUIRE la maquette fournie.
+
+NE PAS :
+- moderniser le design
+- simplifier
+- ajouter des éléments
+- supprimer des éléments
+- changer les proportions
+- changer les espacements
+- changer les couleurs
+- remplacer les icônes
+- modifier la taille du lecteur audio
+- modifier les badges
+- déplacer les boutons
+- inventer des composants
+- utiliser des placeholders
+- créer une autre version « similaire ».
+
+==================================================
+1. IMAGE DE RÉFÉRENCE
+==================================================
+
+Utilise l'image fournie comme référence visuelle pixel-perfect.
+
+Analyse précisément :
+
+- largeur de chaque élément
+- hauteur de chaque élément
+- position X/Y
+- marges
+- padding
+- espacements verticaux
+- espacements horizontaux
+- taille des textes
+- poids des textes
+- hauteur de ligne
+- rayon des coins
+- épaisseur des bordures
+- ombres
+- opacité
+- couleurs
+- icônes
+- badges
+- avatars
+- boutons
+- lecteur audio
+- waveform
+- barre de progression
+- contrôles audio
+- commentaires
+- champ de réponse
+- bouton microphone
+- navigation Android.
+
+La capture de référence est en format mobile vertical.
+
+Le rendu doit conserver exactement les proportions générales de cette capture.
+
+==================================================
+2. STRUCTURE GLOBALE
+==================================================
+
+L'écran doit conserver exactement cette hiérarchie :
+
+STATUS BAR
+↓
+BARRE SUPÉRIEURE
+↓
+PUBLICATION
+↓
+LECTEUR AUDIO
+↓
+RÉACTION
+↓
+BARRE D'ACTIONS
+↓
+SECTION COMMENTAIRES
+↓
+COMMENTAIRE
+↓
+ZONE DE RÉPONSE
+↓
+NAVIGATION SYSTÈME
+
+Ne change jamais cet ordre.
+
+==================================================
+3. ARRIÈRE-PLAN
+==================================================
+
+Utiliser exactement le fond blanc / blanc cassé visible sur la référence.
+
+Le fond doit être très clair.
+
+Aucun gradient visible non présent dans la référence.
+
+Aucune texture.
+
+Aucune couleur supplémentaire.
+
+Les cartes doivent être légèrement différenciées du fond par leur ombre et leur bordure extrêmement subtile.
+
+==================================================
+4. STATUS BAR
+==================================================
+
+Conserver visuellement la zone supérieure telle qu'elle apparaît dans la référence.
+
+Afficher :
+
+13:02
+
+Puis les indicateurs réseau / connexion / batterie correspondant au système réel.
+
+NE PAS dessiner artificiellement une fausse barre système si l'application utilise déjà la vraie status bar Android.
+
+L'interface doit s'adapter correctement à la zone de statut.
+
+==================================================
+5. BARRE SUPÉRIEURE
+==================================================
+
+Sous la status bar :
+
+À gauche :
+bouton retour blanc, carré aux coins très arrondis.
+
+Le bouton possède :
+
+- fond blanc
+- ombre très légère
+- icône flèche gauche
+- taille exacte correspondant à la référence.
+
+Au centre :
+champ de recherche.
+
+Texte exact :
+
+« Rechercher un commentaire... »
+
+Le champ doit avoir :
+
+- forme arrondie
+- fond blanc
+- bordure très légère
+- icône loupe à gauche
+- texte gris clair
+- hauteur correspondant exactement à la référence.
+
+À droite :
+bouton filtre.
+
+Il doit utiliser une vraie icône de réglages/filtres à deux curseurs.
+
+NE PAS utiliser une icône hamburger.
+
+NE PAS utiliser une icône générique différente.
+
+==================================================
+6. CARTE DE PUBLICATION
+==================================================
+
+La carte principale doit reproduire exactement la position et les proportions de la référence.
+
+Fond :
+blanc.
+
+Coins :
+très arrondis.
+
+Ombre :
+très légère.
+
+À gauche :
+
+avatar circulaire de Pat Pat.
+
+L'avatar doit être parfaitement rond.
+
+Contour vert BrutePawa.
+
+Petit indicateur de présence vert/blanc en bas à droite.
+
+À droite :
+
+Nom :
+
+« Pat Pat »
+
+Texte en gras.
+
+Badge de vérification vert immédiatement après le nom.
+
+IMPORTANT :
+
+Le badge doit être une vraie icône vectorielle cohérente.
+
+Il ne faut PAS écrire simplement « ✓ ».
+
+Il doit avoir le même rendu visuel que la référence.
+
+Sous le nom :
+
+« il y a 1 jour »
+
+puis séparateur
+
+icône globe
+
+« Public »
+
+Le mot « Public » est vert.
+
+À droite :
+
+icône trois points horizontaux.
+
+Elle doit être positionnée exactement comme sur la référence.
+
+==================================================
+7. LECTEUR AUDIO — ÉLÉMENT PRIORITAIRE
+==================================================
+
+C'EST L'ÉLÉMENT LE PLUS IMPORTANT DE CETTE MAQUETTE.
+
+Le lecteur audio doit conserver exactement sa taille, sa position et ses proportions.
+
+NE PAS le rendre plus petit.
+
+NE PAS le rendre plus grand.
+
+NE PAS modifier sa hauteur.
+
+NE PAS modifier ses marges internes.
+
+NE PAS modifier son rayon.
+
+NE PAS transformer le lecteur en simple barre audio.
+
+Il doit ressembler visuellement à la référence.
+
+==================================================
+8. CARTE AUDIO
+==================================================
+
+À l'intérieur :
+
+fond blanc très légèrement teinté.
+
+Bordure extrêmement subtile vert pâle.
+
+Coins fortement arrondis.
+
+À gauche :
+
+pochette carrée de l'album.
+
+Coins arrondis.
+
+Taille identique à la référence.
+
+Ne pas modifier son ratio.
+
+À droite :
+
+Titre :
+
+« Lonely At The Top »
+
+Texte noir très foncé et gras.
+
+Sous le titre :
+
+« Asake »
+
+p

@@ -103,7 +103,7 @@ export default function VoicePlayer({ url, duration }: Props) {
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <button onClick={togglePlay}
             style={{
-              background: playing ? "#36A420" : "#22C55E",
+              background: playing ? "#36A420" : "var(--bp-primary)",
               border: "none", borderRadius: "50%",
               width: 38, height: 38, cursor: "pointer",
               color: "#fff", fontSize: 14,
@@ -128,7 +128,7 @@ export default function VoicePlayer({ url, duration }: Props) {
                 <div key={i} style={{
                   flex: 1,
                   height: active ? h : Math.max(3, h * 0.45),
-                  background: active ? "#22C55E" : "#94A3B8",
+                  background: active ? "var(--bp-primary)" : "#94A3B8",
                   borderRadius: 2,
                   transition: "height 0.12s ease, background 0.12s ease",
                   animation: atCursor && playing ? "voicePulse 0.6s infinite" : "none",
@@ -146,7 +146,7 @@ export default function VoicePlayer({ url, duration }: Props) {
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <span style={{ fontSize: 12, color: "#888" }}>🎤</span>
           <button onClick={cycleSpeed}
-            style={{ background: "rgba(66,183,42,0.1)", border: "none", borderRadius: 12, padding: "2px 8px", cursor: "pointer", fontSize: 10, fontWeight: 800, color: "#22C55E" }}>
+            style={{ background: "rgba(66,183,42,0.1)", border: "none", borderRadius: 12, padding: "2px 8px", cursor: "pointer", fontSize: 10, fontWeight: 800, color: "var(--bp-primary)" }}>
             {speed === 1 ? "1×" : speed === 1.5 ? "1.5×" : "2×"}
           </button>
           <div style={{ flex: 1 }} />
@@ -171,7 +171,7 @@ export default function VoicePlayer({ url, duration }: Props) {
 
         {/* Inline reactions */}
         {showReact && (
-          <div style={{ display: "flex", gap: 2, background: "#fff", borderRadius: 20, padding: "4px 8px", boxShadow: "0 2px 12px rgba(0,0,0,0.18)", animation: "voiceFadeIn 0.15s ease" }}>
+          <div style={{ display: "flex", gap: 2, background: "var(--theme-surface)", borderRadius: 20, padding: "4px 8px", boxShadow: "0 2px 12px rgba(0,0,0,0.18)", animation: "voiceFadeIn 0.15s ease" }}>
             {REACTIONS.map(em => (
               <button key={em} onClick={() => pickReaction(em)}
                 style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, padding: "0 2px", transition: "transform 0.1s", lineHeight: 1 }}

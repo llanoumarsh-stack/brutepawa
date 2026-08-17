@@ -135,6 +135,7 @@ export interface FeedPost {
   musicUrl: string | null;
   musicArtworkUrl: string | null;
   musicDuration: string | null;
+  musicLikesCount: number;
   likesCount: number;
   commentsCount: number;
   createdAt: string;
@@ -145,6 +146,9 @@ export interface FeedPost {
   audience?: string;
   authorBadgeType?: string | null;
   location?: string | null;
+  taggedUsers?: { id: number; name: string }[];
+  bgColor?: string | null;
+  mood?: string | null;
 }
 
 export interface PublicUser {
@@ -526,6 +530,9 @@ export async function apiCreatePost(
   thumbnailUrl?: string,
   music?: { trackName: string; artist: string; url: string | null; artworkUrl: string | null; duration: string | null },
   location?: string,
+  taggedUserIds?: number[],
+  bgColor?: string,
+  mood?: string,
 ): Promise<void> {
   const res = await apiFetch("/posts", {
     method: "POST",
@@ -539,12 +546,21 @@ export async function apiCreatePost(
       musicArtworkUrl: music?.artworkUrl ?? null,
       musicDuration:   music?.duration   ?? null,
       location:        location ?? null,
+      taggedUserIds:   taggedUserIds ?? [],
+      bgColor:         bgColor ?? null,
+      mood:            mood ?? null,
     }),
   });
   if (!res.ok) {
     const body = await res.json().catch(() => ({})) as { error?: string };
     throw new Error(body.error ?? `Erreur ${res.status}`);
   }
+}
+
+export async function apiToggleMusicLike(postId: number): Promise<{ liked: boolean; musicLikesCount: number }> {
+  const r = await apiFetch(`/posts/${postId}/music-like`, { method: "POST" });
+  if (!r.ok) throw new Error("music-like failed");
+  return r.json() as Promise<{ liked: boolean; musicLikesCount: number }>;
 }
 
 /* ── Location API ─────────────────────────────────────────────────────────── */

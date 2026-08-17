@@ -278,7 +278,7 @@ export default function VoiceRecorder({ onSend, onCancel, disabled }: VoiceRecor
         {isLocked && (
           <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "2px 6px" }}>
             <span style={{ fontSize: 14 }}>🔒</span>
-            <span style={{ fontSize: 12, fontWeight: 700, color: "#22C55E" }}>Verrouillé — Appuyez ■ pour terminer</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: "var(--bp-primary)" }}>Verrouillé — Appuyez ■ pour terminer</span>
           </div>
         )}
 
@@ -286,7 +286,7 @@ export default function VoiceRecorder({ onSend, onCancel, disabled }: VoiceRecor
         {!isLocked && slideUp && !slideLeft && (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, animation: "voiceFadeIn 0.2s ease" }}>
             <span style={{ fontSize: 16, animation: lockHint ? "voiceBounce 0.5s infinite" : "none" }}>🔒</span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: lockHint ? "#22C55E" : "#888" }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: lockHint ? "var(--bp-primary)" : "#888" }}>
               {lockHint ? "Relâchez pour verrouiller" : "↑ Glisser pour verrouiller"}
             </span>
           </div>
@@ -342,7 +342,7 @@ export default function VoiceRecorder({ onSend, onCancel, disabled }: VoiceRecor
               <button onClick={doCancel} title="Annuler"
                 style={{ background: "#F1F5F9", border: "none", borderRadius: "50%", width: 32, height: 32, cursor: "pointer", fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", color: "#64748B" }}>✕</button>
               <button onClick={() => setState("locked")} title="Verrouiller"
-                style={{ background: "#F1F5F9", border: "none", borderRadius: "50%", width: 32, height: 32, cursor: "pointer", fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", color: "#22C55E" }}>🔒</button>
+                style={{ background: "#F1F5F9", border: "none", borderRadius: "50%", width: 32, height: 32, cursor: "pointer", fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--bp-primary)" }}>🔒</button>
               <button onClick={doStop} title="Arrêter et prévisualiser"
                 style={{ background: "#EF4444", border: "none", borderRadius: "50%", width: 38, height: 38, cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", boxShadow: "0 2px 10px rgba(229,57,53,0.45)", animation: "voiceGlow 2s ease-in-out infinite" }}>■</button>
             </div>
@@ -386,7 +386,7 @@ export default function VoiceRecorder({ onSend, onCancel, disabled }: VoiceRecor
       }}>
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-          <div style={{ width: 30, height: 30, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>🎤</div>
+          <div style={{ width: 30, height: 30, borderRadius: "50%", background: "var(--bp-primary)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>🎤</div>
           <span style={{ fontWeight: 700, fontSize: 13, color: "#1E293B", flex: 1 }}>Vocal enregistré</span>
           <span style={{ fontSize: 12, color: "#64748B", fontVariantNumeric: "tabular-nums" }}>{fmtTime(previewDur)}</span>
         </div>
@@ -394,7 +394,7 @@ export default function VoiceRecorder({ onSend, onCancel, disabled }: VoiceRecor
         {/* Player row */}
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <button onClick={togglePlay}
-            style={{ background: "#22C55E", border: "none", borderRadius: "50%", width: 40, height: 40, cursor: "pointer", color: "#fff", fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 2px 8px rgba(66,183,42,0.45)", transition: "transform 0.1s", }}
+            style={{ background: "var(--bp-primary)", border: "none", borderRadius: "50%", width: 40, height: 40, cursor: "pointer", color: "#fff", fontSize: 15, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 2px 8px rgba(66,183,42,0.45)", transition: "transform 0.1s", }}
             onMouseDown={e => (e.currentTarget.style.transform = "scale(0.9)")}
             onMouseUp={e => (e.currentTarget.style.transform = "scale(1)")}
           >
@@ -412,7 +412,7 @@ export default function VoiceRecorder({ onSend, onCancel, disabled }: VoiceRecor
                 <div key={i} style={{
                   flex: 1,
                   height: active ? h : Math.max(4, h * 0.5),
-                  background: active ? "#22C55E" : "#CBD5E1",
+                  background: active ? "var(--bp-primary)" : "#CBD5E1",
                   borderRadius: 3,
                   transition: "height 0.15s ease, background 0.15s ease",
                   animation: playing_and_near ? "voicePulse 0.5s infinite" : "none",
@@ -439,7 +439,7 @@ export default function VoiceRecorder({ onSend, onCancel, disabled }: VoiceRecor
           🗑 Supprimer
         </button>
         <button onClick={handleSend} disabled={sending}
-          style={{ background: sending ? "#a5d6a7" : "#22C55E", border: "none", borderRadius: 24, padding: "8px 20px", cursor: sending ? "not-allowed" : "pointer", fontSize: 13, fontWeight: 700, color: "#fff", display: "flex", alignItems: "center", gap: 5, boxShadow: sending ? "none" : "0 2px 10px rgba(66,183,42,0.4)", transition: "transform 0.1s, box-shadow 0.1s" }}
+          style={{ background: sending ? "#a5d6a7" : "var(--bp-primary)", border: "none", borderRadius: 24, padding: "8px 20px", cursor: sending ? "not-allowed" : "pointer", fontSize: 13, fontWeight: 700, color: "#fff", display: "flex", alignItems: "center", gap: 5, boxShadow: sending ? "none" : "0 2px 10px rgba(66,183,42,0.4)", transition: "transform 0.1s, box-shadow 0.1s" }}
           onMouseDown={e => { if (!sending) e.currentTarget.style.transform = "scale(0.96)"; }}
           onMouseUp={e => { e.currentTarget.style.transform = "scale(1)"; }}
         >

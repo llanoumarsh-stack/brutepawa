@@ -4,7 +4,7 @@ import { apiGetJobs, apiApplyToJob, apiCreateJob, type ApiJob } from "../lib/api
 import { getAppliedJobs, applyJob } from "../lib/store";
 
 const C = {
-  bg: "#F8FAFC", card: "#FFFFFF", primary: "#22C55E", primaryDark: "#16A34A",
+  bg: "#F8FAFC", card: "#FFFFFF", primary: "var(--bp-primary)", primaryDark: "var(--bp-primary-dark)",
   primaryLight: "#DCFCE7", text: "#111827", secondary: "#64748B", muted: "#9CA3AF",
   border: "#E5E7EB", danger: "#EF4444", shadow: "0 1px 4px rgba(0,0,0,0.07)",
   shadowMd: "0 4px 16px rgba(0,0,0,0.08)",
@@ -35,7 +35,7 @@ function fmtAge(d: string) {
 }
 
 const JOB_TYPE_CONFIG: Record<string, { color: string; bg: string; emoji: string; label: string }> = {
-  CDI:       { color: "#16A34A", bg: "#DCFCE7", emoji: "💼", label: "CDI" },
+  CDI:       { color: "var(--bp-primary-dark)", bg: "#DCFCE7", emoji: "💼", label: "CDI" },
   CDD:       { color: "#D97706", bg: "#FEF3C7", emoji: "📋", label: "CDD" },
   Freelance: { color: "#7C3AED", bg: "#EDE9FE", emoji: "💡", label: "Freelance" },
 };
@@ -195,7 +195,7 @@ export default function JobsPage() {
       {/* ── Stats row ── */}
       <div style={{ display: "flex", gap: 10, padding: "12px 16px" }}>
         {[
-          { label: "CDI",       count: cdiCount,       color: "#16A34A", bg: "#DCFCE7" },
+          { label: "CDI",       count: cdiCount,       color: "var(--bp-primary-dark)", bg: "#DCFCE7" },
           { label: "CDD",       count: cddCount,       color: "#D97706", bg: "#FEF3C7" },
           { label: "Freelance", count: freelanceCount, color: "#7C3AED", bg: "#EDE9FE" },
         ].map(s => (
@@ -266,7 +266,7 @@ export default function JobsPage() {
 
                     {/* Salary */}
                     {job.salary && (
-                      <span style={{ background: "#F0FDF4", color: "#16A34A", fontWeight: 600, fontSize: 11, padding: "3px 10px", borderRadius: 20, border: "1px solid #BBF7D0" }}>
+                      <span style={{ background: "#F0FDF4", color: "var(--bp-primary-dark)", fontWeight: 600, fontSize: 11, padding: "3px 10px", borderRadius: 20, border: "1px solid #BBF7D0" }}>
                         💰 {job.salary.toLocaleString()} {job.currency ?? "XOF"}
                       </span>
                     )}

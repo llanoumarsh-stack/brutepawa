@@ -1,0 +1,322 @@
+MISSION CRITIQUE — REPRODUCTION PIXEL-PERFECT DE L’ACCUEIL BRUTEPAWA
+
+L’IMAGE FOURNIE AVEC CETTE TÂCHE EST LA SOURCE DE VÉRITÉ ABSOLUE.
+
+Je veux que tu reproduises cette interface BrutePawa le plus fidèlement possible.
+
+OBJECTIF :
+200 % de fidélité visuelle recherchée.
+199 % = ÉCHEC.
+
+Il ne s’agit PAS de créer une interface « inspirée » de l’image.
+
+Il s’agit de REPRODUIRE LA MAQUETTE FOURNIE.
+
+========================================================
+RÈGLE ABSOLUE
+========================================================
+
+NE PAS :
+
+- interpréter le design ;
+- moderniser le design ;
+- simplifier le design ;
+- ajouter des éléments ;
+- supprimer des éléments ;
+- déplacer des éléments ;
+- changer les proportions ;
+- changer les espacements ;
+- changer les couleurs ;
+- changer la taille des cartes ;
+- changer la taille du lecteur musical ;
+- remplacer les icônes ;
+- remplacer les badges ;
+- modifier la hiérarchie ;
+- inventer des composants ;
+- ajouter des animations inutiles ;
+- remplacer les vrais éléments par des placeholders.
+
+L’image fournie prime sur toute interprétation personnelle.
+
+========================================================
+1. FORMAT ET PROPORTIONS
+========================================================
+
+L’image de référence est une capture mobile verticale.
+
+Respecte exactement :
+
+- proportions générales ;
+- largeur des cartes ;
+- marges latérales ;
+- hauteur des sections ;
+- espaces entre les sections ;
+- position des éléments ;
+- largeur des boutons ;
+- hauteur des boutons ;
+- taille des icônes ;
+- taille des avatars ;
+- hauteur du lecteur musical ;
+- hauteur de la barre de navigation.
+
+Ne fais pas une approximation responsive qui modifie la composition.
+
+La largeur de référence doit servir de breakpoint principal.
+
+========================================================
+2. FOND GÉNÉRAL
+========================================================
+
+Utiliser exactement le style visuel blanc de la référence.
+
+Fond :
+
+#FFFFFF
+
+Les cartes doivent rester blanches avec :
+
+- bordure très légère ;
+- ombre extrêmement subtile ;
+- coins arrondis ;
+- séparation visuelle délicate.
+
+NE PAS utiliser de fond gris foncé.
+
+NE PAS ajouter de gradient général.
+
+NE PAS ajouter de texture.
+
+========================================================
+3. COULEUR BRUTEPAWA
+========================================================
+
+Couleur principale :
+
+#22C55E
+
+Cette couleur doit être utilisée exactement pour les éléments verts visibles dans la référence :
+
+- logo ;
+- texte BrutePawa ;
+- Accueil actif ;
+- bouton + ;
+- notifications actives lorsque nécessaire ;
+- icônes actives ;
+- bouton microphone ;
+- localisation ;
+- badges ;
+- indicateurs de présence ;
+- boutons ;
+- éléments actifs ;
+- accents.
+
+NE PAS remplacer #22C55E par une autre nuance de vert.
+
+Les autres couleurs doivent être utilisées uniquement lorsqu'elles existent réellement dans la référence.
+
+========================================================
+4. STATUS BAR
+========================================================
+
+Conserver la vraie status bar Android.
+
+Ne pas créer une fausse status bar HTML si le projet utilise déjà la status bar native.
+
+Respecter les safe areas.
+
+La zone supérieure doit conserver la même hauteur visuelle que la référence.
+
+========================================================
+5. HEADER PRINCIPAL
+========================================================
+
+Sous la status bar :
+
+À gauche :
+
+Logo carré BrutePawa.
+
+Le logo doit être :
+
+- carré ;
+- vert ;
+- coins arrondis ;
+- symbole blanc « b » correspondant au logo BrutePawa.
+
+À droite du logo :
+
+« BrutePawa »
+
+Texte vert.
+
+Très visible.
+
+Gras.
+
+La taille doit correspondre à la référence.
+
+========================================================
+6. BOUTONS DU HEADER
+========================================================
+
+À droite :
+
+1. bouton recherche
+2. bouton +
+3. bouton notifications
+4. bouton menu
+
+Les quatre boutons doivent avoir exactement les mêmes proportions que la référence.
+
+Bouton recherche :
+
+- cercle blanc ;
+- ombre très légère ;
+- icône loupe sombre.
+
+Bouton + :
+
+- cercle vert #22C55E ;
+- grand signe + blanc ;
+- ombre légère.
+
+Bouton notifications :
+
+- cercle blanc ;
+- icône cloche ;
+- petit badge rouge en haut à droite.
+
+Bouton menu :
+
+- cercle blanc ;
+- icône hamburger ;
+- ombre légère.
+
+NE PAS changer l'ordre.
+
+========================================================
+7. PREMIÈRE NAVIGATION
+========================================================
+
+Sous le header :
+
+barre horizontale blanche.
+
+Exactement 5 éléments :
+
+Accueil
+Amis
+Messages
+Notifications
+Portefeuille
+
+Chaque élément doit avoir :
+
+- icône ;
+- texte ;
+- alignement parfaitement centré.
+
+Accueil :
+
+VERT et actif.
+
+Ajouter la ligne verte horizontale en bas exactement comme dans la référence.
+
+Amis :
+
+Afficher le badge rouge :
+
+« 9+ »
+
+Notifications :
+
+Afficher le badge rouge :
+
+« 3 »
+
+Messages :
+
+icône conversation.
+
+Portefeuille :
+
+icône portefeuille.
+
+Respecter exactement la largeur de chaque colonne.
+
+========================================================
+8. ESPACEMENT APRÈS LA NAVIGATION
+========================================================
+
+Ne pas rapprocher artificiellement la première carte.
+
+Conserver exactement l'espace visible entre :
+
+navigation supérieure
+
+et
+
+composeur de publication.
+
+========================================================
+9. COMPOSEUR « QUOI DE NEUF »
+========================================================
+
+Créer exactement la grande carte blanche arrondie visible dans la référence.
+
+À gauche :
+
+avatar Pat Pat.
+
+Avatar circulaire.
+
+Contour vert.
+
+Petit indicateur vert en bas à droite.
+
+Au centre :
+
+grand champ :
+
+« Quoi de neuf, Pat ? »
+
+Le champ doit être :
+
+- blanc ;
+- bordure très légère ;
+- fortement arrondi ;
+- texte gris ;
+- hauteur identique à la référence.
+
+À droite :
+
+icône caméra.
+
+Puis :
+
+icône microphone verte.
+
+========================================================
+10. BARRE DES TYPES DE PUBLICATION
+========================================================
+
+Sous le champ :
+
+ligne de séparation subtile.
+
+Puis exactement 5 options :
+
+Photo
+Vocal
+Vidéo
+Localisation
+Humeur
+
+Respecter :
+
+- mêmes icônes ;
+- mêmes couleurs ;
+- même ordre ;
+- mêmes séparateurs ;
+- même largeur ;
+- même alignement.

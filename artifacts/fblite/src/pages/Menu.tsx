@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "../router";
 import { isAdmin, ADMIN_SECRET_PATH } from "../lib/admin";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 import { apiGetTontines, apiGetCourses, apiGetEnrollments, apiGetWallet, apiGetBlockedUsers, apiUnblockUser, apiGetConversations, apiGetFriendRequests, apiGetGroups, apiGetUserStats, type ApiTontine, type ApiCourse, type ApiEnrollment, type BlockedUser } from "../lib/api";
 import { BPFeed, BPMessages, BPAmis, BPGroupes, BPMarketplace, BPServices, BPEmplois, BPPages, BPPortefeuille, BPTontines, BPRevenus, BPPaiements, BPReels, BPLives, BPFormations, BPMonetisation, BPSocialHeader, BPBusinessHeader, BPFinanceHeader, BPCreateurHeader, BPPublier, BPReel, BPProduit, BPService, BPOffreEmploi, BPSearch, BPQR, BPBell } from "../components/BPIcons";
 
@@ -16,8 +17,7 @@ type Section = "main" | "wallet" | "tontines" | "formations" | "emplois" | "bout
 
 export default function Menu() {
   const navigate = useNavigate();
-  const rawUser = localStorage.getItem("fb_user");
-  const user = rawUser ? JSON.parse(rawUser) : { name: "Utilisateur", email: "", flag: "🌍", country: "" };
+  const user = useCurrentUser();
   const userInitials = user.name ? user.name.slice(0, 2).toUpperCase() : "ME";
 
   const [activeSection, setActiveSection] = useState<Section>("main");
@@ -112,7 +112,7 @@ export default function Menu() {
   if (activeSection === "wallet") return (
     <div style={{ maxWidth: 600, margin: "0 auto", padding: 16 }}>
       <Back label="💳 Mon Portefeuille" />
-      <div style={{ background: "linear-gradient(135deg, #22C55E, #0EA5E9)", borderRadius: 16, padding: "24px 20px", color: "#fff", marginBottom: 16, textAlign: "center" }}>
+      <div style={{ background: "linear-gradient(135deg, var(--bp-primary), #0EA5E9)", borderRadius: 16, padding: "24px 20px", color: "#fff", marginBottom: 16, textAlign: "center" }}>
         <div style={{ fontSize: 13, opacity: 0.85, marginBottom: 4 }}>Solde disponible</div>
         <div style={{ fontSize: 36, fontWeight: 900 }}>{(wallet?.balance ?? 0).toLocaleString()} <span style={{ fontSize: 18 }}>{wallet?.currency ?? "FCFA"}</span></div>
         <div style={{ fontSize: 12, opacity: 0.7, marginTop: 8 }}>Mis à jour il y a 2 min</div>
@@ -128,10 +128,10 @@ export default function Menu() {
       <div style={{ background: "var(--fb-white)", borderRadius: 10, border: "1px solid var(--fb-divider)", padding: 16 }}>
         <div style={{ fontWeight: 700, marginBottom: 12 }}>Transactions récentes</div>
         {[
-          { desc: "Transfert reçu – Aminata", amount: "+25 000", date: "Hier", icon: "↙️", color: "#22C55E" },
+          { desc: "Transfert reçu – Aminata", amount: "+25 000", date: "Hier", icon: "↙️", color: "var(--bp-primary)" },
           { desc: "Achat marketplace", amount: "-15 000", date: "3 juin", icon: "🛍️", color: "#EF4444" },
           { desc: "Cotisation tontine", amount: "-50 000", date: "1er juin", icon: "💰", color: "#EF4444" },
-          { desc: "Vente article", amount: "+35 000", date: "28 mai", icon: "🏷️", color: "#22C55E" },
+          { desc: "Vente article", amount: "+35 000", date: "28 mai", icon: "🏷️", color: "var(--bp-primary)" },
         ].map((tx, i) => (
           <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: i < 3 ? "1px solid var(--fb-divider)" : "none" }}>
             <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
@@ -167,7 +167,7 @@ export default function Menu() {
               <div style={{ fontSize: 11, color: "var(--fb-text-secondary)" }}>{t.currency}/{t.cycle}</div>
             </div>
             <div style={{ background: "var(--fb-bg)", borderRadius: 8, padding: 10, textAlign: "center" }}>
-              <div style={{ fontWeight: 900, color: "#22C55E", fontSize: 16 }}>{t.status}</div>
+              <div style={{ fontWeight: 900, color: "var(--bp-primary)", fontSize: 16 }}>{t.status}</div>
               <div style={{ fontSize: 11, color: "var(--fb-text-secondary)" }}>statut</div>
             </div>
           </div>
@@ -221,7 +221,7 @@ export default function Menu() {
                 <div style={{ fontWeight: 700 }}>{course.title}</div>
                 <div style={{ fontSize: 13, color: "var(--fb-text-secondary)" }}>Par Formateur · {fmtD(course.duration)}</div>
                 <div style={{ fontSize: 13, color: "var(--fb-text-secondary)" }}>👥 {course.enrollmentsCount.toLocaleString()} apprenants</div>
-                <div style={{ fontWeight: 700, color: (course.isFree || !course.price) ? "#22C55E" : "var(--bp-primary)", marginTop: 4 }}>
+                <div style={{ fontWeight: 700, color: (course.isFree || !course.price) ? "var(--bp-primary)" : "var(--bp-primary)", marginTop: 4 }}>
                   {(course.isFree || !course.price) ? "GRATUIT" : `${(course.price ?? 0).toLocaleString()} ${course.currency ?? "FCFA"}`}
                 </div>
               </div>
@@ -301,8 +301,8 @@ export default function Menu() {
   if (activeSection === "premium") {
     const BENEFITS = [
       {
-        color:"#22C55E", bg:"#DCFCE7",
-        icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="#22C55E"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>,
+        color:"var(--bp-primary)", bg:"#DCFCE7",
+        icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="var(--bp-primary)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>,
         title:"Profil mis en avant", desc:"Apparaissez en premier dans les recherches"
       },
       {
@@ -311,8 +311,8 @@ export default function Menu() {
         title:"Publications boostées", desc:"+3x de visibilité sur vos publications"
       },
       {
-        color:"#22C55E", bg:"#DCFCE7",
-        icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="#22C55E"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>,
+        color:"var(--bp-primary)", bg:"#DCFCE7",
+        icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="var(--bp-primary)"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>,
         title:"Badge vérifié doré", desc:"Confiance et crédibilité renforcées"
       },
       {
@@ -336,8 +336,8 @@ export default function Menu() {
         title:"Messagerie prioritaire", desc:"Notifications push en temps réel"
       },
       {
-        color:"#22C55E", bg:"#DCFCE7",
-        icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="#22C55E"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>,
+        color:"var(--bp-primary)", bg:"#DCFCE7",
+        icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="var(--bp-primary)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>,
         title:"Visibilité multi-pays", desc:"Diffusion dans les 14 pays BrutePawa"
       },
       {
@@ -356,8 +356,8 @@ export default function Menu() {
         title:"Publicités avancées", desc:"Ciblage intelligent par pays"
       },
       {
-        color:"#22C55E", bg:"#DCFCE7",
-        icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="#22C55E"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>,
+        color:"var(--bp-primary)", bg:"#DCFCE7",
+        icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="var(--bp-primary)"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>,
         title:"Monétisation du profil", desc:"Génération de revenus via BrutePawa"
       },
     ];
@@ -369,7 +369,7 @@ export default function Menu() {
       <div style={{ maxWidth:600, margin:"0 auto", background:"#F8FAFC", minHeight:"100vh", display:"flex", flexDirection:"column" }}>
 
         {/* ── HEADER ── */}
-        <div style={{ background:"linear-gradient(135deg,#22C55E,#22C55E)", padding:"0 16px", height:60, display:"flex", alignItems:"center", gap:12, flexShrink:0, boxShadow:"0 2px 16px rgba(22,194,74,0.3)" }}>
+        <div style={{ background:"linear-gradient(135deg,var(--bp-primary),var(--bp-primary))", padding:"0 16px", height:60, display:"flex", alignItems:"center", gap:12, flexShrink:0, boxShadow:"0 2px 16px rgba(22,194,74,0.3)" }}>
           <button onClick={() => setActiveSection("settings")} style={{ background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", padding:6 }}>
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
           </button>
@@ -381,7 +381,7 @@ export default function Menu() {
         <div style={{ overflowY:"auto", flex:1 }}>
 
           {/* ── PREMIUM BANNER ── */}
-          <div style={{ margin:"16px 16px 0", borderRadius:20, overflow:"hidden", background:"linear-gradient(135deg,#052e16 0%,#22C55E 45%,#16A34A 100%)", padding:"24px 20px 20px", position:"relative", boxShadow:"0 8px 32px rgba(22,194,74,0.4)" }}>
+          <div style={{ margin:"16px 16px 0", borderRadius:20, overflow:"hidden", background:"linear-gradient(135deg,#052e16 0%,var(--bp-primary) 45%,var(--bp-primary-dark) 100%)", padding:"24px 20px 20px", position:"relative", boxShadow:"0 8px 32px rgba(22,194,74,0.4)" }}>
             {/* Decorative circles */}
             <div style={{ position:"absolute", top:-30, right:-30, width:120, height:120, borderRadius:"50%", background:"rgba(255,255,255,0.07)" }} />
             <div style={{ position:"absolute", bottom:-20, right:60, width:80, height:80, borderRadius:"50%", background:"rgba(255,255,255,0.06)" }} />
@@ -414,31 +414,31 @@ export default function Menu() {
           <div style={{ display:"flex", gap:12, margin:"16px 16px 0" }}>
             {/* Mensuel */}
             <button onClick={() => setSelectedPlan("monthly")}
-              style={{ flex:1, background:selectedPlan==="monthly" ? "#fff" : "#fff", border:`2.5px solid ${selectedPlan==="monthly" ? "#22C55E" : "#E5E7EB"}`, borderRadius:16, padding:"16px 12px", cursor:"pointer", position:"relative", textAlign:"center", boxShadow:selectedPlan==="monthly" ? "0 4px 16px rgba(22,194,74,0.18)" : "none", transition:"all 0.18s" }}>
+              style={{ flex:1, background:selectedPlan==="monthly" ? "#fff" : "#fff", border:`2.5px solid ${selectedPlan==="monthly" ? "var(--bp-primary)" : "#E5E7EB"}`, borderRadius:16, padding:"16px 12px", cursor:"pointer", position:"relative", textAlign:"center", boxShadow:selectedPlan==="monthly" ? "0 4px 16px rgba(22,194,74,0.18)" : "none", transition:"all 0.18s" }}>
               {selectedPlan==="monthly" && (
-                <div style={{ position:"absolute", top:10, right:10, width:20, height:20, borderRadius:"50%", background:"#22C55E", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <div style={{ position:"absolute", top:10, right:10, width:20, height:20, borderRadius:"50%", background:"var(--bp-primary)", display:"flex", alignItems:"center", justifyContent:"center" }}>
                   <svg viewBox="0 0 24 24" width="12" height="12" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
                 </div>
               )}
               <div style={{ fontSize:12, color:"#64748B", fontWeight:500, marginBottom:4 }}>Mensuel</div>
-              <div style={{ fontWeight:900, fontSize:20, color: selectedPlan==="monthly" ? "#22C55E" : "#111827" }}>2 500</div>
+              <div style={{ fontWeight:900, fontSize:20, color: selectedPlan==="monthly" ? "var(--bp-primary)" : "#111827" }}>2 500</div>
               <div style={{ fontSize:12, color:"#64748B", fontWeight:500 }}>FCFA/mois</div>
               <div style={{ fontSize:11, color:"#9CA3AF", marginTop:4 }}>Sans engagement</div>
             </button>
             {/* Annuel */}
             <button onClick={() => setSelectedPlan("annual")}
-              style={{ flex:1, background:"#fff", border:`2.5px solid ${selectedPlan==="annual" ? "#22C55E" : "#E5E7EB"}`, borderRadius:16, padding:"16px 12px", cursor:"pointer", position:"relative", textAlign:"center", boxShadow:selectedPlan==="annual" ? "0 4px 16px rgba(22,194,74,0.18)" : "none", transition:"all 0.18s" }}>
+              style={{ flex:1, background:"#fff", border:`2.5px solid ${selectedPlan==="annual" ? "var(--bp-primary)" : "#E5E7EB"}`, borderRadius:16, padding:"16px 12px", cursor:"pointer", position:"relative", textAlign:"center", boxShadow:selectedPlan==="annual" ? "0 4px 16px rgba(22,194,74,0.18)" : "none", transition:"all 0.18s" }}>
               {/* -20% badge */}
               <div style={{ position:"absolute", top:-10, right:10, background:"#EF4444", borderRadius:10, padding:"2px 9px", fontSize:11, fontWeight:800, color:"#fff", boxShadow:"0 2px 8px rgba(239,68,68,0.4)" }}>-20%</div>
               {selectedPlan==="annual" && (
-                <div style={{ position:"absolute", top:10, right:10, width:20, height:20, borderRadius:"50%", background:"#22C55E", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <div style={{ position:"absolute", top:10, right:10, width:20, height:20, borderRadius:"50%", background:"var(--bp-primary)", display:"flex", alignItems:"center", justifyContent:"center" }}>
                   <svg viewBox="0 0 24 24" width="12" height="12" fill="#fff"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
                 </div>
               )}
               <div style={{ fontSize:12, color:"#64748B", fontWeight:500, marginBottom:4 }}>Annuel</div>
-              <div style={{ fontWeight:900, fontSize:20, color: selectedPlan==="annual" ? "#22C55E" : "#111827" }}>24 000</div>
+              <div style={{ fontWeight:900, fontSize:20, color: selectedPlan==="annual" ? "var(--bp-primary)" : "#111827" }}>24 000</div>
               <div style={{ fontSize:12, color:"#64748B", fontWeight:500 }}>FCFA/an</div>
-              <div style={{ fontSize:11, color:"#22C55E", fontWeight:600, marginTop:4 }}>Soit 2 000/mois</div>
+              <div style={{ fontSize:11, color:"var(--bp-primary)", fontWeight:600, marginTop:4 }}>Soit 2 000/mois</div>
             </button>
           </div>
 
@@ -477,13 +477,13 @@ export default function Menu() {
               </div>
               {/* Premium */}
               <div style={{ padding:"16px 14px", background:"#F0FDF4" }}>
-                <div style={{ fontWeight:800, fontSize:14, color:"#22C55E", marginBottom:12, textAlign:"center", display:"flex", alignItems:"center", justifyContent:"center", gap:5 }}>
+                <div style={{ fontWeight:800, fontSize:14, color:"var(--bp-primary)", marginBottom:12, textAlign:"center", display:"flex", alignItems:"center", justifyContent:"center", gap:5 }}>
                   <svg viewBox="0 0 24 24" width="14" height="14" fill="#FBBF24"><path d="M12 2l2.09 6.26H21l-5.47 3.97 2.09 6.26L12 14.52l-5.62 3.97 2.09-6.26L3 8.26h6.91z"/></svg>
                   Premium
                 </div>
                 {PREMIUM_FEATURES.map((f,i) => (
                   <div key={i} style={{ display:"flex", alignItems:"center", gap:6, marginBottom:8 }}>
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="#22C55E"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="var(--bp-primary)"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
                     <span style={{ fontSize:12, color:"#111827", fontWeight:600 }}>{f}</span>
                   </div>
                 ))}
@@ -494,7 +494,7 @@ export default function Menu() {
           {/* ── CTA + PAYMENT ── */}
           <div style={{ margin:"20px 16px 24px" }}>
             <button onClick={() => setIsPremium(true)}
-              style={{ width:"100%", background:"linear-gradient(135deg,#22C55E,#22C55E)", border:"none", borderRadius:16, padding:"17px 20px", cursor:"pointer", boxShadow:"0 6px 24px rgba(22,194,74,0.45)", display:"flex", alignItems:"center", justifyContent:"center", gap:10 }}>
+              style={{ width:"100%", background:"linear-gradient(135deg,var(--bp-primary),var(--bp-primary))", border:"none", borderRadius:16, padding:"17px 20px", cursor:"pointer", boxShadow:"0 6px 24px rgba(22,194,74,0.45)", display:"flex", alignItems:"center", justifyContent:"center", gap:10 }}>
               <svg viewBox="0 0 24 24" width="22" height="22" fill="#FBBF24"><path d="M12 2l2.09 6.26H21l-5.47 3.97 2.09 6.26L12 14.52l-5.62 3.97 2.09-6.26L3 8.26h6.91z"/></svg>
               <span style={{ color:"#fff", fontWeight:900, fontSize:17 }}>Activer Premium maintenant</span>
             </button>
@@ -553,7 +553,7 @@ export default function Menu() {
       position: "relative", cursor: "pointer", transition: "background 0.2s", flexShrink: 0
     }}>
       <div style={{
-        width: 22, height: 22, borderRadius: "50%", background: "#fff",
+        width: 22, height: 22, borderRadius: "50%", background: "var(--theme-surface)",
         position: "absolute", top: 2, left: value ? 24 : 2, transition: "left 0.2s",
         boxShadow: "0 1px 3px rgba(0,0,0,0.3)"
       }} />
@@ -762,7 +762,7 @@ export default function Menu() {
           <Toggle value={dataSaver} onChange={() => setDataSaver(v => !v)} />
         </div>
         <div style={{ background: dataSaver ? "#DCFCE7" : "var(--fb-bg)", borderRadius: 12, padding: 14, marginBottom: 12 }}>
-          <div style={{ fontWeight: 700, color: dataSaver ? "#16A34A" : "var(--fb-text-secondary)" }}>
+          <div style={{ fontWeight: 700, color: dataSaver ? "var(--bp-primary-dark)" : "var(--fb-text-secondary)" }}>
             {dataSaver ? "✅ Économiseur actif — données réduites" : "Mode normal — qualité maximale"}
           </div>
           <div style={{ fontSize: 13, color: "var(--fb-text-secondary)", marginTop: 4 }}>
@@ -790,7 +790,7 @@ export default function Menu() {
         {phoneSaved ? (
           <div style={{ background: "#DCFCE7", borderRadius: 16, padding: 20, textAlign: "center", marginBottom: 16 }}>
             <div style={{ fontSize: 48 }}>✅</div>
-            <div style={{ fontWeight: 800, fontSize: 17, marginTop: 8, color: "#16A34A" }}>Téléphone vérifié</div>
+            <div style={{ fontWeight: 800, fontSize: 17, marginTop: 8, color: "var(--bp-primary-dark)" }}>Téléphone vérifié</div>
             <div style={{ fontSize: 14, color: "#388E3C", marginTop: 4 }}>{phone}</div>
           </div>
         ) : (
@@ -908,13 +908,13 @@ export default function Menu() {
     },
     {
       label: "Groupes", sub: "Rejoignez des communautés qui vous passionnent",
-      bg: "#DCFCE7", iconColor: "#22C55E", badge: groupsCount, action: () => navigate("/community?tab=groupes"),
+      bg: "#DCFCE7", iconColor: "var(--bp-primary)", badge: groupsCount, action: () => navigate("/community?tab=groupes"),
       icon: (_c) => (
         <svg width="30" height="30" viewBox="0 0 30 30">
-          <circle cx="20" cy="10" r="5" fill="#22C55E"/>
-          <path d="M13 28 C13 22 16.5 18 20 18 C23.5 18 27 22 27 28 Z" fill="#22C55E"/>
-          <circle cx="11" cy="11" r="6.5" fill="#16A34A"/>
-          <path d="M2 29 C2 22.5 6 17 11 17 C16 17 20 22.5 20 29 Z" fill="#16A34A"/>
+          <circle cx="20" cy="10" r="5" fill="var(--bp-primary)"/>
+          <path d="M13 28 C13 22 16.5 18 20 18 C23.5 18 27 22 27 28 Z" fill="var(--bp-primary)"/>
+          <circle cx="11" cy="11" r="6.5" fill="var(--bp-primary-dark)"/>
+          <path d="M2 29 C2 22.5 6 17 11 17 C16 17 20 22.5 20 29 Z" fill="var(--bp-primary-dark)"/>
         </svg>
       ),
     },
@@ -945,13 +945,13 @@ export default function Menu() {
     },
     {
       label: "Portefeuille", sub: "Gérez vos paiements et transactions",
-      bg: "#DCFCE7", iconColor: "#16A34A", badge: 0, action: () => navigate("/wallet"),
+      bg: "#DCFCE7", iconColor: "var(--bp-primary-dark)", badge: 0, action: () => navigate("/wallet"),
       icon: (_c) => (
         <svg width="30" height="30" viewBox="0 0 30 30">
-          <rect x="2" y="9" width="26" height="18" rx="5" fill="#16A34A"/>
-          <rect x="2" y="9" width="26" height="6" rx="3" fill="#16A34A"/>
+          <rect x="2" y="9" width="26" height="18" rx="5" fill="var(--bp-primary-dark)"/>
+          <rect x="2" y="9" width="26" height="6" rx="3" fill="var(--bp-primary-dark)"/>
           <rect x="16" y="15" width="11" height="7" rx="3" fill="#DCFCE7"/>
-          <circle cx="21.5" cy="18.5" r="2.5" fill="#16A34A"/>
+          <circle cx="21.5" cy="18.5" r="2.5" fill="var(--bp-primary-dark)"/>
           <rect x="4" y="16" width="9" height="2" rx="1" fill="#DCFCE7"/>
           <rect x="4" y="20" width="6" height="2" rx="1" fill="#DCFCE7"/>
         </svg>
@@ -984,10 +984,10 @@ export default function Menu() {
     },
     {
       label: "Brute Vérifié", sub: "Compte vérifié et sécurisé",
-      bg: "#DCFCE7", iconColor: "#22C55E", badge: 0, action: () => setActiveSection("settings-verify"),
+      bg: "#DCFCE7", iconColor: "var(--bp-primary)", badge: 0, action: () => setActiveSection("settings-verify"),
       icon: (_c) => (
         <svg width="30" height="30" viewBox="0 0 30 30">
-          <path d="M15 2 L28 7.5 V15 C28 22.5 22 27.5 15 30 C8 27.5 2 22.5 2 15 V7.5 Z" fill="#16A34A"/>
+          <path d="M15 2 L28 7.5 V15 C28 22.5 22 27.5 15 30 C8 27.5 2 22.5 2 15 V7.5 Z" fill="var(--bp-primary-dark)"/>
           <path d="M15 2 L28 7.5 V15 C28 22.5 22 27.5 15 30" fill="#388E3C" opacity="0.45"/>
           <polyline points="9,16 13,20 21,11" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
@@ -1041,7 +1041,7 @@ export default function Menu() {
         </svg>
       ),
     },
-    ...(isAdmin(user.email) ? [{
+    ...(isAdmin(user.email ?? "") ? [{
       label: "Admin", sub: "Panneau d'administration",
       bg: "#FEE2E2", iconColor: "#E91E63", badge: 0, action: () => navigate(ADMIN_SECRET_PATH),
       icon: (_c: string) => (
@@ -1078,15 +1078,15 @@ export default function Menu() {
             <div style={{ fontSize: 13, color: "#64748B", marginTop: 5 }}>Tout ce dont vous avez besoin, au même endroit.</div>
           </div>
           <div style={{ display: "flex", gap: 8, alignItems: "center", paddingTop: 2 }}>
-            <button style={{ width: 40, height: 40, borderRadius: 13, background: "#fff", border: "1.5px solid #E2E8F0", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", outline: "none" }}>
+            <button style={{ width: 40, height: 40, borderRadius: 13, background: "var(--theme-surface)", border: "1.5px solid #E2E8F0", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", outline: "none" }}>
               <BPSearch size={18} />
             </button>
-            <button style={{ width: 40, height: 40, borderRadius: 13, background: "#fff", border: "1.5px solid #E2E8F0", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", outline: "none" }}>
+            <button style={{ width: 40, height: 40, borderRadius: 13, background: "var(--theme-surface)", border: "1.5px solid #E2E8F0", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", outline: "none" }}>
               <BPQR size={18} />
             </button>
-            <button onClick={() => navigate("/notifications")} style={{ width: 40, height: 40, borderRadius: 13, background: "#fff", border: "1.5px solid #E2E8F0", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", position: "relative", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", outline: "none" }}>
+            <button onClick={() => navigate("/notifications")} style={{ width: 40, height: 40, borderRadius: 13, background: "var(--theme-surface)", border: "1.5px solid #E2E8F0", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", position: "relative", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", outline: "none" }}>
               <BPBell size={18} />
-              <div style={{ position: "absolute", top: -5, right: -5, background: "#22C55E", color: "#fff", fontSize: 9, fontWeight: 800, minWidth: 19, height: 19, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 3px", animation: "bp-badge-pulse 2s infinite" }}>12</div>
+              <div style={{ position: "absolute", top: -5, right: -5, background: "var(--bp-primary)", color: "#fff", fontSize: 9, fontWeight: 800, minWidth: 19, height: 19, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 3px", animation: "bp-badge-pulse 2s infinite" }}>12</div>
             </button>
           </div>
         </div>
@@ -1106,12 +1106,12 @@ export default function Menu() {
             {/* Avatar + nom + CTA */}
             <div style={{ position:"relative",zIndex:2,display:"flex",alignItems:"center",gap:14 }}>
               <div style={{ position:"relative",flexShrink:0 }}>
-                <div style={{ width:68,height:68,borderRadius:"50%",background:user.avatarUrl?"transparent":"linear-gradient(135deg,#22C55E,#16A34A)",border:"3px solid #fff",overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,fontWeight:800,color:"#fff",boxShadow:"0 4px 20px rgba(0,0,0,0.35)" }}>
+                <div style={{ width:68,height:68,borderRadius:"50%",background:user.avatarUrl?"transparent":"linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))",border:"3px solid #fff",overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,fontWeight:800,color:"#fff",boxShadow:"0 4px 20px rgba(0,0,0,0.35)" }}>
                   {user.avatarUrl
                     ? <img src={user.avatarUrl} alt="" style={{ width:"100%",height:"100%",objectFit:"cover" }}/>
                     : userInitials}
                 </div>
-                <div style={{ position:"absolute",bottom:1,right:1,width:22,height:22,borderRadius:"50%",background:"#22C55E",border:"2px solid #fff",display:"flex",alignItems:"center",justifyContent:"center" }}>
+                <div style={{ position:"absolute",bottom:1,right:1,width:22,height:22,borderRadius:"50%",background:"var(--bp-primary)",border:"2px solid #fff",display:"flex",alignItems:"center",justifyContent:"center" }}>
                   <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
                     <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -1122,7 +1122,7 @@ export default function Menu() {
                 <div style={{ display:"flex",alignItems:"center",gap:5 }}>
                   <span style={{ fontWeight:700,fontSize:17,color:"#fff",letterSpacing:"-0.3px" }}>Brute Pawa</span>
                   <svg viewBox="0 0 24 24" width="17" height="17">
-                    <circle cx="12" cy="12" r="10" fill="#22C55E"/>
+                    <circle cx="12" cy="12" r="10" fill="var(--bp-primary)"/>
                     <path d="M8 12l3 3 5-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
                   </svg>
                 </div>
@@ -1141,7 +1141,7 @@ export default function Menu() {
                   <span style={{ fontSize:12,fontWeight:700,color:"#fff" }}>Niveau 12</span>
                 </div>
                 <div style={{ flex:1,height:6,background:"rgba(255,255,255,0.18)",borderRadius:999,overflow:"hidden" }}>
-                  <div style={{ height:"100%",width:"47%",background:"linear-gradient(90deg,#22C55E,#4ADE80)",borderRadius:999 }}/>
+                  <div style={{ height:"100%",width:"47%",background:"linear-gradient(90deg,var(--bp-primary),#4ADE80)",borderRadius:999 }}/>
                 </div>
                 <span style={{ fontSize:11,color:"rgba(255,255,255,0.85)",fontWeight:600,whiteSpace:"nowrap" }}>2 350 / 5 000 XP</span>
               </div>
@@ -1159,7 +1159,7 @@ export default function Menu() {
                 <div style={{ fontSize:9.5,color:"rgba(255,255,255,0.5)",marginBottom:3,lineHeight:1.3 }}>{s.label}</div>
                 <div style={{ fontWeight:700,fontSize:i===0?13:10.5,color:"#fff",lineHeight:1.2,display:"flex",alignItems:"center",justifyContent:"center",gap:2,flexWrap:"wrap" }}>
                   {s.value}
-                  {s.arrow&&<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>}
+                  {s.arrow&&<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>}
                 </div>
               </div>
             ))}
@@ -1171,7 +1171,7 @@ export default function Menu() {
           <div style={{ display:"flex",alignItems:"center",gap:6,overflowX:"auto",msOverflowStyle:"none",scrollbarWidth:"none" } as React.CSSProperties}>
             {/* Bouton Créer */}
             <div style={{ display:"flex",flexDirection:"column",alignItems:"center",gap:5,flexShrink:0,minWidth:56 }}>
-              <div style={{ width:50,height:50,borderRadius:"50%",background:"linear-gradient(135deg,#22C55E,#16A34A)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 6px 18px rgba(34,197,94,0.38)",cursor:"pointer" }}>
+              <div style={{ width:50,height:50,borderRadius:"50%",background:"linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 6px 18px rgba(34,197,94,0.38)",cursor:"pointer" }}>
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round">
                   <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                 </svg>
@@ -1269,9 +1269,9 @@ export default function Menu() {
                 <div style={{ width:28,height:28,borderRadius:9,background:"#F0FDF4",display:"flex",alignItems:"center",justifyContent:"center" }}>{section.titleIcon}</div>
                 <span style={{ fontWeight:700,fontSize:16,color:"#0F172A" }}>{section.title}</span>
               </div>
-              <button onClick={section.seeAll} style={{ background:"none",border:"none",fontSize:12.5,fontWeight:600,color:"#22C55E",cursor:"pointer",display:"flex",alignItems:"center",gap:2,padding:0,outline:"none" }}>
+              <button onClick={section.seeAll} style={{ background:"none",border:"none",fontSize:12.5,fontWeight:600,color:"var(--bp-primary)",cursor:"pointer",display:"flex",alignItems:"center",gap:2,padding:0,outline:"none" }}>
                 Tout voir
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
               </button>
             </div>
             {/* 2×2 grid */}
@@ -1286,7 +1286,7 @@ export default function Menu() {
                   <div style={{ position:"relative",display:"inline-flex" }}>
                     <div style={{ width:44,height:44,borderRadius:14,background:card.bg,display:"flex",alignItems:"center",justifyContent:"center" }}>{card.icon}</div>
                     {card.badge>0&&(
-                      <div style={{ position:"absolute",top:-5,right:-5,background:"#22C55E",color:"#fff",fontSize:9,fontWeight:800,minWidth:17,height:17,borderRadius:9,display:"flex",alignItems:"center",justifyContent:"center",padding:"0 3px",animation:"bp-badge-pulse 2s infinite" }}>
+                      <div style={{ position:"absolute",top:-5,right:-5,background:"var(--bp-primary)",color:"#fff",fontSize:9,fontWeight:800,minWidth:17,height:17,borderRadius:9,display:"flex",alignItems:"center",justifyContent:"center",padding:"0 3px",animation:"bp-badge-pulse 2s infinite" }}>
                         {card.badge>99?"99+":card.badge}
                       </div>
                     )}
@@ -1313,7 +1313,7 @@ export default function Menu() {
             <div style={{ fontWeight:800,fontSize:15,color:"#fff",lineHeight:1.3 }}>Passez à BrutePawa Premium</div>
             <div style={{ fontSize:11.5,color:"rgba(255,255,255,0.7)",marginTop:4,lineHeight:1.4 }}>Plus de visibilité, d'opportunités et de revenus.</div>
           </div>
-          <button onClick={()=>setActiveSection("premium")} style={{ flexShrink:0,background:"#22C55E",border:"none",borderRadius:20,padding:"10px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:4,outline:"none" }}>
+          <button onClick={()=>setActiveSection("premium")} style={{ flexShrink:0,background:"var(--bp-primary)",border:"none",borderRadius:20,padding:"10px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:4,outline:"none" }}>
             <span style={{ fontWeight:700,fontSize:11.5,color:"#fff",whiteSpace:"nowrap" }}>Découvrir</span>
             <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
           </button>

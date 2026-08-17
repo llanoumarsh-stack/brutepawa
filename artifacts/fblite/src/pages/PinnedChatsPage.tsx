@@ -1,6 +1,6 @@
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"#22C55E",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"var(--bp-primary)",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
 
 const Footer = () => (
   <div style={{ textAlign:"center",padding:"20px 0 32px" }}>
@@ -25,15 +25,15 @@ function PinIllustration() {
       <line x1="80" y1="48" x2="122" y2="48" stroke="#BBF7D0" strokeWidth="3" strokeLinecap="round"/>
       <line x1="80" y1="58" x2="114" y2="58" stroke="#BBF7D0" strokeWidth="3" strokeLinecap="round"/>
       {/* Pin */}
-      <circle cx="100" cy="95" r="28" fill="#22C55E" opacity=".15"/>
-      <circle cx="100" cy="95" r="20" fill="#22C55E"/>
+      <circle cx="100" cy="95" r="28" fill="var(--bp-primary)" opacity=".15"/>
+      <circle cx="100" cy="95" r="20" fill="var(--bp-primary)"/>
       {/* Pin icon */}
       <path d="M106 89v6a6 6 0 01-2 4.47l-3.5 2.83a1 1 0 01-1 0l-3.5-2.83A6 6 0 0194 95v-6a6 6 0 1112 0z" stroke="#fff" strokeWidth="1.8" fill="none" strokeLinecap="round"/>
       <line x1="100" y1="100" x2="100" y2="108" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
       {/* Sparkles */}
-      <circle cx="34" cy="36" r="6" fill="#22C55E" opacity=".3"/>
-      <circle cx="136" cy="115" r="5" fill="#22C55E" opacity=".2"/>
-      <circle cx="22" cy="110" r="4" fill="#22C55E" opacity=".15"/>
+      <circle cx="34" cy="36" r="6" fill="var(--bp-primary)" opacity=".3"/>
+      <circle cx="136" cy="115" r="5" fill="var(--bp-primary)" opacity=".2"/>
+      <circle cx="22" cy="110" r="4" fill="var(--bp-primary)" opacity=".15"/>
     </svg>
   );
 }
@@ -56,7 +56,7 @@ export default function PinnedChatsPage() {
         <div style={{ fontSize:14,color:C.secondary,textAlign:"center",lineHeight:1.65,maxWidth:280,marginBottom:32 }}>
           Épinglez vos discussions importantes pour les retrouver facilement.
         </div>
-        <button style={{ background:"linear-gradient(135deg,#16A34A,#22C55E)",color:"#fff",border:"none",borderRadius:18,padding:"14px 28px",fontWeight:700,fontSize:15,cursor:"pointer",boxShadow:"0 8px 24px rgba(34,197,94,0.3)",width:"100%",maxWidth:300 }}>
+        <button style={{ background:"linear-gradient(135deg,var(--bp-primary-dark),var(--bp-primary))",color:"#fff",border:"none",borderRadius:18,padding:"14px 28px",fontWeight:700,fontSize:15,cursor:"pointer",boxShadow:"0 8px 24px rgba(34,197,94,0.3)",width:"100%",maxWidth:300 }}>
           Épingler une discussion
         </button>
       </div>

@@ -1,19 +1,17 @@
 import { useNavigate } from "../router";
 import { SCORE_LEVELS, computeScore } from "../lib/score";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 export default function ScorePage() {
   const navigate = useNavigate();
 
-  const rawUser = localStorage.getItem("fb_user");
-  const user = rawUser ? JSON.parse(rawUser) as {
-    avatarUrl?: string; coverUrl?: string; bio?: string; phone?: string;
-  } : {};
+  const user = useCurrentUser();
   let ext: Record<string, string> = {};
   try { ext = JSON.parse(localStorage.getItem("fb_profile_ext") ?? "{}"); } catch { /**/ }
 
   const myScore = computeScore({
-    avatarUrl: user.avatarUrl,
-    coverUrl: user.coverUrl,
+    avatarUrl: user.avatarUrl ?? undefined,
+    coverUrl: user.coverUrl ?? undefined,
     bio: user.bio,
     phone: user.phone,
     postsCount: 0,
@@ -32,7 +30,7 @@ export default function ScorePage() {
         display: "flex", alignItems: "center", gap: 10,
         position: "sticky", top: 0, zIndex: 10,
       }}>
-        <button onClick={() => navigate(-1 as unknown as string)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "var(--bp-primary)" }}>←</button>
+        <button onClick={() => navigate(-1)} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "var(--bp-primary)" }}>←</button>
         <span style={{ fontWeight: 700, fontSize: 17 }}>Score de confiance</span>
       </div>
 

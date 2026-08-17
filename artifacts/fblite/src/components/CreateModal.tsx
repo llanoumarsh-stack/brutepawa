@@ -10,16 +10,16 @@ const OPTIONS = [
     type: "post",
     label: "Publier un post",
     desc: "Partagez vos idées, actualités et moments avec la communauté.",
-    color: "#22C55E",
+    color: "var(--bp-primary)",
     iconBg: "#F0FDF4",
     featured: true,
     badge: { text: "Populaire", emoji: "🔥", textColor: "#166534", bgColor: "#DCFCE7" },
     icon: (
       <svg viewBox="0 0 24 24" width="26" height="26" fill="none">
-        <rect x="4" y="2" width="13" height="18" rx="2" stroke="#22C55E" strokeWidth="1.8"/>
-        <path d="M4 2h11l4 4v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M14 2v5h5" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M8 13h5M8 17h8" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"/>
+        <rect x="4" y="2" width="13" height="18" rx="2" stroke="var(--bp-primary)" strokeWidth="1.8"/>
+        <path d="M4 2h11l4 4v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M14 2v5h5" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M8 13h5M8 17h8" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round"/>
       </svg>
     ),
   },
@@ -169,20 +169,20 @@ export default function CreateModal({ onClose, onSelect }: Props) {
           {/* Plus icon — small outlined circle */}
           <div style={{
             width: 46, height: 46, borderRadius: "50%",
-            border: "2px solid #22C55E",
+            border: "2px solid var(--bp-primary)",
             display: "flex", alignItems: "center", justifyContent: "center",
             flexShrink: 0,
             background: "#F0FDF4",
           }}>
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none">
-              <path d="M12 5v14M5 12h14" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"/>
+              <path d="M12 5v14M5 12h14" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round"/>
             </svg>
           </div>
 
           {/* Texts */}
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{
-              fontWeight: 800, fontSize: 20, color: "#111827",
+              fontWeight: 800, fontSize: 20, color: "var(--theme-text)",
               lineHeight: 1.2, fontFamily: "Inter, sans-serif",
             }}>
               Créer
@@ -231,7 +231,7 @@ export default function CreateModal({ onClose, onSelect }: Props) {
                 borderRadius: 18,
                 padding: "13px 13px",
                 border: opt.featured
-                  ? "2px solid #22C55E"
+                  ? "2px solid var(--bp-primary)"
                   : "1.5px solid #F1F5F9",
                 boxShadow: opt.featured
                   ? "0 2px 12px rgba(34,197,94,0.12)"
@@ -256,7 +256,7 @@ export default function CreateModal({ onClose, onSelect }: Props) {
                   flexWrap: "wrap", marginBottom: 3,
                 }}>
                   <span style={{
-                    fontWeight: 700, fontSize: 15, color: "#111827",
+                    fontWeight: 700, fontSize: 15, color: "var(--theme-text)",
                     fontFamily: "Inter, sans-serif", lineHeight: 1.2,
                   }}>
                     {opt.label}
@@ -324,7 +324,7 @@ export default function CreateModal({ onClose, onSelect }: Props) {
                 <defs>
                   <linearGradient id="shieldGrad" x1="4" y1="2" x2="44" y2="54" gradientUnits="userSpaceOnUse">
                     <stop offset="0%" stopColor="#4ADE80"/>
-                    <stop offset="100%" stopColor="#16A34A"/>
+                    <stop offset="100%" stopColor="var(--bp-primary-dark)"/>
                   </linearGradient>
                   <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
                     <feGaussianBlur stdDeviation="2" result="blur"/>
@@ -340,8 +340,8 @@ export default function CreateModal({ onClose, onSelect }: Props) {
                 <path d="M19 28v-4a5 5 0 0 1 10 0v4" stroke="white" strokeWidth="2.2"
                   strokeLinecap="round" strokeLinejoin="round" fill="none"/>
                 {/* Lock keyhole */}
-                <circle cx="24" cy="33" r="2" fill="#16A34A"/>
-                <rect x="23" y="34.5" width="2" height="2.5" rx="1" fill="#16A34A"/>
+                <circle cx="24" cy="33" r="2" fill="var(--bp-primary-dark)"/>
+                <rect x="23" y="34.5" width="2" height="2.5" rx="1" fill="var(--bp-primary-dark)"/>
                 {/* Sparkle top-right */}
                 <g opacity="0.7">
                   <line x1="41" y1="8" x2="41" y2="12" stroke="#4ADE80" strokeWidth="1.5" strokeLinecap="round"/>
@@ -362,8 +362,8 @@ export default function CreateModal({ onClose, onSelect }: Props) {
                   100% sécurisé
                 </span>
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none">
-                  <circle cx="12" cy="12" r="10" stroke="#22C55E" strokeWidth="2"/>
-                  <path d="M8 12l3 3 5-5" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <circle cx="12" cy="12" r="10" stroke="var(--bp-primary)" strokeWidth="2"/>
+                  <path d="M8 12l3 3 5-5" stroke="var(--bp-primary)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </div>
               <div style={{
@@ -380,26 +380,26 @@ export default function CreateModal({ onClose, onSelect }: Props) {
                 <defs>
                   <linearGradient id="lockGrad" x1="0" y1="0" x2="52" y2="56" gradientUnits="userSpaceOnUse">
                     <stop offset="0%" stopColor="#4ADE80"/>
-                    <stop offset="100%" stopColor="#16A34A"/>
+                    <stop offset="100%" stopColor="var(--bp-primary-dark)"/>
                   </linearGradient>
                   <linearGradient id="lockFace" x1="0" y1="0" x2="52" y2="0" gradientUnits="userSpaceOnUse">
                     <stop offset="0%" stopColor="#86EFAC"/>
-                    <stop offset="100%" stopColor="#22C55E"/>
+                    <stop offset="100%" stopColor="var(--bp-primary)"/>
                   </linearGradient>
                 </defs>
                 {/* Lock body isometric */}
                 {/* Bottom face */}
-                <path d="M10 38 L26 48 L42 38 L26 28 Z" fill="#16A34A"/>
+                <path d="M10 38 L26 48 L42 38 L26 28 Z" fill="var(--bp-primary-dark)"/>
                 {/* Right face */}
                 <path d="M42 22 L42 38 L26 48 L26 32 Z" fill="#15803D"/>
                 {/* Top face */}
                 <path d="M10 22 L26 32 L42 22 L26 12 Z" fill="#4ADE80"/>
                 {/* Shackle left bar */}
-                <rect x="14" y="8" width="5" height="20" rx="2.5" fill="#22C55E"/>
+                <rect x="14" y="8" width="5" height="20" rx="2.5" fill="var(--bp-primary)"/>
                 {/* Shackle top */}
-                <path d="M14 10 Q14 2 26 2 Q38 2 38 10" stroke="#22C55E" strokeWidth="5" fill="none" strokeLinecap="round"/>
+                <path d="M14 10 Q14 2 26 2 Q38 2 38 10" stroke="var(--bp-primary)" strokeWidth="5" fill="none" strokeLinecap="round"/>
                 {/* Shackle right bar */}
-                <rect x="33" y="8" width="5" height="14" rx="2.5" fill="#22C55E"/>
+                <rect x="33" y="8" width="5" height="14" rx="2.5" fill="var(--bp-primary)"/>
                 {/* Keyhole on face */}
                 <circle cx="26" cy="29" r="3.5" fill="white" fillOpacity="0.7"/>
                 <rect x="24.5" y="31" width="3" height="4" rx="1.5" fill="white" fillOpacity="0.7"/>

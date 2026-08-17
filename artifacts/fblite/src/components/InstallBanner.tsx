@@ -90,7 +90,7 @@ export default function InstallBanner() {
   return (
     <div style={{
       position: "fixed", bottom: 60, left: 0, right: 0, zIndex: 9999,
-      background: "#fff",
+      background: "var(--theme-surface)",
       borderTop: "1px solid #E5E7EB",
       boxShadow: "0 -3px 16px rgba(0,0,0,0.13)",
       fontFamily: "Inter, sans-serif",
@@ -100,7 +100,7 @@ export default function InstallBanner() {
         <div style={{
           position: "absolute", left: 0, top: 0, bottom: 0,
           width: `${pct}%`,
-          background: "linear-gradient(90deg,#22C55E,#22C55E)",
+          background: "linear-gradient(90deg,var(--bp-primary),var(--bp-primary))",
           transition: "width 1s linear",
           borderRadius: "0 2px 2px 0",
         }} />
@@ -110,7 +110,7 @@ export default function InstallBanner() {
         {/* BP icon */}
         <div style={{
           width: 44, height: 44, borderRadius: 11, flexShrink: 0,
-          background: "linear-gradient(135deg,#22C55E,#22C55E)",
+          background: "linear-gradient(135deg,var(--bp-primary),var(--bp-primary))",
           display: "flex", alignItems: "center", justifyContent: "center",
           boxShadow: "0 2px 8px rgba(22,194,74,0.4)",
         }}>
@@ -136,7 +136,7 @@ export default function InstallBanner() {
         {/* Install button */}
         {deferredPrompt ? (
           <button onClick={install} style={{
-            background: "#22C55E", color: "#fff", border: "none",
+            background: "var(--bp-primary)", color: "#fff", border: "none",
             borderRadius: 7, padding: "8px 14px",
             fontWeight: 700, fontSize: 13.5, cursor: "pointer",
             flexShrink: 0, whiteSpace: "nowrap",
@@ -146,7 +146,7 @@ export default function InstallBanner() {
           </button>
         ) : !ios && (
           <button onClick={dismiss} style={{
-            background: "#22C55E", color: "#fff", border: "none",
+            background: "var(--bp-primary)", color: "#fff", border: "none",
             borderRadius: 7, padding: "8px 14px",
             fontWeight: 700, fontSize: 13.5, cursor: "pointer",
             flexShrink: 0, whiteSpace: "nowrap",
@@ -168,7 +168,7 @@ export default function InstallBanner() {
           {/* Tiny countdown number */}
           <span style={{
             position: "absolute", top: -8, right: -6,
-            background: "#22C55E", color: "#fff",
+            background: "var(--bp-primary)", color: "#fff",
             borderRadius: "50%", width: 16, height: 16, fontSize: 9, fontWeight: 800,
             display: "flex", alignItems: "center", justifyContent: "center",
             lineHeight: 1,

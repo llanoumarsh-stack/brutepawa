@@ -38,7 +38,7 @@ export default function LockProfileModal({ onClose, currentlyLocked, onToggle }:
         onClick={e => { if (e.target === e.currentTarget) onClose(); }}
       >
         <div
-          style={{ background: "#fff", borderRadius: "28px 28px 0 0", width: "100%", maxWidth: 600, padding: "0 0 40px", animation: "slideUpLock 0.3s cubic-bezier(0.32,0.72,0,1)", boxShadow: "0 -8px 48px rgba(0,0,0,0.2)" }}
+          style={{ background: "var(--theme-surface)", borderRadius: "28px 28px 0 0", width: "100%", maxWidth: 600, padding: "0 0 40px", animation: "slideUpLock 0.3s cubic-bezier(0.32,0.72,0,1)", boxShadow: "0 -8px 48px rgba(0,0,0,0.2)" }}
           onClick={e => e.stopPropagation()}
         >
           {/* Handle */}
@@ -51,10 +51,10 @@ export default function LockProfileModal({ onClose, currentlyLocked, onToggle }:
             <div style={{ width: 54, height: 54, borderRadius: "50%", background: locked ? "linear-gradient(135deg,#DCFCE7,#BBF7D0)" : "#F1F5F9", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "background 0.3s", boxShadow: locked ? "0 4px 16px rgba(34,197,94,0.2)" : "none" }}>
               {locked ? (
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-                  <rect x="3" y="11" width="18" height="11" rx="3" fill="#22C55E" opacity="0.15"/>
-                  <rect x="3" y="11" width="18" height="11" rx="3" stroke="#22C55E" strokeWidth="2"/>
-                  <path d="M7 11V7a5 5 0 0110 0v4" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"/>
-                  <circle cx="12" cy="16.5" r="1.5" fill="#22C55E"/>
+                  <rect x="3" y="11" width="18" height="11" rx="3" fill="var(--bp-primary)" opacity="0.15"/>
+                  <rect x="3" y="11" width="18" height="11" rx="3" stroke="var(--bp-primary)" strokeWidth="2"/>
+                  <path d="M7 11V7a5 5 0 0110 0v4" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"/>
+                  <circle cx="12" cy="16.5" r="1.5" fill="var(--bp-primary)"/>
                 </svg>
               ) : (
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
@@ -65,7 +65,7 @@ export default function LockProfileModal({ onClose, currentlyLocked, onToggle }:
               )}
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 800, fontSize: 18, color: "#111827" }}>Verrouiller le profil</div>
+              <div style={{ fontWeight: 800, fontSize: 18, color: "var(--theme-text)" }}>Verrouiller le profil</div>
               <div style={{ fontSize: 13, color: "#64748B", marginTop: 2 }}>Contrôlez qui peut voir votre contenu</div>
             </div>
             <button onClick={onClose} style={{ width: 36, height: 36, borderRadius: "50%", background: "#F1F5F9", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -78,11 +78,11 @@ export default function LockProfileModal({ onClose, currentlyLocked, onToggle }:
               <div style={{ textAlign: "center", padding: "28px 0 8px" }}>
                 <div style={{ width: 72, height: 72, borderRadius: "50%", background: locked ? "linear-gradient(135deg,#DCFCE7,#BBF7D0)" : "#F1F5F9", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", boxShadow: locked ? "0 8px 32px rgba(34,197,94,0.25)" : "none" }}>
                   {locked
-                    ? <svg width="34" height="34" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="3" fill="#22C55E" opacity="0.2"/><rect x="3" y="11" width="18" height="11" rx="3" stroke="#22C55E" strokeWidth="2"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"/><circle cx="12" cy="16.5" r="1.5" fill="#22C55E"/></svg>
+                    ? <svg width="34" height="34" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="3" fill="var(--bp-primary)" opacity="0.2"/><rect x="3" y="11" width="18" height="11" rx="3" stroke="var(--bp-primary)" strokeWidth="2"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"/><circle cx="12" cy="16.5" r="1.5" fill="var(--bp-primary)"/></svg>
                     : <svg width="34" height="34" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="3" stroke="#64748B" strokeWidth="2"/><path d="M7 11V7a5 5 0 019.9-1" stroke="#64748B" strokeWidth="2" strokeLinecap="round"/><circle cx="12" cy="16.5" r="1.5" fill="#64748B"/></svg>
                   }
                 </div>
-                <div style={{ fontWeight: 800, fontSize: 18, color: "#111827", marginBottom: 8 }}>
+                <div style={{ fontWeight: 800, fontSize: 18, color: "var(--theme-text)", marginBottom: 8 }}>
                   {locked ? "Profil verrouillé !" : "Profil déverrouillé !"}
                 </div>
                 <div style={{ fontSize: 14, color: "#64748B", lineHeight: 1.6 }}>
@@ -109,10 +109,10 @@ export default function LockProfileModal({ onClose, currentlyLocked, onToggle }:
                 {/* Toggle row */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 16px", background: locked ? "#F0FDF4" : "#F8FAFC", borderRadius: 16, marginBottom: 20, border: locked ? "1.5px solid #DCFCE7" : "1.5px solid #F1F5F9", transition: "all 0.25s" }}>
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: 15, color: locked ? "#16A34A" : "#64748B" }}>
+                    <div style={{ fontWeight: 700, fontSize: 15, color: locked ? "var(--bp-primary-dark)" : "#64748B" }}>
                       {locked ? "Profil verrouillé" : "Profil non verrouillé"}
                     </div>
-                    <div style={{ fontSize: 12.5, color: locked ? "#22C55E" : "#9CA3AF", marginTop: 2 }}>
+                    <div style={{ fontSize: 12.5, color: locked ? "var(--bp-primary)" : "#9CA3AF", marginTop: 2 }}>
                       {locked ? "Restriction active" : "Cliquer pour activer"}
                     </div>
                   </div>
@@ -120,7 +120,7 @@ export default function LockProfileModal({ onClose, currentlyLocked, onToggle }:
                     onClick={() => setLocked(l => !l)}
                     style={{
                       width: 54, height: 30, borderRadius: 15, border: "none", cursor: "pointer",
-                      background: locked ? "#22C55E" : "#E5E7EB",
+                      background: locked ? "var(--bp-primary)" : "#E5E7EB",
                       position: "relative", transition: "background 0.25s",
                       boxShadow: locked ? "0 2px 8px rgba(34,197,94,0.35)" : "none",
                       flexShrink: 0,
@@ -128,7 +128,7 @@ export default function LockProfileModal({ onClose, currentlyLocked, onToggle }:
                     aria-label="Toggle lock"
                   >
                     <div style={{
-                      width: 24, height: 24, borderRadius: "50%", background: "#fff",
+                      width: 24, height: 24, borderRadius: "50%", background: "var(--theme-surface)",
                       position: "absolute", top: 3, transition: "left 0.25s cubic-bezier(0.4,0,0.2,1)",
                       left: locked ? 27 : 3,
                       boxShadow: "0 2px 6px rgba(0,0,0,0.22)",
@@ -157,7 +157,7 @@ export default function LockProfileModal({ onClose, currentlyLocked, onToggle }:
                     disabled={saving || locked === currentlyLocked}
                     style={{
                       flex: 1.8,
-                      background: locked === currentlyLocked ? "#E5E7EB" : "linear-gradient(135deg, #22C55E, #16A34A)",
+                      background: locked === currentlyLocked ? "#E5E7EB" : "linear-gradient(135deg, var(--bp-primary), var(--bp-primary-dark))",
                       color: locked === currentlyLocked ? "#9CA3AF" : "#fff",
                       border: "none", borderRadius: 14, padding: 14,
                       fontWeight: 700, fontSize: 15,

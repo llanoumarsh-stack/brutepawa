@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"#22C55E",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"var(--bp-primary)",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
 
 const SLabel = ({ t }:{t:string}) => (
   <div style={{ fontSize:12,fontWeight:700,color:C.muted,textTransform:"uppercase",letterSpacing:"0.8px",padding:"20px 4px 10px" }}>{t}</div>

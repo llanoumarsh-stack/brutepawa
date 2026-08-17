@@ -25,7 +25,7 @@ function slugHandle(first: string, last: string): string {
 function initials(u: SearchUserDTO): string {
   return `${u.firstName?.[0] ?? ""}${u.lastName?.[0] ?? ""}`.toUpperCase();
 }
-const AV_COLORS = ["#22C55E","#E91E63","#9C27B0","#D97706","#388E3C","#D32F2F","#00838F","#5D4037"];
+const AV_COLORS = ["var(--bp-primary)","#E91E63","#9C27B0","#D97706","#388E3C","#D32F2F","#00838F","#5D4037"];
 function avColor(id: number): string { return AV_COLORS[id % AV_COLORS.length]; }
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -69,7 +69,7 @@ function GlobeSvg() {
         <defs>
           <radialGradient id="gGrad" cx="36%" cy="32%" r="68%">
             <stop offset="0%"   stopColor="#6EE7B7" />
-            <stop offset="45%"  stopColor="#22C55E" />
+            <stop offset="45%"  stopColor="var(--bp-primary)" />
             <stop offset="100%" stopColor="#15803D" />
           </radialGradient>
           <clipPath id="gClip"><circle cx="52" cy="52" r="48" /></clipPath>
@@ -85,13 +85,13 @@ function GlobeSvg() {
         {/* Location pin */}
         <path d="M52 24 C46 24 42 28.5 42 34 C42 42 52 51 52 51 C52 51 62 42 62 34 C62 28.5 58 24 52 24Z"
           fill="white" fillOpacity="0.92" />
-        <circle cx="52" cy="34" r="4.5" fill="#22C55E" />
+        <circle cx="52" cy="34" r="4.5" fill="var(--bp-primary)" />
       </svg>
       {/* Floating avatar circles */}
       <div style={{ position:"absolute", top:2, right:-4, width:28, height:28, borderRadius:"50%", background:"#8B5CF6", border:"2.5px solid #fff", display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, fontSize:12 }}>A</div>
       <div style={{ position:"absolute", top:36, right:-16, width:24, height:24, borderRadius:"50%", background:"#F59E0B", border:"2px solid #fff", display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, fontSize:10 }}>K</div>
       <div style={{ position:"absolute", bottom:12, right:-6, width:26, height:26, borderRadius:"50%", background:"#EF4444", border:"2px solid #fff", display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, fontSize:11 }}>M</div>
-      <div style={{ position:"absolute", bottom:2, left:2, width:22, height:22, borderRadius:"50%", background:"#22C55E", border:"2px solid #fff" }} />
+      <div style={{ position:"absolute", bottom:2, left:2, width:22, height:22, borderRadius:"50%", background:"var(--bp-primary)", border:"2px solid #fff" }} />
     </div>
   );
 }
@@ -113,10 +113,10 @@ function MagnifyGlass() {
         <rect x="6"  y="55" width="7" height="7" rx="2" fill="#DCFCE7" transform="rotate(45 9.5 58.5)" />
         {/* Lens */}
         <circle cx="36" cy="35" r="23" fill="url(#mgGrad)" />
-        <circle cx="36" cy="35" r="23" fill="none" stroke="#22C55E" strokeWidth="5.5" />
+        <circle cx="36" cy="35" r="23" fill="none" stroke="var(--bp-primary)" strokeWidth="5.5" />
         <circle cx="36" cy="35" r="14" fill="white" />
         {/* Handle */}
-        <line x1="53" y1="52" x2="70" y2="69" stroke="#22C55E" strokeWidth="7" strokeLinecap="round" />
+        <line x1="53" y1="52" x2="70" y2="69" stroke="var(--bp-primary)" strokeWidth="7" strokeLinecap="round" />
       </svg>
     </div>
   );
@@ -125,7 +125,7 @@ function MagnifyGlass() {
 // ── Verified icon ─────────────────────────────────────────────────────────────
 function Verified() {
   return (
-    <svg viewBox="0 0 24 24" width="13" height="13" fill="#22C55E" style={{ flexShrink:0 }}>
+    <svg viewBox="0 0 24 24" width="13" height="13" fill="var(--bp-primary)" style={{ flexShrink:0 }}>
       <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
     </svg>
   );
@@ -212,7 +212,7 @@ export default function SearchPage({ q }: Props) {
 
   // ── Shared styles ────────────────────────────────────────────────────────
   const cardStyle: React.CSSProperties = {
-    background: "#fff",
+    background: "var(--theme-surface)",
     borderRadius: 14,
     overflow: "hidden",
   };
@@ -240,7 +240,7 @@ export default function SearchPage({ q }: Props) {
             {/* Left */}
             <div style={{ flex:1, minWidth:0 }}>
               <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:5 }}>
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="#22C55E">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="var(--bp-primary)">
                   <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                 </svg>
                 <span style={{ fontSize:27, fontWeight:900, color:"#111827", lineHeight:1 }}>{q}</span>
@@ -298,7 +298,7 @@ export default function SearchPage({ q }: Props) {
               <button key={t.id} onClick={() => setActiveTab(t.id)} style={{
                 padding:"7px 13px", borderRadius:20, border:"none", cursor:"pointer",
                 fontWeight:600, fontSize:13, whiteSpace:"nowrap",
-                background: active ? "#22C55E" : "transparent",
+                background: active ? "var(--bp-primary)" : "transparent",
                 color: active ? "#fff" : "#374151",
                 display:"flex", alignItems:"center", gap:5, flexShrink:0,
                 transition:"background .15s",
@@ -330,7 +330,7 @@ export default function SearchPage({ q }: Props) {
                 <button key={c.id} onClick={() => { setActiveContinent(c.id); setActiveCountry(null); }} style={{
                   padding:"5px 12px", borderRadius:20, border:"none", cursor:"pointer",
                   fontWeight:600, fontSize:12, flexShrink:0,
-                  background: active ? "#22C55E" : "#F3F4F6",
+                  background: active ? "var(--bp-primary)" : "#F3F4F6",
                   color: active ? "#fff" : "#374151",
                   transition:"background .15s",
                 }}>{c.label}</button>
@@ -347,7 +347,7 @@ export default function SearchPage({ q }: Props) {
                 onClick={() => setActiveCountry(active ? null : c.name)} style={{
                   padding:"4px 10px", borderRadius:20, cursor:"pointer", fontWeight:500,
                   fontSize:12, display:"flex", alignItems:"center", gap:4,
-                  border:`1.5px solid ${active ? "#22C55E" : "#E5E7EB"}`,
+                  border:`1.5px solid ${active ? "var(--bp-primary)" : "#E5E7EB"}`,
                   background: active ? "#F0FDF4" : "#fff",
                   color: active ? "#15803D" : "#374151",
                   transition:"all .15s",
@@ -373,7 +373,7 @@ export default function SearchPage({ q }: Props) {
         <div style={{ padding:"40px 16px", textAlign:"center" }}>
           <div style={{
             width:32, height:32, borderRadius:"50%",
-            border:"3px solid #22C55E", borderTopColor:"transparent",
+            border:"3px solid var(--bp-primary)", borderTopColor:"transparent",
             animation:"sp .8s linear infinite", margin:"0 auto",
           }} />
           <style>{`@keyframes sp{to{transform:rotate(360deg)}}`}</style>
@@ -393,7 +393,7 @@ export default function SearchPage({ q }: Props) {
               <div style={cardHeader}>
                 <div>
                   <div style={{ display:"flex", alignItems:"center", gap:5 }}>
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="#22C55E">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="var(--bp-primary)">
                       <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
                     </svg>
                     <span style={{ fontSize:13, fontWeight:700, color:"#111827" }}>Personnes</span>
@@ -454,9 +454,9 @@ export default function SearchPage({ q }: Props) {
                         </div>
                         {fs === "none" && (
                           <button onClick={() => handleFollow(user.id)} style={{
-                            border:"1.5px solid #22C55E", borderRadius:20,
+                            border:"1.5px solid var(--bp-primary)", borderRadius:20,
                             padding:"3px 11px", fontSize:11, fontWeight:700,
-                            color:"#22C55E", background:"none", cursor:"pointer",
+                            color:"var(--bp-primary)", background:"none", cursor:"pointer",
                           }}>Suivre</button>
                         )}
                         {fs === "pending" && (
@@ -469,7 +469,7 @@ export default function SearchPage({ q }: Props) {
                         {fs === "followed" && (
                           <button disabled style={{
                             border:"none", borderRadius:20, padding:"3px 9px",
-                            fontSize:10, fontWeight:600, color:"#22C55E", background:"#F0FDF4",
+                            fontSize:10, fontWeight:600, color:"var(--bp-primary)", background:"#F0FDF4",
                           }}>✓ Suivi</button>
                         )}
                         <button style={{ background:"none", border:"none", cursor:"pointer", color:"#9CA3AF", fontSize:17, lineHeight:1, padding:0 }}>
@@ -486,7 +486,7 @@ export default function SearchPage({ q }: Props) {
             <div style={cardStyle}>
               <div style={cardHeader}>
                 <span style={{ fontSize:13, fontWeight:700, color:"#111827" }}>Groupes</span>
-                <span style={{ fontSize:11, fontWeight:600, color:"#22C55E" }}>
+                <span style={{ fontSize:11, fontWeight:600, color:"var(--bp-primary)" }}>
                   {groups.length === 0 ? "Aucun résultat" : `${groups.length} résultat${groups.length > 1 ? "s" : ""}`}
                 </span>
               </div>
@@ -501,7 +501,7 @@ export default function SearchPage({ q }: Props) {
                     Aucun groupe ne correspond à votre recherche.
                   </div>
                   <button onClick={() => setActiveTab("articles")} style={{
-                    width:"100%", background:"#22C55E", color:"#fff",
+                    width:"100%", background:"var(--bp-primary)", color:"#fff",
                     border:"none", borderRadius:10, padding:"11px 16px",
                     fontSize:12, fontWeight:700, cursor:"pointer",
                   }}>
@@ -543,7 +543,7 @@ export default function SearchPage({ q }: Props) {
                   <span style={{ fontSize:12, fontWeight:700, color:"#111827" }}>Publications récentes</span>
                 </div>
                 <button onClick={() => setActiveTab("publications")} style={{
-                  background:"none", border:"none", fontSize:11, color:"#22C55E", fontWeight:600, cursor:"pointer",
+                  background:"none", border:"none", fontSize:11, color:"var(--bp-primary)", fontWeight:600, cursor:"pointer",
                 }}>Voir tout ›</button>
               </div>
               <div style={{ padding:"10px 12px 12px" }}>
@@ -579,7 +579,7 @@ export default function SearchPage({ q }: Props) {
                   <span style={{ fontSize:12, fontWeight:700, color:"#111827" }}>Articles populaires</span>
                 </div>
                 <button onClick={() => setActiveTab("articles")} style={{
-                  background:"none", border:"none", fontSize:11, color:"#22C55E", fontWeight:600, cursor:"pointer",
+                  background:"none", border:"none", fontSize:11, color:"var(--bp-primary)", fontWeight:600, cursor:"pointer",
                 }}>Voir tout ›</button>
               </div>
               <div style={{ padding:"10px 12px 12px" }}>
@@ -679,7 +679,7 @@ export default function SearchPage({ q }: Props) {
               <div style={{ fontSize:13, fontWeight:700, color:"#111827", textAlign:"center", marginBottom:4 }}>Aucun résultat trouvé</div>
               <div style={{ fontSize:12, color:"#6B7280", textAlign:"center", marginBottom:20 }}>Aucun groupe ne correspond à « {q} ».</div>
               <button onClick={() => setActiveTab("articles")} style={{
-                width:"100%", background:"#22C55E", color:"#fff", border:"none",
+                width:"100%", background:"var(--bp-primary)", color:"#fff", border:"none",
                 borderRadius:10, padding:"12px 16px", fontSize:13, fontWeight:700, cursor:"pointer",
               }}>Explorer d'autres contenus</button>
             </div>
@@ -736,7 +736,7 @@ export default function SearchPage({ q }: Props) {
                 {a.description && (
                   <div style={{ fontSize:12, color:"#6B7280", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{a.description}</div>
                 )}
-                <div style={{ fontSize:13, color:"#22C55E", fontWeight:700, marginTop:4 }}>
+                <div style={{ fontSize:13, color:"var(--bp-primary)", fontWeight:700, marginTop:4 }}>
                   {a.price.toLocaleString("fr-FR")} {a.currency}
                 </div>
                 {a.location && <div style={{ fontSize:11, color:"#9CA3AF" }}>📍 {a.location}</div>}

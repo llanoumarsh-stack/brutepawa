@@ -13,6 +13,7 @@ export const postsTable = pgTable("posts", {
   musicUrl: text("music_url"),
   musicArtworkUrl: text("music_artwork_url"),
   musicDuration: text("music_duration"),
+  musicLikesCount: integer("music_likes_count").notNull().default(0),
   likesCount: integer("likes_count").notNull().default(0),
   commentsCount: integer("comments_count").notNull().default(0),
   isPinned: boolean("is_pinned").notNull().default(false),
@@ -21,6 +22,9 @@ export const postsTable = pgTable("posts", {
   commentsDisabled: boolean("comments_disabled").notNull().default(false),
   audience: text("audience").notNull().default("public"),
   location: text("location"),
+  bgColor: text("bg_color"),
+  mood: text("mood"),
+  taggedUserIds: text("tagged_user_ids"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });

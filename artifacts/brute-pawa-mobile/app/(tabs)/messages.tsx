@@ -5,6 +5,7 @@ import React, { useCallback } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  Image,
   Platform,
   RefreshControl,
   StyleSheet,
@@ -95,6 +96,17 @@ export default function MessagesScreen() {
   );
 }
 
+/* Deterministic avatar colors — same palette as fblite */
+const AVATAR_COLORS = [
+  "#22C55E","#EC4899","#8B5CF6","#D97706","#388E3C","#00838F","#D32F2F","#0EA5E9","#F59E0B",
+];
+function avatarColor(userId: number): string {
+  return AVATAR_COLORS[Math.abs(userId) % AVATAR_COLORS.length];
+}
+function initials(name: string): string {
+  return name.split(" ").slice(0, 2).map((w: string) => w[0] ?? "").join("").toUpperCase();
+}
+
 function ConversationRow({
   item,
   colors,
@@ -104,15 +116,11 @@ function ConversationRow({
   colors: any;
   onPress: () => void;
 }) {
-  const displayName = item.otherUserName ?? `Utilisateur #${item.userId}`;
-  const initials = displayName
-    .split(" ")
-    .slice(0, 2)
-    .map((w: string) => w[0])
-    .join("")
-    .toUpperCase();
-
-  const hasUnread = (item.unreadCount ?? 0) > 0;
+  const displayName = item.otherUserName ?? `#${item.userId}`;
+  const abbr        = initials(displayName);
+  const bgColor     = avatarColor(item.userId ?? 0);
+  const hasUnread   = (item.unreadCount ?? 0) > 0;
+  const photoUrl    = item.otherUserAvatarUrl as string | null | undefined;
 
   return (
     <TouchableOpacity
@@ -120,8 +128,11 @@ function ConversationRow({
       onPress={onPress}
       activeOpacity={0.75}
     >
-      <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
-        <Text style={[styles.avatarText, { color: colors.primaryForeground }]}>{initials}</Text>
+      <View style={[styles.avatar, { backgroundColor: bgColor }]}>
+        {photoUrl
+          ? <Image source={{ uri: photoUrl }} style={styles.avatarImg} />
+          : <Text style={styles.avatarText}>{abbr}</Text>
+        }
       </View>
 
       <View style={styles.content}>
@@ -196,6 +207,12 @@ const styles = StyleSheet.create({
   avatarText: {
     fontSize: 18,
     fontFamily: "Inter_700Bold",
+    color: "#fff",
+  },
+  avatarImg: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
   },
   content: { flex: 1 },
   topRow: {

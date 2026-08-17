@@ -8,13 +8,13 @@ import {
   PublicUser, PublicUserWithStatus, FriendRequest, ApiGroup, ApiChatGroup, ApiPage,
 } from "../lib/api";
 
-const BP_GREEN = "#22C55E";
+const BP_GREEN = "var(--bp-primary)";
 
 /* ─── Types ────────────────────────────────────────────────── */
 type SubTab = "personnes"|"amis"|"abonnes"|"groupes"|"pages"|"entreprises"|"messagerie";
 
 /* ─── Helpers ──────────────────────────────────────────────── */
-const AV_COLORS = ["#22C55E","#E91E63","#9C27B0","#FF9800",BP_GREEN,"#0EA5E9","#D32F2F","#00838F"];
+const AV_COLORS = ["var(--bp-primary)","#E91E63","#9C27B0","#FF9800",BP_GREEN,"#0EA5E9","#D32F2F","#00838F"];
 function avColor(id: number) { return AV_COLORS[id % AV_COLORS.length]; }
 function fullName(u: { firstName: string; lastName: string }) { return `${u.firstName} ${u.lastName}`.trim(); }
 function initials(u: { firstName: string; lastName: string }) {
@@ -49,7 +49,7 @@ const Ico = {
   addFriend: <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>,
   message: <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
   check: <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>,
-  checkBlue: <svg viewBox="0 0 24 24" width="14" height="14" fill="#22C55E"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5l-3.5-3.5 1.41-1.41L10 13.67l6.09-6.09 1.41 1.41L10 16.5z"/></svg>,
+  checkBlue: <svg viewBox="0 0 24 24" width="14" height="14" fill="var(--bp-primary)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5l-3.5-3.5 1.41-1.41L10 13.67l6.09-6.09 1.41 1.41L10 16.5z"/></svg>,
   more: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="5" r="1" fill="#9CA3AF"/><circle cx="12" cy="12" r="1" fill="#9CA3AF"/><circle cx="12" cy="19" r="1" fill="#9CA3AF"/></svg>,
   people: <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
   shield: <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke={BP_GREEN} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
@@ -532,7 +532,7 @@ export default function Community() {
                       Groupes de discussion
                     </div>
                     {fcg.map(cg => {
-                      const WIZ_COLORS = ["#EC4899","#8B5CF6","#F97316","#22C55E","#0EA5E9","#EF4444","#3B82F6","#F59E0B","#6366F1","#8B5CF6"];
+                      const WIZ_COLORS = ["#EC4899","#8B5CF6","#F97316","var(--bp-primary)","#0EA5E9","#EF4444","#3B82F6","#F59E0B","#6366F1","#8B5CF6"];
                       const col = WIZ_COLORS[cg.id % WIZ_COLORS.length];
                       const initials = cg.name.split(" ").map((w:string)=>w[0]).join("").toUpperCase().slice(0,2);
                       return (
@@ -628,7 +628,7 @@ export default function Community() {
               {communityPages.slice(0,10).map(page => (
                 <div key={page.id} onClick={()=>navigate("/pages")}
                   style={{ background:"#fff", borderRadius:16, overflow:"hidden", boxShadow:"0 1px 4px rgba(0,0,0,.07)", cursor:"pointer" }}>
-                  <div style={{ height:60, background:page.coverUrl?`url(${page.coverUrl}) center/cover`:`linear-gradient(135deg,${BP_GREEN},#16A34A)`, position:"relative" }}>
+                  <div style={{ height:60, background:page.coverUrl?`url(${page.coverUrl}) center/cover`:`linear-gradient(135deg,${BP_GREEN},var(--bp-primary-dark))`, position:"relative" }}>
                     <div style={{ position:"absolute", bottom:-20, left:12 }}>
                       <div style={{ width:44, height:44, borderRadius:"50%", border:"3px solid #fff", background:BP_GREEN, display:"flex", alignItems:"center", justifyContent:"center", overflow:"hidden" }}>
                         {page.avatarUrl?<img src={page.avatarUrl} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }}/>:<span style={{ fontSize:18 }}>{page.emoji}</span>}
@@ -646,7 +646,7 @@ export default function Community() {
                         else { await apiFollowPage(page.id); setCommunityPages(prev=>prev.map(p=>p.id===page.id?{...p,isFollowed:true,followersCount:p.followersCount+1}:p)); }
                       } catch{} setPageActionLoading(p=>({...p,[page.id]:false}));
                     }} disabled={pageActionLoading[page.id]}
-                    style={{ ...btnSolid, fontSize:12, padding:"6px 12px", background:page.isFollowed?"#F3F4F6":"#22C55E", color:page.isFollowed?"#374151":"#fff", boxShadow:"none" }}>
+                    style={{ ...btnSolid, fontSize:12, padding:"6px 12px", background:page.isFollowed?"#F3F4F6":"var(--bp-primary)", color:page.isFollowed?"#374151":"#fff", boxShadow:"none" }}>
                       {page.isFollowed?"Abonné":"S'abonner"}
                     </button>
                   </div>

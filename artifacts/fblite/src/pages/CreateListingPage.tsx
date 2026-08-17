@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { useNavigate } from "../router";
 import { COUNTRIES } from "../data/mock";
 import { apiCreateProduct } from "../lib/api";
+import { getCurrentUser } from "../hooks/useCurrentUser";
 import { useR2Upload, phaseLabel } from "../hooks/useR2Upload";
 import imgAI      from "@assets/file_00000000dc9871f486329b83a7a1d9d1_1782125734073.png";
 import imgShield  from "@assets/file_00000000a50c71f49a3cfccdfd4ceab1_1782125734281.png";
@@ -12,8 +13,8 @@ import imgTrust   from "@assets/file_00000000f6bc71f48736fd5fc12d67f2_1782125734
 /* ═══════════════════════════════════════════════════════════════════════════
    TOKENS
 ═══════════════════════════════════════════════════════════════════════════ */
-const G  = "#22C55E";
-const GD = "#16A34A";
+const G  = "var(--bp-primary)";
+const GD = "var(--bp-primary-dark)";
 const BG = "#F8FAFC";
 
 const CATEGORIES = [
@@ -143,32 +144,32 @@ function StepBar({ step }: { step: number }) {
 const IllustAI = () => (
   <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
     <defs>
-      <linearGradient id="chipTop" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#34D399"/><stop offset="100%" stopColor="#16A34A"/></linearGradient>
-      <linearGradient id="chipFace" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#22C55E"/><stop offset="100%" stopColor="#15803D"/></linearGradient>
+      <linearGradient id="chipTop" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#34D399"/><stop offset="100%" stopColor="var(--bp-primary-dark)"/></linearGradient>
+      <linearGradient id="chipFace" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--bp-primary)"/><stop offset="100%" stopColor="#15803D"/></linearGradient>
       <linearGradient id="platBase" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="rgba(34,197,94,0.25)"/><stop offset="100%" stopColor="rgba(34,197,94,0.05)"/></linearGradient>
       <filter id="glowAI"><feGaussianBlur stdDeviation="2.5" result="b"/><feComposite in="SourceGraphic" in2="b" operator="over"/></filter>
     </defs>
     <ellipse cx="36" cy="62" rx="22" ry="5" fill="rgba(34,197,94,0.18)"/>
     <ellipse cx="36" cy="59" rx="18" ry="3.5" fill="rgba(34,197,94,0.10)"/>
     <rect x="14" y="20" width="44" height="36" rx="7" fill="url(#chipFace)" filter="url(#glowAI)"/>
-    <rect x="17" y="23" width="38" height="30" rx="5" fill="#22C55E" opacity="0.4"/>
+    <rect x="17" y="23" width="38" height="30" rx="5" fill="var(--bp-primary)" opacity="0.4"/>
     <rect x="20" y="26" width="32" height="24" rx="3" fill="#166534" opacity="0.6"/>
-    <line x1="24" y1="26" x2="24" y2="50" stroke="#22C55E" strokeWidth="0.6" opacity="0.5"/>
-    <line x1="30" y1="26" x2="30" y2="50" stroke="#22C55E" strokeWidth="0.6" opacity="0.5"/>
-    <line x1="36" y1="26" x2="36" y2="50" stroke="#22C55E" strokeWidth="0.6" opacity="0.5"/>
-    <line x1="42" y1="26" x2="42" y2="50" stroke="#22C55E" strokeWidth="0.6" opacity="0.5"/>
-    <line x1="48" y1="26" x2="48" y2="50" stroke="#22C55E" strokeWidth="0.6" opacity="0.5"/>
-    <line x1="20" y1="32" x2="52" y2="32" stroke="#22C55E" strokeWidth="0.6" opacity="0.5"/>
-    <line x1="20" y1="38" x2="52" y2="38" stroke="#22C55E" strokeWidth="0.6" opacity="0.5"/>
-    <line x1="20" y1="44" x2="52" y2="44" stroke="#22C55E" strokeWidth="0.6" opacity="0.5"/>
+    <line x1="24" y1="26" x2="24" y2="50" stroke="var(--bp-primary)" strokeWidth="0.6" opacity="0.5"/>
+    <line x1="30" y1="26" x2="30" y2="50" stroke="var(--bp-primary)" strokeWidth="0.6" opacity="0.5"/>
+    <line x1="36" y1="26" x2="36" y2="50" stroke="var(--bp-primary)" strokeWidth="0.6" opacity="0.5"/>
+    <line x1="42" y1="26" x2="42" y2="50" stroke="var(--bp-primary)" strokeWidth="0.6" opacity="0.5"/>
+    <line x1="48" y1="26" x2="48" y2="50" stroke="var(--bp-primary)" strokeWidth="0.6" opacity="0.5"/>
+    <line x1="20" y1="32" x2="52" y2="32" stroke="var(--bp-primary)" strokeWidth="0.6" opacity="0.5"/>
+    <line x1="20" y1="38" x2="52" y2="38" stroke="var(--bp-primary)" strokeWidth="0.6" opacity="0.5"/>
+    <line x1="20" y1="44" x2="52" y2="44" stroke="var(--bp-primary)" strokeWidth="0.6" opacity="0.5"/>
     <rect x="22" y="28" width="28" height="20" rx="2" fill="#14532D" opacity="0.8"/>
     <text x="36" y="41" textAnchor="middle" fill="white" fontSize="11" fontWeight="800" fontFamily="Inter,sans-serif" letterSpacing="1">AI</text>
     <rect x="8" y="30" width="6" height="3" rx="1.5" fill="#4ADE80"/><rect x="8" y="36" width="6" height="3" rx="1.5" fill="#4ADE80"/><rect x="8" y="42" width="6" height="3" rx="1.5" fill="#4ADE80"/>
     <rect x="58" y="30" width="6" height="3" rx="1.5" fill="#4ADE80"/><rect x="58" y="36" width="6" height="3" rx="1.5" fill="#4ADE80"/><rect x="58" y="42" width="6" height="3" rx="1.5" fill="#4ADE80"/>
     <rect x="26" y="14" width="3" height="6" rx="1.5" fill="#4ADE80"/><rect x="33" y="14" width="3" height="6" rx="1.5" fill="#4ADE80"/><rect x="40" y="14" width="3" height="6" rx="1.5" fill="#4ADE80"/>
-    <rect x="2" y="28" width="7" height="5" rx="2.5" fill="rgba(34,197,94,0.3)" stroke="#22C55E" strokeWidth="0.5"/>
-    <rect x="2" y="35" width="7" height="5" rx="2.5" fill="rgba(34,197,94,0.3)" stroke="#22C55E" strokeWidth="0.5"/>
-    <rect x="2" y="42" width="7" height="5" rx="2.5" fill="rgba(34,197,94,0.3)" stroke="#22C55E" strokeWidth="0.5"/>
+    <rect x="2" y="28" width="7" height="5" rx="2.5" fill="rgba(34,197,94,0.3)" stroke="var(--bp-primary)" strokeWidth="0.5"/>
+    <rect x="2" y="35" width="7" height="5" rx="2.5" fill="rgba(34,197,94,0.3)" stroke="var(--bp-primary)" strokeWidth="0.5"/>
+    <rect x="2" y="42" width="7" height="5" rx="2.5" fill="rgba(34,197,94,0.3)" stroke="var(--bp-primary)" strokeWidth="0.5"/>
     <ellipse cx="36" cy="20" rx="14" ry="3" fill="url(#chipTop)" opacity="0.7"/>
   </svg>
 );
@@ -178,7 +179,7 @@ const IllustShield = () => (
     <defs>
       <linearGradient id="shBase" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#374151"/><stop offset="100%" stopColor="#1F2937"/></linearGradient>
       <linearGradient id="shFace" x1="0" y1="0" x2="0.5" y2="1"><stop offset="0%" stopColor="#4B5563"/><stop offset="100%" stopColor="#111827"/></linearGradient>
-      <linearGradient id="shGreen" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#22C55E"/><stop offset="100%" stopColor="#16A34A"/></linearGradient>
+      <linearGradient id="shGreen" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="var(--bp-primary)"/><stop offset="100%" stopColor="var(--bp-primary-dark)"/></linearGradient>
     </defs>
     <ellipse cx="36" cy="63" rx="20" ry="4" fill="rgba(0,0,0,0.18)"/>
     <rect x="12" y="55" width="48" height="7" rx="3" fill="#111827" opacity="0.5"/>
@@ -188,8 +189,8 @@ const IllustShield = () => (
     <circle cx="36" cy="39" r="12" fill="url(#shGreen)" opacity="0.9"/>
     <rect x="31" y="35" width="10" height="9" rx="2" fill="white" opacity="0.9"/>
     <path d="M33 35 L33 33 C33 31 39 31 39 33 L39 35" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round"/>
-    <circle cx="36" cy="40" r="2" fill="#16A34A"/>
-    <path d="M36 42 L36 44" stroke="#16A34A" strokeWidth="2" strokeLinecap="round"/>
+    <circle cx="36" cy="40" r="2" fill="var(--bp-primary-dark)"/>
+    <path d="M36 42 L36 44" stroke="var(--bp-primary-dark)" strokeWidth="2" strokeLinecap="round"/>
     <ellipse cx="36" cy="58" rx="5" ry="1.5" fill="rgba(34,197,94,0.2)"/>
     <path d="M22 22 L28 24" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" strokeLinecap="round"/>
   </svg>
@@ -205,9 +206,9 @@ const IllustGlobe = () => (
     <circle cx="36" cy="36" r="22" fill="url(#glow)"/>
     <ellipse cx="36" cy="63" rx="16" ry="4" fill="rgba(59,130,246,0.2)"/>
     <ellipse cx="36" cy="14" rx="22" ry="4" fill="rgba(59,130,246,0.2)"/>
-    <path d="M28 22 C26 24 24 28 24 32 C24 36 25 38 28 40 C30 41 32 40 34 38 C35 36 36 32 35 28 C34 24 30 20 28 22Z" fill="#22C55E" opacity="0.95"/>
-    <path d="M34 28 C35 30 36 33 35 36 C34 39 32 41 30 42 C32 44 35 44 38 43 C40 42 41 40 41 37 C41 33 39 29 37 27 C36 26 34 26 34 28Z" fill="#16A34A"/>
-    <path d="M36 40 C37 42 38 44 37 46 C36 47 35 46 35 44 C34 43 35 41 36 40Z" fill="#22C55E" opacity="0.8"/>
+    <path d="M28 22 C26 24 24 28 24 32 C24 36 25 38 28 40 C30 41 32 40 34 38 C35 36 36 32 35 28 C34 24 30 20 28 22Z" fill="var(--bp-primary)" opacity="0.95"/>
+    <path d="M34 28 C35 30 36 33 35 36 C34 39 32 41 30 42 C32 44 35 44 38 43 C40 42 41 40 41 37 C41 33 39 29 37 27 C36 26 34 26 34 28Z" fill="var(--bp-primary-dark)"/>
+    <path d="M36 40 C37 42 38 44 37 46 C36 47 35 46 35 44 C34 43 35 41 36 40Z" fill="var(--bp-primary)" opacity="0.8"/>
     <path d="M21 26 C22 25 24 25 25 26 C25 28 24 29 23 29 C22 28 21 27 21 26Z" fill="#34D399" opacity="0.6"/>
     <path d="M44 20 C46 21 47 23 46 25 C45 26 43 26 42 24 C42 22 43 20 44 20Z" fill="#4ADE80" opacity="0.6"/>
     <ellipse cx="36" cy="36" rx="22" ry="6" stroke="rgba(147,197,253,0.3)" strokeWidth="0.8" fill="none"/>
@@ -252,14 +253,14 @@ const IllustCard = () => (
 const ShieldUserSVG = () => (
   <svg width="56" height="64" viewBox="0 0 56 64" fill="none">
     <defs>
-      <linearGradient id="sug1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#22C55E"/><stop offset="100%" stopColor="#16A34A"/></linearGradient>
+      <linearGradient id="sug1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="var(--bp-primary)"/><stop offset="100%" stopColor="var(--bp-primary-dark)"/></linearGradient>
     </defs>
     <path d="M28 4 L52 14 L52 36 C52 50 42 59 28 62 C14 59 4 50 4 36 L4 14 Z" fill="url(#sug1)"/>
-    <path d="M28 8 L48 17 L48 35 C48 48 39 56 28 59 C17 56 8 48 8 35 L8 17 Z" fill="#16A34A" opacity="0.5"/>
+    <path d="M28 8 L48 17 L48 35 C48 48 39 56 28 59 C17 56 8 48 8 35 L8 17 Z" fill="var(--bp-primary-dark)" opacity="0.5"/>
     <circle cx="28" cy="28" r="9" fill="white" opacity="0.95"/>
-    <circle cx="28" cy="26" r="4" fill="#22C55E"/>
+    <circle cx="28" cy="26" r="4" fill="var(--bp-primary)"/>
     <path d="M19 38 C19 33 22 31 28 31 C34 31 37 33 37 38" stroke="white" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-    <circle cx="28" cy="26" r="4" fill="#16A34A"/>
+    <circle cx="28" cy="26" r="4" fill="var(--bp-primary-dark)"/>
     <polyline points="24 26 27 29 33 23" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
@@ -267,7 +268,7 @@ const ShieldUserSVG = () => (
 const ShieldPhoneLockSVG = () => (
   <svg width="72" height="64" viewBox="0 0 72 64" fill="none">
     <defs>
-      <linearGradient id="spl1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#22C55E"/><stop offset="100%" stopColor="#16A34A"/></linearGradient>
+      <linearGradient id="spl1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="var(--bp-primary)"/><stop offset="100%" stopColor="var(--bp-primary-dark)"/></linearGradient>
       <linearGradient id="spl2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#374151"/><stop offset="100%" stopColor="#1F2937"/></linearGradient>
     </defs>
     <circle cx="36" cy="32" r="28" fill="rgba(34,197,94,0.08)"/>
@@ -900,8 +901,7 @@ function Step4({
   onPublish:()=>void; publishing:boolean; error:string|null;
 }) {
   const [photoIdx, setPhotoIdx] = useState(0);
-  const raw     = useRef(localStorage.getItem("fb_user"));
-  const fbUser  = raw.current ? JSON.parse(raw.current) : { firstName:"Vous", lastName:"", avatarUrl:null };
+  const fbUser  = getCurrentUser();
   const seller  = `${fbUser.firstName??""}${fbUser.lastName?" "+fbUser.lastName:""}`.trim()||"Vous";
   const selectedCo = COUNTRIES.find(c=>c.code===country)??COUNTRIES[0];
   const rawPrice   = price.replace(/[\s\u202f]/g,"");

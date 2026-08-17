@@ -1,0 +1,402 @@
+Je veux que tu implémentes complètement la page « Licences et crédits » de BrutePawa.
+
+OBJECTIF PRINCIPAL :
+
+La page doit afficher automatiquement les technologies, bibliothèques, frameworks, packages, polices, icônes et autres ressources tierces réellement utilisés par le projet BrutePawa, avec leurs informations de licence.
+
+IMPORTANT :
+NE JAMAIS INVENTER une bibliothèque, une licence, un auteur, une version ou un crédit.
+
+Toutes les informations affichées doivent provenir directement des fichiers et dépendances réellement présents dans le projet.
+
+━━━━━━━━━━━━━━━━━━━━━━
+1. ANALYSE COMPLÈTE DU PROJET
+━━━━━━━━━━━━━━━━━━━━━━
+
+Avant d'implémenter la page, analyse réellement le projet.
+
+Inspecte notamment :
+
+- package.json
+- package-lock.json
+- yarn.lock si présent
+- pnpm-lock.yaml si présent
+- bun.lock/bun.lockb si présent
+- node_modules si disponible
+- fichiers de configuration
+- imports réellement utilisés dans le code
+- assets
+- polices
+- bibliothèques d'icônes
+- frameworks
+- SDK
+- composants open source
+- dépendances natives
+- dépendances Expo/React Native si présentes
+- dépendances backend si présentes
+
+Identifie les dépendances réellement utilisées par BrutePawa.
+
+Ne te contente pas de lire uniquement package.json si certaines ressources sont utilisées autrement.
+
+━━━━━━━━━━━━━━━━━━━━━━
+2. INFORMATIONS À AFFICHER
+━━━━━━━━━━━━━━━━━━━━━━
+
+Pour chaque dépendance identifiée, afficher autant que possible :
+
+- Nom
+- Version réellement installée
+- Auteur ou organisation
+- Type
+- Licence
+- Lien officiel du projet
+- Courte description
+- Copyright lorsqu'il est disponible
+- Texte de licence lorsqu'il est nécessaire de l'afficher
+
+Exemple de présentation :
+
+React
+
+Bibliothèque utilisée pour construire l'interface de BrutePawa.
+
+Version
+19.x.x
+
+Licence
+MIT
+
+Auteur
+Meta Platforms, Inc.
+
+Site officiel
+[site officiel réellement trouvé dans les métadonnées du package]
+
+Ne mets jamais une valeur fictive.
+
+Si une information n'est pas disponible dans les métadonnées du package, affiche :
+
+« Information non disponible dans les métadonnées du projet »
+
+au lieu de l'inventer.
+
+━━━━━━━━━━━━━━━━━━━━━━
+3. DÉTECTION AUTOMATIQUE DES LICENCES
+━━━━━━━━━━━━━━━━━━━━━━
+
+Crée un système automatique permettant de détecter les licences des dépendances.
+
+Utilise en priorité :
+
+- les métadonnées package.json
+- les fichiers LICENSE
+- les fichiers LICENSE.md
+- les fichiers COPYING
+- les métadonnées npm
+- les informations disponibles dans les packages installés
+
+Détecte notamment :
+
+- MIT
+- Apache-2.0
+- BSD-2-Clause
+- BSD-3-Clause
+- ISC
+- MPL
+- GPL
+- LGPL
+- et toute autre licence réellement présente.
+
+NE suppose jamais qu'une bibliothèque utilise MIT simplement parce qu'elle est populaire.
+
+━━━━━━━━━━━━━━━━━━━━━━
+4. NE PAS INVENTER LES CRÉDITS
+━━━━━━━━━━━━━━━━━━━━━━
+
+C'est une règle ABSOLUE.
+
+Interdiction de :
+
+- créer de faux packages ;
+- créer de faux auteurs ;
+- inventer des licences ;
+- inventer des versions ;
+- inventer des liens ;
+- ajouter des bibliothèques uniquement pour rendre la page plus remplie ;
+- utiliser des exemples fictifs dans la production.
+
+Chaque élément affiché doit pouvoir être relié à une dépendance ou une ressource réellement utilisée par BrutePawa.
+
+━━━━━━━━━━━━━━━━━━━━━━
+5. CATÉGORIES
+━━━━━━━━━━━━━━━━━━━━━━
+
+Organise automatiquement les crédits dans des catégories lorsque cela est pertinent :
+
+1. Frameworks
+2. Bibliothèques
+3. Icônes
+4. Polices
+5. Outils de développement
+6. SDK et services
+7. Composants open source
+8. Autres ressources tierces
+
+Si une catégorie ne contient aucun élément, ne l'affiche pas.
+
+━━━━━━━━━━━━━━━━━━━━━━
+6. INTERFACE PREMIUM
+━━━━━━━━━━━━━━━━━━━━━━
+
+La page doit respecter exactement l'identité visuelle actuelle de BrutePawa.
+
+Utilise :
+
+- fond clair
+- vert BrutePawa #22C55E
+- cartes blanches
+- coins arrondis
+- ombres très légères
+- icônes élégantes
+- typographie moderne
+- excellente lisibilité mobile
+- espacements cohérents
+- hiérarchie visuelle premium
+
+En haut :
+
+← Retour
+
+Licences et crédits
+
+Puis une courte introduction :
+
+« BrutePawa utilise des technologies et ressources développées par des projets open source et des fournisseurs tiers. Nous remercions leurs auteurs et contributeurs. »
+
+Ne présente cette phrase que comme texte général, sans prétendre qu'une technologie particulière est utilisée.
+
+━━━━━━━━━━━━━━━━━━━━━━
+7. RECHERCHE
+━━━━━━━━━━━━━━━━━━━━━━
+
+Ajoute une barre de recherche :
+
+« Rechercher une bibliothèque... »
+
+La recherche doit fonctionner instantanément sur :
+
+- nom
+- auteur
+- licence
+- catégorie
+
+━━━━━━━━━━━━━━━━━━━━━━
+8. FILTRES
+━━━━━━━━━━━━━━━━━━━━━━
+
+Ajoute éventuellement des filtres :
+
+Toutes
+
+MIT
+
+Apache
+
+BSD
+
+ISC
+
+Autres
+
+Les filtres doivent être générés dynamiquement à partir des licences réellement détectées.
+
+Ne crée pas un filtre pour une licence inexistante dans le projet.
+
+━━━━━━━━━━━━━━━━━━━━━━
+9. PAGE DE DÉTAIL D'UNE LICENCE
+━━━━━━━━━━━━━━━━━━━━━━
+
+Lorsqu'un utilisateur appuie sur une bibliothèque, ouvrir une page ou une vue détaillée.
+
+Afficher :
+
+Nom
+
+Version
+
+Auteur
+
+Licence
+
+Description
+
+Site officiel
+
+Copyright
+
+Texte de licence, si disponible
+
+Dépendances pertinentes, si nécessaire
+
+Ajouter un bouton :
+
+« Visiter le projet »
+
+Le lien doit provenir des métadonnées officielles du package.
+
+Ne jamais inventer une URL.
+
+━━━━━━━━━━━━━━━━━━━━━━
+10. DÉPENDANCES INDIRECTES
+━━━━━━━━━━━━━━━━━━━━━━
+
+Si techniquement possible, prends également en compte les dépendances transitives réellement installées.
+
+Cependant, évite de rendre la page illisible.
+
+Prévois éventuellement une section :
+
+« Dépendances techniques »
+
+pour les packages indirects.
+
+Les packages directs et indirects doivent être distinguables.
+
+━━━━━━━━━━━━━━━━━━━━━━
+11. POLICES ET ICÔNES
+━━━━━━━━━━━━━━━━━━━━━━
+
+Analyse également les ressources non-NPM utilisées par BrutePawa.
+
+Par exemple :
+
+- fichiers .ttf
+- fichiers .otf
+- fichiers .woff
+- bibliothèques d'icônes
+- fichiers SVG provenant de bibliothèques tierces
+- assets open source
+
+Pour chaque ressource identifiée :
+
+Nom
+
+Version si disponible
+
+Auteur
+
+Licence
+
+Source
+
+Copyright si disponible
+
+Encore une fois :
+
+AUCUNE INFORMATION INVENTÉE.
+
+━━━━━━━━━━━━━━━━━━━━━━
+12. MISE À JOUR AUTOMATIQUE
+━━━━━━━━━━━━━━━━━━━━━━
+
+La page ne doit pas être une simple liste écrite manuellement.
+
+Elle doit être générée à partir des dépendances du projet.
+
+Lorsqu'une dépendance est :
+
+- ajoutée
+- supprimée
+- mise à jour
+
+les informations affichées doivent pouvoir être régénérées afin de rester synchronisées avec le projet.
+
+Crée une architecture propre permettant cette génération.
+
+Par exemple :
+
+scripts/generate-licenses.*
+
+ou une architecture équivalente adaptée au projet.
+
+━━━━━━━━━━━━━━━━━━━━━━
+13. PERFORMANCE
+━━━━━━━━━━━━━━━━━━━━━━
+
+La page doit rester rapide même si le projet contient beaucoup de dépendances.
+
+Utilise :
+
+- recherche efficace
+- rendu optimisé
+- chargement approprié
+- listes virtualisées si nécessaire
+
+Ne charge pas inutilement des fichiers de licence volumineux au démarrage.
+
+━━━━━━━━━━━━━━━━━━━━━━
+14. AUCUNE DONNÉE FICTIVE
+━━━━━━━━━━━━━━━━━━━━━━
+
+Avant de terminer, effectue une vérification.
+
+Pour CHAQUE élément affiché :
+
+- vérifie que le package existe réellement ;
+- vérifie que la version correspond réellement ;
+- vérifie la licence ;
+- vérifie l'auteur ;
+- vérifie le lien ;
+- vérifie la source de l'information.
+
+Si une donnée ne peut pas être vérifiée :
+
+NE L'INVENTE PAS.
+
+━━━━━━━━━━━━━━━━━━━━━━
+15. INTÉGRATION DANS BRUTEPAWA
+━━━━━━━━━━━━━━━━━━━━━━
+
+La page doit être accessible depuis :
+
+À propos → Licences et crédits
+
+Le bouton « Licences et crédits » doit fonctionner réellement.
+
+Le bouton retour doit revenir à la page « À propos ».
+
+Respecte le système de navigation déjà présent dans BrutePawa.
+
+Ne casse aucune fonctionnalité existante.
+
+━━━━━━━━━━━━━━━━━━━━━━
+16. TEST FINAL OBLIGATOIRE
+━━━━━━━━━━━━━━━━━━━━━━
+
+Après l'implémentation :
+
+1. Vérifie que la page s'ouvre.
+2. Vérifie que les données sont réellement générées à partir du projet.
+3. Vérifie qu'aucun crédit fictif n'est présent.
+4. Vérifie les licences.
+5. Vérifie les versions.
+6. Vérifie les liens.
+7. Vérifie la recherche.
+8. Vérifie les filtres.
+9. Vérifie les pages de détail.
+10. Vérifie l'affichage mobile.
+11. Vérifie le bouton retour.
+12. Vérifie qu'aucune fonctionnalité existante de BrutePawa n'a été cassée.
+
+IMPORTANT FINAL :
+
+Ne me donne pas simplement une maquette statique.
+
+Je veux une fonctionnalité réellement fonctionnelle et reliée aux dépendances du projet.
+
+La page « Licences et crédits » doit refléter les technologies et ressources réellement utilisées par BrutePawa à chaque génération.
+
+Aucune invention.
+Aucune donnée fictive.
+Aucun exemple laissé en production.

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 export const BADGE_CONFIG: Record<string, { icon: ReactNode; color: string; label: string; bg: string }> = {
-  verified:  { icon: <svg viewBox="0 0 12 12" width="10" height="10" fill="none"><path d="M2 6l2.5 2.5L10 3.5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>, color:"#22C55E", bg:"linear-gradient(135deg,#22C55E,#16A34A)", label:"Vérifié" },
+  verified:  { icon: <svg viewBox="0 0 12 12" width="10" height="10" fill="none"><path d="M2 6l2.5 2.5L10 3.5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>, color:"var(--bp-primary)", bg:"linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))", label:"Vérifié" },
   creator:   { icon: <span style={{ fontSize:9, lineHeight:1 }}>👑</span>, color:"#F59E0B", bg:"linear-gradient(135deg,#F59E0B,#D97706)", label:"Créateur" },
   vip:       { icon: <span style={{ fontSize:9, lineHeight:1 }}>💎</span>, color:"#8B5CF6", bg:"linear-gradient(135deg,#8B5CF6,#7C3AED)", label:"VIP" },
   premium:   { icon: <span style={{ fontSize:9, lineHeight:1 }}>⭐</span>, color:"#F59E0B", bg:"linear-gradient(135deg,#F59E0B,#EAB308)", label:"Premium" },

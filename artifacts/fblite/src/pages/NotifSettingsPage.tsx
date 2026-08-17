@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", text:"#111827", secondary:"#64748B", muted:"#9CA3AF", border:"#F1F5F9", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"var(--bp-primary)", text:"#111827", secondary:"#64748B", muted:"#9CA3AF", border:"#F1F5F9", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
 
 function SubHeader({ title, onBack }:{title:string;onBack:()=>void}) {
   return (

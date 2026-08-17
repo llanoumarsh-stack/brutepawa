@@ -9,19 +9,19 @@ import {
 } from "../lib/api";
 import { toast } from "sonner";
 
-const G = "#22C55E";
-const GD = "#16A34A";
+const G = "var(--bp-primary)";
+const GD = "var(--bp-primary-dark)";
 
 const CATEGORIES = ["Réseau social","Entreprise","Association","Personnalité publique","Artiste / Créateur","Média","Éducation","Santé","Sport","Religion","Commerce","Technologie","Mode","Tourisme","Politique","ONG / Humanitaire","Agriculture","Autre"];
 const TIMEZONES = ["(GMT-12:00) Ligne de changement de date","(GMT-08:00) Los Angeles","(GMT-05:00) New York","(GMT+00:00) Londres","(GMT+01:00) Paris","(GMT+01:00) Afrique de l'Ouest","(GMT+02:00) Johannesburg","(GMT+03:00) Nairobi","(GMT+05:30) Mumbai","(GMT+08:00) Singapour"];
 const ACTIONS = ["Aucun","Nous contacter","En savoir plus","S'inscrire","Commander","Réserver","Télécharger","Obtenir un devis"];
 const ROLE_LABELS: Record<string, string> = { owner: "Propriétaire", admin: "Administrateur", editor: "Éditeur", moderator: "Modérateur" };
-const ROLE_COLORS: Record<string, string> = { owner: "#22C55E", admin: "#6366F1", editor: "#F97316", moderator: "#0EA5E9" };
+const ROLE_COLORS: Record<string, string> = { owner: "var(--bp-primary)", admin: "#6366F1", editor: "#F97316", moderator: "#0EA5E9" };
 
 type View = "list" | "create" | "success" | "invite" | "profile" | "settings" | "settings-info" | "settings-roles" | "settings-about" | "settings-stats";
 
 /* ── Tiny helpers ─────────────────────────────────────────────────── */
-const AVCOLORS = ["#22C55E","#E91E63","#9C27B0","#D97706","#0EA5E9","#D32F2F","#00838F","#F97316"];
+const AVCOLORS = ["var(--bp-primary)","#E91E63","#9C27B0","#D97706","#0EA5E9","#D32F2F","#00838F","#F97316"];
 
 function Av({ name, src, size = 44 }: { name?: string | null; src?: string | null; size?: number }) {
   const bg = name ? AVCOLORS[name.charCodeAt(0) % AVCOLORS.length] : AVCOLORS[0];
@@ -44,7 +44,7 @@ function EmptyState({ icon, title, desc, btn, onBtn }: { icon: string; title: st
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "52px 24px", gap: 12, textAlign: "center" }}>
       <span style={{ fontSize: 52 }}>{icon}</span>
-      <p style={{ margin: 0, fontWeight: 700, fontSize: 17, color: "#111827" }}>{title}</p>
+      <p style={{ margin: 0, fontWeight: 700, fontSize: 17, color: "var(--theme-text)" }}>{title}</p>
       <p style={{ margin: 0, fontSize: 14, color: "#6B7280" }}>{desc}</p>
       {btn && onBtn && <button onClick={onBtn} style={{ background: G, color: "#fff", border: "none", borderRadius: 20, padding: "10px 24px", fontWeight: 700, fontSize: 14, cursor: "pointer", marginTop: 4 }}>{btn}</button>}
     </div>
@@ -64,15 +64,15 @@ function PreviewRow({ label, value }: { label: string; value: string }) {
   return (
     <div style={{ display: "flex", justifyContent: "space-between", gap: 12, paddingBottom: 8, borderBottom: "1px solid #F1F5F9" }}>
       <span style={{ fontSize: 13, color: "#6B7280", fontWeight: 500, flexShrink: 0 }}>{label}</span>
-      <span style={{ fontSize: 13, color: "#111827", fontWeight: 600, textAlign: "right" }}>{value}</span>
+      <span style={{ fontSize: 13, color: "var(--theme-text)", fontWeight: 600, textAlign: "right" }}>{value}</span>
     </div>
   );
 }
 
-const IST: React.CSSProperties = { width: "100%", border: "1.5px solid #E5E7EB", borderRadius: 12, padding: "11px 14px", fontSize: 14, color: "#111827", outline: "none", boxSizing: "border-box", background: "#fff" };
+const IST: React.CSSProperties = { width: "100%", border: "1.5px solid #E5E7EB", borderRadius: 12, padding: "11px 14px", fontSize: 14, color: "var(--theme-text)", outline: "none", boxSizing: "border-box", background: "var(--theme-surface)" };
 
 /* ── Sparkline ── */
-function Sparkline({ growth, color = "#22C55E" }: { growth: number; color?: string }) {
+function Sparkline({ growth, color = "var(--bp-primary)" }: { growth: number; color?: string }) {
   const trending = growth >= 0;
   const pts = trending
     ? [[0,28],[10,22],[20,24],[30,16],[40,18],[50,10],[60,12],[70,6],[80,8],[90,2]]
@@ -96,14 +96,14 @@ function Sparkline({ growth, color = "#22C55E" }: { growth: number; color?: stri
 /* ── Page card ── */
 function PageCard({ page, onOpen, onFollow, onSettings }: { page: ApiPage; onOpen: () => void; onFollow: () => void; onSettings: () => void }) {
   return (
-    <div style={{ background: "#fff", borderRadius: 28, overflow: "hidden", boxShadow: "0 4px 24px rgba(0,0,0,.07),0 1px 4px rgba(0,0,0,.04)", cursor: "pointer", border: "1px solid rgba(0,0,0,.04)" }}>
+    <div style={{ background: "var(--theme-surface)", borderRadius: 28, overflow: "hidden", boxShadow: "0 4px 24px rgba(0,0,0,.07),0 1px 4px rgba(0,0,0,.04)", cursor: "pointer", border: "1px solid rgba(0,0,0,.04)" }}>
       {/* Cover */}
       <div onClick={onOpen} style={{ height: 170, position: "relative", overflow: "hidden", background: page.coverUrl ? `url(${page.coverUrl}) center/cover` : "linear-gradient(135deg,#0C1A12 0%,#0A3D1F 45%,#064E3B 100%)" }}>
         {!page.coverUrl && (
           <svg viewBox="0 0 400 170" width="100%" height="100%" style={{ position:"absolute", inset:0 }} preserveAspectRatio="xMidYMid slice">
             <defs>
-              <radialGradient id="glow1" cx="70%" cy="40%" r="50%"><stop offset="0%" stopColor="#22C55E" stopOpacity=".25"/><stop offset="100%" stopColor="#22C55E" stopOpacity="0"/></radialGradient>
-              <radialGradient id="glow2" cx="20%" cy="80%" r="40%"><stop offset="0%" stopColor="#16A34A" stopOpacity=".2"/><stop offset="100%" stopColor="#16A34A" stopOpacity="0"/></radialGradient>
+              <radialGradient id="glow1" cx="70%" cy="40%" r="50%"><stop offset="0%" stopColor="var(--bp-primary)" stopOpacity=".25"/><stop offset="100%" stopColor="var(--bp-primary)" stopOpacity="0"/></radialGradient>
+              <radialGradient id="glow2" cx="20%" cy="80%" r="40%"><stop offset="0%" stopColor="var(--bp-primary-dark)" stopOpacity=".2"/><stop offset="100%" stopColor="var(--bp-primary-dark)" stopOpacity="0"/></radialGradient>
             </defs>
             <rect width="400" height="170" fill="url(#glow1)"/>
             <rect width="400" height="170" fill="url(#glow2)"/>
@@ -135,7 +135,7 @@ function PageCard({ page, onOpen, onFollow, onSettings }: { page: ApiPage; onOpe
               : <span style={{ color:"#fff", fontWeight:900, fontSize:26 }}>{page.name.charAt(0).toUpperCase()}</span>}
           </div>
           <button onClick={e=>{ e.stopPropagation(); page.isOwner ? onSettings() : onFollow(); }}
-            style={{ background: page.isOwner ? "#F1F5F9" : (page.isFollowed ? "#F1F5F9" : "linear-gradient(135deg,#22C55E,#16A34A)"), color: (page.isOwner || page.isFollowed) ? "#374151" : "#fff", border: page.isOwner || page.isFollowed ? "1.5px solid #E2E8F0" : "none", borderRadius:999, padding:"8px 18px", fontWeight:700, fontSize:13, cursor:"pointer", boxShadow: (page.isOwner || page.isFollowed) ? "none" : "0 4px 12px rgba(34,197,94,.3)", display:"flex", alignItems:"center", gap:6 }}>
+            style={{ background: page.isOwner ? "#F1F5F9" : (page.isFollowed ? "#F1F5F9" : "linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))"), color: (page.isOwner || page.isFollowed) ? "#374151" : "#fff", border: page.isOwner || page.isFollowed ? "1.5px solid #E2E8F0" : "none", borderRadius:999, padding:"8px 18px", fontWeight:700, fontSize:13, cursor:"pointer", boxShadow: (page.isOwner || page.isFollowed) ? "none" : "0 4px 12px rgba(34,197,94,.3)", display:"flex", alignItems:"center", gap:6 }}>
             {page.isOwner
               ? <><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#374151" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Gérer</>
               : page.isFollowed
@@ -150,7 +150,7 @@ function PageCard({ page, onOpen, onFollow, onSettings }: { page: ApiPage; onOpe
           <div style={{ display:"flex", alignItems:"center", gap:6 }}>
             <p style={{ margin:0, fontWeight:900, fontSize:18, color:"#0F172A", letterSpacing:"-0.3px" }}>{page.name}</p>
             {page.verified && (
-              <svg viewBox="0 0 22 22" width="18" height="18" fill="#22C55E">
+              <svg viewBox="0 0 22 22" width="18" height="18" fill="var(--bp-primary)">
                 <path d="M11 0C4.925 0 0 4.925 0 11s4.925 11 11 11 11-4.925 11-11S17.075 0 11 0zm5.02 8.71-6.13 6.13a.75.75 0 0 1-1.06 0L5.98 11a.75.75 0 1 1 1.06-1.06l2.32 2.32 5.6-5.6a.75.75 0 0 1 1.06 1.05z"/>
               </svg>
             )}
@@ -162,9 +162,9 @@ function PageCard({ page, onOpen, onFollow, onSettings }: { page: ApiPage; onOpe
         {/* Stats mini cards */}
         <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, marginTop:14 }}>
           {[
-            { label:"Abonnés", val:page.followersCount, icon:<svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"><path d="M14 17v-1a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v1"/><circle cx="8" cy="7" r="4"/><path d="M18 17v-1a4 4 0 0 0-3-3.87"/><path d="M15 3.13a4 4 0 0 1 0 7.75"/></svg> },
-            { label:"Publications", val:0, icon:<svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"><path d="M12 2H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7z"/><polyline points="12 2 12 7 17 7"/><line x1="13" y1="11" x2="7" y2="11"/><line x1="13" y1="14" x2="7" y2="14"/><polyline points="9 8 8 8 7 8"/></svg> },
-            { label:"Abonnements", val:0, icon:<svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg> },
+            { label:"Abonnés", val:page.followersCount, icon:<svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round"><path d="M14 17v-1a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v1"/><circle cx="8" cy="7" r="4"/><path d="M18 17v-1a4 4 0 0 0-3-3.87"/><path d="M15 3.13a4 4 0 0 1 0 7.75"/></svg> },
+            { label:"Publications", val:0, icon:<svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round"><path d="M12 2H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7z"/><polyline points="12 2 12 7 17 7"/><line x1="13" y1="11" x2="7" y2="11"/><line x1="13" y1="14" x2="7" y2="14"/><polyline points="9 8 8 8 7 8"/></svg> },
+            { label:"Abonnements", val:0, icon:<svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg> },
           ].map(s=>(
             <div key={s.label} style={{ background:"#F0FDF4", borderRadius:16, padding:"10px 8px", textAlign:"center" }}>
               <div style={{ display:"flex", justifyContent:"center", marginBottom:4 }}>{s.icon}</div>
@@ -398,7 +398,7 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
             <span style={{ fontWeight:900, fontSize:19, color:"#0F172A", letterSpacing:"-0.3px" }}>Pages</span>
           </div>
           <button onClick={()=>{ resetCreateForm(); setView("create"); }}
-            style={{ background:"linear-gradient(135deg,#22C55E,#16A34A)", color:"#fff", border:"none", borderRadius:999, padding:"9px 18px", fontWeight:700, fontSize:14, cursor:"pointer", display:"flex", alignItems:"center", gap:6, boxShadow:"0 4px 14px rgba(34,197,94,.3)", letterSpacing:"-0.1px" }}>
+            style={{ background:"linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))", color:"#fff", border:"none", borderRadius:999, padding:"9px 18px", fontWeight:700, fontSize:14, cursor:"pointer", display:"flex", alignItems:"center", gap:6, boxShadow:"0 4px 14px rgba(34,197,94,.3)", letterSpacing:"-0.1px" }}>
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Créer
           </button>
@@ -445,8 +445,8 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
               <div style={{ width:80, height:80, borderRadius:24, background:"#F0FDF4", display:"flex", alignItems:"center", justifyContent:"center" }}>
                 <svg viewBox="0 0 48 48" width="44" height="44" fill="none">
                   <rect x="6" y="10" width="36" height="28" rx="5" fill="#DCFCE7"/>
-                  <path d="M6 16l18 13L42 16" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"/>
-                  <circle cx="38" cy="36" r="8" fill="#22C55E"/>
+                  <path d="M6 16l18 13L42 16" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round"/>
+                  <circle cx="38" cy="36" r="8" fill="var(--bp-primary)"/>
                   <path d="M34 36l3 3 5-5" stroke="#fff" strokeWidth="2" strokeLinecap="round"/>
                 </svg>
               </div>
@@ -467,7 +467,7 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
                   </div>
                   <div style={{ display:"flex", flexDirection:"column", gap:7 }}>
                     <button onClick={async()=>{ await apiAcceptPageInvitation(inv.id); toast.success("Vous suivez maintenant cette page"); setInvitations(p=>p.filter(i=>i.id!==inv.id)); loadPages(); }}
-                      style={{ background:"linear-gradient(135deg,#22C55E,#16A34A)", color:"#fff", border:"none", borderRadius:10, padding:"7px 14px", fontSize:13, fontWeight:700, cursor:"pointer", boxShadow:"0 2px 8px rgba(34,197,94,.25)" }}>Accepter</button>
+                      style={{ background:"linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))", color:"#fff", border:"none", borderRadius:10, padding:"7px 14px", fontSize:13, fontWeight:700, cursor:"pointer", boxShadow:"0 2px 8px rgba(34,197,94,.25)" }}>Accepter</button>
                     <button onClick={async()=>{ await apiDeclinePageInvitation(inv.id); setInvitations(p=>p.filter(i=>i.id!==inv.id)); }}
                       style={{ background:"#F1F5F9", color:"#374151", border:"none", borderRadius:10, padding:"7px 14px", fontSize:13, fontWeight:600, cursor:"pointer" }}>Refuser</button>
                   </div>
@@ -481,7 +481,7 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
               <div style={{ width:80, height:80, borderRadius:24, background:"#F0FDF4", display:"flex", alignItems:"center", justifyContent:"center" }}>
                 <svg viewBox="0 0 48 48" width="44" height="44" fill="none">
                   <rect x="6" y="6" width="36" height="36" rx="8" fill="#DCFCE7"/>
-                  <path d="M24 16v16M16 24h16" stroke="#22C55E" strokeWidth="3" strokeLinecap="round"/>
+                  <path d="M24 16v16M16 24h16" stroke="var(--bp-primary)" strokeWidth="3" strokeLinecap="round"/>
                 </svg>
               </div>
               <div>
@@ -489,7 +489,7 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
                 <p style={{ margin:0, fontSize:14, color:"#64748B", maxWidth:240 }}>Créez votre première page pour partager votre univers avec votre communauté.</p>
               </div>
               <button onClick={()=>{ resetCreateForm(); setView("create"); }}
-                style={{ height:48, background:"linear-gradient(135deg,#22C55E,#16A34A)", color:"#fff", border:"none", borderRadius:14, padding:"0 28px", fontWeight:700, fontSize:15, cursor:"pointer", boxShadow:"0 4px 16px rgba(34,197,94,.3)", display:"flex", alignItems:"center", gap:8 }}>
+                style={{ height:48, background:"linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))", color:"#fff", border:"none", borderRadius:14, padding:"0 28px", fontWeight:700, fontSize:15, cursor:"pointer", boxShadow:"0 4px 16px rgba(34,197,94,.3)", display:"flex", alignItems:"center", gap:8 }}>
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 Créer une page
               </button>
@@ -690,14 +690,14 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
 
         {/* ── Confetti ── */}
         {[
-          { left:"8%",  delay:"0s",   dur:"2.8s", color:"#22C55E", size:9 },
+          { left:"8%",  delay:"0s",   dur:"2.8s", color:"var(--bp-primary)", size:9 },
           { left:"18%", delay:".3s",  dur:"3.2s", color:"#F59E0B", size:7 },
-          { left:"28%", delay:".7s",  dur:"2.5s", color:"#22C55E", size:11, round:"50%" },
+          { left:"28%", delay:".7s",  dur:"2.5s", color:"var(--bp-primary)", size:11, round:"50%" },
           { left:"38%", delay:".1s",  dur:"3.5s", color:"#FCD34D", size:8 },
           { left:"52%", delay:".5s",  dur:"2.9s", color:"#86EFAC", size:10 },
-          { left:"63%", delay:".2s",  dur:"3.1s", color:"#22C55E", size:7, round:"50%" },
+          { left:"63%", delay:".2s",  dur:"3.1s", color:"var(--bp-primary)", size:7, round:"50%" },
           { left:"73%", delay:".9s",  dur:"2.7s", color:"#F59E0B", size:9 },
-          { left:"83%", delay:".4s",  dur:"3.3s", color:"#22C55E", size:8 },
+          { left:"83%", delay:".4s",  dur:"3.3s", color:"var(--bp-primary)", size:8 },
           { left:"92%", delay:".6s",  dur:"2.6s", color:"#FCD34D", size:10, round:"50%" },
         ].map((c,i) => (
           <div key={i} className="confetti-piece" style={{
@@ -714,7 +714,7 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
             {/* Glow background */}
             <div style={{ position:"absolute", top:"50%", left:"50%", transform:"translate(-50%,-50%)", width:170, height:170, borderRadius:"50%", background:"radial-gradient(circle,#DCFCE7 0%,#F0FDF4 60%,transparent 100%)" }}/>
             {/* Pulse ring */}
-            <div style={{ position:"absolute", top:"50%", left:"50%", transform:"translate(-50%,-50%)", width:140, height:140, borderRadius:"50%", border:"2px solid #22C55E", animation:"pulse-ring 1.8s ease-out .4s infinite", opacity:.3 }}/>
+            <div style={{ position:"absolute", top:"50%", left:"50%", transform:"translate(-50%,-50%)", width:140, height:140, borderRadius:"50%", border:"2px solid var(--bp-primary)", animation:"pulse-ring 1.8s ease-out .4s infinite", opacity:.3 }}/>
 
             {/* Smartphone body */}
             <svg viewBox="0 0 120 200" width="120" height="200" style={{ position:"absolute", left:"50%", top:"50%", transform:"translate(-50%,-55%)" }}>
@@ -728,32 +728,32 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
               {/* Screen content */}
               <rect x="24" y="32" width="72" height="38" rx="6" fill="#DCFCE7"/>
               {/* Landscape placeholder */}
-              <path d="M24 56 L44 42 L58 52 L72 38 L96 56 Z" fill="#22C55E" opacity=".5"/>
-              <circle cx="35" cy="42" r="5" fill="#22C55E" opacity=".6"/>
+              <path d="M24 56 L44 42 L58 52 L72 38 L96 56 Z" fill="var(--bp-primary)" opacity=".5"/>
+              <circle cx="35" cy="42" r="5" fill="var(--bp-primary)" opacity=".6"/>
               {/* Lines */}
               <rect x="24" y="76" width="72" height="7" rx="3.5" fill="#E5E7EB"/>
               <rect x="24" y="88" width="52" height="7" rx="3.5" fill="#E5E7EB"/>
               <rect x="24" y="104" width="72" height="7" rx="3.5" fill="#F0FDF4"/>
               <rect x="24" y="116" width="44" height="7" rx="3.5" fill="#F0FDF4"/>
               {/* Bottom button */}
-              <rect x="24" y="134" width="72" height="20" rx="10" fill="#22C55E"/>
+              <rect x="24" y="134" width="72" height="20" rx="10" fill="var(--bp-primary)"/>
               <rect x="36" y="140" width="48" height="8" rx="4" fill="rgba(255,255,255,.5)"/>
               {/* Home bar */}
               <rect x="44" y="164" width="32" height="4" rx="2" fill="#D1D5DB"/>
               {/* Decorative plant */}
               <ellipse cx="10" cy="190" rx="10" ry="12" fill="#86EFAC" opacity=".5"/>
-              <line x1="10" y1="178" x2="10" y2="190" stroke="#22C55E" strokeWidth="1.5"/>
-              <path d="M10 186 Q4 180 2 174" stroke="#22C55E" strokeWidth="1.2" fill="none"/>
-              <path d="M10 184 Q16 178 18 172" stroke="#22C55E" strokeWidth="1.2" fill="none"/>
+              <line x1="10" y1="178" x2="10" y2="190" stroke="var(--bp-primary)" strokeWidth="1.5"/>
+              <path d="M10 186 Q4 180 2 174" stroke="var(--bp-primary)" strokeWidth="1.2" fill="none"/>
+              <path d="M10 184 Q16 178 18 172" stroke="var(--bp-primary)" strokeWidth="1.2" fill="none"/>
               {/* Stars / sparkles */}
               <path d="M100 20 L102 16 L104 20 L108 22 L104 24 L102 28 L100 24 L96 22 Z" fill="#FCD34D" opacity=".8"/>
               <path d="M16 30 L17.2 27 L18.4 30 L21 31 L18.4 32 L17.2 35 L16 32 L13 31 Z" fill="#FCD34D" opacity=".6"/>
-              <circle cx="108" cy="60" r="3" fill="#22C55E" opacity=".5"/>
+              <circle cx="108" cy="60" r="3" fill="var(--bp-primary)" opacity=".5"/>
               <circle cx="12" cy="70" r="2" fill="#F59E0B" opacity=".6"/>
             </svg>
 
             {/* Check badge */}
-            <div style={{ position:"absolute", bottom:24, right:12, width:52, height:52, borderRadius:"50%", background:"linear-gradient(135deg,#22C55E,#16A34A)", boxShadow:"0 8px 24px rgba(34,197,94,.45)", display:"flex", alignItems:"center", justifyContent:"center", animation:"pop-in .5s cubic-bezier(.22,1,.36,1) .5s both" }}>
+            <div style={{ position:"absolute", bottom:24, right:12, width:52, height:52, borderRadius:"50%", background:"linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))", boxShadow:"0 8px 24px rgba(34,197,94,.45)", display:"flex", alignItems:"center", justifyContent:"center", animation:"pop-in .5s cubic-bezier(.22,1,.36,1) .5s both" }}>
               <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
@@ -764,7 +764,7 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
               <rect x="8" y="18" width="14" height="8" rx="2" fill="#F59E0B"/>
               <polygon points="8,18 4,8 22,18" fill="#FCD34D"/>
               {[0,1,2].map(i=>(
-                <line key={i} x1={12+i*3} y1="8" x2={10+i*4} y2={i%2===0?0:4} stroke={["#22C55E","#F59E0B","#22C55E"][i]} strokeWidth="1.5" strokeLinecap="round"/>
+                <line key={i} x1={12+i*3} y1="8" x2={10+i*4} y2={i%2===0?0:4} stroke={["var(--bp-primary)","#F59E0B","var(--bp-primary)"][i]} strokeWidth="1.5" strokeLinecap="round"/>
               ))}
             </svg>
           </div>
@@ -773,7 +773,7 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
           <div className="fade-up-1" style={{ marginTop:8, textAlign:"center" }}>
             <h1 style={{ margin:"0 0 10px", fontWeight:900, fontSize:26, letterSpacing:"-0.5px", color:"#0F172A", lineHeight:1.2 }}>
               Page créée avec succès{" "}
-              <span style={{ color:"#22C55E" }}>!</span>
+              <span style={{ color:"var(--bp-primary)" }}>!</span>
             </h1>
             <p style={{ margin:0, fontSize:15, color:"#64748B", lineHeight:1.55, maxWidth:300 }}>
               Votre page est prête. Personnalisez-la et invitez vos amis à vous rejoindre.
@@ -791,7 +791,7 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
                   ? <img src={avatarUrl} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
                   : <span style={{ color:"#fff", fontWeight:900, fontSize:22, letterSpacing:"-0.5px" }}>{pageName.charAt(0).toUpperCase()}</span>}
               </div>
-              <div style={{ position:"absolute", bottom:-2, right:-2, width:18, height:18, borderRadius:"50%", background:"#22C55E", border:"2px solid #fff", display:"flex", alignItems:"center", justifyContent:"center" }}>
+              <div style={{ position:"absolute", bottom:-2, right:-2, width:18, height:18, borderRadius:"50%", background:"var(--bp-primary)", border:"2px solid #fff", display:"flex", alignItems:"center", justifyContent:"center" }}>
                 <svg viewBox="0 0 10 10" width="9" height="9" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round">
                   <polyline points="8 2.5 4 7.5 2 5.5"/>
                 </svg>
@@ -817,7 +817,7 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
           {/* Stats row */}
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:0 }}>
             {[
-              { icon:<svg viewBox="0 0 22 22" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, label:"Abonnés", val:selectedPage?.followersCount??0 },
+              { icon:<svg viewBox="0 0 22 22" width="20" height="20" fill="none" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, label:"Abonnés", val:selectedPage?.followersCount??0 },
               { icon:<svg viewBox="0 0 22 22" width="20" height="20" fill="none" stroke="#6366F1" strokeWidth="1.8" strokeLinecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>, label:"Publications", val:0 },
               { icon:<svg viewBox="0 0 22 22" width="20" height="20" fill="none" stroke="#0EA5E9" strokeWidth="1.8" strokeLinecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>, label:"Vues", val:0 },
             ].map((s,i) => (
@@ -836,7 +836,7 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
         <div className="fade-up-4" style={{ padding:"20px 20px 0", display:"flex", flexDirection:"column", gap:12 }}>
           {/* Primary CTA */}
           <button onClick={()=>{ if(selectedPage) loadFriends(selectedPage.id); setView("invite"); }}
-            style={{ width:"100%", background:"linear-gradient(135deg,#22C55E 0%,#16A34A 100%)", color:"#fff", border:"none", borderRadius:16, padding:"16px 0", fontWeight:800, fontSize:16, cursor:"pointer", boxShadow:"0 8px 24px rgba(34,197,94,.35),0 2px 8px rgba(34,197,94,.2)", display:"flex", alignItems:"center", justifyContent:"center", gap:10, letterSpacing:"-0.2px", position:"relative", overflow:"hidden" }}>
+            style={{ width:"100%", background:"linear-gradient(135deg,var(--bp-primary) 0%,var(--bp-primary-dark) 100%)", color:"#fff", border:"none", borderRadius:16, padding:"16px 0", fontWeight:800, fontSize:16, cursor:"pointer", boxShadow:"0 8px 24px rgba(34,197,94,.35),0 2px 8px rgba(34,197,94,.2)", display:"flex", alignItems:"center", justifyContent:"center", gap:10, letterSpacing:"-0.2px", position:"relative", overflow:"hidden" }}>
             {/* Shine */}
             <div style={{ position:"absolute", top:0, left:"-30%", width:"60%", height:"100%", background:"linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent)", transform:"skewX(-20deg)" }}/>
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round">
@@ -961,7 +961,7 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
         </div>
 
         {/* ── Cover 260px ── */}
-        <div style={{ position:"relative", height:260, background:selectedPage.coverUrl?`url(${selectedPage.coverUrl}) center/cover`:"linear-gradient(135deg,#22C55E 0%,#16A34A 55%,#15803D 100%)", overflow:"hidden" }}>
+        <div style={{ position:"relative", height:260, background:selectedPage.coverUrl?`url(${selectedPage.coverUrl}) center/cover`:"linear-gradient(135deg,var(--bp-primary) 0%,var(--bp-primary-dark) 55%,#15803D 100%)", overflow:"hidden" }}>
           {/* Geometric patterns */}
           <svg viewBox="0 0 400 260" width="100%" height="100%" style={{ position:"absolute", inset:0 }} preserveAspectRatio="xMidYMid slice">
             <circle cx="340" cy="40"  r="80"  fill="rgba(255,255,255,.06)"/>
@@ -1049,7 +1049,7 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
                     Modifier
                   </button>
                   <button className="action-btn" onClick={()=>{ loadFriends(selectedPage.id); setView("invite"); }}
-                    style={{ flex:1, height:52, background:"linear-gradient(135deg,#22C55E,#16A34A)", border:"none", borderRadius:16, fontWeight:700, fontSize:15, color:"#fff", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8, boxShadow:"0 6px 20px rgba(34,197,94,.35)" }}>
+                    style={{ flex:1, height:52, background:"linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))", border:"none", borderRadius:16, fontWeight:700, fontSize:15, color:"#fff", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8, boxShadow:"0 6px 20px rgba(34,197,94,.35)" }}>
                     <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M3 3l1.664 9.143a2 2 0 0 0 1.958 1.636L15 14l-3 3-3-3"/><path d="M15 14l3 3 3-3"/><path d="M9 11V3l12 12"/></svg>
                     Promouvoir
                   </button>
@@ -1057,7 +1057,7 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
               ) : (
                 <>
                   <button className="action-btn" onClick={()=>handleFollow(selectedPage.id, !!selectedPage.isFollowed)}
-                    style={{ flex:1, height:52, background:selectedPage.isFollowed?"#F1F5F9":"linear-gradient(135deg,#22C55E,#16A34A)", color:selectedPage.isFollowed?"#374151":"#fff", border:selectedPage.isFollowed?"1.5px solid #E2E8F0":"none", borderRadius:16, fontWeight:700, fontSize:15, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8, boxShadow:selectedPage.isFollowed?"none":"0 6px 20px rgba(34,197,94,.35)" }}>
+                    style={{ flex:1, height:52, background:selectedPage.isFollowed?"#F1F5F9":"linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))", color:selectedPage.isFollowed?"#374151":"#fff", border:selectedPage.isFollowed?"1.5px solid #E2E8F0":"none", borderRadius:16, fontWeight:700, fontSize:15, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8, boxShadow:selectedPage.isFollowed?"none":"0 6px 20px rgba(34,197,94,.35)" }}>
                     {selectedPage.isFollowed
                       ? <><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#374151" strokeWidth="2.2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>Abonné</>
                       : <><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>S'abonner</>
@@ -1089,17 +1089,17 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
             <div style={{ width:80, height:80, borderRadius:24, background:"#F0FDF4", display:"flex", alignItems:"center", justifyContent:"center" }}>
               <svg viewBox="0 0 48 48" width="44" height="44" fill="none">
                 <rect x="8" y="6" width="32" height="36" rx="5" fill="#DCFCE7"/>
-                <path d="M16 17h16M16 23h16M16 29h10" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"/>
-                <path d="M34 34l5 5" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"/>
-                <circle cx="34" cy="30" r="5" fill="#22C55E" opacity=".3" stroke="#22C55E" strokeWidth="2"/>
-                <path d="M32 30h4M34 28v4" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"/>
+                <path d="M16 17h16M16 23h16M16 29h10" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round"/>
+                <path d="M34 34l5 5" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round"/>
+                <circle cx="34" cy="30" r="5" fill="var(--bp-primary)" opacity=".3" stroke="var(--bp-primary)" strokeWidth="2"/>
+                <path d="M32 30h4M34 28v4" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round"/>
               </svg>
             </div>
             <div>
               <p style={{ margin:"0 0 6px", fontWeight:800, fontSize:18, color:"#0F172A" }}>Aucune publication</p>
               <p style={{ margin:0, fontSize:14, color:"#64748B", lineHeight:1.55, maxWidth:260 }}>Partagez du contenu avec votre communauté et engagez votre audience.</p>
             </div>
-            <button style={{ height:44, background:"linear-gradient(135deg,#22C55E,#16A34A)", color:"#fff", border:"none", borderRadius:14, padding:"0 24px", fontWeight:700, fontSize:14, cursor:"pointer", display:"flex", alignItems:"center", gap:8, boxShadow:"0 4px 14px rgba(34,197,94,.3)" }}>
+            <button style={{ height:44, background:"linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))", color:"#fff", border:"none", borderRadius:14, padding:"0 24px", fontWeight:700, fontSize:14, cursor:"pointer", display:"flex", alignItems:"center", gap:8, boxShadow:"0 4px 14px rgba(34,197,94,.3)" }}>
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
               Créer une publication
             </button>
@@ -1120,7 +1120,7 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
             {selectedPage.phone && (
               <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:14 }}>
                 <div style={{ width:36, height:36, borderRadius:10, background:"#F0FDF4", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13 19.79 19.79 0 0 1 1.61 4.4 2 2 0 0 1 3.6 2.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.16 6.16l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13 19.79 19.79 0 0 1 1.61 4.4 2 2 0 0 1 3.6 2.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.16 6.16l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                 </div>
                 <span style={{ fontSize:14, color:"#374151" }}>{selectedPage.phone}</span>
               </div>
@@ -1205,7 +1205,7 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
         {profileTab==="plus" && (
           <div style={{ padding:"12px 16px", display:"flex", flexDirection:"column", gap:8 }}>
             {(isOwner ? [
-              { label:"Outils professionnels", desc:"Gérez vos activités", icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>, bg:"#F0FDF4" },
+              { label:"Outils professionnels", desc:"Gérez vos activités", icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>, bg:"#F0FDF4" },
               { label:"Centre publicitaire", desc:"Créez des publicités", icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>, bg:"#FFF7ED" },
               { label:"Boîte de réception", desc:"Messages entrants", icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#6366F1" strokeWidth="2" strokeLinecap="round"><polyline points="22 13 16 13 14 16 10 16 8 13 2 13"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>, bg:"#EEF2FF" },
               { label:"Statistiques", desc:"Performances et croissance", icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0EA5E9" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>, bg:"#F0F9FF", action:()=>{ loadStats(selectedPage.id); setView("settings-stats"); } },
@@ -1239,7 +1239,7 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
     const SITEMS = [
       {
         id:"settings-info" as View,
-        icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>,
+        icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>,
         iconBg:"#F0FDF4", label:"Informations générales", desc:"Nom, description, catégorie",
       },
       {
@@ -1504,8 +1504,8 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
     const KPI = stats ? [
       {
         label:"Vues de la page", val:stats.viewsTotal, growth:stats.viewsGrowth,
-        icon:<svg viewBox="0 0 22 22" width="19" height="19" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M1 11s4-8 10-8 10 8 10 8-4 8-10 8-10-8-10-8z"/><circle cx="11" cy="11" r="3"/></svg>,
-        bg:"#F0FDF4", color:"#22C55E",
+        icon:<svg viewBox="0 0 22 22" width="19" height="19" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"><path d="M1 11s4-8 10-8 10 8 10 8-4 8-10 8-10-8-10-8z"/><circle cx="11" cy="11" r="3"/></svg>,
+        bg:"#F0FDF4", color:"var(--bp-primary)",
       },
       {
         label:"Nouveaux abonnés", val:stats.newFollowers, growth:stats.followersGrowth,
@@ -1549,7 +1549,7 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
           {/* Period selector */}
           <div style={{ position:"relative", display:"inline-block" }}>
             <div style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)", pointerEvents:"none" }}>
-              <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"><rect x="2" y="3" width="16" height="15" rx="2"/><line x1="6" y1="1" x2="6" y2="5"/><line x1="14" y1="1" x2="14" y2="5"/><line x1="2" y1="9" x2="18" y2="9"/></svg>
+              <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round"><rect x="2" y="3" width="16" height="15" rx="2"/><line x1="6" y1="1" x2="6" y2="5"/><line x1="14" y1="1" x2="14" y2="5"/><line x1="2" y1="9" x2="18" y2="9"/></svg>
             </div>
             <select value={statsPeriod} onChange={e=>setStatsPeriod(e.target.value)}
               style={{ appearance:"none", WebkitAppearance:"none", background:"#fff", border:"1.5px solid #E2E8F0", borderRadius:18, padding:"11px 36px 11px 36px", fontSize:14, color:"#0F172A", fontWeight:600, outline:"none", cursor:"pointer", boxShadow:"0 1px 4px rgba(0,0,0,.04)", fontFamily:"inherit" }}>
@@ -1588,10 +1588,10 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
                   {/* Growth */}
                   <div style={{ display:"flex", alignItems:"center", gap:4 }}>
                     <div style={{ display:"flex", alignItems:"center", gap:3, background:kpi.growth>=0?"#F0FDF4":"#FFF1F2", borderRadius:8, padding:"3px 8px" }}>
-                      <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke={kpi.growth>=0?"#22C55E":"#EF4444"} strokeWidth="2" strokeLinecap="round">
+                      <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke={kpi.growth>=0?"var(--bp-primary)":"#EF4444"} strokeWidth="2" strokeLinecap="round">
                         {kpi.growth>=0 ? <><polyline points="14 5 8 11 2 5"/></> : <><polyline points="2 11 8 5 14 11"/></>}
                       </svg>
-                      <span style={{ fontSize:12, fontWeight:800, color:kpi.growth>=0?"#22C55E":"#EF4444" }}>{kpi.growth>=0?"+":""}{kpi.growth.toFixed(1)}%</span>
+                      <span style={{ fontSize:12, fontWeight:800, color:kpi.growth>=0?"var(--bp-primary)":"#EF4444" }}>{kpi.growth>=0?"+":""}{kpi.growth.toFixed(1)}%</span>
                     </div>
                     <span style={{ fontSize:11, color:"#94A3B8" }}>vs 7 jours préc.</span>
                   </div>
@@ -1643,7 +1643,7 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
                             </div>
                           )}
                           {/* Bar */}
-                          <div className="stat-bar" style={{ animationDelay:`${i*40}ms`, width:"100%", height:`${Math.max(hPct*100, 4)}%`, background:isActive?`linear-gradient(to top,#16A34A,#4ADE80)`:`linear-gradient(to top,#22C55E,#86EFAC)`, borderRadius:"6px 6px 0 0", boxShadow:isActive?"0 0 0 2px #16A34A":"none", transition:"background 200ms, box-shadow 200ms" }}/>
+                          <div className="stat-bar" style={{ animationDelay:`${i*40}ms`, width:"100%", height:`${Math.max(hPct*100, 4)}%`, background:isActive?`linear-gradient(to top,var(--bp-primary-dark),#4ADE80)`:`linear-gradient(to top,var(--bp-primary),#86EFAC)`, borderRadius:"6px 6px 0 0", boxShadow:isActive?"0 0 0 2px var(--bp-primary-dark)":"none", transition:"background 200ms, box-shadow 200ms" }}/>
                           {/* Day label */}
                           <span style={{ fontSize:9.5, color:"#94A3B8", marginTop:5, fontWeight:500 }}>{pt.day}</span>
                         </div>
@@ -1657,7 +1657,7 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
 
           {/* Growth summary card */}
           {stats && (
-            <div style={{ background:"linear-gradient(135deg,#22C55E,#16A34A)", borderRadius:20, padding:"14px 18px", display:"flex", alignItems:"center", gap:10, boxShadow:"0 4px 16px rgba(34,197,94,.25)", marginBottom:8 }}>
+            <div style={{ background:"linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))", borderRadius:20, padding:"14px 18px", display:"flex", alignItems:"center", gap:10, boxShadow:"0 4px 16px rgba(34,197,94,.25)", marginBottom:8 }}>
               <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round">
                 <polyline points="18 4 10 12 6 8 2 12"/>
                 <polyline points="14 4 18 4 18 8"/>
@@ -1700,7 +1700,7 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
               {/* Hero */}
               <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:10, padding:"8px 24px 24px" }}>
                 <div style={{ width:64, height:64, borderRadius:20, background:"linear-gradient(135deg,#F0FDF4,#DCFCE7)", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 4px 16px rgba(34,197,94,.15)" }}>
-                  <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round">
+                  <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round">
                     <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
                   </svg>
                 </div>
@@ -1714,7 +1714,7 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
               <div style={{ padding:"0 16px", display:"flex", flexDirection:"column", gap:10 }}>
                 {[
                   {
-                    icon:<svg viewBox="0 0 22 22" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M1 11s4-8 10-8 10 8 10 8-4 8-10 8-10-8-10-8z"/><circle cx="11" cy="11" r="3"/></svg>,
+                    icon:<svg viewBox="0 0 22 22" width="20" height="20" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"><path d="M1 11s4-8 10-8 10 8 10 8-4 8-10 8-10-8-10-8z"/><circle cx="11" cy="11" r="3"/></svg>,
                     bg:"#F0FDF4", label:"Vues de la page",
                     desc:"Nombre de fois où votre page a été affichée par les utilisateurs.",
                   },
@@ -1748,13 +1748,13 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
                 {/* Période analysée */}
                 <div style={{ display:"flex", alignItems:"center", gap:14, background:"#F0FDF4", border:"1.5px solid #DCFCE7", borderRadius:20, padding:"16px 16px" }}>
                   <div style={{ width:42, height:42, borderRadius:13, background:"#DCFCE7", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-                    <svg viewBox="0 0 22 22" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><rect x="3" y="4" width="16" height="15" rx="2"/><line x1="7" y1="2" x2="7" y2="6"/><line x1="15" y1="2" x2="15" y2="6"/><line x1="3" y1="10" x2="19" y2="10"/></svg>
+                    <svg viewBox="0 0 22 22" width="20" height="20" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"><rect x="3" y="4" width="16" height="15" rx="2"/><line x1="7" y1="2" x2="7" y2="6"/><line x1="15" y1="2" x2="15" y2="6"/><line x1="3" y1="10" x2="19" y2="10"/></svg>
                   </div>
                   <div style={{ flex:1 }}>
                     <p style={{ margin:"0 0 4px", fontWeight:800, fontSize:15, color:"#15803D" }}>Période analysée</p>
-                    <p style={{ margin:0, fontSize:13, color:"#16A34A", lineHeight:1.5 }}>Ces données correspondent à la période actuellement sélectionnée.</p>
+                    <p style={{ margin:0, fontSize:13, color:"var(--bp-primary-dark)", lineHeight:1.5 }}>Ces données correspondent à la période actuellement sélectionnée.</p>
                   </div>
-                  <div style={{ background:"#22C55E", borderRadius:10, padding:"5px 10px", flexShrink:0 }}>
+                  <div style={{ background:"var(--bp-primary)", borderRadius:10, padding:"5px 10px", flexShrink:0 }}>
                     <span style={{ fontSize:11, fontWeight:800, color:"#fff", whiteSpace:"nowrap" }}>{statsPeriod}</span>
                   </div>
                 </div>
@@ -1778,7 +1778,7 @@ export default function PagesPage({ initialPageId }: { initialPageId?: number })
                     ].map(tip=>(
                       <div key={tip} style={{ display:"flex", alignItems:"flex-start", gap:10 }}>
                         <div style={{ width:20, height:20, borderRadius:6, background:"#F0FDF4", border:"1.5px solid #DCFCE7", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, marginTop:1 }}>
-                          <svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="13 4 6 11 3 8"/></svg>
+                          <svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round"><polyline points="13 4 6 11 3 8"/></svg>
                         </div>
                         <p style={{ margin:0, fontSize:13.5, color:"#374151", lineHeight:1.4 }}>{tip}</p>
                       </div>

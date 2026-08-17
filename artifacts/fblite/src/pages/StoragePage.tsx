@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#111827", secondary:"#64748B", muted:"#9CA3AF", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"var(--bp-primary)", primaryDark:"var(--bp-primary-dark)", text:"#111827", secondary:"#64748B", muted:"#9CA3AF", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
 
 function SubHeader({ title, onBack }:{title:string;onBack:()=>void}) {
   return (
@@ -18,7 +18,7 @@ function SubHeader({ title, onBack }:{title:string;onBack:()=>void}) {
 }
 
 const CATS = [
-  { label:"Publications", mo:420, color:"#22C55E" },
+  { label:"Publications", mo:420, color:"var(--bp-primary)" },
   { label:"Médias",       mo:420, color:"#3B82F6" },
   { label:"Messages",     mo:420, color:"#F59E0B" },
   { label:"Cache",        mo:120, color:"#8B5CF6" },
@@ -89,7 +89,7 @@ export default function StoragePage() {
               <span style={{ fontSize:13,fontWeight:700,color:C.text }}>{usedPct}%</span>
             </div>
             <div style={{ height:10,background:"#F1F5F9",borderRadius:999,overflow:"hidden" }}>
-              <div style={{ height:"100%",width:`${usedPct}%`,background:`linear-gradient(90deg,#22C55E,#16A34A)`,borderRadius:999,boxShadow:"0 0 8px rgba(34,197,94,0.4)",transition:"width 1.2s ease" }}/>
+              <div style={{ height:"100%",width:`${usedPct}%`,background:`linear-gradient(90deg,var(--bp-primary),var(--bp-primary-dark))`,borderRadius:999,boxShadow:"0 0 8px rgba(34,197,94,0.4)",transition:"width 1.2s ease" }}/>
             </div>
             <div style={{ display:"flex",justifyContent:"space-between",marginTop:6 }}>
               <span style={{ fontSize:11,color:C.muted }}>1,24 Go utilisés</span>
@@ -139,7 +139,7 @@ export default function StoragePage() {
 
       {/* Fixed CTA */}
       <div style={{ position:"fixed",bottom:0,left:0,right:0,padding:"12px 14px",paddingBottom:"calc(12px + env(safe-area-inset-bottom,0px))",background:"rgba(248,250,252,0.97)",backdropFilter:"blur(16px)",borderTop:"1px solid #F1F5F9" }}>
-        <button style={{ width:"100%",padding:"16px",borderRadius:18,background:"linear-gradient(135deg,#16A34A,#22C55E)",border:"none",color:"#fff",fontWeight:700,fontSize:16,cursor:"pointer",boxShadow:"0 8px 24px rgba(34,197,94,0.3)",display:"flex",alignItems:"center",justifyContent:"center",gap:10 }}>
+        <button style={{ width:"100%",padding:"16px",borderRadius:18,background:"linear-gradient(135deg,var(--bp-primary-dark),var(--bp-primary))",border:"none",color:"#fff",fontWeight:700,fontSize:16,cursor:"pointer",boxShadow:"0 8px 24px rgba(34,197,94,0.3)",display:"flex",alignItems:"center",justifyContent:"center",gap:10 }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
           Gérer le stockage
         </button>

@@ -8,8 +8,8 @@ import {
 } from "../lib/api";
 
 /* ─── Design tokens ──────────────────────────────────────────── */
-const G    = "#22C55E";
-const GD   = "#16A34A";
+const G    = "var(--bp-primary)";
+const GD   = "var(--bp-primary-dark)";
 const BG   = "#F8FAFC";
 const CARD = "#FFFFFF";
 const T1   = "#111827";
@@ -40,7 +40,7 @@ function timeAgo(d: string): string {
   return new Date(d).toLocaleDateString("fr-FR", { day: "2-digit", month: "short" });
 }
 
-const AV_COLORS = ["#22C55E","#E91E63","#9C27B0","#D97706",G,"#0EA5E9","#D32F2F","#00838F"];
+const AV_COLORS = ["var(--bp-primary)","#E91E63","#9C27B0","#D97706",G,"#0EA5E9","#D32F2F","#00838F"];
 function avBg(n: string | null) {
   if (!n) return AV_COLORS[0];
   let h = 0;
@@ -59,7 +59,7 @@ function TypeBadge({ type }: { type: string }) {
     friend:  { bg: G,        icon: <svg viewBox="0 0 24 24" width="11" height="11" fill="#fff"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> },
     like:    { bg: "#EF4444", icon: <svg viewBox="0 0 24 24" width="11" height="11" fill="#fff"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> },
     love:    { bg: "#E91E63", icon: <svg viewBox="0 0 24 24" width="11" height="11" fill="#fff"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> },
-    comment: { bg: "#22C55E", icon: <svg viewBox="0 0 24 24" width="11" height="11" fill="#fff"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> },
+    comment: { bg: "var(--bp-primary)", icon: <svg viewBox="0 0 24 24" width="11" height="11" fill="#fff"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> },
     message: { bg: "#06B6D4", icon: <svg viewBox="0 0 24 24" width="11" height="11" fill="#fff"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> },
     job:     { bg: "#F97316", icon: <svg viewBox="0 0 24 24" width="11" height="11" fill="#fff"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> },
     marketplace: { bg: "#6366F1", icon: <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg> },

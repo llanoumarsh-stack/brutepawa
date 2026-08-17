@@ -44,14 +44,14 @@ const bcFetch = async (path: string, opts?: RequestInit) => {
 ═══════════════════════════════════════════════════════════════ */
 const IcBack       = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M5 12l7-7M5 12l7 7"/></svg>;
 const IcDots       = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>;
-const IcInfo       = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>;
-const IcEditPeople = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>;
-const IcAddPerson  = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>;
-const IcPencil     = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>;
-const IcSearch     = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>;
-const IcImage      = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>;
-const IcBell       = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>;
-const IcExport     = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>;
+const IcInfo       = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>;
+const IcEditPeople = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>;
+const IcAddPerson  = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>;
+const IcPencil     = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>;
+const IcSearch     = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>;
+const IcImage      = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>;
+const IcBell       = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>;
+const IcExport     = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>;
 const IcTrashRed   = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>;
 const IcTrashRedFill = () => <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>;
 const IcMic        = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>;
@@ -62,15 +62,15 @@ const IcBroadcastLg = () => <svg width="48" height="48" viewBox="0 0 24 24" fill
 const IcCheck      = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>;
 const IcChevronR   = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>;
 const IcPdf        = () => <svg width="28" height="28" viewBox="0 0 24 24" fill="#EF4444"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><path d="M14 2v6h6" fill="#EF4444" stroke="#fff" strokeWidth="0"/><text x="6" y="19" fontSize="6" fill="white" fontWeight="bold">PDF</text></svg>;
-const IcXls        = () => <svg width="28" height="28" viewBox="0 0 24 24" fill="#22C55E"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><text x="5.5" y="19" fontSize="5" fill="white" fontWeight="bold">XLS</text></svg>;
+const IcXls        = () => <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--bp-primary)"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><text x="5.5" y="19" fontSize="5" fill="white" fontWeight="bold">XLS</text></svg>;
 const IcCsv        = () => <svg width="28" height="28" viewBox="0 0 24 24" fill="#0EA5E9"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><text x="5.5" y="19" fontSize="5.5" fill="white" fontWeight="bold">CSV</text></svg>;
-const IcCloud      = () => <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg>;
-const IcBroom      = () => <svg width="80" height="80" viewBox="0 0 100 100" fill="none"><rect x="40" y="10" width="8" height="50" rx="4" fill="#22C55E"/><ellipse cx="44" cy="70" rx="20" ry="14" fill="#22C55E"/><path d="M24 75 Q44 85 64 75" stroke="#16A34A" strokeWidth="3" fill="none"/><rect x="38" y="8" width="12" height="8" rx="3" fill="#16A34A"/></svg>;
+const IcCloud      = () => <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg>;
+const IcBroom      = () => <svg width="80" height="80" viewBox="0 0 100 100" fill="none"><rect x="40" y="10" width="8" height="50" rx="4" fill="var(--bp-primary)"/><ellipse cx="44" cy="70" rx="20" ry="14" fill="var(--bp-primary)"/><path d="M24 75 Q44 85 64 75" stroke="var(--bp-primary-dark)" strokeWidth="3" fill="none"/><rect x="38" y="8" width="12" height="8" rx="3" fill="var(--bp-primary-dark)"/></svg>;
 const IcCamera     = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>;
-const IcPhone      = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>;
-const IcFile       = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>;
-const IcLink       = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>;
-const IcShield     = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>;
+const IcPhone      = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>;
+const IcFile       = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>;
+const IcLink       = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>;
+const IcShield     = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>;
 
 /* ═══════════════════════════════════════════════════════════════
    WALLPAPER PATTERN (exact maquette — very light green with icons)
@@ -85,33 +85,33 @@ const WallpaperBg = () => (
       <defs>
         <pattern id="bcPattern" x="0" y="0" width="120" height="120" patternUnits="userSpaceOnUse">
           {/* Chat bubble */}
-          <path d="M10 20 Q10 10 20 10 L50 10 Q60 10 60 20 L60 35 Q60 45 50 45 L25 45 L15 55 L17 45 L20 45 Q10 45 10 35 Z" fill="#22C55E" opacity="0.5"/>
+          <path d="M10 20 Q10 10 20 10 L50 10 Q60 10 60 20 L60 35 Q60 45 50 45 L25 45 L15 55 L17 45 L20 45 Q10 45 10 35 Z" fill="var(--bp-primary)" opacity="0.5"/>
           {/* Smiley */}
-          <circle cx="90" cy="30" r="12" fill="none" stroke="#22C55E" strokeWidth="2" opacity="0.5"/>
-          <circle cx="86" cy="27" r="1.5" fill="#22C55E" opacity="0.5"/>
-          <circle cx="94" cy="27" r="1.5" fill="#22C55E" opacity="0.5"/>
-          <path d="M86 33 Q90 37 94 33" fill="none" stroke="#22C55E" strokeWidth="1.5" opacity="0.5"/>
+          <circle cx="90" cy="30" r="12" fill="none" stroke="var(--bp-primary)" strokeWidth="2" opacity="0.5"/>
+          <circle cx="86" cy="27" r="1.5" fill="var(--bp-primary)" opacity="0.5"/>
+          <circle cx="94" cy="27" r="1.5" fill="var(--bp-primary)" opacity="0.5"/>
+          <path d="M86 33 Q90 37 94 33" fill="none" stroke="var(--bp-primary)" strokeWidth="1.5" opacity="0.5"/>
           {/* People */}
-          <circle cx="30" cy="90" r="5" fill="#22C55E" opacity="0.5"/>
-          <path d="M20 110 Q20 100 30 100 Q40 100 40 110" fill="#22C55E" opacity="0.5"/>
+          <circle cx="30" cy="90" r="5" fill="var(--bp-primary)" opacity="0.5"/>
+          <path d="M20 110 Q20 100 30 100 Q40 100 40 110" fill="var(--bp-primary)" opacity="0.5"/>
           {/* Star */}
-          <polygon points="90,75 92,82 99,82 93,87 95,94 90,89 85,94 87,87 81,82 88,82" fill="#22C55E" opacity="0.4"/>
+          <polygon points="90,75 92,82 99,82 93,87 95,94 90,89 85,94 87,87 81,82 88,82" fill="var(--bp-primary)" opacity="0.4"/>
           {/* Shield */}
-          <path d="M60 65 L60 57 L68 54 L76 57 L76 65 Q76 73 68 76 Q60 73 60 65Z" fill="none" stroke="#22C55E" strokeWidth="1.5" opacity="0.5"/>
+          <path d="M60 65 L60 57 L68 54 L76 57 L76 65 Q76 73 68 76 Q60 73 60 65Z" fill="none" stroke="var(--bp-primary)" strokeWidth="1.5" opacity="0.5"/>
           {/* Camera */}
-          <rect x="5" y="75" width="22" height="16" rx="3" fill="none" stroke="#22C55E" strokeWidth="1.5" opacity="0.5"/>
-          <circle cx="16" cy="83" r="4" fill="none" stroke="#22C55E" strokeWidth="1.5" opacity="0.5"/>
-          <path d="M22 75 L24 71 L28 71" fill="none" stroke="#22C55E" strokeWidth="1.5" opacity="0.5"/>
+          <rect x="5" y="75" width="22" height="16" rx="3" fill="none" stroke="var(--bp-primary)" strokeWidth="1.5" opacity="0.5"/>
+          <circle cx="16" cy="83" r="4" fill="none" stroke="var(--bp-primary)" strokeWidth="1.5" opacity="0.5"/>
+          <path d="M22 75 L24 71 L28 71" fill="none" stroke="var(--bp-primary)" strokeWidth="1.5" opacity="0.5"/>
           {/* Airplane */}
-          <path d="M88 100 L100 110 L96 100 L100 90 Z" fill="#22C55E" opacity="0.5"/>
+          <path d="M88 100 L100 110 L96 100 L100 90 Z" fill="var(--bp-primary)" opacity="0.5"/>
           {/* Gift box */}
-          <rect x="55" y="97" width="20" height="16" rx="2" fill="none" stroke="#22C55E" strokeWidth="1.5" opacity="0.5"/>
-          <path d="M55 103 L75 103" stroke="#22C55E" strokeWidth="1.5" opacity="0.5"/>
-          <path d="M65 97 L65 113" stroke="#22C55E" strokeWidth="1.5" opacity="0.5"/>
+          <rect x="55" y="97" width="20" height="16" rx="2" fill="none" stroke="var(--bp-primary)" strokeWidth="1.5" opacity="0.5"/>
+          <path d="M55 103 L75 103" stroke="var(--bp-primary)" strokeWidth="1.5" opacity="0.5"/>
+          <path d="M65 97 L65 113" stroke="var(--bp-primary)" strokeWidth="1.5" opacity="0.5"/>
           {/* Game controller */}
-          <rect x="2" y="50" width="26" height="16" rx="6" fill="none" stroke="#22C55E" strokeWidth="1.5" opacity="0.4"/>
-          <circle cx="20" cy="58" r="2" fill="#22C55E" opacity="0.4"/>
-          <path d="M8 55 L8 61 M5 58 L11 58" stroke="#22C55E" strokeWidth="1.5" opacity="0.4"/>
+          <rect x="2" y="50" width="26" height="16" rx="6" fill="none" stroke="var(--bp-primary)" strokeWidth="1.5" opacity="0.4"/>
+          <circle cx="20" cy="58" r="2" fill="var(--bp-primary)" opacity="0.4"/>
+          <path d="M8 55 L8 61 M5 58 L11 58" stroke="var(--bp-primary)" strokeWidth="1.5" opacity="0.4"/>
         </pattern>
       </defs>
       <rect width="100%" height="100%" fill="url(#bcPattern)"/>
@@ -122,11 +122,11 @@ const WallpaperBg = () => (
       display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2, opacity: 0.25,
     }}>
       <div style={{
-        width: 36, height: 36, borderRadius: 10, background: "#22C55E",
+        width: 36, height: 36, borderRadius: 10, background: "var(--bp-primary)",
         display: "flex", alignItems: "center", justifyContent: "center",
         fontWeight: 800, fontSize: 20, color: "white", fontFamily: "Inter, sans-serif",
       }}>b</div>
-      <span style={{ fontSize: 12, fontWeight: 700, color: "#22C55E", letterSpacing: 0.5, fontFamily: "Inter, sans-serif" }}>BrutePawa</span>
+      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--bp-primary)", letterSpacing: 0.5, fontFamily: "Inter, sans-serif" }}>BrutePawa</span>
     </div>
   </div>
 );
@@ -134,7 +134,7 @@ const WallpaperBg = () => (
 /* ═══════════════════════════════════════════════════════════════
    AVATAR helper
 ═══════════════════════════════════════════════════════════════ */
-function Avatar({ url, name, size = 40, color = "#22C55E" }: { url?: string | null; name?: string; size?: number; color?: string }) {
+function Avatar({ url, name, size = 40, color = "var(--bp-primary)" }: { url?: string | null; name?: string; size?: number; color?: string }) {
   if (url) return <img src={url} alt={name} style={{ width: size, height: size, borderRadius: "50%", objectFit: "cover" }} />;
   const initials = (name ?? "?").split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
   return (
@@ -173,7 +173,7 @@ function fmtRelative(d: string | null | undefined): string {
 function SubPageHeader({ title, onBack, rightSlot }: { title: string; onBack: () => void; rightSlot?: React.ReactNode }) {
   return (
     <div style={{
-      background: "#22C55E", padding: "12px 16px",
+      background: "var(--bp-primary)", padding: "12px 16px",
       display: "flex", alignItems: "center", gap: 12, flexShrink: 0,
     }}>
       <button onClick={onBack} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, display: "flex" }}>
@@ -214,12 +214,12 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
   return (
     <div onClick={() => onChange(!checked)} style={{
       width: 48, height: 26, borderRadius: 13, cursor: "pointer",
-      background: checked ? "#22C55E" : "#E5E7EB",
+      background: checked ? "var(--bp-primary)" : "#E5E7EB",
       transition: "background 0.2s", position: "relative", flexShrink: 0,
     }}>
       <div style={{
         position: "absolute", top: 3, left: checked ? 25 : 3,
-        width: 20, height: 20, borderRadius: "50%", background: "white",
+        width: 20, height: 20, borderRadius: "50%", background: "var(--theme-surface)",
         transition: "left 0.2s", boxShadow: "0 1px 4px rgba(0,0,0,0.2)",
       }}/>
     </div>
@@ -233,9 +233,9 @@ function SettingRow({ label, value, rightSlot, onClick }: { label: string; value
   return (
     <div onClick={onClick} style={{
       display: "flex", alignItems: "center", justifyContent: "space-between",
-      padding: "14px 20px", background: "white", cursor: onClick ? "pointer" : "default",
+      padding: "14px 20px", background: "var(--theme-surface)", cursor: onClick ? "pointer" : "default",
     }}>
-      <span style={{ fontSize: 15, fontWeight: 500, color: "#111827", fontFamily: "Inter, sans-serif" }}>{label}</span>
+      <span style={{ fontSize: 15, fontWeight: 500, color: "var(--theme-text)", fontFamily: "Inter, sans-serif" }}>{label}</span>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         {value && <span style={{ fontSize: 14, color: "#64748B", fontFamily: "Inter, sans-serif" }}>{value}</span>}
         {rightSlot}
@@ -262,20 +262,20 @@ function InfosPage({ bcId, onBack, onRename }: { bcId: number; onBack: () => voi
       <div style={{ flex: 1, overflowY: "auto" }}>
         {loading || !info ? (
           <div style={{ display: "flex", justifyContent: "center", padding: 40 }}>
-            <div style={{ width: 32, height: 32, border: "3px solid #22C55E", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }}/>
+            <div style={{ width: 32, height: 32, border: "3px solid var(--bp-primary)", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }}/>
           </div>
         ) : (
           <>
             {/* Avatar + name */}
-            <div style={{ background: "white", display: "flex", flexDirection: "column", alignItems: "center", padding: "28px 20px 20px" }}>
+            <div style={{ background: "var(--theme-surface)", display: "flex", flexDirection: "column", alignItems: "center", padding: "28px 20px 20px" }}>
               <div style={{
-                width: 80, height: 80, borderRadius: "50%", background: info.color ?? "#22C55E",
+                width: 80, height: 80, borderRadius: "50%", background: info.color ?? "var(--bp-primary)",
                 display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12,
               }}>
                 <IcBroadcastLg />
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize: 20, fontWeight: 700, color: "#111827", fontFamily: "Inter, sans-serif" }}>{info.name}</span>
+                <span style={{ fontSize: 20, fontWeight: 700, color: "var(--theme-text)", fontFamily: "Inter, sans-serif" }}>{info.name}</span>
                 <button onClick={onRename} style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }}>
                   <IcPencil />
                 </button>
@@ -285,9 +285,9 @@ function InfosPage({ bcId, onBack, onRename }: { bcId: number; onBack: () => voi
             <div style={{ height: 8, background: "#F8FAFC" }}/>
 
             {/* Meta */}
-            <div style={{ background: "white" }}>
+            <div style={{ background: "var(--theme-surface)" }}>
               <div style={{ padding: "12px 20px 4px" }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: "#22C55E", textTransform: "uppercase", letterSpacing: 0.8, fontFamily: "Inter, sans-serif" }}>Informations</span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: "var(--bp-primary)", textTransform: "uppercase", letterSpacing: 0.8, fontFamily: "Inter, sans-serif" }}>Informations</span>
               </div>
               {[
                 { label: "Créé par", value: "Vous" },
@@ -296,7 +296,7 @@ function InfosPage({ bcId, onBack, onRename }: { bcId: number; onBack: () => voi
               ].map((row, i) => (
                 <div key={i} style={{ padding: "13px 20px", borderTop: i > 0 ? "1px solid #F3F4F6" : "none", display: "flex", justifyContent: "space-between" }}>
                   <span style={{ fontSize: 14, color: "#64748B", fontFamily: "Inter, sans-serif" }}>{row.label}</span>
-                  <span style={{ fontSize: 14, fontWeight: 500, color: "#111827", fontFamily: "Inter, sans-serif" }}>{row.value}</span>
+                  <span style={{ fontSize: 14, fontWeight: 500, color: "var(--theme-text)", fontFamily: "Inter, sans-serif" }}>{row.value}</span>
                 </div>
               ))}
             </div>
@@ -304,9 +304,9 @@ function InfosPage({ bcId, onBack, onRename }: { bcId: number; onBack: () => voi
             <div style={{ height: 8, background: "#F8FAFC" }}/>
 
             {/* Stats */}
-            <div style={{ background: "white" }}>
+            <div style={{ background: "var(--theme-surface)" }}>
               <div style={{ padding: "12px 20px 4px" }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: "#22C55E", textTransform: "uppercase", letterSpacing: 0.8, fontFamily: "Inter, sans-serif" }}>Statistiques d'envoi</span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: "var(--bp-primary)", textTransform: "uppercase", letterSpacing: 0.8, fontFamily: "Inter, sans-serif" }}>Statistiques d'envoi</span>
               </div>
               {[
                 { label: "Messages envoyés",  value: String(info.messagesSent) },
@@ -317,16 +317,16 @@ function InfosPage({ bcId, onBack, onRename }: { bcId: number; onBack: () => voi
               ].map((row, i) => (
                 <div key={i} style={{ padding: "13px 20px", borderTop: i > 0 ? "1px solid #F3F4F6" : "none", display: "flex", justifyContent: "space-between" }}>
                   <span style={{ fontSize: 14, color: "#64748B", fontFamily: "Inter, sans-serif" }}>{row.label}</span>
-                  <span style={{ fontSize: 14, fontWeight: 600, color: "#111827", fontFamily: "Inter, sans-serif" }}>{row.value}</span>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: "var(--theme-text)", fontFamily: "Inter, sans-serif" }}>{row.value}</span>
                 </div>
               ))}
             </div>
 
             <div style={{ height: 8, background: "#F8FAFC" }}/>
 
-            <div style={{ background: "white", padding: "13px 20px", display: "flex", justifyContent: "space-between" }}>
+            <div style={{ background: "var(--theme-surface)", padding: "13px 20px", display: "flex", justifyContent: "space-between" }}>
               <span style={{ fontSize: 14, color: "#64748B", fontFamily: "Inter, sans-serif" }}>Dernière activité</span>
-              <span style={{ fontSize: 14, fontWeight: 500, color: "#111827", fontFamily: "Inter, sans-serif" }}>{fmtRelative(info.lastActivity)}</span>
+              <span style={{ fontSize: 14, fontWeight: 500, color: "var(--theme-text)", fontFamily: "Inter, sans-serif" }}>{fmtRelative(info.lastActivity)}</span>
             </div>
           </>
         )}
@@ -377,26 +377,26 @@ function ModifierPage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
     <SubPage visible>
       <SubPageHeader title="Modifier les destinataires" onBack={onBack} />
       {/* Search */}
-      <div style={{ background: "white", padding: "10px 16px", borderBottom: "1px solid #F3F4F6" }}>
+      <div style={{ background: "var(--theme-surface)", padding: "10px 16px", borderBottom: "1px solid #F3F4F6" }}>
         <div style={{ display: "flex", alignItems: "center", background: "#F1F5F9", borderRadius: 24, padding: "8px 14px", gap: 8 }}>
           <IcSearch />
           <input value={q} onChange={e => { setQ(e.target.value); load(e.target.value); }} placeholder="Rechercher un contact"
-            style={{ flex: 1, border: "none", background: "none", fontSize: 14, outline: "none", fontFamily: "Inter, sans-serif", color: "#111827" }}
+            style={{ flex: 1, border: "none", background: "none", fontSize: 14, outline: "none", fontFamily: "Inter, sans-serif", color: "var(--theme-text)" }}
           />
         </div>
       </div>
       {/* Count row */}
-      <div style={{ background: "white", padding: "10px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #F3F4F6" }}>
-        <span style={{ fontSize: 14, fontWeight: 600, color: "#22C55E", fontFamily: "Inter, sans-serif" }}>{total} destinataires</span>
-        <button onClick={() => setSelecting(!selecting)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 14, fontWeight: 500, color: "#22C55E", fontFamily: "Inter, sans-serif" }}>
+      <div style={{ background: "var(--theme-surface)", padding: "10px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #F3F4F6" }}>
+        <span style={{ fontSize: 14, fontWeight: 600, color: "var(--bp-primary)", fontFamily: "Inter, sans-serif" }}>{total} destinataires</span>
+        <button onClick={() => setSelecting(!selecting)} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 14, fontWeight: 500, color: "var(--bp-primary)", fontFamily: "Inter, sans-serif" }}>
           {selecting ? "Annuler" : "Sélectionner"}
         </button>
       </div>
       {/* List */}
-      <div style={{ flex: 1, overflowY: "auto", background: "white" }}>
+      <div style={{ flex: 1, overflowY: "auto", background: "var(--theme-surface)" }}>
         {loading ? (
           <div style={{ display: "flex", justifyContent: "center", padding: 40 }}>
-            <div style={{ width: 28, height: 28, border: "3px solid #22C55E", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }}/>
+            <div style={{ width: 28, height: 28, border: "3px solid var(--bp-primary)", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }}/>
           </div>
         ) : members.map((m, i) => (
           <div key={m.userId} onClick={() => selecting && toggleSelect(m.userId)} style={{
@@ -406,8 +406,8 @@ function ModifierPage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
           }}>
             {selecting && (
               <div style={{
-                width: 22, height: 22, borderRadius: "50%", border: `2px solid ${selected.has(m.userId) ? "#22C55E" : "#E5E7EB"}`,
-                background: selected.has(m.userId) ? "#22C55E" : "white",
+                width: 22, height: 22, borderRadius: "50%", border: `2px solid ${selected.has(m.userId) ? "var(--bp-primary)" : "#E5E7EB"}`,
+                background: selected.has(m.userId) ? "var(--bp-primary)" : "white",
                 display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
               }}>
                 {selected.has(m.userId) && <IcCheck />}
@@ -415,7 +415,7 @@ function ModifierPage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
             )}
             <Avatar url={m.avatarUrl} name={`${m.firstName} ${m.lastName}`} size={44}/>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 15, fontWeight: 600, color: "#111827", fontFamily: "Inter, sans-serif" }}>{m.firstName} {m.lastName}</div>
+              <div style={{ fontSize: 15, fontWeight: 600, color: "var(--theme-text)", fontFamily: "Inter, sans-serif" }}>{m.firstName} {m.lastName}</div>
               <div style={{ fontSize: 13, color: "#64748B", fontFamily: "Inter, sans-serif" }}>Membre depuis {fmtDate(m.createdAt).split(" à")[0]}</div>
             </div>
             {!selecting && (
@@ -427,7 +427,7 @@ function ModifierPage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
         ))}
       </div>
       {/* Bottom actions */}
-      <div style={{ background: "white", padding: "12px 16px", borderTop: "1px solid #F3F4F6", display: "flex", flexDirection: "column", gap: 8 }}>
+      <div style={{ background: "var(--theme-surface)", padding: "12px 16px", borderTop: "1px solid #F3F4F6", display: "flex", flexDirection: "column", gap: 8 }}>
         {selecting && selected.size > 0 && (
           <button onClick={handleBulkRemove} disabled={deleting} style={{
             display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
@@ -440,7 +440,7 @@ function ModifierPage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
         )}
         <button style={{
           display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-          background: "none", color: "#22C55E", border: "none", borderRadius: 14,
+          background: "none", color: "var(--bp-primary)", border: "none", borderRadius: 14,
           padding: "12px 20px", fontSize: 15, fontWeight: 500, cursor: "pointer", fontFamily: "Inter, sans-serif",
         }}>
           <IcAddPerson />
@@ -485,17 +485,17 @@ function AjouterPage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
     <SubPage visible>
       <SubPageHeader title="Ajouter des destinataires" onBack={onBack} />
       {/* Search */}
-      <div style={{ background: "white", padding: "10px 16px", borderBottom: "1px solid #F3F4F6" }}>
+      <div style={{ background: "var(--theme-surface)", padding: "10px 16px", borderBottom: "1px solid #F3F4F6" }}>
         <div style={{ display: "flex", alignItems: "center", background: "#F1F5F9", borderRadius: 24, padding: "8px 14px", gap: 8 }}>
           <IcSearch />
           <input value={q} onChange={e => setQ(e.target.value)} placeholder="Rechercher un contact"
-            style={{ flex: 1, border: "none", background: "none", fontSize: 14, outline: "none", fontFamily: "Inter, sans-serif", color: "#111827" }}
+            style={{ flex: 1, border: "none", background: "none", fontSize: 14, outline: "none", fontFamily: "Inter, sans-serif", color: "var(--theme-text)" }}
           />
         </div>
       </div>
       <div style={{ flex: 1, overflowY: "auto" }}>
         {/* Quick options */}
-        <div style={{ background: "white", marginTop: 8, borderRadius: 0 }}>
+        <div style={{ background: "var(--theme-surface)", marginTop: 8, borderRadius: 0 }}>
           {[
             { icon: <IcEditPeople />, label: "Contacts BrutePawa", sub: "Ajouter depuis vos contacts" },
             { icon: <IcPhone />,      label: "Importer depuis téléphone", sub: "Ajouter depuis votre répertoire" },
@@ -510,7 +510,7 @@ function AjouterPage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
                 display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
               }}>{opt.icon}</div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 15, fontWeight: 600, color: "#111827", fontFamily: "Inter, sans-serif" }}>{opt.label}</div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: "var(--theme-text)", fontFamily: "Inter, sans-serif" }}>{opt.label}</div>
                 <div style={{ fontSize: 13, color: "#64748B", fontFamily: "Inter, sans-serif" }}>{opt.sub}</div>
               </div>
               <IcChevronR />
@@ -522,7 +522,7 @@ function AjouterPage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
         <div style={{ padding: "14px 20px 8px" }}>
           <span style={{ fontSize: 13, fontWeight: 600, color: "#64748B", textTransform: "uppercase", letterSpacing: 0.8, fontFamily: "Inter, sans-serif" }}>Suggestions intelligentes</span>
         </div>
-        <div style={{ background: "white" }}>
+        <div style={{ background: "var(--theme-surface)" }}>
           {filtered.map((u, i) => (
             <div key={u.id} style={{
               display: "flex", alignItems: "center", padding: "10px 16px", gap: 12,
@@ -530,17 +530,17 @@ function AjouterPage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
             }}>
               <Avatar url={u.avatarUrl} name={`${u.firstName} ${u.lastName}`} size={44}/>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 15, fontWeight: 600, color: "#111827", fontFamily: "Inter, sans-serif" }}>{u.firstName} {u.lastName}</div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: "var(--theme-text)", fontFamily: "Inter, sans-serif" }}>{u.firstName} {u.lastName}</div>
                 <div style={{ fontSize: 13, color: "#64748B", fontFamily: "Inter, sans-serif" }}>{u.bio ?? u.country ?? "Contact BrutePawa"}</div>
               </div>
               <button onClick={() => !added.has(u.id) && addUser(u.id)} style={{
                 width: 32, height: 32, borderRadius: "50%", border: "none", cursor: "pointer",
-                background: added.has(u.id) ? "#22C55E" : "#F0FDF4",
+                background: added.has(u.id) ? "var(--bp-primary)" : "#F0FDF4",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}>
-                {adding.has(u.id) ? <div style={{ width: 14, height: 14, border: "2px solid #22C55E", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }}/> :
+                {adding.has(u.id) ? <div style={{ width: 14, height: 14, border: "2px solid var(--bp-primary)", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }}/> :
                   added.has(u.id) ? <IcCheck /> :
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 }
               </button>
             </div>
@@ -577,11 +577,11 @@ function MediasPage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
     <SubPage visible>
       <SubPageHeader title="Médias partagés" onBack={onBack} />
       {/* Tabs */}
-      <div style={{ background: "white", padding: "8px 16px", display: "flex", gap: 6, borderBottom: "1px solid #F3F4F6", overflowX: "auto" }}>
+      <div style={{ background: "var(--theme-surface)", padding: "8px 16px", display: "flex", gap: 6, borderBottom: "1px solid #F3F4F6", overflowX: "auto" }}>
         {TABS.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)} style={{
             padding: "6px 14px", borderRadius: 20, border: "none", cursor: "pointer",
-            background: tab === t.key ? "#22C55E" : "#F1F5F9",
+            background: tab === t.key ? "var(--bp-primary)" : "#F1F5F9",
             color: tab === t.key ? "white" : "#64748B",
             fontSize: 13, fontWeight: 600, fontFamily: "Inter, sans-serif", whiteSpace: "nowrap",
           }}>{t.label}</button>
@@ -590,7 +590,7 @@ function MediasPage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
       <div style={{ flex: 1, overflowY: "auto" }}>
         {loading ? (
           <div style={{ display: "flex", justifyContent: "center", padding: 40 }}>
-            <div style={{ width: 28, height: 28, border: "3px solid #22C55E", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }}/>
+            <div style={{ width: 28, height: 28, border: "3px solid var(--bp-primary)", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }}/>
           </div>
         ) : media.length === 0 ? (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "60px 20px", gap: 12 }}>
@@ -616,16 +616,16 @@ function MediasPage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
             {tab !== "photo" && media.map((m, i) => (
               <div key={m.id} style={{
                 display: "flex", alignItems: "center", padding: "12px 16px", gap: 12,
-                borderTop: i > 0 ? "1px solid #F3F4F6" : "none", background: "white",
+                borderTop: i > 0 ? "1px solid #F3F4F6" : "none", background: "var(--theme-surface)",
               }}>
                 <div style={{ width: 44, height: 44, borderRadius: 10, background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  {tab === "video" ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10 8 16 12 10 16"/></svg>
+                  {tab === "video" ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10 8 16 12 10 16"/></svg>
                     : tab === "audio" ? <IcMic />
                     : tab === "doc"   ? <IcFile />
                     : <IcLink />}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 14, fontWeight: 500, color: "#111827", fontFamily: "Inter, sans-serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <div style={{ fontSize: 14, fontWeight: 500, color: "var(--theme-text)", fontFamily: "Inter, sans-serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {m.content || m.mediaUrl?.split("/").pop() || `${tab} ${m.id}`}
                   </div>
                   <div style={{ fontSize: 12, color: "#64748B", fontFamily: "Inter, sans-serif" }}>{fmtRelative(m.createdAt)}</div>
@@ -636,11 +636,11 @@ function MediasPage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
         )}
       </div>
       {/* Search bar */}
-      <div style={{ background: "white", padding: "10px 16px", borderTop: "1px solid #F3F4F6", display: "flex", alignItems: "center", gap: 8 }}>
+      <div style={{ background: "var(--theme-surface)", padding: "10px 16px", borderTop: "1px solid #F3F4F6", display: "flex", alignItems: "center", gap: 8 }}>
         <div style={{ display: "flex", alignItems: "center", background: "#F1F5F9", borderRadius: 24, padding: "8px 14px", gap: 8, flex: 1 }}>
           <IcSearch />
           <input value={searchQ} onChange={e => setSearchQ(e.target.value)} placeholder="Rechercher un média"
-            style={{ flex: 1, border: "none", background: "none", fontSize: 14, outline: "none", fontFamily: "Inter, sans-serif", color: "#111827" }}
+            style={{ flex: 1, border: "none", background: "none", fontSize: 14, outline: "none", fontFamily: "Inter, sans-serif", color: "var(--theme-text)" }}
           />
         </div>
         <button style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }}>
@@ -677,7 +677,7 @@ function NotifPage({ bcId, onBack, onSubPage }: { bcId: number; onBack: () => vo
       <SubPageHeader title="Paramètres de notification" onBack={onBack} />
       <div style={{ flex: 1, overflowY: "auto" }}>
         <div style={{ height: 12 }}/>
-        <div style={{ background: "white", borderRadius: 0 }}>
+        <div style={{ background: "var(--theme-surface)", borderRadius: 0 }}>
           <SettingRow label="Notifications activées" rightSlot={<Toggle checked={settings.notificationsEnabled} onChange={v => save({ notificationsEnabled: v })}/>}/>
           <div style={{ height: 1, background: "#F1F5F9", margin: "0 20px" }}/>
           <SettingRow label="Sonnerie" value="BrutePawa Notification" onClick={() => onSubPage("sonnerie")}/>
@@ -689,13 +689,13 @@ function NotifPage({ bcId, onBack, onSubPage }: { bcId: number; onBack: () => vo
           <SettingRow label="Aperçu des messages" value="Toujours afficher" onClick={() => onSubPage("apercu")}/>
         </div>
         <div style={{ height: 12 }}/>
-        <div style={{ background: "white" }}>
+        <div style={{ background: "var(--theme-surface)" }}>
           <div style={{
             display: "flex", alignItems: "flex-start", justifyContent: "space-between",
             padding: "14px 20px", gap: 12,
           }}>
             <div>
-              <div style={{ fontSize: 15, fontWeight: 500, color: "#111827", fontFamily: "Inter, sans-serif" }}>Mode silencieux</div>
+              <div style={{ fontSize: 15, fontWeight: 500, color: "var(--theme-text)", fontFamily: "Inter, sans-serif" }}>Mode silencieux</div>
               <div style={{ fontSize: 13, color: "#64748B", marginTop: 4, lineHeight: "1.4", fontFamily: "Inter, sans-serif", maxWidth: 220 }}>
                 Désactiver les notifications pendant une période donnée
               </div>
@@ -705,7 +705,7 @@ function NotifPage({ bcId, onBack, onSubPage }: { bcId: number; onBack: () => vo
         </div>
         <div style={{ height: 12 }}/>
         {/* Notification preview illustration */}
-        <div style={{ background: "white", padding: "16px 20px", display: "flex", alignItems: "center", gap: 14 }}>
+        <div style={{ background: "var(--theme-surface)", padding: "16px 20px", display: "flex", alignItems: "center", gap: 14 }}>
           <div style={{
             width: 52, height: 52, borderRadius: 14, background: "#F0FDF4",
             display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
@@ -713,13 +713,13 @@ function NotifPage({ bcId, onBack, onSubPage }: { bcId: number; onBack: () => vo
             <IcBell />
           </div>
           <div>
-            <div style={{ fontSize: 14, fontWeight: 500, color: "#111827", fontFamily: "Inter, sans-serif" }}>Aperçu</div>
+            <div style={{ fontSize: 14, fontWeight: 500, color: "var(--theme-text)", fontFamily: "Inter, sans-serif" }}>Aperçu</div>
             <div style={{ fontSize: 13, color: "#64748B", fontFamily: "Inter, sans-serif", lineHeight: "1.4" }}>
               Vous recevrez des notifications pour tous les messages de cette liste de diffusion.
             </div>
           </div>
         </div>
-        {saving && <div style={{ textAlign: "center", padding: 8, fontSize: 12, color: "#22C55E", fontFamily: "Inter, sans-serif" }}>Enregistrement…</div>}
+        {saving && <div style={{ textAlign: "center", padding: 8, fontSize: 12, color: "var(--bp-primary)", fontFamily: "Inter, sans-serif" }}>Enregistrement…</div>}
       </div>
     </SubPage>
   );
@@ -758,7 +758,7 @@ function ExportPage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
         <div style={{ padding: "20px 20px 12px" }}>
           <span style={{ fontSize: 14, color: "#64748B", fontFamily: "Inter, sans-serif" }}>Choisissez le format d'exportation</span>
         </div>
-        <div style={{ background: "white" }}>
+        <div style={{ background: "var(--theme-surface)" }}>
           {options.map((opt, i) => (
             <div key={opt.key} onClick={() => doExport(opt.key)} style={{
               display: "flex", alignItems: "center", padding: "14px 20px", gap: 14,
@@ -766,13 +766,13 @@ function ExportPage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
             }}>
               <div style={{ width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{opt.icon}</div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 15, fontWeight: 600, color: "#111827", fontFamily: "Inter, sans-serif" }}>{opt.label}</div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: "var(--theme-text)", fontFamily: "Inter, sans-serif" }}>{opt.label}</div>
                 <div style={{ fontSize: 13, color: "#64748B", fontFamily: "Inter, sans-serif" }}>{opt.sub}</div>
               </div>
               {loading === opt.key
-                ? <div style={{ width: 20, height: 20, border: "2px solid #22C55E", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }}/>
+                ? <div style={{ width: 20, height: 20, border: "2px solid var(--bp-primary)", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }}/>
                 : done === opt.key
-                  ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                   : <IcChevronR />}
             </div>
           ))}
@@ -808,7 +808,7 @@ function EffacerPage({ bcId, onBack, onCleared }: { bcId: number; onBack: () => 
       <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "32px 28px", gap: 20 }}>
         <IcBroom />
         <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: 20, fontWeight: 700, color: "#111827", marginBottom: 12, fontFamily: "Inter, sans-serif" }}>Effacer tous les messages ?</div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: "var(--theme-text)", marginBottom: 12, fontFamily: "Inter, sans-serif" }}>Effacer tous les messages ?</div>
           <div style={{ fontSize: 14, color: "#64748B", lineHeight: "1.6", fontFamily: "Inter, sans-serif" }}>
             Cette action supprimera tous les messages de cette conversation. Cette action ne supprimera pas la liste de diffusion.
           </div>
@@ -859,7 +859,7 @@ function SupprimerPage({ bcId, memberCount, onBack, onDeleted }: { bcId: number;
             <IcTrashRedFill />
           </div>
           <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: "#111827", marginBottom: 10, fontFamily: "Inter, sans-serif" }}>Supprimer cette liste de diffusion ?</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "var(--theme-text)", marginBottom: 10, fontFamily: "Inter, sans-serif" }}>Supprimer cette liste de diffusion ?</div>
             <div style={{ fontSize: 14, color: "#64748B", lineHeight: "1.6", fontFamily: "Inter, sans-serif" }}>
               Cette action supprimera définitivement cette liste et tous ses destinataires. Cette action est <span style={{ color: "#EF4444", fontWeight: 600 }}>irréversible</span>.
             </div>
@@ -881,7 +881,7 @@ function SupprimerPage({ bcId, memberCount, onBack, onDeleted }: { bcId: number;
               width: "100%", padding: "13px 16px", borderRadius: 12,
               border: `2px solid ${input === "SUPPRIMER" ? "#EF4444" : "#E5E7EB"}`,
               fontSize: 15, fontFamily: "Inter, sans-serif", outline: "none",
-              background: "white", color: "#111827", boxSizing: "border-box",
+              background: "var(--theme-surface)", color: "var(--theme-text)", boxSizing: "border-box",
               letterSpacing: input === "SUPPRIMER" ? 1.5 : 0,
             }}
           />
@@ -929,18 +929,18 @@ function RecherchePage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
   useEffect(() => { doSearch(); }, [doSearch]);
 
   const typeIcon: Record<string, React.ReactNode> = {
-    image: <IcImage />, video: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10 8 16 12 10 16"/></svg>,
-    doc: <IcFile />, link: <IcLink />, text: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>,
+    image: <IcImage />, video: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10 8 16 12 10 16"/></svg>,
+    doc: <IcFile />, link: <IcLink />, text: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>,
   };
 
   return (
     <SubPage visible>
       <SubPageHeader title="Rechercher dans la conversation" onBack={onBack} />
-      <div style={{ background: "white", padding: "10px 16px", borderBottom: "1px solid #F3F4F6" }}>
+      <div style={{ background: "var(--theme-surface)", padding: "10px 16px", borderBottom: "1px solid #F3F4F6" }}>
         <div style={{ display: "flex", alignItems: "center", background: "#F1F5F9", borderRadius: 24, padding: "8px 14px", gap: 8 }}>
           <IcSearch />
           <input value={q} onChange={e => setQ(e.target.value)} placeholder="Rechercher un mot, un contact..."
-            style={{ flex: 1, border: "none", background: "none", fontSize: 14, outline: "none", fontFamily: "Inter, sans-serif", color: "#111827" }}
+            style={{ flex: 1, border: "none", background: "none", fontSize: 14, outline: "none", fontFamily: "Inter, sans-serif", color: "var(--theme-text)" }}
             autoFocus
           />
         </div>
@@ -955,8 +955,8 @@ function RecherchePage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
                 display: "flex", alignItems: "center", gap: 6,
                 padding: "6px 12px", borderRadius: 20,
                 background: typeF === f.key ? "#F0FDF4" : "#F1F5F9",
-                border: `1.5px solid ${typeF === f.key ? "#22C55E" : "transparent"}`,
-                color: typeF === f.key ? "#22C55E" : "#64748B",
+                border: `1.5px solid ${typeF === f.key ? "var(--bp-primary)" : "transparent"}`,
+                color: typeF === f.key ? "var(--bp-primary)" : "#64748B",
                 fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "Inter, sans-serif",
               }}>
                 {f.icon} {f.label}
@@ -965,7 +965,7 @@ function RecherchePage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
           </div>
         </div>
         {/* Date & Author */}
-        <div style={{ background: "white", marginTop: 8 }}>
+        <div style={{ background: "var(--theme-surface)", marginTop: 8 }}>
           {[
             { label: "Recherche par date", value: "Sélectionner une période", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> },
             { label: "Recherche par auteur", value: "Tous les auteurs", icon: <IcEditPeople /> },
@@ -977,7 +977,7 @@ function RecherchePage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
             }}>
               {row.icon}
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 14, fontWeight: 500, color: "#111827", fontFamily: "Inter, sans-serif" }}>{row.label}</div>
+                <div style={{ fontSize: 14, fontWeight: 500, color: "var(--theme-text)", fontFamily: "Inter, sans-serif" }}>{row.label}</div>
                 <div style={{ fontSize: 13, color: "#64748B", fontFamily: "Inter, sans-serif" }}>{row.value}</div>
               </div>
               <IcChevronR />
@@ -992,7 +992,7 @@ function RecherchePage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
                 {loading ? "Recherche…" : "Résultats récents"}
               </span>
             </div>
-            <div style={{ background: "white" }}>
+            <div style={{ background: "var(--theme-surface)" }}>
               {results.map((r, i) => (
                 <div key={r.id} style={{
                   display: "flex", alignItems: "center", padding: "10px 16px", gap: 12,
@@ -1002,7 +1002,7 @@ function RecherchePage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
                     {typeIcon[r.messageType] ?? typeIcon.text}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 14, fontWeight: 500, color: "#111827", fontFamily: "Inter, sans-serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <div style={{ fontSize: 14, fontWeight: 500, color: "var(--theme-text)", fontFamily: "Inter, sans-serif", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {r.content || r.mediaUrl?.split("/").pop() || "—"}
                     </div>
                     <div style={{ fontSize: 12, color: "#64748B", fontFamily: "Inter, sans-serif" }}>
@@ -1015,7 +1015,7 @@ function RecherchePage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
             </div>
             {results.length >= 5 && (
               <div style={{ textAlign: "center", padding: "12px 0" }}>
-                <button style={{ background: "none", border: "none", cursor: "pointer", fontSize: 14, fontWeight: 500, color: "#22C55E", fontFamily: "Inter, sans-serif" }}>
+                <button style={{ background: "none", border: "none", cursor: "pointer", fontSize: 14, fontWeight: 500, color: "var(--bp-primary)", fontFamily: "Inter, sans-serif" }}>
                   Voir tous les résultats
                 </button>
               </div>
@@ -1030,7 +1030,7 @@ function RecherchePage({ bcId, onBack }: { bcId: number; onBack: () => void }) {
 /* ═══════════════════════════════════════════════════════════════
    ── SUB-PAGE 10 : RENOMMER LA LISTE ──
 ═══════════════════════════════════════════════════════════════ */
-const COLORS = ["#22C55E", "#8B5CF6", "#DCFCE7", "#F97316", "#EF4444", "#EF4444", "#1E293B"];
+const COLORS = ["var(--bp-primary)", "#8B5CF6", "#DCFCE7", "#F97316", "#EF4444", "#EF4444", "#1E293B"];
 const EMOJIS = ["📢", "👥", "🎯", "⭐", "🚀", "💎", "🌍"];
 
 function RenommerPage({ bcId, list, onBack, onRenamed }: { bcId: number; list: BroadcastList; onBack: () => void; onRenamed: (updated: Partial<BroadcastList>) => void }) {
@@ -1058,7 +1058,7 @@ function RenommerPage({ bcId, list, onBack, onRenamed }: { bcId: number; list: B
       <SubPageHeader title="Renommer la liste" onBack={onBack} />
       <div style={{ flex: 1, overflowY: "auto" }}>
         {/* Avatar */}
-        <div style={{ background: "white", display: "flex", flexDirection: "column", alignItems: "center", padding: "28px 20px 20px" }}>
+        <div style={{ background: "var(--theme-surface)", display: "flex", flexDirection: "column", alignItems: "center", padding: "28px 20px 20px" }}>
           <div style={{ position: "relative" }}>
             <div style={{
               width: 80, height: 80, borderRadius: "50%", background: color,
@@ -1068,7 +1068,7 @@ function RenommerPage({ bcId, list, onBack, onRenamed }: { bcId: number; list: B
             </div>
             <div style={{
               position: "absolute", bottom: 0, right: 0, width: 28, height: 28,
-              borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center",
+              borderRadius: "50%", background: "var(--bp-primary)", display: "flex", alignItems: "center", justifyContent: "center",
               border: "2px solid white", cursor: "pointer",
             }}>
               <IcCamera />
@@ -1077,28 +1077,28 @@ function RenommerPage({ bcId, list, onBack, onRenamed }: { bcId: number; list: B
         </div>
         <div style={{ height: 8, background: "#F8FAFC" }}/>
         {/* Name input */}
-        <div style={{ background: "white", padding: "16px 20px" }}>
+        <div style={{ background: "var(--theme-surface)", padding: "16px 20px" }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: "#64748B", marginBottom: 8, textTransform: "uppercase", letterSpacing: 0.8, fontFamily: "Inter, sans-serif" }}>Nom de la liste</div>
           <input
             value={name} onChange={e => setName(e.target.value)} maxLength={100}
             style={{
               width: "100%", padding: "13px 16px", borderRadius: 12,
               border: "1.5px solid #E5E7EB", fontSize: 15, fontFamily: "Inter, sans-serif",
-              outline: "none", color: "#111827", boxSizing: "border-box", background: "white",
+              outline: "none", color: "var(--theme-text)", boxSizing: "border-box", background: "var(--theme-surface)",
             }}
-            onFocus={e => e.currentTarget.style.borderColor = "#22C55E"}
+            onFocus={e => e.currentTarget.style.borderColor = "var(--bp-primary)"}
             onBlur={e => e.currentTarget.style.borderColor = "#E5E7EB"}
           />
           {error && <div style={{ fontSize: 12, color: "#EF4444", marginTop: 6, fontFamily: "Inter, sans-serif" }}>{error}</div>}
         </div>
         <div style={{ height: 8, background: "#F8FAFC" }}/>
         {/* Emoji picker */}
-        <div style={{ background: "white", padding: "16px 20px" }}>
+        <div style={{ background: "var(--theme-surface)", padding: "16px 20px" }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: "#64748B", marginBottom: 12, textTransform: "uppercase", letterSpacing: 0.8, fontFamily: "Inter, sans-serif" }}>Emoji</div>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             {EMOJIS.map(em => (
               <button key={em} onClick={() => setEmoji(em)} style={{
-                width: 44, height: 44, borderRadius: 12, border: `2px solid ${emoji === em ? "#22C55E" : "#E5E7EB"}`,
+                width: 44, height: 44, borderRadius: 12, border: `2px solid ${emoji === em ? "var(--bp-primary)" : "#E5E7EB"}`,
                 background: emoji === em ? "#F0FDF4" : "white",
                 fontSize: 22, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
               }}>{em}</button>
@@ -1107,7 +1107,7 @@ function RenommerPage({ bcId, list, onBack, onRenamed }: { bcId: number; list: B
         </div>
         <div style={{ height: 8, background: "#F8FAFC" }}/>
         {/* Color picker */}
-        <div style={{ background: "white", padding: "16px 20px" }}>
+        <div style={{ background: "var(--theme-surface)", padding: "16px 20px" }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: "#64748B", marginBottom: 12, textTransform: "uppercase", letterSpacing: 0.8, fontFamily: "Inter, sans-serif" }}>Couleur</div>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             {COLORS.map(c => (
@@ -1125,7 +1125,7 @@ function RenommerPage({ bcId, list, onBack, onRenamed }: { bcId: number; list: B
       </div>
       <div style={{ padding: "0 20px 32px" }}>
         <button onClick={save} disabled={saving || !name.trim()} style={{
-          width: "100%", background: "#22C55E", color: "white", border: "none", borderRadius: 14,
+          width: "100%", background: "var(--bp-primary)", color: "white", border: "none", borderRadius: 14,
           padding: "15px 20px", fontSize: 15, fontWeight: 600, cursor: "pointer",
           fontFamily: "Inter, sans-serif", opacity: saving ? 0.7 : 1,
         }}>
@@ -1153,7 +1153,7 @@ function SonneriePage({ onBack }: { onBack: () => void }) {
       <SubPageHeader title="Sonnerie" onBack={onBack} />
       <div style={{ flex: 1, overflowY: "auto" }}>
         <div style={{ height: 12 }}/>
-        <div style={{ background: "white" }}>
+        <div style={{ background: "var(--theme-surface)" }}>
           {SONS.map((s, i) => (
             <div key={s.key} onClick={() => setSelected(s.key)} style={{
               display: "flex", alignItems: "center", padding: "15px 20px", gap: 14,
@@ -1161,24 +1161,24 @@ function SonneriePage({ onBack }: { onBack: () => void }) {
             }}>
               <div style={{
                 width: 22, height: 22, borderRadius: "50%", flexShrink: 0,
-                border: `2px solid ${selected === s.key ? "#22C55E" : "#E5E7EB"}`,
-                background: selected === s.key ? "#22C55E" : "white",
+                border: `2px solid ${selected === s.key ? "var(--bp-primary)" : "#E5E7EB"}`,
+                background: selected === s.key ? "var(--bp-primary)" : "white",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}>
-                {selected === s.key && <div style={{ width: 8, height: 8, borderRadius: "50%", background: "white" }}/>}
+                {selected === s.key && <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--theme-surface)" }}/>}
               </div>
-              <span style={{ fontSize: 15, fontWeight: 500, color: "#111827", fontFamily: "Inter, sans-serif" }}>{s.label}</span>
+              <span style={{ fontSize: 15, fontWeight: 500, color: "var(--theme-text)", fontFamily: "Inter, sans-serif" }}>{s.label}</span>
             </div>
           ))}
         </div>
         <div style={{ height: 12 }}/>
         {/* Waveform preview */}
-        <div style={{ background: "white", padding: "16px 20px" }}>
+        <div style={{ background: "var(--theme-surface)", padding: "16px 20px" }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: "#64748B", marginBottom: 12, fontFamily: "Inter, sans-serif" }}>Prévisualisation</div>
           <div style={{ display: "flex", alignItems: "center", gap: 2, height: 40, marginBottom: 16 }}>
             {Array.from({ length: 32 }).map((_, i) => (
               <div key={i} style={{
-                flex: 1, background: "#22C55E",
+                flex: 1, background: "var(--bp-primary)",
                 height: `${20 + Math.sin(i * 0.7) * 16}px`,
                 borderRadius: 2, opacity: 0.7,
               }}/>
@@ -1191,15 +1191,15 @@ function SonneriePage({ onBack }: { onBack: () => void }) {
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 8 }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/></svg>
             <input type="range" min={0} max={100} value={volume} onChange={e => setVolume(+e.target.value)}
-              style={{ flex: 1, accentColor: "#22C55E" }}
+              style={{ flex: 1, accentColor: "var(--bp-primary)" }}
             />
-            <span style={{ fontSize: 13, fontWeight: 600, color: "#22C55E", fontFamily: "Inter, sans-serif", minWidth: 36 }}>{volume}%</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: "var(--bp-primary)", fontFamily: "Inter, sans-serif", minWidth: 36 }}>{volume}%</span>
           </div>
         </div>
         <div style={{ height: 12 }}/>
         <div style={{ padding: "0 16px 24px" }}>
           <button style={{
-            width: "100%", background: "#22C55E", color: "white", border: "none", borderRadius: 16,
+            width: "100%", background: "var(--bp-primary)", color: "white", border: "none", borderRadius: 16,
             padding: "16px", fontSize: 15, fontWeight: 700, cursor: "pointer", fontFamily: "Inter, sans-serif",
           }}>Tester la sonnerie</button>
         </div>
@@ -1225,7 +1225,7 @@ function VibrationPage({ onBack }: { onBack: () => void }) {
       <SubPageHeader title="Vibration" onBack={onBack} />
       <div style={{ flex: 1, overflowY: "auto" }}>
         <div style={{ height: 12 }}/>
-        <div style={{ background: "white" }}>
+        <div style={{ background: "var(--theme-surface)" }}>
           {VIBS.map((v, i) => (
             <div key={v.key} onClick={() => setSelected(v.key)} style={{
               display: "flex", alignItems: "center", padding: "15px 20px", gap: 14,
@@ -1233,20 +1233,20 @@ function VibrationPage({ onBack }: { onBack: () => void }) {
             }}>
               <div style={{
                 width: 22, height: 22, borderRadius: "50%", flexShrink: 0,
-                border: `2px solid ${selected === v.key ? "#22C55E" : "#E5E7EB"}`,
-                background: selected === v.key ? "#22C55E" : "white",
+                border: `2px solid ${selected === v.key ? "var(--bp-primary)" : "#E5E7EB"}`,
+                background: selected === v.key ? "var(--bp-primary)" : "white",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}>
-                {selected === v.key && <div style={{ width: 8, height: 8, borderRadius: "50%", background: "white" }}/>}
+                {selected === v.key && <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--theme-surface)" }}/>}
               </div>
-              <span style={{ fontSize: 15, fontWeight: 500, color: "#111827", fontFamily: "Inter, sans-serif" }}>{v.label}</span>
+              <span style={{ fontSize: 15, fontWeight: 500, color: "var(--theme-text)", fontFamily: "Inter, sans-serif" }}>{v.label}</span>
             </div>
           ))}
         </div>
         <div style={{ height: 24 }}/>
         <div style={{ padding: "0 16px 24px" }}>
           <button style={{
-            width: "100%", background: "#22C55E", color: "white", border: "none", borderRadius: 16,
+            width: "100%", background: "var(--bp-primary)", color: "white", border: "none", borderRadius: 16,
             padding: "16px", fontSize: 15, fontWeight: 700, cursor: "pointer", fontFamily: "Inter, sans-serif",
           }}>Tester la vibration</button>
         </div>
@@ -1263,7 +1263,7 @@ function PrioritePage({ onBack }: { onBack: () => void }) {
   const PRIOS = [
     { key: "faible",     label: "Faible",      desc: "Vous ne recevez pas de son.", color: "#9CA3AF" },
     { key: "normale",    label: "Normale",     desc: "Vous recevez les notifications standard.", color: "#0EA5E9" },
-    { key: "haute",      label: "Haute",       desc: "Vous recevez toutes les notifications prioritaires.", color: "#22C55E" },
+    { key: "haute",      label: "Haute",       desc: "Vous recevez toutes les notifications prioritaires.", color: "var(--bp-primary)" },
     { key: "urgente",    label: "Urgente",     desc: "Vous recevez toutes les notifications immédiatement.", color: "#F97316" },
     { key: "silencieuse",label: "Silencieuse", desc: "Aucune notification sonore.", color: "#8B5CF6" },
   ];
@@ -1272,7 +1272,7 @@ function PrioritePage({ onBack }: { onBack: () => void }) {
       <SubPageHeader title="Priorité" onBack={onBack} />
       <div style={{ flex: 1, overflowY: "auto" }}>
         <div style={{ height: 12 }}/>
-        <div style={{ background: "white" }}>
+        <div style={{ background: "var(--theme-surface)" }}>
           {PRIOS.map((p, i) => (
             <div key={p.key} onClick={() => setSelected(p.key)} style={{
               display: "flex", alignItems: "center", padding: "14px 20px", gap: 14,
@@ -1284,10 +1284,10 @@ function PrioritePage({ onBack }: { onBack: () => void }) {
                 background: selected === p.key ? p.color : "white",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}>
-                {selected === p.key && <div style={{ width: 8, height: 8, borderRadius: "50%", background: "white" }}/>}
+                {selected === p.key && <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--theme-surface)" }}/>}
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 15, fontWeight: 600, color: "#111827", fontFamily: "Inter, sans-serif" }}>{p.label}</div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: "var(--theme-text)", fontFamily: "Inter, sans-serif" }}>{p.label}</div>
                 <div style={{ fontSize: 13, color: "#64748B", fontFamily: "Inter, sans-serif" }}>{p.desc}</div>
               </div>
             </div>
@@ -1315,18 +1315,18 @@ function ApercuPage({ onBack }: { onBack: () => void }) {
       <SubPageHeader title="Aperçu des messages" onBack={onBack} />
       <div style={{ flex: 1, overflowY: "auto" }}>
         <div style={{ height: 12 }}/>
-        <div style={{ background: "white" }}>
+        <div style={{ background: "var(--theme-surface)" }}>
           {OPTS.map((o, i) => (
             <div key={o.key} onClick={() => setSelected(o.key)} style={{
               display: "flex", alignItems: "center", padding: "14px 20px", gap: 14,
               borderTop: i > 0 ? "1px solid #F3F4F6" : "none", cursor: "pointer",
             }}>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 15, fontWeight: 500, color: "#111827", fontFamily: "Inter, sans-serif" }}>{o.label}</div>
+                <div style={{ fontSize: 15, fontWeight: 500, color: "var(--theme-text)", fontFamily: "Inter, sans-serif" }}>{o.label}</div>
                 <div style={{ fontSize: 13, color: "#64748B", fontFamily: "Inter, sans-serif" }}>{o.desc}</div>
               </div>
               {selected === o.key && (
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               )}
             </div>
           ))}
@@ -1357,22 +1357,22 @@ function RechercheParDatePage({ onBack }: { onBack: () => void }) {
       <SubPageHeader title="Recherche par date" onBack={onBack} rightSlot={<span/>} />
       <div style={{ flex: 1, overflowY: "auto" }}>
         <div style={{ height: 12 }}/>
-        <div style={{ background: "white" }}>
+        <div style={{ background: "var(--theme-surface)" }}>
           {PERIODES.map((p, i) => (
             <div key={p.key} onClick={() => setSelected(p.key)} style={{
               display: "flex", alignItems: "center", justifyContent: "space-between",
               padding: "15px 20px", borderTop: i > 0 ? "1px solid #F3F4F6" : "none", cursor: "pointer",
             }}>
-              <span style={{ fontSize: 15, fontWeight: 500, color: "#111827", fontFamily: "Inter, sans-serif" }}>{p.label}</span>
+              <span style={{ fontSize: 15, fontWeight: 500, color: "var(--theme-text)", fontFamily: "Inter, sans-serif" }}>{p.label}</span>
               {selected === p.key && (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               )}
             </div>
           ))}
         </div>
         <div style={{ height: 12 }}/>
-        <div style={{ background: "white", padding: "16px 20px" }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: "#22C55E", marginBottom: 14, fontFamily: "Inter, sans-serif", textTransform: "uppercase", letterSpacing: 0.8 }}>Période personnalisée</div>
+        <div style={{ background: "var(--theme-surface)", padding: "16px 20px" }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: "var(--bp-primary)", marginBottom: 14, fontFamily: "Inter, sans-serif", textTransform: "uppercase", letterSpacing: 0.8 }}>Période personnalisée</div>
           {[
             { label: "Date début", val: debut, set: setDebut },
             { label: "Date fin",   val: fin,   set: setFin   },
@@ -1382,12 +1382,12 @@ function RechercheParDatePage({ onBack }: { onBack: () => void }) {
               <input type="date" value={f.val} onChange={e => f.set(e.target.value)} style={{
                 width: "100%", border: "1.5px solid #E5E7EB", borderRadius: 12,
                 padding: "10px 14px", fontSize: 14, fontFamily: "Inter, sans-serif", outline: "none",
-                accentColor: "#22C55E", boxSizing: "border-box",
+                accentColor: "var(--bp-primary)", boxSizing: "border-box",
               }}/>
             </div>
           ))}
           <button style={{
-            width: "100%", background: "#22C55E", color: "white", border: "none", borderRadius: 14,
+            width: "100%", background: "var(--bp-primary)", color: "white", border: "none", borderRadius: 14,
             padding: "14px", fontSize: 15, fontWeight: 700, cursor: "pointer", fontFamily: "Inter, sans-serif", marginTop: 8,
           }}>Appliquer le filtre</button>
         </div>
@@ -1414,25 +1414,25 @@ function ImporterTelephonePage({ onBack }: { onBack: () => void }) {
   return (
     <SubPage visible>
       <SubPageHeader title="Importer depuis téléphone" onBack={onBack} />
-      <div style={{ background: "white", padding: "10px 16px", borderBottom: "1px solid #F3F4F6" }}>
+      <div style={{ background: "var(--theme-surface)", padding: "10px 16px", borderBottom: "1px solid #F3F4F6" }}>
         <div style={{ display: "flex", alignItems: "center", background: "#F1F5F9", borderRadius: 24, padding: "8px 14px", gap: 8 }}>
           <IcSearch />
           <input value={q} onChange={e => setQ(e.target.value)} placeholder="Rechercher un contact"
-            style={{ flex: 1, border: "none", background: "none", fontSize: 14, outline: "none", fontFamily: "Inter, sans-serif", color: "#111827" }}
+            style={{ flex: 1, border: "none", background: "none", fontSize: 14, outline: "none", fontFamily: "Inter, sans-serif", color: "var(--theme-text)" }}
           />
         </div>
       </div>
       <div style={{ flex: 1, overflowY: "auto" }}>
         <div style={{ height: 12 }}/>
-        <div style={{ background: "white" }}>
+        <div style={{ background: "var(--theme-surface)" }}>
           {FILTRES.map((f, i) => (
             <div key={f.key} onClick={() => setFiltre(f.key)} style={{
               display: "flex", alignItems: "center", justifyContent: "space-between",
               padding: "14px 20px", borderTop: i > 0 ? "1px solid #F3F4F6" : "none", cursor: "pointer",
             }}>
-              <span style={{ fontSize: 15, fontWeight: 500, color: "#111827", fontFamily: "Inter, sans-serif" }}>{f.label}</span>
+              <span style={{ fontSize: 15, fontWeight: 500, color: "var(--theme-text)", fontFamily: "Inter, sans-serif" }}>{f.label}</span>
               {filtre === f.key && (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               )}
             </div>
           ))}
@@ -1441,7 +1441,7 @@ function ImporterTelephonePage({ onBack }: { onBack: () => void }) {
         <div style={{ padding: "0 20px" }}>
           <button style={{
             background: "none", border: "none", cursor: "pointer",
-            fontSize: 14, fontWeight: 500, color: "#22C55E", fontFamily: "Inter, sans-serif",
+            fontSize: 14, fontWeight: 500, color: "var(--bp-primary)", fontFamily: "Inter, sans-serif",
           }}>+ Rechercher un utilisateur</button>
         </div>
       </div>
@@ -1471,14 +1471,14 @@ function ParamsAvancesPage({ onBack }: { onBack: () => void }) {
       <SubPageHeader title="Paramètres avancés" onBack={onBack} />
       <div style={{ flex: 1, overflowY: "auto" }}>
         <div style={{ height: 12 }}/>
-        <div style={{ background: "white" }}>
+        <div style={{ background: "var(--theme-surface)" }}>
           {ITEMS.map((item, i) => (
             <div key={item.key} style={{
               display: "flex", alignItems: "center", justifyContent: "space-between",
               padding: "14px 20px", borderTop: i > 0 ? "1px solid #F3F4F6" : "none",
             }}>
               <div style={{ flex: 1, paddingRight: 12 }}>
-                <div style={{ fontSize: 15, fontWeight: 500, color: "#111827", fontFamily: "Inter, sans-serif" }}>{item.label}</div>
+                <div style={{ fontSize: 15, fontWeight: 500, color: "var(--theme-text)", fontFamily: "Inter, sans-serif" }}>{item.label}</div>
                 <div style={{ fontSize: 13, color: "#64748B", fontFamily: "Inter, sans-serif" }}>{item.desc}</div>
               </div>
               <Toggle checked={toggles[item.key]} onChange={() => toggle(item.key)} />
@@ -1516,7 +1516,7 @@ function DropdownMenu({ onSelect, onClose }: { onSelect: (id: SubPageId) => void
       {/* Menu card */}
       <div style={{
         position: "absolute", top: 56, right: 8, zIndex: 50,
-        background: "white", borderRadius: 14,
+        background: "var(--theme-surface)", borderRadius: 14,
         boxShadow: "0 8px 40px rgba(0,0,0,0.18)",
         width: 280, overflow: "hidden",
         animation: "dropIn 0.18s ease-out",
@@ -1599,7 +1599,7 @@ export default function BroadcastListPage({ broadcastId, recipientView }: { broa
 
   if (loading) return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", background: "#F8FAFC" }}>
-      <div style={{ width: 40, height: 40, border: "4px solid #22C55E", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }}/>
+      <div style={{ width: 40, height: 40, border: "4px solid var(--bp-primary)", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }}/>
     </div>
   );
 
@@ -1614,7 +1614,7 @@ export default function BroadcastListPage({ broadcastId, recipientView }: { broa
 
       {/* ── HEADER ── */}
       <div style={{
-        background: "#22C55E", padding: "10px 8px 10px 4px",
+        background: "var(--bp-primary)", padding: "10px 8px 10px 4px",
         display: "flex", alignItems: "center", gap: 8, position: "relative", zIndex: 30, flexShrink: 0,
       }}>
         <button onClick={() => navigate("/messages")} style={{ background: "none", border: "none", cursor: "pointer", padding: "4px 8px", display: "flex" }}>
@@ -1622,7 +1622,7 @@ export default function BroadcastListPage({ broadcastId, recipientView }: { broa
         </button>
         {/* Avatar */}
         <div style={{
-          width: 42, height: 42, borderRadius: "50%", background: list.color ?? "#16A34A",
+          width: 42, height: 42, borderRadius: "50%", background: list.color ?? "var(--bp-primary-dark)",
           display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
           border: "2px solid rgba(255,255,255,0.3)",
         }}>
@@ -1676,10 +1676,10 @@ export default function BroadcastListPage({ broadcastId, recipientView }: { broa
           {messages.map(m => (
             <div key={m.id} style={{ display: "flex", justifyContent: "flex-end", marginBottom: 8 }}>
               <div style={{
-                maxWidth: "75%", background: "white", borderRadius: "16px 4px 16px 16px",
+                maxWidth: "75%", background: "var(--theme-surface)", borderRadius: "16px 4px 16px 16px",
                 padding: "9px 13px", boxShadow: "0 1px 2px rgba(0,0,0,0.08)",
               }}>
-                <div style={{ fontSize: 14, color: "#111827", lineHeight: "1.45" }}>{m.content}</div>
+                <div style={{ fontSize: 14, color: "var(--theme-text)", lineHeight: "1.45" }}>{m.content}</div>
                 <div style={{ fontSize: 11, color: "#9CA3AF", textAlign: "right", marginTop: 3 }}>
                   {new Date(m.createdAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
                   <span style={{ marginLeft: 5 }}>✓✓</span>
@@ -1706,7 +1706,7 @@ export default function BroadcastListPage({ broadcastId, recipientView }: { broa
             position: "relative", zIndex: 1,
           }}>
             <div style={{
-              flex: 1, background: "white", borderRadius: 26,
+              flex: 1, background: "var(--theme-surface)", borderRadius: 26,
               display: "flex", alignItems: "center", padding: "6px 14px", gap: 10,
               boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
             }}>
@@ -1719,7 +1719,7 @@ export default function BroadcastListPage({ broadcastId, recipientView }: { broa
                 placeholder="Message"
                 style={{
                   flex: 1, border: "none", background: "none", fontSize: 15,
-                  outline: "none", color: "#111827", fontFamily: "Inter, sans-serif",
+                  outline: "none", color: "var(--theme-text)", fontFamily: "Inter, sans-serif",
                 }}
               />
               <button style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", flexShrink: 0 }}>
@@ -1728,7 +1728,7 @@ export default function BroadcastListPage({ broadcastId, recipientView }: { broa
             </div>
             <button onClick={sendMessage} disabled={sending} style={{
               width: 46, height: 46, borderRadius: "50%",
-              background: "#22C55E", border: "none", cursor: "pointer",
+              background: "var(--bp-primary)", border: "none", cursor: "pointer",
               display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
               boxShadow: "0 2px 8px rgba(34,197,94,0.4)",
             }}>

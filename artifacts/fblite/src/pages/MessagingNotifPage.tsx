@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "../router";
 import { apiFetch, getBpToken } from "../lib/api";
 
-const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"#22C55E",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"var(--bp-primary)",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
 
 const Toggle = ({ on,onChange }:{on:boolean;onChange:(v:boolean)=>void}) => (
   <div onClick={()=>onChange(!on)} style={{ width:52,height:30,borderRadius:15,background:on?C.primary:"#E5E7EB",position:"relative",cursor:"pointer",transition:"background 250ms",flexShrink:0,boxShadow:on?"0 2px 10px rgba(34,197,94,0.35)":"inset 0 1px 3px rgba(0,0,0,0.08)" }}>

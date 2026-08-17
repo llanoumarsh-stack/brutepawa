@@ -22,7 +22,7 @@ const BOT_META: Record<string, { emoji: string; label: string; desc: string; col
     emoji: "👋",
     label: "Bot de Bienvenue",
     desc: "Publie automatiquement un message de bienvenue quand un nouveau membre rejoint le groupe.",
-    color: "#22C55E",
+    color: "var(--bp-primary)",
   },
   anti_insult: {
     emoji: "🛡️",
@@ -40,7 +40,7 @@ const BOT_META: Record<string, { emoji: string; label: string; desc: string; col
     emoji: "🌍",
     label: "Bot Traducteur",
     desc: "Permet aux membres de traduire des publications dans leur langue avec un bouton dédié.",
-    color: "#22C55E",
+    color: "var(--bp-primary)",
   },
   scheduler: {
     emoji: "📅",
@@ -56,12 +56,12 @@ function ToggleSwitch({ enabled, onChange }: { enabled: boolean; onChange: (v: b
       onClick={() => onChange(!enabled)}
       style={{
         width: 44, height: 24, borderRadius: 12, border: "none", cursor: "pointer",
-        background: enabled ? "#22C55E" : "#CCD0D5",
+        background: enabled ? "var(--bp-primary)" : "#CCD0D5",
         position: "relative", transition: "background 0.2s", flexShrink: 0,
       }}
     >
       <div style={{
-        width: 18, height: 18, borderRadius: "50%", background: "#fff",
+        width: 18, height: 18, borderRadius: "50%", background: "var(--theme-surface)",
         position: "absolute", top: 3,
         left: enabled ? 23 : 3,
         transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.3)",
@@ -148,7 +148,7 @@ function AntiInsultSettings({
             onClick={addWord}
             style={{
               padding: "8px 14px", borderRadius: 8, border: "none",
-              background: "#22C55E", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer",
+              background: "var(--bp-primary)", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer",
             }}
           >Ajouter</button>
         </div>
@@ -224,13 +224,13 @@ function AntiLinkSettings({
         <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
           {domains.map(d => (
             <span key={d} style={{
-              background: "#DCFCE7", color: "#22C55E", borderRadius: 20, padding: "3px 10px",
+              background: "#DCFCE7", color: "var(--bp-primary)", borderRadius: 20, padding: "3px 10px",
               fontSize: 13, fontWeight: 600, display: "flex", alignItems: "center", gap: 4,
             }}>
               {d}
               <button
                 onClick={() => onChange({ ...settings, allowedDomains: domains.filter(x => x !== d) })}
-                style={{ background: "none", border: "none", cursor: "pointer", color: "#22C55E", padding: 0, fontSize: 14, lineHeight: 1 }}
+                style={{ background: "none", border: "none", cursor: "pointer", color: "var(--bp-primary)", padding: 0, fontSize: 14, lineHeight: 1 }}
               >×</button>
             </span>
           ))}
@@ -253,7 +253,7 @@ function AntiLinkSettings({
             onClick={addDomain}
             style={{
               padding: "8px 14px", borderRadius: 8, border: "none",
-              background: "#22C55E", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer",
+              background: "var(--bp-primary)", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer",
             }}
           >Ajouter</button>
         </div>
@@ -386,9 +386,9 @@ function SchedulerSettings({
                 onClick={() => toggleDay(i)}
                 style={{
                   padding: "5px 10px", borderRadius: 20, border: "1px solid",
-                  borderColor: newDays.includes(i) ? "#22C55E" : "var(--fb-border)",
-                  background: newDays.includes(i) ? "#22C55E20" : "var(--fb-bg)",
-                  color: newDays.includes(i) ? "#22C55E" : "var(--fb-text-secondary)",
+                  borderColor: newDays.includes(i) ? "var(--bp-primary)" : "var(--fb-border)",
+                  background: newDays.includes(i) ? "rgba(var(--bp-primary-rgb),0.13)" : "var(--fb-bg)",
+                  color: newDays.includes(i) ? "var(--bp-primary)" : "var(--fb-text-secondary)",
                   fontWeight: 600, fontSize: 12, cursor: "pointer",
                 }}
               >{name}</button>
@@ -400,7 +400,7 @@ function SchedulerSettings({
           disabled={!newMsg.trim()}
           style={{
             padding: "9px 0", borderRadius: 8, border: "none",
-            background: newMsg.trim() ? "#22C55E" : "var(--fb-divider)",
+            background: newMsg.trim() ? "var(--bp-primary)" : "var(--fb-divider)",
             color: newMsg.trim() ? "#fff" : "var(--fb-text-secondary)",
             fontWeight: 700, fontSize: 14, cursor: newMsg.trim() ? "pointer" : "not-allowed",
           }}
@@ -485,7 +485,7 @@ function BotCard({ bot, onSave }: { bot: ApiGroupBot; onSave: (enabled: boolean,
             disabled={saving}
             style={{
               marginTop: 14, width: "100%", padding: "11px 0", borderRadius: 8, border: "none",
-              background: saved ? "#22C55E" : meta.color, color: "#fff",
+              background: saved ? "var(--bp-primary)" : meta.color, color: "#fff",
               fontWeight: 700, fontSize: 14, cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.7 : 1,
             }}
           >

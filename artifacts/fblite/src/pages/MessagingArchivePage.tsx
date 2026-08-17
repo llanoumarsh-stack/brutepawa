@@ -1,6 +1,6 @@
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"#22C55E",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"var(--bp-primary)",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
 
 const Footer = () => (
   <div style={{ textAlign:"center",padding:"20px 0 32px" }}>
@@ -19,8 +19,8 @@ function ArchiveIllustration() {
       {/* Back folder */}
       <path d="M20 42a6 6 0 016-6h40l9 11h59a6 6 0 016 6v57a6 6 0 01-6 6H26a6 6 0 01-6-6V42z" fill="#BBF7D0"/>
       {/* Front folder */}
-      <path d="M16 54a6 6 0 016-6h42l9 11h63a6 6 0 016 6v55a6 6 0 01-6 6H22a6 6 0 01-6-6V54z" fill="#22C55E"/>
-      <path d="M16 54a6 6 0 016-6h42l9 11h63a6 6 0 016 6v12H16V54z" fill="#22C55E" opacity=".4"/>
+      <path d="M16 54a6 6 0 016-6h42l9 11h63a6 6 0 016 6v55a6 6 0 01-6 6H22a6 6 0 01-6-6V54z" fill="var(--bp-primary)"/>
+      <path d="M16 54a6 6 0 016-6h42l9 11h63a6 6 0 016 6v12H16V54z" fill="var(--bp-primary)" opacity=".4"/>
       {/* Documents */}
       <rect x="48" y="72" width="40" height="50" rx="5" fill="#fff" transform="rotate(-7 48 72)"/>
       <line x1="56" y1="90" x2="80" y2="87" stroke="#E5E7EB" strokeWidth="2.5" strokeLinecap="round"/>
@@ -28,8 +28,8 @@ function ArchiveIllustration() {
       <rect x="70" y="68" width="40" height="50" rx="5" fill="#fff" transform="rotate(6 70 68)"/>
       <line x1="78" y1="86" x2="102" y2="87" stroke="#E5E7EB" strokeWidth="2.5" strokeLinecap="round"/>
       {/* Download arrow badge */}
-      <circle cx="118" cy="38" r="18" fill="#DCFCE7" stroke="#22C55E" strokeWidth="2"/>
-      <path d="M118 32v8m0 0l-4-4m4 4l4-4M114 44h8" stroke="#16A34A" strokeWidth="2" strokeLinecap="round"/>
+      <circle cx="118" cy="38" r="18" fill="#DCFCE7" stroke="var(--bp-primary)" strokeWidth="2"/>
+      <path d="M118 32v8m0 0l-4-4m4 4l4-4M114 44h8" stroke="var(--bp-primary-dark)" strokeWidth="2" strokeLinecap="round"/>
     </svg>
   );
 }
@@ -52,7 +52,7 @@ export default function MessagingArchivePage() {
         <div style={{ fontSize:14,color:C.secondary,textAlign:"center",lineHeight:1.65,maxWidth:280,marginBottom:32 }}>
           Vous pouvez archiver vos discussions pour les retrouver plus tard.
         </div>
-        <button style={{ background:"linear-gradient(135deg,#16A34A,#22C55E)",color:"#fff",border:"none",borderRadius:18,padding:"14px 28px",fontWeight:700,fontSize:15,cursor:"pointer",boxShadow:"0 8px 24px rgba(34,197,94,0.3)",width:"100%",maxWidth:300 }}>
+        <button style={{ background:"linear-gradient(135deg,var(--bp-primary-dark),var(--bp-primary))",color:"#fff",border:"none",borderRadius:18,padding:"14px 28px",fontWeight:700,fontSize:15,cursor:"pointer",boxShadow:"0 8px 24px rgba(34,197,94,0.3)",width:"100%",maxWidth:300 }}>
           Archiver une discussion
         </button>
       </div>

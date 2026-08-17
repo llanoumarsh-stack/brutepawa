@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "../router";
 import { apiFetch, getBpToken } from "../lib/api";
 
-const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"#22C55E",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"var(--bp-primary)",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
 
 const Toggle = ({ on,onChange }:{on:boolean;onChange:(v:boolean)=>void}) => (
   <div onClick={()=>onChange(!on)} style={{ width:52,height:30,borderRadius:15,background:on?C.primary:"#E5E7EB",position:"relative",cursor:"pointer",transition:"background 250ms ease",flexShrink:0,boxShadow:on?"0 2px 10px rgba(34,197,94,0.35)":"inset 0 1px 3px rgba(0,0,0,0.08)" }}>
@@ -65,7 +65,7 @@ export default function OnlineStatusPage() {
 
         <div style={{ background:"linear-gradient(135deg,#DCFCE7,#DCFCE7)",borderRadius:24,padding:"16px 18px",display:"flex",gap:12,marginBottom:12,border:"1px solid #DCFCE7" }}>
           <div style={{ width:36,height:36,borderRadius:"50%",background:"#DCFCE7",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
           </div>
           <p style={{ fontSize:13,color:"#0EA5E9",lineHeight:1.6,margin:0 }}>
             Lorsque ce paramètre est activé, votre Statut En Ligne est visible par les personnes qui vous ont dans leur liste de contacts sur <strong>BrutePawa</strong>, et par celles auxquelles vous avez envoyé une invitation. Vous ne pouvez pas voir le statut En ligne des autres si le vôtre est activé.

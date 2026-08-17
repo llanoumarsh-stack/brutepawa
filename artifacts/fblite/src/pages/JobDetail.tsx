@@ -38,7 +38,7 @@ export default function JobDetail({ id }: Props) {
     }).finally(() => setLoading(false));
   }, [id]);
 
-  const typeColor: Record<string, string> = { CDI: "#22C55E", CDD: "#FF9800", Freelance: "#9C27B0" };
+  const typeColor: Record<string, string> = { CDI: "var(--bp-primary)", CDD: "#FF9800", Freelance: "#9C27B0" };
 
   const handleApply = async () => {
     if (!job) return;
@@ -107,7 +107,7 @@ export default function JobDetail({ id }: Props) {
 
         {/* Apply button */}
         {applied ? (
-          <div style={{ background: "#DCFCE7", color: "#16A34A", borderRadius: 12, padding: "14px", textAlign: "center", fontWeight: 800, fontSize: 15, marginBottom: 10 }}>
+          <div style={{ background: "#DCFCE7", color: "var(--bp-primary-dark)", borderRadius: 12, padding: "14px", textAlign: "center", fontWeight: 800, fontSize: 15, marginBottom: 10 }}>
             ✅ Vous avez postulé à cette offre
           </div>
         ) : (
@@ -123,7 +123,7 @@ export default function JobDetail({ id }: Props) {
             const enc = job ? encodeURIComponent(job.title + " — " + job.company) : "";
             navigate(`/jobs/inbox${job ? `?jobTitle=${enc}` : ""}`);
           }}
-          style={{ width: "100%", background: "#fff", color: "#22C55E", border: "2px solid #22C55E", borderRadius: 12, padding: "12px", fontWeight: 700, fontSize: 15, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
+          style={{ width: "100%", background: "var(--theme-surface)", color: "var(--bp-primary)", border: "2px solid var(--bp-primary)", borderRadius: 12, padding: "12px", fontWeight: 700, fontSize: 15, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
         >
           💬 Contacter le recruteur
         </button>
@@ -157,7 +157,7 @@ export default function JobDetail({ id }: Props) {
           "Esprit d'initiative et sens des responsabilités",
           job.type === "Freelance" ? "Disponibilité immédiate" : "2+ ans d'expérience minimum"].map((r, i) => (
           <div key={i} style={{ display: "flex", gap: 8, marginBottom: 8, fontSize: 14 }}>
-            <span style={{ color: "#22C55E", fontWeight: 700, flexShrink: 0 }}>•</span>
+            <span style={{ color: "var(--bp-primary)", fontWeight: 700, flexShrink: 0 }}>•</span>
             <span>{r}</span>
           </div>
         ))}
@@ -214,7 +214,7 @@ export default function JobDetail({ id }: Props) {
               <button onClick={() => setShowForm(false)} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer" }}>✕</button>
             </div>
             {done ? (
-              <div style={{ textAlign: "center", padding: "24px 0", color: "#22C55E" }}>
+              <div style={{ textAlign: "center", padding: "24px 0", color: "var(--bp-primary)" }}>
                 <div style={{ fontSize: 48 }}>✅</div>
                 <div style={{ fontWeight: 800, fontSize: 17, marginTop: 10 }}>Candidature envoyée !</div>
                 <div style={{ fontSize: 14, color: "var(--fb-text-secondary)", marginTop: 6 }}>

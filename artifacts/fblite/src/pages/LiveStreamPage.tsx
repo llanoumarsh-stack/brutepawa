@@ -3,6 +3,7 @@ import { useNavigate } from "../router";
 import { useCloudflareStream } from "../hooks/useCloudflareStream";
 import { getBpToken } from "../lib/api";
 import GiftPicker from "../components/GiftPicker";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 const REACTIONS = ["❤️", "😍", "🔥", "👏", "😂", "🎉"];
 
@@ -11,8 +12,7 @@ interface FloatingReaction { id: number; emoji: string; x: number; }
 
 export default function LiveStreamPage() {
   const navigate = useNavigate();
-  const rawUser = localStorage.getItem("fb_user");
-  const user = rawUser ? JSON.parse(rawUser) : { name: "Moi", flag: "", email: "" };
+  const user = useCurrentUser();
   const userInitials = user.name ? user.name.slice(0, 2).toUpperCase() : "ME";
   const userId = user.email || user.name || "anonymous";
 
@@ -226,7 +226,7 @@ export default function LiveStreamPage() {
     if (!localStreamRef.current) return;
     await cfStream.startStream(localStreamRef.current, {
       userId,
-      userName: user.name,
+      userName: user.name ?? "",
       userFlag: user.flag ?? "",
     });
   };
@@ -261,7 +261,7 @@ export default function LiveStreamPage() {
     setNewComment("");
     setShowCommentInput(false);
     // Optimistic: add locally immediately
-    setComments(prev => [...prev.slice(-30), { id: Date.now(), user: user.name.split(" ")[0], text }]);
+    setComments(prev => [...prev.slice(-30), { id: Date.now(), user: (user.name ?? "").split(" ")[0], text }]);
     // Persist to the server if we're live so viewers also see it
     if (isLive && cfStream.session?.id) {
       const token = getBpToken();
@@ -344,23 +344,23 @@ export default function LiveStreamPage() {
           <div style={{ color: "#fff", fontWeight: 900, fontSize: 32, textAlign: "center", lineHeight: 1.1, marginBottom: 4 }}>
             Lancer
           </div>
-          <div style={{ color: "#22C55E", fontWeight: 900, fontSize: 32, textAlign: "center", lineHeight: 1.1, marginBottom: 24 }}>
+          <div style={{ color: "var(--bp-primary)", fontWeight: 900, fontSize: 32, textAlign: "center", lineHeight: 1.1, marginBottom: 24 }}>
             un direct
           </div>
           <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 14, textAlign: "center", marginBottom: 24 }}>
-            Partagez votre moment avec<br />la communauté <strong style={{ color: "#22C55E" }}>BrutePawa</strong>
+            Partagez votre moment avec<br />la communauté <strong style={{ color: "var(--bp-primary)" }}>BrutePawa</strong>
           </div>
 
           {/* Camera loading */}
           {cameraLoading && (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, marginBottom: 16 }}>
-              <div style={{ width: 32, height: 32, border: "3px solid rgba(255,255,255,0.2)", borderTopColor: "#22C55E", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+              <div style={{ width: 32, height: 32, border: "3px solid rgba(255,255,255,0.2)", borderTopColor: "var(--bp-primary)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
               <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 13 }}>Connexion à la caméra…</div>
             </div>
           )}
           {isConnecting && (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, marginBottom: 16 }}>
-              <div style={{ width: 32, height: 32, border: "3px solid rgba(255,255,255,0.2)", borderTopColor: "#22C55E", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+              <div style={{ width: 32, height: 32, border: "3px solid rgba(255,255,255,0.2)", borderTopColor: "var(--bp-primary)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
               <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 13 }}>
                 {cfStream.status === "creating" ? "Création du flux…" : "Connexion WebRTC…"}
               </div>
@@ -378,17 +378,17 @@ export default function LiveStreamPage() {
               {locked ? (
                 <>
                   <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}>
-                    <div style={{ width: 52, height: 52, borderRadius: "50%", background: "linear-gradient(135deg,#22C55E,#22C55E)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 20px rgba(22,194,74,0.4)" }}>
+                    <div style={{ width: 52, height: 52, borderRadius: "50%", background: "linear-gradient(135deg,var(--bp-primary),var(--bp-primary))", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 20px rgba(22,194,74,0.4)" }}>
                       <svg viewBox="0 0 24 24" width="26" height="26" fill="#fff"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
                     </div>
                   </div>
                   <div style={{ color: "rgba(255,255,255,0.85)", fontSize: 13, textAlign: "center", marginBottom: 12, lineHeight: 1.5 }}>
-                    Le direct est disponible à partir de <strong style={{ color: "#22C55E", fontSize: 15 }}>{GOAL_FOLLOWERS.toLocaleString("fr-FR")} abonnés</strong>
+                    Le direct est disponible à partir de <strong style={{ color: "var(--bp-primary)", fontSize: 15 }}>{GOAL_FOLLOWERS.toLocaleString("fr-FR")} abonnés</strong>
                   </div>
                   {/* Progress bar */}
                   <div style={{ marginBottom: 8 }}>
                     <div style={{ height: 6, background: "rgba(255,255,255,0.12)", borderRadius: 3, overflow: "hidden" }}>
-                      <div style={{ height: "100%", width: `${followPct}%`, background: "linear-gradient(90deg,#22C55E,#22C55E)", borderRadius: 3, transition: "width 0.6s ease" }} />
+                      <div style={{ height: "100%", width: `${followPct}%`, background: "linear-gradient(90deg,var(--bp-primary),var(--bp-primary))", borderRadius: 3, transition: "width 0.6s ease" }} />
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", marginTop: 5, fontSize: 11, color: "rgba(255,255,255,0.45)" }}>
                       <span>{eligibility.followersCount.toLocaleString("fr-FR")} abonné{eligibility.followersCount !== 1 ? "s" : ""}</span>
@@ -396,13 +396,13 @@ export default function LiveStreamPage() {
                     </div>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "rgba(255,255,255,0.55)", marginTop: 4 }}>
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="#22C55E"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="var(--bp-primary)"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
                     Continuez à publier du contenu pour débloquer cette fonctionnalité.
                   </div>
                 </>
               ) : (
-                <div style={{ textAlign: "center", color: "#22C55E", fontWeight: 700, fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                  <svg viewBox="0 0 24 24" width="20" height="20" fill="#22C55E"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                <div style={{ textAlign: "center", color: "var(--bp-primary)", fontWeight: 700, fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="var(--bp-primary)"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
                   Vous êtes éligible au direct !
                 </div>
               )}
@@ -413,10 +413,10 @@ export default function LiveStreamPage() {
           {!isConnecting && (
             <div style={{ display: "flex", gap: 16, justifyContent: "center", width: "100%", maxWidth: 360, marginBottom: 24 }}>
               {[
-                { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="#22C55E"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>, label: "Diffusion HD" },
-                { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="#22C55E"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>, label: "Chat temps réel" },
-                { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="#22C55E"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>, label: "Modération" },
-                { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="#22C55E"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>, label: "Partage instantané" },
+                { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="var(--bp-primary)"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>, label: "Diffusion HD" },
+                { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="var(--bp-primary)"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>, label: "Chat temps réel" },
+                { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="var(--bp-primary)"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>, label: "Modération" },
+                { icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="var(--bp-primary)"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>, label: "Partage instantané" },
               ].map(f => (
                 <div key={f.label} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.07)", backdropFilter: "blur(6px)", borderRadius: 14, padding: "12px 6px" }}>
                   {f.icon}
@@ -446,7 +446,7 @@ export default function LiveStreamPage() {
                   onClick={goLive}
                   disabled={locked}
                   style={{
-                    background: locked ? "rgba(255,255,255,0.12)" : "linear-gradient(135deg,#22C55E,#22C55E)",
+                    background: locked ? "rgba(255,255,255,0.12)" : "linear-gradient(135deg,var(--bp-primary),var(--bp-primary))",
                     border: locked ? "1px solid rgba(255,255,255,0.15)" : "none",
                     borderRadius: 50, padding: "16px 0", color: locked ? "rgba(255,255,255,0.4)" : "#fff",
                     fontWeight: 900, fontSize: 16, cursor: locked ? "not-allowed" : "pointer", width: "100%",
@@ -483,11 +483,11 @@ export default function LiveStreamPage() {
         {!isConnecting && (
           <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "14px 20px 32px", background: "rgba(0,0,0,0.4)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", gap: 10 }}>
             <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(22,194,74,0.2)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="#22C55E"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="var(--bp-primary)"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>
             </div>
             <div>
               <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>Astuce : publiez régulièrement du contenu </span>
-              <span style={{ color: "#22C55E", fontSize: 12, fontWeight: 700 }}>pour augmenter rapidement votre audience.</span>
+              <span style={{ color: "var(--bp-primary)", fontSize: 12, fontWeight: 700 }}>pour augmenter rapidement votre audience.</span>
             </div>
             <svg viewBox="0 0 24 24" width="16" height="16" fill="rgba(255,255,255,0.25)" style={{ flexShrink: 0, marginLeft: "auto" }}><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
           </div>
@@ -659,7 +659,7 @@ export default function LiveStreamPage() {
         display: "flex", alignItems: "center", gap: 8,
       }}>
         <div style={{
-          width: 34, height: 34, borderRadius: "50%", background: "#22C55E",
+          width: 34, height: 34, borderRadius: "50%", background: "var(--bp-primary)",
           display: "flex", alignItems: "center", justifyContent: "center",
           color: "#fff", fontWeight: 800, fontSize: 13, border: "2px solid #fff",
         }}>{userInitials}</div>
@@ -707,7 +707,7 @@ export default function LiveStreamPage() {
               }}
             />
             <button onClick={sendComment} style={{
-              background: "#22C55E", border: "none", borderRadius: "50%",
+              background: "var(--bp-primary)", border: "none", borderRadius: "50%",
               width: 40, height: 40, color: "#fff", fontSize: 18, cursor: "pointer",
               display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
             }}>➤</button>
@@ -747,7 +747,7 @@ export default function LiveStreamPage() {
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>💬</button>
           <button onClick={() => setShowGiftPicker(true)} style={{
-            background: "linear-gradient(135deg,#22C55E,#22C55E)", border: "none", borderRadius: "50%",
+            background: "linear-gradient(135deg,var(--bp-primary),var(--bp-primary))", border: "none", borderRadius: "50%",
             width: 38, height: 38, cursor: "pointer",
             boxShadow: "0 0 14px rgba(22,194,74,0.5)",
             display: "flex", alignItems: "center", justifyContent: "center",

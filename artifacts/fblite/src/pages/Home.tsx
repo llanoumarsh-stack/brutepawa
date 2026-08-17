@@ -1,15 +1,18 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 import { Post } from "../lib/store";
 import { formatNumber } from "../data/mock";
-import { apiGetStories, apiGetComments, apiPostComment, apiPostVoiceComment, apiUploadVoice, apiDeleteComment, apiToggleCommentLike, apiToggleSaved, apiReportPost, apiFollow, apiBlockUser, apiDeletePost, apiHidePost, apiUnpinPost, apiPinPost, apiArchivePost, apiTogglePostComments, apiSetPostAudience, apiGetPostStats, type StoryGroup, type PostComment } from "../lib/api";
+import { apiGetStories, apiGetComments, apiPostComment, apiPostVoiceComment, apiUploadVoice, apiDeleteComment, apiToggleCommentLike, apiToggleSaved, apiReportPost, apiFollow, apiCheckFollowing, apiBlockUser, apiDeletePost, apiHidePost, apiUnpinPost, apiPinPost, apiArchivePost, apiTogglePostComments, apiSetPostAudience, apiGetPostStats, apiSearchUsers, type StoryGroup, type PostComment } from "../lib/api";
+import ExpandableText from "../components/ExpandableText";
+import MusicPlayerWidget from "../components/MusicPlayerWidget";
 import StoryViewer from "../components/StoryViewer";
 import VoiceRecorder from "../components/VoiceRecorder";
 import VoicePlayer from "../components/VoicePlayer";
 import { storyDraftStore } from "../lib/storyDraft";
 
-const AVATAR_COLORS = ["#22C55E","#E91E63","#9C27B0","#D97706","#388E3C","#212121","#D32F2F","#00838F"];
+const AVATAR_COLORS = ["var(--bp-primary)","#E91E63","#9C27B0","#D97706","#388E3C","#212121","#D32F2F","#00838F"];
 
 function getInitials(name?: string) {
   if (!name) return "??";
@@ -17,7 +20,7 @@ function getInitials(name?: string) {
 }
 
 const REACTIONS = [
-  { id: "like",  label: "J'aime",    emoji: "👍", color: "#22C55E" },
+  { id: "like",  label: "J'aime",    emoji: "👍", color: "var(--bp-primary)" },
   { id: "love",  label: "J'adore",   emoji: "❤️", color: "#F33E58" },
   { id: "care",  label: "Solidaire", emoji: "🫂", color: "#F7B125" },
   { id: "haha",  label: "Haha",      emoji: "😆", color: "#F7B125" },
@@ -55,8 +58,7 @@ type PostMenu = {
 
 export default function Home({ posts = [], postsLoading = false, onLike, newPosts = [] }: Props) {
   const navigate = useNavigate();
-  const rawUser = localStorage.getItem("fb_user");
-  const user = rawUser ? JSON.parse(rawUser) as { name: string; email: string; avatarUrl?: string; flag?: string; id?: number } : { name: "Moi", email: "" };
+  const user = useCurrentUser();
   const userInitials = user.name ? user.name.slice(0, 2).toUpperCase() : "ME";
 
   const [storyGroups, setStoryGroups] = useState<StoryGroup[]>([]);
@@ -80,6 +82,15 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
   useEffect(() => { loadStories(); }, [loadStories]);
 
   const allPosts = [...newPosts, ...posts];
+
+  // Check which post authors the current user already follows
+  useEffect(() => {
+    const myId = (user as { id?: number }).id;
+    const ids = [...new Set(allPosts.map(p => p.userId).filter(id => id && id !== myId))] as number[];
+    if (ids.length === 0) return;
+    apiCheckFollowing(ids).then(followed => setFollowedUsers(new Set(followed))).catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [posts, newPosts]);
 
   const [showComments, setShowComments] = useState<number | null>(null);
   const [comments, setComments] = useState<Record<number, PostComment[]>>({});
@@ -175,6 +186,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
   const [statsModal, setStatsModal] = useState<{ postId: number; stats: Record<string, unknown> } | null>(null);
   const [audienceSheet, setAudienceSheet] = useState<{ postId: number; current: string } | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [followedUsers, setFollowedUsers] = useState<Set<number>>(new Set());
 
   // Lock body scroll when bottom sheet is open to prevent layout shift
   useEffect(() => {
@@ -264,7 +276,16 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
     closeMenu();
   };
 
+  const handleFollow = (authorId: number, authorName: string) => {
+    setFollowedUsers(prev => new Set([...prev, authorId]));
+    apiFollow(authorId, "follow").catch(() => {
+      setFollowedUsers(prev => { const n = new Set(prev); n.delete(authorId); return n; });
+    });
+    showToast(`✅ Vous suivez maintenant ${authorName}`);
+  };
+
   const handleUnfollow = (authorId: number, authorName: string) => {
+    setFollowedUsers(prev => { const n = new Set(prev); n.delete(authorId); return n; });
     apiFollow(authorId, "unfollow").catch(() => {});
     showToast(`Vous ne suivez plus ${authorName}`);
     closeMenu();
@@ -408,38 +429,38 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
       )}
 
       {/* ─── Create post card ─── */}
-      <div style={{ background: "#0F241D", borderRadius: 12, border: "1px solid rgba(34,197,94,0.15)", boxShadow: "0 4px 20px rgba(0,15,6,0.5), inset 0 1px 0 rgba(34,197,94,0.06)", overflow: "hidden" }}>
+      <div style={{ background: "#fff", borderRadius: 12, border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 1px 4px rgba(0,0,0,0.06)", overflow: "hidden" }}>
         {/* Top row: avatar + input + icons */}
         <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 14px 10px" }}>
           {user.avatarUrl
-            ? <img src={user.avatarUrl} alt="Avatar" onClick={() => navigate("/profile")} style={{ width: 44, height: 44, borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer" }} />
-            : <div onClick={() => navigate("/profile")} style={{ width: 44, height: 44, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 16, flexShrink: 0, cursor: "pointer" }}>{userInitials}</div>
+            ? <img src={user.avatarUrl} alt="Avatar" onClick={() => navigate("/profile")} style={{ width: 44, height: 44, borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer", border: "2.5px solid var(--bp-primary)" }} />
+            : <div onClick={() => navigate("/profile")} style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--bp-primary)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 16, flexShrink: 0, cursor: "pointer", border: "2.5px solid var(--bp-primary)" }}>{userInitials}</div>
           }
           <div
             onClick={() => navigate("/create-post")}
-            style={{ flex: 1, background: "#132a1f", borderRadius: 30, padding: "11px 16px", fontSize: 15, color: "#9CA3AF", cursor: "pointer", fontWeight: 400, lineHeight: 1 }}
+            style={{ flex: 1, background: "#F9FAFB", border: "1px solid #E5E7EB", borderRadius: 24, padding: "11px 16px", fontSize: 15, color: "#9CA3AF", cursor: "pointer", fontWeight: 400, lineHeight: 1 }}
           >
-            Quoi de neuf, {user.name.split(" ")[0]} ?
+            Quoi de neuf, {(user.name ?? "").split(" ")[0]} ?
           </div>
-          {/* Photo icon */}
+          {/* Camera icon */}
           <button onClick={() => { sessionStorage.setItem("createPost_mode","photo"); navigate("/create-post"); }} style={{ background: "none", border: "none", cursor: "pointer", padding: 6, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="16" rx="3" stroke="#9CA3AF" strokeWidth="1.8"/><circle cx="9" cy="12" r="3" stroke="#9CA3AF" strokeWidth="1.8"/><path d="M2 9l5-5 3 4" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><circle cx="17" cy="8" r="1.5" fill="#9CA3AF"/></svg>
           </button>
-          {/* Mic icon */}
+          {/* Mic icon green */}
           <button onClick={() => { sessionStorage.setItem("createPost_mode","vocal"); navigate("/create-post"); }} style={{ background: "none", border: "none", cursor: "pointer", padding: 6, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="12" rx="3" stroke="#22C55E" strokeWidth="1.8"/><path d="M5 11a7 7 0 0 0 14 0" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"/><path d="M12 18v4M9 22h6" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"/></svg>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="12" rx="3" stroke="var(--bp-primary)" strokeWidth="1.8"/><path d="M5 11a7 7 0 0 0 14 0" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round"/><path d="M12 18v4M9 22h6" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round"/></svg>
           </button>
         </div>
 
         {/* Divider */}
-        <div style={{ height: 1, background: "rgba(34,197,94,0.12)", margin: "0 14px" }} />
+        <div style={{ height: 1, background: "rgba(0,0,0,0.07)", margin: "0 14px" }} />
 
-        {/* Action buttons row */}
-        <div style={{ display: "flex", overflowX: "auto", scrollbarWidth: "none" as const }}>
+        {/* Action buttons row — 5 items, full width */}
+        <div style={{ display: "flex" }}>
           {([
-            { label: "Photo",       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="3" fill="#22C55E"/><circle cx="12" cy="12" r="4" fill="#fff" fillOpacity=".9"/><circle cx="9" cy="7" r="1.5" fill="#fff" fillOpacity=".7"/></svg>, action: () => { sessionStorage.setItem("createPost_mode","photo"); navigate("/create-post"); } },
-            { label: "Vocal",       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="8" y="2" width="8" height="12" rx="4" fill="#E91E63"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/></svg>, action: () => { sessionStorage.setItem("createPost_mode","vocal"); navigate("/create-post"); } },
-            { label: "Vidéo",       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="14" height="12" rx="2" fill="#EF4444"/><path d="M16 9l5-3v12l-5-3V9z" fill="#EF4444"/></svg>, action: () => { sessionStorage.setItem("createPost_mode","video"); navigate("/create-post"); } },
+            { label: "Photo",        icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="3" fill="var(--bp-primary)"/><circle cx="12" cy="12" r="4" fill="#fff" fillOpacity=".9"/><circle cx="9" cy="7" r="1.5" fill="#fff" fillOpacity=".7"/></svg>, action: () => { sessionStorage.setItem("createPost_mode","photo"); navigate("/create-post"); } },
+            { label: "Vocal",        icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="8" y="2" width="8" height="12" rx="4" fill="#E91E63"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/></svg>, action: () => { sessionStorage.setItem("createPost_mode","vocal"); navigate("/create-post"); } },
+            { label: "Vidéo",        icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="14" height="12" rx="2" fill="#EF4444"/><path d="M16 9l5-3v12l-5-3V9z" fill="#EF4444"/></svg>, action: () => { sessionStorage.setItem("createPost_mode","video"); navigate("/create-post"); } },
             { label: "Localisation", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#E91E63"/><circle cx="12" cy="9" r="2.5" fill="#fff"/></svg>, action: () => {
               if (!navigator.geolocation) { alert("La géolocalisation n'est pas disponible sur cet appareil."); return; }
               sessionStorage.setItem("createPost_mode","location");
@@ -448,16 +469,15 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 () => { sessionStorage.removeItem("createPost_mode"); alert("Impossible d'accéder à votre position. Vérifiez les autorisations."); }
               );
             }},
-            { label: "Humeur",      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#FFC107"/><path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/><circle cx="9" cy="10" r="1.5" fill="#fff"/><circle cx="15" cy="10" r="1.5" fill="#fff"/></svg>, action: () => navigate("/create-post") },
-            { label: "Sondage",     icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="15" width="4" height="6" rx="1" fill="#22C55E"/><rect x="10" y="10" width="4" height="11" rx="1" fill="#22C55E"/><rect x="16" y="5" width="4" height="16" rx="1" fill="#22C55E"/></svg>, action: () => navigate("/create-post") },
+            { label: "Humeur",       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#FFC107"/><path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/><circle cx="9" cy="10" r="1.5" fill="#fff"/><circle cx="15" cy="10" r="1.5" fill="#fff"/></svg>, action: () => navigate("/create-post") },
           ] as { label: string; icon: React.ReactNode; action: () => void }[]).map((btn, i, arr) => (
             <button
               key={btn.label}
               onClick={btn.action}
-              style={{ flex: "0 0 auto", display: "flex", flexDirection: "column" as const, alignItems: "center" as const, justifyContent: "center" as const, gap: 4, padding: "10px 14px 12px", background: "none", border: "none", cursor: "pointer", borderRight: i < arr.length - 1 ? "1px solid rgba(34,197,94,0.15)" : "none", minWidth: 80 }}
+              style={{ flex: 1, display: "flex", flexDirection: "column" as const, alignItems: "center" as const, justifyContent: "center" as const, gap: 4, padding: "10px 4px 12px", background: "none", border: "none", cursor: "pointer", borderRight: i < arr.length - 1 ? "1px solid rgba(0,0,0,0.07)" : "none" }}
             >
               {btn.icon}
-              <span style={{ fontSize: 12, fontWeight: 600, color: "#9CA3AF", whiteSpace: "nowrap" as const }}>{btn.label}</span>
+              <span style={{ fontSize: 11.5, fontWeight: 600, color: "#6B7280", whiteSpace: "nowrap" as const }}>{btn.label}</span>
             </button>
           ))}
         </div>
@@ -465,86 +485,75 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
 
       {/* ─── Stories Row ─── */}
       <input ref={storyFileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleStoryFileSelect} />
-      <div style={{ background: "#0F241D", borderRadius: 12, border: "1px solid rgba(34,197,94,0.15)", boxShadow: "0 4px 20px rgba(0,15,6,0.5), inset 0 1px 0 rgba(34,197,94,0.06)", padding: "12px 10px 10px" }}>
-        <div style={{ display: "flex", gap: 10, overflowX: "auto", scrollbarWidth: "none" as const, alignItems: "flex-start" }}>
+      <div style={{ background: "#fff", borderRadius: 12, border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 1px 4px rgba(0,0,0,0.06)", padding: "12px 14px" }}>
+        <div style={{ display: "flex", gap: 10, overflowX: "auto", scrollbarWidth: "none" as const, alignItems: "center" }}>
 
-          {/* ── Créer une story — circulaire ── */}
-          <div onClick={() => storyFileRef.current?.click()} style={{ flex: "0 0 auto", cursor: "pointer", display: "flex", flexDirection: "column" as const, alignItems: "center" as const }}>
-            <div style={{ position: "relative", width: 76, height: 76 }}>
-              <div style={{
-                width: 76, height: 76, borderRadius: "50%", overflow: "hidden",
-                background: "linear-gradient(135deg, #1e3a2e 0%, #0f2a1a 100%)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                border: "2px solid rgba(34,197,94,0.25)",
-              }}>
-                {user.avatarUrl
-                  ? <img src={user.avatarUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.6 }} />
-                  : <span style={{ color: "#22C55E", fontWeight: 900, fontSize: 22, lineHeight: 1 }}>{userInitials}</span>
-                }
+          {/* ── Créer une story ── */}
+          <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+            <div onClick={() => storyFileRef.current?.click()} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+              <div style={{ position: "relative", width: 56, height: 56, flexShrink: 0 }}>
+                <div style={{
+                  width: 56, height: 56, borderRadius: "50%", overflow: "hidden",
+                  background: "#F0FDF4",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  border: "2.5px solid var(--bp-primary)",
+                }}>
+                  {user.avatarUrl
+                    ? <img src={user.avatarUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    : <span style={{ color: "var(--bp-primary)", fontWeight: 900, fontSize: 18, lineHeight: 1 }}>{userInitials}</span>
+                  }
+                </div>
+                <div style={{ position: "absolute", bottom: 0, right: 0, width: 20, height: 20, borderRadius: "50%", background: "var(--bp-primary)", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                </div>
               </div>
-              <div style={{ position: "absolute", bottom: 2, right: 2, width: 22, height: 22, borderRadius: "50%", background: "#22C55E", border: "2px solid #081C15", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
+              <div style={{ flexShrink: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#111827", lineHeight: 1.3 }}>Créer</div>
+                <div style={{ fontSize: 12, color: "#9CA3AF", lineHeight: 1.3 }}>une story</div>
               </div>
             </div>
-            <div style={{ marginTop: 5, textAlign: "center" as const }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#f0f0f0", lineHeight: 1.3 }}>Créer</div>
-              <div style={{ fontSize: 11, color: "#9CA3AF", lineHeight: 1.3 }}>une story</div>
-            </div>
+            {storyGroups.length === 0 && (
+              <span style={{ fontSize: 13, color: "#9CA3AF", fontStyle: "italic", flex: 1, minWidth: 0 }}>
+                Sois le premier à publier une story !
+              </span>
+            )}
           </div>
 
-          {/* ── User story cards — CIRCULAIRES ── */}
+          {/* ── User story cards ── */}
           {storyGroups.map((group, idx) => {
             const initials = group.authorName.slice(0, 2).toUpperCase();
             const avatarBg = AVATAR_COLORS[group.authorId % AVATAR_COLORS.length];
             const preview = group.stories[0];
-            const ringColors = ["#22C55E","#22C55E","#E91E63","#FF9800","#9C27B0","#EF4444"];
+            const ringColors = ["var(--bp-primary)","var(--bp-primary)","#E91E63","#FF9800","#9C27B0","#EF4444"];
             const ring = ringColors[group.authorId % ringColors.length];
             return (
               <div key={group.authorId} onClick={() => { setViewerGroupIdx(idx); setViewerOpen(true); }}
                 style={{ flex: "0 0 auto", cursor: "pointer", display: "flex", flexDirection: "column" as const, alignItems: "center" as const }}>
-                {/* Circular avatar with colored ring */}
-                <div style={{ width: 76, height: 76, borderRadius: "50%", padding: 3, background: `linear-gradient(135deg, ${ring}, ${ring}99)`, boxSizing: "border-box" as const, position: "relative" }}>
-                  <div style={{ width: "100%", height: "100%", borderRadius: "50%", border: "2.5px solid #081C15", overflow: "hidden", background: avatarBg, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ width: 56, height: 56, borderRadius: "50%", padding: 2.5, background: `linear-gradient(135deg, ${ring}, ${ring}99)`, boxSizing: "border-box" as const, position: "relative" }}>
+                  <div style={{ width: "100%", height: "100%", borderRadius: "50%", border: "2px solid #fff", overflow: "hidden", background: avatarBg, display: "flex", alignItems: "center", justifyContent: "center" }}>
                     {group.authorAvatarUrl
                       ? <img src={group.authorAvatarUrl} alt={group.authorName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       : (preview?.mediaUrl
                           ? <img src={preview.mediaUrl} alt={group.authorName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                          : <span style={{ color: "#fff", fontWeight: 800, fontSize: 22 }}>{initials}</span>)
+                          : <span style={{ color: "#fff", fontWeight: 800, fontSize: 18 }}>{initials}</span>)
                     }
                   </div>
-                  {/* Online dot */}
-                  <div style={{ position: "absolute", bottom: 4, right: 4, width: 14, height: 14, borderRadius: "50%", background: "#22C55E", border: "2px solid #081C15" }} />
+                  <div style={{ position: "absolute", bottom: 2, right: 2, width: 13, height: 13, borderRadius: "50%", background: "var(--bp-primary)", border: "2px solid #fff" }} />
                 </div>
-                <div style={{ marginTop: 6, fontSize: 11, fontWeight: 600, color: "#f0f0f0", textAlign: "center" as const, maxWidth: 76, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>
+                <div style={{ marginTop: 5, fontSize: 10.5, fontWeight: 600, color: "#374151", textAlign: "center" as const, maxWidth: 60, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>
                   {group.authorName.split(" ")[0]}
                 </div>
               </div>
             );
           })}
-
-          {/* ── Voir plus ── */}
-          {storyGroups.length >= 3 && (
-            <div style={{ flex: "0 0 auto", cursor: "pointer", display: "flex", flexDirection: "column" as const, alignItems: "center" as const }}>
-              <div style={{ width: 76, height: 76, borderRadius: "50%", background: "#132a1f", border: "1px solid rgba(34,197,94,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="5" cy="12" r="1.8" fill="#9CA3AF"/><circle cx="12" cy="12" r="1.8" fill="#9CA3AF"/><circle cx="19" cy="12" r="1.8" fill="#9CA3AF"/></svg>
-              </div>
-              <div style={{ marginTop: 6, fontSize: 11, fontWeight: 600, color: "#9CA3AF", textAlign: "center" as const }}>Voir plus</div>
-            </div>
-          )}
-
-          {storyGroups.length === 0 && (
-            <div style={{ display: "flex", alignItems: "center", height: 76, padding: "0 8px", color: "#9CA3AF", fontSize: 12, fontStyle: "italic" }}>
-              Sois le premier à publier une story !
-            </div>
-          )}
         </div>
       </div>
 
       {/* Loading skeleton */}
       {postsLoading && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {[0, 1, 2].map(i => (
-            <div key={i} style={{ background: "#0F241D", borderRadius: 10, border: "1px solid rgba(34,197,94,0.15)", overflow: "hidden", padding: "14px 16px" }}>
+            <div key={i} style={{ background: "#fff", borderRadius: 10, border: "1px solid rgba(0,0,0,0.07)", overflow: "hidden", padding: "14px 16px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
                 <span className="bp-skeleton" style={{ width: 42, height: 42, borderRadius: "50%", flexShrink: 0 }} />
                 <div style={{ flex: 1 }}>
@@ -564,7 +573,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
       {!postsLoading && visiblePosts.map(post => {
         const displayName = post.authorName ?? "Utilisateur";
         const displayInitials = getInitials(displayName);
-        const displayColor = post.authorAvatarUrl ? undefined : "#22C55E";
+        const displayColor = post.authorAvatarUrl ? undefined : "var(--bp-primary)";
         const postComments = comments[post.id] ?? [];
         return (
           <div key={post.id} className="post-card">
@@ -588,18 +597,50 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
               )}
               <div className="post-meta">
                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <div
-                    className="post-author"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => navigate(post.userId === user.id ? "/profile" : `/user/${post.userId}`)}
-                  >{displayName}</div>
-                  {!post.sponsored && (
-                    <span style={{ color: "#22C55E", fontSize: 12, fontWeight: 700, cursor: "pointer", marginLeft: 2 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
+                    <div
+                      className="post-author"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => navigate(post.userId === user.id ? "/profile" : `/user/${post.userId}`)}
+                    >{displayName}</div>
+                    {post.taggedUsers && post.taggedUsers.length > 0 && (
+                      <span style={{ fontSize: 13, color: "var(--fb-text-secondary)" }}>
+                        {" avec "}
+                        {post.taggedUsers.map((u, i) => (
+                          <span key={u.id}>
+                            <span
+                              onClick={e => { e.stopPropagation(); navigate(`/user/${u.id}`); }}
+                              style={{ color: "var(--bp-primary)", fontWeight: 700, cursor: "pointer" }}
+                            >{u.name}</span>
+                            {i < post.taggedUsers!.length - 1 && ", "}
+                          </span>
+                        ))}
+                      </span>
+                    )}
+                    {post.mood && (
+                      <span style={{ fontSize: 13, color: "var(--fb-text-secondary)", fontWeight: 400 }}>
+                        {" est "}<span style={{ fontSize: 15 }}>{post.mood.split(" ")[0]}</span>{" "}
+                        <em>{post.mood.slice(post.mood.indexOf(" ") + 1)}</em>
+                      </span>
+                    )}
+                  </div>
+                  {!post.sponsored && post.userId !== (user as { id?: number }).id && !followedUsers.has(post.userId) && (
+                    <span
+                      onClick={e => { e.stopPropagation(); handleFollow(post.userId, displayName); }}
+                      style={{ color: "var(--bp-primary)", fontSize: 12, fontWeight: 700, cursor: "pointer", marginLeft: 2 }}
+                    >
                       · Suivre
                     </span>
                   )}
                 </div>
-                <div className="post-time">🌐 {post.time}</div>
+                <div className="post-time" style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                  <span>🌐 {post.time}</span>
+                  {post.location && (
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 3, fontSize: 12, color: "var(--bp-primary)", fontWeight: 600 }}>
+                      · 📍 {post.location}
+                    </span>
+                  )}
+                </div>
               </div>
               <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
                 <button
@@ -617,41 +658,133 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 </button>
               </div>
             </div>
-            {post.content && <div className="post-content">{post.content}</div>}
-            {post.emoji && (
-              <div className="post-image-emoji" style={{ background: "var(--fb-bg)" }}>{post.emoji}</div>
-            )}
-            {(post.imageUrl || post.thumbnailUrl) && (() => {
-              const mediaUrl = post.imageUrl ?? "";
-              const thumb    = post.thumbnailUrl;
-              const isVideo  = thumb != null || /\.(mp4|mov|webm|ogg|m4v)(\?.*)?$/i.test(mediaUrl);
-              if (isVideo) {
-                return (
-                  <div
-                    onClick={() => navigate(`/video/${post.id}`)}
-                    style={{ position: "relative", cursor: "pointer", background: "#000", lineHeight: 0 }}
-                  >
-                    {thumb
-                      ? <img src={thumb} alt="" style={{ width: "100%", maxHeight: 420, objectFit: "cover", display: "block" }} />
-                      : <div style={{ width: "100%", height: 260, background: "#111", display: "block" }} />
-                    }
-                    <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <div style={{ width: 58, height: 58, borderRadius: "50%", background: "rgba(0,0,0,0.55)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
-                      </div>
-                    </div>
+            {/* ── bgColor + music : lecteur intégré dans le dégradé ── */}
+            {post.bgColor && post.musicTrackName ? (
+              <div style={{
+                background: post.bgColor,
+                borderRadius: 12,
+                margin: "8px 0",
+                overflow: "hidden",
+              }}>
+                {post.content && (
+                  <div style={{
+                    padding: "32px 20px 20px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    minHeight: 120,
+                    textAlign: "center",
+                  }}>
+                    <ExpandableText
+                      text={post.content}
+                      maxChars={220}
+                      fontSize={20}
+                      color="#ffffff"
+                      lineHeight={1.5}
+                      onMentionClick={name => {
+                        apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {});
+                      }}
+                    />
                   </div>
-                );
-              }
-              return (
-                <img
-                  src={mediaUrl}
-                  alt=""
-                  loading="lazy"
-                  style={{ width: "100%", maxHeight: 420, objectFit: "cover", display: "block", borderRadius: 0 }}
+                )}
+                <MusicPlayerWidget
+                  trackName={post.musicTrackName}
+                  artist={post.musicArtist}
+                  artworkUrl={post.musicArtworkUrl}
+                  duration={post.musicDuration}
+                  audioLikes={post.musicLikesCount ?? 0}
+                  postId={post.id}
+                  glassmorphism
                 />
-              );
-            })()}
+              </div>
+            ) : (
+              <>
+                {post.content && (
+                  post.bgColor ? (
+                    <div style={{
+                      background: post.bgColor,
+                      borderRadius: 12,
+                      padding: "28px 20px",
+                      margin: "8px 0",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      minHeight: 160,
+                      textAlign: "center",
+                    }}>
+                      <ExpandableText
+                        text={post.content}
+                        maxChars={220}
+                        fontSize={18}
+                        color="#ffffff"
+                        lineHeight={1.5}
+                        onMentionClick={name => {
+                          apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {});
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="post-content">
+                      <ExpandableText
+                        text={post.content}
+                        maxChars={220}
+                        fontSize={15}
+                        color="var(--fb-text)"
+                        lineHeight={1.5}
+                        onMentionClick={name => {
+                          apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {});
+                        }}
+                      />
+                    </div>
+                  )
+                )}
+                {post.emoji && (
+                  <div className="post-image-emoji" style={{ background: "var(--fb-bg)" }}>{post.emoji}</div>
+                )}
+                {(post.imageUrl || post.thumbnailUrl) && (() => {
+                  const mediaUrl = post.imageUrl ?? "";
+                  const thumb    = post.thumbnailUrl;
+                  const isVideo  = thumb != null || /\.(mp4|mov|webm|ogg|m4v)(\?.*)?$/i.test(mediaUrl);
+                  if (isVideo) {
+                    return (
+                      <div
+                        onClick={() => navigate(`/video/${post.id}`)}
+                        style={{ position: "relative", cursor: "pointer", background: "#000", lineHeight: 0 }}
+                      >
+                        {thumb
+                          ? <img src={thumb} alt="" style={{ width: "100%", maxHeight: 420, objectFit: "cover", display: "block" }} />
+                          : <div style={{ width: "100%", height: 260, background: "#111", display: "block" }} />
+                        }
+                        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <div style={{ width: 58, height: 58, borderRadius: "50%", background: "rgba(0,0,0,0.55)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return (
+                    <img
+                      src={mediaUrl}
+                      alt=""
+                      loading="lazy"
+                      style={{ width: "100%", maxHeight: 420, objectFit: "cover", display: "block", borderRadius: 0 }}
+                    />
+                  );
+                })()}
+                {/* ── Music player standalone ── */}
+                {post.musicTrackName && (
+                  <MusicPlayerWidget
+                    trackName={post.musicTrackName}
+                    artist={post.musicArtist}
+                    artworkUrl={post.musicArtworkUrl}
+                    duration={post.musicDuration}
+                    audioLikes={post.musicLikesCount ?? 0}
+                    postId={post.id}
+                  />
+                )}
+              </>
+            )}
             {/* ── Stats bar ── */}
             {(post.likes > 0 || (post.comments + postComments.length) > 0 || post.shares > 0) && (
               <div style={{ padding: "6px 14px 4px", display: "flex", alignItems: "center", gap: 12, fontSize: 13.5, color: "#9CA3AF" }}>
@@ -680,7 +813,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
             )}
 
             {/* ── Action bar ── */}
-            <div style={{ display: "flex", borderTop: "1px solid rgba(34,197,94,0.15)", borderBottom: "1px solid rgba(34,197,94,0.15)", position: "relative" }}>
+            <div style={{ display: "flex", borderTop: "1px solid rgba(0,0,0,0.07)", borderBottom: "1px solid rgba(0,0,0,0.07)", position: "relative" }}>
               {/* Reaction picker backdrop */}
               {showReactionPicker === post.id && (
                 <div style={{ position: "fixed", inset: 0, zIndex: 98 }} onClick={() => setShowReactionPicker(null)} />
@@ -736,7 +869,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
               })()}
 
               {/* Commenter */}
-              <button className="post-btn" style={{ flex: 1, borderRight: "1px solid rgba(34,197,94,0.15)", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }} onClick={() => navigate(`/post/${post.id}`)}>
+              <button className="post-btn" style={{ flex: 1, borderRight: "1px solid rgba(0,0,0,0.07)", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }} onClick={() => navigate(`/post/${post.id}`)}>
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 Commenter
               </button>
@@ -800,10 +933,10 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                             {/* Time · J'aime · Répondre · Supprimer */}
                             <div style={{ display: "flex", gap: 12, paddingLeft: 4, marginTop: 3, fontSize: 12, fontWeight: 600, color: "#9CA3AF", alignItems: "center" }}>
                               <span style={{ color: "#6b7280", fontWeight: 400 }}>{timeAgo(c.createdAt)}</span>
-                              <button onClick={() => toggleCommentLike(post.id, c.id)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 12, fontWeight: 700, color: c.likedByMe ? "#22C55E" : "#9CA3AF" }}>
+                              <button onClick={() => toggleCommentLike(post.id, c.id)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 12, fontWeight: 700, color: c.likedByMe ? "var(--bp-primary)" : "#9CA3AF" }}>
                                 J'aime
                               </button>
-                              <button onClick={() => replyingTo === c.id ? cancelReply() : startReply(c, post.id)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 12, fontWeight: 700, color: replyingTo === c.id ? "#22C55E" : "#9CA3AF" }}>
+                              <button onClick={() => replyingTo === c.id ? cancelReply() : startReply(c, post.id)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 12, fontWeight: 700, color: replyingTo === c.id ? "var(--bp-primary)" : "#9CA3AF" }}>
                                 {replyingTo === c.id ? "Annuler" : "Répondre"}
                               </button>
                               {c.authorId === user.id && (
@@ -838,7 +971,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                                     )}
                                     <div style={{ display: "flex", gap: 10, paddingLeft: 4, marginTop: 2, fontSize: 11, fontWeight: 600, color: "#9CA3AF" }}>
                                       <span style={{ color: "#6b7280", fontWeight: 400 }}>{timeAgo(r.createdAt)}</span>
-                                      <button onClick={() => toggleCommentLike(post.id, r.id)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 11, fontWeight: 700, color: r.likedByMe ? "#22C55E" : "#9CA3AF" }}>J'aime</button>
+                                      <button onClick={() => toggleCommentLike(post.id, r.id)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontSize: 11, fontWeight: 700, color: r.likedByMe ? "var(--bp-primary)" : "#9CA3AF" }}>J'aime</button>
                                     </div>
                                   </div>
                                 </div>
@@ -855,7 +988,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                   {replyContextPostId === post.id && replyingTo !== null && (
                     <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px 2px", fontSize: 12, color: "#9CA3AF" }}>
                       <span>↩️ Répondre à</span>
-                      <span style={{ fontWeight: 700, color: "#22C55E" }}>{replyContextName}</span>
+                      <span style={{ fontWeight: 700, color: "var(--bp-primary)" }}>{replyContextName}</span>
                       <button
                         onClick={cancelReply}
                         style={{ background: "none", border: "none", cursor: "pointer", color: "#aaa", fontSize: 15, padding: "0 0 0 4px", lineHeight: 1, marginLeft: "auto" }}
@@ -869,7 +1002,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                     {voiceMode !== post.id && (
                       user.avatarUrl
                         ? <img src={user.avatarUrl} alt="moi" style={{ width: 34, height: 34, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
-                        : <div className="avatar xs" style={{ width: 34, height: 34, fontSize: 12, flexShrink: 0, background: "#22C55E" }}>{userInitials}</div>
+                        : <div className="avatar xs" style={{ width: 34, height: 34, fontSize: 12, flexShrink: 0, background: "var(--bp-primary)" }}>{userInitials}</div>
                     )}
 
                     {voiceMode === post.id ? (
@@ -883,7 +1016,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                         <input
                           ref={el => { commentInputRef.current[post.id] = el; }}
                           style={{ flex: 1, background: "transparent", border: "none", padding: "9px 0", fontSize: 14, outline: "none", color: "#f0f0f0", minWidth: 0 }}
-                          placeholder={replyContextPostId === post.id && replyingTo != null ? `Répondre à ${replyContextName.split(" ")[0]}…` : `Commenter en tant que ${user.name.split(" ")[0]}…`}
+                          placeholder={replyContextPostId === post.id && replyingTo != null ? `Répondre à ${replyContextName.split(" ")[0]}…` : `Commenter en tant que ${(user.name ?? "").split(" ")[0]}…`}
                           value={newComment[post.id] ?? ""}
                           onChange={e => setNewComment(prev => ({ ...prev, [post.id]: e.target.value }))}
                           onKeyDown={e => { if (e.key === "Enter") submitComment(post.id); if (e.key === "Escape" && replyingTo) cancelReply(); }}
@@ -904,7 +1037,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                           <button
                             onClick={() => submitComment(post.id)}
                             disabled={submittingComment === post.id}
-                            style={{ background: "none", border: "none", padding: "6px 8px", cursor: "pointer", color: "#22C55E", fontSize: 18, opacity: submittingComment === post.id ? 0.6 : 1, flexShrink: 0 }}
+                            style={{ background: "none", border: "none", padding: "6px 8px", cursor: "pointer", color: "var(--bp-primary)", fontSize: 18, opacity: submittingComment === post.id ? 0.6 : 1, flexShrink: 0 }}
                           >➤</button>
                         )}
                       </div>
@@ -940,7 +1073,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
               <div style={{ width:40, height:4, background:"rgba(34,197,94,0.2)", borderRadius:99 }} />
             </div>
             <div style={{ display:"flex", alignItems:"center", gap:10, padding:"4px 18px 14px" }}>
-              <div style={{ width:38, height:38, borderRadius:"50%", background:"#22C55E", display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:700, color:"#fff", flexShrink:0 }}>
+              <div style={{ width:38, height:38, borderRadius:"50%", background:"var(--bp-primary)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:700, color:"#fff", flexShrink:0 }}>
                 {openMenu.authorName.slice(0,2).toUpperCase()}
               </div>
               <div>
@@ -953,8 +1086,8 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 {/* OWN: edit + pin */}
                 <div style={{ background:"#132a1f", borderRadius:18, overflow:"hidden" }}>
                   {([
-                    { iconBg:"#1e3a2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>, label:"Modifier la publication", desc:"Modifiez le texte ou le contenu.", action:()=>{ navigate("/profile"); closeMenu(); } },
-                    { iconBg: openMenu.isPinned ? "#3a2e1e" : "#1e3a2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke={openMenu.isPinned?"#F59E0B":"#22C55E"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>, label: openMenu.isPinned ? "Désépingler du profil" : "Épingler au profil", desc: openMenu.isPinned ? "Retirer l'épingle de votre profil." : "Afficher en haut de votre profil.", action:()=>handlePin(openMenu.postId, openMenu.isPinned) },
+                    { iconBg:"#1e3a2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--bp-primary)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>, label:"Modifier la publication", desc:"Modifiez le texte ou le contenu.", action:()=>{ navigate("/profile"); closeMenu(); } },
+                    { iconBg: openMenu.isPinned ? "#3a2e1e" : "#1e3a2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke={openMenu.isPinned?"#F59E0B":"var(--bp-primary)"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>, label: openMenu.isPinned ? "Désépingler du profil" : "Épingler au profil", desc: openMenu.isPinned ? "Retirer l'épingle de votre profil." : "Afficher en haut de votre profil.", action:()=>handlePin(openMenu.postId, openMenu.isPinned) },
                   ] as const).map((item,i,arr)=>(
                     <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom:i<arr.length-1?"1px solid rgba(34,197,94,0.12)":"none", textAlign:"left" }}>
                       <div style={{ width:42, height:42, borderRadius:"50%", background:item.iconBg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{item.svg}</div>
@@ -968,7 +1101,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                   {([
                     { iconBg:"#1e3a2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0EA5E9" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>, label:"Partager", desc:"Envoyez cette publication à vos amis.", action:()=>handleShare(openMenu.postId) },
                     { iconBg:"#1e3a2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0EA5E9" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>, label:"Copier le lien", desc:"Copiez le lien de cette publication.", action:()=>handleCopyLink(openMenu.postId) },
-                    { iconBg:"#1e3a2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>, label:"Voir les statistiques", desc:"Vues, likes, portée et engagement.", action:()=>handleViewStats(openMenu.postId) },
+                    { iconBg:"#1e3a2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--bp-primary)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>, label:"Voir les statistiques", desc:"Vues, likes, portée et engagement.", action:()=>handleViewStats(openMenu.postId) },
                     { iconBg:"#1e3a2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0EA5E9" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>, label:"Modifier l'audience", desc:`Actuellement : ${openMenu.audience==="public"?"🌐 Public":openMenu.audience==="friends"?"👥 Amis":"🔒 Privé"}`, action:()=>{ setAudienceSheet({postId:openMenu.postId,current:openMenu.audience}); closeMenu(); } },
                   ] as const).map((item,i,arr)=>(
                     <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom:i<arr.length-1?"1px solid rgba(34,197,94,0.12)":"none", textAlign:"left" }}>
@@ -981,7 +1114,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 {/* OWN: comments/archive */}
                 <div style={{ background:"#132a1f", borderRadius:18, overflow:"hidden" }}>
                   {([
-                    { iconBg:"rgba(34,197,94,0.12)", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke={openMenu.commentsDisabled?"#22C55E":"#9CA3AF"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>, label: openMenu.commentsDisabled?"Activer les commentaires":"Désactiver les commentaires", desc: openMenu.commentsDisabled?"Permettre à nouveau les commentaires.":"Empêcher les commentaires sur ce post.", action:()=>handleToggleComments(openMenu.postId, openMenu.commentsDisabled) },
+                    { iconBg:"rgba(34,197,94,0.12)", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke={openMenu.commentsDisabled?"var(--bp-primary)":"#9CA3AF"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>, label: openMenu.commentsDisabled?"Activer les commentaires":"Désactiver les commentaires", desc: openMenu.commentsDisabled?"Permettre à nouveau les commentaires.":"Empêcher les commentaires sur ce post.", action:()=>handleToggleComments(openMenu.postId, openMenu.commentsDisabled) },
                     { iconBg:"rgba(34,197,94,0.12)", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#9CA3AF" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>, label:"Archiver la publication", desc:"Masquer sans supprimer définitivement.", action:()=>handleArchivePost(openMenu.postId) },
                   ] as const).map((item,i,arr)=>(
                     <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom:i<arr.length-1?"1px solid rgba(34,197,94,0.12)":"none", textAlign:"left" }}>
@@ -1003,8 +1136,8 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 {/* OTHER: save/notif */}
                 <div style={{ background:"#132a1f", borderRadius:18, overflow:"hidden" }}>
                   {([
-                    { iconBg: savedPosts.has(openMenu.postId)?"#3a2e1e":"#1e3a2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke={savedPosts.has(openMenu.postId)?"#F59E0B":"#22C55E"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>, label: savedPosts.has(openMenu.postId)?"Retirer des enregistrements":"Enregistrer la publication", desc: savedPosts.has(openMenu.postId)?"Retirer de vos éléments enregistrés.":"Ajoutez ceci à vos éléments enregistrés.", action:()=>handleSave(openMenu.postId) },
-                    { iconBg: notifPosts.has(openMenu.postId)?"rgba(34,197,94,0.12)":"#1e3a2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke={notifPosts.has(openMenu.postId)?"#9CA3AF":"#22C55E"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>, label: notifPosts.has(openMenu.postId)?"Désactiver les notifications":"Activer les notifications", desc:"Recevez des notifications pour cette publication.", action:()=>handleNotif(openMenu.postId) },
+                    { iconBg: savedPosts.has(openMenu.postId)?"#3a2e1e":"#1e3a2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke={savedPosts.has(openMenu.postId)?"#F59E0B":"var(--bp-primary)"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>, label: savedPosts.has(openMenu.postId)?"Retirer des enregistrements":"Enregistrer la publication", desc: savedPosts.has(openMenu.postId)?"Retirer de vos éléments enregistrés.":"Ajoutez ceci à vos éléments enregistrés.", action:()=>handleSave(openMenu.postId) },
+                    { iconBg: notifPosts.has(openMenu.postId)?"rgba(34,197,94,0.12)":"#1e3a2e", svg:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke={notifPosts.has(openMenu.postId)?"#9CA3AF":"var(--bp-primary)"} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>, label: notifPosts.has(openMenu.postId)?"Désactiver les notifications":"Activer les notifications", desc:"Recevez des notifications pour cette publication.", action:()=>handleNotif(openMenu.postId) },
                   ] as const).map((item,i,arr)=>(
                     <button key={i} onClick={item.action} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"13px 16px", borderBottom:i<arr.length-1?"1px solid rgba(34,197,94,0.12)":"none", textAlign:"left" }}>
                       <div style={{ width:42, height:42, borderRadius:"50%", background:item.iconBg, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{item.svg}</div>
@@ -1139,7 +1272,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
               <span style={{ fontSize:22 }}>📈</span>
               <div>
                 <div style={{ fontWeight:700, fontSize:13, color:"#4ade80" }}>Taux d'engagement</div>
-                <div style={{ fontSize:16, fontWeight:800, color:"#22C55E" }}>{String(statsModal.stats.engagement??"0%")}</div>
+                <div style={{ fontSize:16, fontWeight:800, color:"var(--bp-primary)" }}>{String(statsModal.stats.engagement??"0%")}</div>
               </div>
             </div>
             <button onClick={()=>setStatsModal(null)} style={{ width:"100%", background:"#132a1f", border:"none", borderRadius:14, padding:"14px", fontWeight:700, fontSize:15, color:"#9CA3AF", cursor:"pointer" }}>Fermer</button>
@@ -1165,7 +1298,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 <button key={opt.value} onClick={()=>handleAudienceChange(audienceSheet.postId, opt.value)} style={{ width:"100%", background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, padding:"14px 16px", borderBottom:i<arr.length-1?"1px solid rgba(34,197,94,0.12)":"none", textAlign:"left" }}>
                   <div style={{ width:42, height:42, borderRadius:"50%", background:audienceSheet.current===opt.value?"#1e3a2e":"rgba(34,197,94,0.12)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, flexShrink:0 }}>{opt.icon}</div>
                   <div style={{ flex:1, minWidth:0 }}><div style={{ fontWeight:700, fontSize:15, color:"#f0f0f0" }}>{opt.label}</div><div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:2 }}>{opt.desc}</div></div>
-                  {audienceSheet.current===opt.value && <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
+                  {audienceSheet.current===opt.value && <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}
                 </button>
               ))}
             </div>

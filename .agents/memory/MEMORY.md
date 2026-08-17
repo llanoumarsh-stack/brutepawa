@@ -3,4 +3,6 @@
 - [MoneyFusion simulation](moneyfusion-sim.md) — webhook uses HMAC via MONEYFUSION_SECRET env; if unset, webhook is open for dev testing
 - [Supabase-only DB rule](supabase-db-rule.md) — always use APP_DATABASE_URL (Supabase), never Replit executeSql; prod migrations need explicit file path to apply-migration.mjs
 - [GitHub push convention](github-push.md) — push to origin/main at end of every work session; bypass secret-scanning with -o flag if needed
+- [Custom domain split](custom-domain-split.md) — brutepawa.com pointed to an old deployment; always check which domain the user browses vs getDeploymentInfo additionalUrls
 - [Contact management system](contact-management.md) — 4 new tables (muted/pinned/favorite/deleted_conversations), API at /contacts/:userId, 12 mobile screens under app/contact/[userId]/, ContactOptionsBottomSheet component
+- [Appearance/Theme system](appearance-system.md) — AppearanceContext + user_preferences table + GET/PUT /api/preferences; dark mode via data-bp-theme on html; localStorage key = bp_appearance

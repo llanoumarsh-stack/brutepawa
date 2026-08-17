@@ -1,0 +1,57 @@
+Le bucket Cloudflare R2 "brutepawa" est maintenant correctement accessible.
+
+Vérification Cloudflare :
+
+- Bucket : "brutepawa"
+- 39 objets présents
+- 8,04 MB utilisés
+- Accès public : ACTIVÉ
+
+Le problème n'est donc plus l'activation de l'accès public du bucket.
+
+Maintenant, inspecte le projet BrutePawa et corrige uniquement la chaîne d'accès aux médias.
+
+1. Identifie exactement quelle URL est actuellement utilisée par le frontend pour afficher les images R2.
+2. Identifie la configuration R2 réellement utilisée par le backend.
+3. Vérifie les variables d'environnement existantes.
+4. Vérifie si les URLs enregistrées dans la base de données utilisent encore une ancienne URL R2.
+5. Vérifie la fonction qui transforme la clé R2 d'un fichier en URL publique.
+6. Vérifie les composants qui affichent :
+   - avatars
+   - photos de profil
+   - images des publications
+   - couvertures
+   - vidéos et miniatures
+
+IMPORTANT :
+Le bucket est déjà public. Ne modifie plus les permissions du bucket et ne crée aucun nouveau bucket.
+
+Ne devine aucune URL R2.
+
+Utilise exclusivement le véritable domaine public configuré pour le bucket "brutepawa" dans Cloudflare.
+
+Teste directement une image existante du bucket et vérifie :
+
+- que son URL répond correctement ;
+- qu'elle renvoie bien le fichier ;
+- qu'elle peut être chargée depuis le navigateur ;
+- que le frontend utilise cette même URL.
+
+Si le backend stocke uniquement la clé R2 (ce qui est préférable), construis correctement l'URL publique à partir de cette clé.
+
+Si la base contient des anciennes URLs incorrectes, ajoute une compatibilité permettant de les corriger sans supprimer les données existantes.
+
+NE SUPPRIME AUCUN OBJET R2.
+NE SUPPRIME AUCUNE DONNÉE DE LA BASE.
+NE CHANGE PAS LE DESIGN DE BRUTEPAWA.
+NE CHANGE PAS LES FONCTIONNALITÉS QUI FONCTIONNENT.
+
+À la fin, indique-moi :
+
+1. La cause exacte du problème.
+2. L'URL/domaine public réellement utilisé.
+3. Les fichiers de code modifiés.
+4. Le résultat du test avec un objet R2 existant.
+5. Le résultat du test avec un nouvel upload.
+
+Ne considère pas la tâche terminée tant qu'une image existante de "brutepawa" n'est pas effectivement visible dans BrutePawa après un rechargement complet.

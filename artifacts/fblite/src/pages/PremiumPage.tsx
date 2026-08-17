@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#111827", secondary:"#64748B", muted:"#9CA3AF", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"var(--bp-primary)", primaryDark:"var(--bp-primary-dark)", text:"#111827", secondary:"#64748B", muted:"#9CA3AF", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
 
 function SubHeader({ title, onBack }:{title:string;onBack:()=>void}) {
   return (
@@ -128,7 +128,7 @@ export default function PremiumPage() {
                 </div>
                 <div style={{ padding:"12px 8px",textAlign:"center",background:"rgba(5,46,22,0.04)",borderLeft:"1px solid rgba(5,46,22,0.08)",display:"flex",alignItems:"center",justifyContent:"center" }}>
                   {f.prem==="Oui"
-                    ? <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+                    ? <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>
                     : <span style={{ fontSize:11,color:C.primary,fontWeight:700 }}>{f.prem}</span>}
                 </div>
               </div>
@@ -141,7 +141,7 @@ export default function PremiumPage() {
       <div style={{ position:"fixed",bottom:0,left:0,right:0,padding:"12px 14px",paddingBottom:"calc(12px + env(safe-area-inset-bottom,0px))",background:"rgba(248,250,252,0.97)",backdropFilter:"blur(16px)",borderTop:"1px solid #F1F5F9" }}>
         <div style={{ textAlign:"center",marginBottom:10 }}>
           <span style={{ fontSize:12,color:C.muted }}>{plan==="yearly"?`${price} FCFA/mois · facturé annuellement`:`${price} FCFA/mois · sans engagement`}</span>
-          {plan==="yearly" && <span style={{ marginLeft:6,background:"#DCFCE7",color:"#16A34A",fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:8 }}>-20%</span>}
+          {plan==="yearly" && <span style={{ marginLeft:6,background:"#DCFCE7",color:"var(--bp-primary-dark)",fontSize:10,fontWeight:700,padding:"2px 7px",borderRadius:8 }}>-20%</span>}
         </div>
         <button onClick={subscribe} disabled={loading} style={{ width:"100%",padding:"16px",borderRadius:18,background:loading?"#BBF7D0":"linear-gradient(135deg,#FBBF24,#F4C542,#D97706)",border:"none",color:"#1C1917",fontWeight:800,fontSize:16,cursor:loading?"not-allowed":"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:10,boxShadow:"0 8px 24px rgba(244,197,66,0.45)",transition:"all 300ms" }}>
           {loading

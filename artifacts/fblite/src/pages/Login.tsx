@@ -38,9 +38,9 @@ function LanguageSheet({ current, onSelect, onClose, regionFlag, regionName }: {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 20px 10px" }}>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <circle cx="10" cy="10" r="8.5" stroke="#22C55E" strokeWidth="1.5"/>
-            <ellipse cx="10" cy="10" rx="3.5" ry="8.5" stroke="#22C55E" strokeWidth="1.5"/>
-            <path d="M2 7h16M2 13h16" stroke="#22C55E" strokeWidth="1.5" strokeLinecap="round"/>
+            <circle cx="10" cy="10" r="8.5" stroke="var(--bp-primary)" strokeWidth="1.5"/>
+            <ellipse cx="10" cy="10" rx="3.5" ry="8.5" stroke="var(--bp-primary)" strokeWidth="1.5"/>
+            <path d="M2 7h16M2 13h16" stroke="var(--bp-primary)" strokeWidth="1.5" strokeLinecap="round"/>
           </svg>
           <span style={{ fontSize: 17, fontWeight: 700, color: "#fff" }}>Choisir une langue</span>
         </div>
@@ -68,7 +68,7 @@ function LanguageSheet({ current, onSelect, onClose, regionFlag, regionName }: {
               <span style={{ flex: 1, fontSize: 15, fontWeight: 500, color: "#E5E7EB" }}>{lang.nameNative}</span>
               {lang.code === current.code && (
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                  <path d="M3.5 9l4 4L14.5 5" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M3.5 9l4 4L14.5 5" stroke="var(--bp-primary)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               )}
             </button>
@@ -81,11 +81,11 @@ function LanguageSheet({ current, onSelect, onClose, regionFlag, regionName }: {
           <div style={{ padding: "10px 20px 28px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, border: "1px solid rgba(34,197,94,0.15)", borderRadius: 12, padding: "11px 14px", background: "rgba(34,197,94,0.06)" }}>
               <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-                <path d="M7.5 1.5C5.57 1.5 4 3.07 4 5s3.5 8 3.5 8 3.5-5.93 3.5-8c0-1.93-1.57-3.5-3.5-3.5z" stroke="#22C55E" strokeWidth="1.3"/>
-                <circle cx="7.5" cy="5" r="1.2" stroke="#22C55E" strokeWidth="1.2"/>
+                <path d="M7.5 1.5C5.57 1.5 4 3.07 4 5s3.5 8 3.5 8 3.5-5.93 3.5-8c0-1.93-1.57-3.5-3.5-3.5z" stroke="var(--bp-primary)" strokeWidth="1.3"/>
+                <circle cx="7.5" cy="5" r="1.2" stroke="var(--bp-primary)" strokeWidth="1.2"/>
               </svg>
               <span style={{ fontSize: 12, color: "#64748B", fontWeight: 500 }}>📍 Pays détecté automatiquement</span>
-              <span style={{ marginLeft: "auto", fontSize: 14, fontWeight: 700, color: "#22C55E", display: "flex", alignItems: "center", gap: 5 }}>
+              <span style={{ marginLeft: "auto", fontSize: 14, fontWeight: 700, color: "var(--bp-primary)", display: "flex", alignItems: "center", gap: 5 }}>
                 {regionFlag} {regionName}
               </span>
             </div>
@@ -103,8 +103,8 @@ function Globe() {
     <svg viewBox="0 0 400 220" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "115%", height: "auto", display: "block" }} preserveAspectRatio="xMidYMin slice">
       <defs>
         <radialGradient id="globeGlow" cx="50%" cy="30%" r="60%">
-          <stop offset="0%" stopColor="#22C55E" stopOpacity="0.15"/>
-          <stop offset="100%" stopColor="#22C55E" stopOpacity="0"/>
+          <stop offset="0%" stopColor="var(--bp-primary)" stopOpacity="0.15"/>
+          <stop offset="100%" stopColor="var(--bp-primary)" stopOpacity="0"/>
         </radialGradient>
         <radialGradient id="globeCenter" cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor="#052e16" stopOpacity="0.3"/>
@@ -134,7 +134,7 @@ function Globe() {
         [100, 310], [155, 295], [200, 290], [248, 296], [295, 310],
         [150, 315], [200, 312], [245, 316],
       ].map(([x, y], i) => (
-        <circle key={i} cx={x} cy={y} r="2.5" fill="#22C55E" fillOpacity={0.7 - i * 0.02} />
+        <circle key={i} cx={x} cy={y} r="2.5" fill="var(--bp-primary)" fillOpacity={0.7 - i * 0.02} />
       ))}
       {/* Network connections */}
       {[
@@ -144,11 +144,11 @@ function Globe() {
         [200, 290, 248, 296], [130, 258, 110, 282], [175, 248, 160, 272], [225, 248, 200, 268],
         [270, 255, 250, 272], [200, 268, 200, 290], [155, 295, 150, 315], [200, 290, 200, 312],
       ].map(([x1, y1, x2, y2], i) => (
-        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#22C55E" strokeOpacity="0.35" strokeWidth="0.8"/>
+        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--bp-primary)" strokeOpacity="0.35" strokeWidth="0.8"/>
       ))}
       {/* Glowing pulse dots */}
       {[[175, 248], [200, 268], [250, 272]].map(([x, y], i) => (
-        <circle key={i} cx={x} cy={y} r="5" fill="none" stroke="#22C55E" strokeOpacity="0.4" strokeWidth="1">
+        <circle key={i} cx={x} cy={y} r="5" fill="none" stroke="var(--bp-primary)" strokeOpacity="0.4" strokeWidth="1">
           <animate attributeName="r" values="3;8;3" dur={`${2 + i * 0.7}s`} repeatCount="indefinite"/>
           <animate attributeName="stroke-opacity" values="0.5;0;0.5" dur={`${2 + i * 0.7}s`} repeatCount="indefinite"/>
         </circle>
@@ -220,10 +220,10 @@ export default function Login() {
         .lf:focus-within { border-color: rgba(34,197,94,.5); box-shadow: 0 0 0 3px rgba(34,197,94,.12); }
         .lf input { flex:1; height:100%; background:none; border:none; outline:none; font-size:14px; color:#fff; font-family:inherit; padding: 0 14px 0 0; }
         .lf input::placeholder { color:#64748B; }
-        .btn-connect { width:100%; height:60px; background:linear-gradient(135deg,#22C55E 0%,#16A34A 100%); border:none; border-radius:30px; color:#fff; font-size:17px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 0 28px rgba(34,197,94,.45), 0 4px 16px rgba(0,0,0,.3); transition:transform .15s,box-shadow .15s; font-family:inherit; letter-spacing:.1px; }
+        .btn-connect { width:100%; height:60px; background:linear-gradient(135deg,var(--bp-primary) 0%,var(--bp-primary-dark) 100%); border:none; border-radius:30px; color:#fff; font-size:17px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 0 28px rgba(34,197,94,.45), 0 4px 16px rgba(0,0,0,.3); transition:transform .15s,box-shadow .15s; font-family:inherit; letter-spacing:.1px; }
         .btn-connect:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 0 36px rgba(34,197,94,.55),0 6px 20px rgba(0,0,0,.4); }
         .btn-connect:active:not(:disabled) { transform:scale(.97); }
-        .btn-connect:disabled { background:linear-gradient(135deg,#16A34A 0%,#052e16 100%); box-shadow:none; cursor:not-allowed; }
+        .btn-connect:disabled { background:linear-gradient(135deg,var(--bp-primary-dark) 0%,#052e16 100%); box-shadow:none; cursor:not-allowed; }
         .btn-register { width:100%; height:52px; background:transparent; border:1px solid rgba(255,255,255,.12); border-radius:26px; color:rgba(255,255,255,.85); font-size:15px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:background .15s,border-color .15s; font-family:inherit; }
         .btn-register:hover { background:rgba(255,255,255,.05); border-color:rgba(34,197,94,.35); }
         .btn-register:active { transform:scale(.98); }
@@ -250,7 +250,7 @@ export default function Login() {
         <div key={i} style={{
           position: "fixed", left: `${x}%`, top: `${y}%`,
           width: size, height: size, borderRadius: "50%",
-          background: "#22C55E", boxShadow: `0 0 ${size * 3}px rgba(34,197,94,0.8)`,
+          background: "var(--bp-primary)", boxShadow: `0 0 ${size * 3}px rgba(34,197,94,0.8)`,
           animation: `floatParticle ${3 + i * 0.5}s ease-in-out infinite`,
           animationDelay: `${i * 0.4}s`, pointerEvents: "none", zIndex: 0,
         }} />
@@ -277,14 +277,14 @@ export default function Login() {
             <img src="/logo.png" alt="BrutePawa" style={{ width: "clamp(62px,14vw,82px)", height: "clamp(62px,14vw,82px)", objectFit: "contain", filter: "drop-shadow(0 0 16px rgba(34,197,94,0.5))", animation: "glowPulse 3s ease-in-out infinite" }} />
           </div>
           <div style={{ marginTop: 6, fontSize: "clamp(17px,4.5vw,22px)", fontWeight: 800, letterSpacing: "-0.3px", lineHeight: 1 }}>
-            <span style={{ color: "#fff" }}>Brute</span><span style={{ color: "#22C55E" }}>Pawa</span>
+            <span style={{ color: "#fff" }}>Brute</span><span style={{ color: "var(--bp-primary)" }}>Pawa</span>
           </div>
         </div>
 
         {/* Title */}
         <div style={{ textAlign: "center", marginBottom: "clamp(2px,.8vh,6px)" }}>
           <div style={{ fontSize: "clamp(30px,8vw,52px)", fontWeight: 900, color: "#fff", lineHeight: 1.1, letterSpacing: "-1px" }}>Connectez-vous</div>
-          <div style={{ fontSize: "clamp(30px,8vw,52px)", fontWeight: 900, color: "#22C55E", lineHeight: 1.1, letterSpacing: "-1px" }}>au monde.</div>
+          <div style={{ fontSize: "clamp(30px,8vw,52px)", fontWeight: 900, color: "var(--bp-primary)", lineHeight: 1.1, letterSpacing: "-1px" }}>au monde.</div>
         </div>
 
         {/* Description */}
@@ -312,8 +312,8 @@ export default function Login() {
             {/* Email/phone */}
             <div className="lf" style={{ paddingLeft: 14 }}>
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0, marginRight: 10 }}>
-                <circle cx="9" cy="6" r="3" stroke="#22C55E" strokeWidth="1.5"/>
-                <path d="M3 16c0-3.314 2.686-5 6-5s6 1.686 6 5" stroke="#22C55E" strokeWidth="1.5" strokeLinecap="round"/>
+                <circle cx="9" cy="6" r="3" stroke="var(--bp-primary)" strokeWidth="1.5"/>
+                <path d="M3 16c0-3.314 2.686-5 6-5s6 1.686 6 5" stroke="var(--bp-primary)" strokeWidth="1.5" strokeLinecap="round"/>
               </svg>
               <input type="text" placeholder="Numéro de téléphone ou e-mail" value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" disabled={loading} />
             </div>
@@ -321,9 +321,9 @@ export default function Login() {
             {/* Password */}
             <div className="lf" style={{ paddingLeft: 14 }}>
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ flexShrink: 0, marginRight: 10 }}>
-                <rect x="3.5" y="8" width="11" height="8" rx="2" stroke="#22C55E" strokeWidth="1.5"/>
-                <path d="M6 8V6a3 3 0 016 0v2" stroke="#22C55E" strokeWidth="1.5" strokeLinecap="round"/>
-                <circle cx="9" cy="12" r="1.2" fill="#22C55E"/>
+                <rect x="3.5" y="8" width="11" height="8" rx="2" stroke="var(--bp-primary)" strokeWidth="1.5"/>
+                <path d="M6 8V6a3 3 0 016 0v2" stroke="var(--bp-primary)" strokeWidth="1.5" strokeLinecap="round"/>
+                <circle cx="9" cy="12" r="1.2" fill="var(--bp-primary)"/>
               </svg>
               <input type={showPw ? "text" : "password"} placeholder="Mot de passe" value={password} onChange={e => setPassword(e.target.value)} autoComplete="current-password" disabled={loading} />
               <button type="button" onClick={() => setShowPw(v => !v)} tabIndex={-1}
@@ -338,12 +338,12 @@ export default function Login() {
             {/* Remember me + forgot */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 2px" }}>
               <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
-                <div onClick={() => setRememberMe(v => !v)} style={{ width: 20, height: 20, borderRadius: 6, border: rememberMe ? "none" : "1.5px solid rgba(255,255,255,0.2)", background: rememberMe ? "#22C55E" : "rgba(255,255,255,0.04)", display: "flex", alignItems: "center", justifyContent: "center", transition: "all .15s", cursor: "pointer", flexShrink: 0 }}>
+                <div onClick={() => setRememberMe(v => !v)} style={{ width: 20, height: 20, borderRadius: 6, border: rememberMe ? "none" : "1.5px solid rgba(255,255,255,0.2)", background: rememberMe ? "var(--bp-primary)" : "rgba(255,255,255,0.04)", display: "flex", alignItems: "center", justifyContent: "center", transition: "all .15s", cursor: "pointer", flexShrink: 0 }}>
                   {rememberMe && <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
                 </div>
                 <span style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", fontWeight: 500 }}>Se souvenir de moi</span>
               </label>
-              <a href="#" style={{ fontSize: 13, fontWeight: 600, color: "#22C55E", textDecoration: "none" }}>Mot de passe oublié ?</a>
+              <a href="#" style={{ fontSize: 13, fontWeight: 600, color: "var(--bp-primary)", textDecoration: "none" }}>Mot de passe oublié ?</a>
             </div>
 
             {/* Connect button */}
@@ -376,7 +376,7 @@ export default function Login() {
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                 <circle cx="8" cy="6" r="3" stroke="rgba(255,255,255,0.75)" strokeWidth="1.4"/>
                 <path d="M2 16c0-3 2.5-5 6-5s6 2 6 5" stroke="rgba(255,255,255,0.75)" strokeWidth="1.4" strokeLinecap="round"/>
-                <path d="M14.5 10v4M12.5 12h4" stroke="#22C55E" strokeWidth="1.5" strokeLinecap="round"/>
+                <path d="M14.5 10v4M12.5 12h4" stroke="var(--bp-primary)" strokeWidth="1.5" strokeLinecap="round"/>
               </svg>
               Créer un compte
             </button>
@@ -406,9 +406,9 @@ export default function Login() {
           onMouseLeave={e => { (e.currentTarget).style.borderColor = "rgba(255,255,255,0.12)"; }}
         >
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <circle cx="9" cy="9" r="7.5" stroke="#22C55E" strokeWidth="1.4"/>
-            <ellipse cx="9" cy="9" rx="3" ry="7.5" stroke="#22C55E" strokeWidth="1.4"/>
-            <path d="M1.5 6.5h15M1.5 11.5h15" stroke="#22C55E" strokeWidth="1.4" strokeLinecap="round"/>
+            <circle cx="9" cy="9" r="7.5" stroke="var(--bp-primary)" strokeWidth="1.4"/>
+            <ellipse cx="9" cy="9" rx="3" ry="7.5" stroke="var(--bp-primary)" strokeWidth="1.4"/>
+            <path d="M1.5 6.5h15M1.5 11.5h15" stroke="var(--bp-primary)" strokeWidth="1.4" strokeLinecap="round"/>
           </svg>
           <span>{lang.flag} {lang.nameNative}</span>
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">

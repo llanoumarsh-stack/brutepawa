@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "../router";
 import { apiFetch } from "../lib/api";
 import { createPortal } from "react-dom";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 interface ApiEvent {
   id: number;
@@ -60,7 +61,7 @@ function CreateEventModal({ onClose, onCreated }: { onClose: () => void; onCreat
   return createPortal(
     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 200, display: "flex", alignItems: "flex-end", justifyContent: "center" }}
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
-      <div style={{ background: "#fff", borderRadius: "20px 20px 0 0", width: "100%", maxWidth: 600, maxHeight: "90vh", overflowY: "auto", padding: "20px 20px 40px" }}>
+      <div style={{ background: "var(--theme-surface)", borderRadius: "20px 20px 0 0", width: "100%", maxWidth: 600, maxHeight: "90vh", overflowY: "auto", padding: "20px 20px 40px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
           <div style={{ fontWeight: 800, fontSize: 18 }}>📅 Créer un événement</div>
           <button onClick={onClose} style={{ background: "#F1F5F9", border: "none", borderRadius: "50%", width: 32, height: 32, cursor: "pointer", fontSize: 16 }}>✕</button>
@@ -100,14 +101,14 @@ function CreateEventModal({ onClose, onCreated }: { onClose: () => void; onCreat
               Événement en ligne
             </label>
             <select value={type} onChange={e => setType(e.target.value)}
-              style={{ marginLeft: "auto", padding: "8px 12px", border: "1px solid #ccc", borderRadius: 8, fontSize: 14, background: "#fff" }}>
+              style={{ marginLeft: "auto", padding: "8px 12px", border: "1px solid #ccc", borderRadius: 8, fontSize: 14, background: "var(--theme-surface)" }}>
               <option value="public">🌐 Public</option>
               <option value="friends">👥 Amis</option>
               <option value="private">🔒 Privé</option>
             </select>
           </div>
           <button onClick={submit} disabled={saving}
-            style={{ background: saving ? "#ccc" : "#22C55E", color: "#fff", border: "none", borderRadius: 8, padding: "13px", fontWeight: 700, fontSize: 15, cursor: saving ? "not-allowed" : "pointer" }}>
+            style={{ background: saving ? "#ccc" : "var(--bp-primary)", color: "#fff", border: "none", borderRadius: 8, padding: "13px", fontWeight: 700, fontSize: 15, cursor: saving ? "not-allowed" : "pointer" }}>
             {saving ? "Création…" : "Créer l'événement"}
           </button>
         </div>
@@ -125,8 +126,8 @@ export default function EventsPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [rsvpLoading, setRsvpLoading] = useState<number | null>(null);
 
-  const rawUser = localStorage.getItem("fb_user");
-  const userId = rawUser ? (JSON.parse(rawUser) as { id?: number }).id ?? 0 : 0;
+  const user = useCurrentUser();
+  const userId = user.id ?? 0;
 
   const load = async () => {
     try {
@@ -167,20 +168,20 @@ export default function EventsPage() {
   return (
     <div style={{ maxWidth: 680, margin: "0 auto", paddingBottom: 40 }}>
       {/* Header */}
-      <div style={{ background: "#fff", padding: "14px 16px", borderBottom: "1px solid #E5E7EB", display: "flex", alignItems: "center", gap: 10, position: "sticky", top: 0, zIndex: 10 }}>
-        <button onClick={() => navigate("/")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#22C55E" }}>←</button>
+      <div style={{ background: "var(--theme-surface)", padding: "14px 16px", borderBottom: "1px solid #E5E7EB", display: "flex", alignItems: "center", gap: 10, position: "sticky", top: 0, zIndex: 10 }}>
+        <button onClick={() => navigate("/")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "var(--bp-primary)" }}>←</button>
         <div style={{ fontWeight: 800, fontSize: 18, flex: 1 }}>📅 Événements</div>
         <button onClick={() => setShowCreate(true)}
-          style={{ background: "#22C55E", color: "#fff", border: "none", borderRadius: 8, padding: "8px 14px", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
+          style={{ background: "var(--bp-primary)", color: "#fff", border: "none", borderRadius: 8, padding: "8px 14px", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
           + Créer
         </button>
       </div>
 
       {/* Tabs */}
-      <div style={{ display: "flex", background: "#fff", borderBottom: "1px solid #E5E7EB" }}>
+      <div style={{ display: "flex", background: "var(--theme-surface)", borderBottom: "1px solid #E5E7EB" }}>
         {([["upcoming", "À venir"], ["my", "Mes événements"]] as const).map(([id, label]) => (
           <button key={id} onClick={() => setTab(id)}
-            style={{ flex: 1, background: "none", border: "none", padding: "12px", fontWeight: tab === id ? 700 : 400, fontSize: 14, color: tab === id ? "#22C55E" : "#64748B", borderBottom: tab === id ? "3px solid #22C55E" : "3px solid transparent", cursor: "pointer" }}>
+            style={{ flex: 1, background: "none", border: "none", padding: "12px", fontWeight: tab === id ? 700 : 400, fontSize: 14, color: tab === id ? "var(--bp-primary)" : "#64748B", borderBottom: tab === id ? "3px solid var(--bp-primary)" : "3px solid transparent", cursor: "pointer" }}>
             {label}
           </button>
         ))}
@@ -199,7 +200,7 @@ export default function EventsPage() {
             <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 6 }}>Aucun événement</div>
             <div style={{ fontSize: 14 }}>Créez votre premier événement ou invitez des amis !</div>
             <button onClick={() => setShowCreate(true)}
-              style={{ marginTop: 16, background: "#22C55E", color: "#fff", border: "none", borderRadius: 8, padding: "10px 20px", fontWeight: 700, cursor: "pointer" }}>
+              style={{ marginTop: 16, background: "var(--bp-primary)", color: "#fff", border: "none", borderRadius: 8, padding: "10px 20px", fontWeight: 700, cursor: "pointer" }}>
               Créer un événement
             </button>
           </div>
@@ -211,23 +212,23 @@ export default function EventsPage() {
             const start = new Date(event.startAt);
             const isPast = start < new Date();
             return (
-              <div key={event.id} style={{ background: "#fff", borderRadius: 12, border: "1px solid #E5E7EB", overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
+              <div key={event.id} style={{ background: "var(--theme-surface)", borderRadius: 12, border: "1px solid #E5E7EB", overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.07)" }}>
                 {/* Cover or colored header */}
                 {event.coverUrl
                   ? <img src={event.coverUrl} alt={event.title} style={{ width: "100%", height: 180, objectFit: "cover", display: "block" }} />
-                  : <div style={{ width: "100%", height: 120, background: "linear-gradient(135deg, #22C55E, #42b0ff)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 48 }}>📅</div>
+                  : <div style={{ width: "100%", height: 120, background: "linear-gradient(135deg, var(--bp-primary), #42b0ff)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 48 }}>📅</div>
                 }
                 <div style={{ padding: 16 }}>
                   <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
                     <div style={{ flex: 1 }}>
                       {isPast && <span style={{ background: "#F1F5F9", color: "#64748B", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 10, marginBottom: 6, display: "inline-block" }}>PASSÉ</span>}
                       <div style={{ fontWeight: 800, fontSize: 16, marginBottom: 4 }}>{event.title}</div>
-                      <div style={{ fontSize: 13, color: "#22C55E", fontWeight: 600, marginBottom: 4 }}>🗓 {fmtDate(event.startAt)}</div>
+                      <div style={{ fontSize: 13, color: "var(--bp-primary)", fontWeight: 600, marginBottom: 4 }}>🗓 {fmtDate(event.startAt)}</div>
                       {event.location && <div style={{ fontSize: 13, color: "#64748B", marginBottom: 4 }}>📍 {event.location}</div>}
-                      {event.isOnline && <div style={{ fontSize: 13, color: "#22C55E", marginBottom: 4 }}>🌐 En ligne</div>}
+                      {event.isOnline && <div style={{ fontSize: 13, color: "var(--bp-primary)", marginBottom: 4 }}>🌐 En ligne</div>}
                       {event.description && <div style={{ fontSize: 13, color: "#64748B", marginTop: 6, lineHeight: 1.4 }}>{event.description.slice(0, 120)}{event.description.length > 120 ? "…" : ""}</div>}
                     </div>
-                    {isOrganizer && <span style={{ background: "#DCFCE7", color: "#22C55E", fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 10, flexShrink: 0 }}>Organisateur</span>}
+                    {isOrganizer && <span style={{ background: "#DCFCE7", color: "var(--bp-primary)", fontSize: 11, fontWeight: 700, padding: "3px 8px", borderRadius: 10, flexShrink: 0 }}>Organisateur</span>}
                   </div>
 
                   {/* Counts */}
@@ -244,8 +245,8 @@ export default function EventsPage() {
                         disabled={rsvpLoading === event.id}
                         style={{
                           flex: 1, padding: "9px", borderRadius: 8, border: "none", fontWeight: 700, fontSize: 13, cursor: "pointer",
-                          background: event.myRsvp === "going" ? "#22C55E" : "#DCFCE7",
-                          color: event.myRsvp === "going" ? "#fff" : "#22C55E",
+                          background: event.myRsvp === "going" ? "var(--bp-primary)" : "#DCFCE7",
+                          color: event.myRsvp === "going" ? "#fff" : "var(--bp-primary)",
                         }}>
                         ✅ {event.myRsvp === "going" ? "Inscrit ✓" : "Participer"}
                       </button>
@@ -266,7 +267,7 @@ export default function EventsPage() {
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 14, paddingTop: 12, borderTop: "1px solid #E5E7EB" }}>
                     {event.organizerAvatarUrl
                       ? <img src={event.organizerAvatarUrl} alt="" style={{ width: 28, height: 28, borderRadius: "50%", objectFit: "cover" }} />
-                      : <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: "#fff", fontWeight: 700 }}>
+                      : <div style={{ width: 28, height: 28, borderRadius: "50%", background: "var(--bp-primary)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: "#fff", fontWeight: 700 }}>
                           {event.organizerName.slice(0, 2).toUpperCase()}
                         </div>
                     }

@@ -1,0 +1,855 @@
+MISSION — REPRODUCTION PIXEL-PERFECT DE LA PAGE « APPARENCE » DE BRUTEPAWA
+
+Tu travailles sur le projet existant BrutePawa.
+
+L'image de référence fournie avec cette demande est la SOURCE DE VÉRITÉ VISUELLE ABSOLUE.
+
+Tu dois reproduire cette interface avec une fidélité maximale.
+
+RÈGLE ABSOLUE
+
+NE CRÉE AUCUN DESIGN PERSONNEL.
+
+NE MODERNISE PAS LA MAQUETTE.
+
+NE RAJOUTE AUCUN ÉLÉMENT.
+
+NE SUPPRIME AUCUN ÉLÉMENT visible dans la référence.
+
+NE CHANGE PAS les proportions.
+
+NE CHANGE PAS les espacements.
+
+NE CHANGE PAS les couleurs.
+
+NE CHANGE PAS la hiérarchie visuelle.
+
+NE CHANGE PAS la taille des textes.
+
+NE CHANGE PAS les rayons de bordure.
+
+NE CHANGE PAS les icônes.
+
+NE CHANGE PAS la position des éléments.
+
+NE REMPLACE PAS les vrais éléments par des emojis.
+
+L'image fournie doit être considérée comme un screenshot de production à reproduire, pas comme une simple inspiration.
+
+---
+
+1. STRUCTURE GÉNÉRALE
+
+La page est une page mobile intitulée :
+
+Apparence
+
+L'écran doit avoir exactement la structure visible sur la référence.
+
+La page contient :
+
+1. barre supérieure
+2. carte « APERÇU »
+3. section « Thème »
+4. section « Couleur principale »
+5. section « Taille du texte »
+6. bouton « Enregistrer les modifications »
+
+Il ne doit PAS y avoir de barre de navigation inférieure.
+
+Il ne doit PAS y avoir de menu supplémentaire inventé.
+
+Il ne doit PAS y avoir de footer.
+
+Il ne doit PAS y avoir de carte supplémentaire.
+
+---
+
+2. BARRE SUPÉRIEURE
+
+Reproduire exactement la partie supérieure de la maquette.
+
+Fond :
+
+- clair en thème clair
+- sombre en thème sombre
+
+Contenu :
+
+À gauche :
+
+- vraie icône « retour »
+- positionnée exactement comme dans la référence
+
+Au centre :
+
+- titre Apparence
+- centré horizontalement
+
+À droite :
+
+- vraie icône verticale à trois points
+
+IMPORTANT :
+
+Utiliser une vraie bibliothèque d'icônes déjà présente dans le projet si elle existe.
+
+Sinon utiliser une bibliothèque d'icônes professionnelle compatible avec le projet.
+
+NE PAS utiliser :
+
+- emoji
+- caractères Unicode simulant une icône
+- SVG approximatif dessiné à la main si une vraie icône de bibliothèque est disponible.
+
+---
+
+3. CARTE « APERÇU »
+
+Reproduire exactement la carte située immédiatement sous la barre supérieure.
+
+Titre :
+
+APERÇU
+
+Le texte doit être en majuscules.
+
+Dans la carte :
+
+Logo circulaire vert avec :
+
+B
+
+À droite du logo :
+
+BrutePawa
+
+Sous le nom :
+
+Réseau social panafricain
+
+La carte possède :
+
+- bordure verte
+- coins très arrondis
+- fond clair en mode clair
+- fond sombre en mode sombre
+- dimensions et espacements identiques à la référence
+
+À l'intérieur de la carte se trouvent également les éléments de prévisualisation représentés dans la maquette :
+
+- lignes horizontales
+- bloc média
+- petit avatar
+- lignes de contenu
+
+Reproduire leurs positions, tailles, proportions, opacités et espacements.
+
+NE PAS inventer de contenu supplémentaire.
+
+---
+
+4. SECTION « THÈME »
+
+Titre exact :
+
+Thème
+
+Créer trois cartes horizontales :
+
+Carte 1
+
+Clair
+
+Avec sa miniature représentant le thème clair.
+
+Carte 2
+
+Sombre
+
+Avec sa miniature représentant le thème sombre.
+
+Carte 3
+
+Système
+
+Avec sa miniature divisée clair/sombre comme sur la référence.
+
+La carte sélectionnée doit avoir :
+
+- bordure verte
+- état visuel sélectionné
+- cercle vert avec coche blanche
+
+La sélection initiale doit correspondre au comportement actuel de l'application.
+
+Respecter EXACTEMENT :
+
+- largeur des trois cartes
+- hauteur
+- espacement horizontal
+- padding
+- position de la miniature
+- taille de la miniature
+- taille du texte
+- position du texte
+- position de la coche
+- rayon des coins
+- épaisseur de la bordure
+
+---
+
+5. COULEUR PRINCIPALE
+
+Titre exact :
+
+Couleur principale
+
+Afficher exactement les six pastilles visibles dans la référence :
+
+1. vert
+2. bleu
+3. rouge
+4. violet
+5. orange
+6. rose
+
+Chaque couleur doit être représentée par un cercle parfaitement rond.
+
+La couleur active possède :
+
+- anneau/bordure de sélection
+- coche blanche
+- traitement visuel identique à la référence
+
+Ne pas ajouter d'autres couleurs.
+
+Ne pas supprimer de couleurs.
+
+Les couleurs doivent rester cohérentes dans toute l'application lorsque l'utilisateur sélectionne une couleur.
+
+---
+
+6. TAILLE DU TEXTE
+
+Titre :
+
+Taille du texte
+
+Sous-titre exact :
+
+Choisissez la taille de lecture confortable
+
+Créer trois cartes :
+
+Petite
+
+Moyenne
+
+Grande
+
+Chaque carte contient :
+
+Aa
+
+et le libellé correspondant.
+
+La carte sélectionnée possède exactement le style de sélection vert visible dans la référence.
+
+Les trois cartes doivent avoir :
+
+- même largeur
+- même hauteur
+- même espacement
+- mêmes coins arrondis
+- même alignement
+- même typographie
+
+---
+
+7. BOUTON
+
+En bas de la page :
+
+Enregistrer les modifications
+
+Le bouton doit :
+
+- être vert
+- occuper la largeur visible dans la référence
+- avoir les mêmes marges latérales
+- avoir le même rayon
+- avoir le même poids typographique
+- avoir la même hauteur
+- être centré
+
+Texte exactement :
+
+Enregistrer les modifications
+
+Ne pas changer ce texte.
+
+---
+
+8. RESPONSIVE
+
+La référence est mobile.
+
+La page doit cependant rester correctement responsive.
+
+IMPORTANT :
+
+La version mobile doit être PRIORITAIRE.
+
+Ne pas transformer la page en desktop avec de grandes colonnes.
+
+Sur smartphone :
+
+- aucune barre de navigation inférieure
+- aucun débordement horizontal
+- aucune carte coupée
+- aucun texte tronqué
+- aucune superposition
+
+Les proportions doivent rester proches de la référence.
+
+---
+
+9. THÈME CLAIR
+
+Le mode clair doit reproduire exactement l'apparence gauche de la référence.
+
+Utiliser les couleurs existantes de BrutePawa lorsque celles-ci correspondent à la référence.
+
+Le vert BrutePawa doit rester cohérent avec le reste du projet.
+
+NE PAS changer la couleur officielle de BrutePawa globalement simplement pour reproduire cette page.
+
+---
+
+10. THÈME SOMBRE
+
+Le mode sombre doit reproduire exactement l'apparence droite de la référence.
+
+Il doit modifier :
+
+- arrière-plan
+- cartes
+- textes
+- bordures
+- éléments secondaires
+
+mais conserver la couleur d'accent sélectionnée.
+
+Les contrastes doivent rester accessibles.
+
+---
+
+11. MODE « SYSTÈME »
+
+Le mode Système doit suivre automatiquement le thème du système de l'utilisateur.
+
+Utiliser :
+
+"prefers-color-scheme"
+
+Comportement :
+
+Système + téléphone clair → interface claire.
+
+Système + téléphone sombre → interface sombre.
+
+Le choix « Système » ne doit pas être un simple thème fixe.
+
+---
+
+12. COULEUR PERSONNALISÉE
+
+Créer une architecture de tokens de design.
+
+Exemple logique :
+
+"--primary-color"
+
+"--background"
+
+"--surface"
+
+"--surface-secondary"
+
+"--text-primary"
+
+"--text-secondary"
+
+"--border"
+
+"--success"
+
+etc.
+
+La couleur principale sélectionnée doit pouvoir être utilisée par toute l'application.
+
+Mais ATTENTION :
+
+Ne remplace pas brutalement toutes les couleurs existantes de BrutePawa.
+
+La page Apparence doit modifier uniquement les éléments prévus par le système de personnalisation.
+
+---
+
+13. TAILLE DU TEXTE
+
+Les trois choix doivent réellement fonctionner.
+
+Petite
+
+Réduire l'échelle typographique.
+
+Moyenne
+
+Valeur normale.
+
+Grande
+
+Augmenter l'échelle typographique.
+
+NE PAS simplement appliquer "transform: scale()" à toute la page.
+
+Le texte doit rester correctement aligné.
+
+Les boutons, cartes et icônes ne doivent pas devenir disproportionnés.
+
+---
+
+14. PERSISTANCE
+
+Les préférences doivent être sauvegardées.
+
+Préférences :
+
+- theme
+- primaryColor
+- fontSize
+
+Si l'utilisateur est connecté :
+
+sauvegarder dans le compte utilisateur via le backend.
+
+Si l'utilisateur n'est pas connecté :
+
+utiliser localStorage comme fallback.
+
+Au prochain lancement :
+
+restaurer automatiquement les préférences.
+
+---
+
+15. BACKEND COMPLET
+
+Le backend doit être réellement fonctionnel.
+
+NE FAIS PAS de faux bouton.
+
+NE FAIS PAS de simple "console.log".
+
+NE FAIS PAS une simulation locale uniquement.
+
+Créer ou utiliser correctement une structure de préférences utilisateur.
+
+Exemple logique :
+
+"user_preferences"
+
+avec :
+
+- "user_id"
+- "theme"
+- "primary_color"
+- "font_size"
+- "created_at"
+- "updated_at"
+
+IMPORTANT :
+
+Avant de créer une nouvelle table, inspecte le schéma actuel de BrutePawa.
+
+Si une table de préférences utilisateur existe déjà :
+
+réutilise-la.
+
+Ne crée pas de doublon.
+
+---
+
+16. API
+
+Créer ou réutiliser les endpoints appropriés.
+
+Exemple :
+
+"GET /api/preferences"
+
+"PUT /api/preferences"
+
+Le backend doit :
+
+- vérifier l'utilisateur authentifié
+- récupérer ses préférences
+- valider les valeurs
+- enregistrer les modifications
+- retourner les préférences mises à jour
+
+Valeurs autorisées :
+
+theme :
+
+- "light"
+- "dark"
+- "system"
+
+fontSize :
+
+- "small"
+- "medium"
+- "large"
+
+primaryColor :
+
+uniquement les six couleurs autorisées.
+
+NE PAS accepter arbitrairement une valeur CSS envoyée par le client.
+
+---
+
+17. SÉCURITÉ
+
+Les préférences doivent appartenir à l'utilisateur connecté.
+
+L'utilisateur A ne doit jamais pouvoir modifier les préférences de l'utilisateur B.
+
+Si BrutePawa utilise Supabase/PostgreSQL :
+
+respecter l'architecture et les politiques de sécurité déjà présentes.
+
+NE PAS désactiver RLS.
+
+NE PAS exposer de secret backend.
+
+NE PAS placer de clé privée dans le frontend.
+
+Valider toutes les données côté serveur.
+
+---
+
+18. BASE DE DONNÉES
+
+Avant toute modification :
+
+inspecter la base existante.
+
+Ne pas créer une nouvelle table si une structure équivalente existe.
+
+Si une migration est nécessaire :
+
+créer une migration propre et réversible.
+
+NE SUPPRIMER AUCUNE donnée existante.
+
+NE PAS réinitialiser la base.
+
+NE PAS recréer les utilisateurs.
+
+NE PAS modifier les publications.
+
+NE PAS modifier les messages.
+
+NE PAS modifier les relations sociales.
+
+---
+
+19. ÉTAT LOCAL + SERVEUR
+
+Pour éviter un délai lors du changement visuel :
+
+l'interface doit changer immédiatement après la sélection.
+
+Puis la préférence doit être sauvegardée côté serveur.
+
+Si la sauvegarde échoue :
+
+- conserver temporairement l'état local
+- afficher une erreur discrète
+- ne pas casser l'interface.
+
+---
+
+20. SYNCHRONISATION MULTI-APPAREILS
+
+Lorsqu'un utilisateur connecté ouvre BrutePawa sur un autre appareil :
+
+récupérer ses préférences depuis le serveur.
+
+Exemple :
+
+Téléphone A :
+Thème sombre + vert + texte moyen.
+
+Téléphone B :
+après connexion → récupérer les mêmes préférences.
+
+Le système local ne doit pas écraser automatiquement une préférence serveur plus récente.
+
+---
+
+21. ACCESSIBILITÉ
+
+Les boutons et cartes doivent être accessibles au tactile.
+
+Chaque option doit avoir un véritable élément interactif.
+
+Ajouter les attributs d'accessibilité appropriés.
+
+Exemple logique :
+
+"aria-pressed"
+
+ou mécanisme équivalent selon le composant utilisé.
+
+La sélection doit être compréhensible sans dépendre uniquement de la couleur.
+
+---
+
+22. ANIMATIONS
+
+Utiliser uniquement des animations très discrètes si elles existent déjà dans BrutePawa.
+
+NE PAS ajouter :
+
+- animations excessives
+- effets 3D
+- particules
+- gradients inutiles
+- effets lumineux
+- animations de chargement inventées
+
+La référence est sobre.
+
+---
+
+23. ICÔNES
+
+Utiliser de vraies icônes professionnelles.
+
+Pour :
+
+- retour
+- menu trois points
+- coche
+
+Utiliser la bibliothèque d'icônes déjà installée dans BrutePawa si elle existe.
+
+NE PAS remplacer les icônes par des emojis.
+
+Les icônes doivent avoir :
+
+- même style
+- même épaisseur
+- même taille
+- même alignement
+
+que la référence.
+
+---
+
+24. PIXEL-PERFECT
+
+Après implémentation, compare visuellement le rendu avec l'image fournie.
+
+Vérifie systématiquement :
+
+- dimensions
+- marges
+- padding
+- espaces verticaux
+- espaces horizontaux
+- largeur des cartes
+- hauteur des cartes
+- rayons
+- bordures
+- couleurs
+- tailles des textes
+- poids des textes
+- alignement
+- icônes
+- états sélectionnés
+- bouton
+- hauteur totale de la page
+
+Ne considère pas la tâche terminée simplement parce que « ça ressemble ».
+
+Effectue plusieurs corrections visuelles jusqu'à obtenir la correspondance maximale possible.
+
+---
+
+25. INTERDICTION D'INVENTION
+
+Si quelque chose n'est pas visible sur la référence :
+
+NE L'AJOUTE PAS.
+
+Si tu hésites entre deux possibilités :
+
+utilise celle qui correspond à la référence et au design existant de BrutePawa.
+
+Ne crée pas :
+
+- nouvelles sections
+- nouvelles cartes
+- nouveaux boutons
+- nouvelles couleurs
+- nouvelles icônes
+- nouvelles fonctionnalités
+- nouveaux textes
+- nouvelles barres de navigation.
+
+---
+
+26. COMPATIBILITÉ AVEC LE PROJET EXISTANT
+
+Avant de coder :
+
+inspecte :
+
+- framework frontend
+- architecture backend
+- système d'authentification
+- PostgreSQL/Supabase
+- composants UI
+- système de thème existant
+- gestion des préférences existante
+- routing
+- API existantes
+
+Réutilise les composants existants lorsque cela permet une meilleure cohérence.
+
+NE RÉÉCRIS PAS toute l'application.
+
+Ne casse aucune fonctionnalité existante.
+
+---
+
+27. TESTS OBLIGATOIRES
+
+Après développement, teste :
+
+TEST 1
+
+Ouvrir Apparence.
+
+TEST 2
+
+Sélectionner Clair.
+
+Vérifier immédiatement le changement.
+
+TEST 3
+
+Sélectionner Sombre.
+
+Vérifier immédiatement le changement.
+
+TEST 4
+
+Sélectionner Système.
+
+Changer le thème du téléphone.
+
+Vérifier que BrutePawa suit le système.
+
+TEST 5
+
+Changer la couleur verte vers bleue.
+
+Vérifier tous les éléments dépendants de la couleur principale.
+
+TEST 6
+
+Choisir Grande.
+
+Vérifier la typographie.
+
+TEST 7
+
+Cliquer sur :
+
+Enregistrer les modifications
+
+Recharger la page.
+
+Les préférences doivent être conservées.
+
+TEST 8
+
+Se déconnecter/reconnecter.
+
+Les préférences doivent être conservées.
+
+TEST 9
+
+Tester sur une nouvelle session navigateur.
+
+TEST 10
+
+Tester sur écran mobile.
+
+TEST 11
+
+Tester le mode clair.
+
+TEST 12
+
+Tester le mode sombre.
+
+TEST 13
+
+Tester qu'un utilisateur ne peut pas modifier les préférences d'un autre utilisateur.
+
+---
+
+28. RAPPORT FINAL
+
+Lorsque tout est terminé, ne réponds pas simplement « terminé ».
+
+Donne un rapport concis contenant :
+
+1. fichiers frontend modifiés
+2. fichiers backend modifiés
+3. migrations éventuellement créées
+4. endpoints utilisés/créés
+5. table utilisée
+6. système de persistance
+7. système de thème
+8. système de couleur
+9. système de taille du texte
+10. tests réalisés
+11. problèmes rencontrés
+12. confirmation qu'aucune donnée existante n'a été supprimée
+
+---
+
+RÈGLE FINALE
+
+L'image fournie est la référence visuelle.
+
+FIDÉLITÉ VISUELLE > créativité.
+
+FIDÉLITÉ À L'ARCHITECTURE EXISTANTE > réécriture inutile.
+
+FONCTIONNALITÉ RÉELLE > simulation.
+
+SÉCURITÉ > raccourci.
+
+Tu dois produire une page Apparence BrutePawa qui ressemble au maximum à la référence tout en ayant un système de préférences réellement fonctionnel côté frontend + backend + base de données.
+
+Ne considère pas la tâche terminée tant que l'interface, la persistance, le backend et les tests ne sont pas fonctionnels.

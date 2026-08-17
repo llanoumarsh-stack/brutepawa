@@ -3,6 +3,7 @@ import { useNavigate } from "../router";
 import { useViewerPresence } from "../hooks/useViewerPresence";
 import { getBpToken } from "../lib/api";
 import GiftPicker from "../components/GiftPicker";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 interface LiveInfo {
   id: number;
@@ -42,10 +43,9 @@ interface Props {
 
 export default function LiveWatchPage({ streamId }: Props) {
   const navigate = useNavigate();
-  const rawUser = localStorage.getItem("fb_user");
-  const localUser = rawUser ? (JSON.parse(rawUser) as { name?: string; flag?: string }) : null;
-  const viewerName = localUser?.name || "Anonyme";
-  const viewerFlag = localUser?.flag || "";
+  const localUser = useCurrentUser();
+  const viewerName = localUser.name || "Anonyme";
+  const viewerFlag = localUser.flag || "";
 
   const [stream, setStream]           = useState<LiveInfo | null>(null);
   const [error, setError]             = useState<string | null>(null);
@@ -210,7 +210,7 @@ export default function LiveWatchPage({ streamId }: Props) {
   if (loading) {
     return (
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", background: "#000", color: "#fff" }}>
-        <div style={{ width: 36, height: 36, border: "3px solid rgba(255,255,255,0.15)", borderTopColor: "#22C55E", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+        <div style={{ width: 36, height: 36, border: "3px solid rgba(255,255,255,0.15)", borderTopColor: "var(--bp-primary)", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
@@ -222,7 +222,7 @@ export default function LiveWatchPage({ streamId }: Props) {
         <p style={{ color: "rgba(255,255,255,0.6)" }}>{error ?? "Live introuvable."}</p>
         <button
           onClick={() => navigate("/")}
-          style={{ padding: "10px 24px", borderRadius: 24, background: "#fff", color: "#000", border: "none", cursor: "pointer", fontSize: 14, fontWeight: 600 }}
+          style={{ padding: "10px 24px", borderRadius: 24, background: "var(--theme-surface)", color: "#000", border: "none", cursor: "pointer", fontSize: 14, fontWeight: 600 }}
         >
           Retour
         </button>
@@ -439,7 +439,7 @@ export default function LiveWatchPage({ streamId }: Props) {
               onClick={sendChat}
               disabled={!chatInput.trim() || sendingChat}
               style={{
-                background: chatInput.trim() ? "#22C55E" : "rgba(255,255,255,0.15)",
+                background: chatInput.trim() ? "var(--bp-primary)" : "rgba(255,255,255,0.15)",
                 border: "none",
                 borderRadius: "50%",
                 width: 38,
@@ -465,7 +465,7 @@ export default function LiveWatchPage({ streamId }: Props) {
         <button
           onClick={() => setShowGiftPicker(true)}
           style={{
-            background: "linear-gradient(135deg, #22C55E, #22C55E)",
+            background: "linear-gradient(135deg, var(--bp-primary), var(--bp-primary))",
             border: "none",
             borderRadius: 24,
             padding: "9px 16px",

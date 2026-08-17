@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "../router";
 import { apiFetch, getBpToken } from "../lib/api";
 
-const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"#22C55E",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"var(--bp-primary)",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
 
 const Toggle = ({ on,onChange }:{on:boolean;onChange:(v:boolean)=>void}) => (
   <div onClick={()=>onChange(!on)} style={{ width:52,height:30,borderRadius:15,background:on?C.primary:"#E5E7EB",position:"relative",cursor:"pointer",transition:"background 250ms",flexShrink:0,boxShadow:on?"0 2px 10px rgba(34,197,94,0.35)":"inset 0 1px 3px rgba(0,0,0,0.08)" }}>
@@ -105,7 +105,7 @@ export default function ChatBackupPage() {
               <div style={{ fontSize:12,color:C.muted,marginTop:2 }}>Taille : {formatSize(backupSize)}</div>
             </div>
           </div>
-          <button onClick={handleSave} style={{ width:"100%",background:saving||saved?"#16A34A":"linear-gradient(135deg,#16A34A,#22C55E)",color:"#fff",border:"none",borderRadius:18,padding:"14px",fontWeight:700,fontSize:15,cursor:"pointer",boxShadow:"0 6px 20px rgba(34,197,94,0.3)",transition:"all 300ms",display:"flex",alignItems:"center",justifyContent:"center",gap:8 }}>
+          <button onClick={handleSave} style={{ width:"100%",background:saving||saved?"var(--bp-primary-dark)":"linear-gradient(135deg,var(--bp-primary-dark),var(--bp-primary))",color:"#fff",border:"none",borderRadius:18,padding:"14px",fontWeight:700,fontSize:15,cursor:"pointer",boxShadow:"0 6px 20px rgba(34,197,94,0.3)",transition:"all 300ms",display:"flex",alignItems:"center",justifyContent:"center",gap:8 }}>
             {saving ? (
               <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" style={{ animation:"spin 1s linear infinite" }}><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0"/></svg>Sauvegarde en cours...</>
             ) : saved ? (
@@ -155,8 +155,8 @@ export default function ChatBackupPage() {
         </div>
 
         <div style={{ background:"linear-gradient(135deg,#F0FDF4,#DCFCE7)",borderRadius:20,padding:"14px 16px",display:"flex",gap:10,border:"1px solid #BBF7D0" }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2" strokeLinecap="round" style={{ flexShrink:0,marginTop:1 }}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
-          <p style={{ fontSize:13,color:"#16A34A",margin:0,lineHeight:1.6 }}>Vos sauvegardes sont protégées par chiffrement de bout en bout.</p>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary-dark)" strokeWidth="2" strokeLinecap="round" style={{ flexShrink:0,marginTop:1 }}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+          <p style={{ fontSize:13,color:"var(--bp-primary-dark)",margin:0,lineHeight:1.6 }}>Vos sauvegardes sont protégées par chiffrement de bout en bout.</p>
         </div>
       </div>
       <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>

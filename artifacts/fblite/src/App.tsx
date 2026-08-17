@@ -1,5 +1,6 @@
 import { useState, useEffect, Component, ReactNode } from "react";
 import { Router, useLocation, useNavigate } from "./router";
+import { isUserLoggedIn } from "./hooks/useCurrentUser";
 import Layout from "./Layout";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -61,12 +62,18 @@ import MediaQualityPage from "./pages/MediaQualityPage";
 import ChatBackupPage from "./pages/ChatBackupPage";
 import AdvancedSettingsPage from "./pages/AdvancedSettingsPage";
 import AboutPage from "./pages/AboutPage";
+import TermsPage from "./pages/TermsPage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import LicensesPage from "./pages/LicensesPage";
+import AccountDeletionFlow from "./pages/AccountDeletionFlow";
+import DeleteShowcasePage from "./pages/DeleteShowcasePage";
 import BroadcastListPage from "./pages/BroadcastListPage";
 import PeoplePage from "./pages/PeoplePage";
 import PagesPage from "./pages/PagesPage";
 
 import { Toaster } from "sonner";
 import { ADMIN_SECRET_PATH } from "./lib/admin";
+import { AppearanceProvider } from "./contexts/AppearanceContext";
 import { Post } from "./lib/store";
 import { apiGetPosts, apiLikePost, apiCreatePost, getBpToken } from "./lib/api";
 import InstallBanner from "./components/InstallBanner";
@@ -81,7 +88,7 @@ class GlobalErrorBoundary extends Component<{ children: ReactNode }, { err: Erro
     if (err) {
       return (
         <div style={{
-          position: "fixed", inset: 0, background: "#fff", zIndex: 99999,
+          position: "fixed", inset: 0, background: "var(--theme-surface)", zIndex: 99999,
           display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
           padding: 24, gap: 16, fontFamily: "monospace",
         }}>
@@ -103,7 +110,7 @@ class GlobalErrorBoundary extends Component<{ children: ReactNode }, { err: Erro
           </div>
           <button
             onClick={() => { this.setState({ err: null }); window.location.reload(); }}
-            style={{ background: "#22C55E", color: "#fff", border: "none", borderRadius: 12, padding: "12px 28px", fontWeight: 700, fontSize: 15, cursor: "pointer" }}
+            style={{ background: "var(--bp-primary)", color: "#fff", border: "none", borderRadius: 12, padding: "12px 28px", fontWeight: 700, fontSize: 15, cursor: "pointer" }}
           >
             Réessayer
           </button>
@@ -120,11 +127,11 @@ class MessagesBoundary extends Component<{ children: ReactNode }, { err: string 
   render() {
     if (this.state.err) {
       return (
-        <div style={{ position: "fixed", inset: 0, background: "#fff", zIndex: 9999, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-          <p style={{ fontWeight: 800, fontSize: 18, color: "#111827" }}>Messages</p>
+        <div style={{ position: "fixed", inset: 0, background: "var(--theme-surface)", zIndex: 9999, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          <p style={{ fontWeight: 800, fontSize: 18, color: "var(--theme-text)" }}>Messages</p>
           <p style={{ fontSize: 13, color: "#666", textAlign: "center" }}>{this.state.err}</p>
-          <button onClick={() => { this.setState({ err: null }); window.location.reload(); }} style={{ background: "#22C55E", color: "#fff", border: "none", borderRadius: 12, padding: "12px 24px", fontWeight: 700, fontSize: 15, cursor: "pointer" }}>Réessayer</button>
+          <button onClick={() => { this.setState({ err: null }); window.location.reload(); }} style={{ background: "var(--bp-primary)", color: "#fff", border: "none", borderRadius: 12, padding: "12px 24px", fontWeight: 700, fontSize: 15, cursor: "pointer" }}>Réessayer</button>
         </div>
       );
     }
@@ -142,7 +149,7 @@ function relativeTime(iso: string): string {
   return `Il y a ${Math.floor(h / 24)} j`;
 }
 
-const PUBLIC_PATHS = ["/login", "/register"];
+const PUBLIC_PATHS = ["/login", "/register", "/delete-showcase"];
 const NO_LAYOUT_PATHS = [ADMIN_SECRET_PATH];
 
 function matchDynamic(pattern: string, path: string): Record<string, string> | null {
@@ -161,7 +168,7 @@ function matchDynamic(pattern: string, path: string): Record<string, string> | n
 }
 
 function PushAutoSubscribe() {
-  const isAuth = Boolean(localStorage.getItem("fb_user"));
+  const isAuth = isUserLoggedIn();
   const { permission, subscribed, subscribe } = usePushNotifications();
 
   useEffect(() => {
@@ -179,7 +186,7 @@ function PushAutoSubscribe() {
 function AppContent() {
   const path = useLocation();
   const navigate = useNavigate();
-  const isAuth = Boolean(localStorage.getItem("fb_user"));
+  const isAuth = isUserLoggedIn();
   const isPublic = PUBLIC_PATHS.includes(path);
 
   const [posts, setPosts] = useState<Post[]>([]);
@@ -206,6 +213,16 @@ function AppContent() {
         isPinned: p.isPinned,
         commentsDisabled: p.commentsDisabled,
         audience: p.audience,
+        taggedUsers: p.taggedUsers,
+        bgColor: p.bgColor,
+        mood: p.mood,
+        location: p.location,
+        musicTrackName: p.musicTrackName,
+        musicArtist: p.musicArtist,
+        musicUrl: p.musicUrl,
+        musicArtworkUrl: p.musicArtworkUrl,
+        musicDuration: p.musicDuration,
+        musicLikesCount: p.musicLikesCount ?? 0,
       }));
       setPosts(converted);
     } catch {
@@ -324,10 +341,9 @@ function AppContent() {
     <Layout onNewPost={handleNewPost}><MemoriesPage /></Layout>
   );
 
-  // Search route — path may include query string: /search?q=...
-  if (path.startsWith("/search")) {
-    const qs = path.includes("?") ? path.slice(path.indexOf("?") + 1) : "";
-    const q = new URLSearchParams(qs).get("q") ?? "";
+  // Search route
+  if (path === "/search") {
+    const q = new URLSearchParams(window.location.search).get("q") ?? "";
     return (
       <Layout onNewPost={handleNewPost}>
         <SearchPage q={q} />
@@ -456,6 +472,11 @@ function AppContent() {
   if (path === "/settings/messaging/backup") return <ChatBackupPage />;
   if (path === "/settings/messaging/advanced") return <AdvancedSettingsPage />;
   if (path === "/settings/messaging/about") return <AboutPage />;
+  if (path === "/settings/terms") return <TermsPage />;
+  if (path === "/settings/privacy-policy") return <PrivacyPolicyPage />;
+  if (path === "/settings/licenses") return <LicensesPage />;
+  if (path === "/settings/delete-account") return <AccountDeletionFlow />;
+  if (path === "/delete-showcase") return <DeleteShowcasePage />;
 
   if (groupMatch) {
     const gid = parseInt(groupMatch.id, 10);
@@ -542,13 +563,15 @@ function AppContent() {
 export default function App() {
   return (
     <GlobalErrorBoundary>
-      <Router>
-        <TopLoadingBar />
-        <PushAutoSubscribe />
-        <AppContent />
-        <InstallBanner />
-        <Toaster position="top-center" richColors closeButton />
-      </Router>
+      <AppearanceProvider>
+        <Router>
+          <TopLoadingBar />
+          <PushAutoSubscribe />
+          <AppContent />
+          <InstallBanner />
+          <Toaster position="top-center" richColors closeButton />
+        </Router>
+      </AppearanceProvider>
     </GlobalErrorBoundary>
   );
 }
