@@ -43,6 +43,13 @@
       "when": 1786981766982,
       "tag": "0005_group_management",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1786988777612,
+      "tag": "0006_uneven_chamber",
+      "breakpoints": true
     }
   ]
 }
