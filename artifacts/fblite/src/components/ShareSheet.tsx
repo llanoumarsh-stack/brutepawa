@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { apiGetFriends, type PublicUser } from "../lib/api";
+import { apiGetFriends, apiSendMessage, type PublicUser } from "../lib/api";
 
 export interface SharePost {
   id: number;
@@ -71,16 +71,26 @@ export default function ShareSheet({ open, post, onClose }: Props) {
   const [friends, setFriends] = useState<PublicUser[]>([]);
   const [copied, setCopied] = useState(false);
   const [sentTo, setSentTo] = useState<Set<number>>(new Set());
+  const [sending, setSending] = useState<Set<number>>(new Set());
   const [showAllFriends, setShowAllFriends] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   /* Load friends when sheet opens */
   useEffect(() => {
     if (!open) return;
     setCopied(false);
     setSentTo(new Set());
+    setSending(new Set());
+    setToast(null);
     setShowAllFriends(false);
     apiGetFriends().then(f => setFriends(f)).catch(() => setFriends([]));
   }, [open]);
+
+  /* Cleanup toast timer on unmount */
+  useEffect(() => {
+    return () => { if (toastTimer.current) clearTimeout(toastTimer.current); };
+  }, []);
 
   /* Lock body scroll while open */
   useEffect(() => {
@@ -113,9 +123,36 @@ export default function ShareSheet({ open, post, onClose }: Props) {
     setTimeout(() => setCopied(false), 2200);
   };
 
-  /* Send to friend (visual feedback only — real DM could be added later) */
-  const handleSendToFriend = (friendId: number) => {
+  /* Show a brief toast */
+  const showToast = (msg: string) => {
+    setToast(msg);
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(null), 2400);
+  };
+
+  /* Send to friend — real DM with optimistic update */
+  const handleSendToFriend = async (friend: PublicUser) => {
+    const { id: friendId } = friend;
+    if (sentTo.has(friendId) || sending.has(friendId) || !post) return;
+
+    /* Optimistic update */
     setSentTo(prev => new Set([...prev, friendId]));
+    setSending(prev => new Set([...prev, friendId]));
+
+    const messageContent = `https://brutepawa.com/post/${post.id}`;
+    const firstName = friend.firstName ?? "Ami";
+
+    try {
+      await apiSendMessage(friendId, messageContent);
+      const name = `${firstName} ${friend.lastName ?? ""}`.trim() || "Ami";
+      showToast(`Envoyé à ${name}`);
+    } catch {
+      /* Revert on error */
+      setSentTo(prev => { const s = new Set(prev); s.delete(friendId); return s; });
+      showToast("Échec de l'envoi, réessayez.");
+    } finally {
+      setSending(prev => { const s = new Set(prev); s.delete(friendId); return s; });
+    }
   };
 
   /* External platform share */
@@ -330,8 +367,9 @@ export default function ShareSheet({ open, post, onClose }: Props) {
                 return (
                   <button
                     key={friend.id}
-                    onClick={() => handleSendToFriend(friend.id)}
-                    style={{ background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 5, flexShrink: 0, width: 62 }}
+                    onClick={() => handleSendToFriend(friend)}
+                    disabled={sending.has(friend.id)}
+                    style={{ background: "none", border: "none", cursor: sending.has(friend.id) ? "default" : "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 5, flexShrink: 0, width: 62, opacity: sending.has(friend.id) ? 0.7 : 1, transition: "opacity 0.18s" }}
                   >
                     <div style={{ position: "relative" }}>
                       <AvatarCircle user={friend} />
@@ -407,9 +445,38 @@ export default function ShareSheet({ open, post, onClose }: Props) {
           from { opacity: 0; }
           to   { opacity: 1; }
         }
+        @keyframes ssToastIn {
+          from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+          to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
         /* Hide scrollbar inside share sheet */
         [data-share-scroll]::-webkit-scrollbar { display: none; }
       `}</style>
+
+      {/* ── Toast ──────────────────────────────────────────────── */}
+      {toast && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "calc(env(safe-area-inset-bottom, 16px) + 16px)",
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 10000,
+            background: "rgba(17,24,39,0.92)",
+            color: "#fff",
+            fontSize: 13.5,
+            fontWeight: 600,
+            padding: "10px 20px",
+            borderRadius: 24,
+            whiteSpace: "nowrap",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.22)",
+            animation: "ssToastIn 0.22s ease both",
+            pointerEvents: "none",
+          }}
+        >
+          {toast}
+        </div>
+      )}
     </>,
     document.body
   );
