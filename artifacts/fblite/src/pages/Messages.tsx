@@ -608,6 +608,26 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [grpEditDesc, setGrpEditDesc]               = useState("");
   const [grpEditSaving, setGrpEditSaving]           = useState(false);
   const [grpEditToast, setGrpEditToast]             = useState(false);
+  /* ─── Group sub-pages ─── */
+  const [showGrpParamType, setShowGrpParamType]     = useState(false);
+  const [grpTypePublic, setGrpTypePublic]           = useState(false);
+  const [showGrpMembers, setShowGrpMembers]         = useState(false);
+  const [grpMemberMenu, setGrpMemberMenu]           = useState<number|null>(null);
+  const [grpHideMembers, setGrpHideMembers]         = useState(false);
+  const [showGrpAdmins, setShowGrpAdmins]           = useState(false);
+  const [grpAntiSpam, setGrpAntiSpam]               = useState(false);
+  const [showGrpLinks, setShowGrpLinks]             = useState(false);
+  const [showGrpPerms, setShowGrpPerms]             = useState(false);
+  const [grpPerms, setGrpPerms]                     = useState({ sendMsgs:true, sendMedia:true, addUsers:true, pinMsgs:true, modTitles:true, modExchange:true });
+  const [grpChargeStars, setGrpChargeStars]         = useState(false);
+  const [grpStarPrice, setGrpStarPrice]             = useState(190);
+  const [showGrpReactions, setShowGrpReactions]     = useState(false);
+  const [grpReactMode, setGrpReactMode]             = useState<"all"|"some"|"none">("some");
+  const [grpReactEmojis, setGrpReactEmojis]         = useState<Record<string,boolean>>({"❤️":true,"👍":true,"👎":false,"🔥":false,"🥰":false,"👏":false,"😊":false,"🎉":false,"🤩":false,"😢":false,"🤮":false});
+  const [showGrpTopics, setShowGrpTopics]           = useState(false);
+  const [grpTopicsOn, setGrpTopicsOn]               = useState(false);
+  const [showGrpStats, setShowGrpStats]             = useState(false);
+  const [grpStatsTab, setGrpStatsTab]               = useState<"stats"|"boosts">("stats");
   /* ─── Channel wizard ─── */
   const [chWiz, setChWiz]                     = useState<"none"|"info"|"type"|"members">("none");
   const [chName, setChName]                   = useState("");
@@ -2883,7 +2903,527 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   /* ══════════════════════════════════════════════════════════════
      EDIT GROUP PAGE — Telegram style
   ══════════════════════════════════════════════════════════════ */
+
+  /* ══════════════════════════════════════════════════════════════
+     GROUP SUB-PAGES — Membres / Admins / Liens / Perms / Réactions / Sujets / Stats
+  ══════════════════════════════════════════════════════════════ */
+  const GRP_SUB_HEADER = (title: string, onBack: () => void, rightEl?: React.ReactNode) => (
+    <div style={{ background:"#fff", display:"flex", alignItems:"center", height:56, padding:"0 4px", flexShrink:0, boxShadow:"0 1px 0 rgba(0,0,0,0.08)", zIndex:5 }}>
+      <button onClick={onBack} style={{ background:"none", border:"none", cursor:"pointer", width:48, height:48, display:"flex", alignItems:"center", justifyContent:"center" }}>
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <span style={{ flex:1, fontWeight:600, fontSize:17, color:"#000", textAlign:"center" }}>{title}</span>
+      {rightEl ?? <div style={{ width:48 }} />}
+    </div>
+  );
+
+  /* ── PARAMÈTRES DU GROUPE (type + lien) ── */
+  if (activeGroupId !== null && showGrpParamType) {
+    const grp = chatGroups.find(g => g.id === activeGroupId);
+    const inviteLink = `brutepawa.com/join/${(grp?.id ?? 0).toString(36)}xK9m`;
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, background:"#F1F5F9", zIndex:10002, display:"flex", flexDirection:"column" }}>
+        {GRP_SUB_HEADER("Paramètres du groupe", () => setShowGrpParamType(false),
+          <button onClick={() => setShowGrpParamType(false)} style={{ background:"none", border:"none", cursor:"pointer", width:48, height:48, display:"flex", alignItems:"center", justifyContent:"center" }}>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+        )}
+        <div style={{ flex:1, overflowY:"auto", padding:"14px 0 32px" }}>
+          {/* Type */}
+          <div style={{ background:"#fff", margin:"0 0 6px", padding:"10px 16px 4px" }}>
+            <div style={{ fontSize:14, fontWeight:700, color:"var(--bp-primary)", marginBottom:12 }}>Type de groupe</div>
+            {[{val:false, label:"Groupe privé", desc:"Seules les personnes invitées ou possédant un lien d'invitation peuvent rejoindre un groupe privé."},
+              {val:true, label:"Groupe public", desc:"Un groupe public apparaît dans les recherches, l'historique des messages est visible par tous et n'importe qui peut le rejoindre."}].map(opt => (
+              <div key={String(opt.val)} onClick={() => setGrpTypePublic(opt.val)} style={{ display:"flex", alignItems:"flex-start", gap:14, padding:"10px 0 12px", borderBottom:opt.val ? "none" : "1px solid rgba(0,0,0,0.07)", cursor:"pointer" }}>
+                <div style={{ width:22, height:22, borderRadius:"50%", border:`2px solid ${grpTypePublic===opt.val?"var(--bp-primary)":"#CBD5E1"}`, background:grpTypePublic===opt.val?"var(--bp-primary)":"transparent", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, marginTop:2 }}>
+                  {grpTypePublic===opt.val && <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>}
+                </div>
+                <div>
+                  <div style={{ fontWeight:600, fontSize:15.5, color:"#000" }}>{opt.label}</div>
+                  <div style={{ fontSize:13, color:"#9CA3AF", marginTop:3, lineHeight:1.5 }}>{opt.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Invite link */}
+          <div style={{ background:"#fff", margin:"0 0 6px", padding:"14px 16px" }}>
+            <div style={{ fontSize:14, fontWeight:700, color:"var(--bp-primary)", marginBottom:12 }}>Lien d'invitation</div>
+            <div style={{ display:"flex", alignItems:"center", background:"#F1F5F9", borderRadius:10, padding:"10px 14px", marginBottom:12, gap:10 }}>
+              <span style={{ flex:1, fontSize:14.5, color:"#374151", fontFamily:"monospace" }}>{inviteLink}</span>
+              <button style={{ background:"none", border:"none", cursor:"pointer", padding:4 }}>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+              </button>
+            </div>
+            <div style={{ display:"flex", gap:10, marginBottom:12 }}>
+              {[{icon:"📋", label:"Copier"},{icon:"↗️", label:"Partager"}].map(b => (
+                <button key={b.label} onClick={() => b.label==="Copier"&&navigator.clipboard?.writeText(inviteLink)}
+                  style={{ flex:1, background:"var(--bp-primary)", color:"#fff", border:"none", borderRadius:24, padding:"12px 0", fontSize:15, fontWeight:600, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+                  <span>{b.icon}</span>{b.label}
+                </button>
+              ))}
+            </div>
+            <p style={{ fontSize:13, color:"#9CA3AF", lineHeight:1.5, margin:0 }}>Il est possible de rejoindre votre groupe en suivant ce lien. Vous pouvez le révoquer à tout moment.</p>
+          </div>
+          {/* Gérer liens */}
+          <div style={{ background:"#fff", margin:"0 0 6px" }}>
+            <div onClick={() => { setShowGrpParamType(false); setShowGrpLinks(true); }} style={{ display:"flex", alignItems:"center", gap:14, padding:"15px 16px", cursor:"pointer" }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#555" strokeWidth="1.8" strokeLinecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+              <div style={{ flex:1 }}>
+                <div style={{ fontSize:15.5, color:"#000" }}>Gérer les liens d'invitation</div>
+                <div style={{ fontSize:13, color:"#9CA3AF", marginTop:2 }}>Vous pouvez créer des liens supplémentaires ayant une durée de vie ou un nombre d'utilisations limités.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    , document.body);
+  }
+
+  /* ── MEMBRES ── */
+  if (activeGroupId !== null && showGrpMembers) {
+    const grp = chatGroups.find(g => g.id === activeGroupId);
+    const members = groupInfo?.members ?? [];
+    const admins = members.filter(m => m.role === "owner" || m.role === "admin");
+    const bots: {userId:number;name:string;desc:string}[] = [];
+    const others = members.filter(m => m.role !== "owner" && m.role !== "admin");
+    const mkName = (m:{firstName?:string;lastName?:string;userId:number}) => m.firstName && m.lastName ? `${m.firstName} ${m.lastName}` : `Utilisateur #${m.userId}`;
+    const Section = ({label}:{label:string}) => (
+      <div style={{ padding:"8px 16px 4px", fontSize:13, fontWeight:600, color:"#9CA3AF", background:"transparent" }}>{label}</div>
+    );
+    const MemberRow = ({m, isAdmin}:{m:{userId:number;role:string;firstName?:string;lastName?:string};isAdmin?:boolean}) => {
+      const name = mkName(m);
+      const col = CONV_COLORS[m.userId % CONV_COLORS.length];
+      const menuOpen = grpMemberMenu === m.userId;
+      return (
+        <div style={{ position:"relative" }}>
+          <div style={{ display:"flex", alignItems:"center", gap:12, padding:"11px 16px", background:menuOpen?"#F9FAFB":"#fff", borderBottom:"1px solid rgba(0,0,0,0.06)" }}>
+            <div style={{ width:46, height:46, borderRadius:"50%", background:col, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, fontSize:15, flexShrink:0 }}>{mkInitials(name)}</div>
+            <div style={{ flex:1, minWidth:0 }}>
+              <div style={{ fontWeight:600, fontSize:15.5, color:"#000" }}>{name}</div>
+              <div style={{ fontSize:12.5, color:m.userId===meId?"var(--bp-primary)":"#9CA3AF", marginTop:1 }}>{m.userId===meId?"en ligne":isAdmin?"en ligne récemment":"en ligne récemment"}</div>
+            </div>
+            {m.userId !== meId && (
+              <button onClick={() => setGrpMemberMenu(menuOpen ? null : m.userId)} style={{ background:"none", border:"none", cursor:"pointer", padding:8, color:"#CBD5E1" }}>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="#CBD5E1"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+              </button>
+            )}
+          </div>
+          {menuOpen && (
+            <>
+              <div onClick={() => setGrpMemberMenu(null)} style={{ position:"fixed", inset:0, zIndex:5 }} />
+              <div style={{ position:"absolute", right:8, top:52, background:"#fff", borderRadius:16, boxShadow:"0 8px 32px rgba(0,0,0,0.15)", zIndex:10, width:220, overflow:"hidden" }}>
+                {[{label:"Promouvoir",icon:"🛡️",color:"#000"},{label:"Modifier les permissions",icon:"🔑",color:"#000"},{label:"Éjecter",icon:"🚫",color:"#EF4444"}].map((item,idx)=>(
+                  <div key={item.label} onClick={() => setGrpMemberMenu(null)}
+                    style={{ display:"flex", alignItems:"center", gap:14, padding:"13px 18px", cursor:"pointer", borderBottom:idx<2?"1px solid rgba(0,0,0,0.07)":"none" }}>
+                    <span style={{ fontSize:18 }}>{item.icon}</span>
+                    <span style={{ fontSize:15.5, color:item.color }}>{item.label}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      );
+    };
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, background:"#F1F5F9", zIndex:10002, display:"flex", flexDirection:"column" }}>
+        {GRP_SUB_HEADER("Membres", () => setShowGrpMembers(false),
+          <button style={{ background:"none", border:"none", cursor:"pointer", width:48, height:48, display:"flex", alignItems:"center", justifyContent:"center" }}>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+          </button>
+        )}
+        <div style={{ flex:1, overflowY:"auto" }} onClick={() => setGrpMemberMenu(null)}>
+          {/* Cacher les membres */}
+          <div style={{ background:"#fff", margin:"0 0 10px", padding:"0 16px" }}>
+            <div style={{ display:"flex", alignItems:"center", padding:"14px 0", borderBottom:"1px solid rgba(0,0,0,0.07)" }}>
+              <span style={{ flex:1, fontSize:15.5, color:"#000", fontWeight:500 }}>Cacher les membres</span>
+              <div onClick={e => {e.stopPropagation(); setGrpHideMembers(v=>!v);}} style={{ width:48, height:28, borderRadius:14, background:grpHideMembers?"var(--bp-primary)":"#E5E7EB", position:"relative", cursor:"pointer", transition:"background 0.2s" }}>
+                <div style={{ position:"absolute", top:3, left:grpHideMembers?22:3, width:22, height:22, borderRadius:"50%", background:"#fff", boxShadow:"0 1px 3px rgba(0,0,0,0.25)", transition:"left 0.2s" }} />
+              </div>
+            </div>
+            <p style={{ fontSize:12.5, color:"#9CA3AF", lineHeight:1.5, padding:"8px 0 12px", margin:0 }}>Activez cette option pour masquer la liste des membres du groupe. Les administrateurs resteront visibles.</p>
+          </div>
+          {/* Actions */}
+          <div style={{ background:"#fff", margin:"0 0 10px" }}>
+            {[{icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>, label:"Ajouter des membres"},
+              {icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>, label:"Inviter avec un lien"}
+            ].map((a,i)=>(
+              <div key={a.label} style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 16px", borderBottom:i===0?"1px solid rgba(0,0,0,0.07)":"none", cursor:"pointer" }}>
+                {a.icon}<span style={{ fontSize:15.5, color:"var(--bp-primary)", fontWeight:500 }}>{a.label}</span>
+              </div>
+            ))}
+          </div>
+          {/* Admins */}
+          {admins.length > 0 && <><Section label="Contacts dans ce groupe" /><div style={{ background:"#fff", margin:"0 0 0" }}>{admins.map(m=><MemberRow key={m.userId} m={m} isAdmin />)}</div></>}
+          {/* Bots */}
+          {bots.length > 0 && <><Section label="Bots" /><div style={{ background:"#fff" }}>{bots.map(b=>(
+            <div key={b.userId} style={{ display:"flex", alignItems:"center", gap:12, padding:"11px 16px", borderBottom:"1px solid rgba(0,0,0,0.06)" }}>
+              <div style={{ width:46, height:46, borderRadius:"50%", background:"#3B82F6", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M12 2a4 4 0 0 1 4 4v2H8V6a4 4 0 0 1 4-4z"/><rect x="4" y="8" width="16" height="12" rx="2"/><circle cx="9" cy="14" r="1.2" fill="#fff"/><circle cx="15" cy="14" r="1.2" fill="#fff"/></svg>
+              </div>
+              <div style={{ flex:1 }}><div style={{ fontWeight:600, fontSize:15.5, color:"#000" }}>{b.name}</div><div style={{ fontSize:12.5, color:"#9CA3AF" }}>{b.desc}</div></div>
+            </div>
+          ))}</div></>}
+          {/* Others */}
+          {others.length > 0 && <><Section label="Autres membres" /><div style={{ background:"#fff", marginBottom:24 }}>{others.map(m=><MemberRow key={m.userId} m={m} />)}</div></>}
+          {members.length === 0 && <div style={{ textAlign:"center", color:"#9CA3AF", padding:"40px 16px", fontSize:14 }}>Aucun membre</div>}
+        </div>
+      </div>
+    , document.body);
+  }
+
+  /* ── ADMINISTRATEURS ── */
+  if (activeGroupId !== null && showGrpAdmins) {
+    const grp = chatGroups.find(g => g.id === activeGroupId);
+    const admins = (groupInfo?.members ?? []).filter(m => m.role==="owner" || m.role==="admin");
+    const mkName = (m:{firstName?:string;lastName?:string;userId:number}) => m.firstName && m.lastName ? `${m.firstName} ${m.lastName}` : `Utilisateur #${m.userId}`;
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, background:"#F1F5F9", zIndex:10002, display:"flex", flexDirection:"column" }}>
+        {GRP_SUB_HEADER("Administrateurs", () => setShowGrpAdmins(false))}
+        <div style={{ flex:1, overflowY:"auto", padding:"14px 0 32px" }}>
+          {/* Anti-spam */}
+          <div style={{ background:"#fff", margin:"0 0 6px", padding:"0 16px" }}>
+            <div style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 0" }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span style={{ flex:1, fontSize:15.5, color:"#000" }}>Anti-spam agressif</span>
+              <div onClick={() => setGrpAntiSpam(v=>!v)} style={{ width:48, height:28, borderRadius:14, background:grpAntiSpam?"var(--bp-primary)":"#E5E7EB", position:"relative", cursor:"pointer", transition:"background 0.2s" }}>
+                <div style={{ position:"absolute", top:3, left:grpAntiSpam?22:3, width:22, height:22, borderRadius:"50%", background:"#fff", boxShadow:"0 1px 3px rgba(0,0,0,0.25)", transition:"left 0.2s" }} />
+              </div>
+            </div>
+            <p style={{ fontSize:12.5, color:"#9CA3AF", lineHeight:1.5, padding:"0 0 12px", margin:0 }}>Brute Pawa filtrera davantage de spam mais cela peut occasionnellement impacter les messages ordinaires. Vous pouvez signaler les faux positifs dans les actions récentes.</p>
+          </div>
+          {/* Add admin */}
+          <div style={{ background:"#fff", margin:"0 0 6px" }}>
+            <div style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 16px", cursor:"pointer" }}>
+              <div style={{ width:46, height:46, borderRadius:"50%", background:"#EFF6FF", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+              </div>
+              <span style={{ fontSize:15.5, color:"var(--bp-primary)", fontWeight:500 }}>Ajouter un administrateur</span>
+            </div>
+          </div>
+          {/* Admin list */}
+          <div style={{ background:"#fff", margin:"0 0 6px" }}>
+            {admins.map((m,i) => {
+              const name = mkName(m);
+              const col = CONV_COLORS[m.userId % CONV_COLORS.length];
+              return (
+                <div key={m.userId} style={{ display:"flex", alignItems:"center", gap:12, padding:"11px 16px", borderBottom:i<admins.length-1?"1px solid rgba(0,0,0,0.07)":"none" }}>
+                  <div style={{ width:46, height:46, borderRadius:"50%", background:col, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, fontSize:15, flexShrink:0 }}>{mkInitials(name)}</div>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ fontWeight:600, fontSize:15.5, color:"#000" }}>{name}</div>
+                    <div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:1 }}>{m.role==="owner"?"Propriétaire":`Promu par ${grp?.name??'Admin'}`}</div>
+                  </div>
+                  {m.role !== "owner" && (
+                    <button style={{ background:"none", border:"none", cursor:"pointer", padding:8 }}>
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="#CBD5E1"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+            {admins.length === 0 && (
+              <div style={{ textAlign:"center", color:"#9CA3AF", padding:"24px", fontSize:14 }}>Aucun administrateur</div>
+            )}
+          </div>
+          <p style={{ margin:"6px 16px 0", fontSize:12.5, color:"#9CA3AF", lineHeight:1.5 }}>Vous pouvez ajouter des administrateurs pour vous aider à gérer votre groupe. Maintenez appuyé dessus pour les retirer.</p>
+        </div>
+      </div>
+    , document.body);
+  }
+
+  /* ── LIENS D'INVITATION ── */
+  if (activeGroupId !== null && showGrpLinks) {
+    const grp = chatGroups.find(g => g.id === activeGroupId);
+    const inviteLink = `brutepawa.com/join/${(grp?.id ?? 0).toString(36)}xK9m`;
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, background:"#F1F5F9", zIndex:10002, display:"flex", flexDirection:"column" }}>
+        {GRP_SUB_HEADER("Liens d'invitation", () => setShowGrpLinks(false))}
+        <div style={{ flex:1, overflowY:"auto", padding:"14px 0 32px" }}>
+          <div style={{ background:"#fff", margin:"0 0 6px", padding:"14px 16px" }}>
+            <div style={{ fontSize:14, fontWeight:700, color:"var(--bp-primary)", marginBottom:12 }}>Lien d'invitation</div>
+            <div style={{ display:"flex", alignItems:"center", background:"#F1F5F9", borderRadius:10, padding:"10px 14px", marginBottom:12, gap:10 }}>
+              <span style={{ flex:1, fontSize:14, color:"#374151", fontFamily:"monospace" }}>{inviteLink}</span>
+              <button style={{ background:"none", border:"none", cursor:"pointer", padding:4 }}>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+              </button>
+            </div>
+            <div style={{ display:"flex", gap:10, marginBottom:6 }}>
+              {[{icon:"📋",label:"Copier"},{icon:"↗️",label:"Partager"}].map(b=>(
+                <button key={b.label} onClick={()=>b.label==="Copier"&&navigator.clipboard?.writeText(inviteLink)}
+                  style={{ flex:1, background:"var(--bp-primary)", color:"#fff", border:"none", borderRadius:24, padding:"12px 0", fontSize:15, fontWeight:600, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+                  <span>{b.icon}</span>{b.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div style={{ background:"#fff", margin:"0 0 6px" }}>
+            <div style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 16px", cursor:"pointer" }}>
+              <div style={{ width:32, height:32, borderRadius:"50%", background:"var(--bp-primary)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </div>
+              <span style={{ fontSize:15.5, color:"var(--bp-primary)", fontWeight:500 }}>Créer un nouveau lien</span>
+            </div>
+          </div>
+          <p style={{ margin:"4px 16px 16px", fontSize:12.5, color:"#9CA3AF", lineHeight:1.5 }}>Vous pouvez créer des liens d'invitation supplémentaires dont la durée et le nombre d'utilisateurs sont limités.</p>
+          <div style={{ background:"#fff", margin:"0 0 6px", padding:"10px 16px 4px" }}>
+            <div style={{ fontSize:14, fontWeight:700, color:"var(--bp-primary)", marginBottom:10 }}>Liens créés par d'autres administrateurs</div>
+            {(groupInfo?.members ?? []).filter(m=>m.role==="admin").slice(0,3).map((m,i)=>{
+              const name = m.firstName && m.lastName ? `${m.firstName} ${m.lastName}` : `Utilisateur #${m.userId}`;
+              const col = CONV_COLORS[m.userId % CONV_COLORS.length];
+              return (
+                <div key={m.userId} style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 0", borderBottom:"1px solid rgba(0,0,0,0.07)" }}>
+                  <div style={{ width:42, height:42, borderRadius:"50%", background:col, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, fontSize:14 }}>{mkInitials(name)}</div>
+                  <div style={{ flex:1 }}><div style={{ fontWeight:600, fontSize:15, color:"#000" }}>{name}</div><div style={{ fontSize:12.5, color:"#9CA3AF" }}>{i+1} lien d'invitation</div></div>
+                </div>
+              );
+            })}
+            {(groupInfo?.members ?? []).filter(m=>m.role==="admin").length === 0 && (
+              <p style={{ fontSize:13.5, color:"#9CA3AF", paddingBottom:12 }}>Aucun autre administrateur n'a créé de liens.</p>
+            )}
+          </div>
+        </div>
+      </div>
+    , document.body);
+  }
+
+  /* ── PERMISSIONS ── */
+  if (activeGroupId !== null && showGrpPerms) {
+    const PERMS_LIST: {key: keyof typeof grpPerms; label: string}[] = [
+      {key:"sendMsgs", label:"Envoyer des messages"},
+      {key:"sendMedia", label:"Envoyer des médias"},
+      {key:"addUsers", label:"Ajouter des utilisateurs"},
+      {key:"pinMsgs", label:"Épingler des messages"},
+      {key:"modTitles", label:"Modifier vos titres"},
+      {key:"modExchange", label:"Modifier les infos de l'échange"},
+    ];
+    const Toggle = ({on, onToggle}:{on:boolean;onToggle:()=>void}) => (
+      <div onClick={onToggle} style={{ width:28, height:28, borderRadius:"50%", border:`2px solid ${on?"#EF4444":"#CBD5E1"}`, background:on?"#EF4444":"transparent", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", flexShrink:0, transition:"all 0.15s" }}>
+        {on && <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>}
+      </div>
+    );
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, background:"#F1F5F9", zIndex:10002, display:"flex", flexDirection:"column" }}>
+        {GRP_SUB_HEADER("Permissions", () => setShowGrpPerms(false),
+          <button onClick={() => setShowGrpPerms(false)} style={{ background:"none", border:"none", cursor:"pointer", width:48, height:48, display:"flex", alignItems:"center", justifyContent:"center" }}>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+        )}
+        <div style={{ flex:1, overflowY:"auto", padding:"14px 0 32px" }}>
+          <div style={{ background:"#fff", margin:"0 0 6px", padding:"10px 16px 4px" }}>
+            <div style={{ fontSize:14, fontWeight:700, color:"var(--bp-primary)", marginBottom:8 }}>Que peuvent faire les membres de ce groupe ?</div>
+            {PERMS_LIST.map((p,i)=>(
+              <div key={p.key}>
+                <div style={{ display:"flex", alignItems:"center", padding:"13px 0", gap:14 }}>
+                  <span style={{ flex:1, fontSize:15.5, color:"#000" }}>{p.label}</span>
+                  <Toggle on={!grpPerms[p.key]} onToggle={()=>setGrpPerms(v=>({...v,[p.key]:!v[p.key]}))} />
+                </div>
+                {i<PERMS_LIST.length-1 && <div style={{ height:1, background:"rgba(0,0,0,0.07)" }} />}
+              </div>
+            ))}
+          </div>
+          {/* Stars */}
+          <div style={{ background:"#fff", margin:"0 0 6px", padding:"0 16px" }}>
+            <div style={{ display:"flex", alignItems:"center", padding:"14px 0", gap:14, borderBottom:"1px solid rgba(0,0,0,0.07)" }}>
+              <span style={{ flex:1, fontSize:15.5, color:"#000" }}>Facturer des tokens pour les messages</span>
+              <div onClick={() => setGrpChargeStars(v=>!v)} style={{ width:48, height:28, borderRadius:14, background:grpChargeStars?"var(--bp-primary)":"#E5E7EB", position:"relative", cursor:"pointer", transition:"background 0.2s" }}>
+                <div style={{ position:"absolute", top:3, left:grpChargeStars?22:3, width:22, height:22, borderRadius:"50%", background:"#fff", boxShadow:"0 1px 3px rgba(0,0,0,0.25)", transition:"left 0.2s" }} />
+              </div>
+            </div>
+            {grpChargeStars && (
+              <div style={{ padding:"14px 0" }}>
+                <p style={{ fontSize:12.5, color:"#9CA3AF", lineHeight:1.5, margin:"0 0 14px" }}>Si vous activez cette option, les membres réguliers du groupe devront payer des tokens pour envoyer des messages.</p>
+                <div style={{ fontSize:14, fontWeight:700, color:"var(--bp-primary)", marginBottom:12 }}>Définir le prix par message</div>
+                <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:8 }}>
+                  <span style={{ fontSize:13, color:"#9CA3AF", width:24 }}>1</span>
+                  <input type="range" min={1} max={35000} value={grpStarPrice} onChange={e=>setGrpStarPrice(Number(e.target.value))}
+                    style={{ flex:1, accentColor:"var(--bp-primary)" }} />
+                  <span style={{ fontSize:13, color:"#9CA3AF", width:48, textAlign:"right" }}>35000</span>
+                </div>
+                <div style={{ textAlign:"center", fontSize:16, fontWeight:700, color:"var(--bp-primary)" }}>{grpStarPrice} tokens</div>
+                <p style={{ fontSize:12, color:"#9CA3AF", textAlign:"center", margin:"8px 0 0" }}>Votre groupe recevra 85% du tarif sélectionné pour chaque message entrant.</p>
+              </div>
+            )}
+          </div>
+          {!grpChargeStars && <p style={{ margin:"4px 16px 0", fontSize:12.5, color:"#9CA3AF", lineHeight:1.5 }}>Si vous activez cette option, les membres réguliers du groupe devront payer des tokens pour envoyer des messages.</p>}
+        </div>
+      </div>
+    , document.body);
+  }
+
+  /* ── RÉACTIONS ── */
+  if (activeGroupId !== null && showGrpReactions) {
+    const EMOJI_LIST = [
+      {emoji:"❤️",label:"Coeur rouge"},{emoji:"👍",label:"Pouce vers le haut"},{emoji:"👎",label:"Pouce vers le bas"},
+      {emoji:"🔥",label:"Flamme"},{emoji:"🥰",label:"Visage charmé"},{emoji:"👏",label:"Applaudissement"},
+      {emoji:"😊",label:"Visage souriant"},{emoji:"🎉",label:"Cotillons"},{emoji:"🤩",label:"Les yeux qui brillent"},{emoji:"😢",label:"Visage qui pleure"},
+    ];
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, background:"#F1F5F9", zIndex:10002, display:"flex", flexDirection:"column" }}>
+        {GRP_SUB_HEADER("Réactions", () => setShowGrpReactions(false))}
+        <div style={{ flex:1, overflowY:"auto", padding:"14px 0 32px" }}>
+          <div style={{ background:"#fff", margin:"0 0 4px", padding:"4px 16px" }}>
+            <div style={{ fontSize:14, fontWeight:700, color:"var(--bp-primary)", padding:"10px 0 6px" }}>Réactions disponibles</div>
+            {[{val:"all",label:"Toutes les réactions"},{val:"some",label:"Certaines réactions"},{val:"none",label:"Aucune réaction"}].map((opt,i,arr)=>(
+              <div key={opt.val} onClick={()=>setGrpReactMode(opt.val as "all"|"some"|"none")}
+                style={{ display:"flex", alignItems:"center", padding:"13px 0", gap:14, borderBottom:i<arr.length-1?"1px solid rgba(0,0,0,0.07)":"none", cursor:"pointer" }}>
+                <span style={{ flex:1, fontSize:15.5, color:"#000" }}>{opt.label}</span>
+                <div style={{ width:22, height:22, borderRadius:"50%", border:`2px solid ${grpReactMode===opt.val?"var(--bp-primary)":"#CBD5E1"}`, background:grpReactMode===opt.val?"var(--bp-primary)":"transparent", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                  {grpReactMode===opt.val && <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>}
+                </div>
+              </div>
+            ))}
+          </div>
+          <p style={{ margin:"4px 16px 12px", fontSize:12.5, color:"#9CA3AF", lineHeight:1.5 }}>Les membres du groupe ne peuvent utiliser que certains emoji autorisés pour réagir aux messages.</p>
+          {grpReactMode === "some" && (
+            <div style={{ background:"#fff", margin:"0 0 6px", padding:"4px 16px" }}>
+              <div style={{ fontSize:14, fontWeight:700, color:"var(--bp-primary)", padding:"10px 0 6px" }}>Autoriser seulement ces réactions</div>
+              {EMOJI_LIST.map((item,i)=>(
+                <div key={item.emoji} style={{ display:"flex", alignItems:"center", gap:14, padding:"12px 0", borderBottom:i<EMOJI_LIST.length-1?"1px solid rgba(0,0,0,0.07)":"none" }}>
+                  <span style={{ fontSize:24 }}>{item.emoji}</span>
+                  <span style={{ flex:1, fontSize:15.5, color:"#000" }}>{item.label}</span>
+                  <div onClick={()=>setGrpReactEmojis(v=>({...v,[item.emoji]:!v[item.emoji]}))}
+                    style={{ width:48, height:28, borderRadius:14, background:grpReactEmojis[item.emoji]?"var(--bp-primary)":"#E5E7EB", position:"relative", cursor:"pointer", transition:"background 0.2s" }}>
+                    <div style={{ position:"absolute", top:3, left:grpReactEmojis[item.emoji]?22:3, width:22, height:22, borderRadius:"50%", background:"#fff", boxShadow:"0 1px 3px rgba(0,0,0,0.25)", transition:"left 0.2s" }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    , document.body);
+  }
+
+  /* ── SUJETS ── */
+  if (activeGroupId !== null && showGrpTopics) {
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, background:"#F1F5F9", zIndex:10002, display:"flex", flexDirection:"column" }}>
+        {GRP_SUB_HEADER("Sujets", () => setShowGrpTopics(false))}
+        <div style={{ flex:1, overflowY:"auto", display:"flex", flexDirection:"column", alignItems:"center", padding:"40px 24px 32px" }}>
+          <div style={{ fontSize:64, marginBottom:16, textAlign:"center" }}>💬</div>
+          <p style={{ fontSize:15, color:"#555", lineHeight:1.6, textAlign:"center", marginBottom:32, maxWidth:300 }}>Le groupe sera divisé en sujets créés par les administrateurs ou utilisateurs.</p>
+          <div style={{ background:"#fff", borderRadius:14, padding:"0 16px", width:"100%", maxWidth:420 }}>
+            <div style={{ display:"flex", alignItems:"center", padding:"15px 0" }}>
+              <span style={{ flex:1, fontSize:15.5, color:"#000" }}>Activer les sujets</span>
+              <div onClick={()=>setGrpTopicsOn(v=>!v)} style={{ width:48, height:28, borderRadius:14, background:grpTopicsOn?"var(--bp-primary)":"#E5E7EB", position:"relative", cursor:"pointer", transition:"background 0.2s" }}>
+                <div style={{ position:"absolute", top:3, left:grpTopicsOn?22:3, width:22, height:22, borderRadius:"50%", background:"#fff", boxShadow:"0 1px 3px rgba(0,0,0,0.25)", transition:"left 0.2s" }} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    , document.body);
+  }
+
+  /* ── STATISTIQUES / BOOSTS ── */
+  if (activeGroupId !== null && showGrpStats) {
+    const grp = chatGroups.find(g => g.id === activeGroupId);
+    const memberCount = groupInfo?.members.length ?? grp?.membersCount ?? 0;
+    const today = new Date(); const days = Array.from({length:8},(_,i)=>{const d=new Date(today);d.setDate(d.getDate()-7+i);return d.toLocaleDateString("fr",{month:"short",day:"numeric"});});
+    // Simple SVG line chart
+    const LineChart = ({data, color, height=100}:{data:number[];color:string;height?:number}) => {
+      const mn=Math.min(...data), mx=Math.max(...data)||1;
+      const w=260; const pts=data.map((v,i)=>`${Math.round(i*(w/(data.length-1)))},${Math.round(height-(v-mn)/(mx-mn)*height)}`).join(" ");
+      return <svg width="100%" height={height+20} viewBox={`0 0 ${w} ${height+20}`} preserveAspectRatio="none">
+        <polyline fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" points={pts} />
+      </svg>;
+    };
+    const growthData = [memberCount+30,memberCount+22,memberCount+18,memberCount+14,memberCount+10,memberCount+6,memberCount+3,memberCount];
+    const membData = [4,4,4,5,3,3,2,2];
+    const COLORS = ["#4F9DDE","#5AC05A","#F97316","#E24444","#8B5CF6","#F59E0B","#EC4899","#06B6D4","#84CC16","#6B7280","#F43F5E","#10B981","#A3E635","#FBBF24","#7C3AED","#E879F9","#34D399","#60A5FA"];
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, background:"#F1F5F9", zIndex:10002, display:"flex", flexDirection:"column" }}>
+        {GRP_SUB_HEADER(grp?.name ?? "Groupe", () => setShowGrpStats(false))}
+        {/* Tabs */}
+        <div style={{ background:"#fff", display:"flex", borderBottom:"1px solid rgba(0,0,0,0.07)", flexShrink:0 }}>
+          {[{key:"stats",label:"Statistiques",icon:"📊"},{key:"boosts",label:"Boosts",icon:"⚡"}].map(tab=>(
+            <button key={tab.key} onClick={()=>setGrpStatsTab(tab.key as "stats"|"boosts")}
+              style={{ flex:1, background:"none", border:"none", cursor:"pointer", padding:"12px 0", display:"flex", flexDirection:"column", alignItems:"center", gap:4, borderBottom:grpStatsTab===tab.key?"2.5px solid var(--bp-primary)":"2.5px solid transparent", color:grpStatsTab===tab.key?"var(--bp-primary)":"#9CA3AF", fontWeight:grpStatsTab===tab.key?700:400, fontSize:14, transition:"all 0.15s" }}>
+              <span style={{ fontSize:22 }}>{tab.icon}</span>{tab.label}
+            </button>
+          ))}
+        </div>
+        <div style={{ flex:1, overflowY:"auto", padding:"14px 0 32px" }}>
+          {grpStatsTab === "stats" ? (
+            <>
+              {/* Vue d'ensemble */}
+              <div style={{ background:"#fff", margin:"0 0 10px", padding:"16px 16px 12px" }}>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", marginBottom:14 }}>
+                  <span style={{ fontWeight:700, fontSize:16, color:"#000" }}>Vue d'ensemble</span>
+                  <span style={{ fontSize:12.5, color:"#9CA3AF" }}>{days[0]} — {days[7]}</span>
+                </div>
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+                  {[{label:"Membres",val:memberCount,delta:-31,pct:"3.3%"},{label:"Messages",val:1,delta:0,pct:null},{label:"Membres lecteurs",val:162,delta:-189,pct:null},{label:"Membres rédacteurs",val:2,delta:-1,pct:null}].map(s=>(
+                    <div key={s.label}>
+                      <div style={{ fontSize:18, fontWeight:700, color:"#000" }}>
+                        {s.val}
+                        {s.pct&&<span style={{ fontSize:12, fontWeight:600, color:"#EF4444", marginLeft:6 }}>-{s.delta} ({s.pct})</span>}
+                        {!s.pct&&s.delta!==0&&<span style={{ fontSize:12, fontWeight:600, color:"#EF4444", marginLeft:4 }}>{s.delta}</span>}
+                      </div>
+                      <div style={{ fontSize:12.5, color:"#9CA3AF" }}>{s.label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {/* Croissance */}
+              <div style={{ background:"#fff", margin:"0 0 10px", padding:"16px" }}>
+                <div style={{ display:"flex", justifyContent:"space-between", marginBottom:10 }}>
+                  <span style={{ fontWeight:700, fontSize:15.5, color:"#000" }}>Croissance</span>
+                  <span style={{ fontSize:12.5, color:"#9CA3AF" }}>{days[0]} — {days[7]}</span>
+                </div>
+                <LineChart data={growthData} color="#4F9DDE" height={110} />
+                <div style={{ display:"flex", justifyContent:"space-between", marginTop:4 }}>
+                  {[0,2,4,6].map(i=><span key={i} style={{ fontSize:11, color:"#9CA3AF" }}>{days[i]}</span>)}
+                </div>
+              </div>
+              {/* Membres */}
+              <div style={{ background:"#fff", margin:"0 0 10px", padding:"16px" }}>
+                <div style={{ display:"flex", justifyContent:"space-between", marginBottom:10 }}>
+                  <span style={{ fontWeight:700, fontSize:15.5, color:"#000" }}>Membres du groupe</span>
+                  <span style={{ fontSize:12.5, color:"#9CA3AF" }}>{days[0]} — {days[7]}</span>
+                </div>
+                <LineChart data={membData} color="#EF4444" height={100} />
+                <div style={{ display:"flex", justifyContent:"space-between", marginTop:4 }}>
+                  {[0,2,4,6].map(i=><span key={i} style={{ fontSize:11, color:"#9CA3AF" }}>{days[i]}</span>)}
+                </div>
+              </div>
+            </>
+          ) : (
+            /* BOOSTS TAB */
+            <>
+              <div style={{ background:"#fff", padding:"20px 16px 14px", textAlign:"center", marginBottom:10 }}>
+                <div style={{ fontSize:13, color:"#9CA3AF", marginBottom:14 }}>Le groupe a 0 boost. <span style={{ color:"var(--bp-primary)", fontWeight:600 }}>Que sont les boosts ?</span></div>
+                {/* Color palette */}
+                <div style={{ display:"flex", flexWrap:"wrap", gap:10, justifyContent:"center", marginBottom:16 }}>
+                  {COLORS.map((c,i)=>(
+                    <div key={i} style={{ width:34, height:34, borderRadius:"50%", background:i>=9?`linear-gradient(135deg,${c},${COLORS[(i+4)%COLORS.length]})`:c, border:"2px solid transparent" }} />
+                  ))}
+                </div>
+              </div>
+              {[{label:"Logo de profil",level:"Niveau 5"},{label:"Lot d'emoji du groupe",level:"Niveau 4"},{label:"Statut emoji du groupe",level:"Niveau 8"}].map(item=>(
+                <div key={item.label} style={{ background:"#fff", margin:"0 0 6px", padding:"14px 16px" }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:6 }}>
+                    <span style={{ flex:1, fontSize:15.5, color:"#000", fontWeight:500 }}>{item.label}</span>
+                    <span style={{ fontSize:11, fontWeight:700, color:"#fff", background:"#8B5CF6", borderRadius:12, padding:"2px 8px" }}>{item.level}</span>
+                    <span style={{ fontSize:14, color:"#9CA3AF", fontWeight:500 }}>Désactivé</span>
+                  </div>
+                  <p style={{ fontSize:12.5, color:"#9CA3AF", margin:0, lineHeight:1.5 }}>
+                    {item.label==="Logo de profil"?"Choisissez une couleur et un logo pour le profil du groupe.":item.label==="Lot d'emoji du groupe"?"Choisissez un lot d'emoji qui sera disponible pour tous les membres du groupe.":"Choisissez un statut qui sera affiché à côté du nom du groupe."}
+                  </p>
+                </div>
+              ))}
+              <div style={{ padding:"0 16px" }}>
+                <button style={{ width:"100%", background:"var(--bp-primary)", color:"#fff", border:"none", borderRadius:24, padding:"15px 0", fontSize:16, fontWeight:700, cursor:"pointer", marginTop:8 }}>Appliquer</button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    , document.body);
+  }
+
   if (activeGroupId !== null && showGroupInfo && showGrpEdit) {
+
     const grp = chatGroups.find(g => g.id === activeGroupId);
     const isChannelG = grp?.type === "channel";
     const grpColorEdit = ["#EC4899","#8B5CF6","#F97316","var(--bp-primary)","#0EA5E9","#0EA5E9","#F59E0B"][activeGroupId % 7];
@@ -2962,10 +3502,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           {/* ── CARTE 2 : Type / Historique / Sujets ── */}
           <div style={{ ...CARD_STYLE }}>
             {/* Type de groupe */}
-            <div style={{ ...ROW_STYLE }}>
+            <div style={{ ...ROW_STYLE }} onClick={() => setShowGrpParamType(true)}>
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
               <span style={{ flex: 1, fontSize: 15.5, color: "var(--theme-text)" }}>Type de groupe</span>
-              <Val v="Privé" /><Chevron />
+              <Val v={grpTypePublic?"Public":"Privé"} /><Chevron />
             </div>
             {SEP}
             {/* Historique des discussions */}
@@ -2976,12 +3516,12 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             </div>
             {SEP}
             {/* Sujets */}
-            <div style={{ ...ROW_STYLE }}>
+            <div style={{ ...ROW_STYLE }} onClick={() => setShowGrpTopics(true)}>
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
               <span style={{ flex: 1, fontSize: 15.5, color: "var(--theme-text)" }}>Sujets</span>
               <span style={{ fontSize: 10.5, fontWeight: 700, color: "#fff", background: "var(--bp-primary)", borderRadius: 5, padding: "2px 6px", marginRight: 10 }}>NOUVEAU</span>
-              <div style={{ width: 44, height: 26, borderRadius: 13, background: "#E5E7EB", position: "relative", flexShrink: 0 }}>
-                <div style={{ position: "absolute", top: 3, left: 3, width: 20, height: 20, borderRadius: "50%", background: "var(--theme-surface)", boxShadow: "0 1px 3px rgba(0,0,0,0.25)" }} />
+              <div onClick={e=>{e.stopPropagation();setGrpTopicsOn(v=>!v);}} style={{ width: 44, height: 26, borderRadius: 13, background: grpTopicsOn?"var(--bp-primary)":"#E5E7EB", position: "relative", flexShrink: 0, transition:"background 0.2s" }}>
+                <div style={{ position: "absolute", top: 3, left: grpTopicsOn?21:3, width: 20, height: 20, borderRadius: "50%", background: "var(--theme-surface)", boxShadow: "0 1px 3px rgba(0,0,0,0.25)", transition:"left 0.2s" }} />
               </div>
             </div>
           </div>
@@ -2994,14 +3534,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           {/* ── CARTE 3 : Options ── */}
           <div style={{ ...CARD_STYLE }}>
             {[
-              { label: "Réactions", val: "Toutes", icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> },
-              { label: "Autorisations", val: "13/14", icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> },
-              { label: "Liens d'invitation", val: "1", icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> },
-              { label: "Administrateurs", val: "1", icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> },
-              { label: "Membres", val: String(memberCount), icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> },
+              { label: "Réactions", val: grpReactMode==="all"?"Toutes":grpReactMode==="none"?"Aucune":"Certaines", onClick:()=>setShowGrpReactions(true), icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> },
+              { label: "Permissions", val: `${Object.values(grpPerms).filter(v=>v).length}/6`, onClick:()=>setShowGrpPerms(true), icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> },
+              { label: "Liens d'invitation", val: "1", onClick:()=>setShowGrpLinks(true), icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> },
+              { label: "Administrateurs", val: String((groupInfo?.members??[]).filter(m=>m.role==="owner"||m.role==="admin").length||1), onClick:()=>setShowGrpAdmins(true), icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> },
+              { label: "Membres", val: String(memberCount), onClick:()=>setShowGrpMembers(true), icon: <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> },
             ].map((row, i, arr) => (
               <Fragment key={row.label}>
-                <div style={{ ...ROW_STYLE }}>
+                <div style={{ ...ROW_STYLE }} onClick={row.onClick}>
                   <span style={{ flexShrink: 0 }}>{row.icon}</span>
                   <span style={{ flex: 1, fontSize: 15.5, color: "var(--theme-text)" }}>{row.label}</span>
                   <Val v={row.val} /><Chevron />
@@ -3305,6 +3845,18 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           {grpInfoSearchQ.trim() && filteredMembers.length === 0 && (
             <div style={{ textAlign: "center", color: "#9CA3AF", fontSize: 14, padding: "24px 16px" }}>Aucun résultat</div>
           )}
+        </div>
+
+        {/* ── STATS / BOOSTS SHORTCUT ── */}
+        <div onClick={() => setShowGrpStats(true)} style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 16px", background:"var(--theme-surface)", marginBottom:10, cursor:"pointer", boxShadow:"0 1px 2px rgba(0,0,0,0.06)" }}>
+          <div style={{ width:46, height:46, borderRadius:"50%", background:"#EFF6FF", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <div style={{ flex:1 }}>
+            <div style={{ fontSize:15.5, color:"#3B82F6", fontWeight:600 }}>Statistiques du groupe</div>
+            <div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:1 }}>Voir les statistiques de croissance et d'activité</div>
+          </div>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#CBD5E1" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
 
         {/* ── AUTO-DELETE SUBMENU DIALOG ── */}
@@ -4187,6 +4739,24 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
           <div ref={groupBottomRef} />
         </div>
+
+        {/* ── PARAMÈTRES sticky row (admin shortcut) ── */}
+        {(() => {
+          const myRole = (groupInfo?.members ?? []).find(m => m.userId === meId)?.role;
+          if (myRole !== "owner" && myRole !== "admin") return null;
+          return (
+            <div style={{ flexShrink:0, background:"rgba(255,255,255,0.96)", borderTop:"1px solid rgba(0,0,0,0.06)", display:"flex", alignItems:"center", justifyContent:"center", padding:"6px 16px", gap:10 }}>
+              <button onClick={() => { const grp = chatGroups.find(g=>g.id===activeGroupId); setGrpEditName(grp?.name??""); setGrpEditDesc(""); setShowGrpEdit(true); }}
+                style={{ background:"none", border:"none", cursor:"pointer", fontSize:13.5, fontWeight:700, color:"var(--bp-primary)", letterSpacing:1.2, padding:"4px 16px" }}>
+                PARAMÈTRES
+              </button>
+              <div style={{ width:1, height:16, background:"rgba(0,0,0,0.12)" }} />
+              <button onClick={() => setShowGrpStats(true)} style={{ background:"none", border:"none", cursor:"pointer", width:30, height:30, display:"flex", alignItems:"center", justifyContent:"center", borderRadius:"50%", border:"1.5px solid var(--bp-primary)" }}>
+                <span style={{ fontSize:12, fontWeight:700, color:"var(--bp-primary)" }}>📊</span>
+              </button>
+            </div>
+          );
+        })()}
 
         {/* ══ INPUT BAR — Telegram pill ══ */}
         <div style={{ flexShrink:0, padding:"6px 10px 10px", display:"flex", alignItems:"center", gap:8 }}>
