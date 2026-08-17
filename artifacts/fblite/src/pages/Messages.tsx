@@ -550,6 +550,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [muteChoice, setMuteChoice]               = useState<"8h" | "1w" | "always">("8h");
   const [reportReason, setReportReason]           = useState("");
   const [reportDesc, setReportDesc]               = useState("");
+  const [showInfoAbout, setShowInfoAbout]         = useState(false);
+  const [showInfoSettings, setShowInfoSettings]   = useState(false);
+  const [showInfoMenu, setShowInfoMenu]           = useState(false);
   const [reportSending, setReportSending]         = useState(false);
   const [contactSearchQ, setContactSearchQ]       = useState("");
   const [contactSearchResults, setContactSearchResults] = useState<{ id: number; text: string; createdAt: string; fromMe: boolean }[]>([]);
@@ -5121,139 +5124,244 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
      INFO OVERLAY — BrutePawa 2026 premium
   ══════════════════════════════════════════════════════════════ */
   if (activeConv && activeUser && overlay === "info") {
-    const infoActions = [
-      {
-        label: "Message",
-        action: () => setOverlay("none"),
-        icon: (
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" fill="var(--bp-primary)"/>
-            <circle cx="8" cy="11" r="1.2" fill="#fff"/>
-            <circle cx="12" cy="11" r="1.2" fill="#fff"/>
-            <circle cx="16" cy="11" r="1.2" fill="#fff"/>
-          </svg>
-        ),
-      },
-      {
-        label: "Appel audio",
-        action: () => { setOverlay("none"); sig.startCall(activeConv, "audio"); },
-        icon: (
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="var(--bp-primary)">
-            <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58a1 1 0 01-.25 1.01z"/>
-          </svg>
-        ),
-      },
-      {
-        label: "Vidéo",
-        action: () => { setOverlay("none"); sig.startCall(activeConv, "video"); },
-        icon: (
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="var(--bp-primary)">
-            <path d="M15 10l4.55-2.27A1 1 0 0121 8.62v6.76a1 1 0 01-1.45.9L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-          </svg>
-        ),
-      },
-    ];
-    const infoRows = [
-      {
-        label: "Bonjour ! J'utilise Brute Pawa.",
-        icon: (
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--bp-primary)">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M8 13s1.5 2 4 2 4-2 4-2" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" fill="none"/>
-            <circle cx="9" cy="10" r="1.2" fill="#fff"/>
-            <circle cx="15" cy="10" r="1.2" fill="#fff"/>
-          </svg>
-        ),
-      },
-      {
-        label: activeUser.name,
-        icon: (
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--bp-primary)">
-            <rect x="5" y="2" width="14" height="20" rx="3"/>
-            <rect x="9" y="4" width="6" height="1.5" rx="0.75" fill="#fff"/>
-            <circle cx="12" cy="18" r="1" fill="#fff"/>
-          </svg>
-        ),
-      },
-    ];
+    const bio = contactInfo?.bio?.trim() || "Bonjour ! J'utilise Brute Pawa.";
+    const memberSince = contactInfo?.createdAt
+      ? new Date(contactInfo.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
+      : "—";
+    const bpId = `BPW-${activeConv.toString(16).toUpperCase().padStart(8, "0")}`;
+    const ciBlocked  = contactInfo?.isBlocked ?? false;
+    const ciMuted    = contactInfo?.isMuted   ?? false;
+
+    /* ── Chevron ── */
+    const ChevronRight = ({ color = "#22C55E" }: { color?: string }) => (
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    );
+    /* ── Row touch feedback ── */
+    const rowProps = (onClick: () => void) => ({
+      onClick,
+      style: { display:"flex", alignItems:"center", gap:14, padding:"15px 16px", cursor:"pointer" } as React.CSSProperties,
+      onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => { e.currentTarget.style.background = "#F0FDF4"; },
+      onPointerUp:   (e: React.PointerEvent<HTMLDivElement>) => { e.currentTarget.style.background = "transparent"; },
+      onPointerLeave:(e: React.PointerEvent<HTMLDivElement>) => { e.currentTarget.style.background = "transparent"; },
+    });
+    /* ── Icon box ── */
+    const IconBox = ({ children, red = false }: { children: React.ReactNode; red?: boolean }) => (
+      <div style={{ width:40, height:40, borderRadius:12, background: red ? "#FEF2F2" : "#F0FDF4", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>{children}</div>
+    );
+
+    /* ═══════════════════════════════════════
+       SUB-PAGE — À PROPOS
+    ═══════════════════════════════════════ */
+    if (showInfoAbout) return createPortal(
+      <div style={{ position:"fixed", inset:0, zIndex:10001, background:"#F9FFF9", display:"flex", flexDirection:"column" }}>
+        {/* header */}
+        <div style={{ background:"#fff", padding:"14px 16px", display:"flex", alignItems:"center", gap:12, borderBottom:"1px solid #F0F9F4", position:"sticky", top:0, zIndex:10 }}>
+          <button onClick={() => setShowInfoAbout(false)} style={{ width:36, height:36, borderRadius:"50%", background:"#F0FDF4", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <span style={{ flex:1, fontWeight:700, fontSize:16, color:"#111" }}>À propos</span>
+        </div>
+        <div style={{ flex:1, overflowY:"auto", padding:"0 0 32px" }}>
+          {/* big icon */}
+          <div style={{ display:"flex", justifyContent:"center", paddingTop:28, paddingBottom:20 }}>
+            <div style={{ width:68, height:68, borderRadius:"50%", background:"#F0FDF4", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 12px rgba(34,197,94,0.12)" }}>
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="#22C55E"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" fill="none"/><circle cx="9" cy="10" r="1.2" fill="#fff"/><circle cx="15" cy="10" r="1.2" fill="#fff"/></svg>
+            </div>
+          </div>
+          {/* bio card */}
+          <div style={{ margin:"0 16px 10px", background:"#fff", borderRadius:16, padding:"16px" }}>
+            <div style={{ fontSize:11, fontWeight:700, color:"#22C55E", textTransform:"uppercase", letterSpacing:0.7, marginBottom:10 }}>À propos</div>
+            <p style={{ fontSize:14.5, color:"#374151", lineHeight:1.65, margin:0 }}>{bio}</p>
+          </div>
+          {/* detail rows */}
+          <div style={{ margin:"0 16px", background:"#fff", borderRadius:16, overflow:"hidden" }}>
+            {([
+              { label:"Statut",         val: presence.online ? "En ligne" : presText, green: presence.online },
+              { label:"Membre depuis",  val: memberSince, green: false },
+              { label:"ID Brute Pawa",  val: bpId, green: false, mono: true },
+            ] as { label:string; val:string; green:boolean; mono?:boolean }[]).map((row, i, arr) => (
+              <div key={row.label} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"13px 16px", borderBottom:i<arr.length-1?"1px solid #F3F4F6":"none" }}>
+                <span style={{ fontSize:13.5, color:"#9CA3AF", fontWeight:400 }}>{row.label}</span>
+                <span style={{ fontSize:13.5, fontWeight:row.green?700:500, color:row.green?"#22C55E":"#111", fontFamily:row.mono?"monospace":undefined, display:"flex", alignItems:"center", gap:5 }}>
+                  {row.green && <span style={{ width:7, height:7, borderRadius:"50%", background:"#22C55E", display:"inline-block" }} />}
+                  {row.val}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    , document.body);
+
+    /* ═══════════════════════════════════════
+       SUB-PAGE — PARAMÈTRES DU CONTACT
+    ═══════════════════════════════════════ */
+    if (showInfoSettings) return createPortal(
+      <div style={{ position:"fixed", inset:0, zIndex:10001, background:"#F9FFF9", display:"flex", flexDirection:"column" }}>
+        {/* header */}
+        <div style={{ background:"#fff", padding:"14px 16px", display:"flex", alignItems:"center", gap:12, borderBottom:"1px solid #F0F9F4", position:"sticky", top:0, zIndex:10 }}>
+          <button onClick={() => setShowInfoSettings(false)} style={{ width:36, height:36, borderRadius:"50%", background:"#F0FDF4", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <span style={{ flex:1, fontWeight:700, fontSize:16, color:"#111" }}>{activeUser.name}</span>
+        </div>
+        <div style={{ flex:1, overflowY:"auto" }}>
+          {/* main settings */}
+          <div style={{ background:"#fff", margin:"12px 0 2px" }}>
+            {([
+              { icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>,
+                label:"Notifications", val: ciMuted ? "Désactivées" : "Actives", green:!ciMuted, onClick:()=>{ setShowInfoSettings(false); setOverlay("contact-mute"); } },
+              { icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
+                label:"Confidentialité", val:"Personnalisée", green:false, onClick:()=>{} },
+              { icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>,
+                label:"Médias partagés", val:"—", green:false, onClick:()=>{} },
+              { icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>,
+                label:"Fichiers", val:"—", green:false, onClick:()=>{} },
+              { icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
+                label:"Groupes en commun", val:"—", green:false, onClick:()=>{} },
+              { icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+                label:"Contacts en commun", val:"—", green:false, onClick:()=>{} },
+            ] as { icon:React.ReactNode; label:string; val:string; green:boolean; onClick:()=>void }[]).map((item, i, arr) => (
+              <div key={item.label} onClick={item.onClick}
+                style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 16px", borderBottom:i<arr.length-1?"1px solid #F3F4F6":"none", cursor:"pointer", background:"transparent" }}
+                onPointerDown={e=>(e.currentTarget.style.background="#F9FFF9")}
+                onPointerUp={e=>(e.currentTarget.style.background="transparent")}
+                onPointerLeave={e=>(e.currentTarget.style.background="transparent")}>
+                <IconBox>{item.icon}</IconBox>
+                <span style={{ flex:1, fontSize:14.5, color:"#111", fontWeight:500 }}>{item.label}</span>
+                {item.val !== "—" && <span style={{ fontSize:13, color:item.green?"#22C55E":"#9CA3AF", fontWeight:item.green?700:400 }}>{item.val}</span>}
+                <ChevronRight color="#D1D5DB" />
+              </div>
+            ))}
+          </div>
+          {/* danger */}
+          <div style={{ background:"#fff", margin:"8px 0 24px" }}>
+            {[
+              { label: ciBlocked ? "Débloquer le contact" : "Bloquer le contact",
+                icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>,
+                onClick:()=>{ setShowInfoSettings(false); setOverlay("contact-block"); } },
+              { label:"Signaler le contact",
+                icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>,
+                onClick:()=>{ setReportReason(""); setReportDesc(""); setShowInfoSettings(false); setOverlay("contact-report"); } },
+            ].map((item, i, arr) => (
+              <div key={item.label} onClick={item.onClick}
+                style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 16px", borderBottom:i<arr.length-1?"1px solid #FEF2F2":"none", cursor:"pointer" }}
+                onPointerDown={e=>(e.currentTarget.style.background="#FFF5F5")}
+                onPointerUp={e=>(e.currentTarget.style.background="transparent")}
+                onPointerLeave={e=>(e.currentTarget.style.background="transparent")}>
+                <IconBox red>{item.icon}</IconBox>
+                <span style={{ flex:1, fontSize:14.5, color:"#EF4444", fontWeight:500 }}>{item.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    , document.body);
+
+    /* ═══════════════════════════════════════
+       MAIN PAGE — INFOS DU CONTACT
+    ═══════════════════════════════════════ */
     return createPortal(
-      <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, zIndex: 10000, overflowY: "auto", background: "linear-gradient(160deg, #f0fdf4 0%, #ffffff 50%, #f0fdf4 100%)" }}>
-        {/* subtle decorative blobs */}
-        <div style={{ position: "fixed", top: -60, right: -60, width: 200, height: 200, borderRadius: "50%", background: "radial-gradient(circle, rgba(34,197,94,0.10) 0%, transparent 70%)", pointerEvents: "none" }} />
-        <div style={{ position: "fixed", bottom: 80, left: -40, width: 160, height: 160, borderRadius: "50%", background: "radial-gradient(circle, rgba(34,197,94,0.07) 0%, transparent 70%)", pointerEvents: "none" }} />
+      <div style={{ position:"fixed", inset:0, zIndex:10000, overflowY:"auto", background:"#F9FFF9" }}
+        onClick={() => showInfoMenu && setShowInfoMenu(false)}>
 
         {/* ── HEADER ── */}
-        <div style={{ position: "sticky", top: 0, zIndex: 10, background: "rgba(255,255,255,0.92)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", borderBottom: "1px solid rgba(34,197,94,0.12)", padding: "10px 13px", display: "flex", alignItems: "center", gap: 10 }}>
-          <button onClick={() => setOverlay("none")} style={{ width: 30, height: 30, borderRadius: "50%", background: "#F0FDF4", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 18 9 12 15 6"/>
-            </svg>
+        <div style={{ position:"sticky", top:0, zIndex:20, background:"#fff", padding:"14px 16px", display:"flex", alignItems:"center", gap:12, borderBottom:"1px solid rgba(34,197,94,0.10)" }}>
+          <button onClick={() => { setShowInfoAbout(false); setShowInfoSettings(false); setShowInfoMenu(false); setOverlay("none"); }}
+            style={{ width:36, height:36, borderRadius:"50%", background:"#F0FDF4", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
           </button>
-          <div style={{ flex: 1, fontWeight: 800, fontSize: 14, color: "var(--theme-text)" }}>Infos du contact</div>
-          <button onClick={() => setOverlay("contact-options")} style={{ width: 30, height: 30, borderRadius: "50%", background: "#F0FDF4", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--bp-primary)">
-              <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
-            </svg>
-          </button>
+          <span style={{ flex:1, fontWeight:700, fontSize:17, color:"#111" }}>Infos du contact</span>
+          {/* 3-dot menu */}
+          <div style={{ position:"relative" }}>
+            <button onClick={e => { e.stopPropagation(); setShowInfoMenu(v => !v); }}
+              style={{ width:36, height:36, borderRadius:"50%", border:"none", background:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#374151"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+            </button>
+            {showInfoMenu && (
+              <div style={{ position:"absolute", top:42, right:0, background:"#fff", borderRadius:14, boxShadow:"0 8px 30px rgba(0,0,0,0.14)", zIndex:100, minWidth:230, overflow:"hidden" }}
+                onClick={e => e.stopPropagation()}>
+                {([
+                  { label:"Rechercher dans la conv.", onClick:()=>{ setContactSearchQ(""); setContactSearchResults([]); setShowInfoMenu(false); setOverlay("contact-search"); } },
+                  { label:"Partager le contact", onClick:()=>{ const url=`${window.location.origin}${import.meta.env.BASE_URL}profile/${activeConv}`; if(navigator.share) navigator.share({title:activeUser.name,url}).catch(()=>{}); else navigator.clipboard.writeText(url).catch(()=>{}); setShowInfoMenu(false); } },
+                  { label:"Bloquer", onClick:()=>{ setShowInfoMenu(false); setOverlay("contact-block"); } },
+                  { label:"Signaler", onClick:()=>{ setReportReason(""); setReportDesc(""); setShowInfoMenu(false); setOverlay("contact-report"); } },
+                  { label:"Supprimer la discussion", red:true, onClick:()=>{ setShowInfoMenu(false); setOverlay("contact-delete"); } },
+                ] as { label:string; red?:boolean; onClick:()=>void }[]).map((item, i, arr) => (
+                  <div key={item.label} onClick={item.onClick}
+                    style={{ padding:"13px 18px", fontSize:14.5, color:item.red?"#EF4444":"#111827", cursor:"pointer", borderBottom:i<arr.length-1?"1px solid #F9FAFB":"none", fontWeight:item.red?500:400 }}
+                    onPointerDown={e=>(e.currentTarget.style.background="#F9FAFB")}
+                    onPointerUp={e=>(e.currentTarget.style.background="transparent")}
+                    onPointerLeave={e=>(e.currentTarget.style.background="transparent")}>
+                    {item.label}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* ── PROFILE CARD ── */}
-        <div style={{ margin: "16px 13px 0", background: "var(--theme-surface)", borderRadius: 19, padding: "22px 16px 19px", textAlign: "center", boxShadow: "0 4px 24px rgba(34,197,94,0.10), 0 1px 4px rgba(0,0,0,0.06)", border: "1px solid rgba(34,197,94,0.08)" }}>
+        {/* ── CARTE PROFIL ── */}
+        <div style={{ margin:"16px 16px 0", background:"#fff", borderRadius:20, padding:"28px 16px 22px", textAlign:"center", boxShadow:"0 2px 16px rgba(34,197,94,0.08), 0 1px 4px rgba(0,0,0,0.04)", border:"1px solid rgba(34,197,94,0.08)" }}>
           {/* avatar */}
-          <div style={{ position: "relative", display: "inline-block", marginBottom: 14 }}>
+          <div style={{ position:"relative", display:"inline-block", marginBottom:16 }}>
             {activeUser.avatarUrl
-              ? <img src={activeUser.avatarUrl} alt={activeUser.name} style={{ width: 83, height: 83, borderRadius: "50%", objectFit: "cover", display: "block", border: "2.8px solid var(--bp-primary)", boxShadow: "0 0 0 3px rgba(34,197,94,0.15), 0 6px 20px rgba(0,0,0,0.12)" }} />
-              : <div style={{ width: 83, height: 83, borderRadius: "50%", background: activeUser.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 29, fontWeight: 900, color: "#fff", border: "2.8px solid var(--bp-primary)", boxShadow: "0 0 0 3px rgba(34,197,94,0.15), 0 6px 20px rgba(0,0,0,0.12)" }}>
-                  {activeUser.initials}
-                </div>
-            }
-            {/* presence dot */}
-            <div style={{ position: "absolute", bottom: 5, right: 5, width: 16, height: 16, borderRadius: "50%", background: presence.online ? "var(--bp-primary)" : "#9CA3AF", border: "2.4px solid #fff", boxShadow: "0 1px 4px rgba(0,0,0,0.15)" }} />
+              ? <img src={activeUser.avatarUrl} alt={activeUser.name} style={{ width:96, height:96, borderRadius:"50%", objectFit:"cover", display:"block", border:"3px solid #22C55E", boxShadow:"0 0 0 5px rgba(34,197,94,0.12)" }} />
+              : <div style={{ width:96, height:96, borderRadius:"50%", background:activeUser.color, display:"flex", alignItems:"center", justifyContent:"center", fontSize:34, fontWeight:900, color:"#fff", border:"3px solid #22C55E", boxShadow:"0 0 0 5px rgba(34,197,94,0.12)" }}>{activeUser.initials}</div>}
+            <div style={{ position:"absolute", bottom:5, right:5, width:15, height:15, borderRadius:"50%", background:presence.online?"#22C55E":"#9CA3AF", border:"2.5px solid #fff" }} />
           </div>
-
-          {/* name + verified badge */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 5 }}>
-            <span style={{ fontWeight: 900, fontSize: 18, color: "var(--theme-text)", letterSpacing: -0.3 }}>{activeUser.name}</span>
-            {[13, 26, 40].includes(activeConv) && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 18, height: 18, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />}
+          {/* name */}
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:7, marginBottom:6 }}>
+            <span style={{ fontWeight:800, fontSize:21, color:"#111", letterSpacing:-0.2 }}>{activeUser.name}</span>
+            {[13,26,40].includes(activeConv) && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width:20, height:20, borderRadius:"50%", objectFit:"cover", flexShrink:0 }} />}
           </div>
-
-          {/* presence text */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5, marginBottom: 19 }}>
-            <div style={{ width: 6, height: 6, borderRadius: "50%", background: presence.online ? "var(--bp-primary)" : "#9CA3AF", flexShrink: 0 }} />
-            <span style={{ fontSize: 10, color: presence.online ? "var(--bp-primary)" : "#9CA3AF", fontWeight: 600 }}>{presence.online ? "En ligne" : presText}</span>
+          {/* status */}
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:5, marginBottom:22 }}>
+            <div style={{ width:8, height:8, borderRadius:"50%", background:presence.online?"#22C55E":"#9CA3AF" }} />
+            <span style={{ fontSize:13, color:presence.online?"#22C55E":"#9CA3AF", fontWeight:600 }}>{presence.online?"En ligne":presText}</span>
           </div>
-
-          {/* action buttons */}
-          <div style={{ display: "flex", gap: 8 }}>
-            {infoActions.map(a => (
-              <div key={a.label} onClick={a.action} style={{ flex: 1, background: "#F0FDF4", borderRadius: 13, padding: "11px 6px 10px", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 6, border: "1px solid rgba(34,197,94,0.15)", boxShadow: "0 2px 8px rgba(34,197,94,0.08)", transition: "transform 0.15s" }}
-                onPointerDown={e => (e.currentTarget.style.transform = "scale(0.96)")}
-                onPointerUp={e => (e.currentTarget.style.transform = "scale(1)")}
-                onPointerLeave={e => (e.currentTarget.style.transform = "scale(1)")}
-              >
-                <div style={{ width: 38, height: 38, borderRadius: 11, background: "var(--theme-surface)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(34,197,94,0.15)" }}>
-                  {a.icon}
-                </div>
-                <span style={{ fontSize: 9, fontWeight: 700, color: "#64748B", textAlign: "center" }}>{a.label}</span>
+          {/* actions */}
+          <div style={{ display:"flex", gap:10 }}>
+            {([
+              { label:"Message", onClick:()=>{ setShowInfoAbout(false); setShowInfoSettings(false); setShowInfoMenu(false); setOverlay("none"); },
+                icon:<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" fill="#22C55E"/><circle cx="8" cy="11" r="1.15" fill="#fff"/><circle cx="12" cy="11" r="1.15" fill="#fff"/><circle cx="16" cy="11" r="1.15" fill="#fff"/></svg> },
+              { label:"Appel audio", onClick:()=>{ setOverlay("none"); sig.startCall(activeConv,"audio"); },
+                icon:<svg width="24" height="24" viewBox="0 0 24 24" fill="#22C55E"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58a1 1 0 01-.25 1.01z"/></svg> },
+              { label:"Vidéo", onClick:()=>{ setOverlay("none"); sig.startCall(activeConv,"video"); },
+                icon:<svg width="24" height="24" viewBox="0 0 24 24" fill="#22C55E"><path d="M15 10l4.55-2.27A1 1 0 0121 8.62v6.76a1 1 0 01-1.45.9L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg> },
+            ]).map(btn => (
+              <div key={btn.label} onClick={btn.onClick}
+                style={{ flex:1, background:"#F0FDF4", borderRadius:14, padding:"13px 4px 11px", cursor:"pointer", display:"flex", flexDirection:"column", alignItems:"center", gap:7, border:"1px solid rgba(34,197,94,0.15)", transition:"transform 0.1s" }}
+                onPointerDown={e=>(e.currentTarget.style.transform="scale(0.95)")}
+                onPointerUp={e=>(e.currentTarget.style.transform="scale(1)")}
+                onPointerLeave={e=>(e.currentTarget.style.transform="scale(1)")}>
+                <div style={{ width:46, height:46, borderRadius:13, background:"#fff", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 1px 6px rgba(34,197,94,0.14)" }}>{btn.icon}</div>
+                <span style={{ fontSize:11.5, fontWeight:600, color:"#374151" }}>{btn.label}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* ── INFO ROWS ── */}
-        <div style={{ margin: "11px 13px 26px", background: "var(--theme-surface)", borderRadius: 16, overflow: "hidden", boxShadow: "0 2px 12px rgba(0,0,0,0.05)", border: "1px solid rgba(34,197,94,0.07)" }}>
-          {infoRows.map((row, i) => (
-            <div key={i} style={{ display: "flex", alignItems: "center", gap: 11, padding: "13px 14px", borderBottom: i < infoRows.length - 1 ? "1px solid #F0FDF4" : "none" }}>
-              <div style={{ width: 30, height: 30, borderRadius: 10, background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                {row.icon}
-              </div>
-              <span style={{ flex: 1, fontSize: 12, color: "var(--theme-text)", fontWeight: 500 }}>{row.label}</span>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
+        <div style={{ margin:"12px 16px 32px", background:"#fff", borderRadius:16, overflow:"hidden", boxShadow:"0 1px 8px rgba(0,0,0,0.04)", border:"1px solid rgba(34,197,94,0.07)" }}>
+          {/* Row 1 — À propos */}
+          <div {...rowProps(() => { setShowInfoAbout(true); })} style={{ ...rowProps(()=>{}).style, borderBottom:"1px solid #F3F4F6" }}>
+            <div style={{ width:38, height:38, borderRadius:11, background:"#F0FDF4", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#22C55E"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" fill="none"/><circle cx="9" cy="10" r="1.2" fill="#fff"/><circle cx="15" cy="10" r="1.2" fill="#fff"/></svg>
             </div>
-          ))}
+            <span style={{ flex:1, fontSize:14.5, color:"#374151", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{bio}</span>
+            <ChevronRight />
+          </div>
+          {/* Row 2 — Paramètres contact */}
+          <div {...rowProps(() => { setShowInfoSettings(true); })}>
+            <div style={{ width:38, height:38, borderRadius:11, background:"#F0FDF4", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#22C55E"><rect x="5" y="2" width="14" height="20" rx="3"/><rect x="9" y="4" width="6" height="1.5" rx="0.75" fill="#fff"/><circle cx="12" cy="18" r="1" fill="#fff"/></svg>
+            </div>
+            <span style={{ flex:1, fontSize:14.5, color:"#374151" }}>{activeUser.name}</span>
+            <ChevronRight />
+          </div>
         </div>
+        <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}`}</style>
       </div>
     , document.body);
   }
