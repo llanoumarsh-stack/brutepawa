@@ -127,43 +127,18 @@ export default function PhotoPicker({ open, onClose, onConfirm, maxFiles = 10, d
 
   const photoInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
-  const hasAutoTriggered = useRef(false);
-  const hasAutoTriggeredVideo = useRef(false);
 
-  /* Helper: active input ref */
+  /* Helper: active input ref based on current tab */
   const activeInput = () => tab === "videos" ? videoInputRef : photoInputRef;
-
-  /* Trigger file input automatically on first open */
-  useEffect(() => {
-    if (open && !hasAutoTriggered.current) {
-      hasAutoTriggered.current = true;
-      const ref = defaultTab === "videos" ? videoInputRef : photoInputRef;
-      if (defaultTab === "videos") hasAutoTriggeredVideo.current = true;
-      const t = setTimeout(() => ref.current?.click(), 120);
-      return () => clearTimeout(t);
-    }
-    if (!open) {
-      hasAutoTriggered.current = false;
-      hasAutoTriggeredVideo.current = false;
-    }
-    return undefined;
-  }, [open, defaultTab]);
 
   /* Sync tab when defaultTab prop changes (e.g. reopened on videos) */
   useEffect(() => {
     if (open) setTab(defaultTab);
   }, [open, defaultTab]);
 
-  /* Auto-trigger video input when switching to videos tab for the first time */
+  /* Tab switch — no auto-trigger; user opens gallery deliberately */
   const handleTabChange = (newTab: typeof tab) => {
     setTab(newTab);
-    if (newTab === "videos" && !hasAutoTriggeredVideo.current) {
-      hasAutoTriggeredVideo.current = true;
-      const videosInMedia = media.filter(m => m.mediaType === "video");
-      if (videosInMedia.length === 0) {
-        setTimeout(() => videoInputRef.current?.click(), 80);
-      }
-    }
   };
 
   /* Lock body scroll */
@@ -178,7 +153,6 @@ export default function PhotoPicker({ open, onClose, onConfirm, maxFiles = 10, d
     setSelectedIds([]);
     setSearch("");
     setTab(defaultTab);
-    hasAutoTriggeredVideo.current = false;
     onClose();
   };
 
