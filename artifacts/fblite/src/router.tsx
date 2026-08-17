@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect, ReactNode, JSX } from "
 
 interface RouterCtx {
   path: string;
-  navigate: (to: string) => void;
+  navigate: (to: string | number) => void;
 }
 
 const RouterContext = createContext<RouterCtx>({ path: "/", navigate: () => {} });
@@ -22,7 +22,11 @@ export function Router({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("popstate", handler);
   }, []);
 
-  const navigate = (to: string) => {
+  const navigate = (to: string | number) => {
+    if (typeof to === "number") {
+      window.history.go(to);
+      return;
+    }
     const url = base + to;
     window.history.pushState(null, "", url);
     setPath(to);
