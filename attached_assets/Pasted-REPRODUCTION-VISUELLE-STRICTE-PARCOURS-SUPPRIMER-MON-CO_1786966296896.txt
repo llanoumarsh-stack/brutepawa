@@ -1,0 +1,541 @@
+REPRODUCTION VISUELLE STRICTE — PARCOURS « SUPPRIMER MON COMPTE » BRUTEPAWA
+
+IMPORTANT :
+L'image de référence fournie avec cette tâche est LA RÉFÉRENCE VISUELLE ABSOLUE.
+
+Je veux reproduire cette maquette le plus fidèlement possible dans BrutePawa.
+
+NE PAS INTERPRÉTER.
+NE PAS MODERNISER.
+NE PAS SIMPLIFIER.
+NE PAS INVENTER.
+NE PAS REMPLACER LES ILLUSTRATIONS PAR DES ICÔNES GÉNÉRIQUES.
+
+Le résultat doit visuellement correspondre à la référence, écran par écran.
+
+==================================================
+1. RÉFÉRENCE VISUELLE
+==================================================
+
+Utilise l'image de référence fournie comme référence permanente pendant toute l'implémentation.
+
+Compare constamment le rendu développé avec l'image.
+
+Respecte précisément :
+
+- proportions
+- dimensions
+- positionnement
+- marges
+- espacements
+- tailles
+- alignements
+- couleurs
+- typographie
+- poids des textes
+- rayons des cartes
+- ombres
+- bordures
+- boutons
+- icônes
+- illustrations
+- hiérarchie visuelle
+- navigation
+- arrière-plan
+- footer
+- disposition générale
+
+Aucune invention visuelle.
+
+==================================================
+2. LES 8 ÉCRANS DOIVENT ÊTRE REPRODUITS
+==================================================
+
+Créer exactement le parcours suivant :
+
+ÉCRAN 01
+« Supprimer mon compte »
+
+ÉCRAN 02
+« Ce qui va être supprimé »
+
+ÉCRAN 03
+« Avant de supprimer votre compte »
+
+ÉCRAN 04
+« Délai de récupération »
+
+ÉCRAN 05
+« Confirmation »
+
+ÉCRAN 06
+« Vérification de sécurité »
+
+ÉCRAN 07
+« Suppression programmée »
+
+ÉCRAN 08
+« Suppression terminée »
+
+Les huit écrans doivent appartenir au même système visuel.
+
+==================================================
+3. ILLUSTRATIONS — TRÈS IMPORTANT
+==================================================
+
+NE REMPLACE PAS les grandes illustrations de la maquette par de simples icônes Lucide, Material Icons, Font Awesome ou emojis.
+
+La maquette possède des illustrations spécifiques.
+
+Il faut reproduire/utiliser des assets correspondant précisément aux illustrations suivantes :
+
+ÉCRAN 01 :
+Grande illustration d'une poubelle 3D/illustrative avec couvercle vert et éléments flottants autour.
+
+ÉCRAN 04 :
+Grande illustration représentant le temps / la récupération :
+horloge + flèches circulaires vertes.
+
+ÉCRAN 05 :
+Grande illustration d'avertissement :
+symbole d'exclamation rouge dans une forme arrondie.
+
+ÉCRAN 06 :
+Grande illustration de sécurité :
+bouclier vert avec cadenas.
+
+ÉCRAN 07 :
+Grande illustration de calendrier :
+calendrier vert/blanc avec élément de verrouillage.
+
+ÉCRAN 08 :
+Grande illustration de réussite :
+grand cercle vert avec coche blanche et petites particules autour.
+
+Ces illustrations sont des éléments MAJEURS de la maquette.
+
+Ne les remplace pas par :
+
+- emoji
+- simple caractère Unicode
+- icône générique
+- petite icône dans une carte
+- symbole système
+- illustration inventée différente.
+
+==================================================
+4. SI LES ASSETS EXACTS SONT DISPONIBLES
+==================================================
+
+Si les illustrations de référence existent déjà dans le projet :
+
+UTILISE EXACTEMENT CES ASSETS.
+
+Ne les recrée pas.
+
+Ne les remplace pas.
+
+Ne les redessine pas.
+
+Ne change pas leurs proportions.
+
+Ne change pas leur style.
+
+Si elles n'existent pas encore, crée des assets dédiés dans le projet, par exemple :
+
+/assets/account-deletion/
+
+trash-delete.webp
+recovery-clock.webp
+warning.webp
+security-lock.webp
+scheduled-calendar.webp
+success-check.webp
+
+Utilise ensuite ces mêmes assets dans les écrans correspondants.
+
+==================================================
+5. STYLE DES ILLUSTRATIONS
+==================================================
+
+Les illustrations doivent conserver :
+
+- rendu premium
+- profondeur légère
+- formes douces
+- esthétique moderne
+- vert BrutePawa
+- ombres douces
+- légers effets de lumière
+- arrière-plan très clair
+- cohérence entre toutes les illustrations.
+
+NE PAS utiliser six styles d'icônes différents.
+
+Toutes les illustrations doivent sembler provenir du même système graphique.
+
+==================================================
+6. PETITES ICÔNES
+==================================================
+
+Les petites icônes utilisées dans les cartes doivent également correspondre à la référence.
+
+Pour les éléments suivants :
+
+Profil
+Publications
+Commentaires
+Abonnements
+Messages
+Groupes
+Préférences
+Sécurité
+Téléchargement
+Désactivation
+Confidentialité
+
+utilise des icônes cohérentes avec la maquette.
+
+Si une icône exacte existe déjà dans le projet, réutilise-la.
+
+Sinon, utilise une bibliothèque d'icônes vectorielles cohérente.
+
+NE mélange pas plusieurs styles d'icônes.
+
+==================================================
+7. COULEURS
+==================================================
+
+Utilise exactement le système de couleurs de BrutePawa.
+
+Vert principal :
+
+#22C55E
+
+Utilise cette couleur pour :
+
+- boutons principaux
+- accents
+- icônes principales
+- éléments de progression
+- éléments de sécurité
+- validation.
+
+Le rouge doit être réservé aux actions destructives et avertissements.
+
+Le fond doit rester très clair.
+
+Ne crée pas de nouvelles couleurs arbitraires.
+
+==================================================
+8. TYPOGRAPHIE
+==================================================
+
+Respecte exactement la hiérarchie de la référence.
+
+Titres :
+gras, grands et très lisibles.
+
+Sous-titres :
+gris foncé / secondaire.
+
+Texte :
+lisible, avec une hauteur de ligne confortable.
+
+Les titres doivent avoir les mêmes proportions visuelles que la référence.
+
+Ne change pas la police déjà utilisée par BrutePawa si elle existe.
+
+==================================================
+9. ÉCRAN 01
+==================================================
+
+En haut :
+
+bouton retour à gauche.
+
+Bouclier BrutePawa centré.
+
+Indicateur :
+
+01 / 08
+
+Titre :
+
+« Supprimer mon compte »
+
+Grande illustration de la poubelle.
+
+Carte d'information :
+
+« La suppression de votre compte est définitive après la période de récupération. »
+
+Section :
+
+« Avant de continuer »
+
+Avec les informations visibles dans la référence.
+
+Bouton vert :
+
+« Continuer »
+
+En bas :
+
+indication de processus sécurisé et confidentiel.
+
+==================================================
+10. ÉCRAN 02
+==================================================
+
+Titre :
+
+« Ce qui va être supprimé »
+
+Présenter les éléments sous forme de cartes :
+
+Profil
+Publications
+Commentaires
+Abonnements et abonnés
+Messages
+Groupes et Pages
+Préférences
+
+Chaque carte doit avoir :
+
+- icône
+- titre
+- description
+- espacement identique à la référence.
+
+Bouton :
+
+« Continuer »
+
+==================================================
+11. ÉCRAN 03
+==================================================
+
+Titre :
+
+« Avant de supprimer votre compte »
+
+Présenter les alternatives :
+
+« Télécharger mes données »
+
+« Désactiver temporairement »
+
+« Modifier mes paramètres de confidentialité »
+
+Puis l'avertissement.
+
+Bouton destructif :
+
+« Je souhaite quand même supprimer mon compte »
+
+==================================================
+12. ÉCRAN 04
+==================================================
+
+Titre :
+
+« Délai de récupération »
+
+Utiliser exactement l'illustration horloge + flèches de récupération de la référence.
+
+Présenter clairement le délai de récupération.
+
+IMPORTANT :
+
+NE PAS programmer arbitrairement 30 jours si le backend ne prévoit pas réellement 30 jours.
+
+Le nombre de jours affiché doit provenir d'une constante/configuration unique.
+
+==================================================
+13. ÉCRAN 05
+==================================================
+
+Titre :
+
+« Confirmation »
+
+Grande illustration rouge d'avertissement.
+
+Texte :
+
+« Êtes-vous sûr de vouloir supprimer votre compte ? »
+
+Afficher les informations du compte concerné.
+
+Afficher une carte rouge indiquant que l'action est importante.
+
+Deux boutons :
+
+« Annuler »
+
+« Supprimer mon compte »
+
+Le bouton destructif doit être visuellement clairement identifiable.
+
+==================================================
+14. ÉCRAN 06
+==================================================
+
+Titre :
+
+« Vérification de sécurité »
+
+Grande illustration bouclier + cadenas.
+
+Expliquer que la vérification permet de confirmer que la demande provient bien du propriétaire du compte.
+
+Afficher les méthodes réellement disponibles :
+
+Email
+SMS
+ou autre méthode réellement implémentée.
+
+NE PAS afficher une méthode qui n'existe pas dans le backend.
+
+Le code de vérification doit être fonctionnel.
+
+==================================================
+15. ÉCRAN 07
+==================================================
+
+Titre :
+
+« Suppression programmée »
+
+Grande illustration calendrier.
+
+Afficher :
+
+- date de la demande
+- date prévue de suppression définitive
+- statut du compte
+- délai restant si réellement disponible.
+
+Bouton :
+
+« Annuler la suppression »
+
+L'annulation doit réellement fonctionner.
+
+==================================================
+16. ÉCRAN 08
+==================================================
+
+Titre :
+
+« Suppression terminée »
+
+Grande illustration verte de validation avec coche.
+
+Message :
+
+« Votre compte BrutePawa a été supprimé. »
+
+Afficher l'information concernant les données pouvant être conservées lorsque cela est réellement applicable.
+
+Bouton :
+
+« Retour à l'accueil »
+
+==================================================
+17. NAVIGATION
+==================================================
+
+Le parcours doit fonctionner réellement :
+
+01 → 02 → 03 → 04 → 05 → 06 → 07 → 08
+
+Le bouton retour fonctionne sur chaque écran.
+
+Les boutons Annuler fonctionnent.
+
+La navigation doit être cohérente avec le système actuel de BrutePawa.
+
+==================================================
+18. RESPONSIVE MOBILE
+==================================================
+
+La référence est principalement mobile.
+
+Le rendu doit être optimisé pour :
+
+- petits smartphones
+- smartphones moyens
+- grands smartphones.
+
+Aucun élément ne doit :
+
+- dépasser de l'écran
+- être coupé
+- se chevaucher
+- devenir illisible.
+
+==================================================
+19. ARCHITECTURE
+==================================================
+
+Ne crée pas huit copies indépendantes du même composant.
+
+Crée un système propre avec :
+
+AccountDeletionFlow
+
+DeletionStep
+
+DeletionIllustration
+
+DeletionCard
+
+DeletionProgress
+
+DeletionAction
+
+ou une architecture équivalente.
+
+Les données de chaque écran doivent être séparées de la présentation lorsque cela est pertinent.
+
+==================================================
+20. BACKEND — IMPORTANT
+==================================================
+
+Le design doit être connecté au vrai système de compte.
+
+NE SIMULE PAS une suppression si le backend peut réellement la gérer.
+
+La suppression doit respecter l'architecture actuelle de BrutePawa.
+
+Avant de modifier quoi que ce soit :
+
+analyse le système actuel d'authentification et de stockage.
+
+Identifie :
+
+- utilisateur
+- profil
+- publications
+- commentaires
+- messages
+- relations
+- groupes
+- pages
+- fichiers
+- stockage R2
+- données Supabase/PostgreSQL
+- sessions
+- tokens
+- préférences.
+
+Ne supprime jamais des données sans vérifier les relations et dépendances.
+
+==================================================
+21. VÉRIFICATION VISUELLE OBLIGATOIRE
+==================================================
+
+Après avoir

@@ -31,6 +31,7 @@ import searchRouter from "./search";
 import locationRouter from "./location";
 import mediaRouter from "./media";
 import preferencesRouter from "./preferences";
+import accountDeletionRouter from "./accountDeletion";
 
 const router: IRouter = Router();
 
@@ -66,5 +67,6 @@ router.use(contactsRouter);
 router.use(searchRouter);
 router.use(locationRouter);
 router.use(preferencesRouter);
+router.use(accountDeletionRouter);
 
 export default router;

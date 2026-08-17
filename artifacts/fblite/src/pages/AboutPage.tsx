@@ -128,6 +128,7 @@ export default function AboutPage() {
             icon={<Trash2 size={20} color={C.red} strokeWidth={1.9} />}
             title="Supprimer mon compte"
             subtitle={<>Supprimer définitivement votre compte<br />et vos données</>}
+            onClick={() => navigate("/settings/delete-account")}
           />
         </div>
       </div>

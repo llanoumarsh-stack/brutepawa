@@ -65,6 +65,7 @@ import AboutPage from "./pages/AboutPage";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import LicensesPage from "./pages/LicensesPage";
+import AccountDeletionFlow from "./pages/AccountDeletionFlow";
 import DeleteShowcasePage from "./pages/DeleteShowcasePage";
 import BroadcastListPage from "./pages/BroadcastListPage";
 import PeoplePage from "./pages/PeoplePage";
@@ -475,6 +476,7 @@ function AppContent() {
   if (path === "/settings/terms") return <TermsPage />;
   if (path === "/settings/privacy-policy") return <PrivacyPolicyPage />;
   if (path === "/settings/licenses") return <LicensesPage />;
+  if (path === "/settings/delete-account") return <AccountDeletionFlow />;
   if (path === "/delete-showcase") return <DeleteShowcasePage />;
 
   if (groupMatch) {
