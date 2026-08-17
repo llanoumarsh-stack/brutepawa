@@ -4303,8 +4303,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         backgroundImage: convWallpaper ? `url(${convWallpaper})` : convWpKey !== "none" && wpUrl(convWpKey) ? `url(${wpUrl(convWpKey)})` : `url(${import.meta.env.BASE_URL}wallpapers/bp-chat-bg.jpg)`,
         backgroundSize:"cover", backgroundRepeat:"no-repeat", backgroundPosition:"center" }}>
         <style>{`
-          .fbl-msg-mine   { background:#C8E6B2; color:#14532D; border-radius:16px 16px 4px 16px; box-shadow:0 1px 2px rgba(0,0,0,0.10); }
-          .fbl-msg-theirs { background:#fff; color:#111; border-radius:4px 16px 16px 16px; box-shadow:0 1px 2px rgba(0,0,0,0.08); }
+          .fbl-msg-mine   { background:#C8E6B2; color:#14532D; border-radius:18px 18px 4px 18px; box-shadow:0 1px 3px rgba(0,0,0,0.09), 0 0.5px 1.5px rgba(0,0,0,0.06); }
+          .fbl-msg-theirs { background:#fff; color:#111; border-radius:4px 18px 18px 18px; box-shadow:0 1px 3px rgba(0,0,0,0.08), 0 0.5px 1.5px rgba(0,0,0,0.05); }
           textarea:focus  { outline:none !important; box-shadow:none !important; border:none !important; }
           textarea        { -webkit-appearance:none; scrollbar-width:none; }
           textarea::-webkit-scrollbar { display:none; }
@@ -4381,7 +4381,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           </div>
         ) : (
           /* NORMAL HEADER — Telegram-style compact */
-          <div style={{ background:"#fff", padding:"5px 4px 5px 2px", display:"flex", alignItems:"center", gap:6, flexShrink:0, borderBottom:"1px solid #E5E7EB", boxShadow:"0 1px 3px rgba(0,0,0,0.04)" }}>
+          <div style={{ background:"#fff", padding:"5px 4px 5px 2px", display:"flex", alignItems:"center", gap:6, flexShrink:0, borderBottom:"1px solid rgba(0,0,0,0.07)", boxShadow:"0 1px 5px rgba(0,0,0,0.07), 0 0.5px 2px rgba(0,0,0,0.04)" }}>
             {/* Back arrow */}
             <button onClick={() => { setActiveConv(null); setOverlay("none"); setShowConvMenu(false); }}
               style={{ background:"none", border:"none", cursor:"pointer", display:"flex", alignItems:"center", padding:"8px 2px 8px 6px", flexShrink:0 }}>
@@ -4391,7 +4391,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             <div style={{ position:"relative", cursor:"pointer", flexShrink:0 }} onClick={() => setOverlay("info")}>
               {activeUser.avatarUrl
                 ? <img src={activeUser.avatarUrl} alt={activeUser.name} style={{ width:38, height:38, borderRadius:"50%", objectFit:"cover", display:"block" }} />
-                : <div style={{ width:38, height:38, borderRadius:"50%", background:"linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))", display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:800, color:"#fff" }}>{activeUser.initials}</div>
+                : <div style={{ width:38, height:38, borderRadius:"50%", background:"linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))", display:"flex", alignItems:"center", justifyContent:"center", fontSize:13, fontWeight:800, color:"#fff", boxShadow:"0 2px 6px rgba(34,197,94,0.28)", letterSpacing:"-0.3px" }}>{activeUser.initials}</div>
               }
               {presence.online && <div style={{ position:"absolute", bottom:0, right:0, width:10, height:10, background:"var(--bp-primary)", borderRadius:"50%", border:"2px solid #fff" }} />}
             </div>
@@ -4592,10 +4592,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                             <button
                               onClick={() => toggleVoice(msg.id, msg.attachment!.label)}
                               style={{
-                                width:38, height:38, borderRadius:"50%", flexShrink:0, border:"none", cursor:"pointer",
+                                width:42, height:42, borderRadius:"50%", flexShrink:0, border:"none", cursor:"pointer",
                                 background: mine ? "var(--bp-primary)" : "var(--bp-primary)",
                                 display:"flex", alignItems:"center", justifyContent:"center",
-                                boxShadow: mine ? "0 2px 6px rgba(139,203,122,0.30)" : "0 2px 6px rgba(34,197,94,0.28)",
+                                boxShadow: "0 3px 10px rgba(34,197,94,0.35), 0 1px 3px rgba(34,197,94,0.18)",
                                 transition:"transform 0.11s, opacity 0.11s",
                                 WebkitTapHighlightColor:"transparent",
                                 touchAction:"manipulation",

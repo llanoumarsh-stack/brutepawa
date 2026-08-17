@@ -1,0 +1,706 @@
+BRUTEPAWA — TRANSFORMATION ULTRA PREMIUM À 1000 %
+
+RÈGLE ABSOLUE — AUCUNE INVENTION
+
+Tu dois travailler sur l’interface de messagerie BrutePawa actuellement existante.
+
+La version actuelle est la SOURCE DE VÉRITÉ ABSOLUE.
+
+Tu n’as PAS le droit de :
+
+- créer une nouvelle interface ;
+- changer la structure ;
+- déplacer les éléments ;
+- ajouter des fonctionnalités ;
+- supprimer des éléments ;
+- changer le contenu ;
+- inventer des boutons ;
+- inventer des icônes ;
+- modifier les proportions ;
+- modifier les espacements ;
+- modifier les dimensions des cartes ;
+- modifier la disposition des messages ;
+- changer le style général ;
+- remplacer le wallpaper ;
+- changer la palette BrutePawa ;
+- transformer l’interface en dashboard ;
+- ajouter des effets futuristes inutiles ;
+- ajouter du glassmorphism excessif ;
+- ajouter des animations visibles partout ;
+- ajouter des gradients agressifs ;
+- ajouter des éléments décoratifs inexistants.
+
+Toute invention = ÉCHEC.
+
+Le résultat attendu est :
+
+«LA MÊME INTERFACE BRUTEPAWA, À L’IDENTIQUE DANS SA STRUCTURE, MAIS AVEC UNE QUALITÉ VISUELLE ET UNE FINITION DE NIVEAU PRODUIT INTERNATIONAL PREMIUM.»
+
+---
+
+1. CONSERVER EXACTEMENT LA STRUCTURE
+
+Conserver absolument :
+
+- la barre système Android ;
+- la barre du navigateur ;
+- l’adresse "brutepawa.com/messi..." ;
+- l’icône accueil ;
+- le bouton "+" ;
+- le compteur "48" ;
+- le menu trois points ;
+- l’en-tête de conversation ;
+- la flèche retour ;
+- l’avatar "DA" ;
+- le nom "Diane Abachello" ;
+- le statut "Hors ligne" ;
+- l’icône téléphone ;
+- l’icône vidéo ;
+- le menu trois points ;
+- le séparateur ;
+- le wallpaper ;
+- la date "30 juin 2026" ;
+- le message "Cc" ;
+- l’heure "21:56" ;
+- le message vocal ;
+- la durée "0:02" ;
+- le bouton "1x" ;
+- l’heure "21:56" ;
+- l’avatar "DA" ;
+- le message "Oui diane" ;
+- l’heure "22:03" ;
+- les doubles coches ;
+- le champ "Écrire un message..." ;
+- l’emoji ;
+- la pièce jointe ;
+- l’appareil photo ;
+- le microphone ;
+- la barre de navigation Android.
+
+Ne rien réorganiser.
+
+---
+
+2. OBJECTIF VISUEL
+
+Le rendu doit donner l'impression d'une application :
+
+- extrêmement professionnelle ;
+- moderne ;
+- raffinée ;
+- internationale ;
+- cohérente ;
+- mature ;
+- premium ;
+- parfaitement finie ;
+- prête pour une présentation à des investisseurs ou à des millions d'utilisateurs.
+
+Le premium doit venir de la qualité d'exécution, pas de l'ajout d'éléments.
+
+INTERDICTION
+
+Ne pas faire :
+
+"plus d'effets = plus premium"
+
+Faire :
+
+"meilleure précision + meilleure lumière + meilleure profondeur + meilleure typographie + meilleurs détails = premium"
+
+---
+
+3. PALETTE — NE PAS CHANGER L'IDENTITÉ
+
+Conserver l'identité verte BrutePawa.
+
+Le vert principal doit rester proche du vert actuellement utilisé.
+
+Utiliser principalement :
+
+- vert BrutePawa ;
+- blanc ;
+- vert très pâle ;
+- gris très clair ;
+- gris foncé pour les textes ;
+- nuances extrêmement subtiles du vert pour les profondeurs.
+
+Aucun violet.
+
+Aucun bleu.
+
+Aucun orange.
+
+Aucun rouge décoratif.
+
+Aucune nouvelle couleur de marque.
+
+---
+
+4. EN-TÊTE DE CONVERSATION
+
+Conserver exactement la composition actuelle.
+
+Avatar
+
+Le cercle "DA" doit être :
+
+- parfaitement circulaire ;
+- parfaitement centré ;
+- net ;
+- légèrement profond ;
+- avec une ombre extrêmement subtile ;
+- vert BrutePawa ;
+- texte blanc ;
+- typographie parfaitement centrée.
+
+Ne pas modifier les lettres "DA".
+
+Nom
+
+"Diane Abachello"
+
+Le nom doit être :
+
+- parfaitement lisible ;
+- légèrement renforcé ;
+- très propre ;
+- parfaitement aligné verticalement avec l'avatar.
+
+Statut
+
+"Hors ligne"
+
+Doit rester plus léger visuellement que le nom.
+
+Ne pas modifier son emplacement.
+
+Icônes téléphone / vidéo / menu
+
+Utiliser des icônes vectorielles propres et cohérentes.
+
+Même :
+
+- taille ;
+- poids de trait ;
+- alignement ;
+- espacement ;
+- zone tactile.
+
+Aucune icône fantaisie.
+
+---
+
+5. WALLPAPER
+
+Le wallpaper est un élément essentiel de l'identité.
+
+NE PAS LE REMPLACER PAR UN AUTRE STYLE.
+
+Conserver :
+
+- fond vert très clair ;
+- motifs BrutePawa ;
+- nombreux petits pictogrammes ;
+- faible contraste ;
+- répétition régulière ;
+- aspect discret.
+
+Mais améliorer la qualité :
+
+Les motifs doivent être
+
+- parfaitement nets ;
+- très fins ;
+- légèrement translucides ;
+- uniformément répartis ;
+- jamais trop visibles ;
+- jamais trop foncés ;
+- jamais trop lumineux.
+
+Le wallpaper doit rester subtil derrière les conversations.
+
+Il ne doit jamais concurrencer les messages.
+
+Profondeur
+
+Ajouter uniquement une profondeur extrêmement légère au fond :
+
+- variations de luminosité très douces ;
+- micro-gradient presque imperceptible ;
+- aucune grosse tache lumineuse ;
+- aucune texture 3D.
+
+---
+
+6. DATE
+
+Le badge :
+
+"30 juin 2026"
+
+doit conserver exactement :
+
+- son emplacement ;
+- son texte ;
+- sa taille générale ;
+- sa forme ;
+- sa position centrée.
+
+Améliorer uniquement :
+
+- netteté ;
+- ombre ;
+- contraste ;
+- profondeur ;
+- finition du contour.
+
+Le badge doit sembler flotter très légèrement au-dessus du wallpaper.
+
+---
+
+7. BULLE "CC"
+
+Conserver exactement :
+
+"Cc"
+
+et :
+
+"21:56"
+
+La bulle doit avoir :
+
+- coins parfaitement arrondis ;
+- fond blanc ;
+- ombre douce ;
+- profondeur légère ;
+- excellente séparation avec le wallpaper.
+
+L'ombre doit être très subtile.
+
+Pas d'ombre noire forte.
+
+---
+
+8. MESSAGE VOCAL — ÉLÉMENT TRÈS IMPORTANT
+
+Le message vocal doit devenir l'un des éléments les plus premium de l'interface.
+
+Conserver absolument :
+
+- grande carte blanche ;
+- bouton lecture ;
+- waveform ;
+- bouton "1x" ;
+- durée "0:02" ;
+- heure "21:56".
+
+Carte audio
+
+La carte doit avoir :
+
+- coins arrondis parfaitement réguliers ;
+- ombre douce ;
+- profondeur subtile ;
+- surface blanche propre ;
+- excellente séparation du fond.
+
+Bouton lecture
+
+Le bouton vert doit être :
+
+- parfaitement circulaire ;
+- parfaitement centré ;
+- vert BrutePawa ;
+- légèrement profond ;
+- ombre très subtile ;
+- icône lecture blanche parfaitement centrée.
+
+Il ne faut PAS créer un bouton futuriste.
+
+Waveform
+
+C'est ici que la finition doit être exceptionnelle.
+
+La waveform doit être :
+
+- régulière ;
+- précise ;
+- élégante ;
+- parfaitement alignée ;
+- composée de barres verticales fines ;
+- avec des hauteurs variables naturellement ;
+- cohérente avec une vraie onde audio.
+
+Utiliser un vert BrutePawa.
+
+Créer une différence subtile entre :
+
+- partie jouée ;
+- partie non jouée.
+
+Mais sans inventer de lecteur supplémentaire.
+
+Bouton "1x"
+
+Conserver exactement "1x".
+
+Le badge doit être :
+
+- petit ;
+- arrondi ;
+- vert très pâle ;
+- texte vert ;
+- parfaitement aligné.
+
+---
+
+9. MESSAGE ENVOYÉ
+
+Conserver exactement :
+
+"Oui diane"
+
+"22:03"
+
+et les doubles coches.
+
+La bulle doit rester à droite.
+
+Améliorer :
+
+- arrondi ;
+- ombre ;
+- profondeur ;
+- contraste ;
+- alignement interne ;
+- lisibilité.
+
+Le vert doit rester cohérent avec BrutePawa.
+
+ATTENTION
+
+Ne pas rendre la bulle trop brillante.
+
+Ne pas utiliser de gros gradient.
+
+Ne pas ajouter de bordure lumineuse.
+
+Elle doit être premium mais naturelle.
+
+---
+
+10. AVATAR DU MESSAGE AUDIO
+
+Le petit avatar "DA" doit rester exactement à son emplacement.
+
+Améliorer uniquement :
+
+- netteté ;
+- profondeur ;
+- rendu circulaire ;
+- centrage ;
+- cohérence avec l'avatar principal.
+
+---
+
+11. ZONE DE COMPOSITION
+
+C'est une zone extrêmement importante.
+
+Conserver exactement :
+
+- emoji ;
+- champ de texte ;
+- trombone ;
+- caméra ;
+- bouton microphone.
+
+Conteneur
+
+Le conteneur blanc doit être :
+
+- parfaitement arrondi ;
+- propre ;
+- légèrement profond ;
+- très premium ;
+- sans bordure agressive.
+
+Champ texte
+
+Conserver :
+
+"Écrire un message..."
+
+Le texte doit être :
+
+- gris ;
+- élégant ;
+- légèrement léger ;
+- parfaitement aligné verticalement.
+
+Emoji
+
+Utiliser une icône vectorielle extrêmement propre.
+
+Pas d'emoji Unicode approximatif.
+
+Trombone
+
+Icône fine et précise.
+
+Caméra
+
+Icône parfaitement cohérente avec le trombone.
+
+Microphone
+
+Le microphone est le point fort de cette zone.
+
+Le bouton doit rester :
+
+- circulaire ;
+- vert BrutePawa ;
+- très légèrement profond ;
+- parfaitement centré ;
+- sans changement de taille disproportionné.
+
+Ajouter uniquement une finition premium subtile :
+
+- ombre douce ;
+- léger relief ;
+- meilleure netteté ;
+- micro parfaitement centré.
+
+AUCUN effet néon.
+
+---
+
+12. MICRO-OMBRES
+
+Le niveau premium doit particulièrement venir des ombres.
+
+Utiliser plusieurs niveaux de profondeur très subtils.
+
+Niveau 1
+
+Éléments flottants :
+
+ombre presque imperceptible.
+
+Niveau 2
+
+Cartes audio et bulles :
+
+ombre légèrement plus visible.
+
+Niveau 3
+
+Bouton microphone :
+
+ombre douce mais légèrement plus profonde.
+
+Les ombres doivent être :
+
+- diffuses ;
+- naturelles ;
+- très douces ;
+- jamais noires ;
+- jamais épaisses.
+
+---
+
+13. TYPOGRAPHIE
+
+La typographie doit être parfaitement cohérente.
+
+Respecter :
+
+- tailles actuelles ;
+- hiérarchie ;
+- poids ;
+- alignements ;
+- espacements.
+
+Améliorer uniquement la qualité du rendu.
+
+Le texte principal doit être immédiatement lisible.
+
+Les heures doivent être visuellement secondaires.
+
+Le statut "Hors ligne" doit rester secondaire.
+
+---
+
+14. PIXEL-PERFECT
+
+Le résultat doit être extrêmement précis.
+
+Vérifier :
+
+- alignement horizontal ;
+- alignement vertical ;
+- marges ;
+- padding ;
+- hauteur des éléments ;
+- largeur des éléments ;
+- rayon des coins ;
+- distance entre les icônes ;
+- distance entre avatar et texte ;
+- distance entre les messages ;
+- position du champ de saisie ;
+- position du microphone ;
+- position du wallpaper.
+
+Aucun élément ne doit sembler approximativement positionné.
+
+---
+
+15. RESPONSIVE
+
+La référence actuelle est un écran mobile.
+
+Le résultat doit être parfaitement adapté :
+
+- aux petits smartphones ;
+- aux smartphones moyens ;
+- aux grands smartphones.
+
+Mais :
+
+NE PAS modifier le design selon la taille de l'écran.
+
+Adapter uniquement les dimensions nécessaires pour conserver exactement la même composition.
+
+---
+
+16. PERFORMANCE
+
+Le premium ne doit PAS ralentir BrutePawa.
+
+Éviter :
+
+- énormes images ;
+- animations lourdes ;
+- filtres GPU inutiles ;
+- blur massif ;
+- effets coûteux ;
+- bibliothèques inutiles.
+
+Privilégier :
+
+- CSS ;
+- SVG ;
+- assets optimisés ;
+- ombres CSS légères ;
+- gradients subtils ;
+- composants réutilisables.
+
+---
+
+17. ICÔNES
+
+Les icônes doivent appartenir au même langage visuel.
+
+Elles doivent avoir :
+
+- même poids de trait ;
+- même niveau de détail ;
+- même rayon ;
+- même style ;
+- même alignement.
+
+Ne jamais mélanger plusieurs bibliothèques d'icônes visuellement incompatibles.
+
+---
+
+18. INTERDIT ABSOLU
+
+NE PAS ajouter :
+
+- boutons flottants supplémentaires ;
+- réactions ;
+- emojis supplémentaires ;
+- menu supplémentaire ;
+- badge supplémentaire ;
+- indicateurs inventés ;
+- statut supplémentaire ;
+- animations inutiles ;
+- particules ;
+- halos ;
+- néons ;
+- glassmorphism excessif ;
+- ombres énormes ;
+- gradients agressifs ;
+- bordures lumineuses ;
+- effets 3D ;
+- éléments futuristes ;
+- nouveaux textes ;
+- nouveaux messages ;
+- nouvelles fonctionnalités.
+
+Si l'élément n'existe pas dans la version actuelle, ne le crée PAS.
+
+---
+
+19. CRITÈRE D'ÉCHEC
+
+Le travail est considéré comme un ÉCHEC si :
+
+- un élément existant est supprimé ;
+- un élément est déplacé sans nécessité ;
+- une proportion est changée arbitrairement ;
+- une couleur de marque est remplacée ;
+- un texte est modifié ;
+- une icône est inventée ;
+- un élément est ajouté ;
+- le wallpaper est remplacé ;
+- l'interface devient surchargée ;
+- le résultat ressemble à une autre application.
+
+99 % = ÉCHEC.
+
+99,9 % = ÉCHEC.
+
+L'objectif est de respecter la référence au maximum, tout en améliorant uniquement la finition visuelle.
+
+---
+
+20. RÈGLE FINALE
+
+Avant de modifier quoi que ce soit, analyse l'interface existante.
+
+Identifie précisément :
+
+1. chaque élément ;
+2. sa position ;
+3. sa taille ;
+4. sa couleur ;
+5. son espacement ;
+6. son rayon ;
+7. son ombre ;
+8. son alignement ;
+9. sa typographie ;
+10. sa relation avec les autres éléments.
+
+Ensuite seulement, améliore la finition.
+
+FORMULE À RESPECTER
+
+STRUCTURE ACTUELLE × IDENTITÉ ACTUELLE × CONTENU ACTUEL × ESPACEMENTS ACTUELS × PROPORTIONS ACTUELLES
+
++ 
+
+FINITION PREMIUM × PRÉCISION × PROFONDEUR × NETTETÉ × COHÉRENCE
+
+=
+
+BRUTEPAWA MESSAGERIE ULTRA PREMIUM
+
+Ne sois pas créatif sur le design. Sois extrêmement précis dans son exécution.
+
+Le rôle n'est pas de réinventer BrutePawa.
+
+Le rôle est de prendre exactement ce qui existe déjà et de le faire paraître exceptionnellement bien conçu et parfaitement fini.
+
+AUCUNE INVENTION. AUCUNE INTERPRÉTATION. AUCUNE SURCHARGE. AUCUN ÉLÉMENT SUPPLÉMENTAIRE.
