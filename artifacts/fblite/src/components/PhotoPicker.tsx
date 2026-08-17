@@ -53,8 +53,17 @@ function IconHeart() {
   );
 }
 
+/* ─── Video duration formatter ───────────────────────────── */
+function formatDuration(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
 /* ─── Video thumbnail tile ───────────────────────────────── */
 function VideoThumbnail({ src }: { src: string }) {
+  const [duration, setDuration] = useState<number | null>(null);
+
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
       <video
@@ -63,6 +72,10 @@ function VideoThumbnail({ src }: { src: string }) {
         muted
         playsInline
         preload="metadata"
+        onLoadedMetadata={e => {
+          const d = (e.currentTarget as HTMLVideoElement).duration;
+          if (isFinite(d)) setDuration(d);
+        }}
       />
       {/* Play overlay */}
       <div style={{
@@ -80,6 +93,22 @@ function VideoThumbnail({ src }: { src: string }) {
           </svg>
         </div>
       </div>
+      {/* Duration badge — bottom left */}
+      {duration !== null && (
+        <div style={{
+          position: "absolute", bottom: 5, left: 5,
+          background: "rgba(0,0,0,0.55)",
+          color: "#fff",
+          fontSize: 10,
+          fontWeight: 700,
+          lineHeight: 1,
+          padding: "2px 5px",
+          borderRadius: 5,
+          letterSpacing: "0.3px",
+        }}>
+          {formatDuration(duration)}
+        </div>
+      )}
     </div>
   );
 }
