@@ -1,0 +1,508 @@
+╔══════════════════════════════════════════════════════════════╗
+║ BRUTEPAWA — PHOTO PICKER PREMIUM                            ║
+║ SPÉCIFICATION VISUELLE ABSOLUE — 0 INTERPRÉTATION           ║
+║ FIDÉLITÉ MAQUETTE : 100 % — QUALITÉ D'EXÉCUTION : 1000 %    ║
+╚══════════════════════════════════════════════════════════════╝
+
+
+IMPORTANT — RÈGLE ABSOLUE
+
+L'image fournie avec cette demande est LA SOURCE DE VÉRITÉ.
+
+Elle ne constitue PAS une inspiration.
+
+Elle constitue le DESIGN À REPRODUIRE.
+
+Tu dois reproduire exactement l'interface visible dans cette
+maquette dans BrutePawa.
+
+Toute interprétation personnelle est considérée comme une erreur.
+
+Toute modification esthétique non demandée est considérée comme
+une erreur.
+
+Tout élément oublié est considéré comme une erreur.
+
+Toute simplification est considérée comme une erreur.
+
+Toute surcharge est considérée comme une erreur.
+
+Toute approximation est considérée comme une erreur.
+
+99 % = ÉCHEC.
+
+Le résultat attendu doit être suffisamment fidèle pour qu'une
+comparaison côte à côte avec la maquette donne l'impression qu'il
+s'agit de la même interface conçue nativement dans BrutePawa.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. OBJECTIF
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Créer le sélecteur de photos BrutePawa ultra premium visible sur
+la maquette.
+
+Cette interface doit remplacer l'expérience visuelle du sélecteur
+photo lorsqu'elle est appelée depuis BrutePawa.
+
+IMPORTANT :
+
+Ne pas essayer de modifier le sélecteur Google Photos ou le
+sélecteur Android natif.
+
+Créer une interface BrutePawa personnalisée.
+
+Le design doit rester cohérent avec toute la plateforme BrutePawa.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2. IDENTITÉ BRUTEPAWA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Couleur principale officielle :
+
+#22C55E
+
+Cette couleur doit être utilisée avec précision.
+
+Utiliser également des variations extrêmement légères de ce vert
+pour :
+
+- les états actifs ;
+- les bordures sélectionnées ;
+- les icônes ;
+- les badges ;
+- les boutons ;
+- les micro-indicateurs ;
+- les effets lumineux très subtils.
+
+INTERDICTION :
+
+Ne pas transformer toute l'interface en vert.
+
+Le blanc doit rester la couleur dominante.
+
+Le vert doit fonctionner comme une signature visuelle BrutePawa.
+
+Le résultat doit être :
+
+blanc + vert BrutePawa + gris neutres + noir profond.
+
+Aucune couleur parasite ne doit être introduite dans le système
+visuel BrutePawa, sauf les couleurs naturelles présentes dans les
+photos.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3. STRUCTURE GÉNÉRALE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+L'écran doit être organisé exactement selon cette hiérarchie :
+
+STATUS BAR
+↓
+ESPACE SUPÉRIEUR
+↓
+HANDLE
+↓
+HEADER
+↓
+BARRE DE RECHERCHE
+↓
+BOUTON FILTRE
+↓
+NAVIGATION PHOTOS / ALBUMS / VIDÉOS / FAVORIS
+↓
+SECTION RÉCENTS
+↓
+BOUTON SÉLECTION MULTIPLE
+↓
+GRILLE PHOTO
+↓
+BARRE DE CONFIRMATION FIXÉE EN BAS
+↓
+NAVIGATION SYSTÈME
+
+
+Ne pas changer cette hiérarchie.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4. FOND GÉNÉRAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Le fond principal doit être blanc.
+
+Il doit être extrêmement propre.
+
+Aucune texture inutile.
+
+Aucun gradient visible agressif.
+
+Aucun effet glassmorphism excessif.
+
+Aucune couleur de fond parasite.
+
+Le premium doit venir de la précision et de la qualité des
+micro-détails, pas d'effets inutiles.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5. HANDLE SUPÉRIEUR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+En haut de l'interface :
+
+petite barre horizontale verte.
+
+Elle doit être :
+
+- centrée ;
+- courte ;
+- fine ;
+- arrondie ;
+- parfaitement horizontale.
+
+Elle doit avoir une présence discrète.
+
+Ne pas l'agrandir.
+
+Ne pas la remplacer par une icône.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+6. HEADER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+À gauche :
+
+logo BrutePawa circulaire/arrondi.
+
+Le logo doit utiliser le véritable branding BrutePawa.
+
+À droite du logo :
+
+titre :
+
+Sélectionner des photos
+
+Le mot « photos » doit utiliser le vert BrutePawa.
+
+Sous le titre :
+
+Jusqu'à 10 photos • 1 sélectionnée
+
+La partie :
+
+1 sélectionnée
+
+doit être verte lorsque des éléments sont sélectionnés.
+
+Le compteur doit être dynamique.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+7. BOUTON FERMER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+En haut à droite :
+
+bouton circulaire très léger.
+
+Fond :
+
+vert extrêmement pâle.
+
+Icône :
+
+X vert BrutePawa.
+
+Le bouton doit être parfaitement circulaire.
+
+Il doit avoir une zone tactile suffisamment grande.
+
+Au clic :
+
+fermer le sélecteur avec une animation fluide.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+8. RECHERCHE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Sous le header :
+
+grande barre de recherche horizontale.
+
+Elle doit avoir :
+
+- fond blanc ;
+- bordure gris extrêmement clair ;
+- coins très arrondis ;
+- icône loupe à gauche ;
+- texte gris.
+
+Placeholder exact :
+
+Rechercher dans vos photos...
+
+La barre doit être large et dominante mais rester élégante.
+
+Lorsqu'elle reçoit le focus :
+
+bordure subtile BrutePawa.
+
+Aucun effet lumineux agressif.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+9. BOUTON FILTRE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+À droite de la barre de recherche :
+
+bouton carré aux coins fortement arrondis.
+
+Icône :
+
+réglages/filtres.
+
+Couleur :
+
+vert BrutePawa.
+
+Fond :
+
+blanc / vert extrêmement pâle.
+
+Le bouton doit avoir exactement la même hauteur visuelle que la
+barre de recherche.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+10. NAVIGATION PRINCIPALE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Créer quatre catégories :
+
+PHOTOS
+ALBUMS
+VIDÉOS
+FAVORIS
+
+Elles sont disposées horizontalement.
+
+La navigation doit rester parfaitement équilibrée.
+
+Chaque catégorie possède :
+
+- icône ;
+- texte ;
+- zone tactile.
+
+État actif :
+
+Photos.
+
+L'onglet actif doit utiliser le vert BrutePawa.
+
+Il doit avoir une présence visuelle légèrement supérieure aux
+autres onglets.
+
+Les autres onglets restent neutres.
+
+Ne pas ajouter de catégories supplémentaires.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+11. SECTION RÉCENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Titre exact :
+
+Récents
+
+À droite :
+
+petit chevron descendant.
+
+Le titre doit être foncé et lisible.
+
+Cette section doit rester visuellement légère.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+12. SÉLECTION MULTIPLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+À droite de « Récents » :
+
+bouton :
+
+Sélection multiple
+
+avec icône de sélection.
+
+Le bouton doit être :
+
+- blanc ;
+- bordure verte ;
+- texte vert ;
+- arrondi ;
+- compact ;
+- premium.
+
+Il ne doit pas prendre trop de place.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+13. GRILLE DE PHOTOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+La grille est l'élément principal de l'interface.
+
+Respecter strictement :
+
+- nombre de colonnes ;
+- largeur des cellules ;
+- hauteur des cellules ;
+- espace horizontal ;
+- espace vertical ;
+- rayon des coins ;
+- alignement.
+
+Les photos doivent remplir leur cellule.
+
+Utiliser :
+
+object-fit: cover
+
+Les images doivent avoir des coins arrondis.
+
+Aucune image ne doit être déformée.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+14. PHOTOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+La galerie doit être dynamique.
+
+Ne pas utiliser uniquement des images fictives.
+
+Afficher les vraies photos disponibles de l'utilisateur lorsque
+les permissions sont accordées.
+
+Les images doivent être chargées progressivement.
+
+Prévoir un état skeleton discret pendant le chargement.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+15. SÉLECTION D'UNE PHOTO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Chaque photo possède un indicateur de sélection en haut à droite.
+
+État non sélectionné :
+
+cercle discret.
+
+État sélectionné :
+
+- cercle vert BrutePawa ;
+- coche blanche ;
+- numéro de sélection si sélection multiple.
+
+La photo sélectionnée doit également recevoir une bordure
+BrutePawa très subtile.
+
+Dans la maquette :
+
+la première photo est sélectionnée.
+
+Le compteur :
+
+1
+
+doit apparaître dans un cercle vert.
+
+Ne pas supprimer cet indicateur.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+16. MICRO-INTERACTION DE SÉLECTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Lorsqu'une photo est sélectionnée :
+
+animation extrêmement courte et fluide.
+
+La coche apparaît avec un léger scale-in.
+
+Aucune animation spectaculaire.
+
+Aucun effet flashy.
+
+Le rendu doit être premium et discret.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+17. MULTI-SÉLECTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Permettre de sélectionner jusqu'à 10 photos.
+
+Le compteur doit se mettre à jour en temps réel.
+
+Exemple :
+
+1 sélectionnée
+2 sélectionnées
+3 sélectionnées
+
+etc.
+
+Une fois la limite atteinte :
+
+ne pas permettre une 11e sélection.
+
+Afficher un feedback discret.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+18. BARRE INFÉRIEURE DE CONFIRMATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+La barre située en bas est FIXÉE.
+
+Elle ne doit pas disparaître lorsque l'utilisateur fait défiler
+la galerie.
+
+Elle doit rester visuellement attachée au bas de l'interface.
+
+Fond :
+
+blanc.
+
+Coins :
+
+fortement arrondis.
+
+Ombre :
+
+extrêmement légère.
+
+Elle doit donner une impression de profondeur subtile.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+19. MINIATURE SÉLECTIONNÉE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+À gauche de la barre inférieure :
+
+petite miniature de la photo sélectionnée.
+
+Elle doit être

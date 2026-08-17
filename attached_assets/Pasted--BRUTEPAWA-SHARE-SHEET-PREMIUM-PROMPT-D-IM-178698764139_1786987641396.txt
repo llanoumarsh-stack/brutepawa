@@ -1,0 +1,137 @@
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+BRUTEPAWA — SHARE SHEET PREMIUM
+PROMPT D'IMPLÉMENTATION ULTRA STRICT
+NIVEAU PREMIUM 2030 — FIDÉLITÉ VISUELLE ABSOLUE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SOURCE DE VÉRITÉ ABSOLUE :
+
+La maquette/image fournie avec ce prompt est la référence visuelle
+EXACTE de l'interface à implémenter.
+
+Cette image n'est PAS une simple inspiration.
+
+Elle constitue le cahier des charges visuel.
+
+Je veux reproduire :
+
+- la structure ;
+- la hiérarchie ;
+- les proportions ;
+- les positions ;
+- les espacements ;
+- les dimensions ;
+- les rayons ;
+- les ombres ;
+- les couleurs ;
+- les nuances ;
+- les icônes ;
+- les textes ;
+- les badges ;
+- les états ;
+- le comportement ;
+- le bottom sheet ;
+- le fond assombri ;
+- les micro-interactions.
+
+Toute interprétation personnelle est considérée comme un ÉCHEC.
+
+Toute omission est considérée comme un ÉCHEC.
+
+Toute simplification est considérée comme un ÉCHEC.
+
+Toute surcharge est considérée comme un ÉCHEC.
+
+99 % = ÉCHEC.
+
+Je veux une implémentation production-ready extrêmement précise.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. RÈGLE PRINCIPALE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+NE PAS modifier le design global de BrutePawa.
+
+NE PAS transformer cette interface en autre chose.
+
+NE PAS ajouter de composants inutiles.
+
+NE PAS supprimer d'éléments présents dans la maquette.
+
+NE PAS déplacer les éléments.
+
+NE PAS modifier leur hiérarchie.
+
+NE PAS inventer de nouvelles fonctionnalités visuelles.
+
+La seule liberté autorisée concerne :
+
+- la qualité du rendu ;
+- la précision ;
+- la responsivité ;
+- l'accessibilité ;
+- les micro-interactions ;
+- la robustesse technique.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2. NATURE DE L'INTERFACE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Cette interface doit être implémentée comme un :
+
+CUSTOM BRUTEPAWA SHARE SHEET.
+
+IMPORTANT :
+
+Il ne faut PAS dépendre exclusivement du panneau de partage natif
+Android pour cette interface.
+
+Le panneau visible dans la maquette doit être une véritable
+interface BrutePawa contrôlée par BrutePawa.
+
+Le partage système peut être utilisé uniquement pour les options
+externes lorsque nécessaire.
+
+La partie principale de l'expérience doit être entièrement
+contrôlable par BrutePawa.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3. OUVERTURE DU SHARE SHEET
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Lorsque l'utilisateur appuie sur :
+
+PARTAGER
+
+ouvrir le Share Sheet BrutePawa depuis le bas de l'écran.
+
+Animation :
+
+bottom → top.
+
+L'animation doit être :
+
+- fluide ;
+- rapide ;
+- naturelle ;
+- premium ;
+- sans rebond excessif.
+
+Le contenu derrière doit rester visible.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4. BACKDROP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Lorsque le Share Sheet est ouvert :
+
+le contenu situé derrière doit être assombri.
+
+Créer un backdrop semi-transparent.
+
+Il doit donner exactement la sensation de la maquette :
+
+interface arrière encore identifiable,
+mais visuellement secondaire.
+
+Le backdrop doit
