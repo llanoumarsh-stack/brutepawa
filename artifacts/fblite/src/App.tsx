@@ -341,10 +341,9 @@ function AppContent() {
     <Layout onNewPost={handleNewPost}><MemoriesPage /></Layout>
   );
 
-  // Search route — path may include query string: /search?q=...
-  if (path.startsWith("/search")) {
-    const qs = path.includes("?") ? path.slice(path.indexOf("?") + 1) : "";
-    const q = new URLSearchParams(qs).get("q") ?? "";
+  // Search route
+  if (path === "/search") {
+    const q = new URLSearchParams(window.location.search).get("q") ?? "";
     return (
       <Layout onNewPost={handleNewPost}>
         <SearchPage q={q} />

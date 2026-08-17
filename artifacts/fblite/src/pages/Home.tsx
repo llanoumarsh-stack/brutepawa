@@ -429,38 +429,38 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
       )}
 
       {/* ─── Create post card ─── */}
-      <div style={{ background: "#0F241D", borderRadius: 12, border: "1px solid rgba(34,197,94,0.15)", boxShadow: "0 4px 20px rgba(0,15,6,0.5), inset 0 1px 0 rgba(34,197,94,0.06)", overflow: "hidden" }}>
+      <div style={{ background: "#fff", borderRadius: 12, border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 1px 4px rgba(0,0,0,0.06)", overflow: "hidden" }}>
         {/* Top row: avatar + input + icons */}
         <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 14px 10px" }}>
           {user.avatarUrl
-            ? <img src={user.avatarUrl} alt="Avatar" onClick={() => navigate("/profile")} style={{ width: 44, height: 44, borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer" }} />
-            : <div onClick={() => navigate("/profile")} style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--bp-primary)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 16, flexShrink: 0, cursor: "pointer" }}>{userInitials}</div>
+            ? <img src={user.avatarUrl} alt="Avatar" onClick={() => navigate("/profile")} style={{ width: 44, height: 44, borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer", border: "2.5px solid var(--bp-primary)" }} />
+            : <div onClick={() => navigate("/profile")} style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--bp-primary)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 16, flexShrink: 0, cursor: "pointer", border: "2.5px solid var(--bp-primary)" }}>{userInitials}</div>
           }
           <div
             onClick={() => navigate("/create-post")}
-            style={{ flex: 1, background: "#132a1f", borderRadius: 30, padding: "11px 16px", fontSize: 15, color: "#9CA3AF", cursor: "pointer", fontWeight: 400, lineHeight: 1 }}
+            style={{ flex: 1, background: "#F9FAFB", border: "1px solid #E5E7EB", borderRadius: 24, padding: "11px 16px", fontSize: 15, color: "#9CA3AF", cursor: "pointer", fontWeight: 400, lineHeight: 1 }}
           >
             Quoi de neuf, {(user.name ?? "").split(" ")[0]} ?
           </div>
-          {/* Photo icon */}
+          {/* Camera icon */}
           <button onClick={() => { sessionStorage.setItem("createPost_mode","photo"); navigate("/create-post"); }} style={{ background: "none", border: "none", cursor: "pointer", padding: 6, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="16" rx="3" stroke="#9CA3AF" strokeWidth="1.8"/><circle cx="9" cy="12" r="3" stroke="#9CA3AF" strokeWidth="1.8"/><path d="M2 9l5-5 3 4" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><circle cx="17" cy="8" r="1.5" fill="#9CA3AF"/></svg>
           </button>
-          {/* Mic icon */}
+          {/* Mic icon green */}
           <button onClick={() => { sessionStorage.setItem("createPost_mode","vocal"); navigate("/create-post"); }} style={{ background: "none", border: "none", cursor: "pointer", padding: 6, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="12" rx="3" stroke="var(--bp-primary)" strokeWidth="1.8"/><path d="M5 11a7 7 0 0 0 14 0" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round"/><path d="M12 18v4M9 22h6" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round"/></svg>
           </button>
         </div>
 
         {/* Divider */}
-        <div style={{ height: 1, background: "rgba(34,197,94,0.12)", margin: "0 14px" }} />
+        <div style={{ height: 1, background: "rgba(0,0,0,0.07)", margin: "0 14px" }} />
 
-        {/* Action buttons row */}
-        <div style={{ display: "flex", overflowX: "auto", scrollbarWidth: "none" as const }}>
+        {/* Action buttons row — 5 items, full width */}
+        <div style={{ display: "flex" }}>
           {([
-            { label: "Photo",       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="3" fill="var(--bp-primary)"/><circle cx="12" cy="12" r="4" fill="#fff" fillOpacity=".9"/><circle cx="9" cy="7" r="1.5" fill="#fff" fillOpacity=".7"/></svg>, action: () => { sessionStorage.setItem("createPost_mode","photo"); navigate("/create-post"); } },
-            { label: "Vocal",       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="8" y="2" width="8" height="12" rx="4" fill="#E91E63"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/></svg>, action: () => { sessionStorage.setItem("createPost_mode","vocal"); navigate("/create-post"); } },
-            { label: "Vidéo",       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="14" height="12" rx="2" fill="#EF4444"/><path d="M16 9l5-3v12l-5-3V9z" fill="#EF4444"/></svg>, action: () => { sessionStorage.setItem("createPost_mode","video"); navigate("/create-post"); } },
+            { label: "Photo",        icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="3" fill="var(--bp-primary)"/><circle cx="12" cy="12" r="4" fill="#fff" fillOpacity=".9"/><circle cx="9" cy="7" r="1.5" fill="#fff" fillOpacity=".7"/></svg>, action: () => { sessionStorage.setItem("createPost_mode","photo"); navigate("/create-post"); } },
+            { label: "Vocal",        icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="8" y="2" width="8" height="12" rx="4" fill="#E91E63"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/></svg>, action: () => { sessionStorage.setItem("createPost_mode","vocal"); navigate("/create-post"); } },
+            { label: "Vidéo",        icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="14" height="12" rx="2" fill="#EF4444"/><path d="M16 9l5-3v12l-5-3V9z" fill="#EF4444"/></svg>, action: () => { sessionStorage.setItem("createPost_mode","video"); navigate("/create-post"); } },
             { label: "Localisation", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#E91E63"/><circle cx="12" cy="9" r="2.5" fill="#fff"/></svg>, action: () => {
               if (!navigator.geolocation) { alert("La géolocalisation n'est pas disponible sur cet appareil."); return; }
               sessionStorage.setItem("createPost_mode","location");
@@ -469,16 +469,15 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                 () => { sessionStorage.removeItem("createPost_mode"); alert("Impossible d'accéder à votre position. Vérifiez les autorisations."); }
               );
             }},
-            { label: "Humeur",      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#FFC107"/><path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/><circle cx="9" cy="10" r="1.5" fill="#fff"/><circle cx="15" cy="10" r="1.5" fill="#fff"/></svg>, action: () => navigate("/create-post") },
-            { label: "Sondage",     icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="15" width="4" height="6" rx="1" fill="var(--bp-primary)"/><rect x="10" y="10" width="4" height="11" rx="1" fill="var(--bp-primary)"/><rect x="16" y="5" width="4" height="16" rx="1" fill="var(--bp-primary)"/></svg>, action: () => navigate("/create-post") },
+            { label: "Humeur",       icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#FFC107"/><path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="#fff" strokeWidth="1.8" strokeLinecap="round"/><circle cx="9" cy="10" r="1.5" fill="#fff"/><circle cx="15" cy="10" r="1.5" fill="#fff"/></svg>, action: () => navigate("/create-post") },
           ] as { label: string; icon: React.ReactNode; action: () => void }[]).map((btn, i, arr) => (
             <button
               key={btn.label}
               onClick={btn.action}
-              style={{ flex: "0 0 auto", display: "flex", flexDirection: "column" as const, alignItems: "center" as const, justifyContent: "center" as const, gap: 4, padding: "10px 14px 12px", background: "none", border: "none", cursor: "pointer", borderRight: i < arr.length - 1 ? "1px solid rgba(34,197,94,0.15)" : "none", minWidth: 80 }}
+              style={{ flex: 1, display: "flex", flexDirection: "column" as const, alignItems: "center" as const, justifyContent: "center" as const, gap: 4, padding: "10px 4px 12px", background: "none", border: "none", cursor: "pointer", borderRight: i < arr.length - 1 ? "1px solid rgba(0,0,0,0.07)" : "none" }}
             >
               {btn.icon}
-              <span style={{ fontSize: 12, fontWeight: 600, color: "#9CA3AF", whiteSpace: "nowrap" as const }}>{btn.label}</span>
+              <span style={{ fontSize: 11.5, fontWeight: 600, color: "#6B7280", whiteSpace: "nowrap" as const }}>{btn.label}</span>
             </button>
           ))}
         </div>
@@ -486,34 +485,41 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
 
       {/* ─── Stories Row ─── */}
       <input ref={storyFileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleStoryFileSelect} />
-      <div style={{ background: "#0F241D", borderRadius: 12, border: "1px solid rgba(34,197,94,0.15)", boxShadow: "0 4px 20px rgba(0,15,6,0.5), inset 0 1px 0 rgba(34,197,94,0.06)", padding: "12px 10px 10px" }}>
-        <div style={{ display: "flex", gap: 10, overflowX: "auto", scrollbarWidth: "none" as const, alignItems: "flex-start" }}>
+      <div style={{ background: "#fff", borderRadius: 12, border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 1px 4px rgba(0,0,0,0.06)", padding: "12px 14px" }}>
+        <div style={{ display: "flex", gap: 10, overflowX: "auto", scrollbarWidth: "none" as const, alignItems: "center" }}>
 
-          {/* ── Créer une story — circulaire ── */}
-          <div onClick={() => storyFileRef.current?.click()} style={{ flex: "0 0 auto", cursor: "pointer", display: "flex", flexDirection: "column" as const, alignItems: "center" as const }}>
-            <div style={{ position: "relative", width: 76, height: 76 }}>
-              <div style={{
-                width: 76, height: 76, borderRadius: "50%", overflow: "hidden",
-                background: "linear-gradient(135deg, #1e3a2e 0%, #0f2a1a 100%)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                border: "2px solid rgba(34,197,94,0.25)",
-              }}>
-                {user.avatarUrl
-                  ? <img src={user.avatarUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.6 }} />
-                  : <span style={{ color: "var(--bp-primary)", fontWeight: 900, fontSize: 22, lineHeight: 1 }}>{userInitials}</span>
-                }
+          {/* ── Créer une story ── */}
+          <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+            <div onClick={() => storyFileRef.current?.click()} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+              <div style={{ position: "relative", width: 56, height: 56, flexShrink: 0 }}>
+                <div style={{
+                  width: 56, height: 56, borderRadius: "50%", overflow: "hidden",
+                  background: "#F0FDF4",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  border: "2.5px solid var(--bp-primary)",
+                }}>
+                  {user.avatarUrl
+                    ? <img src={user.avatarUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    : <span style={{ color: "var(--bp-primary)", fontWeight: 900, fontSize: 18, lineHeight: 1 }}>{userInitials}</span>
+                  }
+                </div>
+                <div style={{ position: "absolute", bottom: 0, right: 0, width: 20, height: 20, borderRadius: "50%", background: "var(--bp-primary)", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                </div>
               </div>
-              <div style={{ position: "absolute", bottom: 2, right: 2, width: 22, height: 22, borderRadius: "50%", background: "var(--bp-primary)", border: "2px solid #081C15", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
+              <div style={{ flexShrink: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#111827", lineHeight: 1.3 }}>Créer</div>
+                <div style={{ fontSize: 12, color: "#9CA3AF", lineHeight: 1.3 }}>une story</div>
               </div>
             </div>
-            <div style={{ marginTop: 5, textAlign: "center" as const }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#f0f0f0", lineHeight: 1.3 }}>Créer</div>
-              <div style={{ fontSize: 11, color: "#9CA3AF", lineHeight: 1.3 }}>une story</div>
-            </div>
+            {storyGroups.length === 0 && (
+              <span style={{ fontSize: 13, color: "#9CA3AF", fontStyle: "italic", flex: 1, minWidth: 0 }}>
+                Sois le premier à publier une story !
+              </span>
+            )}
           </div>
 
-          {/* ── User story cards — CIRCULAIRES ── */}
+          {/* ── User story cards ── */}
           {storyGroups.map((group, idx) => {
             const initials = group.authorName.slice(0, 2).toUpperCase();
             const avatarBg = AVATAR_COLORS[group.authorId % AVATAR_COLORS.length];
@@ -523,49 +529,31 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
             return (
               <div key={group.authorId} onClick={() => { setViewerGroupIdx(idx); setViewerOpen(true); }}
                 style={{ flex: "0 0 auto", cursor: "pointer", display: "flex", flexDirection: "column" as const, alignItems: "center" as const }}>
-                {/* Circular avatar with colored ring */}
-                <div style={{ width: 76, height: 76, borderRadius: "50%", padding: 3, background: `linear-gradient(135deg, ${ring}, ${ring}99)`, boxSizing: "border-box" as const, position: "relative" }}>
-                  <div style={{ width: "100%", height: "100%", borderRadius: "50%", border: "2.5px solid #081C15", overflow: "hidden", background: avatarBg, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ width: 56, height: 56, borderRadius: "50%", padding: 2.5, background: `linear-gradient(135deg, ${ring}, ${ring}99)`, boxSizing: "border-box" as const, position: "relative" }}>
+                  <div style={{ width: "100%", height: "100%", borderRadius: "50%", border: "2px solid #fff", overflow: "hidden", background: avatarBg, display: "flex", alignItems: "center", justifyContent: "center" }}>
                     {group.authorAvatarUrl
                       ? <img src={group.authorAvatarUrl} alt={group.authorName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       : (preview?.mediaUrl
                           ? <img src={preview.mediaUrl} alt={group.authorName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                          : <span style={{ color: "#fff", fontWeight: 800, fontSize: 22 }}>{initials}</span>)
+                          : <span style={{ color: "#fff", fontWeight: 800, fontSize: 18 }}>{initials}</span>)
                     }
                   </div>
-                  {/* Online dot */}
-                  <div style={{ position: "absolute", bottom: 4, right: 4, width: 14, height: 14, borderRadius: "50%", background: "var(--bp-primary)", border: "2px solid #081C15" }} />
+                  <div style={{ position: "absolute", bottom: 2, right: 2, width: 13, height: 13, borderRadius: "50%", background: "var(--bp-primary)", border: "2px solid #fff" }} />
                 </div>
-                <div style={{ marginTop: 6, fontSize: 11, fontWeight: 600, color: "#f0f0f0", textAlign: "center" as const, maxWidth: 76, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>
+                <div style={{ marginTop: 5, fontSize: 10.5, fontWeight: 600, color: "#374151", textAlign: "center" as const, maxWidth: 60, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>
                   {group.authorName.split(" ")[0]}
                 </div>
               </div>
             );
           })}
-
-          {/* ── Voir plus ── */}
-          {storyGroups.length >= 3 && (
-            <div style={{ flex: "0 0 auto", cursor: "pointer", display: "flex", flexDirection: "column" as const, alignItems: "center" as const }}>
-              <div style={{ width: 76, height: 76, borderRadius: "50%", background: "#132a1f", border: "1px solid rgba(34,197,94,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="5" cy="12" r="1.8" fill="#9CA3AF"/><circle cx="12" cy="12" r="1.8" fill="#9CA3AF"/><circle cx="19" cy="12" r="1.8" fill="#9CA3AF"/></svg>
-              </div>
-              <div style={{ marginTop: 6, fontSize: 11, fontWeight: 600, color: "#9CA3AF", textAlign: "center" as const }}>Voir plus</div>
-            </div>
-          )}
-
-          {storyGroups.length === 0 && (
-            <div style={{ display: "flex", alignItems: "center", height: 76, padding: "0 8px", color: "#9CA3AF", fontSize: 12, fontStyle: "italic" }}>
-              Sois le premier à publier une story !
-            </div>
-          )}
         </div>
       </div>
 
       {/* Loading skeleton */}
       {postsLoading && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {[0, 1, 2].map(i => (
-            <div key={i} style={{ background: "#0F241D", borderRadius: 10, border: "1px solid rgba(34,197,94,0.15)", overflow: "hidden", padding: "14px 16px" }}>
+            <div key={i} style={{ background: "#fff", borderRadius: 10, border: "1px solid rgba(0,0,0,0.07)", overflow: "hidden", padding: "14px 16px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
                 <span className="bp-skeleton" style={{ width: 42, height: 42, borderRadius: "50%", flexShrink: 0 }} />
                 <div style={{ flex: 1 }}>
@@ -825,7 +813,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
             )}
 
             {/* ── Action bar ── */}
-            <div style={{ display: "flex", borderTop: "1px solid rgba(34,197,94,0.15)", borderBottom: "1px solid rgba(34,197,94,0.15)", position: "relative" }}>
+            <div style={{ display: "flex", borderTop: "1px solid rgba(0,0,0,0.07)", borderBottom: "1px solid rgba(0,0,0,0.07)", position: "relative" }}>
               {/* Reaction picker backdrop */}
               {showReactionPicker === post.id && (
                 <div style={{ position: "fixed", inset: 0, zIndex: 98 }} onClick={() => setShowReactionPicker(null)} />
@@ -881,7 +869,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
               })()}
 
               {/* Commenter */}
-              <button className="post-btn" style={{ flex: 1, borderRight: "1px solid rgba(34,197,94,0.15)", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }} onClick={() => navigate(`/post/${post.id}`)}>
+              <button className="post-btn" style={{ flex: 1, borderRight: "1px solid rgba(0,0,0,0.07)", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }} onClick={() => navigate(`/post/${post.id}`)}>
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 Commenter
               </button>
