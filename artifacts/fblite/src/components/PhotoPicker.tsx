@@ -6,6 +6,7 @@ interface PickedPhoto {
   id: string;
   file: File;
   previewUrl: string;
+  mediaType: "photo" | "video";
 }
 
 export interface Props {
@@ -13,6 +14,7 @@ export interface Props {
   onClose: () => void;
   onConfirm: (files: File[]) => void;
   maxFiles?: number;
+  defaultTab?: "photos" | "videos";
 }
 
 /* ─── Constants ──────────────────────────────────────────── */
@@ -51,31 +53,89 @@ function IconHeart() {
   );
 }
 
+/* ─── Video thumbnail tile ───────────────────────────────── */
+function VideoThumbnail({ src }: { src: string }) {
+  return (
+    <div style={{ position: "relative", width: "100%", height: "100%" }}>
+      <video
+        src={src}
+        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+        muted
+        playsInline
+        preload="metadata"
+      />
+      {/* Play overlay */}
+      <div style={{
+        position: "absolute", inset: 0,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        background: "rgba(0,0,0,0.18)",
+      }}>
+        <div style={{
+          width: 28, height: 28, borderRadius: "50%",
+          background: "rgba(255,255,255,0.85)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="#111827">
+            <polygon points="8 5 19 12 8 19 8 5" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Helpers ────────────────────────────────────────────── */
 function uid() { return `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`; }
 
 /* ═══════════════════════════════════════════════════════════
    PhotoPicker
 ═══════════════════════════════════════════════════════════ */
-export default function PhotoPicker({ open, onClose, onConfirm, maxFiles = 10 }: Props) {
-  const [photos, setPhotos] = useState<PickedPhoto[]>([]);
+export default function PhotoPicker({ open, onClose, onConfirm, maxFiles = 10, defaultTab = "photos" }: Props) {
+  const [media, setMedia] = useState<PickedPhoto[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [search, setSearch] = useState("");
-  const [tab, setTab] = useState<"photos" | "albums" | "videos" | "favoris">("photos");
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [tab, setTab] = useState<"photos" | "albums" | "videos" | "favoris">(defaultTab);
+
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
   const hasAutoTriggered = useRef(false);
+  const hasAutoTriggeredVideo = useRef(false);
+
+  /* Helper: active input ref */
+  const activeInput = () => tab === "videos" ? videoInputRef : photoInputRef;
 
   /* Trigger file input automatically on first open */
   useEffect(() => {
     if (open && !hasAutoTriggered.current) {
       hasAutoTriggered.current = true;
-      const t = setTimeout(() => fileInputRef.current?.click(), 120);
+      const ref = defaultTab === "videos" ? videoInputRef : photoInputRef;
+      if (defaultTab === "videos") hasAutoTriggeredVideo.current = true;
+      const t = setTimeout(() => ref.current?.click(), 120);
       return () => clearTimeout(t);
     }
     if (!open) {
       hasAutoTriggered.current = false;
+      hasAutoTriggeredVideo.current = false;
     }
-  }, [open]);
+    return undefined;
+  }, [open, defaultTab]);
+
+  /* Sync tab when defaultTab prop changes (e.g. reopened on videos) */
+  useEffect(() => {
+    if (open) setTab(defaultTab);
+  }, [open, defaultTab]);
+
+  /* Auto-trigger video input when switching to videos tab for the first time */
+  const handleTabChange = (newTab: typeof tab) => {
+    setTab(newTab);
+    if (newTab === "videos" && !hasAutoTriggeredVideo.current) {
+      hasAutoTriggeredVideo.current = true;
+      const videosInMedia = media.filter(m => m.mediaType === "video");
+      if (videosInMedia.length === 0) {
+        setTimeout(() => videoInputRef.current?.click(), 80);
+      }
+    }
+  };
 
   /* Lock body scroll */
   useEffect(() => {
@@ -85,40 +145,39 @@ export default function PhotoPicker({ open, onClose, onConfirm, maxFiles = 10 }:
 
   /* Reset on close */
   const handleClose = () => {
-    setPhotos([]);
+    setMedia([]);
     setSelectedIds([]);
     setSearch("");
-    setTab("photos");
+    setTab(defaultTab);
+    hasAutoTriggeredVideo.current = false;
     onClose();
   };
 
-  /* Handle file selection from input */
-  const handleFilesSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+  /* Handle file selection from either input */
+  const handleFilesSelected = (e: React.ChangeEvent<HTMLInputElement>, mediaType: "photo" | "video") => {
     const files = Array.from(e.target.files ?? []);
     if (!files.length) return;
     if (e.target) e.target.value = "";
-    const newPhotos: PickedPhoto[] = files.map(f => ({
+    const newItems: PickedPhoto[] = files.map(f => ({
       id: uid(),
       file: f,
       previewUrl: URL.createObjectURL(f),
+      mediaType,
     }));
-    setPhotos(prev => {
-      const merged = [...prev, ...newPhotos];
-      return merged;
-    });
+    setMedia(prev => [...prev, ...newItems]);
     /* Auto-select new ones up to max */
     setSelectedIds(prev => {
-      const added = newPhotos.map(p => p.id);
+      const added = newItems.map(p => p.id);
       const combined = [...prev, ...added];
       return combined.slice(0, maxFiles);
     });
   };
 
-  /* Toggle a photo in/out of selection */
+  /* Toggle a media item in/out of selection */
   const toggleSelect = (id: string) => {
     setSelectedIds(prev => {
       if (prev.includes(id)) return prev.filter(x => x !== id);
-      if (prev.length >= maxFiles) return prev; // limit reached
+      if (prev.length >= maxFiles) return prev;
       return [...prev, id];
     });
   };
@@ -126,7 +185,7 @@ export default function PhotoPicker({ open, onClose, onConfirm, maxFiles = 10 }:
   /* Confirm selection */
   const handleConfirm = () => {
     const ordered = selectedIds
-      .map(id => photos.find(p => p.id === id))
+      .map(id => media.find(p => p.id === id))
       .filter(Boolean) as PickedPhoto[];
     onConfirm(ordered.map(p => p.file));
     handleClose();
@@ -134,10 +193,20 @@ export default function PhotoPicker({ open, onClose, onConfirm, maxFiles = 10 }:
 
   /* Derived */
   const selectedCount = selectedIds.length;
-  const firstSelectedPhoto = photos.find(p => p.id === selectedIds[0]);
+  const firstSelectedItem = media.find(p => p.id === selectedIds[0]);
+
+  /* Filter by tab, then by search */
+  const tabFiltered = tab === "videos"
+    ? media.filter(m => m.mediaType === "video")
+    : tab === "photos"
+    ? media.filter(m => m.mediaType === "photo")
+    : media;
+
   const filtered = search.trim()
-    ? photos.filter(p => p.file.name.toLowerCase().includes(search.toLowerCase()))
-    : photos;
+    ? tabFiltered.filter(p => p.file.name.toLowerCase().includes(search.toLowerCase()))
+    : tabFiltered;
+
+  const isVideoTab = tab === "videos";
 
   const TABS = [
     { id: "photos",  label: "Photos",  Icon: () => <IconPhoto active={tab === "photos"} /> },
@@ -191,13 +260,13 @@ export default function PhotoPicker({ open, onClose, onConfirm, maxFiles = 10 }:
           {/* Title + subtitle */}
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 19, fontWeight: 800, color: "#111827", lineHeight: 1.2, letterSpacing: "-0.2px" }}>
-              Sélectionner des{" "}
-              <span style={{ color: G }}>photos</span>
+              Sélectionner{" "}
+              <span style={{ color: G }}>{isVideoTab ? "des vidéos" : "des photos"}</span>
             </div>
             <div style={{ fontSize: 13, color: "#6B7280", marginTop: 2, fontWeight: 500 }}>
-              Jusqu'à {maxFiles} photos{" "}
+              Jusqu'à {maxFiles} fichiers combinés{" "}
               {selectedCount > 0
-                ? <>• <span style={{ color: G, fontWeight: 700 }}>{selectedCount} sélectionnée{selectedCount > 1 ? "s" : ""}</span></>
+                ? <>• <span style={{ color: G, fontWeight: 700 }}>{selectedCount} sélectionné{selectedCount > 1 ? "s" : ""}</span></>
                 : null
               }
             </div>
@@ -232,7 +301,7 @@ export default function PhotoPicker({ open, onClose, onConfirm, maxFiles = 10 }:
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="Rechercher dans vos photos..."
+              placeholder={isVideoTab ? "Rechercher dans vos vidéos..." : "Rechercher dans vos photos..."}
               style={{
                 width: "100%", padding: "12px 14px 12px 42px",
                 borderRadius: 16, border: "1.5px solid #E5E7EB",
@@ -276,7 +345,7 @@ export default function PhotoPicker({ open, onClose, onConfirm, maxFiles = 10 }:
             return (
               <button
                 key={id}
-                onClick={() => setTab(id)}
+                onClick={() => handleTabChange(id)}
                 style={{
                   display: "flex", alignItems: "center", gap: 6,
                   padding: "8px 14px", borderRadius: 22, border: "none",
@@ -301,6 +370,7 @@ export default function PhotoPicker({ open, onClose, onConfirm, maxFiles = 10 }:
             <svg viewBox="0 0 24 24" width="14" height="14" fill="#374151"><path d="M6 9l6 6 6-6" /></svg>
           </button>
           <button
+            onClick={() => activeInput().current?.click()}
             style={{
               display: "flex", alignItems: "center", gap: 5,
               padding: "6px 12px", borderRadius: 20,
@@ -309,19 +379,18 @@ export default function PhotoPicker({ open, onClose, onConfirm, maxFiles = 10 }:
             }}
           >
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="2" />
-              <path d="M8 12l3 3 6-6" />
+              <path d="M12 5v14M5 12h14" />
             </svg>
-            Sélection multiple
+            {isVideoTab ? "Ajouter des vidéos" : "Sélection multiple"}
           </button>
         </div>
 
-        {/* ── Photo grid ──────────────────────────────────── */}
+        {/* ── Media grid ──────────────────────────────────── */}
         <div style={{ flex: 1, overflowY: "auto", padding: "0 12px", paddingBottom: selectedCount > 0 ? 92 : 16 }}>
-          {photos.length === 0 ? (
+          {filtered.length === 0 ? (
             /* ── Empty state ── */
             <div
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => activeInput().current?.click()}
               style={{
                 display: "flex", flexDirection: "column",
                 alignItems: "center", justifyContent: "center",
@@ -333,22 +402,33 @@ export default function PhotoPicker({ open, onClose, onConfirm, maxFiles = 10 }:
                 background: "#ECFDF5",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}>
-                <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke={G} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="3" width="18" height="18" rx="3" />
-                  <circle cx="8.5" cy="8.5" r="1.5" fill={G} />
-                  <path d="m21 15-5-5L5 21" />
-                </svg>
+                {isVideoTab ? (
+                  <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke={G} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="3" />
+                    <polygon points="10 8 16 12 10 16 10 8" fill={G} />
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke={G} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="3" />
+                    <circle cx="8.5" cy="8.5" r="1.5" fill={G} />
+                    <path d="m21 15-5-5L5 21" />
+                  </svg>
+                )}
               </div>
               <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: 16, fontWeight: 700, color: "#111827" }}>Accéder à votre galerie</div>
-                <div style={{ fontSize: 13.5, color: "#6B7280", marginTop: 4 }}>Appuyez pour sélectionner vos photos</div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: "#111827" }}>
+                  {isVideoTab ? "Accéder à vos vidéos" : "Accéder à votre galerie"}
+                </div>
+                <div style={{ fontSize: 13.5, color: "#6B7280", marginTop: 4 }}>
+                  {isVideoTab ? "Appuyez pour sélectionner vos vidéos" : "Appuyez pour sélectionner vos photos"}
+                </div>
               </div>
               <div style={{
                 background: G, color: "#fff", borderRadius: 24,
                 padding: "11px 28px", fontWeight: 700, fontSize: 14,
                 boxShadow: "0 2px 12px rgba(34,197,94,0.35)",
               }}>
-                Ouvrir la galerie
+                {isVideoTab ? "Ouvrir les vidéos" : "Ouvrir la galerie"}
               </div>
             </div>
           ) : (
@@ -357,13 +437,13 @@ export default function PhotoPicker({ open, onClose, onConfirm, maxFiles = 10 }:
               gridTemplateColumns: "repeat(4, 1fr)",
               gap: 3,
             }}>
-              {filtered.map(photo => {
-                const isSelected = selectedIds.includes(photo.id);
-                const selIdx = selectedIds.indexOf(photo.id);
+              {filtered.map(item => {
+                const isSelected = selectedIds.includes(item.id);
+                const selIdx = selectedIds.indexOf(item.id);
                 return (
                   <div
-                    key={photo.id}
-                    onClick={() => toggleSelect(photo.id)}
+                    key={item.id}
+                    onClick={() => toggleSelect(item.id)}
                     style={{
                       position: "relative", aspectRatio: "1 / 1",
                       borderRadius: 9, overflow: "hidden",
@@ -372,12 +452,16 @@ export default function PhotoPicker({ open, onClose, onConfirm, maxFiles = 10 }:
                       transition: "border-color .12s",
                     }}
                   >
-                    <img
-                      src={photo.previewUrl}
-                      alt={photo.file.name}
-                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                      loading="lazy"
-                    />
+                    {item.mediaType === "video" ? (
+                      <VideoThumbnail src={item.previewUrl} />
+                    ) : (
+                      <img
+                        src={item.previewUrl}
+                        alt={item.file.name}
+                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                        loading="lazy"
+                      />
+                    )}
                     {/* Subtle dim overlay when selected */}
                     {isSelected && (
                       <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.10)" }} />
@@ -423,7 +507,7 @@ export default function PhotoPicker({ open, onClose, onConfirm, maxFiles = 10 }:
 
               {/* ── Add more tile ── */}
               <div
-                onClick={() => fileInputRef.current?.click()}
+                onClick={() => activeInput().current?.click()}
                 style={{
                   aspectRatio: "1 / 1", borderRadius: 9,
                   background: "#F9FAFB", border: "2px dashed #E5E7EB",
@@ -440,14 +524,22 @@ export default function PhotoPicker({ open, onClose, onConfirm, maxFiles = 10 }:
           )}
         </div>
 
-        {/* ── Hidden file input ───────────────────────────── */}
+        {/* ── Hidden file inputs ───────────────────────────── */}
         <input
-          ref={fileInputRef}
+          ref={photoInputRef}
           type="file"
           accept="image/*"
           multiple
           style={{ display: "none" }}
-          onChange={handleFilesSelected}
+          onChange={e => handleFilesSelected(e, "photo")}
+        />
+        <input
+          ref={videoInputRef}
+          type="file"
+          accept="video/*"
+          multiple
+          style={{ display: "none" }}
+          onChange={e => handleFilesSelected(e, "video")}
         />
 
         {/* ── Bottom confirmation bar ─────────────────────── */}
@@ -462,15 +554,25 @@ export default function PhotoPicker({ open, onClose, onConfirm, maxFiles = 10 }:
             zIndex: 10,
           }}>
             {/* Thumbnail */}
-            {firstSelectedPhoto && (
+            {firstSelectedItem && (
               <div style={{ position: "relative", flexShrink: 0 }}>
-                <img
-                  src={firstSelectedPhoto.previewUrl}
-                  alt="preview"
-                  style={{ width: 52, height: 52, borderRadius: 11, objectFit: "cover", display: "block" }}
-                />
+                {firstSelectedItem.mediaType === "video" ? (
+                  <video
+                    src={firstSelectedItem.previewUrl}
+                    style={{ width: 52, height: 52, borderRadius: 11, objectFit: "cover", display: "block" }}
+                    muted
+                    playsInline
+                    preload="metadata"
+                  />
+                ) : (
+                  <img
+                    src={firstSelectedItem.previewUrl}
+                    alt="preview"
+                    style={{ width: 52, height: 52, borderRadius: 11, objectFit: "cover", display: "block" }}
+                  />
+                )}
                 <button
-                  onClick={e => { e.stopPropagation(); toggleSelect(firstSelectedPhoto.id); }}
+                  onClick={e => { e.stopPropagation(); toggleSelect(firstSelectedItem.id); }}
                   style={{
                     position: "absolute", top: -6, left: -6,
                     width: 18, height: 18, borderRadius: "50%",
@@ -489,7 +591,7 @@ export default function PhotoPicker({ open, onClose, onConfirm, maxFiles = 10 }:
             {/* Labels */}
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 14, fontWeight: 700, color: "#111827" }}>
-                {selectedCount} photo{selectedCount > 1 ? "s" : ""} sélectionnée{selectedCount > 1 ? "s" : ""}
+                {selectedCount} fichier{selectedCount > 1 ? "s" : ""} sélectionné{selectedCount > 1 ? "s" : ""}
               </div>
               <div style={{ fontSize: 12, color: G, marginTop: 2, cursor: "pointer" }}>
                 Appuyez pour voir l'aperçu →

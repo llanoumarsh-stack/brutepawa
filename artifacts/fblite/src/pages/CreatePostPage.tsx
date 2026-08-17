@@ -203,6 +203,7 @@ export default function CreatePostPage({ onPublish }: Props) {
   const [mediaIsVideo, setMediaIsVideo] = useState<boolean[]>([]);
   const [uploadingIdx, setUploadingIdx] = useState<number | null>(null);
   const [showPhotoPicker, setShowPhotoPicker] = useState(false);
+  const [photoPickerTab, setPhotoPickerTab] = useState<"photos" | "videos">("photos");
   const { upload, status: uploadStatus, phase: uploadPhase, progress, error: uploadError, reset: resetUpload } = useR2Upload();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
@@ -394,7 +395,7 @@ export default function CreatePostPage({ onPublish }: Props) {
         </svg>
       ),
       color: "var(--bp-primary)", bg: "#F0FDF4",
-      action: () => setShowPhotoPicker(true),
+      action: () => { setPhotoPickerTab("photos"); setShowPhotoPicker(true); },
     },
     {
       id: "video", label: "Vidéo",
@@ -404,7 +405,7 @@ export default function CreatePostPage({ onPublish }: Props) {
         </svg>
       ),
       color: "#EF4444", bg: "#FEF2F2",
-      action: () => videoInputRef.current?.click(),
+      action: () => { setPhotoPickerTab("videos"); setShowPhotoPicker(true); },
     },
     {
       id: "music", label: "Musique",
@@ -493,6 +494,7 @@ export default function CreatePostPage({ onPublish }: Props) {
         onClose={() => setShowPhotoPicker(false)}
         onConfirm={handleFilesFromPicker}
         maxFiles={10}
+        defaultTab={photoPickerTab}
       />
 
       {/* ══ HEADER ══ */}
