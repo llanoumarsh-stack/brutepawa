@@ -142,7 +142,6 @@ export default function PostDetailPage({ postId }: Props) {
   const [recDragX, setRecDragX]       = useState(0);
   const [recDragY, setRecDragY]       = useState(0);
 
-  const [showSearch, setShowSearch]     = useState(false);
   const [commentSearch, setCommentSearch] = useState("");
   const searchInputRef      = useRef<HTMLInputElement>(null);
 
@@ -269,7 +268,6 @@ export default function PostDetailPage({ postId }: Props) {
     try { setComments(await apiGetComments(postId)); } catch { /* silent */ }
   }, [postId]);
   useEffect(() => { loadComments(); }, [loadComments]);
-  useEffect(() => { setTimeout(() => inputRef.current?.focus(), 300); }, []);
 
   const reactWith = (type: string | null) => {
     const wasActive = userReaction === type;
@@ -348,7 +346,7 @@ export default function PostDetailPage({ postId }: Props) {
   };
 
   const searchQ   = commentSearch.trim().toLowerCase();
-  const isSearching = showSearch && searchQ.length >= 2;
+  const isSearching = searchQ.length >= 2;
 
   const topLevel = comments.filter(c => {
     if (c.parentId) return false;
@@ -411,33 +409,34 @@ export default function PostDetailPage({ postId }: Props) {
       {/* ── HEADER ─────────────────────────────────────────────── */}
       <div style={{ position:"sticky", top:0, zIndex:50, background:"rgba(247,249,251,0.92)", backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)", borderBottom:"1px solid rgba(0,0,0,0.05)", display:"flex", alignItems:"center", padding:"12px 16px", gap:12 }}>
         <button
-          onClick={() => { if (showSearch) { setShowSearch(false); setCommentSearch(""); } else window.history.back(); }}
+          onClick={() => { if (commentSearch) setCommentSearch(""); else window.history.back(); }}
           style={{ width:40, height:40, borderRadius:12, background:"#fff", border:"1px solid rgba(0,0,0,0.07)", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 1px 4px rgba(0,0,0,0.06)", flexShrink:0 }}
         >
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M20 12H4M10 6l-6 6 6 6" stroke="#111" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
         </button>
-        <div style={{ flex:1, overflow:"hidden" }}>
-          {showSearch ? (
-            <input
-              ref={searchInputRef}
-              autoFocus
-              value={commentSearch}
-              onChange={e => setCommentSearch(e.target.value)}
-              placeholder="Rechercher un commentaire…"
-              style={{ width:"100%", background:"#fff", border:"1.5px solid var(--bp-primary)", borderRadius:12, padding:"9px 14px", fontSize:14, fontWeight:600, color:"#111827", outline:"none", boxShadow:"0 0 0 3px rgba(34,197,94,0.12)" }}
-            />
-          ) : (
-            <div style={{ fontWeight:900, fontSize:17, color:"#111827" }}>Publication de {authorName}</div>
-          )}
+        {/* Champ de recherche toujours visible (maquette) */}
+        <div style={{ flex:1, overflow:"hidden", position:"relative", display:"flex", alignItems:"center" }}>
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" style={{ position:"absolute", left:14, pointerEvents:"none" }}>
+            <circle cx="11" cy="11" r="8" stroke="#9CA3AF" strokeWidth="2"/>
+            <path d="M21 21l-4.35-4.35" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+          <input
+            ref={searchInputRef}
+            value={commentSearch}
+            onChange={e => setCommentSearch(e.target.value)}
+            placeholder="Rechercher un commentaire..."
+            style={{ width:"100%", background:"#fff", border:"1px solid rgba(0,0,0,0.07)", borderRadius:22, padding:"10px 14px 10px 40px", fontSize:13.5, fontWeight:500, color:"#111827", outline:"none", boxShadow:"0 1px 4px rgba(0,0,0,0.05)" }}
+          />
         </div>
+        {/* Bouton filtre (deux curseurs) */}
         <button
-          onClick={() => {
-            if (showSearch) { setShowSearch(false); setCommentSearch(""); }
-            else { setShowSearch(true); setTimeout(() => searchInputRef.current?.focus(), 80); }
-          }}
-          style={{ width:40, height:40, borderRadius:12, background: showSearch ? "#DCFCE7" : "#fff", border:`1px solid ${showSearch ? "var(--bp-primary)" : "rgba(0,0,0,0.07)"}`, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 1px 4px rgba(0,0,0,0.06)", flexShrink:0, transition:"background .15s,border .15s" }}
+          onClick={() => searchInputRef.current?.focus()}
+          style={{ width:40, height:40, borderRadius:12, background:"#fff", border:"1px solid rgba(0,0,0,0.07)", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 1px 4px rgba(0,0,0,0.06)", flexShrink:0 }}
         >
-          <svg viewBox="0 0 24 24" width="19" height="19" fill="none"><circle cx="11" cy="11" r="8" stroke={showSearch ? "var(--bp-primary)" : "#64748B"} strokeWidth="2"/><path d="M21 21l-4.35-4.35" stroke={showSearch ? "var(--bp-primary)" : "#64748B"} strokeWidth="2" strokeLinecap="round"/></svg>
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round">
+            <line x1="4" y1="8" x2="20" y2="8"/><circle cx="9" cy="8" r="2.6" fill="#fff"/>
+            <line x1="4" y1="16" x2="20" y2="16"/><circle cx="15" cy="16" r="2.6" fill="#fff"/>
+          </svg>
         </button>
       </div>
 
@@ -473,6 +472,7 @@ export default function PostDetailPage({ postId }: Props) {
               <span style={{ fontSize:12, color:"#9CA3AF", fontWeight:500 }}>{timeAgo(post.createdAt)}</span>
               <span style={{ color:"#E5E7EB", fontSize:10 }}>·</span>
               <svg viewBox="0 0 24 24" width="13" height="13" fill="#9CA3AF"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+              <span style={{ fontSize:12, color:"var(--bp-primary)", fontWeight:700 }}>Public</span>
             </div>
           </div>
           <button style={{ width:36, height:36, borderRadius:10, background:"#F8FAFC", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
@@ -601,8 +601,16 @@ export default function PostDetailPage({ postId }: Props) {
         {/* Divider */}
         <div style={{ borderTop:"1px solid #F1F5F9", margin:"0 14px" }} />
 
-        {/* ── 4 Action buttons — equal width, no text cut ─────── */}
-        <div style={{ display:"flex", position:"relative" }}>
+        {/* ── 4 Action buttons — pastilles séparées (maquette) ── */}
+        <div style={{ display:"flex", position:"relative", gap:5, padding:"10px 8px 14px" }}>
+          <style>{`
+            .bp-pill { flex:1; display:flex; align-items:center; justify-content:center; gap:4px;
+              padding:10px 2px; background:#fff; border:1px solid #EEF0F3; border-radius:22px;
+              cursor:pointer; font-size:10.5px; font-weight:700; color:#64748B;
+              box-shadow:0 1px 4px rgba(15,23,42,0.04); white-space:nowrap; min-width:0;
+              transition:color .13s, background .13s; }
+            .bp-pill:active { background:#F8FAFC }
+          `}</style>
 
           {/* Reactions popup — Facebook-style 3D emoji bubbles */}
           {showReactions && (
@@ -639,40 +647,36 @@ export default function PostDetailPage({ postId }: Props) {
 
           {/* J'aime */}
           <button
-            className={`bp-action${userReaction ? " bp-action-active" : ""}`}
-            style={{ color: userReaction ? activeReaction.color : "#64748B", animation: userReaction ? "bp-like .3s ease" : undefined, borderRadius:"0 0 0 24px" }}
+            className="bp-pill"
+            style={{ color: userReaction ? activeReaction.color : "#64748B", animation: userReaction ? "bp-like .3s ease" : undefined }}
             onClick={() => { cancelReactionTimer(); reactWith("like"); }}
             onMouseDown={startReactionTimer} onMouseUp={cancelReactionTimer}
             onTouchStart={startReactionTimer} onTouchEnd={cancelReactionTimer}
           >
-            {activeReaction.icon(!!userReaction)}
-            <span style={{ fontSize:13, fontWeight:700 }}>
+            {userReaction
+              ? activeReaction.icon(true)
+              : <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="var(--bp-primary)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M7 10v12M15 5.88L14 10h5.83A2 2 0 0 1 21.83 12.49L19.04 19.5A2 2 0 0 1 17.12 21H7a2 2 0 0 1-2-2v-8.5a2 2 0 0 1 .586-1.414L10 5H13a2 2 0 0 1 2 2v-.12z"/></svg>}
+            <span>
               {userReaction ? activeReaction.label : "J'aime"}
               {reactionsTotal > 0 ? ` ${reactionsTotal}` : ""}
             </span>
           </button>
 
-          <div style={{ width:1, background:"#F1F5F9", alignSelf:"stretch", margin:"8px 0" }} />
-
           {/* Commenter */}
-          <button className="bp-action" onClick={() => inputRef.current?.focus()}>
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#64748B" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <button className="bp-pill" onClick={() => inputRef.current?.focus()}>
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#64748B" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             <span>Commenter</span>
           </button>
 
-          <div style={{ width:1, background:"#F1F5F9", alignSelf:"stretch", margin:"8px 0" }} />
-
           {/* Partager */}
-          <button className="bp-action">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#64748B" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
+          <button className="bp-pill">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#64748B" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
             <span>Partager</span>
           </button>
 
-          <div style={{ width:1, background:"#F1F5F9", alignSelf:"stretch", margin:"8px 0" }} />
-
           {/* Enregistrer */}
-          <button className={`bp-action${saved ? " bp-action-active" : ""}`} onClick={() => setSaved(s => !s)} style={{ borderRadius:"0 0 24px 0" }}>
-            <svg viewBox="0 0 24 24" width="18" height="18" fill={saved ? "var(--bp-primary)" : "none"} stroke={saved ? "var(--bp-primary)" : "#64748B"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          <button className="bp-pill" onClick={() => setSaved(s => !s)} style={{ color: saved ? "var(--bp-primary)" : "#64748B" }}>
+            <svg viewBox="0 0 24 24" width="17" height="17" fill={saved ? "var(--bp-primary)" : "none"} stroke={saved ? "var(--bp-primary)" : "#64748B"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
             <span>Enregistrer</span>
           </button>
         </div>
@@ -680,14 +684,20 @@ export default function PostDetailPage({ postId }: Props) {
 
       {/* ── COMMENTS CARD ───────────────────────────────────────── */}
       <div style={{ background:"#fff", margin:"12px 14px", borderRadius:24, boxShadow:"0 4px 24px rgba(0,0,0,0.07)", overflow:"hidden", padding:"4px 0 16px" }}>
-        {topLevel.length > 1 && (
-          <div style={{ display:"flex", justifyContent:"flex-end", padding:"10px 16px 4px" }}>
-            <button style={{ background:"none", border:"none", cursor:"pointer", fontSize:12, fontWeight:800, color:"#64748B", display:"flex", alignItems:"center", gap:4 }}>
-              Plus pertinents
-              <svg viewBox="0 0 24 24" width="13" height="13" fill="#64748B"><path d="M7 10l5 5 5-5z"/></svg>
-            </button>
+        {/* En-tête Commentaires (maquette) */}
+        <div style={{ padding:"14px 16px 2px" }}>
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+            <span style={{ fontWeight:900, fontSize:16.5, color:"#111827" }}>Commentaires</span>
+            <div style={{ display:"flex", alignItems:"center", gap:5 }}>
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span style={{ fontSize:13.5, fontWeight:800, color:"var(--bp-primary)" }}>{topLevel.length}</span>
+            </div>
           </div>
-        )}
+          <button style={{ background:"none", border:"none", cursor:"pointer", padding:"6px 0 8px", fontSize:12.5, fontWeight:700, color:"#64748B", display:"flex", alignItems:"center", gap:4 }}>
+            Les plus récents
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="#64748B"><path d="M7 10l5 5 5-5z"/></svg>
+          </button>
+        </div>
 
         <div style={{ padding:"4px 14px", display:"flex", flexDirection:"column", gap:12 }}>
           {topLevel.map((c, idx) => {
@@ -714,10 +724,13 @@ export default function PostDetailPage({ postId }: Props) {
                       )}
                     </div>
                     <div style={{ display:"flex", gap:14, paddingLeft:6, marginTop:9, fontSize:12, alignItems:"center" }}>
-                      <span style={{ color:"#E5E7EB", fontWeight:500 }}>{timeAgo(c.createdAt)}</span>
+                      <span style={{ color:"#9CA3AF", fontWeight:500 }}>{timeAgo(c.createdAt)}</span>
                       <button className="bp-cmnt-like" onClick={() => toggleCommentLike(c.id)} style={{ color: c.likedByMe ? "var(--bp-primary)" : "#9CA3AF" }}>J'aime</button>
                       <button className="bp-cmnt-like" onClick={() => replyingTo === c.id ? cancelReply() : startReply(c)} style={{ color: replyingTo === c.id ? "var(--bp-primary)" : "#9CA3AF" }}>
                         {replyingTo === c.id ? "Annuler" : "Répondre"}
+                      </button>
+                      <button className="bp-cmnt-like" onClick={() => toggleCommentLike(c.id)} style={{ marginLeft:"auto", display:"flex", alignItems:"center", paddingRight:4 }}>
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill={c.likedByMe ? "#F43F5E" : "none"} stroke={c.likedByMe ? "#F43F5E" : "#9CA3AF"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                       </button>
                     </div>
                   </div>
