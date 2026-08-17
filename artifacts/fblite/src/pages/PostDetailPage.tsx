@@ -115,8 +115,8 @@ interface Props { postId: number; }
 
 export default function PostDetailPage({ postId }: Props) {
   const navigate = useNavigate();
-  const rawUser  = localStorage.getItem("bp_user");
-  const user     = rawUser ? JSON.parse(rawUser) as { name: string; email: string; avatarUrl?: string; id?: number } : { name: "Moi", email: "" };
+  const rawUser  = localStorage.getItem("fb_user") ?? localStorage.getItem("bp_user");
+  const user     = rawUser ? JSON.parse(rawUser) as { name: string; email: string; avatarUrl?: string; id?: number } : { name: "", email: "" };
 
   const [post, setPost]               = useState<PostData | null>(null);
   const [loading, setLoading]         = useState(true);
@@ -648,7 +648,7 @@ export default function PostDetailPage({ postId }: Props) {
 
         <div style={{ padding:"4px 14px", display:"flex", flexDirection:"column", gap:12 }}>
           {topLevel.map((c, idx) => {
-            const cName    = `${c.authorFirstName} ${c.authorLastName}`;
+            const cName    = [c.authorFirstName, c.authorLastName].filter(Boolean).join(" ") || "Utilisateur";
             const cReplies = replies(c.id);
             return (
               <div key={c.id} style={{ animation:`bp-item .25s ${idx * 0.04}s both` }}>
@@ -683,7 +683,7 @@ export default function PostDetailPage({ postId }: Props) {
                 {cReplies.length > 0 && (
                   <div style={{ marginLeft:50, marginTop:8, display:"flex", flexDirection:"column", gap:8 }}>
                     {cReplies.map(r => {
-                      const rName = `${r.authorFirstName} ${r.authorLastName}`;
+                      const rName = [r.authorFirstName, r.authorLastName].filter(Boolean).join(" ") || "Utilisateur";
                       return (
                         <div key={r.id} style={{ display:"flex", gap:8, alignItems:"flex-start" }}>
                           <Avatar url={r.authorAvatarUrl} name={rName} size={30} borderWidth={2} />
