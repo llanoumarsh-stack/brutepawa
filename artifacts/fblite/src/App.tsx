@@ -80,6 +80,11 @@ import InstallBanner from "./components/InstallBanner";
 import TopLoadingBar from "./components/TopLoadingBar";
 import { usePushNotifications } from "./hooks/usePushNotifications";
 
+/** Réduit l'interface de 15 % — appliqué aux pages Messages & Paramètres */
+function Sc({ children }: { children: ReactNode }) {
+  return <div style={{ zoom: 0.85, transformOrigin: "top left" }}>{children}</div>;
+}
+
 class GlobalErrorBoundary extends Component<{ children: ReactNode }, { err: Error | null }> {
   state: { err: Error | null } = { err: null };
   static getDerivedStateFromError(e: Error) { return { err: e }; }
@@ -437,46 +442,48 @@ function AppContent() {
   }
 
   if (path === "/profile") {
-    return <Profile />;
+    return <Sc><Profile /></Sc>;
   }
 
   /* ── Settings hub ── */
   if (path === "/settings") {
     return (
-      <Layout onNewPost={handleNewPost}>
-        <ProfileMenuPage />
-      </Layout>
+      <Sc>
+        <Layout onNewPost={handleNewPost}>
+          <ProfileMenuPage />
+        </Layout>
+      </Sc>
     );
   }
-  if (path === "/settings/archive") return <ArchivePage />;
-  if (path === "/settings/privacy") return <PrivacyPage />;
-  if (path === "/settings/notifications") return <NotifSettingsPage />;
-  if (path === "/settings/language") return <LanguagePage />;
-  if (path === "/settings/data") return <DataModePage />;
-  if (path === "/settings/appearance") return <AppearancePage />;
-  if (path === "/settings/verify") return <VerifyPage />;
-  if (path === "/settings/badge") return <BadgePage />;
-  if (path === "/settings/premium") return <PremiumPage />;
-  if (path === "/settings/storage") return <StoragePage />;
+  if (path === "/settings/archive") return <Sc><ArchivePage /></Sc>;
+  if (path === "/settings/privacy") return <Sc><PrivacyPage /></Sc>;
+  if (path === "/settings/notifications") return <Sc><NotifSettingsPage /></Sc>;
+  if (path === "/settings/language") return <Sc><LanguagePage /></Sc>;
+  if (path === "/settings/data") return <Sc><DataModePage /></Sc>;
+  if (path === "/settings/appearance") return <Sc><AppearancePage /></Sc>;
+  if (path === "/settings/verify") return <Sc><VerifyPage /></Sc>;
+  if (path === "/settings/badge") return <Sc><BadgePage /></Sc>;
+  if (path === "/settings/premium") return <Sc><PremiumPage /></Sc>;
+  if (path === "/settings/storage") return <Sc><StoragePage /></Sc>;
 
   /* ── Messaging settings ── */
-  if (path === "/settings/messaging") return <MessagingSettingsPage />;
-  if (path === "/settings/messaging/online") return <OnlineStatusPage />;
-  if (path === "/settings/messaging/archive") return <MessagingArchivePage />;
-  if (path === "/settings/messaging/privacy") return <MessagingPrivacyPage />;
-  if (path === "/settings/messaging/requests") return <MessageRequestsPage />;
-  if (path === "/settings/messaging/notifications") return <MessagingNotifPage />;
-  if (path === "/settings/messaging/pinned") return <PinnedChatsPage />;
-  if (path === "/settings/messaging/download") return <AutoDownloadPage />;
-  if (path === "/settings/messaging/quality") return <MediaQualityPage />;
-  if (path === "/settings/messaging/backup") return <ChatBackupPage />;
-  if (path === "/settings/messaging/advanced") return <AdvancedSettingsPage />;
-  if (path === "/settings/messaging/about") return <AboutPage />;
-  if (path === "/settings/terms") return <TermsPage />;
-  if (path === "/settings/privacy-policy") return <PrivacyPolicyPage />;
-  if (path === "/settings/licenses") return <LicensesPage />;
-  if (path === "/settings/delete-account") return <AccountDeletionFlow />;
-  if (path === "/delete-showcase") return <DeleteShowcasePage />;
+  if (path === "/settings/messaging") return <Sc><MessagingSettingsPage /></Sc>;
+  if (path === "/settings/messaging/online") return <Sc><OnlineStatusPage /></Sc>;
+  if (path === "/settings/messaging/archive") return <Sc><MessagingArchivePage /></Sc>;
+  if (path === "/settings/messaging/privacy") return <Sc><MessagingPrivacyPage /></Sc>;
+  if (path === "/settings/messaging/requests") return <Sc><MessageRequestsPage /></Sc>;
+  if (path === "/settings/messaging/notifications") return <Sc><MessagingNotifPage /></Sc>;
+  if (path === "/settings/messaging/pinned") return <Sc><PinnedChatsPage /></Sc>;
+  if (path === "/settings/messaging/download") return <Sc><AutoDownloadPage /></Sc>;
+  if (path === "/settings/messaging/quality") return <Sc><MediaQualityPage /></Sc>;
+  if (path === "/settings/messaging/backup") return <Sc><ChatBackupPage /></Sc>;
+  if (path === "/settings/messaging/advanced") return <Sc><AdvancedSettingsPage /></Sc>;
+  if (path === "/settings/messaging/about") return <Sc><AboutPage /></Sc>;
+  if (path === "/settings/terms") return <Sc><TermsPage /></Sc>;
+  if (path === "/settings/privacy-policy") return <Sc><PrivacyPolicyPage /></Sc>;
+  if (path === "/settings/licenses") return <Sc><LicensesPage /></Sc>;
+  if (path === "/settings/delete-account") return <Sc><AccountDeletionFlow /></Sc>;
+  if (path === "/delete-showcase") return <Sc><DeleteShowcasePage /></Sc>;
 
   if (groupMatch) {
     const gid = parseInt(groupMatch.id, 10);
@@ -493,9 +500,11 @@ function AppContent() {
     const cgid = parseInt(chatGroupMatch.id, 10);
     if (!isNaN(cgid)) {
       return (
-        <Layout onNewPost={handleNewPost}>
-          <Messages initialGroupId={cgid} />
-        </Layout>
+        <Sc>
+          <Layout onNewPost={handleNewPost}>
+            <Messages initialGroupId={cgid} />
+          </Layout>
+        </Sc>
       );
     }
   }
@@ -504,14 +513,14 @@ function AppContent() {
   if (broadcastReceivedMatch) {
     const bid = parseInt(broadcastReceivedMatch.id, 10);
     if (!isNaN(bid)) {
-      return <BroadcastListPage broadcastId={bid} recipientView />;
+      return <Sc><BroadcastListPage broadcastId={bid} recipientView /></Sc>;
     }
   }
 
   if (broadcastMatch) {
     const bid = parseInt(broadcastMatch.id, 10);
     if (!isNaN(bid)) {
-      return <BroadcastListPage broadcastId={bid} />;
+      return <Sc><BroadcastListPage broadcastId={bid} /></Sc>;
     }
   }
 
@@ -534,14 +543,16 @@ function AppContent() {
     const initUid = uid ? parseInt(uid, 10) : undefined;
     const initGid = gid2 ? parseInt(gid2, 10) : undefined;
     return (
-      <Layout onNewPost={handleNewPost}>
-        <MessagesBoundary>
-          <Messages
-            initialUserId={!initUid || isNaN(initUid) ? undefined : initUid}
-            initialGroupId={!initGid || isNaN(initGid) ? undefined : initGid}
-          />
-        </MessagesBoundary>
-      </Layout>
+      <Sc>
+        <Layout onNewPost={handleNewPost}>
+          <MessagesBoundary>
+            <Messages
+              initialUserId={!initUid || isNaN(initUid) ? undefined : initUid}
+              initialGroupId={!initGid || isNaN(initGid) ? undefined : initGid}
+            />
+          </MessagesBoundary>
+        </Layout>
+      </Sc>
     );
   }
 
