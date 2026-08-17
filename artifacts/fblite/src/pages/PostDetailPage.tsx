@@ -143,6 +143,10 @@ export default function PostDetailPage({ postId }: Props) {
   const [recDragX, setRecDragX]       = useState(0);
   const [recDragY, setRecDragY]       = useState(0);
 
+  const [showSearch, setShowSearch]     = useState(false);
+  const [commentSearch, setCommentSearch] = useState("");
+  const searchInputRef      = useRef<HTMLInputElement>(null);
+
   const inputRef            = useRef<HTMLInputElement>(null);
   const mediaRecorderRef    = useRef<MediaRecorder | null>(null);
   const audioChunksRef      = useRef<Blob[]>([]);
@@ -344,8 +348,28 @@ export default function PostDetailPage({ postId }: Props) {
     }
   };
 
-  const topLevel = comments.filter(c => !c.parentId);
+  const searchQ   = commentSearch.trim().toLowerCase();
+  const isSearching = showSearch && searchQ.length >= 2;
+
+  const topLevel = comments.filter(c => {
+    if (c.parentId) return false;
+    if (!isSearching) return true;
+    const name = [c.authorFirstName, c.authorLastName].filter(Boolean).join(" ").toLowerCase();
+    const text = (c.content ?? "").toLowerCase();
+    return name.includes(searchQ) || text.includes(searchQ);
+  });
   const replies  = (pid: number) => comments.filter(c => c.parentId === pid);
+
+  /** Highlight occurrences of `q` inside `text` */
+  function Highlighted({ text, q }: { text: string; q: string }) {
+    if (!q || q.length < 2) return <>{text}</>;
+    const parts = text.split(new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi"));
+    return <>{parts.map((p, i) =>
+      p.toLowerCase() === q
+        ? <mark key={i} style={{ background:"#DCFCE7", color:"#166534", borderRadius:3, padding:"0 1px" }}>{p}</mark>
+        : p
+    )}</>;
+  }
   const activeReaction = REACTIONS.find(r => r.id === (userReaction ?? "like")) ?? REACTIONS[0];
 
   if (loading) return (
@@ -387,14 +411,34 @@ export default function PostDetailPage({ postId }: Props) {
 
       {/* ── HEADER ─────────────────────────────────────────────── */}
       <div style={{ position:"sticky", top:0, zIndex:50, background:"rgba(247,249,251,0.92)", backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)", borderBottom:"1px solid rgba(0,0,0,0.05)", display:"flex", alignItems:"center", padding:"12px 16px", gap:12 }}>
-        <button onClick={() => window.history.back()} style={{ width:40, height:40, borderRadius:12, background:"#fff", border:"1px solid rgba(0,0,0,0.07)", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 1px 4px rgba(0,0,0,0.06)", flexShrink:0 }}>
+        <button
+          onClick={() => { if (showSearch) { setShowSearch(false); setCommentSearch(""); } else window.history.back(); }}
+          style={{ width:40, height:40, borderRadius:12, background:"#fff", border:"1px solid rgba(0,0,0,0.07)", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 1px 4px rgba(0,0,0,0.06)", flexShrink:0 }}
+        >
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none"><path d="M20 12H4M10 6l-6 6 6 6" stroke="#111" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
         </button>
-        <div style={{ flex:1 }}>
-          <div style={{ fontWeight:900, fontSize:17, color:"#111827" }}>Publication de {authorName}</div>
+        <div style={{ flex:1, overflow:"hidden" }}>
+          {showSearch ? (
+            <input
+              ref={searchInputRef}
+              autoFocus
+              value={commentSearch}
+              onChange={e => setCommentSearch(e.target.value)}
+              placeholder="Rechercher un commentaire…"
+              style={{ width:"100%", background:"#fff", border:"1.5px solid #22C55E", borderRadius:12, padding:"9px 14px", fontSize:14, fontWeight:600, color:"#111827", outline:"none", boxShadow:"0 0 0 3px rgba(34,197,94,0.12)" }}
+            />
+          ) : (
+            <div style={{ fontWeight:900, fontSize:17, color:"#111827" }}>Publication de {authorName}</div>
+          )}
         </div>
-        <button style={{ width:40, height:40, borderRadius:12, background:"#fff", border:"1px solid rgba(0,0,0,0.07)", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 1px 4px rgba(0,0,0,0.06)" }}>
-          <svg viewBox="0 0 24 24" width="19" height="19" fill="none"><circle cx="11" cy="11" r="8" stroke="#64748B" strokeWidth="2"/><path d="M21 21l-4.35-4.35" stroke="#64748B" strokeWidth="2" strokeLinecap="round"/></svg>
+        <button
+          onClick={() => {
+            if (showSearch) { setShowSearch(false); setCommentSearch(""); }
+            else { setShowSearch(true); setTimeout(() => searchInputRef.current?.focus(), 80); }
+          }}
+          style={{ width:40, height:40, borderRadius:12, background: showSearch ? "#DCFCE7" : "#fff", border:`1px solid ${showSearch ? "#22C55E" : "rgba(0,0,0,0.07)"}`, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 1px 4px rgba(0,0,0,0.06)", flexShrink:0, transition:"background .15s,border .15s" }}
+        >
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none"><circle cx="11" cy="11" r="8" stroke={showSearch ? "#22C55E" : "#64748B"} strokeWidth="2"/><path d="M21 21l-4.35-4.35" stroke={showSearch ? "#22C55E" : "#64748B"} strokeWidth="2" strokeLinecap="round"/></svg>
         </button>
       </div>
 
@@ -657,10 +701,10 @@ export default function PostDetailPage({ postId }: Props) {
                   <div style={{ flex:1 }}>
                     <div style={{ position:"relative", display:"inline-block", maxWidth:"100%" }}>
                       <div style={{ background:"#F8FAFC", borderRadius:18, padding:"10px 14px", border:"1px solid rgba(0,0,0,0.04)" }}>
-                        <div style={{ fontWeight:800, fontSize:13, color:"#111827", marginBottom:3 }}>{cName}</div>
+                        <div style={{ fontWeight:800, fontSize:13, color:"#111827", marginBottom:3 }}><Highlighted text={cName} q={isSearching ? searchQ : ""} /></div>
                         {c.audioUrl
                           ? <VoicePlayer url={c.audioUrl} duration={c.audioDuration} />
-                          : <div style={{ fontSize:14, lineHeight:1.55 }}><ExpandableText text={c.content ?? ""} maxChars={150} fontSize={14} color="#111827" lineHeight={1.55} onMentionClick={name => { apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {}); }} /></div>
+                          : <div style={{ fontSize:14, lineHeight:1.55 }}>{isSearching ? <Highlighted text={c.content ?? ""} q={searchQ} /> : <ExpandableText text={c.content ?? ""} maxChars={150} fontSize={14} color="#111827" lineHeight={1.55} onMentionClick={name => { apiSearchUsers(name).then(u => { if (u[0]) navigate(`/user/${u[0].id}`); }).catch(() => {}); }} />}</div>
                         }
                       </div>
                       {c.likesCount > 0 && (
@@ -709,9 +753,14 @@ export default function PostDetailPage({ postId }: Props) {
           {topLevel.length === 0 && !loading && (
             <div style={{ textAlign:"center", padding:"24px 0 12px" }}>
               <div style={{ width:44, height:44, borderRadius:"50%", background:"#F0FDF4", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 10px" }}>
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#BBF7D0" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                {isSearching
+                  ? <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#BBF7D0" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                  : <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#BBF7D0" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                }
               </div>
-              <p style={{ color:"#E5E7EB", fontSize:13, margin:0 }}>Soyez le premier à commenter</p>
+              <p style={{ color:"#9CA3AF", fontSize:13, margin:0 }}>
+                {isSearching ? `Aucun commentaire trouvé pour "${commentSearch.trim()}"` : "Soyez le premier à commenter"}
+              </p>
             </div>
           )}
         </div>
