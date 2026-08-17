@@ -176,7 +176,7 @@ async function apiSave(prefs: AppearancePrefs): Promise<boolean> {
 interface AppearanceCtx {
   prefs:    AppearancePrefs;
   setPrefs: (p: AppearancePrefs) => void;
-  save:     () => Promise<boolean>;
+  save:     (prefsToSave?: AppearancePrefs) => Promise<boolean>;
   saving:   boolean;
   saved:    boolean;
 }
@@ -217,9 +217,9 @@ export function AppearanceProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(LS_KEY, JSON.stringify(p));
   }, []);
 
-  const save = useCallback(async (): Promise<boolean> => {
+  const save = useCallback(async (prefsToSave?: AppearancePrefs): Promise<boolean> => {
     setSaving(true);
-    const ok = await apiSave(prefs);
+    const ok = await apiSave(prefsToSave ?? prefs);
     if (ok) { setSaved(true); setTimeout(() => setSaved(false), 2000); }
     setSaving(false);
     return ok;

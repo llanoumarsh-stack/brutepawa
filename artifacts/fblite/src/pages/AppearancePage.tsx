@@ -135,7 +135,7 @@ export default function AppearancePage() {
 
   const handleSave = async () => {
     setPrefs(draft);
-    await save();
+    await save(draft); // passe draft directement pour éviter la capture du vieux state
   };
 
   return (
