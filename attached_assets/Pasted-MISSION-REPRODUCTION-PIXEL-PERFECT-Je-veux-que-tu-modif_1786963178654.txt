@@ -1,0 +1,728 @@
+MISSION — REPRODUCTION PIXEL-PERFECT
+
+Je veux que tu modifies UNIQUEMENT la page « À propos » de BrutePawa afin de reproduire exactement la maquette de référence fournie dans cette conversation.
+
+La capture de référence est la SOURCE DE VÉRITÉ ABSOLUE.
+
+Objectif : obtenir visuellement le même résultat que la capture, avec le minimum absolu de différence.
+
+Ne crée aucune nouvelle interprétation visuelle.
+Ne modernise rien.
+Ne simplifie rien.
+N'ajoute aucun élément.
+Ne supprime aucun élément.
+Ne change aucune couleur volontairement.
+Ne change aucun espacement volontairement.
+Ne remplace pas les icônes par des emojis.
+Ne remplace pas les icônes par des formes CSS approximatives.
+
+---
+
+1. RÈGLE ABSOLUE : LA MAQUETTE EST LA SOURCE DE VÉRITÉ
+
+Analyse attentivement l'image fournie avant de modifier le code.
+
+La référence doit être reproduite :
+
+- même hiérarchie visuelle
+- même positionnement
+- mêmes proportions
+- mêmes marges
+- mêmes espacements
+- mêmes dimensions relatives
+- mêmes arrondis
+- mêmes ombres
+- mêmes bordures
+- mêmes tailles de texte
+- mêmes poids de police
+- mêmes couleurs
+- mêmes icônes
+- mêmes chevrons
+- même organisation verticale
+- même densité visuelle
+- même footer
+- même disposition des éléments
+
+Ne fais aucune invention.
+
+Si une valeur n'est pas explicitement connue, déduis-la uniquement à partir des proportions visibles de la capture. Ne remplace jamais une valeur par une valeur générique simplement parce qu'elle est plus facile à coder.
+
+---
+
+2. RÉFÉRENCE DE DIMENSION
+
+La capture de référence est en :
+
+725 × 1536 px
+
+Utilise cette dimension comme référence principale pour contrôler le rendu.
+
+La page doit être parfaitement adaptée à la largeur mobile tout en conservant exactement les proportions de la maquette.
+
+Le contenu de l'application doit commencer sous la zone système Android.
+
+Ne recrée pas artificiellement la barre d'état Android ni les boutons de navigation Android : ils appartiennent au système du téléphone et doivent rester gérés par l'appareil.
+
+---
+
+3. ARRIÈRE-PLAN GLOBAL
+
+Le fond de la page est un blanc très légèrement teinté / gris extrêmement clair.
+
+Il ne doit surtout pas être :
+
+- blanc pur partout
+- gris foncé
+- coloré
+- gradient fortement visible
+
+Le rendu doit rester extrêmement lumineux, propre et premium.
+
+Conserve la légère différence visuelle entre :
+
+- le header
+- le fond principal
+- les cartes blanches.
+
+---
+
+4. HEADER
+
+En haut de la page :
+
+Bouton retour
+
+À gauche :
+
+- véritable icône de flèche gauche
+- style minimaliste
+- trait fin
+- couleur sombre
+- taille proportionnelle à la capture
+- position exactement comme dans la référence
+
+Utiliser une vraie icône vectorielle, par exemple depuis Lucide Icons, et non un caractère texte.
+
+Titre
+
+Centré horizontalement :
+
+À propos
+
+Le texte doit être :
+
+- noir / bleu-noir très foncé
+- gras
+- centré parfaitement
+- taille correspondant exactement à la référence
+- aucune ombre
+- aucune décoration
+
+Le header doit conserver la même hauteur que dans la capture.
+
+---
+
+5. ZONE LOGO BRUTEPAWA
+
+Sous le header, reproduire exactement la composition visible.
+
+Logo
+
+Afficher le logo BrutePawa :
+
+- carré vert
+- coins fortement arrondis
+- lettre blanche « b »
+- même proportion
+- même taille
+- même position
+- même couleur verte
+- même rayon de bordure
+- même ombre/lueur verte subtile
+
+Ne redessine pas un autre logo.
+
+Si le logo BrutePawa existe déjà dans le projet, réutilise exactement l'asset existant.
+
+Si un asset officiel existe dans "/public", "/assets" ou dans les ressources du projet, utilise-le plutôt que de recréer le logo.
+
+Effet lumineux
+
+Autour du logo :
+
+- halo vert très léger
+- plusieurs cercles/éléments décoratifs extrêmement subtils
+- faible opacité
+- positionnement identique à la référence
+
+Ces éléments doivent rester discrets.
+
+Ne transforme pas cette zone en animation.
+
+Aucune animation supplémentaire.
+
+---
+
+6. NOM BRUTEPAWA
+
+Sous le logo :
+
+BrutePawa
+
+Le nom doit être :
+
+- très foncé
+- fortement gras
+- centré
+- même taille visuelle que la capture
+
+À droite du nom :
+
+Badge de vérification
+
+Afficher le petit badge vert de vérification visible sur la référence.
+
+Il doit être :
+
+- vert
+- compact
+- aligné verticalement avec le nom
+- placé immédiatement après « BrutePawa »
+
+Utiliser une vraie icône vectorielle.
+
+---
+
+7. VERSION
+
+Sous BrutePawa :
+
+Créer un petit badge arrondi contenant :
+
+Version 1.0.0
+
+Le badge doit avoir :
+
+- fond vert extrêmement pâle
+- texte vert
+- coins arrondis
+- dimensions proches de la référence
+- aucune bordure forte
+- centrage parfait
+
+Ne transforme pas ce badge en bouton.
+
+---
+
+8. CARTE DE DESCRIPTION
+
+Sous la version, créer exactement la carte visible dans la capture.
+
+Carte :
+
+- fond blanc
+- grande largeur
+- centrée
+- coins fortement arrondis
+- bordure extrêmement subtile
+- ombre très légère
+- hauteur correspondant à la référence
+
+À l'intérieur :
+
+Guillemets
+
+En haut de la carte :
+
+“
+
+Utiliser de vrais guillemets graphiques / élément typographique correspondant au visuel.
+
+Couleur :
+
+vert BrutePawa.
+
+Ils doivent être grands et centrés.
+
+Texte
+
+Afficher exactement :
+
+BrutePawa est conçu pour vous
+connecter, partager et créer des relations
+authentiques.
+
+Le mot :
+
+authentiques.
+
+doit être vert BrutePawa.
+
+Le reste doit être sombre/gris foncé.
+
+Respecter exactement :
+
+- les retours à la ligne
+- le centrage
+- la taille
+- l'interligne
+- le poids
+- les espacements.
+
+Ne reformule surtout pas le texte.
+
+---
+
+9. GRANDE CARTE DES OPTIONS
+
+Sous la carte de description, créer une grande carte blanche contenant les options.
+
+La carte doit :
+
+- être presque pleine largeur
+- être centrée
+- avoir les mêmes marges gauche/droite que la référence
+- avoir les mêmes coins arrondis
+- avoir la même ombre
+- avoir la même hauteur
+- être divisée en lignes horizontales
+
+IMPORTANT :
+
+Les espacements entre chaque ligne doivent être mesurés visuellement à partir de la capture.
+
+Ne mets pas un "padding: 24px" générique partout si cela ne correspond pas à la référence.
+
+---
+
+10. OPTION 1
+
+Icône :
+
+document
+
+Utiliser une vraie icône vectorielle de document/file.
+
+L'icône est placée dans un cercle très pâle vert.
+
+Titre :
+
+Conditions d'utilisation
+
+Sous-titre :
+
+Règles et conditions d'utilisation de BrutePawa
+
+À droite :
+
+vrai chevron droit.
+
+Respecter exactement :
+
+- taille de l'icône
+- diamètre du cercle
+- couleur verte
+- position
+- taille du titre
+- taille du sous-titre
+- espacement titre/sous-titre
+- chevron
+- hauteur de ligne.
+
+---
+
+11. OPTION 2
+
+Icône :
+
+bouclier / shield
+
+Même structure que la première ligne.
+
+Titre :
+
+Politique de confidentialité
+
+Sous-titre :
+
+Découvrez comment nous protégeons
+vos données
+
+Le sous-titre doit pouvoir passer sur deux lignes exactement comme dans la référence.
+
+Chevron à droite.
+
+Utiliser une vraie icône vectorielle.
+
+---
+
+12. OPTION 3
+
+Icône :
+
+code / chevrons
+
+Titre :
+
+Licences et crédits
+
+Sous-titre :
+
+Bibliothèques et ressources tierces utilisées
+
+Chevron à droite.
+
+Utiliser une vraie icône vectorielle.
+
+---
+
+13. OPTION 4
+
+Icône :
+
+casque / support
+
+Titre :
+
+Nous contacter
+
+Sous-titre :
+
+Besoin d'aide ? Notre équipe est là
+
+Chevron à droite.
+
+Utiliser une vraie icône vectorielle.
+
+---
+
+14. OPTION 5 — ZONE ROUGE
+
+Cette ligne est volontairement différente.
+
+Fond légèrement rosé / rouge extrêmement pâle.
+
+Icône :
+
+corbeille / trash
+
+L'icône doit être rouge.
+
+Titre :
+
+Supprimer mon compte
+
+Le titre doit être rouge.
+
+Sous-titre :
+
+Supprimer définitivement votre compte
+et vos données
+
+Le sous-titre doit être gris.
+
+Chevron rouge à droite.
+
+Cette zone doit conserver exactement le contraste subtil visible dans la référence.
+
+Ne rendre cette zone ni trop rouge ni trop agressive.
+
+---
+
+15. SÉPARATEURS
+
+Entre les différentes options :
+
+utiliser de très fines lignes horizontales gris extrêmement clair.
+
+Elles doivent être :
+
+- discrètes
+- parfaitement alignées
+- continues dans la carte
+- presque imperceptibles.
+
+---
+
+16. FOOTER
+
+Sous la grande carte, centrer le footer.
+
+Afficher :
+
+Logo miniature
+
+Petit carré vert arrondi contenant le « b » blanc.
+
+À droite :
+
+BrutePawa
+
+Le tout sur une seule ligne.
+
+Copyright
+
+Afficher exactement :
+
+© 2026 BrutePawa. Tous droits réservés.
+
+Couleur gris clair.
+
+Centré.
+
+---
+
+17. RÉSEAUX SOCIAUX
+
+Sous le copyright :
+
+Afficher les cinq icônes visibles dans la référence :
+
+1. Globe
+2. Instagram
+3. Facebook
+4. X/Twitter
+5. YouTube
+
+Chaque icône doit être une vraie icône vectorielle, pas du texte et pas un emoji.
+
+Les icônes doivent être :
+
+- gris clair
+- petites
+- espacées régulièrement
+- centrées
+- disposées horizontalement.
+
+Ne rajoute aucun autre réseau social.
+
+---
+
+18. COULEUR DE MARQUE
+
+La couleur verte principale doit correspondre visuellement au vert BrutePawa déjà utilisé dans l'application.
+
+Référence de marque à conserver :
+
+#22C55E
+
+Utiliser cette couleur comme couleur principale pour :
+
+- logo
+- icônes principales
+- badge
+- texte accentué
+- éléments verts
+
+Mais ne transforme pas toute l'interface en vert.
+
+La majorité de l'interface reste blanche / gris très clair / noir.
+
+---
+
+19. TYPOGRAPHIE
+
+Utiliser la même police déjà utilisée par BrutePawa si elle existe dans le projet.
+
+Ne pas introduire une nouvelle police sans nécessité.
+
+La typographie doit avoir une apparence proche de :
+
+- police sans-serif moderne
+- excellente lisibilité mobile
+- titres semi-bold/bold
+- descriptions regular
+- hiérarchie très nette.
+
+Respecter particulièrement :
+
+- taille
+- poids
+- interligne
+- letter-spacing
+- alignement.
+
+---
+
+20. ICÔNES
+
+INTERDICTION ABSOLUE :
+
+❌ emojis
+❌ caractères Unicode utilisés comme icônes
+❌ icônes dessinées approximativement en CSS
+❌ symboles texte
+❌ SVG inventés inutilement
+
+Utiliser les vraies icônes vectorielles disponibles dans le projet.
+
+Si le projet utilise déjà Lucide React, conserver Lucide React.
+
+Les icônes doivent avoir un style cohérent :
+
+- stroke
+- épaisseur
+- dimensions
+- proportions.
+
+---
+
+21. RESPONSIVE
+
+La référence est mobile.
+
+La priorité absolue est le rendu mobile.
+
+À environ 725 px de largeur, le résultat doit être visuellement extrêmement proche de la capture.
+
+Sur les téléphones plus petits :
+
+- conserver les proportions
+- réduire uniquement ce qui doit l'être
+- empêcher les débordements
+- conserver les espacements relatifs
+- conserver les retours à la ligne logiques.
+
+Ne crée pas une nouvelle version desktop qui change complètement le design.
+
+---
+
+22. NE PAS TOUCHER AUX FONCTIONNALITÉS EXISTANTES
+
+Cette tâche concerne principalement le VISUEL.
+
+Avant de modifier :
+
+1. inspecte le composant actuel ;
+2. identifie les routes ;
+3. identifie les composants existants ;
+4. identifie les assets ;
+5. identifie les systèmes de navigation ;
+6. identifie les styles globaux.
+
+Ne casse aucune fonctionnalité existante.
+
+Les boutons doivent continuer à fonctionner.
+
+Les routes suivantes doivent rester fonctionnelles :
+
+- Conditions d'utilisation
+- Politique de confidentialité
+- Licences et crédits
+- Nous contacter
+- Supprimer mon compte
+
+Si elles existent déjà, réutilise-les.
+
+---
+
+23. AUCUNE INVENTION
+
+C'est une instruction CRITIQUE.
+
+NE PAS :
+
+- ajouter des animations
+- ajouter des gradients visibles
+- ajouter des boutons flottants
+- ajouter des illustrations
+- ajouter des statistiques
+- ajouter des informations supplémentaires
+- ajouter des textes marketing
+- ajouter des badges supplémentaires
+- ajouter des cartes supplémentaires
+- modifier le logo
+- modifier les couleurs
+- modifier la structure
+- ajouter un menu
+- ajouter des ombres excessives
+- ajouter du glassmorphism excessif
+- ajouter des effets 3D.
+
+La capture est le design final.
+
+---
+
+24. MÉTHODE DE TRAVAIL OBLIGATOIRE
+
+Avant d'écrire le code :
+
+Étape 1
+
+Inspecte le projet existant.
+
+Étape 2
+
+Trouve la page « À propos ».
+
+Étape 3
+
+Trouve tous les composants et assets déjà utilisés.
+
+Étape 4
+
+Compare le code actuel avec la capture.
+
+Étape 5
+
+Implémente uniquement les différences nécessaires.
+
+Étape 6
+
+Lance l'application.
+
+Étape 7
+
+Affiche la page sur une viewport mobile correspondant à 725 × 1536.
+
+Étape 8
+
+Compare le rendu à la capture de référence.
+
+Étape 9
+
+Corrige :
+
+- positions
+- marges
+- paddings
+- tailles
+- hauteurs
+- largeur des cartes
+- rayons
+- couleurs
+- typographie
+- icônes
+- alignements
+- espacements verticaux.
+
+Étape 10
+
+Refais une vérification finale.
+
+---
+
+25. CRITÈRE D'ACCEPTATION
+
+Je ne veux pas une page « inspirée de » la capture.
+
+Je veux une reproduction extrêmement fidèle de la capture.
+
+Le résultat doit donner l'impression que la capture et l'application proviennent exactement du même design system.
+
+Priorité :
+
+1. Fidélité visuelle
+2. Espacements
+3. Dimensions
+4. Typographie
+5. Couleurs
+6. Icônes
+7. Alignements
+8. Fonctionnalités existantes
+
+Ne considère pas la tâche terminée simplement parce que la page fonctionne.
+
+Elle est terminée uniquement lorsque le rendu visuel correspond très précisément à la référence.
+
+Ne m'explique pas longuement ce que tu pourrais faire. Analyse le projet, implémente directement les modifications et vérifie le résultat.
