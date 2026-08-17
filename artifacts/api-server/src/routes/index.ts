@@ -29,9 +29,11 @@ import pagesRouter from "./pages";
 import contactsRouter from "./contacts";
 import searchRouter from "./search";
 import locationRouter from "./location";
+import mediaRouter from "./media";
 
 const router: IRouter = Router();
 
+router.use(mediaRouter); // doit être avant authMiddleware
 router.use(healthRouter);
 router.use(authRouter);
 router.use(usersRouter);

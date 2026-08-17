@@ -10,8 +10,24 @@ import crypto from "crypto";
 import path from "path";
 
 const accountId  = process.env.CF_ACCOUNT_ID ?? process.env.R2_ACCOUNT_ID!;
-const bucketName = process.env.R2_BUCKET_NAME!;
+export const bucketName = process.env.R2_BUCKET_NAME!;
 const publicUrl  = (process.env.R2_PUBLIC_URL ?? "").replace(/\/$/, "");
+
+/**
+ * Convertit une URL publique R2 (r2.dev) en URL proxy interne /api/media/<key>.
+ * Utilisé dans toutes les réponses API pour contourner le CORS Chrome.
+ */
+export function toProxyUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  if (publicUrl && url.startsWith(publicUrl + "/")) {
+    const key = url.slice(publicUrl.length + 1);
+    return `/api/media/${key}`;
+  }
+  // Fallback: détecter pub-*.r2.dev
+  const m = url.match(/^https:\/\/pub-[a-f0-9]+\.r2\.dev\/(.+)$/);
+  if (m) return `/api/media/${m[1]}`;
+  return url; // URL externe (Cloudflare Stream, etc.) — inchangée
+}
 
 export const r2 = new S3Client({
   region: "auto",

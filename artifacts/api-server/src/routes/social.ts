@@ -200,15 +200,15 @@ router.get("/posts", requireAuth, async (req, res): Promise<void> => {
       id: r.id,
       authorId: r.authorId,
       authorName: r.authorFirstName && r.authorLastName ? `${r.authorFirstName} ${r.authorLastName}` : "Utilisateur",
-      authorAvatarUrl: r.authorAvatarUrl ?? null,
+      authorAvatarUrl: r.authorAvatarUrl,
       authorCountry: r.authorCountry ?? "BJ",
       content: r.content,
       imageUrl: r.imageUrl,
-      thumbnailUrl: r.thumbnailUrl ?? null,
+      thumbnailUrl: r.thumbnailUrl,
       musicTrackName: r.musicTrackName ?? null,
       musicArtist: r.musicArtist ?? null,
-      musicUrl: r.musicUrl ?? null,
-      musicArtworkUrl: r.musicArtworkUrl ?? null,
+      musicUrl: r.musicUrl,
+      musicArtworkUrl: r.musicArtworkUrl,
       musicDuration: r.musicDuration ?? null,
       musicLikesCount: (r as { musicLikesCount?: number }).musicLikesCount ?? 0,
       likesCount: r.likesCount,
@@ -879,7 +879,7 @@ router.get("/stories", requireAuth, async (req, res): Promise<void> => {
         authorId: r.authorId,
         authorName: r.authorFirstName && r.authorLastName
           ? `${r.authorFirstName} ${r.authorLastName}` : "Utilisateur",
-        authorAvatarUrl: r.authorAvatarUrl ?? null,
+        authorAvatarUrl: r.authorAvatarUrl,
         authorCountry: r.authorCountry ?? "BJ",
         stories: [],
       });
@@ -897,14 +897,14 @@ router.get("/stories", requireAuth, async (req, res): Promise<void> => {
     stories: a.stories.map(s => ({
       id: s.id,
       mediaUrl: s.mediaUrl,
-      thumbnailUrl:    s.thumbnailUrl ?? null,
+      thumbnailUrl:    s.thumbnailUrl,
       content:         s.content,
       bgColor:         s.bgColor,
       emoji:           s.emoji,
       musicTrackName:  s.musicTrackName ?? null,
       musicArtist:     s.musicArtist ?? null,
-      musicUrl:        s.musicUrl ?? null,
-      musicArtworkUrl: s.musicArtworkUrl ?? null,
+      musicUrl:        s.musicUrl,
+      musicArtworkUrl: s.musicArtworkUrl,
       expiresAt:       s.expiresAt,
       viewsCount:      s.viewsCount,
       createdAt:       s.createdAt,
@@ -1257,7 +1257,11 @@ router.get("/notifications", requireAuth, async (req, res): Promise<void> => {
     .orderBy(desc(notificationsTable.createdAt))
     .limit(50);
 
-  res.json(rows);
+  res.json(rows.map(r => ({
+    ...r,
+    actorAvatarUrl: (r as any).actorAvatarUrl,
+    thumbnailUrl: (r as any).thumbnailUrl,
+  })));
 });
 
 router.patch("/notifications/read-all", requireAuth, async (req, res): Promise<void> => {

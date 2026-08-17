@@ -118,7 +118,7 @@ router.get("/users", requireAuth, async (req, res): Promise<void> => {
       else if (req.fromUserId === me) friendshipStatus = "pending_sent";
       else friendshipStatus = "pending_received";
     }
-    return { ...u, friendshipStatus, requestId };
+    return { ...u, avatarUrl: u.avatarUrl, friendshipStatus, requestId };
   });
 
   res.json(result);
