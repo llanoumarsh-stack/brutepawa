@@ -4003,7 +4003,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     const showInfoCard = isNewGroup && !dismissedInfoPanel.has(activeGroupId);
 
     return createPortal(
-      <div style={{ position:"fixed", top:0, bottom:0, left:0, right:0, display:"flex", flexDirection:"column", zIndex:10000, overflow:"hidden",
+      <div style={{ position:"fixed", top: vpOffset ? `${vpOffset}px` : 0, left:0, right:0, height: vpHeight ? `${vpHeight}px` : "100dvh", display:"flex", flexDirection:"column", zIndex:10000, overflow:"hidden",
         backgroundImage:`url(${import.meta.env.BASE_URL}wallpapers/bp-chat-bg.jpg)`,
         backgroundSize:"cover", backgroundRepeat:"no-repeat", backgroundPosition:"center" }}>
         <style>{`
