@@ -64,6 +64,7 @@ import AdvancedSettingsPage from "./pages/AdvancedSettingsPage";
 import AboutPage from "./pages/AboutPage";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import LicensesPage from "./pages/LicensesPage";
 import DeleteShowcasePage from "./pages/DeleteShowcasePage";
 import BroadcastListPage from "./pages/BroadcastListPage";
 import PeoplePage from "./pages/PeoplePage";
@@ -473,6 +474,7 @@ function AppContent() {
   if (path === "/settings/messaging/about") return <AboutPage />;
   if (path === "/settings/terms") return <TermsPage />;
   if (path === "/settings/privacy-policy") return <PrivacyPolicyPage />;
+  if (path === "/settings/licenses") return <LicensesPage />;
   if (path === "/delete-showcase") return <DeleteShowcasePage />;
 
   if (groupMatch) {

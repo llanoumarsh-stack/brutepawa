@@ -115,6 +115,7 @@ export default function AboutPage() {
             icon={<Code2 size={20} color="var(--bp-primary)" strokeWidth={1.9} />}
             title="Licences et crédits"
             subtitle="Bibliothèques et ressources tierces utilisées"
+            onClick={() => navigate("/settings/licenses")}
           />
           <OptionRow
             icon={<Headphones size={20} color="var(--bp-primary)" strokeWidth={1.9} />}
