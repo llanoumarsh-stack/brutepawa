@@ -12,6 +12,7 @@ interface Props {
   trackName: string;
   artist?: string | null;
   artworkUrl?: string | null;
+  url?: string | null;
   duration?: string | null;
   glassmorphism?: boolean;
   audioLikes?: number;
@@ -36,7 +37,7 @@ function fmtK(n: number): string {
 }
 
 export default function MusicPlayerWidget({
-  trackName, artist, artworkUrl, duration, glassmorphism,
+  trackName, artist, artworkUrl, url, duration, glassmorphism,
   audioLikes = 0, postId,
 }: Props) {
   const total = parseTotal(duration);
@@ -46,19 +47,61 @@ export default function MusicPlayerWidget({
   const [likeCount,  setLikeCount]  = useState(audioLikes);
   const [heartAnim,  setHeartAnim]  = useState(false);
   const [haloAnim,   setHaloAnim]   = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const iv = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => { setLikeCount(audioLikes); }, [audioLikes]);
 
+  // ── Créer l'élément audio quand l'URL change ──
   useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = "";
+      audioRef.current = null;
+    }
+    if (!url) return;
+    const audio = new Audio(url);
+    audio.preload = "metadata";
+    audioRef.current = audio;
+    return () => {
+      audio.pause();
+      audio.src = "";
+    };
+  }, [url]);
+
+  // ── Sync play / pause avec l'élément audio ──
+  useEffect(() => {
+    const audio = audioRef.current;
     if (playing) {
+      // Timer de fallback pour UI (si pas d'audio réel)
       iv.current = setInterval(() =>
         setCur(s => { if (s >= total) { setPlaying(false); return 0; } return s + 1; }), 1000);
+
+      if (audio) {
+        audio.play().catch(() => {});
+        // Sync progression depuis l'audio réel
+        const onTime = () => setCur(Math.floor(audio.currentTime));
+        const onEnd  = () => { setPlaying(false); setCur(0); };
+        audio.addEventListener("timeupdate", onTime);
+        audio.addEventListener("ended", onEnd);
+        return () => {
+          if (iv.current) clearInterval(iv.current);
+          audio.removeEventListener("timeupdate", onTime);
+          audio.removeEventListener("ended", onEnd);
+        };
+      }
     } else {
       if (iv.current) clearInterval(iv.current);
+      if (audio) audio.pause();
     }
     return () => { if (iv.current) clearInterval(iv.current); };
   }, [playing, total]);
+
+  // ── Seek via barre de progression ──
+  const seekTo = (s: number) => {
+    setCur(s);
+    if (audioRef.current) audioRef.current.currentTime = s;
+  };
 
   const pct = total > 0 ? cur / total : 0;
 
@@ -271,7 +314,7 @@ export default function MusicPlayerWidget({
             style={{ position: "relative", height: S.progressH, background: "rgba(139,92,246,.18)", borderRadius: 2, cursor: "pointer" }}
             onClick={e => {
               const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
-              setCur(Math.max(0, Math.min(total, Math.round(((e.clientX - rect.left) / rect.width) * total))));
+              seekTo(Math.max(0, Math.min(total, Math.round(((e.clientX - rect.left) / rect.width) * total))));
             }}
           >
             <div style={{
@@ -308,7 +351,7 @@ export default function MusicPlayerWidget({
           </button>
 
           {/* Précédent */}
-          <button onClick={() => setCur(0)} style={{ background: "none", border: "none", cursor: "pointer", padding: S.iconPad, color: "#FFFFFF", display: "flex" }}>
+          <button onClick={() => seekTo(0)} style={{ background: "none", border: "none", cursor: "pointer", padding: S.iconPad, color: "#FFFFFF", display: "flex" }}>
             <svg width={S.iconSize} height={S.iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="19 20 9 12 19 4 19 20"/>
               <line x1="5" y1="19" x2="5" y2="5"/>
@@ -344,7 +387,7 @@ export default function MusicPlayerWidget({
           </button>
 
           {/* Suivant */}
-          <button onClick={() => setCur(s => Math.min(s + 30, total))} style={{ background: "none", border: "none", cursor: "pointer", padding: S.iconPad, color: "#FFFFFF", display: "flex" }}>
+          <button onClick={() => seekTo(Math.min(cur + 30, total))} style={{ background: "none", border: "none", cursor: "pointer", padding: S.iconPad, color: "#FFFFFF", display: "flex" }}>
             <svg width={S.iconSize} height={S.iconSize} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="5 4 15 12 5 20 5 4"/>
               <line x1="19" y1="5" x2="19" y2="19"/>
