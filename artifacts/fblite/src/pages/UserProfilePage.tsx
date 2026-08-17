@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { openImageViewer } from "../components/ImageViewer";
+import ImageViewer from "../components/ImageViewer";
 import {
   apiGetUserById, apiGetUsersWithStatus, apiGetFriendRequests, apiGetUserPosts,
   apiSendFriendRequest, apiAcceptFriendRequest, apiRejectFriendRequest,
@@ -1305,6 +1306,8 @@ export default function UserProfilePage({ userId }: { userId: number }) {
           {hideToast}
         </div>
       )}
+
+      <ImageViewer />
     </div>
   );
 }
