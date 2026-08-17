@@ -31,6 +31,7 @@ export default function Profile() {
   const [coverUrl, setCoverUrl] = useState<string>(localUser.coverUrl ?? "");
   const [uploadingWhat, setUploadingWhat] = useState<"avatar" | "cover" | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   /* Lock/unlock body scroll when profile menu sheet is open */
@@ -385,9 +386,9 @@ export default function Profile() {
             backgroundImage: coverUrl ? `url(${coverUrl})` : undefined,
             backgroundSize: "cover",
             backgroundPosition: "center",
-            cursor: "pointer",
+            cursor: coverUrl ? "zoom-in" : "default",
           }}
-          onClick={() => !uploadingWhat && coverInputRef.current?.click()}
+          onClick={() => coverUrl && setLightboxUrl(coverUrl)}
         >
           {/* Clipped layer for abstract shapes + rounded corners */}
           <div style={{ position: "absolute", inset: 0, borderRadius: "12px 12px 0 0", overflow: "hidden", pointerEvents: "none", zIndex: 1 }}>
@@ -430,22 +431,28 @@ export default function Profile() {
 
           {/* Avatar — overlapping cover */}
           <div className="profile-avatar-wrap" style={{ zIndex: 4 }}>
-            <div
-              onClick={e => { e.stopPropagation(); if (!uploadingWhat) avatarInputRef.current?.click(); }}
-              style={{ position: "relative", cursor: "pointer" }}
-            >
-              {avatarUrl ? (
-                <img src={avatarUrl} alt="Avatar" style={{ width: 96, height: 96, borderRadius: "50%", border: "4px solid #fff", objectFit: "cover", display: "block", boxShadow: "0 4px 16px rgba(0,0,0,0.22)" }} />
-              ) : (
-                <div className="profile-avatar-lg">{userInitials}</div>
-              )}
-              {/* Camera icon */}
-              <div style={{ position: "absolute", bottom: 2, right: 2, width: 28, height: 28, borderRadius: "50%", background: "#22C55E", border: "2.5px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 1px 6px rgba(34,197,94,0.35)" }}>
+            <div style={{ position: "relative" }}>
+              {/* Image cliquable → viewer */}
+              <div
+                onClick={e => { e.stopPropagation(); if (avatarUrl) setLightboxUrl(avatarUrl); }}
+                style={{ cursor: avatarUrl ? "zoom-in" : "default" }}
+              >
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Avatar" style={{ width: 96, height: 96, borderRadius: "50%", border: "4px solid #fff", objectFit: "cover", display: "block", boxShadow: "0 4px 16px rgba(0,0,0,0.22)" }} />
+                ) : (
+                  <div className="profile-avatar-lg">{userInitials}</div>
+                )}
+              </div>
+              {/* Icône caméra — uniquement pour uploader */}
+              <button
+                onClick={e => { e.stopPropagation(); if (!uploadingWhat) avatarInputRef.current?.click(); }}
+                style={{ position: "absolute", bottom: 2, right: 2, width: 28, height: 28, borderRadius: "50%", background: "#22C55E", border: "2.5px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 1px 6px rgba(34,197,94,0.35)", cursor: "pointer", padding: 0 }}
+              >
                 {uploadingWhat === "avatar"
                   ? <div style={{ width: 12, height: 12, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
                   : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                 }
-              </div>
+              </button>
               {/* Lock badge */}
               {isProfileLocked && (
                 <div style={{ position: "absolute", top: 2, left: 2, width: 24, height: 24, borderRadius: "50%", background: "linear-gradient(135deg,#22C55E,#16A34A)", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 6px rgba(34,197,94,0.4)" }}>
@@ -1034,6 +1041,32 @@ export default function Profile() {
             setShowReviewTags(true);
           }}
         />
+      )}
+
+      {/* ── Lightbox viewer (avatar / couverture) ── */}
+      {lightboxUrl && createPortal(
+        <div
+          onClick={() => setLightboxUrl(null)}
+          style={{
+            position: "fixed", inset: 0, zIndex: 99999,
+            background: "rgba(0,0,0,0.92)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            animation: "fadeIn 0.18s ease",
+          }}
+        >
+          <button
+            onClick={() => setLightboxUrl(null)}
+            style={{ position: "absolute", top: 16, right: 16, background: "rgba(255,255,255,0.15)", border: "none", borderRadius: "50%", width: 40, height: 40, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 22, lineHeight: 1 }}
+            aria-label="Fermer"
+          >×</button>
+          <img
+            src={lightboxUrl}
+            alt=""
+            onClick={e => e.stopPropagation()}
+            style={{ maxWidth: "95vw", maxHeight: "90vh", objectFit: "contain", borderRadius: 8, boxShadow: "0 8px 48px rgba(0,0,0,0.6)" }}
+          />
+        </div>,
+        document.body
       )}
     </div>
   );
