@@ -1,0 +1,1319 @@
+BRUTEPAWA — PROMPT MAÎTRE ULTRA-SÉVÈRE
+
+REPRODUCTION DE LA MAQUETTE À 1000 % — ZÉRO INTERPRÉTATION
+
+Tu dois implémenter l'écran Informations / détails du groupe BrutePawa visible dans la maquette fournie.
+
+La maquette fournie est la SOURCE DE VÉRITÉ VISUELLE ABSOLUE.
+
+Elle n'est PAS une inspiration.
+
+Elle n'est PAS une suggestion.
+
+Elle n'est PAS une direction artistique.
+
+Elle constitue une spécification visuelle à reproduire.
+
+---
+
+⚠️ RÈGLE N°1 — AUCUNE INTERPRÉTATION
+
+Toute interprétation personnelle est considérée comme un ÉCHEC.
+
+Toute simplification est considérée comme un ÉCHEC.
+
+Toute omission est considérée comme un ÉCHEC.
+
+Toute invention non présente dans la maquette est considérée comme un ÉCHEC.
+
+Toute modification injustifiée du design est considérée comme un ÉCHEC.
+
+99 % de fidélité = ÉCHEC.
+
+100 % = minimum obligatoire.
+
+L'objectif réel est 1000 % de qualité d'exécution, pas de modifier le design.
+
+Tu dois améliorer UNIQUEMENT :
+
+- la qualité technique ;
+- la netteté ;
+- la précision des alignements ;
+- la qualité des icônes ;
+- la qualité des animations ;
+- la cohérence responsive ;
+- les interactions ;
+- la performance ;
+- l'accessibilité ;
+
+sans modifier l'identité visuelle de la maquette.
+
+---
+
+1. ANALYSE OBLIGATOIRE AVANT CODAGE
+
+Avant de modifier le moindre fichier, inspecte entièrement le projet.
+
+Identifie :
+
+- framework ;
+- architecture ;
+- routes ;
+- composants ;
+- système de styles ;
+- système de couleurs ;
+- bibliothèque d'icônes ;
+- système responsive ;
+- backend ;
+- base de données ;
+- authentification ;
+- composants réutilisables ;
+- navigation existante.
+
+Ne détruis aucune fonctionnalité existante.
+
+Ne recrée pas inutilement ce qui existe déjà.
+
+Réutilise les composants existants lorsqu'ils respectent la maquette.
+
+---
+
+2. RÉFÉRENCE EXACTE
+
+La maquette cible est un écran mobile vertical de 848 × 1536 px.
+
+Tu dois respecter son ratio et sa composition.
+
+L'écran doit conserver :
+
+- fond blanc ;
+- barre système verte en haut ;
+- header blanc ;
+- contenu vertical ;
+- cartes blanches ;
+- ombres très légères ;
+- vert BrutePawa ;
+- textes noirs ;
+- textes secondaires gris ;
+- accents violet / bleu / orange / rouge lorsqu'ils existent dans la maquette ;
+- coins arrondis ;
+- espaces généreux ;
+- design minimal ;
+- aucune surcharge.
+
+---
+
+3. BARRE SYSTÈME SUPÉRIEURE
+
+Conserver visuellement la zone supérieure verte.
+
+Elle contient :
+
+- heure à gauche ;
+- icônes de notification ;
+- icônes réseau ;
+- indicateur de débit ;
+- Wi-Fi ;
+- réseau mobile ;
+- batterie.
+
+La zone doit être parfaitement intégrée à l'interface mobile.
+
+Ne pas créer une fausse barre système si l'application native la gère déjà correctement.
+
+Si le projet utilise une WebView/PWA, gérer correctement :
+
+- safe area ;
+- status bar ;
+- padding supérieur ;
+- contraste des icônes.
+
+---
+
+4. HEADER
+
+Sous la barre système :
+
+header blanc.
+
+À gauche :
+
+flèche retour verte
+
+À droite :
+
+icône modifier
+
+puis :
+
+menu trois points vertical
+
+Respecter :
+
+- taille ;
+- position ;
+- distance entre les icônes ;
+- poids du trait ;
+- zone tactile ;
+- alignement vertical.
+
+Il ne doit PAS y avoir de titre texte dans le header si celui-ci n'existe pas dans la maquette.
+
+Ne pas inventer un titre.
+
+---
+
+5. CARTE PRINCIPALE DU GROUPE
+
+Créer une grande carte blanche premium.
+
+Elle doit être visuellement légère.
+
+Utiliser :
+
+- rayon de bordure important ;
+- ombre extrêmement subtile ;
+- aucun contour agressif ;
+- padding équilibré ;
+- séparation visuelle naturelle.
+
+---
+
+6. AVATAR DU GROUPE
+
+Au centre :
+
+avatar circulaire violet.
+
+Lettre :
+
+O
+
+Le violet doit être proche de celui de la maquette.
+
+La lettre doit être :
+
+- blanche ;
+- centrée ;
+- épaisse ;
+- parfaitement proportionnée.
+
+Autour de l'avatar :
+
+anneau vert BrutePawa.
+
+Ajouter le petit badge circulaire de sécurité/statut en bas à droite exactement comme dans la référence.
+
+Le badge doit :
+
+- être circulaire ;
+- avoir un fond vert ;
+- avoir son icône blanche ;
+- posséder une séparation blanche propre avec l'avatar.
+
+Ne pas remplacer cet élément par un autre badge.
+
+---
+
+7. NOM DU GROUPE
+
+Sous l'avatar :
+
+Omat
+
+Typographie :
+
+- noire ;
+- très lisible ;
+- bold ;
+- centrée.
+
+Respecter la taille visuelle de la maquette.
+
+Ne pas utiliser une police fantaisiste.
+
+---
+
+8. INFORMATIONS DU GROUPE
+
+Sous le nom :
+
+2 membres • Groupe
+
+Le texte doit être :
+
+- gris clair ;
+- centré ;
+- suffisamment petit ;
+- parfaitement espacé.
+
+Le point "•" doit rester présent.
+
+Ne pas le remplacer par un autre séparateur.
+
+---
+
+9. BOUTON « TOUTES LES ACTIONS »
+
+Sous les informations :
+
+bouton horizontal :
+
+▦ Toutes les actions ˅
+
+Le bouton est extrêmement important.
+
+Il doit contenir :
+
+- icône grille ;
+- texte « Toutes les actions » ;
+- chevron descendant ;
+- couleur verte ;
+- fond très légèrement teinté vert ;
+- contour subtil ;
+- forme capsule ;
+- alignement parfait.
+
+Le bouton doit être interactif.
+
+Lorsqu'il est pressé :
+
+ouvrir un panneau/menu d'actions premium.
+
+Ne jamais supprimer ce bouton.
+
+---
+
+10. QUATRE ACTIONS PRINCIPALES
+
+Sous « Toutes les actions », afficher exactement quatre actions :
+
+1 — Message
+
+Icône conversation.
+
+Texte :
+
+Message
+
+2 — Silencieux
+
+Icône cloche avec indication "Zz".
+
+Texte :
+
+Silencieux
+
+3 — Vidéo
+
+Icône caméra vidéo.
+
+Texte :
+
+Vidéo
+
+4 — Quitter
+
+Icône sortie.
+
+Texte :
+
+Quitter
+
+---
+
+11. STYLE DES QUATRE ACTIONS
+
+Les quatre boutons doivent être alignés sur UNE SEULE LIGNE sur mobile lorsque l'espace le permet, exactement selon la composition de la maquette.
+
+Chaque bouton possède :
+
+- fond blanc ;
+- coins arrondis ;
+- ombre très légère ;
+- icône centrée ;
+- texte centré ;
+- espace vertical équilibré.
+
+Le vert est utilisé pour :
+
+- Message ;
+- Silencieux ;
+- Vidéo.
+
+Le rouge est réservé à :
+
+- Quitter.
+
+Ne pas transformer ces actions en gros boutons colorés.
+
+La maquette est minimaliste.
+
+---
+
+12. « SILENCIEUX »
+
+L'état silencieux doit être fonctionnel.
+
+Lors du clic :
+
+ouvrir une interface permettant de choisir la durée.
+
+Exemples :
+
+- 1 heure ;
+- 8 heures ;
+- 1 semaine ;
+- jusqu'à désactivation.
+
+Afficher clairement l'état actif.
+
+L'icône cloche + "Zz" doit rester cohérente avec l'état.
+
+---
+
+13. « QUITTER »
+
+Le bouton quitter doit être réellement fonctionnel.
+
+Avant de quitter :
+
+afficher une confirmation.
+
+Titre :
+
+Quitter le groupe ?
+
+Proposer :
+
+Annuler
+
+et
+
+Quitter le groupe
+
+Le bouton destructif doit être visuellement distinct.
+
+Après confirmation :
+
+- retirer l'utilisateur du groupe ;
+- mettre à jour les données ;
+- gérer la navigation ;
+- empêcher l'accès aux actions réservées aux membres.
+
+---
+
+14. « AJOUTER DES MEMBRES »
+
+Créer une grande carte blanche.
+
+Elle contient :
+
+icône utilisateur +.
+
+Titre :
+
+Ajouter des membres
+
+Sous-titre :
+
+Inviter des contacts dans le groupe
+
+À droite :
+
+chevron >
+
+Toute la ligne est cliquable.
+
+L'icône doit rester verte et légèrement entourée d'un fond vert très pâle.
+
+---
+
+15. PAGE « AJOUTER DES MEMBRES »
+
+Le clic doit ouvrir une véritable sous-page.
+
+Elle doit permettre :
+
+- rechercher des contacts ;
+- sélectionner des contacts ;
+- afficher avatar ;
+- nom ;
+- statut ;
+- sélection ;
+- confirmer l'ajout.
+
+Prévoir un bouton :
+
+Ajouter au groupe
+
+Ne pas créer une page vide.
+
+---
+
+16. LISTE DES MEMBRES
+
+La maquette contient exactement les membres visibles :
+
+LANOU sachadrac
+
+Avatar rose avec :
+
+LS
+
+Statut :
+
+en ligne
+
+Point de présence vert.
+
+À droite :
+
+menu trois points.
+
+---
+
+Pat Pat
+
+Avatar rouge avec :
+
+PP
+
+Sous le nom :
+
+Vous
+
+Badge :
+
+Propriétaire
+
+À droite :
+
+menu trois points.
+
+---
+
+17. CARTE MEMBRE
+
+Chaque ligne doit respecter :
+
+- avatar circulaire ;
+- nom ;
+- statut ;
+- position ;
+- menu trois points ;
+- séparateur subtil ;
+- hauteur ;
+- padding.
+
+Le badge Propriétaire doit être :
+
+- vert ;
+- contour vert ;
+- fond blanc ;
+- forme capsule.
+
+Ne pas transformer le badge en gros bouton.
+
+---
+
+18. MENU D'UN MEMBRE
+
+Le "⋮" de chaque membre doit être fonctionnel.
+
+Selon les permissions :
+
+afficher les actions pertinentes.
+
+Exemples :
+
+- Voir le profil ;
+- Envoyer un message ;
+- Appeler ;
+- Promouvoir ;
+- Retirer du groupe ;
+- Bloquer ;
+- Signaler.
+
+Les actions doivent dépendre du rôle réel.
+
+Un membre normal ne doit jamais recevoir les permissions du propriétaire.
+
+---
+
+19. STATISTIQUES DU GROUPE
+
+La carte :
+
+Statistiques du groupe
+
+doit être conservée.
+
+Sous-titre :
+
+Voir les statistiques de croissance et d'activité
+
+À droite :
+
+chevron.
+
+Icône de statistiques bleue dans un cercle très pâle.
+
+---
+
+20. QUATRE INDICATEURS
+
+Conserver EXACTEMENT les quatre indicateurs de la maquette.
+
+Indicateur 1
+
+Icône tendance verte.
+
+Valeur :
+
+12
+
+Libellé :
+
+Messages aujourd'hui
+
+---
+
+Indicateur 2
+
+Icône membres violette.
+
+Valeur :
+
+2
+
+Libellé :
+
+Membres total
+
+---
+
+Indicateur 3
+
+Icône œil bleue.
+
+Valeur :
+
+15
+
+Libellé :
+
+Vues
+
+Sous-texte :
+
+7 derniers jours
+
+---
+
+Indicateur 4
+
+Icône cœur orange.
+
+Valeur :
+
+3
+
+Libellé :
+
+Réactions
+
+Sous-texte :
+
+7 derniers jours
+
+---
+
+21. RÈGLE IMPORTANTE SUR LES STATISTIQUES
+
+Ces chiffres ne doivent PAS être du simple texte statique si les données réelles existent.
+
+Ils doivent être alimentés par les données du groupe.
+
+Le système doit pouvoir calculer :
+
+- messages ;
+- membres ;
+- vues ;
+- réactions ;
+- période ;
+- évolution.
+
+Les chiffres d'exemple de la maquette servent uniquement à reproduire l'apparence si aucune donnée réelle n'est disponible.
+
+---
+
+22. « ACTIVITÉ RÉCENTE »
+
+Sous les statistiques :
+
+carte/ligne :
+
+Activité récente
+
+Sous-titre :
+
+Groupe actif • Réponse rapide • Bonne engagement
+
+À gauche :
+
+icône d'activité verte.
+
+À droite :
+
+chevron.
+
+Cette ligne doit être interactive.
+
+---
+
+23. PAGE « ACTIVITÉ RÉCENTE »
+
+Créer une vraie sous-page.
+
+Afficher :
+
+- nouveaux membres ;
+- messages ;
+- réactions ;
+- vues ;
+- modifications du groupe ;
+- départs ;
+- invitations ;
+- événements administratifs.
+
+Afficher :
+
+- date ;
+- heure ;
+- utilisateur ;
+- action.
+
+Prévoir un état vide propre si aucune activité.
+
+---
+
+24. BARRE D'ACTIONS INFÉRIEURE
+
+La maquette contient une barre blanche arrondie.
+
+Elle contient exactement quatre actions :
+
+Modifier
+
+Icône crayon.
+
+Ajouter des commentaires
+
+Icône commentaire +.
+
+Redimensionner
+
+Icône carré de sélection.
+
+Supprimer
+
+Icône corbeille rouge.
+
+Ces quatre actions doivent rester visibles.
+
+Ne PAS les supprimer.
+
+Ne PAS les fusionner.
+
+Ne PAS les remplacer par un menu caché.
+
+---
+
+25. ACTION « MODIFIER »
+
+Ouvre la page d'édition du groupe.
+
+Permet de modifier les informations réellement modifiables :
+
+- nom ;
+- avatar ;
+- description ;
+- paramètres ;
+- permissions.
+
+Conserver la même esthétique.
+
+---
+
+26. ACTION « AJOUTER DES COMMENTAIRES »
+
+Cette action doit avoir une vraie fonction.
+
+Elle doit permettre de gérer l'autorisation ou l'ajout de commentaires selon la logique du produit.
+
+Ne pas afficher une fonctionnalité fictive.
+
+---
+
+27. ACTION « REDIMENSIONNER »
+
+Ne pas interpréter cette action comme un simple bouton décoratif.
+
+Si cette action correspond à la gestion d'affichage ou de dimensionnement d'un élément du groupe, implémenter le comportement correspondant au contexte réel du projet.
+
+Si aucune logique existante ne justifie une modification de dimension, ne pas inventer une fonctionnalité arbitraire.
+
+Conserver néanmoins l'action visuellement comme dans la maquette.
+
+---
+
+28. ACTION « SUPPRIMER »
+
+Action critique.
+
+Toujours demander confirmation.
+
+Afficher :
+
+Supprimer le groupe ?
+
+Puis expliquer clairement les conséquences.
+
+Actions :
+
+Annuler
+
+Supprimer
+
+Le bouton supprimer doit être rouge.
+
+Ne jamais supprimer directement au premier clic.
+
+---
+
+29. MENU « ⋮ » PRINCIPAL
+
+Le menu trois points situé dans le header doit être réellement fonctionnel.
+
+Il doit contenir les options pertinentes pour le propriétaire.
+
+Exemples possibles :
+
+- Paramètres du groupe ;
+- Liens d'invitation ;
+- Permissions ;
+- Notifications ;
+- Confidentialité ;
+- Statistiques ;
+- Export ;
+- Signaler ;
+- etc.
+
+Mais attention : ne pas inventer des fonctionnalités qui n'existent pas dans le projet.
+
+Utiliser uniquement les fonctionnalités réellement supportées.
+
+---
+
+30. « TOUTES LES ACTIONS » — ARCHITECTURE
+
+Le bouton « Toutes les actions » doit regrouper proprement les actions secondaires.
+
+Le panneau doit être :
+
+- premium ;
+- compact ;
+- lisible ;
+- non surchargé ;
+- facilement fermable ;
+- accessible ;
+- animé rapidement.
+
+Ne pas transformer l'écran en dashboard massif.
+
+---
+
+31. DESIGN — COULEUR
+
+Couleur principale BrutePawa :
+
+#22C55E
+
+Ne pas remplacer cette couleur par un vert aléatoire.
+
+Utiliser les couleurs secondaires uniquement lorsqu'elles correspondent à la fonction :
+
+- violet → membres ;
+- bleu → statistiques / vues ;
+- orange → réactions ;
+- rouge → actions destructives.
+
+Le reste doit rester neutre.
+
+---
+
+32. DESIGN — BLANC
+
+Le blanc est une partie essentielle du design.
+
+Ne pas rendre l'écran entièrement vert.
+
+Ne pas utiliser un fond sombre.
+
+Ne pas ajouter du glassmorphism excessif.
+
+Ne pas ajouter de gradients agressifs.
+
+Ne pas ajouter de néons.
+
+Ne pas ajouter de textures.
+
+La maquette est premium parce qu'elle est sobre.
+
+---
+
+33. OMBRES
+
+Les ombres doivent être :
+
+- extrêmement douces ;
+- diffuses ;
+- légères.
+
+Aucune ombre noire forte.
+
+Aucun effet 3D lourd.
+
+---
+
+34. BORDURES
+
+Utiliser des bordures très subtiles.
+
+Elles doivent séparer les surfaces sans devenir visibles comme des cadres lourds.
+
+---
+
+35. RAYONS
+
+Les cartes doivent avoir des coins généreusement arrondis.
+
+Conserver une cohérence entre :
+
+- carte principale ;
+- cartes membres ;
+- statistiques ;
+- boutons ;
+- barre d'actions.
+
+Ne pas utiliser des rayons différents sans raison.
+
+---
+
+36. TYPOGRAPHIE
+
+Utiliser une typographie moderne et extrêmement lisible.
+
+Hiérarchie stricte :
+
+1. nom du groupe ;
+2. titres de section ;
+3. valeurs statistiques ;
+4. labels ;
+5. descriptions.
+
+Les textes secondaires doivent être plus clairs.
+
+Les titres doivent rester noirs.
+
+Ne jamais utiliser de police fantaisie.
+
+---
+
+37. ICÔNES
+
+Utiliser de vraies icônes vectorielles cohérentes.
+
+Interdiction absolue :
+
+- emojis ;
+- caractères Unicode à la place d'icônes ;
+- icônes dessinées approximativement ;
+- mélange de styles ;
+- SVG de mauvaise qualité.
+
+Toutes les icônes doivent avoir :
+
+- même langage graphique ;
+- même épaisseur ;
+- même alignement ;
+- taille cohérente.
+
+---
+
+38. ESPACEMENTS — PRIORITÉ MAXIMALE
+
+Les espacements de la maquette doivent être analysés avant le développement.
+
+Respecter précisément :
+
+- distance entre header et carte ;
+- distance avatar/nom ;
+- distance nom/informations ;
+- distance informations/actions ;
+- espace entre les quatre actions ;
+- espace entre cartes ;
+- padding interne ;
+- hauteur des lignes ;
+- distance statistiques/activité ;
+- distance barre d'actions.
+
+Ne jamais utiliser des marges arbitraires.
+
+---
+
+39. RESPONSIVE
+
+La référence est mobile.
+
+L'interface doit être parfaite sur :
+
+- 320 px ;
+- 360 px ;
+- 375 px ;
+- 390 px ;
+- 412 px ;
+- 430 px ;
+- tablettes.
+
+Aucun :
+
+- débordement ;
+- chevauchement ;
+- texte coupé ;
+- bouton écrasé ;
+- scroll horizontal.
+
+Sur très petit écran, adapter intelligemment les dimensions sans modifier la hiérarchie de la maquette.
+
+---
+
+40. SAFE AREA
+
+Prendre en charge :
+
+- status bar ;
+- appareils avec encoche ;
+- navigation gestuelle ;
+- appareils Android ;
+- appareils iOS.
+
+Le contenu ne doit jamais passer sous les zones système.
+
+---
+
+41. INTERACTIONS
+
+Tous les éléments qui ressemblent à des boutons doivent fonctionner.
+
+Tester :
+
+- retour ;
+- modifier ;
+- menu ;
+- toutes les actions ;
+- message ;
+- silencieux ;
+- vidéo ;
+- quitter ;
+- ajouter membres ;
+- membre menu ;
+- statistiques ;
+- activité ;
+- modifier ;
+- commentaire ;
+- redimensionner ;
+- supprimer.
+
+---
+
+42. ÉTATS INTERACTIFS
+
+Chaque bouton doit avoir :
+
+- normal ;
+- pressed ;
+- disabled ;
+- loading si nécessaire ;
+- success si nécessaire ;
+- error si nécessaire.
+
+Les animations doivent être très rapides et discrètes.
+
+---
+
+43. LOADING
+
+Ne jamais afficher une page blanche pendant le chargement.
+
+Utiliser des skeletons cohérents avec la maquette.
+
+Pas de spinner gigantesque.
+
+---
+
+44. ERREURS
+
+Les erreurs doivent être propres.
+
+Exemple :
+
+Impossible de charger les informations du groupe.
+
+Action :
+
+Réessayer
+
+Ne jamais afficher une erreur technique brute à l'utilisateur.
+
+---
+
+45. PERMISSIONS
+
+Le propriétaire :
+
+- peut modifier ;
+- peut supprimer ;
+- peut gérer les membres ;
+- peut gérer les paramètres.
+
+Un membre normal :
+
+- ne doit pas voir les actions administratives interdites.
+
+La sécurité doit être appliquée côté backend.
+
+---
+
+46. PERFORMANCE
+
+L'écran doit être extrêmement fluide.
+
+Optimiser :
+
+- images ;
+- avatars ;
+- composants ;
+- requêtes ;
+- animations ;
+- rendu.
+
+Éviter les re-renders inutiles.
+
+---
+
+47. ACCESSIBILITÉ
+
+Chaque bouton doit avoir :
+
+- label accessible ;
+- zone tactile suffisamment grande ;
+- contraste suffisant ;
+- état focus ;
+- état pressed.
+
+Le menu trois points doit être accessible.
+
+---
+
+48. DONNÉES RÉELLES
+
+Ne pas hardcoder les données si elles existent dans la base.
+
+Le nom :
+
+"Omat"
+
+Les membres :
+
+"LANOU sachadrac"
+
+"Pat Pat"
+
+Les statistiques :
+
+"12 / 2 / 15 / 3"
+
+sont des valeurs de référence visuelle.
+
+Dans l'application réelle, elles doivent être remplacées par les données du groupe connecté lorsque celles-ci existent.
+
+---
+
+49. CE QU'IL NE FAUT ABSOLUMENT PAS FAIRE
+
+NE PAS :
+
+- changer le design ;
+- passer en dark mode ;
+- ajouter des gradients inutiles ;
+- ajouter des animations extravagantes ;
+- ajouter des graphiques énormes ;
+- ajouter des cartes supplémentaires ;
+- ajouter des informations non présentes ;
+- supprimer les statistiques ;
+- supprimer « Toutes les actions » ;
+- supprimer « Silencieux » ;
+- supprimer la barre d'actions ;
+- supprimer les trois points ;
+- supprimer les chevrons ;
+- remplacer les icônes ;
+- modifier les textes sans nécessité ;
+- modifier les couleurs ;
+- modifier la hiérarchie ;
+- surcharger l'écran.
+
+---
+
+50. PHILOSOPHIE DE DESIGN
+
+Le résultat doit donner l'impression d'un produit :
+
+premium 2026–2030
+
+mais sans tomber dans la mode temporaire.
+
+Le premium doit venir de :
+
+- précision ;
+- sobriété ;
+- cohérence ;
+- qualité des icônes ;
+- micro-interactions ;
+- typographie ;
+- alignement ;
+- proportions ;
+- fluidité ;
+- qualité technique.
+
+PAS de surcharge.
+
+---
+
+51. VALIDATION VISUELLE OBLIGATOIRE
+
+Après développement, compare visuellement ton rendu à la maquette fournie.
+
+Vérifie séparément :
+
+HEADER
+
+- [ ] flèche
+- [ ] modifier
+- [ ] trois points
+- [ ] dimensions
+- [ ] alignement
+
+PROFIL GROUPE
+
+- [ ] avatar violet
+- [ ] lettre O
+- [ ] anneau vert
+- [ ] badge
+- [ ] Omat
+- [ ] 2 membres • Groupe
+- [ ] Toutes les actions
+- [ ] icône grille
+- [ ] chevron
+
+ACTIONS
+
+- [ ] Message
+- [ ] Silencieux
+- [ ] Zz
+- [ ] Vidéo
+- [ ] Quitter
+- [ ] couleurs
+- [ ] dimensions
+- [ ] espacement
+
+MEMBRES
+
+- [ ] Ajouter des membres
+- [ ] sous-titre
+- [ ] chevron
+- [ ] LANOU sachadrac
+- [ ] LS
+- [ ] statut en ligne
+- [ ] menu
+- [ ] Pat Pat
+- [ ] PP
+- [ ] Vous
+- [ ] Propriétaire
+- [ ] menu
+
+STATISTIQUES
+
+- [ ] titre
+- [ ] sous-titre
+- [ ] icône bleue
+- [ ] chevron
+- [ ] 12
+- [ ] Messages aujourd'hui
+- [ ] 2
+- [ ] Membres total
+- [ ] 15
+- [ ] Vues
+- [ ] 7 derniers jours
+- [ ] 3
+- [ ] Réactions
+- [ ] 7 derniers jours
+
+ACTIVITÉ
+
+- [ ] icône verte
+- [ ] Activité récente
+- [ ] description
+- [ ] chevron
+
+BARRE INFÉRIEURE
+
+- [ ] Modifier
+- [ ] Ajouter des commentaires
+- [ ] Redimensionner
+- [ ] Supprimer
+- [ ] séparateurs
+- [ ] icônes
+- [ ] couleur rouge uniquement pour supprimer
+
+---
+
+52. TEST FINAL OBLIGATOIRE
+
+Avant de déclarer la tâche terminée :
+
+1. lancer l'application ;
+2. ouvrir l'écran du groupe ;
+3. tester chaque bouton ;
+4. tester chaque menu ;
+5. tester chaque sous-page ;
+6. tester les permissions ;
+7. tester les erreurs ;
+8. tester le chargement ;
+9. tester sur petit écran ;
+10. tester sur grand écran ;
+11. vérifier les espacements ;
+12. comparer avec la maquette ;
+13. corriger toutes les différences.
+
+---
+
+53. RÈGLE FINALE ABSOLUE
+
+Ne considère PAS la tâche terminée parce que :
+
+- le code compile ;
+- la page s'affiche ;
+- les boutons existent.
+-
