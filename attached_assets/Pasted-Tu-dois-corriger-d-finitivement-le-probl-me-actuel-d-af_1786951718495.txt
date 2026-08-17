@@ -1,0 +1,239 @@
+Tu dois corriger définitivement le problème actuel d'affichage des médias de BrutePawa liés à Cloudflare R2.
+
+CONTEXTE :
+
+- Le bucket Cloudflare R2 utilisé par BrutePawa s'appelle : "brutepawa".
+- Les images peuvent être uploadées, mais certaines images ne s'affichent plus correctement dans l'application.
+- Les médias concernés comprennent notamment les avatars, photos de profil et images des publications.
+- Le problème semble lié à l'accès public et/ou à la génération/utilisation des URLs R2.
+- NE SUPPRIME AUCUN FICHIER EXISTANT.
+- NE CHANGE PAS inutilement l'architecture actuelle.
+- NE MIGRE PAS vers un autre stockage.
+- NE recrée pas la base de données.
+- NE modifie pas les fonctionnalités qui fonctionnent déjà.
+
+OBJECTIF :
+Faire fonctionner correctement toute la chaîne :
+
+UPLOAD → CLOUDFLARE R2 → URL PUBLIQUE CORRECTE → BASE DE DONNÉES → AFFICHAGE DANS BRUTEPAWA
+
+ÉTAPE 1 — ANALYSE AVANT MODIFICATION
+
+Inspecte d'abord tout le code existant concernant :
+
+- configuration Cloudflare R2
+- variables d'environnement R2
+- client S3/R2
+- fonction d'upload
+- génération des URLs
+- stockage des URLs dans PostgreSQL/Supabase
+- affichage des avatars
+- affichage des images de publications
+- affichage des vidéos
+- composants React qui utilisent les URLs médias
+- éventuels proxys ou endpoints backend servant les médias
+
+Identifie précisément pourquoi les fichiers existent dans R2 mais ne sont plus accessibles depuis le navigateur.
+
+NE fais aucune modification avant d'avoir identifié la cause.
+
+ÉTAPE 2 — CONFIGURATION R2
+
+Vérifie que le bucket "brutepawa" utilise correctement l'accès public pour les médias qui doivent être visibles publiquement.
+
+Important :
+
+- Ne rends pas publics des fichiers qui doivent rester privés.
+- Ne supprime pas les paramètres de sécurité existants.
+- Ne modifie pas les permissions de fichiers sans raison.
+- Si l'application utilise déjà un domaine public R2 personnalisé, utilise ce domaine plutôt que d'en inventer un nouveau.
+
+Si l'accès public est nécessaire, vérifie que le code utilise réellement l'URL publique R2 correcte.
+
+NE DEVINE JAMAIS l'URL publique.
+
+Lis les variables d'environnement et la configuration existante pour déterminer le domaine réellement utilisé.
+
+ÉTAPE 3 — NORMALISATION DES URLS
+
+Crée ou corrige une fonction centrale de génération d'URL média.
+
+Elle doit gérer proprement :
+
+- avatar
+- photo de profil
+- image de publication
+- vidéo
+- miniature
+- image de couverture
+- tout autre média stocké dans R2
+
+Évite d'avoir plusieurs systèmes différents de génération d'URL dans l'application.
+
+Une URL enregistrée en base doit rester exploitable après rechargement de la page.
+
+Ne stocke pas une URL temporaire ou une URL signée avec une expiration courte pour les médias qui doivent être publics.
+
+ÉTAPE 4 — COMPATIBILITÉ AVEC LES ANCIENNES DONNÉES
+
+Très important :
+
+Les anciennes URLs déjà présentes dans PostgreSQL/Supabase doivent continuer à fonctionner si elles sont valides.
+
+Ne fais PAS une migration destructive.
+
+Si certaines anciennes URLs utilisent un ancien format R2, ajoute une logique de compatibilité permettant de les convertir proprement vers le nouveau format public lorsque cela est nécessaire.
+
+Ne modifie pas massivement la base de données sans nécessité.
+
+ÉTAPE 5 — UPLOAD
+
+Vérifie que chaque nouvel upload :
+
+1. envoie correctement le fichier vers R2 ;
+2. vérifie que l'upload a réussi ;
+3. récupère la clé exacte du fichier ;
+4. construit l'URL publique correcte ;
+5. enregistre cette URL ou cette clé dans la base de données ;
+6. retourne au frontend une URL immédiatement utilisable.
+
+Ne considère jamais l'upload comme réussi si R2 n'a pas réellement confirmé l'enregistrement du fichier.
+
+ÉTAPE 6 — AFFICHAGE FRONTEND
+
+Inspecte tous les composants utilisant les médias.
+
+Corrige notamment :
+
+- "<img>"
+- avatars
+- images de posts
+- images de profil
+- couvertures
+- vidéos
+- galeries
+- prévisualisations
+
+Ajoute une gestion propre des erreurs d'image.
+
+Si une image échoue :
+
+- ne provoque pas de crash React ;
+- affiche le placeholder déjà prévu par BrutePawa ;
+- ne lance pas de boucle infinie de rechargement.
+
+NE change pas le design visuel existant.
+
+ÉTAPE 7 — CACHE
+
+Vérifie également le cache du navigateur et les URLs.
+
+Évite qu'une ancienne URL cassée soit conservée indéfiniment.
+
+Mais ne désactive pas inutilement le cache global de BrutePawa.
+
+ÉTAPE 8 — SÉCURITÉ
+
+NE rends PAS toute l'infrastructure R2 accessible publiquement simplement pour résoudre un problème d'affichage.
+
+Le principe doit être :
+
+Médias publics → URL publique R2
+
+Médias privés → accès authentifié / URL signée
+
+Ne mets jamais :
+
+- "R2_ACCESS_KEY_ID"
+- "R2_SECRET_ACCESS_KEY"
+- secrets Cloudflare
+- clés Supabase privées
+
+dans le frontend.
+
+Ces informations doivent rester exclusivement côté serveur.
+
+ÉTAPE 9 — TESTS
+
+Après correction, effectue de vrais tests.
+
+Teste au minimum :
+
+TEST 1 :
+Créer un nouvel avatar → upload R2 → sauvegarde → rechargement de la page → avatar toujours visible.
+
+TEST 2 :
+Publier une nouvelle image → vérifier R2 → vérifier la base → vérifier l'affichage du post.
+
+TEST 3 :
+Actualiser complètement le navigateur → vérifier que les images restent visibles.
+
+TEST 4 :
+Ouvrir l'application depuis une nouvelle session/navigation privée → vérifier que les médias publics fonctionnent.
+
+TEST 5 :
+Supprimer une image → vérifier que la référence est correctement supprimée selon le comportement actuel de BrutePawa.
+
+TEST 6 :
+Vérifier qu'aucune clé secrète R2 n'est envoyée au navigateur.
+
+TEST 7 :
+Vérifier qu'aucune URL temporaire expirée n'est enregistrée par erreur pour un média public.
+
+ÉTAPE 10 — NE PAS INVENTER
+
+IMPORTANT :
+
+Tu dois travailler uniquement avec :
+
+- la configuration R2 réellement présente ;
+- les variables d'environnement réellement disponibles ;
+- le code existant ;
+- le schéma réel de la base de données.
+
+NE DEVINE PAS :
+
+- le nom d'un domaine ;
+- une variable d'environnement ;
+- une URL R2 ;
+- une table ;
+- une colonne ;
+- un bucket ;
+- une clé API.
+
+Si quelque chose manque, identifie précisément ce qui manque au lieu d'inventer une valeur.
+
+ÉTAPE 11 — CONSERVATION DE BRUTEPAWA
+
+Ne touche pas :
+
+- au design ;
+- aux couleurs ;
+- aux composants UI ;
+- aux fonctionnalités sociales ;
+- aux comptes utilisateurs ;
+- aux posts existants ;
+- aux commentaires ;
+- aux messages ;
+- aux relations utilisateurs ;
+- aux données existantes ;
+
+sauf si une modification est strictement nécessaire pour réparer les médias.
+
+À LA FIN :
+
+Donne-moi un rapport très court contenant :
+
+1. Cause exacte du problème.
+2. Fichiers modifiés.
+3. Configuration R2 utilisée.
+4. Méthode utilisée pour générer les URLs.
+5. Tests effectués.
+6. Résultat de chaque test.
+7. Confirmation qu'aucune donnée existante n'a été supprimée.
+8. Confirmation qu'aucun secret R2 n'est exposé au frontend.
+
+IMPORTANT :
+Ne me demande pas de refaire manuellement le code si tu peux effectuer la correction directement dans le projet.
+
+Travaille proprement, vérifie chaque modification et ne considère pas la tâche terminée tant qu'un nouvel avatar et une nouvelle image de publication ne sont pas réellement visibles après un rechargement complet de BrutePawa.
