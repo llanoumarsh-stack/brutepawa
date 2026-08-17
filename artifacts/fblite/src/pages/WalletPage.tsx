@@ -5,7 +5,7 @@ import {
   type ApiTx, type PublicUser, type ApiTokenPurchase, type ApiGiftHistoryItem,
 } from "../lib/api";
 
-const BP_GREEN   = "#22C55E";
+const BP_GREEN   = "var(--bp-primary)";
 const USD_RATE   = 600; // 1 USD = 600 FCFA
 
 type Modal = "depot" | "retirer" | "envoyer" | "recevoir" | "jetons" | "historique" | "cadeaux" | null;
@@ -56,7 +56,7 @@ const OPS = [
   { name: "MTN Mobile",   color: "#FFC107", text: "#000", abbr: "MTN",    avail: true  },
   { name: "Orange Money", color: "#FF6D00", text: "#fff", abbr: "Orange", avail: true  },
   { name: "Moov Money",   color: "#1565C0", text: "#fff", abbr: "Moov",   avail: true  },
-  { name: "Wave",         color: "#111827", text: "#fff", abbr: "Wave",   avail: true  },
+  { name: "Wave",         color: "var(--theme-text)", text: "#fff", abbr: "Wave",   avail: true  },
   { name: "Airtel Money", color: "#EF4444", text: "#fff", abbr: "Airtel", avail: true  },
   { name: "Free Money",   color: "#E91E63", text: "#fff", abbr: "Free",   avail: false },
 ];
@@ -213,7 +213,7 @@ export default function WalletPage() {
     };
   });
 
-  const txColor: Record<string,string> = { depot:"#22C55E", envoi:"#EF4444", reception:"#22C55E", paiement:"#F97316" };
+  const txColor: Record<string,string> = { depot:"var(--bp-primary)", envoi:"#EF4444", reception:"var(--bp-primary)", paiement:"#F97316" };
 
   /* ── stat computations ── */
   const now = new Date();
@@ -242,7 +242,7 @@ export default function WalletPage() {
 
   /* ── action tile config ── */
   const ACTIONS = [
-    { id:"depot" as Modal,     label:"Déposer",          icon: I.download, color:"#22C55E" },
+    { id:"depot" as Modal,     label:"Déposer",          icon: I.download, color:"var(--bp-primary)" },
     { id:"retirer" as Modal,   label:"Retirer",          icon: I.upload,   color:"#EF4444" },
     { id:"envoyer" as Modal,   label:"Envoyer",          icon: I.send,     color:"#6366F1" },
     { id:"recevoir" as Modal,  label:"Recevoir",         icon: I.receive,  color:"#F97316" },
@@ -256,7 +256,7 @@ export default function WalletPage() {
 
       {/* ══ 1. HERO WALLET CARD ══════════════════════════════ */}
       <div style={{
-        background:"linear-gradient(135deg, #0a8f32 0%, #22C55E 55%, #22C55E 100%)",
+        background:"linear-gradient(135deg, #0a8f32 0%, var(--bp-primary) 55%, var(--bp-primary) 100%)",
         borderRadius:"0 0 28px 28px", padding:"24px 20px 32px", position:"relative", overflow:"hidden",
       }}>
         {/* decorative circles */}
@@ -535,7 +535,7 @@ export default function WalletPage() {
             </div>
 
             <div style={{ padding:"16px 20px" }}>
-              {success && <div style={{ background:"#DCFCE7", color:"#16A34A", borderRadius:12, padding:"12px 16px", fontWeight:700, marginBottom:12, textAlign:"center" }}>{success}</div>}
+              {success && <div style={{ background:"#DCFCE7", color:"var(--bp-primary-dark)", borderRadius:12, padding:"12px 16px", fontWeight:700, marginBottom:12, textAlign:"center" }}>{success}</div>}
               {txError && <div style={{ background:"#FEE2E2", color:"#EF4444", borderRadius:12, padding:"12px 16px", fontWeight:700, marginBottom:12 }}>{txError}</div>}
 
               {/* ── DEPOT ── */}
@@ -582,7 +582,7 @@ export default function WalletPage() {
                     <div style={{ display:"flex", gap:10, overflowX:"auto", scrollbarWidth:"none", marginBottom:16, paddingBottom:4 }}>
                       {users.slice(0,8).map(u=>{
                         const name=`${u.firstName} ${u.lastName}`;
-                        const colors=["#22C55E","#EC4899","#8B5CF6","#D97706",BP_GREEN];
+                        const colors=["var(--bp-primary)","#EC4899","#8B5CF6","#D97706",BP_GREEN];
                         const color=colors[u.id%colors.length];
                         const inits=name.split(" ").map((w:string)=>w[0]).join("").slice(0,2).toUpperCase();
                         const sel=sendToId===u.id;
@@ -770,7 +770,7 @@ export default function WalletPage() {
 const lbl: React.CSSProperties = { display:"block", fontSize:13, fontWeight:700, color:"#64748B", marginBottom:6 };
 const ipt: React.CSSProperties = { width:"100%", background:"#F8FAFC", border:"1.5px solid #E5E7EB", borderRadius:12, padding:"12px 14px", fontSize:15, marginBottom:14, boxSizing:"border-box", fontFamily:"inherit", outline:"none", color:"#111827" };
 const btnGreen = (disabled: boolean): React.CSSProperties => ({
-  width:"100%", background: disabled?"#E5E7EB":"linear-gradient(135deg, #22C55E, #22C55E)", color:"#fff", border:"none",
+  width:"100%", background: disabled?"#E5E7EB":"linear-gradient(135deg, var(--bp-primary), var(--bp-primary))", color:"#fff", border:"none",
   borderRadius:14, padding:"15px 0", fontWeight:800, fontSize:16, cursor: disabled?"default":"pointer",
   boxShadow: disabled?"none":"0 6px 20px rgba(22,194,74,0.4)", opacity: disabled ? 0.7 : 1,
 });

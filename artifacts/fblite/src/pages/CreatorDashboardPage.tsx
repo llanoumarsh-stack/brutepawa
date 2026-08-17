@@ -88,7 +88,7 @@ export default function CreatorDashboardPage() {
     pending: "En attente", validated: "Validé", paid: "Payé", rejected: "Rejeté",
   };
   const statusColor: Record<string, string> = {
-    pending: "#FF9800", validated: "#2196F3", paid: "#22C55E", rejected: "#EF4444",
+    pending: "#FF9800", validated: "#2196F3", paid: "var(--bp-primary)", rejected: "#EF4444",
   };
 
   if (loading) return (
@@ -268,7 +268,7 @@ export default function CreatorDashboardPage() {
             )}
 
             {wdError   && <div style={{ background: "#FEE2E2", color: "#EF4444", borderRadius: 10, padding: "10px 14px", marginBottom: 12, fontSize: 13 }}>❌ {wdError}</div>}
-            {wdSuccess && <div style={{ background: "#DCFCE7", color: "#16A34A", borderRadius: 10, padding: "10px 14px", marginBottom: 12, fontSize: 13 }}>✅ {wdSuccess}</div>}
+            {wdSuccess && <div style={{ background: "#DCFCE7", color: "var(--bp-primary-dark)", borderRadius: 10, padding: "10px 14px", marginBottom: 12, fontSize: 13 }}>✅ {wdSuccess}</div>}
 
             <button onClick={handleWithdraw}
               disabled={wdLoading || !wdPhone || !wdTokens || parseInt(wdTokens, 10) < (w?.minWithdrawTokens ?? 1000)}

@@ -1,6 +1,6 @@
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"#22C55E",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"var(--bp-primary)",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
 
 const Footer = () => (
   <div style={{ textAlign:"center",padding:"20px 0 32px" }}>
@@ -41,7 +41,7 @@ export default function AdvancedSettingsPage() {
       <div style={{ padding:"16px 14px 0" }}>
         <div style={{ background:C.card,borderRadius:24,boxShadow:C.shadow,overflow:"hidden" }}>
           <NavRow bg="linear-gradient(135deg,#DCFCE7,#DCFCE7)"
-            icon={<svg width="18" height="18" viewBox="0 0 24 24" stroke="#22C55E" {...sv}><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>}
+            icon={<svg width="18" height="18" viewBox="0 0 24 24" stroke="var(--bp-primary)" {...sv}><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>}
             title="Langue" value="Français"/>
 
           <NavRow bg="linear-gradient(135deg,#FEF3C7,#FEF3C7)"
@@ -57,7 +57,7 @@ export default function AdvancedSettingsPage() {
             title="Fond d'écran"/>
 
           <NavRow bg="linear-gradient(135deg,#DCFCE7,#BBF7D0)"
-            icon={<svg width="18" height="18" viewBox="0 0 24 24" stroke="#22C55E" {...sv}><path d="M15 3h6v6"/><path d="M10 14L21 3"/><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/></svg>}
+            icon={<svg width="18" height="18" viewBox="0 0 24 24" stroke="var(--bp-primary)" {...sv}><path d="M15 3h6v6"/><path d="M10 14L21 3"/><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/></svg>}
             title="Raccourcis"/>
 
           <NavRow bg="linear-gradient(135deg,#FEE2E2,#FCA5A5)"
@@ -65,7 +65,7 @@ export default function AdvancedSettingsPage() {
             title="Nettoyer le cache" value="128 Mo"/>
 
           <NavRow bg="linear-gradient(135deg,#DCFCE7,#DCFCE7)"
-            icon={<svg width="18" height="18" viewBox="0 0 24 24" stroke="#22C55E" {...sv}><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>}
+            icon={<svg width="18" height="18" viewBox="0 0 24 24" stroke="var(--bp-primary)" {...sv}><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>}
             title="Aide"/>
 
           <NavRow bg="linear-gradient(135deg,#F1F5F9,#E5E7EB)"

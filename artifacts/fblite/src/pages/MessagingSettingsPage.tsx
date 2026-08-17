@@ -1,6 +1,6 @@
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"#22C55E",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"var(--bp-primary)",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
 
 const Back = ({onBack}:{onBack:()=>void}) => (
   <div style={{ background:"#fff",borderBottom:"1px solid "+C.border,height:56,display:"flex",alignItems:"center",padding:"0 6px",position:"sticky",top:0,zIndex:30 }}>
@@ -45,7 +45,7 @@ export default function MessagingSettingsPage() {
   const ROWS = [
     { bg:"linear-gradient(135deg,#D97706,#F59E0B)", icon:<svg width="20" height="20" viewBox="0 0 24 24" {...sv}><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>, title:"Notifications de messages", sub:"Personnalisez vos notifications", path:"/settings/messaging/notifications" },
     { bg:"linear-gradient(135deg,#0EA5E9,#06B6D4)", icon:<svg width="20" height="20" viewBox="0 0 24 24" {...sv}><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>, title:"Invitations", sub:"Gérez vos invitations reçues", path:"/settings/messaging/requests" },
-    { bg:"linear-gradient(135deg,#16A34A,#22C55E)", icon:<svg width="20" height="20" viewBox="0 0 24 24" {...sv}><polyline points="21,8 21,21 3,21 3,8"/><rect x="1" y="3" width="22" height="5"/></svg>, title:"Archive", sub:"Gérez vos conversations archivées", path:"/settings/messaging/archive" },
+    { bg:"linear-gradient(135deg,var(--bp-primary-dark),var(--bp-primary))", icon:<svg width="20" height="20" viewBox="0 0 24 24" {...sv}><polyline points="21,8 21,21 3,21 3,8"/><rect x="1" y="3" width="22" height="5"/></svg>, title:"Archive", sub:"Gérez vos conversations archivées", path:"/settings/messaging/archive" },
     { bg:"linear-gradient(135deg,#7C3AED,#8B5CF6)", icon:<svg width="20" height="20" viewBox="0 0 24 24" {...sv}><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17H4a2 2 0 01-2-2V5a2 2 0 012-2h16a2 2 0 012 2v10a2 2 0 01-2 2h-1"/><polygon points="12,15 7,10 17,10"/></svg>, title:"Discussions épinglées", sub:"Gérez vos discussions favorites", path:"/settings/messaging/pinned" },
     { bg:"linear-gradient(135deg,#0EA5E9,#3B82F6)", icon:<svg width="20" height="20" viewBox="0 0 24 24" {...sv}><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>, title:"Téléchargement automatique", sub:"Photos, vidéos, fichiers", path:"/settings/messaging/download" },
     { bg:"linear-gradient(135deg,#EC4899,#F472B6)", icon:<svg width="20" height="20" viewBox="0 0 24 24" {...sv}><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>, title:"Qualité des médias", sub:"Qualité standard", path:"/settings/messaging/quality" },
@@ -62,7 +62,7 @@ export default function MessagingSettingsPage() {
         <div style={{ background:C.card,borderRadius:24,boxShadow:C.shadow,padding:"16px",display:"flex",alignItems:"center",gap:14,marginBottom:12 }}>
           {user.avatarUrl
             ? <img src={user.avatarUrl} alt="" style={{ width:60,height:60,borderRadius:"50%",objectFit:"cover",border:"2px solid #fff",boxShadow:"0 2px 8px rgba(0,0,0,0.15)",flexShrink:0 }}/>
-            : <div style={{ width:60,height:60,borderRadius:"50%",background:"linear-gradient(135deg,#22C55E,#16A34A)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,border:"2px solid #fff",boxShadow:"0 2px 8px rgba(34,197,94,0.3)" }}><span style={{ fontSize:24,fontWeight:800,color:"#fff" }}>{name.charAt(0).toUpperCase()}</span></div>}
+            : <div style={{ width:60,height:60,borderRadius:"50%",background:"linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,border:"2px solid #fff",boxShadow:"0 2px 8px rgba(34,197,94,0.3)" }}><span style={{ fontSize:24,fontWeight:800,color:"#fff" }}>{name.charAt(0).toUpperCase()}</span></div>}
           <div style={{ flex:1 }}>
             <div style={{ display:"flex",alignItems:"center",gap:6,flexWrap:"wrap" }}>
               <span style={{ fontWeight:700,fontSize:16,color:C.text }}>{name}</span>

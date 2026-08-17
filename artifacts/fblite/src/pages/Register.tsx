@@ -28,22 +28,22 @@ const BENEFITS = [
   {
     label: "Connectez-vous avec vos amis",
     sub: "Trouvez et ajoutez des amis facilement.",
-    svg: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="8" cy="7" r="3.5" stroke="#22C55E" strokeWidth="1.6"/><path d="M2 18c0-3.31 2.69-5 6-5s6 1.69 6 5" stroke="#22C55E" strokeWidth="1.6" strokeLinecap="round"/><circle cx="16" cy="7" r="2.5" stroke="#22C55E" strokeWidth="1.4"/><path d="M18 18c0-2.21-1.34-4-4-4" stroke="#22C55E" strokeWidth="1.4" strokeLinecap="round"/></svg>,
+    svg: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="8" cy="7" r="3.5" stroke="var(--bp-primary)" strokeWidth="1.6"/><path d="M2 18c0-3.31 2.69-5 6-5s6 1.69 6 5" stroke="var(--bp-primary)" strokeWidth="1.6" strokeLinecap="round"/><circle cx="16" cy="7" r="2.5" stroke="var(--bp-primary)" strokeWidth="1.4"/><path d="M18 18c0-2.21-1.34-4-4-4" stroke="var(--bp-primary)" strokeWidth="1.4" strokeLinecap="round"/></svg>,
   },
   {
     label: "Partagez vos idées",
     sub: "Publiez du contenu et inspirez les autres.",
-    svg: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 14H2a1 1 0 01-1-1V8a1 1 0 011-1h2l5-4v15l-5-4z" stroke="#22C55E" strokeWidth="1.6" strokeLinejoin="round"/><path d="M15.5 8.5C16.5 9.5 17 10.5 17 11s-.5 1.5-1.5 2.5M18 6c2 1.5 3 3.3 3 5s-1 3.5-3 5" stroke="#22C55E" strokeWidth="1.6" strokeLinecap="round"/></svg>,
+    svg: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 14H2a1 1 0 01-1-1V8a1 1 0 011-1h2l5-4v15l-5-4z" stroke="var(--bp-primary)" strokeWidth="1.6" strokeLinejoin="round"/><path d="M15.5 8.5C16.5 9.5 17 10.5 17 11s-.5 1.5-1.5 2.5M18 6c2 1.5 3 3.3 3 5s-1 3.5-3 5" stroke="var(--bp-primary)" strokeWidth="1.6" strokeLinecap="round"/></svg>,
   },
   {
     label: "Développez votre réseau",
     sub: "Élargissez votre réseau professionnel.",
-    svg: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="12" width="5" height="8" rx="1.5" stroke="#22C55E" strokeWidth="1.6"/><rect x="8.5" y="7" width="5" height="13" rx="1.5" stroke="#22C55E" strokeWidth="1.6"/><rect x="15" y="3" width="5" height="17" rx="1.5" stroke="#22C55E" strokeWidth="1.6"/></svg>,
+    svg: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="12" width="5" height="8" rx="1.5" stroke="var(--bp-primary)" strokeWidth="1.6"/><rect x="8.5" y="7" width="5" height="13" rx="1.5" stroke="var(--bp-primary)" strokeWidth="1.6"/><rect x="15" y="3" width="5" height="17" rx="1.5" stroke="var(--bp-primary)" strokeWidth="1.6"/></svg>,
   },
   {
     label: "Découvrez du contenu inspirant",
     sub: "Explorez du contenu qui vous passionne.",
-    svg: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8.5" stroke="#22C55E" strokeWidth="1.6"/><ellipse cx="11" cy="11" rx="3.5" ry="8.5" stroke="#22C55E" strokeWidth="1.4"/><path d="M2.5 8.5h17M2.5 13.5h17" stroke="#22C55E" strokeWidth="1.4" strokeLinecap="round"/></svg>,
+    svg: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8.5" stroke="var(--bp-primary)" strokeWidth="1.6"/><ellipse cx="11" cy="11" rx="3.5" ry="8.5" stroke="var(--bp-primary)" strokeWidth="1.4"/><path d="M2.5 8.5h17M2.5 13.5h17" stroke="var(--bp-primary)" strokeWidth="1.4" strokeLinecap="round"/></svg>,
   },
 ];
 
@@ -91,7 +91,7 @@ const CSS = `
 
   .rg-btn {
     width:100%; height:56px; border:none; border-radius:50px; cursor:pointer;
-    background:linear-gradient(135deg,#00FF7A 0%,#22C55E 100%);
+    background:linear-gradient(135deg,#00FF7A 0%,var(--bp-primary) 100%);
     color:#111827; font-size:16px; font-weight:700; font-family:inherit;
     display:flex; align-items:center; justify-content:center; gap:10px;
     box-shadow:0 0 28px rgba(0,255,122,.45), 0 4px 16px rgba(0,0,0,.35);
@@ -99,7 +99,7 @@ const CSS = `
   }
   .rg-btn:hover:not(:disabled) { transform:translateY(-2px) scale(1.02); box-shadow:0 0 40px rgba(0,255,122,.6),0 6px 20px rgba(0,0,0,.4); filter:brightness(1.06); }
   .rg-btn:active:not(:disabled) { transform:scale(.97); }
-  .rg-btn:disabled { background:linear-gradient(135deg,#052e16,#052e16); color:#22C55E; box-shadow:none; cursor:not-allowed; }
+  .rg-btn:disabled { background:linear-gradient(135deg,#052e16,#052e16); color:var(--bp-primary); box-shadow:none; cursor:not-allowed; }
 
   .rg-btn-outline {
     width:100%; height:56px; border:1px solid #1C2A22; border-radius:50px; cursor:pointer;
@@ -137,7 +137,7 @@ function RegBackground() {
       <div style={{ position:"fixed", top:"28%", left:"-5%", width:"45%", height:1.5, background:"linear-gradient(90deg,transparent,rgba(0,255,122,.3),transparent)", borderRadius:2, transform:"rotate(22deg)", animation:"arcMove 9s ease-in-out infinite reverse", pointerEvents:"none", zIndex:0 }} />
       {/* Floating particles */}
       {[[8,22,1.8],[90,38,1.3],[16,60,2.0],[76,26,1.5],[52,12,1.1],[34,76,1.6],[68,50,1.2],[22,88,1.4]].map(([x,y,s],i) => (
-        <div key={i} style={{ position:"fixed", left:`${x}%`, top:`${y}%`, width:s, height:s, borderRadius:"50%", background:"#22C55E", boxShadow:`0 0 ${s*4}px rgba(0,255,122,.9)`, animation:`floatPt ${3.5+i*.45}s ease-in-out infinite`, animationDelay:`${i*.38}s`, pointerEvents:"none", zIndex:0 }} />
+        <div key={i} style={{ position:"fixed", left:`${x}%`, top:`${y}%`, width:s, height:s, borderRadius:"50%", background:"var(--bp-primary)", boxShadow:`0 0 ${s*4}px rgba(0,255,122,.9)`, animation:`floatPt ${3.5+i*.45}s ease-in-out infinite`, animationDelay:`${i*.38}s`, pointerEvents:"none", zIndex:0 }} />
       ))}
       {/* Digital globe at bottom */}
       <div style={{ position:"fixed", bottom:-20, left:"50%", transform:"translateX(-50%)", width:"120%", zIndex:0, pointerEvents:"none", opacity:0.9 }}>
@@ -145,9 +145,9 @@ function RegBackground() {
           <ellipse cx="200" cy="310" rx="190" ry="190" stroke="rgba(0,255,122,.2)" strokeWidth="1"/>
           {[258,292,328,364].map((y,i) => { const r=Math.sqrt(Math.max(0,190*190-(y-310)*(y-310))); return r>0?<ellipse key={i} cx="200" cy={y} rx={r} ry={r*.27} stroke="rgba(0,255,122,.14)" strokeWidth=".8"/>:null; })}
           {[-70,-35,0,35,70].map((a,i) => <ellipse key={i} cx="200" cy="310" rx={190*Math.abs(Math.cos(a*Math.PI/180))+1} ry="190" stroke="rgba(0,255,122,.11)" strokeWidth=".7" style={{ transform:`rotate(${a}deg)`, transformOrigin:"200px 310px" }}/>)}
-          {[[80,262],[130,248],[175,238],[225,238],[270,245],[310,258],[60,285],[110,272],[160,262],[200,258],[250,262],[300,273],[100,300],[155,285],[200,280],[248,286],[295,300],[150,305],[200,302],[245,306]].map(([x,y],i) => <circle key={i} cx={x} cy={y} r="2.5" fill="#22C55E" fillOpacity={.7-i*.02}/>)}
-          {[[80,262,130,248],[130,248,175,238],[175,238,225,238],[225,238,270,245],[270,245,310,258],[60,285,110,272],[110,272,160,262],[160,262,200,258],[200,258,250,262],[250,262,300,273],[100,300,155,285],[155,285,200,280],[200,280,248,286],[130,248,110,272],[175,238,160,262],[225,238,200,258],[200,258,200,280]].map(([x1,y1,x2,y2],i) => <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#22C55E" strokeOpacity=".25" strokeWidth=".8"/>)}
-          {[[175,238],[200,258]].map(([x,y],i) => <circle key={i} cx={x} cy={y} r="5" fill="none" stroke="#22C55E" strokeOpacity=".45" strokeWidth="1"><animate attributeName="r" values="3;9;3" dur={`${2.2+i*.8}s`} repeatCount="indefinite"/><animate attributeName="stroke-opacity" values=".5;0;.5" dur={`${2.2+i*.8}s`} repeatCount="indefinite"/></circle>)}
+          {[[80,262],[130,248],[175,238],[225,238],[270,245],[310,258],[60,285],[110,272],[160,262],[200,258],[250,262],[300,273],[100,300],[155,285],[200,280],[248,286],[295,300],[150,305],[200,302],[245,306]].map(([x,y],i) => <circle key={i} cx={x} cy={y} r="2.5" fill="var(--bp-primary)" fillOpacity={.7-i*.02}/>)}
+          {[[80,262,130,248],[130,248,175,238],[175,238,225,238],[225,238,270,245],[270,245,310,258],[60,285,110,272],[110,272,160,262],[160,262,200,258],[200,258,250,262],[250,262,300,273],[100,300,155,285],[155,285,200,280],[200,280,248,286],[130,248,110,272],[175,238,160,262],[225,238,200,258],[200,258,200,280]].map(([x1,y1,x2,y2],i) => <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--bp-primary)" strokeOpacity=".25" strokeWidth=".8"/>)}
+          {[[175,238],[200,258]].map(([x,y],i) => <circle key={i} cx={x} cy={y} r="5" fill="none" stroke="var(--bp-primary)" strokeOpacity=".45" strokeWidth="1"><animate attributeName="r" values="3;9;3" dur={`${2.2+i*.8}s`} repeatCount="indefinite"/><animate attributeName="stroke-opacity" values=".5;0;.5" dur={`${2.2+i*.8}s`} repeatCount="indefinite"/></circle>)}
         </svg>
       </div>
     </>
@@ -163,7 +163,7 @@ function ProgressDots({ step }: { step: number }) {
         <div key={i} style={{
           height:6, borderRadius:3,
           transition:"all .5s cubic-bezier(.16,1,.3,1)",
-          background: i < step ? "#22C55E" : "#064E3B",
+          background: i < step ? "var(--bp-primary)" : "#064E3B",
           width: i === step-1 ? 28 : 24,
           boxShadow: i < step ? "0 0 6px rgba(0,255,122,.5)" : "none",
         }} />
@@ -245,7 +245,7 @@ function LangSheet({ current, onSelect, onClose, regionFlag, regionName }: {
             <button key={l.code} onClick={() => { onSelect(l); onClose(); }} style={{ width:"100%", display:"flex", alignItems:"center", gap:12, height:52, padding:"0 12px", borderRadius:12, background:"none", border:"none", cursor:"pointer", fontFamily:"inherit" }}>
               <span style={{ fontSize:22 }}>{l.flag}</span>
               <span style={{ flex:1, fontSize:15, fontWeight:500, color:"#E5E7EB", textAlign:"left" }}>{l.nameNative}</span>
-              {l.code===current.code && <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4L13 4" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+              {l.code===current.code && <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4L13 4" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
             </button>
           ))}
         </div>
@@ -253,11 +253,11 @@ function LangSheet({ current, onSelect, onClose, regionFlag, regionName }: {
           <div style={{ padding:"10px 16px 28px", borderTop:"1px solid rgba(255,255,255,0.06)" }}>
             <div style={{ display:"flex", alignItems:"center", gap:10, border:"1px solid rgba(34,197,94,0.15)", borderRadius:12, padding:"11px 14px", background:"rgba(34,197,94,0.06)" }}>
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M7 1.3C5.12 1.3 3.6 2.82 3.6 4.7c0 2.84 3.4 7.6 3.4 7.6s3.4-4.76 3.4-7.6C10.4 2.82 8.88 1.3 7 1.3z" stroke="#22C55E" strokeWidth="1.2"/>
-                <circle cx="7" cy="4.7" r="1.1" stroke="#22C55E" strokeWidth="1.2"/>
+                <path d="M7 1.3C5.12 1.3 3.6 2.82 3.6 4.7c0 2.84 3.4 7.6 3.4 7.6s3.4-4.76 3.4-7.6C10.4 2.82 8.88 1.3 7 1.3z" stroke="var(--bp-primary)" strokeWidth="1.2"/>
+                <circle cx="7" cy="4.7" r="1.1" stroke="var(--bp-primary)" strokeWidth="1.2"/>
               </svg>
               <span style={{ fontSize:12, color:"#64748B", fontWeight:500 }}>Pays détecté</span>
-              <span style={{ marginLeft:"auto", fontSize:14, fontWeight:700, color:"#22C55E" }}>{regionFlag} {regionName}</span>
+              <span style={{ marginLeft:"auto", fontSize:14, fontWeight:700, color:"var(--bp-primary)" }}>{regionFlag} {regionName}</span>
             </div>
           </div>
         )}
@@ -273,7 +273,7 @@ function Confetti() {
     x: Math.random()*100,
     delay: Math.random()*1.8,
     dur: 2.2+Math.random()*2.5,
-    color: i%4===0?"#22C55E":i%4===1?"#FFFFFF":i%4===2?"#22C55E":"#DCFCE7",
+    color: i%4===0?"var(--bp-primary)":i%4===1?"#FFFFFF":i%4===2?"var(--bp-primary)":"#DCFCE7",
     size: 5+Math.random()*7,
     shape: i%3===0?"rect":i%3===1?"circle":"pill",
     rotate: Math.random()*360,
@@ -290,7 +290,7 @@ function Confetti() {
           opacity:0,
           transform:`rotate(${c.rotate}deg)`,
           animation:`confettiDrop ${c.dur}s ${c.delay}s ease-in forwards`,
-          boxShadow: c.color==="#22C55E"?`0 0 4px rgba(0,255,122,.6)`:"none",
+          boxShadow: c.color==="var(--bp-primary)"?`0 0 4px rgba(0,255,122,.6)`:"none",
         }} />
       ))}
     </div>
@@ -375,7 +375,7 @@ export default function Register() {
 
   const pwScore = PW_CHECKS.filter(c => c.test(password)).length;
   const pwStrength = pwScore <= 1 ? "Faible" : pwScore <= 2 ? "Moyen" : pwScore <= 3 ? "Bon" : "Fort";
-  const pwColor    = pwScore <= 1 ? "#ef4444" : pwScore <= 2 ? "#f97316" : pwScore <= 3 ? "#F59E0B" : "#22C55E";
+  const pwColor    = pwScore <= 1 ? "#ef4444" : pwScore <= 2 ? "#f97316" : pwScore <= 3 ? "#F59E0B" : "var(--bp-primary)";
 
   const next = () => { setError(""); setStep(s => s+1); };
   const back = () => { setError(""); setStep(s => s-1); };
@@ -416,7 +416,7 @@ export default function Register() {
         {/* Language pill — top left */}
         <div style={{ width:"88%", display:"flex", justifyContent:"flex-start", marginTop:"clamp(20px,4vh,36px)", marginBottom:12 }}>
           <button onClick={() => setShowLang(true)} style={{ display:"flex", alignItems:"center", gap:7, height:44, padding:"0 14px", background:"rgba(0,0,0,.45)", backdropFilter:"blur(30px)", WebkitBackdropFilter:"blur(30px)", border:"1px solid rgba(255,255,255,.12)", borderRadius:22, color:"#fff", fontSize:14, fontWeight:600, cursor:"pointer", fontFamily:"inherit", whiteSpace:"nowrap" }}>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#22C55E" strokeWidth="1.3"/><ellipse cx="8" cy="8" rx="2.8" ry="6.5" stroke="#22C55E" strokeWidth="1.3"/><path d="M1.5 6h13M1.5 10h13" stroke="#22C55E" strokeWidth="1.3" strokeLinecap="round"/></svg>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="var(--bp-primary)" strokeWidth="1.3"/><ellipse cx="8" cy="8" rx="2.8" ry="6.5" stroke="var(--bp-primary)" strokeWidth="1.3"/><path d="M1.5 6h13M1.5 10h13" stroke="var(--bp-primary)" strokeWidth="1.3" strokeLinecap="round"/></svg>
             <span>{lang.flag} {lang.nameNative}</span>
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="rgba(255,255,255,.5)" strokeWidth="1.5" strokeLinecap="round"/></svg>
           </button>
@@ -426,13 +426,13 @@ export default function Register() {
         <div style={{ display:"flex", flexDirection:"column", alignItems:"center", marginBottom:12 }}>
           <img src="/logo.png" alt="BrutePawa" style={{ width:"clamp(60px,13vw,78px)", height:"clamp(60px,13vw,78px)", objectFit:"contain", filter:"drop-shadow(0 0 14px rgba(34,197,94,.5))", animation:"glowPulse 3s ease-in-out infinite" }} />
           <div style={{ marginTop:6, fontSize:"clamp(16px,4vw,20px)", fontWeight:800 }}>
-            <span style={{ color:"#fff" }}>Brute</span><span style={{ color:"#22C55E" }}>Pawa</span>
+            <span style={{ color:"#fff" }}>Brute</span><span style={{ color:"var(--bp-primary)" }}>Pawa</span>
           </div>
         </div>
 
         <Card>
           <ProgressDots step={step} />
-          <h2 style={{ margin:"0 0 4px", color:"#fff", fontSize:"clamp(20px,5vw,24px)", fontWeight:800, textAlign:"center" }}>Créer votre <span style={{ color:"#22C55E" }}>compte</span></h2>
+          <h2 style={{ margin:"0 0 4px", color:"#fff", fontSize:"clamp(20px,5vw,24px)", fontWeight:800, textAlign:"center" }}>Créer votre <span style={{ color:"var(--bp-primary)" }}>compte</span></h2>
           <p style={{ margin:"0 0 16px", color:"#9CA3AF", fontSize:14, textAlign:"center" }}>Entrez votre numéro de téléphone pour commencer.</p>
 
           <ErrorBanner msg={error} />
@@ -446,7 +446,7 @@ export default function Register() {
 
           {/* Phone input */}
           <div style={{ position:"relative", marginBottom:6 }}>
-            <div style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", color:"#22C55E", fontSize:14, fontWeight:600 }}>{selectedCountry.phone}</div>
+            <div style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", color:"var(--bp-primary)", fontSize:14, fontWeight:600 }}>{selectedCountry.phone}</div>
             <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="12 34 56 78"
               style={{ width:"100%", boxSizing:"border-box", height:54, paddingLeft: selectedCountry.phone.length*9+20, paddingRight:14, background:"rgba(255,255,255,.04)", border:"1.5px solid rgba(255,255,255,.1)", borderRadius:16, fontSize:17, color:"#fff", fontFamily:"inherit", outline:"none", letterSpacing:2 }}
               onFocus={e => { e.target.style.borderColor="rgba(34,197,94,.6)"; e.target.style.boxShadow="0 0 0 3px rgba(34,197,94,.12)"; }}
@@ -455,7 +455,7 @@ export default function Register() {
           </div>
 
           <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:16 }}>
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="#22C55E" strokeWidth="1.2"/><path d="M5 6.5l1.5 1.5 2.5-3" stroke="#22C55E" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="var(--bp-primary)" strokeWidth="1.2"/><path d="M5 6.5l1.5 1.5 2.5-3" stroke="var(--bp-primary)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
             <span style={{ fontSize:12, color:"#64748B" }}>Nous détectons automatiquement votre région.</span>
           </div>
 
@@ -475,11 +475,11 @@ export default function Register() {
           <BackBtn onClick={back} />
           <ProgressDots step={step} />
           <StepIcon>
-            <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="3" y="7" width="22" height="14" rx="3" stroke="#22C55E" strokeWidth="1.8"/><path d="M8 13h3M13 13h7" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"/><circle cx="21" cy="21" r="5" fill="#052e16" stroke="#22C55E" strokeWidth="1.5"/><path d="M21 19.5v2l1 1" stroke="#22C55E" strokeWidth="1.3" strokeLinecap="round"/></svg>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="3" y="7" width="22" height="14" rx="3" stroke="var(--bp-primary)" strokeWidth="1.8"/><path d="M8 13h3M13 13h7" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round"/><circle cx="21" cy="21" r="5" fill="#052e16" stroke="var(--bp-primary)" strokeWidth="1.5"/><path d="M21 19.5v2l1 1" stroke="var(--bp-primary)" strokeWidth="1.3" strokeLinecap="round"/></svg>
           </StepIcon>
           <h2 style={{ margin:"0 0 4px", color:"#fff", fontSize:"clamp(20px,5vw,24px)", fontWeight:800, textAlign:"center" }}>Vérifiez votre numéro</h2>
           <p style={{ margin:"0 0 4px", color:"#9CA3AF", fontSize:14, textAlign:"center" }}>Nous avons envoyé un code de vérification par SMS au numéro</p>
-          <p style={{ margin:"0 0 18px", color:"#22C55E", fontSize:15, fontWeight:700, textAlign:"center" }}>{selectedCountry.phone} {phone}</p>
+          <p style={{ margin:"0 0 18px", color:"var(--bp-primary)", fontSize:15, fontWeight:700, textAlign:"center" }}>{selectedCountry.phone} {phone}</p>
 
           <ErrorBanner msg={error} />
 
@@ -499,8 +499,8 @@ export default function Register() {
 
           <div style={{ textAlign:"center", marginTop:14 }}>
             {smsCountdown > 0
-              ? <span style={{ fontSize:13, color:"#64748B" }}>Renvoyer le code dans <span style={{ color:"#22C55E", fontWeight:600 }}>{smsCountdown}s</span></span>
-              : <button onClick={() => setSmsCountdown(60)} style={{ background:"none", border:"none", cursor:"pointer", fontSize:14, fontWeight:700, color:"#22C55E", fontFamily:"inherit" }}>Renvoyer par SMS</button>
+              ? <span style={{ fontSize:13, color:"#64748B" }}>Renvoyer le code dans <span style={{ color:"var(--bp-primary)", fontWeight:600 }}>{smsCountdown}s</span></span>
+              : <button onClick={() => setSmsCountdown(60)} style={{ background:"none", border:"none", cursor:"pointer", fontSize:14, fontWeight:700, color:"var(--bp-primary)", fontFamily:"inherit" }}>Renvoyer par SMS</button>
             }
           </div>
         </Card>
@@ -514,7 +514,7 @@ export default function Register() {
           <BackBtn onClick={back} />
           <ProgressDots step={step} />
           <StepIcon>
-            <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="10" r="5" stroke="#22C55E" strokeWidth="1.8"/><path d="M5 24c0-4.97 4.03-8 9-8s9 3.03 9 8" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"/></svg>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="10" r="5" stroke="var(--bp-primary)" strokeWidth="1.8"/><path d="M5 24c0-4.97 4.03-8 9-8s9 3.03 9 8" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round"/></svg>
           </StepIcon>
           <h2 style={{ margin:"0 0 4px", color:"#fff", fontSize:"clamp(18px,5vw,22px)", fontWeight:800, textAlign:"center" }}>Vos informations</h2>
           <p style={{ margin:"0 0 16px", color:"#9CA3AF", fontSize:14, textAlign:"center" }}>Renseignez vos informations personnelles.</p>
@@ -525,14 +525,14 @@ export default function Register() {
             {/* First name */}
             <div style={{ position:"relative" }}>
               <div style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)" }}>
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3" stroke="#22C55E" strokeWidth="1.4"/><path d="M3 16c0-3 2.5-5 6-5s6 2 6 5" stroke="#22C55E" strokeWidth="1.4" strokeLinecap="round"/></svg>
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3" stroke="var(--bp-primary)" strokeWidth="1.4"/><path d="M3 16c0-3 2.5-5 6-5s6 2 6 5" stroke="var(--bp-primary)" strokeWidth="1.4" strokeLinecap="round"/></svg>
               </div>
               <input className="rg-field" type="text" placeholder="Prénom" value={firstName} onChange={e => setFirstName(e.target.value)}/>
             </div>
             {/* Last name */}
             <div style={{ position:"relative" }}>
               <div style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)" }}>
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3" stroke="#22C55E" strokeWidth="1.4"/><path d="M3 16c0-3 2.5-5 6-5s6 2 6 5" stroke="#22C55E" strokeWidth="1.4" strokeLinecap="round"/></svg>
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3" stroke="var(--bp-primary)" strokeWidth="1.4"/><path d="M3 16c0-3 2.5-5 6-5s6 2 6 5" stroke="var(--bp-primary)" strokeWidth="1.4" strokeLinecap="round"/></svg>
               </div>
               <input className="rg-field" type="text" placeholder="Nom de famille" value={lastName} onChange={e => setLastName(e.target.value)}/>
             </div>
@@ -570,7 +570,7 @@ export default function Register() {
           <BackBtn onClick={back} />
           <ProgressDots step={step} />
           <StepIcon>
-            <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="4.5" stroke="#22C55E" strokeWidth="1.8"/><path d="M22 14c0 5.5-4 9-9 9" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"/><path d="M20.5 9A9 9 0 0014 5" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"/></svg>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="4.5" stroke="var(--bp-primary)" strokeWidth="1.8"/><path d="M22 14c0 5.5-4 9-9 9" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round"/><path d="M20.5 9A9 9 0 0014 5" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round"/></svg>
           </StepIcon>
           <h2 style={{ margin:"0 0 4px", color:"#fff", fontSize:"clamp(18px,4.5vw,22px)", fontWeight:800, textAlign:"center" }}>Choisissez votre<br/>nom d'utilisateur</h2>
           <p style={{ margin:"0 0 16px", color:"#9CA3AF", fontSize:13, textAlign:"center" }}>C'est votre identité unique sur BrutePawa.</p>
@@ -579,12 +579,12 @@ export default function Register() {
 
           {/* Username input */}
           <div style={{ position:"relative", marginBottom:6 }}>
-            <div style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", color:"#22C55E", fontWeight:700, fontSize:16 }}>@</div>
+            <div style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", color:"var(--bp-primary)", fontWeight:700, fontSize:16 }}>@</div>
             <input className="rg-field" type="text" placeholder="votre_username" value={username} onChange={e => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_.]/g,""))} style={{ paddingLeft:34 }}/>
             {usernameOk !== null && (
               <div style={{ position:"absolute", right:14, top:"50%", transform:"translateY(-50%)" }}>
                 {usernameOk
-                  ? <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" fill="rgba(34,197,94,.15)" stroke="#22C55E" strokeWidth="1.5"/><path d="M5.5 9l2.5 2.5 4-5" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  ? <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" fill="rgba(34,197,94,.15)" stroke="var(--bp-primary)" strokeWidth="1.5"/><path d="M5.5 9l2.5 2.5 4-5" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   : <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" fill="rgba(239,68,68,.12)" stroke="#ef4444" strokeWidth="1.5"/><path d="M6 6l6 6M12 6l-6 6" stroke="#ef4444" strokeWidth="1.5" strokeLinecap="round"/></svg>
                 }
               </div>
@@ -593,8 +593,8 @@ export default function Register() {
 
           {usernameOk === true && (
             <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:10 }}>
-              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="#22C55E" strokeWidth="1.2"/><path d="M4.5 6.5l1.5 1.5 2.5-2.5" stroke="#22C55E" strokeWidth="1.2" strokeLinecap="round"/></svg>
-              <span style={{ fontSize:12, color:"#22C55E", fontWeight:600 }}>Nom d'utilisateur disponible !</span>
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="var(--bp-primary)" strokeWidth="1.2"/><path d="M4.5 6.5l1.5 1.5 2.5-2.5" stroke="var(--bp-primary)" strokeWidth="1.2" strokeLinecap="round"/></svg>
+              <span style={{ fontSize:12, color:"var(--bp-primary)", fontWeight:600 }}>Nom d'utilisateur disponible !</span>
             </div>
           )}
 
@@ -603,7 +603,7 @@ export default function Register() {
             <p style={{ margin:"0 0 8px", fontSize:12, color:"#64748B" }}>Suggestions :</p>
             <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
               {USERNAME_SUGGESTIONS(phone).map((s,i) => (
-                <button key={i} onClick={() => setUsername(s.replace("@",""))} style={{ padding:"6px 12px", background:"rgba(34,197,94,.08)", border:"1px solid rgba(34,197,94,.2)", borderRadius:20, color:"#22C55E", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>{s}</button>
+                <button key={i} onClick={() => setUsername(s.replace("@",""))} style={{ padding:"6px 12px", background:"rgba(34,197,94,.08)", border:"1px solid rgba(34,197,94,.2)", borderRadius:20, color:"var(--bp-primary)", fontSize:13, fontWeight:600, cursor:"pointer", fontFamily:"inherit" }}>{s}</button>
               ))}
             </div>
           </div>
@@ -622,7 +622,7 @@ export default function Register() {
           <BackBtn onClick={back} />
           <ProgressDots step={step} />
           <StepIcon>
-            <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="6" y="13" width="16" height="11" rx="2.5" stroke="#22C55E" strokeWidth="1.8"/><path d="M10 13V9a4 4 0 018 0v4" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round"/><circle cx="14" cy="18.5" r="1.5" fill="#22C55E"/></svg>
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="6" y="13" width="16" height="11" rx="2.5" stroke="var(--bp-primary)" strokeWidth="1.8"/><path d="M10 13V9a4 4 0 018 0v4" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round"/><circle cx="14" cy="18.5" r="1.5" fill="var(--bp-primary)"/></svg>
           </StepIcon>
           <h2 style={{ margin:"0 0 4px", color:"#fff", fontSize:"clamp(18px,4.5vw,22px)", fontWeight:800, textAlign:"center" }}>Créez un mot de passe</h2>
           <p style={{ margin:"0 0 14px", color:"#9CA3AF", fontSize:13, textAlign:"center" }}>Utilisez un mot de passe sécurisé pour protéger votre compte.</p>
@@ -633,7 +633,7 @@ export default function Register() {
             {/* Password */}
             <div style={{ position:"relative" }}>
               <div style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)" }}>
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3.5" y="8" width="11" height="8" rx="2" stroke="#22C55E" strokeWidth="1.4"/><path d="M6 8V6a3 3 0 016 0v2" stroke="#22C55E" strokeWidth="1.4" strokeLinecap="round"/></svg>
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3.5" y="8" width="11" height="8" rx="2" stroke="var(--bp-primary)" strokeWidth="1.4"/><path d="M6 8V6a3 3 0 016 0v2" stroke="var(--bp-primary)" strokeWidth="1.4" strokeLinecap="round"/></svg>
               </div>
               <input className="rg-field" type={showPw?"text":"password"} placeholder="Mot de passe" value={password} onChange={e => setPw(e.target.value)} style={{ paddingRight:44 }}/>
               <button type="button" onClick={() => setShowPw(v=>!v)} style={{ position:"absolute", right:12, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", cursor:"pointer", color:"#64748B", padding:4 }}>
@@ -655,10 +655,10 @@ export default function Register() {
                   {PW_CHECKS.map((c,i) => (
                     <div key={i} style={{ display:"flex", alignItems:"center", gap:7 }}>
                       <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-                        <circle cx="6.5" cy="6.5" r="5.5" stroke={c.test(password)?"#22C55E":"rgba(255,255,255,.2)"} strokeWidth="1.2"/>
-                        {c.test(password) && <path d="M4.5 6.5l1.5 1.5 2.5-2.5" stroke="#22C55E" strokeWidth="1.2" strokeLinecap="round"/>}
+                        <circle cx="6.5" cy="6.5" r="5.5" stroke={c.test(password)?"var(--bp-primary)":"rgba(255,255,255,.2)"} strokeWidth="1.2"/>
+                        {c.test(password) && <path d="M4.5 6.5l1.5 1.5 2.5-2.5" stroke="var(--bp-primary)" strokeWidth="1.2" strokeLinecap="round"/>}
                       </svg>
-                      <span style={{ fontSize:12, color:c.test(password)?"#22C55E":"#64748B" }}>{c.label}</span>
+                      <span style={{ fontSize:12, color:c.test(password)?"var(--bp-primary)":"#64748B" }}>{c.label}</span>
                     </div>
                   ))}
                 </div>
@@ -668,7 +668,7 @@ export default function Register() {
             {/* Confirm */}
             <div style={{ position:"relative" }}>
               <div style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)" }}>
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3.5" y="8" width="11" height="8" rx="2" stroke="#22C55E" strokeWidth="1.4"/><path d="M6 8V6a3 3 0 016 0v2" stroke="#22C55E" strokeWidth="1.4" strokeLinecap="round"/></svg>
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="3.5" y="8" width="11" height="8" rx="2" stroke="var(--bp-primary)" strokeWidth="1.4"/><path d="M6 8V6a3 3 0 016 0v2" stroke="var(--bp-primary)" strokeWidth="1.4" strokeLinecap="round"/></svg>
               </div>
               <input className="rg-field" type={showPwC?"text":"password"} placeholder="Confirmer le mot de passe" value={pwConfirm} onChange={e => setPwC(e.target.value)} style={{ paddingRight:44 }}/>
               <button type="button" onClick={() => setShowPwC(v=>!v)} style={{ position:"absolute", right:12, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", cursor:"pointer", color:"#64748B", padding:4 }}>
@@ -719,7 +719,7 @@ export default function Register() {
               <button onClick={() => fileRef.current?.click()} style={{
                 position:"absolute", bottom:2, right:2,
                 width:36, height:36, borderRadius:"50%",
-                background:"#22C55E",
+                background:"var(--bp-primary)",
                 border:"3px solid #052e16",
                 display:"flex", alignItems:"center", justifyContent:"center",
                 cursor:"pointer",
@@ -732,9 +732,9 @@ export default function Register() {
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                   <rect x="1" y="4" width="14" height="10" rx="2" fill="#111827"/>
                   <circle cx="8" cy="9" r="2.8" fill="#111827" stroke="#111827" strokeWidth=".5"/>
-                  <circle cx="8" cy="9" r="2" fill="#22C55E"/>
+                  <circle cx="8" cy="9" r="2" fill="var(--bp-primary)"/>
                   <path d="M5.5 4L6.5 2h3l1 2" fill="#111827"/>
-                  <circle cx="12.5" cy="6.5" r=".8" fill="#22C55E"/>
+                  <circle cx="12.5" cy="6.5" r=".8" fill="var(--bp-primary)"/>
                 </svg>
               </button>
             </div>
@@ -742,7 +742,7 @@ export default function Register() {
 
           {/* Title */}
           <h2 style={{ margin:"0 0 6px", color:"#fff", fontSize:22, fontWeight:700, textAlign:"center", lineHeight:1.25 }}>
-            Ajoutez une <span style={{ color:"#22C55E", fontWeight:800 }}>photo</span><br/>de profil
+            Ajoutez une <span style={{ color:"var(--bp-primary)", fontWeight:800 }}>photo</span><br/>de profil
           </h2>
           <p style={{ margin:"0 0 20px", color:"#94A3B8", fontSize:14, textAlign:"center", lineHeight:"22px" }}>
             Une photo de profil vous aidera<br/>à vous faire connaître.
@@ -759,7 +759,7 @@ export default function Register() {
               background:"rgba(0,255,122,.06)",
               animation:"benefitSlide .35s ease",
             }}>
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2l1.8 3.6L15 6.5l-3 2.9.7 4.1L9 11.5l-3.7 2 .7-4.1-3-2.9 4.2-.9L9 2z" stroke="#22C55E" strokeWidth="1.4" strokeLinejoin="round"/></svg>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2l1.8 3.6L15 6.5l-3 2.9.7 4.1L9 11.5l-3.7 2 .7-4.1-3-2.9 4.2-.9L9 2z" stroke="var(--bp-primary)" strokeWidth="1.4" strokeLinejoin="round"/></svg>
               <span style={{ fontSize:13, color:"#94A3B8", lineHeight:1.4 }}>
                 Les profils avec photo reçoivent <span style={{ color:"#fff", fontWeight:700 }}>3x plus</span> d'interactions
               </span>
@@ -810,7 +810,7 @@ export default function Register() {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 16V8M8 12l4-4 4 4" stroke="rgba(255,255,255,.35)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="rgba(255,255,255,.35)" strokeWidth="1.5" strokeLinecap="round"/></svg>
             <span style={{ fontSize:13, color:"rgba(255,255,255,.4)", lineHeight:1.4 }}>
               Glisser-déposer une photo ici<br/>
-              ou <span style={{ color:"#22C55E" }}>cliquer pour parcourir</span>
+              ou <span style={{ color:"var(--bp-primary)" }}>cliquer pour parcourir</span>
             </span>
           </div>
 
@@ -847,18 +847,18 @@ export default function Register() {
               boxShadow:"0 0 0 8px rgba(0,255,122,.08), 0 0 40px rgba(0,255,122,.3)",
             }}>
               <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                <path d="M9 20l7.5 8L31 11" stroke="#22C55E" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M9 20l7.5 8L31 11" stroke="var(--bp-primary)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
           </div>
 
           {/* "— COMPTE CRÉÉ AVEC SUCCÈS —" */}
           <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8, marginBottom:14 }}>
-            <div style={{ height:1, width:24, background:"#22C55E", opacity:.6 }} />
-            <span style={{ fontSize:11, fontWeight:700, color:"#22C55E", letterSpacing:"0.14em", textTransform:"uppercase", whiteSpace:"nowrap" }}>
+            <div style={{ height:1, width:24, background:"var(--bp-primary)", opacity:.6 }} />
+            <span style={{ fontSize:11, fontWeight:700, color:"var(--bp-primary)", letterSpacing:"0.14em", textTransform:"uppercase", whiteSpace:"nowrap" }}>
               COMPTE CRÉÉ AVEC SUCCÈS
             </span>
-            <div style={{ height:1, width:24, background:"#22C55E", opacity:.6 }} />
+            <div style={{ height:1, width:24, background:"var(--bp-primary)", opacity:.6 }} />
           </div>
 
           {/* BrutePawa logo */}
@@ -867,7 +867,7 @@ export default function Register() {
           </div>
 
           <h2 style={{ margin:"0 0 10px", color:"#fff", fontSize:22, fontWeight:700, lineHeight:1.25 }}>
-            Bienvenue sur <span style={{ color:"#22C55E", fontWeight:800 }}>BrutePawa</span> !
+            Bienvenue sur <span style={{ color:"var(--bp-primary)", fontWeight:800 }}>BrutePawa</span> !
           </h2>
           <p style={{ margin:"0 0 20px", color:"#94A3B8", fontSize:13, lineHeight:1.65 }}>
             Votre compte est prêt. Connectez-vous,<br/>développez votre réseau, partagez vos idées<br/>et créez des opportunités partout dans le monde.

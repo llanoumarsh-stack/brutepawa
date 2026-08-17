@@ -48,7 +48,7 @@ const REACTIONS = [
   },
 ];
 
-const AVATAR_COLORS = ["#16A34A","#0EA5E9","#8B5CF6","#D97706","#EF4444","#0EA5E9","#22C55E","#6366F1"];
+const AVATAR_COLORS = ["var(--bp-primary-dark)","#0EA5E9","#8B5CF6","#D97706","#EF4444","#0EA5E9","var(--bp-primary)","#6366F1"];
 function getInitials(name?: string) {
   if (!name) return "?";
   return name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
@@ -80,7 +80,7 @@ function Avatar({ url, name, size = 48, borderWidth = 3, online = false }: {
   const inner    = size - borderWidth * 2;
   return (
     <div style={{ position:"relative", flexShrink:0, width:size, height:size }}>
-      <div style={{ width:size, height:size, borderRadius:"50%", background:"linear-gradient(135deg,#22C55E 0%,#16A34A 50%,#BBF7D0 100%)", padding:borderWidth, boxSizing:"border-box" }}>
+      <div style={{ width:size, height:size, borderRadius:"50%", background:"linear-gradient(135deg,var(--bp-primary) 0%,var(--bp-primary-dark) 50%,#BBF7D0 100%)", padding:borderWidth, boxSizing:"border-box" }}>
         <div style={{ width:inner, height:inner, borderRadius:"50%", overflow:"hidden", background:color, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:800, fontSize:Math.round(inner * 0.33) }}>
           {url
             ? <img src={url} alt={initials} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
@@ -88,7 +88,7 @@ function Avatar({ url, name, size = 48, borderWidth = 3, online = false }: {
         </div>
       </div>
       {online && (
-        <div style={{ position:"absolute", bottom:1, right:1, width:Math.round(size * 0.25), height:Math.round(size * 0.25), borderRadius:"50%", background:"#22C55E", border:`${borderWidth - 1}px solid #fff`, boxShadow:"0 0 6px rgba(34,197,94,0.6)" }} />
+        <div style={{ position:"absolute", bottom:1, right:1, width:Math.round(size * 0.25), height:Math.round(size * 0.25), borderRadius:"50%", background:"var(--bp-primary)", border:`${borderWidth - 1}px solid #fff`, boxShadow:"0 0 6px rgba(34,197,94,0.6)" }} />
       )}
     </div>
   );
@@ -376,7 +376,7 @@ export default function PostDetailPage({ postId }: Props) {
     <div style={{ background:"#F8FAFC", minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center" }}>
       <style>{`@keyframes bp-spin{to{transform:rotate(360deg)}}`}</style>
       <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:14 }}>
-        <div style={{ width:40, height:40, border:"3px solid #DCFCE7", borderTopColor:"#22C55E", borderRadius:"50%", animation:"bp-spin .7s linear infinite" }} />
+        <div style={{ width:40, height:40, border:"3px solid #DCFCE7", borderTopColor:"var(--bp-primary)", borderRadius:"50%", animation:"bp-spin .7s linear infinite" }} />
         <span style={{ color:"#9CA3AF", fontSize:13, fontWeight:600 }}>Chargement...</span>
       </div>
     </div>
@@ -388,7 +388,7 @@ export default function PostDetailPage({ postId }: Props) {
         <svg viewBox="0 0 24 24" width="32" height="32" fill="none"><circle cx="12" cy="12" r="10" stroke="#EF4444" strokeWidth="2"/><path d="M12 8v4M12 16h.01" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"/></svg>
       </div>
       <p style={{ color:"#64748B", fontSize:15, textAlign:"center", margin:0 }}>{error ?? "Publication introuvable."}</p>
-      <button onClick={() => navigate(-1)} style={{ background:"linear-gradient(135deg,#22C55E,#16A34A)", color:"#fff", border:"none", borderRadius:16, padding:"12px 28px", cursor:"pointer", fontWeight:700, fontSize:14, boxShadow:"0 4px 16px rgba(34,197,94,0.35)" }}>Retour</button>
+      <button onClick={() => navigate(-1)} style={{ background:"linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))", color:"#fff", border:"none", borderRadius:16, padding:"12px 28px", cursor:"pointer", fontWeight:700, fontSize:14, boxShadow:"0 4px 16px rgba(34,197,94,0.35)" }}>Retour</button>
     </div>
   );
 
@@ -405,8 +405,8 @@ export default function PostDetailPage({ postId }: Props) {
         .bp-cmnt-like { background:none;border:none;cursor:pointer;font-size:12px;font-weight:700;transition:color .12s;padding:0 }
         .bp-action    { flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 4px;background:none;border:none;cursor:pointer;font-size:13px;font-weight:700;color:#64748B;transition:color .13s,background .13s;white-space:nowrap;min-width:0 }
         .bp-action:active { background:#F8FAFC }
-        .bp-action-active { color:#22C55E!important }
-        .bp-input-wrap:focus-within { border-color:#22C55E!important;box-shadow:none!important }
+        .bp-action-active { color:var(--bp-primary)!important }
+        .bp-input-wrap:focus-within { border-color:var(--bp-primary)!important;box-shadow:none!important }
       `}</style>
 
       {/* ── HEADER ─────────────────────────────────────────────── */}
@@ -425,7 +425,7 @@ export default function PostDetailPage({ postId }: Props) {
               value={commentSearch}
               onChange={e => setCommentSearch(e.target.value)}
               placeholder="Rechercher un commentaire…"
-              style={{ width:"100%", background:"#fff", border:"1.5px solid #22C55E", borderRadius:12, padding:"9px 14px", fontSize:14, fontWeight:600, color:"#111827", outline:"none", boxShadow:"0 0 0 3px rgba(34,197,94,0.12)" }}
+              style={{ width:"100%", background:"#fff", border:"1.5px solid var(--bp-primary)", borderRadius:12, padding:"9px 14px", fontSize:14, fontWeight:600, color:"#111827", outline:"none", boxShadow:"0 0 0 3px rgba(34,197,94,0.12)" }}
             />
           ) : (
             <div style={{ fontWeight:900, fontSize:17, color:"#111827" }}>Publication de {authorName}</div>
@@ -436,9 +436,9 @@ export default function PostDetailPage({ postId }: Props) {
             if (showSearch) { setShowSearch(false); setCommentSearch(""); }
             else { setShowSearch(true); setTimeout(() => searchInputRef.current?.focus(), 80); }
           }}
-          style={{ width:40, height:40, borderRadius:12, background: showSearch ? "#DCFCE7" : "#fff", border:`1px solid ${showSearch ? "#22C55E" : "rgba(0,0,0,0.07)"}`, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 1px 4px rgba(0,0,0,0.06)", flexShrink:0, transition:"background .15s,border .15s" }}
+          style={{ width:40, height:40, borderRadius:12, background: showSearch ? "#DCFCE7" : "#fff", border:`1px solid ${showSearch ? "var(--bp-primary)" : "rgba(0,0,0,0.07)"}`, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 1px 4px rgba(0,0,0,0.06)", flexShrink:0, transition:"background .15s,border .15s" }}
         >
-          <svg viewBox="0 0 24 24" width="19" height="19" fill="none"><circle cx="11" cy="11" r="8" stroke={showSearch ? "#22C55E" : "#64748B"} strokeWidth="2"/><path d="M21 21l-4.35-4.35" stroke={showSearch ? "#22C55E" : "#64748B"} strokeWidth="2" strokeLinecap="round"/></svg>
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none"><circle cx="11" cy="11" r="8" stroke={showSearch ? "var(--bp-primary)" : "#64748B"} strokeWidth="2"/><path d="M21 21l-4.35-4.35" stroke={showSearch ? "var(--bp-primary)" : "#64748B"} strokeWidth="2" strokeLinecap="round"/></svg>
         </button>
       </div>
 
@@ -673,7 +673,7 @@ export default function PostDetailPage({ postId }: Props) {
 
           {/* Enregistrer */}
           <button className={`bp-action${saved ? " bp-action-active" : ""}`} onClick={() => setSaved(s => !s)} style={{ borderRadius:"0 0 24px 0" }}>
-            <svg viewBox="0 0 24 24" width="18" height="18" fill={saved ? "#22C55E" : "none"} stroke={saved ? "#22C55E" : "#64748B"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill={saved ? "var(--bp-primary)" : "none"} stroke={saved ? "var(--bp-primary)" : "#64748B"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
             <span>Enregistrer</span>
           </button>
         </div>
@@ -716,8 +716,8 @@ export default function PostDetailPage({ postId }: Props) {
                     </div>
                     <div style={{ display:"flex", gap:14, paddingLeft:6, marginTop:9, fontSize:12, alignItems:"center" }}>
                       <span style={{ color:"#E5E7EB", fontWeight:500 }}>{timeAgo(c.createdAt)}</span>
-                      <button className="bp-cmnt-like" onClick={() => toggleCommentLike(c.id)} style={{ color: c.likedByMe ? "#22C55E" : "#9CA3AF" }}>J'aime</button>
-                      <button className="bp-cmnt-like" onClick={() => replyingTo === c.id ? cancelReply() : startReply(c)} style={{ color: replyingTo === c.id ? "#22C55E" : "#9CA3AF" }}>
+                      <button className="bp-cmnt-like" onClick={() => toggleCommentLike(c.id)} style={{ color: c.likedByMe ? "var(--bp-primary)" : "#9CA3AF" }}>J'aime</button>
+                      <button className="bp-cmnt-like" onClick={() => replyingTo === c.id ? cancelReply() : startReply(c)} style={{ color: replyingTo === c.id ? "var(--bp-primary)" : "#9CA3AF" }}>
                         {replyingTo === c.id ? "Annuler" : "Répondre"}
                       </button>
                     </div>
@@ -738,7 +738,7 @@ export default function PostDetailPage({ postId }: Props) {
                             </div>
                             <div style={{ display:"flex", gap:10, paddingLeft:4, marginTop:5, fontSize:11 }}>
                               <span style={{ color:"#E5E7EB" }}>{timeAgo(r.createdAt)}</span>
-                              <button className="bp-cmnt-like" onClick={() => toggleCommentLike(r.id)} style={{ color: r.likedByMe ? "#22C55E" : "#9CA3AF" }}>J'aime</button>
+                              <button className="bp-cmnt-like" onClick={() => toggleCommentLike(r.id)} style={{ color: r.likedByMe ? "var(--bp-primary)" : "#9CA3AF" }}>J'aime</button>
                             </div>
                           </div>
                         </div>
@@ -771,9 +771,9 @@ export default function PostDetailPage({ postId }: Props) {
 
         {replyingTo !== null && (
           <div style={{ display:"flex", alignItems:"center", gap:8, padding:"8px 16px 4px", fontSize:12 }}>
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round"><path d="M9 15L3 9l6-6M3 9h12a6 6 0 0 1 0 12h-3"/></svg>
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--bp-primary)" strokeWidth="2.2" strokeLinecap="round"><path d="M9 15L3 9l6-6M3 9h12a6 6 0 0 1 0 12h-3"/></svg>
             <span style={{ color:"#9CA3AF" }}>Répondre à</span>
-            <span style={{ fontWeight:800, color:"#22C55E" }}>{replyName}</span>
+            <span style={{ fontWeight:800, color:"var(--bp-primary)" }}>{replyName}</span>
             <button onClick={cancelReply} style={{ background:"none", border:"none", cursor:"pointer", marginLeft:"auto", display:"flex", padding:2 }}>
               <svg viewBox="0 0 24 24" width="16" height="16" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#E5E7EB" strokeWidth="2.2" strokeLinecap="round"/></svg>
             </button>
@@ -810,7 +810,7 @@ export default function PostDetailPage({ postId }: Props) {
               <div style={{ flex:1, display:"flex", alignItems:"center", gap:1.5, height:34 }}>
                 {recLiveBars.map((h, i) => (
                   <div key={i} style={{ flex:1, borderRadius:2,
-                    background: recPaused ? "#E5E7EB" : "#22C55E",
+                    background: recPaused ? "#E5E7EB" : "var(--bp-primary)",
                     height: recPaused ? "30%" : `${h}%`,
                     transition:"height 0.07s ease",
                     opacity: recPaused ? 0.5 : 0.6 + Math.min(0.4, (h / 96) * 0.4) }} />
@@ -825,7 +825,7 @@ export default function PostDetailPage({ postId }: Props) {
                 display:"flex", alignItems:"center", justifyContent:"center",
                 boxShadow:"0 2px 8px rgba(0,0,0,0.08)" }}>
               {recPaused ? (
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="#22C55E"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="var(--bp-primary)"><polygon points="5 3 19 12 5 21 5 3"/></svg>
               ) : (
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="#64748B"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
               )}
@@ -834,7 +834,7 @@ export default function PostDetailPage({ postId }: Props) {
             {/* Send */}
             <button onClick={stopVoice}
               style={{ width:48, height:48, borderRadius:"50%", border:"none", flexShrink:0,
-                background:"linear-gradient(135deg,#22C55E 0%,#22C55E 100%)",
+                background:"linear-gradient(135deg,var(--bp-primary) 0%,var(--bp-primary) 100%)",
                 display:"flex", alignItems:"center", justifyContent:"center",
                 cursor:"pointer", boxShadow:"0 4px 20px rgba(22,194,74,0.5)" }}>
               <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -867,7 +867,7 @@ export default function PostDetailPage({ postId }: Props) {
                 <div style={{ flex:1, display:"flex", alignItems:"center", gap:2, height:30, overflow:"hidden" }}>
                   {recLiveBars.map((h, i) => (
                     <div key={i} style={{ flex:1, borderRadius:2,
-                      background:"#22C55E",
+                      background:"var(--bp-primary)",
                       height:`${h}%`,
                       transition:"height 0.07s ease",
                       opacity: 0.6 + Math.min(0.4, (h / 96) * 0.4) }} />
@@ -910,7 +910,7 @@ export default function PostDetailPage({ postId }: Props) {
                   <button
                     onClick={submit}
                     disabled={submitting}
-                    style={{ width:36, height:36, borderRadius:"50%", background:"linear-gradient(135deg,#22C55E,#16A34A)", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", opacity: submitting ? 0.6 : 1, boxShadow:"0 3px 12px rgba(34,197,94,0.45)", flexShrink:0, transition:"transform .1s,opacity .1s" }}
+                    style={{ width:36, height:36, borderRadius:"50%", background:"linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", opacity: submitting ? 0.6 : 1, boxShadow:"0 3px 12px rgba(34,197,94,0.45)", flexShrink:0, transition:"transform .1s,opacity .1s" }}
                     onMouseDown={e => (e.currentTarget.style.transform = "scale(.9)")}
                     onMouseUp={e => (e.currentTarget.style.transform = "scale(1)")}
                   >
@@ -941,7 +941,7 @@ export default function PostDetailPage({ postId }: Props) {
                     top: -(LOCK_DIST - SIZE/2 + 22),
                     left:"50%", transform:"translateX(-50%)",
                     width:44, height:44, borderRadius:"50%",
-                    background: isAtLock ? "#22C55E" : isNearLock ? "#EDE9FE" : "#fff",
+                    background: isAtLock ? "var(--bp-primary)" : isNearLock ? "#EDE9FE" : "#fff",
                     boxShadow: isAtLock
                       ? "0 0 0 8px rgba(34,197,94,0.18), 0 6px 24px rgba(34,197,94,0.45)"
                       : "0 6px 24px rgba(0,0,0,0.14)",
@@ -957,8 +957,8 @@ export default function PostDetailPage({ postId }: Props) {
                       </svg>
                     ) : (
                       <svg viewBox="0 0 24 24" width="20" height="20">
-                        <rect x="5" y="11" width="14" height="10" rx="2" fill={isNearLock ? "#22C55E" : "#9CA3AF"}/>
-                        <path d="M8 11V7a4 4 0 0 1 7-1.7" stroke={isNearLock ? "#22C55E" : "#9CA3AF"} strokeWidth="2.2" fill="none" strokeLinecap="round"/>
+                        <rect x="5" y="11" width="14" height="10" rx="2" fill={isNearLock ? "var(--bp-primary)" : "#9CA3AF"}/>
+                        <path d="M8 11V7a4 4 0 0 1 7-1.7" stroke={isNearLock ? "var(--bp-primary)" : "#9CA3AF"} strokeWidth="2.2" fill="none" strokeLinecap="round"/>
                       </svg>
                     )}
                   </div>
@@ -1001,7 +1001,7 @@ export default function PostDetailPage({ postId }: Props) {
                   onContextMenu={e => e.preventDefault()}
                   style={{
                     position:"absolute", top:0, left:0,
-                    background:"linear-gradient(135deg,#22C55E 0%,#16a34a 100%)",
+                    background:"linear-gradient(135deg,var(--bp-primary) 0%,#16a34a 100%)",
                     border:"none", borderRadius:"50%",
                     width:SIZE, height:SIZE,
                     display:"flex", alignItems:"center", justifyContent:"center",
@@ -1059,10 +1059,10 @@ export default function PostDetailPage({ postId }: Props) {
 
             {/* Preview avatar */}
             <div style={{ display:"flex", flexDirection:"column", alignItems:"center", padding:"8px 0 20px" }}>
-              <div style={{ width:80, height:80, borderRadius:"50%", overflow:"hidden", border:"3px solid #22C55E", boxShadow:"0 4px 16px rgba(34,197,94,0.3)" }}>
+              <div style={{ width:80, height:80, borderRadius:"50%", overflow:"hidden", border:"3px solid var(--bp-primary)", boxShadow:"0 4px 16px rgba(34,197,94,0.3)" }}>
                 {post.authorAvatarUrl
                   ? <img src={post.authorAvatarUrl} alt="" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
-                  : <div style={{ width:"100%", height:"100%", background:"linear-gradient(135deg,#22C55E,#16A34A)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  : <div style={{ width:"100%", height:"100%", background:"linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))", display:"flex", alignItems:"center", justifyContent:"center" }}>
                       <span style={{ fontSize:28, fontWeight:900, color:"#fff" }}>{post.authorName.charAt(0).toUpperCase()}</span>
                     </div>
                 }
@@ -1086,7 +1086,7 @@ export default function PostDetailPage({ postId }: Props) {
               style={{ width:"100%", display:"flex", alignItems:"center", gap:14, padding:"16px 24px", background:"none", border:"none", cursor:"pointer", textAlign:"left" }}
             >
               <div style={{ width:44, height:44, borderRadius:14, background:"#F0FDF4", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="4"/><path d="M2 12c2.5-5 5.5-8 10-8s7.5 3 10 8c-2.5 5-5.5 8-10 8S4.5 17 2 12z"/></svg>
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="4"/><path d="M2 12c2.5-5 5.5-8 10-8s7.5 3 10 8c-2.5 5-5.5 8-10 8S4.5 17 2 12z"/></svg>
               </div>
               <div>
                 <div style={{ fontWeight:700, fontSize:15, color:"#111827" }}>Voir la photo</div>
@@ -1168,7 +1168,7 @@ export default function PostDetailPage({ postId }: Props) {
                 style={{ maxWidth:"100%", maxHeight:"100%", borderRadius:12, objectFit:"contain", boxShadow:"0 8px 48px rgba(0,0,0,0.6)" }}
               />
             ) : (
-              <div style={{ width:220, height:220, borderRadius:"50%", background:"linear-gradient(135deg,#22C55E,#16A34A)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+              <div style={{ width:220, height:220, borderRadius:"50%", background:"linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))", display:"flex", alignItems:"center", justifyContent:"center" }}>
                 <span style={{ fontSize:88, fontWeight:900, color:"#fff" }}>{post.authorName.charAt(0).toUpperCase()}</span>
               </div>
             )}
@@ -1187,7 +1187,7 @@ export default function PostDetailPage({ postId }: Props) {
             )}
             <button
               onClick={() => { setAvatarViewer(false); navigate(`/profile/${post.authorId}`); }}
-              style={{ marginTop:14, padding:"10px 28px", borderRadius:12, background:"linear-gradient(135deg,#22C55E,#16A34A)", border:"none", cursor:"pointer", fontWeight:700, fontSize:14, color:"#fff" }}
+              style={{ marginTop:14, padding:"10px 28px", borderRadius:12, background:"linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))", border:"none", cursor:"pointer", fontWeight:700, fontSize:14, color:"#fff" }}
             >
               Voir le profil
             </button>

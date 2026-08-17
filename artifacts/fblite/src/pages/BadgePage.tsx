@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#111827", secondary:"#64748B", muted:"#9CA3AF", border:"#F1F5F9", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"var(--bp-primary)", primaryDark:"var(--bp-primary-dark)", text:"#111827", secondary:"#64748B", muted:"#9CA3AF", border:"#F1F5F9", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
 
 function SubHeader({ title, onBack }:{title:string;onBack:()=>void}) {
   return (
@@ -110,11 +110,11 @@ export default function BadgePage() {
         </div>
         {success ? (
           <div style={{ background:"linear-gradient(135deg,#DCFCE7,#BBF7D0)", borderRadius:16, padding:"16px", display:"flex", alignItems:"center", justifyContent:"center", gap:10 }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>
-            <span style={{ fontWeight:700, fontSize:15, color:"#16A34A" }}>Badge vérifié activé !</span>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary-dark)" strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+            <span style={{ fontWeight:700, fontSize:15, color:"var(--bp-primary-dark)" }}>Badge vérifié activé !</span>
           </div>
         ) : (
-          <button onClick={pay} disabled={loading} style={{ width:"100%", padding:"16px", borderRadius:18, background:loading?"#BBF7D0":"linear-gradient(135deg,#16A34A,#22C55E)", border:"none", color:"#fff", fontWeight:700, fontSize:16, cursor:loading?"not-allowed":"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:10, boxShadow:"0 8px 24px rgba(34,197,94,0.35)", transition:"all 300ms" }}>
+          <button onClick={pay} disabled={loading} style={{ width:"100%", padding:"16px", borderRadius:18, background:loading?"#BBF7D0":"linear-gradient(135deg,var(--bp-primary-dark),var(--bp-primary))", border:"none", color:"#fff", fontWeight:700, fontSize:16, cursor:loading?"not-allowed":"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:10, boxShadow:"0 8px 24px rgba(34,197,94,0.35)", transition:"all 300ms" }}>
             {loading ? <><div style={{ width:20,height:20,borderRadius:"50%",border:"2px solid rgba(255,255,255,0.4)",borderTopColor:"#fff",animation:"spin 0.7s linear infinite" }}/> Traitement…</> : "Obtenir pour 2 500 FCFA"}
           </button>
         )}

@@ -13,7 +13,7 @@ import GroupBotsPanel from "../components/GroupBotsPanel";
 
 const GROUP_CATEGORIES = ["general", "Agriculture", "Technologie", "Commerce", "Éducation", "Sport", "Santé", "Culture", "Religion"];
 
-const AVATAR_COLORS = ["#22C55E", "#E91E63", "#9C27B0", "#FF9800", "#22C55E", "#0EA5E9", "#EF4444", "#6366F1"];
+const AVATAR_COLORS = ["var(--bp-primary)", "#E91E63", "#9C27B0", "#FF9800", "var(--bp-primary)", "#0EA5E9", "#EF4444", "#6366F1"];
 function avatarColor(id: number) { return AVATAR_COLORS[id % AVATAR_COLORS.length]; }
 function initials(firstName: string, lastName: string) {
   return ((firstName?.[0] ?? "") + (lastName?.[0] ?? "")).toUpperCase() || "??";
@@ -45,7 +45,7 @@ function UserAvatar({ id, firstName, lastName, avatarUrl, size = 40 }: {
 }
 
 function roleLabel(role: string) {
-  if (role === "admin") return { text: "Admin", color: "#22C55E" };
+  if (role === "admin") return { text: "Admin", color: "var(--bp-primary)" };
   if (role === "moderator") return { text: "Modérateur", color: "#9C27B0" };
   return null;
 }
@@ -359,7 +359,7 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
   return (
     <div style={{ maxWidth: 600, margin: "0 auto" }}>
       {/* Cover / header */}
-      <div style={{ position: "relative", background: group.coverUrl ? undefined : "linear-gradient(135deg, #22C55E 0%, #0EA5E9 100%)", height: 180, overflow: "hidden" }}>
+      <div style={{ position: "relative", background: group.coverUrl ? undefined : "linear-gradient(135deg, var(--bp-primary) 0%, #0EA5E9 100%)", height: 180, overflow: "hidden" }}>
         {group.coverUrl && (
           <img src={group.coverUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         )}
@@ -731,7 +731,7 @@ export default function GroupDetailPage({ groupId }: { groupId: number }) {
                 style={{
                   height: 120, borderRadius: 10, overflow: "hidden", background: (editCoverPreview || editCoverUrl)
                     ? undefined
-                    : "linear-gradient(135deg, #22C55E 0%, #0EA5E9 100%)",
+                    : "linear-gradient(135deg, var(--bp-primary) 0%, #0EA5E9 100%)",
                   display: "flex", alignItems: "center", justifyContent: "center", position: "relative", cursor: "pointer", border: "1px solid var(--fb-border)",
                 }}
                 onClick={() => editCoverInputRef.current?.click()}

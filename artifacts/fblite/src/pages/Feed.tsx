@@ -69,7 +69,7 @@ function FeedMusicCard({ trackName, artist, artworkUrl, url, duration, onClick }
     <div
       onClick={onClick}
       style={{
-        margin: "0 14px 12px", background: "#fff", borderRadius: 18,
+        margin: "0 14px 12px", background: "var(--theme-surface)", borderRadius: 18,
         padding: "12px 14px", display: "flex", alignItems: "center", gap: 12,
         boxShadow: "0 2px 12px rgba(0,0,0,0.08)", cursor: "pointer",
         border: "1px solid #F1F5F9", minHeight: 110,
@@ -87,7 +87,7 @@ function FeedMusicCard({ trackName, artist, artworkUrl, url, duration, onClick }
 
       {/* Center: title + artist + waveform + seek */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 16, fontWeight: 700, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", lineHeight: 1.2, marginBottom: 3 }}>
+        <div style={{ fontSize: 16, fontWeight: 700, color: "var(--theme-text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", lineHeight: 1.2, marginBottom: 3 }}>
           {trackName}
         </div>
         <div style={{ fontSize: 13, fontWeight: 500, color: "#64748B", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 8 }}>
@@ -103,7 +103,7 @@ function FeedMusicCard({ trackName, artist, artworkUrl, url, duration, onClick }
             return (
               <div key={i} style={{
                 width: 2.5, borderRadius: 2, flexShrink: 0,
-                background: filled ? "#22C55E" : "#DCFCE7",
+                background: filled ? "var(--bp-primary)" : "#DCFCE7",
                 height: h,
                 transition: playing ? `height 0.12s ease` : "height 0.3s ease",
               }} />
@@ -118,9 +118,9 @@ function FeedMusicCard({ trackName, artist, artworkUrl, url, duration, onClick }
             onClick={handleSeek}
             style={{ flex: 1, height: 4, background: "#E5E7EB", borderRadius: 4, position: "relative", cursor: "pointer" }}
           >
-            <div style={{ width: `${progress}%`, height: "100%", background: "#22C55E", borderRadius: 4, position: "relative" }}>
+            <div style={{ width: `${progress}%`, height: "100%", background: "var(--bp-primary)", borderRadius: 4, position: "relative" }}>
               {progress > 0 && (
-                <div style={{ position: "absolute", right: -5, top: "50%", transform: "translateY(-50%)", width: 10, height: 10, borderRadius: "50%", background: "#22C55E", boxShadow: "0 0 0 2px #fff" }} />
+                <div style={{ position: "absolute", right: -5, top: "50%", transform: "translateY(-50%)", width: 10, height: 10, borderRadius: "50%", background: "var(--bp-primary)", boxShadow: "0 0 0 2px #fff" }} />
               )}
             </div>
           </div>
@@ -132,7 +132,7 @@ function FeedMusicCard({ trackName, artist, artworkUrl, url, duration, onClick }
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, flexShrink: 0 }}>
         <button
           onClick={toggle}
-          style={{ width: 44, height: 44, borderRadius: "50%", background: "#22C55E", border: "none", cursor: url ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", opacity: url ? 1 : 0.4, boxShadow: "0 2px 8px rgba(34,197,94,0.35)" }}
+          style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--bp-primary)", border: "none", cursor: url ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center", opacity: url ? 1 : 0.4, boxShadow: "0 2px 8px rgba(34,197,94,0.35)" }}
         >
           {playing
             ? <svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
@@ -144,7 +144,7 @@ function FeedMusicCard({ trackName, artist, artworkUrl, url, duration, onClick }
           {[5, 10, 7, 13, 9].map((h, i) => {
             const animH = playing ? Math.max(3, Math.round(h * (Math.sin((tick + i * 2) * 0.8) * 0.4 + 0.8))) : 3;
             return (
-              <div key={i} style={{ width: 3, borderRadius: 2, background: "#22C55E", height: animH, transition: "height 0.12s ease" }} />
+              <div key={i} style={{ width: 3, borderRadius: 2, background: "var(--bp-primary)", height: animH, transition: "height 0.12s ease" }} />
             );
           })}
         </div>
@@ -158,7 +158,7 @@ const COUNTRY_FLAGS: Record<string, string> = {
   ML: "🇲🇱", GN: "🇬🇳", CM: "🇨🇲", TD: "🇹🇩", GA: "🇬🇦", CG: "🇨🇬",
   CD: "🇨🇩", CF: "🇨🇫", GH: "🇬🇭",
 };
-const AVATAR_COLORS = ["#22C55E","#E91E63","#9C27B0","#D97706","#388E3C","#212121","#D32F2F","#00838F"];
+const AVATAR_COLORS = ["var(--bp-primary)","#E91E63","#9C27B0","#D97706","#388E3C","#212121","#D32F2F","#00838F"];
 
 function getInitials(name: string) { return name.slice(0, 2).toUpperCase(); }
 function formatNumber(n: number): string {
@@ -179,24 +179,24 @@ function timeAgo(iso: string): string {
 /* ── SVG tab icons (filled = active, outline = inactive) ── */
 function IconHome({ active }: { active: boolean }) {
   return active
-    ? <svg width="24" height="24" viewBox="0 0 24 24" fill="#22C55E"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+    ? <svg width="24" height="24" viewBox="0 0 24 24" fill="var(--bp-primary)"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
     : <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinejoin="round"><path d="M3 12L12 3l9 9M5 10v9a1 1 0 0 0 1 1h4v-5h4v5h4a1 1 0 0 0 1-1v-9"/></svg>;
 }
 function IconFriends({ active }: { active: boolean }) {
-  const c = active ? "#22C55E" : "#64748B";
-  return <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="3.5" stroke={c} strokeWidth={active?2:1.8} fill={active?"#22C55E":"none"} fillOpacity={active?.15:0}/><circle cx="17" cy="8" r="2.5" stroke={c} strokeWidth={active?2:1.8} fill="none"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6" stroke={c} strokeWidth={active?2:1.8} strokeLinecap="round" fill="none"/><path d="M19 14c2.5.5 4 2 4 4.5" stroke={c} strokeWidth={active?2:1.8} strokeLinecap="round" fill="none"/></svg>;
+  const c = active ? "var(--bp-primary)" : "#64748B";
+  return <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="7" r="3.5" stroke={c} strokeWidth={active?2:1.8} fill={active?"var(--bp-primary)":"none"} fillOpacity={active?.15:0}/><circle cx="17" cy="8" r="2.5" stroke={c} strokeWidth={active?2:1.8} fill="none"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6" stroke={c} strokeWidth={active?2:1.8} strokeLinecap="round" fill="none"/><path d="M19 14c2.5.5 4 2 4 4.5" stroke={c} strokeWidth={active?2:1.8} strokeLinecap="round" fill="none"/></svg>;
 }
 function IconMessenger({ active }: { active: boolean }) {
-  const c = active ? "#22C55E" : "#64748B";
-  return <svg width="24" height="24" viewBox="0 0 24 24" fill={active?"#22C55E":"none"}><path d="M12 2C6.48 2 2 6.2 2 11.4c0 2.77 1.26 5.26 3.28 6.99V22l3.56-1.96c.95.26 1.96.4 3.16.4 5.52 0 10-4.2 10-9.4S17.52 2 12 2z" stroke={c} strokeWidth="1.8" fill={active?"#22C55E":"none"} fillOpacity={active?1:0}/><path d="M7 13l2.5-2.5 2.5 2.5 4-5" stroke={active?"#fff":"#64748B"} strokeWidth={active?2:1.8} strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>;
+  const c = active ? "var(--bp-primary)" : "#64748B";
+  return <svg width="24" height="24" viewBox="0 0 24 24" fill={active?"var(--bp-primary)":"none"}><path d="M12 2C6.48 2 2 6.2 2 11.4c0 2.77 1.26 5.26 3.28 6.99V22l3.56-1.96c.95.26 1.96.4 3.16.4 5.52 0 10-4.2 10-9.4S17.52 2 12 2z" stroke={c} strokeWidth="1.8" fill={active?"var(--bp-primary)":"none"} fillOpacity={active?1:0}/><path d="M7 13l2.5-2.5 2.5 2.5 4-5" stroke={active?"#fff":"#64748B"} strokeWidth={active?2:1.8} strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>;
 }
 function IconBell({ active }: { active: boolean }) {
-  const c = active ? "#22C55E" : "#64748B";
-  return <svg width="24" height="24" viewBox="0 0 24 24" fill={active?"#22C55E":"none"}><path d="M18 8a6 6 0 0 0-12 0c0 4-2 5-2 5h16s-2-1-2-5" stroke={c} strokeWidth="1.8" strokeLinecap="round" fill={active?"#22C55E":"none"}/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke={c} strokeWidth="1.8" strokeLinecap="round" fill="none"/></svg>;
+  const c = active ? "var(--bp-primary)" : "#64748B";
+  return <svg width="24" height="24" viewBox="0 0 24 24" fill={active?"var(--bp-primary)":"none"}><path d="M18 8a6 6 0 0 0-12 0c0 4-2 5-2 5h16s-2-1-2-5" stroke={c} strokeWidth="1.8" strokeLinecap="round" fill={active?"var(--bp-primary)":"none"}/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke={c} strokeWidth="1.8" strokeLinecap="round" fill="none"/></svg>;
 }
 function IconShop({ active }: { active: boolean }) {
-  const c = active ? "#22C55E" : "#64748B";
-  return <svg width="24" height="24" viewBox="0 0 24 24" fill={active?"#22C55E":"none"}><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" stroke={c} strokeWidth="1.8" fill={active?"#22C55E":"none"} fillOpacity={active?.15:0}/><line x1="3" y1="6" x2="21" y2="6" stroke={c} strokeWidth="1.8"/><path d="M16 10a4 4 0 0 1-8 0" stroke={c} strokeWidth="1.8" fill="none"/></svg>;
+  const c = active ? "var(--bp-primary)" : "#64748B";
+  return <svg width="24" height="24" viewBox="0 0 24 24" fill={active?"var(--bp-primary)":"none"}><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" stroke={c} strokeWidth="1.8" fill={active?"var(--bp-primary)":"none"} fillOpacity={active?.15:0}/><line x1="3" y1="6" x2="21" y2="6" stroke={c} strokeWidth="1.8"/><path d="M16 10a4 4 0 0 1-8 0" stroke={c} strokeWidth="1.8" fill="none"/></svg>;
 }
 
 export default function Feed() {
@@ -354,16 +354,16 @@ export default function Feed() {
       {/* ═══════════════════════════════════════════════
           STICKY HEADER — 3 rows exactly like Facebook
       ═══════════════════════════════════════════════ */}
-      <div style={{ position: "sticky", top: 0, zIndex: 100, background: "#fff" }}>
+      <div style={{ position: "sticky", top: 0, zIndex: 100, background: "var(--theme-surface)" }}>
 
         {/* Row 1 — Mode payant */}
         <div style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
           padding: "7px 14px", borderBottom: "1px solid #F1F5F9",
-          background: "#fff",
+          background: "var(--theme-surface)",
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span style={{ fontWeight: 600, fontSize: 13.5, color: "#111827" }}>Mode payant</span>
+            <span style={{ fontWeight: 600, fontSize: 13.5, color: "var(--theme-text)" }}>Mode payant</span>
             <div style={{
               width: 17, height: 17, borderRadius: "50%", background: "#E5E7EB",
               display: "flex", alignItems: "center", justifyContent: "center",
@@ -373,7 +373,7 @@ export default function Feed() {
           <button style={{
             background: "#E5E7EB", border: "none", borderRadius: 6,
             padding: "6px 13px", fontWeight: 600, fontSize: 13, cursor: "pointer",
-            color: "#111827",
+            color: "var(--theme-text)",
           }}>
             Changer de mode
           </button>
@@ -404,7 +404,7 @@ export default function Feed() {
                   display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: btn.label === "+" ? 22 : 18,
                   fontWeight: btn.label === "+" ? 700 : 400,
-                  color: "#111827", cursor: "pointer", flexShrink: 0,
+                  color: "var(--theme-text)", cursor: "pointer", flexShrink: 0,
                   lineHeight: 1,
                 }}
               >
@@ -427,7 +427,7 @@ export default function Feed() {
                 flex: 1, background: "none", border: "none",
                 padding: "10px 0 8px",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                borderBottom: activeTab === id ? "3px solid #22C55E" : "3px solid transparent",
+                borderBottom: activeTab === id ? "3px solid var(--bp-primary)" : "3px solid transparent",
                 cursor: "pointer",
                 transition: "border-color .15s",
               }}
@@ -445,7 +445,7 @@ export default function Feed() {
 
         {/* ── Stories row ── */}
         <input ref={storyFileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleStoryFileSelect} />
-        <div style={{ background: "#fff", overflowX: "auto", padding: "10px 0 10px 10px" }}>
+        <div style={{ background: "var(--theme-surface)", overflowX: "auto", padding: "10px 0 10px 10px" }}>
           <div style={{ display: "flex", gap: 8, width: "max-content" }}>
 
             {/* Create story card */}
@@ -463,16 +463,16 @@ export default function Feed() {
                 <div style={{ width: "100%", height: "100%", background: "#E5E7EB", overflow: "hidden" }}>
                   {user.avatarUrl
                     ? <img src={user.avatarUrl} alt="moi" style={{ width: "100%", height: "75%", objectFit: "cover", display: "block" }} />
-                    : <div style={{ width: "100%", height: "75%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 26 }}>{userInitials}</div>
+                    : <div style={{ width: "100%", height: "75%", background: "var(--bp-primary)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 26 }}>{userInitials}</div>
                   }
-                  <div style={{ height: "25%", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }} />
+                  <div style={{ height: "25%", background: "var(--theme-surface)", display: "flex", alignItems: "center", justifyContent: "center" }} />
                 </div>
                 {/* Blue + circle at bottom of image zone */}
                 <div style={{
                   position: "absolute", bottom: "23%", left: "50%",
                   transform: "translate(-50%, 50%)",
                   width: 32, height: 32, borderRadius: "50%",
-                  background: "#22C55E", border: "3px solid #fff",
+                  background: "var(--bp-primary)", border: "3px solid #fff",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   color: "#fff", fontSize: 20, fontWeight: 900, lineHeight: 1,
                   zIndex: 2,
@@ -480,7 +480,7 @@ export default function Feed() {
               </div>
               <div style={{
                 textAlign: "center", fontSize: 12, fontWeight: 700,
-                color: "#111827", marginTop: 6, lineHeight: 1.3,
+                color: "var(--theme-text)", marginTop: 6, lineHeight: 1.3,
                 padding: "0 2px",
               }}>Créer une story</div>
             </div>
@@ -516,7 +516,7 @@ export default function Feed() {
                     <div style={{
                       position: "absolute", top: 8, left: 8,
                       width: 36, height: 36, borderRadius: "50%",
-                      border: "3px solid #22C55E",
+                      border: "3px solid var(--bp-primary)",
                       background: avatarBg,
                       overflow: "hidden", flexShrink: 0,
                     }}>
@@ -529,7 +529,7 @@ export default function Feed() {
                     {group.storiesCount > 1 && (
                       <div style={{
                         position: "absolute", top: 6, right: 6,
-                        background: "#22C55E", color: "#fff",
+                        background: "var(--bp-primary)", color: "#fff",
                         borderRadius: 10, minWidth: 20, height: 20,
                         display: "flex", alignItems: "center", justifyContent: "center",
                         fontSize: 11, fontWeight: 700, padding: "0 4px",
@@ -553,13 +553,13 @@ export default function Feed() {
         </div>
 
         {/* ── Post creation card ── */}
-        <div style={{ background: "#fff", padding: "10px 14px 0" }}>
+        <div style={{ background: "var(--theme-surface)", padding: "10px 14px 0" }}>
           {/* Top row: avatar + input + Photo */}
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
             {/* Avatar */}
             {user.avatarUrl
               ? <img src={user.avatarUrl} alt="moi" onClick={() => navigate("/profile")} style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0, cursor: "pointer" }} />
-              : <div onClick={() => navigate("/profile")} style={{ width: 40, height: 40, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15, flexShrink: 0, cursor: "pointer" }}>{userInitials}</div>
+              : <div onClick={() => navigate("/profile")} style={{ width: 40, height: 40, borderRadius: "50%", background: "var(--bp-primary)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15, flexShrink: 0, cursor: "pointer" }}>{userInitials}</div>
             }
             {/* Fake input */}
             <div
@@ -622,10 +622,10 @@ export default function Feed() {
 
         {/* ── Loading ── */}
         {loading && (
-          <div style={{ textAlign: "center", padding: 32, background: "#fff", color: "#64748B" }}>
+          <div style={{ textAlign: "center", padding: 32, background: "var(--theme-surface)", color: "#64748B" }}>
             <div style={{
               width: 28, height: 28, border: "3px solid #E5E7EB",
-              borderTopColor: "#22C55E", borderRadius: "50%",
+              borderTopColor: "var(--bp-primary)", borderRadius: "50%",
               animation: "fb-spin .7s linear infinite",
               margin: "0 auto 10px",
             }} />
@@ -635,9 +635,9 @@ export default function Feed() {
 
         {/* ── Empty state ── */}
         {!loading && posts.length === 0 && (
-          <div style={{ textAlign: "center", padding: 40, background: "#fff", color: "#64748B" }}>
+          <div style={{ textAlign: "center", padding: 40, background: "var(--theme-surface)", color: "#64748B" }}>
             <div style={{ fontSize: 40, marginBottom: 8 }}>📭</div>
-            <div style={{ fontWeight: 700, color: "#111827" }}>Aucune publication pour l'instant</div>
+            <div style={{ fontWeight: 700, color: "var(--theme-text)" }}>Aucune publication pour l'instant</div>
             <div style={{ fontSize: 13, marginTop: 4 }}>Soyez le premier à publier quelque chose !</div>
           </div>
         )}
@@ -648,7 +648,7 @@ export default function Feed() {
           const initials = getInitials(post.authorName);
           const avatarColor = AVATAR_COLORS[post.authorId % AVATAR_COLORS.length];
           return (
-            <div key={post.id} style={{ background: "#fff" }}>
+            <div key={post.id} style={{ background: "var(--theme-surface)" }}>
               {/* Post header */}
               <div style={{ display: "flex", alignItems: "flex-start", padding: "12px 14px 8px", gap: 10 }}>
                 {post.authorAvatarUrl
@@ -661,7 +661,7 @@ export default function Feed() {
                 }
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap" }}>
-                    <span style={{ fontWeight: 700, fontSize: 14.5, color: "#111827", cursor: "pointer" }}
+                    <span style={{ fontWeight: 700, fontSize: 14.5, color: "var(--theme-text)", cursor: "pointer" }}
                       onClick={() => navigate(`/user/${post.authorId}`)}>
                       {post.authorName}
                     </span>
@@ -673,7 +673,7 @@ export default function Feed() {
                           style={{ fontSize: 13, fontWeight: 600, color: "#64748B", cursor: "pointer" }}>· Suivi</span>
                       : <span
                           onClick={(e) => handleFollow(post.authorId, e)}
-                          style={{ fontSize: 13, fontWeight: 600, color: "#22C55E", cursor: "pointer" }}>· Suivre</span>
+                          style={{ fontSize: 13, fontWeight: 600, color: "var(--bp-primary)", cursor: "pointer" }}>· Suivre</span>
                     }
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#64748B", marginTop: 1 }}>
@@ -682,8 +682,8 @@ export default function Feed() {
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="#64748B"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6l5 3-1 1.73-6-3.5V7z"/></svg>
                   </div>
                   {post.location && (
-                    <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#22C55E", marginTop: 2 }}>
-                      <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "var(--bp-primary)", marginTop: 2 }}>
+                      <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                       <span>{post.location}</span>
                     </div>
                   )}
@@ -771,7 +771,7 @@ export default function Feed() {
                       {/* Stacked reaction circles */}
                       <div style={{ display: "flex" }}>
                         {/* 👍 Like — always shown */}
-                        <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#22C55E", border: "1.5px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, zIndex: 3 }}>👍</div>
+                        <div style={{ width: 20, height: 20, borderRadius: "50%", background: "var(--bp-primary)", border: "1.5px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, zIndex: 3 }}>👍</div>
                         {post.likesCount >= 3 && (
                           <div style={{ width: 20, height: 20, borderRadius: "50%", background: "#F43F5E", border: "1.5px solid #fff", marginLeft: -6, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, zIndex: 2 }}>❤️</div>
                         )}
@@ -789,7 +789,7 @@ export default function Feed() {
                       <div style={{ display: "flex", alignItems: "center" }}>
                         {/* Mock avatar stack — colored circles */}
                         {[
-                          { bg: "#22C55E", i: 0 },
+                          { bg: "var(--bp-primary)", i: 0 },
                           ...(post.likesCount > 1 ? [{ bg: "#3B82F6", i: 1 }] : []),
                           ...(post.likesCount > 2 ? [{ bg: "#F43F5E", i: 2 }] : []),
                         ].map(({ bg, i }) => (
@@ -820,9 +820,9 @@ export default function Feed() {
                 {/* J'aime */}
                 <button
                   onClick={() => toggleLike(post.id)}
-                  style={{ flex: 1, background: "none", border: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "9px 4px", fontSize: 13.5, fontWeight: 700, color: post.liked ? "#22C55E" : "#64748B", cursor: "pointer", transition: "color .13s" }}
+                  style={{ flex: 1, background: "none", border: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "9px 4px", fontSize: 13.5, fontWeight: 700, color: post.liked ? "var(--bp-primary)" : "#64748B", cursor: "pointer", transition: "color .13s" }}
                 >
-                  <svg viewBox="0 0 24 24" width="19" height="19" fill={post.liked ? "#22C55E" : "none"} stroke={post.liked ? "#22C55E" : "#64748B"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M7 10v12M15 5.88L14 10h5.83A2 2 0 0 1 21.83 12.49L19.04 19.5A2 2 0 0 1 17.12 21H7a2 2 0 0 1-2-2v-8.5a2 2 0 0 1 .586-1.414L10 5H13a2 2 0 0 1 2 2v-.12z"/></svg>
+                  <svg viewBox="0 0 24 24" width="19" height="19" fill={post.liked ? "var(--bp-primary)" : "none"} stroke={post.liked ? "var(--bp-primary)" : "#64748B"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M7 10v12M15 5.88L14 10h5.83A2 2 0 0 1 21.83 12.49L19.04 19.5A2 2 0 0 1 17.12 21H7a2 2 0 0 1-2-2v-8.5a2 2 0 0 1 .586-1.414L10 5H13a2 2 0 0 1 2 2v-.12z"/></svg>
                   <span>J'aime</span>
                 </button>
                 <div style={{ width: 1, background: "#E5E7EB", alignSelf: "stretch", margin: "6px 0" }} />
@@ -846,9 +846,9 @@ export default function Feed() {
                 {/* Enregistrer */}
                 <button
                   onClick={() => toggleSave(post.id)}
-                  style={{ flex: 1, background: "none", border: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "9px 4px", fontSize: 13.5, fontWeight: 700, color: savedSet.has(post.id) ? "#22C55E" : "#64748B", cursor: "pointer", transition: "color .13s" }}
+                  style={{ flex: 1, background: "none", border: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "9px 4px", fontSize: 13.5, fontWeight: 700, color: savedSet.has(post.id) ? "var(--bp-primary)" : "#64748B", cursor: "pointer", transition: "color .13s" }}
                 >
-                  <svg viewBox="0 0 24 24" width="19" height="19" fill={savedSet.has(post.id) ? "#22C55E" : "none"} stroke={savedSet.has(post.id) ? "#22C55E" : "#64748B"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                  <svg viewBox="0 0 24 24" width="19" height="19" fill={savedSet.has(post.id) ? "var(--bp-primary)" : "none"} stroke={savedSet.has(post.id) ? "var(--bp-primary)" : "#64748B"} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
                   <span>Enregistrer</span>
                 </button>
               </div>
@@ -892,9 +892,9 @@ export default function Feed() {
                 return (
                   <>
                     {([
-                      { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>, label: "Modifier le post", color: "#22C55E", action: closeMenu },
-                      { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1v3.76z"/></svg>, label: "Épingler le post", color: "#22C55E", action: () => { if (postMenuId !== null) pinPost(postMenuId); } },
-                      { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><line x1="10" y1="12" x2="14" y2="12"/></svg>, label: "Archiver le post", color: "#22C55E", action: () => { if (postMenuId !== null) archivePost(postMenuId); } },
+                      { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>, label: "Modifier le post", color: "var(--bp-primary)", action: closeMenu },
+                      { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1v3.76z"/></svg>, label: "Épingler le post", color: "var(--bp-primary)", action: () => { if (postMenuId !== null) pinPost(postMenuId); } },
+                      { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><line x1="10" y1="12" x2="14" y2="12"/></svg>, label: "Archiver le post", color: "var(--bp-primary)", action: () => { if (postMenuId !== null) archivePost(postMenuId); } },
                     ] as { icon: React.ReactNode; label: string; color: string; action: () => void }[]).map((item, i) => (
                       <button key={i} onClick={item.action}
                         onMouseEnter={e => (e.currentTarget.style.background = "rgba(34,197,94,0.06)")}
@@ -917,8 +917,8 @@ export default function Feed() {
                 return (
                   <>
                     {([
-                      { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>, label: "Ça m'intéresse", color: "#22C55E", action: closeMenu },
-                      { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>, label: "Enregistrer", color: "#22C55E", action: () => { if (postMenuId !== null) { toggleSave(postMenuId); closeMenu(); } } },
+                      { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>, label: "Ça m'intéresse", color: "var(--bp-primary)", action: closeMenu },
+                      { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>, label: "Enregistrer", color: "var(--bp-primary)", action: () => { if (postMenuId !== null) { toggleSave(postMenuId); closeMenu(); } } },
                       { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15" stroke="#EF4444" strokeWidth="2"/></svg>, label: "Signaler", color: "#EF4444", action: closeMenu },
                       { icon: <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>, label: "Bloquer l'utilisateur", color: "#EF4444", action: closeMenu },
                     ] as { icon: React.ReactNode; label: string; color: string; action: () => void }[]).map((item, i, arr) => (
@@ -946,7 +946,7 @@ export default function Feed() {
           onClick={() => setShowModal(false)}
         >
           <div
-            style={{ background: "#fff", borderRadius: 10, width: "100%", maxWidth: 500, overflow: "hidden" }}
+            style={{ background: "var(--theme-surface)", borderRadius: 10, width: "100%", maxWidth: 500, overflow: "hidden" }}
             onClick={e => e.stopPropagation()}
           >
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 14px", borderBottom: "1px solid #E5E7EB" }}>
@@ -957,7 +957,7 @@ export default function Feed() {
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
                 {user.avatarUrl
                   ? <img src={user.avatarUrl} alt="Avatar" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover" }} />
-                  : <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15 }}>{userInitials}</div>
+                  : <div style={{ width: 40, height: 40, borderRadius: "50%", background: "var(--bp-primary)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15 }}>{userInitials}</div>
                 }
                 <div>
                   <div style={{ fontWeight: 700, fontSize: 15 }}>{user.name}</div>
@@ -965,7 +965,7 @@ export default function Feed() {
                 </div>
               </div>
               <textarea
-                style={{ width: "100%", border: "none", outline: "none", resize: "none", fontSize: 18, minHeight: 120, color: "#111827", fontFamily: "inherit", lineHeight: 1.5, background: "transparent" }}
+                style={{ width: "100%", border: "none", outline: "none", resize: "none", fontSize: 18, minHeight: 120, color: "var(--theme-text)", fontFamily: "inherit", lineHeight: 1.5, background: "transparent" }}
                 placeholder={`Quoi de neuf, ${user.name.split(" ")[0]} ?`}
                 value={newPost}
                 onChange={e => setNewPost(e.target.value)}
@@ -977,7 +977,7 @@ export default function Feed() {
                 onClick={submitPost}
                 disabled={submitting || !newPost.trim()}
                 style={{
-                  width: "100%", background: !newPost.trim() ? "#bec3c9" : "#22C55E",
+                  width: "100%", background: !newPost.trim() ? "#bec3c9" : "var(--bp-primary)",
                   color: "#fff", border: "none", borderRadius: 6,
                   padding: "10px", fontWeight: 700, fontSize: 16,
                   cursor: !newPost.trim() ? "not-allowed" : "pointer",

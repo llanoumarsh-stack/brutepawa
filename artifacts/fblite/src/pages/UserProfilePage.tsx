@@ -12,7 +12,7 @@ import {
   type PublicUser, type PublicUserWithStatus, type FriendRequest, type FeedPost,
 } from "../lib/api";
 
-const AVATAR_COLORS = ["#22C55E","#E91E63","#9C27B0","#FF9800","#22C55E","#0EA5E9","#EF4444","#6366F1"];
+const AVATAR_COLORS = ["var(--bp-primary)","#E91E63","#9C27B0","#FF9800","var(--bp-primary)","#0EA5E9","#EF4444","#6366F1"];
 function avatarColor(id: number) { return AVATAR_COLORS[id % AVATAR_COLORS.length]; }
 function fullName(u: { firstName: string; lastName: string }) { return `${u.firstName} ${u.lastName}`.trim(); }
 function initials(u: { firstName: string; lastName: string }) {
@@ -135,8 +135,8 @@ const IcoGroup = () => (
   </svg>
 );
 const IcoUnlock = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" fill="#DCFCE7" stroke="#22C55E"/>
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" fill="#DCFCE7" stroke="var(--bp-primary)"/>
     <path d="M7 11V7a5 5 0 019.9-1"/>
   </svg>
 );
@@ -147,7 +147,7 @@ const IcoGlobe = () => (
   </svg>
 );
 const IcoLike = ({ active }: { active?: boolean }) => (
-  <svg width="17" height="17" viewBox="0 0 24 24" fill={active ? "#22C55E" : "none"} stroke={active ? "#22C55E" : "#94A3B8"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="17" height="17" viewBox="0 0 24 24" fill={active ? "var(--bp-primary)" : "none"} stroke={active ? "var(--bp-primary)" : "#94A3B8"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3z"/>
     <path d="M7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"/>
   </svg>
@@ -202,19 +202,19 @@ const IcoCopy = () => (
 const EmptyPostsIllustration = () => (
   <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
     <rect x="18" y="22" width="84" height="76" rx="10" fill="#DCFCE7"/>
-    <rect x="26" y="34" width="68" height="42" rx="7" fill="#F0FDF4" stroke="#22C55E" strokeWidth="1.5"/>
+    <rect x="26" y="34" width="68" height="42" rx="7" fill="#F0FDF4" stroke="var(--bp-primary)" strokeWidth="1.5"/>
     <circle cx="38" cy="47" r="6" fill="#BBF7D0"/>
     <path d="M26 76l16-14 10 10 14-18 22 22H26z" fill="#BBF7D0" opacity="0.7"/>
     <rect x="32" y="84" width="56" height="6" rx="3" fill="#DCFCE7"/>
     <rect x="42" y="94" width="36" height="4" rx="2" fill="#DCFCE7"/>
-    <circle cx="88" cy="84" r="14" fill="#22C55E"/>
+    <circle cx="88" cy="84" r="14" fill="var(--bp-primary)"/>
     <path d="M82 84h12M88 78v12" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"/>
   </svg>
 );
 const EmptyPhotosIllustration = () => (
   <svg width="110" height="110" viewBox="0 0 110 110" fill="none">
     <rect x="10" y="20" width="90" height="70" rx="10" fill="#DCFCE7"/>
-    <rect x="18" y="28" width="74" height="54" rx="7" fill="#F0FDF4" stroke="#22C55E" strokeWidth="1.5"/>
+    <rect x="18" y="28" width="74" height="54" rx="7" fill="#F0FDF4" stroke="var(--bp-primary)" strokeWidth="1.5"/>
     <circle cx="36" cy="42" r="7" fill="#BBF7D0"/>
     <path d="M18 72l20-18 14 12 18-22 28 28H18z" fill="#BBF7D0" opacity="0.6"/>
   </svg>
@@ -415,7 +415,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
     return (
       <div style={{ minHeight: "100vh", background: "linear-gradient(160deg,#f0fdf4 0%,#fff 60%,#f0fdf4 100%)", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ textAlign: "center" }}>
-          <div style={{ width: 48, height: 48, border: "4px solid #DCFCE7", borderTop: "4px solid #22C55E", borderRadius: "50%", margin: "0 auto 16px", animation: "spin 0.8s linear infinite" }} />
+          <div style={{ width: 48, height: 48, border: "4px solid #DCFCE7", borderTop: "4px solid var(--bp-primary)", borderRadius: "50%", margin: "0 auto 16px", animation: "spin 0.8s linear infinite" }} />
           <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
           <div style={{ color: "#64748B", fontSize: 14, fontWeight: 600 }}>Chargement du profil…</div>
         </div>
@@ -429,13 +429,13 @@ export default function UserProfilePage({ userId }: { userId: number }) {
       <div style={{ minHeight: "100vh", background: "linear-gradient(160deg,#f0fdf4 0%,#fff 60%,#f0fdf4 100%)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 20, padding: 32 }}>
         <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
           <circle cx="50" cy="50" r="40" fill="#DCFCE7"/>
-          <circle cx="38" cy="42" r="5" fill="#22C55E"/><circle cx="62" cy="42" r="5" fill="#22C55E"/>
-          <path d="M35 62c4-6 26-6 30 0" stroke="#22C55E" strokeWidth="3" strokeLinecap="round" fill="none"/>
+          <circle cx="38" cy="42" r="5" fill="var(--bp-primary)"/><circle cx="62" cy="42" r="5" fill="var(--bp-primary)"/>
+          <path d="M35 62c4-6 26-6 30 0" stroke="var(--bp-primary)" strokeWidth="3" strokeLinecap="round" fill="none"/>
           <path d="M20 20l60 60M80 20L20 80" stroke="#EF4444" strokeWidth="3" strokeLinecap="round" opacity="0.25"/>
         </svg>
-        <div style={{ fontWeight: 900, fontSize: 20, color: "#111827" }}>Profil introuvable</div>
+        <div style={{ fontWeight: 900, fontSize: 20, color: "var(--theme-text)" }}>Profil introuvable</div>
         <div style={{ fontSize: 14, color: "#94A3B8", textAlign: "center" }}>Ce profil n'existe pas ou a été supprimé.</div>
-        <button onClick={() => window.history.back()} style={{ background: "linear-gradient(135deg, #22C55E, #16A34A)", color: "#fff", border: "none", borderRadius: 14, padding: "13px 32px", fontWeight: 700, fontSize: 15, cursor: "pointer", boxShadow: "0 4px 16px rgba(34,197,94,0.35)" }}>
+        <button onClick={() => window.history.back()} style={{ background: "linear-gradient(135deg, var(--bp-primary), var(--bp-primary-dark))", color: "#fff", border: "none", borderRadius: 14, padding: "13px 32px", fontWeight: 700, fontSize: 15, cursor: "pointer", boxShadow: "0 4px 16px rgba(34,197,94,0.35)" }}>
           Retour
         </button>
       </div>
@@ -453,7 +453,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
 
   /* ── HEADER (shared) ─────────────────────────────── */
   const StickyHeader = ({ locked = false }: { locked?: boolean }) => (
-    <div style={{ position: "sticky", top: 0, zIndex: 50, background: "#fff", boxShadow: "0 1px 0 #E5E7EB", padding: "0 14px", height: 58, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+    <div style={{ position: "sticky", top: 0, zIndex: 50, background: "var(--theme-surface)", boxShadow: "0 1px 0 #E5E7EB", padding: "0 14px", height: 58, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
       <button onClick={() => window.history.back()} style={{ background: "none", border: "none", width: 40, height: 40, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "background 0.15s" }}
         onPointerDown={e => (e.currentTarget.style.background = "#F1F5F9")}
         onPointerUp={e => (e.currentTarget.style.background = "none")}
@@ -463,10 +463,10 @@ export default function UserProfilePage({ userId }: { userId: number }) {
       </button>
       {/* BrutePawa logo centered */}
       <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-        <div style={{ width: 30, height: 30, borderRadius: "50%", background: "linear-gradient(135deg,#22C55E,#16A34A)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(34,197,94,0.35)" }}>
+        <div style={{ width: 30, height: 30, borderRadius: "50%", background: "linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(34,197,94,0.35)" }}>
           <span style={{ color: "#fff", fontWeight: 900, fontSize: 17, lineHeight: 1, fontFamily: "Arial Black,Arial,sans-serif" }}>b</span>
         </div>
-        <span style={{ fontWeight: 800, fontSize: 18, color: "#111827", letterSpacing: -0.3 }}>BrutePawa</span>
+        <span style={{ fontWeight: 800, fontSize: 18, color: "var(--theme-text)", letterSpacing: -0.3 }}>BrutePawa</span>
       </div>
       {!isOwner ? (
         <button onClick={openMenu} style={{ background: "none", border: "none", width: 40, height: 40, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "background 0.15s" }}
@@ -490,9 +490,9 @@ export default function UserProfilePage({ userId }: { userId: number }) {
           <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
             {user.coverUrl
               ? <img ref={coverImgRef} src={user.coverUrl} alt="cover" loading="lazy" style={{ width: "100%", height: "115%", objectFit: "cover", display: "block", transformOrigin: "top center", willChange: "transform" }} />
-              : <div style={{ width: "100%", height: "100%", background: "linear-gradient(135deg,#052e16 0%,#052e16 40%,#22C55E44 80%,#052e16 100%)" }}>
+              : <div style={{ width: "100%", height: "100%", background: "linear-gradient(135deg,#052e16 0%,#052e16 40%,rgba(var(--bp-primary-rgb),0.27) 80%,#052e16 100%)" }}>
                   <svg viewBox="0 0 480 190" width="100%" height="100%" style={{ position: "absolute", inset: 0 }}>
-                    <defs><radialGradient id="glw" cx="60%" cy="40%" r="60%"><stop offset="0%" stopColor="#22C55E" stopOpacity="0.35"/><stop offset="100%" stopColor="#22C55E" stopOpacity="0"/></radialGradient></defs>
+                    <defs><radialGradient id="glw" cx="60%" cy="40%" r="60%"><stop offset="0%" stopColor="var(--bp-primary)" stopOpacity="0.35"/><stop offset="100%" stopColor="var(--bp-primary)" stopOpacity="0"/></radialGradient></defs>
                     <rect width="480" height="190" fill="#052e16"/>
                     <ellipse cx="290" cy="80" rx="200" ry="130" fill="url(#glw)"/>
                   </svg>
@@ -505,16 +505,16 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                 ? <img src={user.avatarUrl} alt={name} style={{ width: 94, height: 94, borderRadius: "50%", border: "4px solid #fff", objectFit: "cover", boxShadow: "0 3px 16px rgba(0,0,0,0.25)", display: "block" }} />
                 : <div style={{ width: 94, height: 94, borderRadius: "50%", background: color, border: "4px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 900, fontSize: 30, boxShadow: "0 3px 16px rgba(0,0,0,0.25)" }}>{initials(user)}</div>
               }
-              <div style={{ position: "absolute", bottom: -3, right: -3, width: 30, height: 30, borderRadius: "50%", background: "linear-gradient(135deg,#22C55E,#16A34A)", border: "3px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(34,197,94,0.6)", zIndex: 6 }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="4" y="11" width="16" height="10" rx="2.5" fill="#fff"/><path d="M8 11V7a4 4 0 018 0v4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"/><circle cx="12" cy="16" r="2" fill="#22C55E"/></svg>
+              <div style={{ position: "absolute", bottom: -3, right: -3, width: 30, height: 30, borderRadius: "50%", background: "linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))", border: "3px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(34,197,94,0.6)", zIndex: 6 }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="4" y="11" width="16" height="10" rx="2.5" fill="#fff"/><path d="M8 11V7a4 4 0 018 0v4" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"/><circle cx="12" cy="16" r="2" fill="var(--bp-primary)"/></svg>
               </div>
             </div>
           </div>
         </div>
 
-        <div style={{ background: "#fff", paddingTop: 58, paddingBottom: 18, paddingLeft: 12, paddingRight: 12, borderBottom: "1px solid #F1F5F9" }}>
+        <div style={{ background: "var(--theme-surface)", paddingTop: 58, paddingBottom: 18, paddingLeft: 12, paddingRight: 12, borderBottom: "1px solid #F1F5F9" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 7, flexWrap: "wrap", marginBottom: 5 }}>
-            <span style={{ fontWeight: 900, fontSize: 22, color: "#111827", letterSpacing: -0.3 }}>{name}</span>
+            <span style={{ fontWeight: 900, fontSize: 22, color: "var(--theme-text)", letterSpacing: -0.3 }}>{name}</span>
             {[13, 26, 40].includes(userId) && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 20, height: 20, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 18 }}>
@@ -523,7 +523,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
           </div>
           <div style={{ display: "flex", gap: 6, alignItems: "stretch" }}>
             {(user.friendshipStatus === "none" && !pendingRequest) ? (
-              <button disabled={actionLoading} onClick={handleSendRequest} style={{ flex: "1 1 0", minWidth: 0, padding: "11px 5px", background: "#22C55E", color: "#fff", border: "none", borderRadius: 12, fontWeight: 700, fontSize: 12.5, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, boxShadow: "0 3px 12px rgba(34,197,94,0.4)", whiteSpace: "nowrap", overflow: "hidden" }}>
+              <button disabled={actionLoading} onClick={handleSendRequest} style={{ flex: "1 1 0", minWidth: 0, padding: "11px 5px", background: "var(--bp-primary)", color: "#fff", border: "none", borderRadius: 12, fontWeight: 700, fontSize: 12.5, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, boxShadow: "0 3px 12px rgba(34,197,94,0.4)", whiteSpace: "nowrap", overflow: "hidden" }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
                 {actionLoading ? "…" : "Ajouter comme ami"}
               </button>
@@ -532,7 +532,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                 <IcoClock />{actionLoading ? "…" : "Demande envoyée"}
               </button>
             ) : (user.friendshipStatus === "pending_received" || pendingRequest) ? (
-              <button disabled={actionLoading} onClick={handleAccept} style={{ flex: "1 1 0", minWidth: 0, padding: "11px 5px", background: "#22C55E", color: "#fff", border: "none", borderRadius: 12, fontWeight: 700, fontSize: 12.5, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, boxShadow: "0 3px 12px rgba(34,197,94,0.4)", whiteSpace: "nowrap", overflow: "hidden" }}>
+              <button disabled={actionLoading} onClick={handleAccept} style={{ flex: "1 1 0", minWidth: 0, padding: "11px 5px", background: "var(--bp-primary)", color: "#fff", border: "none", borderRadius: 12, fontWeight: 700, fontSize: 12.5, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, boxShadow: "0 3px 12px rgba(34,197,94,0.4)", whiteSpace: "nowrap", overflow: "hidden" }}>
                 <IcoCheck />{actionLoading ? "…" : "Confirmer"}
               </button>
             ) : null}
@@ -543,34 +543,34 @@ export default function UserProfilePage({ userId }: { userId: number }) {
           </div>
         </div>
 
-        <div style={{ margin: "12px 12px 10px", background: "#fff", borderRadius: 18, boxShadow: "0 2px 10px rgba(0,0,0,0.07)", display: "flex", alignItems: "center", padding: "16px 16px 16px 0", minHeight: 110 }}>
+        <div style={{ margin: "12px 12px 10px", background: "var(--theme-surface)", borderRadius: 18, boxShadow: "0 2px 10px rgba(0,0,0,0.07)", display: "flex", alignItems: "center", padding: "16px 16px 16px 0", minHeight: 110 }}>
           <div style={{ width: 110, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
             <svg width="76" height="86" viewBox="0 0 90 100" fill="none">
-              <path d="M45 8L12 20v24c0 22 14.4 40.6 33 47 18.6-6.4 33-25 33-47V20L45 8z" fill="#16A34A" opacity="0.45"/>
+              <path d="M45 8L12 20v24c0 22 14.4 40.6 33 47 18.6-6.4 33-25 33-47V20L45 8z" fill="var(--bp-primary-dark)" opacity="0.45"/>
               <path d="M45 4L10 17v25c0 23 15.3 42.2 35 48.5C64.7 84.2 80 65 80 42V17L45 4z" fill="url(#shG2)"/>
-              <defs><linearGradient id="shG2" x1="10" y1="4" x2="80" y2="95" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#22C55E"/><stop offset="50%" stopColor="#22C55E"/><stop offset="100%" stopColor="#16A34A"/></linearGradient></defs>
+              <defs><linearGradient id="shG2" x1="10" y1="4" x2="80" y2="95" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="var(--bp-primary)"/><stop offset="50%" stopColor="var(--bp-primary)"/><stop offset="100%" stopColor="var(--bp-primary-dark)"/></linearGradient></defs>
               <path d="M45 10L16 21v23c0 5 1.2 10 3.2 14.5L45 10z" fill="rgba(255,255,255,0.15)"/>
               <rect x="31" y="47" width="28" height="22" rx="5" fill="#fff"/>
               <path d="M35.5 47V40a9.5 9.5 0 0119 0v7" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" fill="none"/>
-              <circle cx="45" cy="56" r="4" fill="#22C55E"/>
-              <rect x="43.5" y="56" width="3" height="7" rx="1.5" fill="#22C55E"/>
+              <circle cx="45" cy="56" r="4" fill="var(--bp-primary)"/>
+              <rect x="43.5" y="56" width="3" height="7" rx="1.5" fill="var(--bp-primary)"/>
             </svg>
           </div>
           <div style={{ flex: 1, paddingRight: 16, minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 7 }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2.5" fill="#22C55E"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round"/></svg>
-              <span style={{ fontWeight: 800, fontSize: 16, color: "#111827" }}>Profil verrouillé</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2.5" fill="var(--bp-primary)"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="var(--bp-primary)" strokeWidth="2.2" strokeLinecap="round"/></svg>
+              <span style={{ fontWeight: 800, fontSize: 16, color: "var(--theme-text)" }}>Profil verrouillé</span>
             </div>
             <div style={{ fontSize: 13, color: "#64748B", lineHeight: 1.65 }}>Ce profil est protégé. Seuls ses amis peuvent voir ses publications, photos et informations.</div>
           </div>
         </div>
 
-        <div style={{ margin: "0 12px 80px", background: "#fff", borderRadius: 18, boxShadow: "0 2px 10px rgba(0,0,0,0.07)", padding: "16px 18px", display: "flex", gap: 14, alignItems: "flex-start" }}>
+        <div style={{ margin: "0 12px 80px", background: "var(--theme-surface)", borderRadius: 18, boxShadow: "0 2px 10px rgba(0,0,0,0.07)", padding: "16px 18px", display: "flex", gap: 14, alignItems: "flex-start" }}>
           <div style={{ width: 46, height: 46, borderRadius: 14, background: "#F0FDF4", border: "1.5px solid #BBF7D0", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           </div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 700, fontSize: 14.5, color: "#111827", marginBottom: 7 }}>Pourquoi ce profil est-il verrouillé ?</div>
+            <div style={{ fontWeight: 700, fontSize: 14.5, color: "var(--theme-text)", marginBottom: 7 }}>Pourquoi ce profil est-il verrouillé ?</div>
             <div style={{ fontSize: 13, color: "#64748B", lineHeight: 1.7 }}>Le propriétaire a choisi de restreindre l'accès à son contenu. Ajoutez-le comme ami pour voir ses publications et interagir avec lui sur BrutePawa.</div>
           </div>
         </div>
@@ -598,7 +598,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
         {menuPanel === "menu" && (
           <div style={{ position: "fixed", inset: 0, zIndex: 400, display: "flex", flexDirection: "column", justifyContent: "flex-end" }} onClick={closeAll}>
             <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", animation: "fadeIn 0.2s ease" }} />
-            <div style={{ position: "relative", background: "#fff", borderRadius: "24px 24px 0 0", maxHeight: "85vh", overflowY: "auto", animation: "slideUp 0.28s ease-out", maxWidth: 600, width: "100%", margin: "0 auto", boxShadow: "0 -8px 48px rgba(0,0,0,0.22)" }}
+            <div style={{ position: "relative", background: "var(--theme-surface)", borderRadius: "24px 24px 0 0", maxHeight: "85vh", overflowY: "auto", animation: "slideUp 0.28s ease-out", maxWidth: 600, width: "100%", margin: "0 auto", boxShadow: "0 -8px 48px rgba(0,0,0,0.22)" }}
               onClick={e => e.stopPropagation()}>
               {/* Drag handle */}
               <div style={{ padding: "14px 0 6px", display: "flex", justifyContent: "center" }}>
@@ -611,7 +611,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                   : <div style={{ width: 46, height: 46, borderRadius: "50%", background: color, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 16, border: "2px solid #DCFCE7", flexShrink: 0 }}>{initials(user)}</div>
                 }
                 <div>
-                  <div style={{ fontWeight: 800, fontSize: 15, color: "#111827" }}>{name}</div>
+                  <div style={{ fontWeight: 800, fontSize: 15, color: "var(--theme-text)" }}>{name}</div>
                   <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 2 }}>@{name.toLowerCase().replace(/\s+/g, "_")}</div>
                 </div>
               </div>
@@ -631,7 +631,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
               {/* Section: Sécurité */}
               <MenuSection label="Sécurité">
                 {isBlocked
-                  ? <MenuItem icon={<IcoUnlock />} label="Débloquer cet utilisateur" sublabel="Vous reverrez ce profil" labelColor="#16A34A" onClick={handleUnblock} />
+                  ? <MenuItem icon={<IcoUnlock />} label="Débloquer cet utilisateur" sublabel="Vous reverrez ce profil" labelColor="var(--bp-primary-dark)" onClick={handleUnblock} />
                   : <MenuItem icon={<IcoBlock />} label="Bloquer cet utilisateur" sublabel="Vous ne verrez plus ce profil" labelColor="#EF4444" onClick={() => setMenuPanel("block")} arrow />
                 }
                 <MenuItem icon={<IcoFlag />} label="Signaler ce profil" sublabel="Signaler un comportement" labelColor="#EF4444" onClick={() => { setMenuPanel("report"); setReportSent(false); setReportReason(""); setReportDescription(""); }} arrow />
@@ -667,11 +667,11 @@ export default function UserProfilePage({ userId }: { userId: number }) {
             {reportSent ? (
               <div style={{ textAlign: "center", padding: "40px 20px" }}>
                 <div style={{ width: 80, height: 80, borderRadius: "50%", background: "#DCFCE7", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
-                  <IcoCheck size={38} color="#22C55E" />
+                  <IcoCheck size={38} color="var(--bp-primary)" />
                 </div>
-                <div style={{ fontWeight: 900, fontSize: 20, color: "#111827", marginBottom: 10 }}>Signalement envoyé</div>
+                <div style={{ fontWeight: 900, fontSize: 20, color: "var(--theme-text)", marginBottom: 10 }}>Signalement envoyé</div>
                 <div style={{ fontSize: 14, color: "#94A3B8", lineHeight: 1.7, marginBottom: 32 }}>Notre équipe examinera ce profil dans les meilleurs délais. Merci de contribuer à la sécurité de la communauté.</div>
-                <button onClick={closeAll} style={{ width: "100%", padding: "15px 0", background: "linear-gradient(135deg,#22C55E,#16A34A)", color: "#fff", border: "none", borderRadius: 16, fontWeight: 700, fontSize: 15, cursor: "pointer" }}>Fermer</button>
+                <button onClick={closeAll} style={{ width: "100%", padding: "15px 0", background: "linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))", color: "#fff", border: "none", borderRadius: 16, fontWeight: 700, fontSize: 15, cursor: "pointer" }}>Fermer</button>
               </div>
             ) : (
               <>
@@ -680,8 +680,8 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 18 }}>
                   {["Spam ou faux compte", "Harcèlement ou intimidation", "Contenu inapproprié", "Usurpation d'identité", "Violence ou menaces", "Autre"].map(r => (
-                    <button key={r} onClick={() => setReportReason(r)} style={{ padding: "14px 16px", borderRadius: 14, border: `2px solid ${reportReason === r ? "#22C55E" : "#E5E7EB"}`, background: reportReason === r ? "#F0FDF4" : "#fff", cursor: "pointer", textAlign: "left", fontSize: 14, fontWeight: 600, color: reportReason === r ? "#16A34A" : "#64748B", display: "flex", alignItems: "center", gap: 12, transition: "all 0.15s" }}>
-                      <div style={{ width: 20, height: 20, borderRadius: "50%", border: `2px solid ${reportReason === r ? "#22C55E" : "#E5E7EB"}`, background: reportReason === r ? "#22C55E" : "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.15s" }}>
+                    <button key={r} onClick={() => setReportReason(r)} style={{ padding: "14px 16px", borderRadius: 14, border: `2px solid ${reportReason === r ? "var(--bp-primary)" : "#E5E7EB"}`, background: reportReason === r ? "#F0FDF4" : "#fff", cursor: "pointer", textAlign: "left", fontSize: 14, fontWeight: 600, color: reportReason === r ? "var(--bp-primary-dark)" : "#64748B", display: "flex", alignItems: "center", gap: 12, transition: "all 0.15s" }}>
+                      <div style={{ width: 20, height: 20, borderRadius: "50%", border: `2px solid ${reportReason === r ? "var(--bp-primary)" : "#E5E7EB"}`, background: reportReason === r ? "var(--bp-primary)" : "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.15s" }}>
                         {reportReason === r && <IcoCheck size={11} />}
                       </div>
                       {r}
@@ -697,14 +697,14 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                     maxLength={500}
                     rows={3}
                     style={{ width: "100%", padding: "12px 14px", borderRadius: 14, border: "2px solid #E5E7EB", fontSize: 14, color: "#64748B", resize: "none", fontFamily: "inherit", outline: "none", boxSizing: "border-box", transition: "border-color 0.15s" }}
-                    onFocus={e => (e.target.style.borderColor = "#22C55E")}
+                    onFocus={e => (e.target.style.borderColor = "var(--bp-primary)")}
                     onBlur={e => (e.target.style.borderColor = "#E5E7EB")}
                   />
                   <div style={{ textAlign: "right", fontSize: 11, color: "#94A3B8", marginTop: 4 }}>{reportDescription.length}/500</div>
                 </div>
                 <div style={{ display: "flex", gap: 10 }}>
                   <button onClick={closeAll} style={{ flex: 1, padding: 15, background: "#F1F5F9", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: "pointer", color: "#64748B" }}>Annuler</button>
-                  <button onClick={handleReport} disabled={!reportReason.trim() || reportLoading} style={{ flex: 2, padding: 15, background: !reportReason.trim() ? "#E5E7EB" : "linear-gradient(135deg,#22C55E,#16A34A)", color: !reportReason.trim() ? "#94A3B8" : "#fff", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: !reportReason.trim() ? "default" : "pointer", transition: "all 0.2s" }}>
+                  <button onClick={handleReport} disabled={!reportReason.trim() || reportLoading} style={{ flex: 2, padding: 15, background: !reportReason.trim() ? "#E5E7EB" : "linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))", color: !reportReason.trim() ? "#94A3B8" : "#fff", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: !reportReason.trim() ? "default" : "pointer", transition: "all 0.2s" }}>
                     {reportLoading ? "Envoi…" : "Envoyer"}
                   </button>
                 </div>
@@ -721,7 +721,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                 ? <img src={user.avatarUrl} alt="" style={{ width: 80, height: 80, borderRadius: "50%", objectFit: "cover", border: "4px solid #FEE2E2", margin: "0 auto 16px", display: "block" }} />
                 : <div style={{ width: 80, height: 80, borderRadius: "50%", background: color, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 900, fontSize: 26, border: "4px solid #FEE2E2", margin: "0 auto 16px" }}>{initials(user)}</div>
               }
-              <div style={{ fontWeight: 800, fontSize: 18, color: "#111827", marginBottom: 6 }}>Bloquer {name} ?</div>
+              <div style={{ fontWeight: 800, fontSize: 18, color: "var(--theme-text)", marginBottom: 6 }}>Bloquer {name} ?</div>
             </div>
             <div style={{ background: "#FEE2E2", borderRadius: 16, padding: "16px 18px", marginBottom: 24, display: "flex", flexDirection: "column", gap: 10 }}>
               {[
@@ -760,12 +760,12 @@ export default function UserProfilePage({ userId }: { userId: number }) {
             <SubPage title="Partager le profil" onBack={closeAll}>
               <div style={{ padding: "4px 0 20px", fontSize: 13, color: "#94A3B8" }}>Choisissez comment partager ce profil.</div>
               {/* Copy link big card */}
-              <button onClick={handleCopyLink} style={{ width: "100%", padding: "16px 18px", background: copyDone ? "#F0FDF4" : "#F8FAFC", border: `2px solid ${copyDone ? "#22C55E" : "#E5E7EB"}`, borderRadius: 18, cursor: "pointer", display: "flex", alignItems: "center", gap: 14, marginBottom: 12, transition: "all 0.2s", textAlign: "left" }}>
+              <button onClick={handleCopyLink} style={{ width: "100%", padding: "16px 18px", background: copyDone ? "#F0FDF4" : "#F8FAFC", border: `2px solid ${copyDone ? "var(--bp-primary)" : "#E5E7EB"}`, borderRadius: 18, cursor: "pointer", display: "flex", alignItems: "center", gap: 14, marginBottom: 12, transition: "all 0.2s", textAlign: "left" }}>
                 <div style={{ width: 50, height: 50, borderRadius: 16, background: copyDone ? "#DCFCE7" : "#F1F5F9", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 22 }}>
                   {copyDone ? "✅" : "🔗"}
                 </div>
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: 15, color: copyDone ? "#16A34A" : "#111827" }}>{copyDone ? "Lien copié !" : "Copier le lien"}</div>
+                  <div style={{ fontWeight: 700, fontSize: 15, color: copyDone ? "var(--bp-primary-dark)" : "#111827" }}>{copyDone ? "Lien copié !" : "Copier le lien"}</div>
                   <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 2 }}>{profileUrl.replace("https://","").substring(0,40)}{profileUrl.length > 44 ? "…" : ""}</div>
                 </div>
               </button>
@@ -777,9 +777,9 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                     onPointerUp={e => (e.currentTarget.style.background = "#F8FAFC")}
                     onPointerLeave={e => (e.currentTarget.style.background = "#F8FAFC")}
                   >
-                    <div style={{ width: 46, height: 46, borderRadius: 14, background: "#fff", border: "1.5px solid #E5E7EB", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 22 }}>{item.icon}</div>
+                    <div style={{ width: 46, height: 46, borderRadius: 14, background: "var(--theme-surface)", border: "1.5px solid #E5E7EB", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 22 }}>{item.icon}</div>
                     <div>
-                      <div style={{ fontWeight: 700, fontSize: 14, color: "#111827" }}>{item.label}</div>
+                      <div style={{ fontWeight: 700, fontSize: 14, color: "var(--theme-text)" }}>{item.label}</div>
                       {item.sublabel && <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 2 }}>{item.sublabel}</div>}
                     </div>
                   </button>
@@ -798,7 +798,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                 : <div style={{ width: 90, height: 90, borderRadius: "50%", background: color, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 900, fontSize: 28, border: "4px solid #fff", boxShadow: "0 4px 16px rgba(0,0,0,0.12)" }}>{initials(user)}</div>
               }
               <div style={{ textAlign: "center" }}>
-                <div style={{ fontWeight: 900, fontSize: 20, color: "#111827", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                <div style={{ fontWeight: 900, fontSize: 20, color: "var(--theme-text)", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
                   {name}
                   {[13, 26, 40].includes(userId) && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 20, height: 20, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />}
                 </div>
@@ -813,11 +813,11 @@ export default function UserProfilePage({ userId }: { userId: number }) {
               stats && { icon: "📝", label: "Publications", value: fmtCount(stats.postsCount) },
               stats && { icon: "👥", label: "Abonnés", value: fmtCount(stats.followersCount) },
             ].filter(Boolean).map((row: any, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", background: "#fff", borderRadius: 14, marginBottom: 8, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", background: "var(--theme-surface)", borderRadius: 14, marginBottom: 8, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
                 <div style={{ width: 42, height: 42, borderRadius: 12, background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>{row.icon}</div>
                 <div>
                   <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 500 }}>{row.label}</div>
-                  <div style={{ fontSize: 15, color: "#111827", fontWeight: 700, marginTop: 2 }}>{row.value}</div>
+                  <div style={{ fontSize: 15, color: "var(--theme-text)", fontWeight: 700, marginTop: 2 }}>{row.value}</div>
                 </div>
               </div>
             ))}
@@ -829,13 +829,13 @@ export default function UserProfilePage({ userId }: { userId: number }) {
           <SubPage title="Amis en commun" onBack={closeAll}>
             {mutualFriendsLoading ? (
               <div style={{ textAlign: "center", padding: "60px 0" }}>
-                <div style={{ width: 40, height: 40, border: "4px solid #DCFCE7", borderTop: "4px solid #22C55E", borderRadius: "50%", margin: "0 auto 14px", animation: "spin 0.8s linear infinite" }} />
+                <div style={{ width: 40, height: 40, border: "4px solid #DCFCE7", borderTop: "4px solid var(--bp-primary)", borderRadius: "50%", margin: "0 auto 14px", animation: "spin 0.8s linear infinite" }} />
                 <div style={{ color: "#94A3B8", fontSize: 14 }}>Chargement…</div>
               </div>
             ) : mutualFriends.length === 0 ? (
               <div style={{ textAlign: "center", padding: "40px 0" }}>
                 <EmptyMutualIllustration />
-                <div style={{ fontWeight: 800, fontSize: 17, color: "#111827", marginTop: 16, marginBottom: 8 }}>Aucun ami en commun</div>
+                <div style={{ fontWeight: 800, fontSize: 17, color: "var(--theme-text)", marginTop: 16, marginBottom: 8 }}>Aucun ami en commun</div>
                 <div style={{ fontSize: 13, color: "#94A3B8" }}>Vous n'avez pas encore d'amis en commun avec {user.firstName}.</div>
               </div>
             ) : (
@@ -851,10 +851,10 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                           : <div style={{ width: 50, height: 50, borderRadius: "50%", background: fc, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 17, border: "2px solid #DCFCE7", flexShrink: 0 }}>{initials(f)}</div>
                         }
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontWeight: 700, fontSize: 14, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{fullName(f)}</div>
+                          <div style={{ fontWeight: 700, fontSize: 14, color: "var(--theme-text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{fullName(f)}</div>
                           {f.country && <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 2 }}>{COUNTRY_FLAGS[f.country] ?? "🌍"} {f.country}</div>}
                         </div>
-                        <button onClick={() => { closeAll(); navigate(`/profile?id=${f.id}`); }} style={{ background: "#F0FDF4", border: "1.5px solid #DCFCE7", borderRadius: 10, padding: "7px 12px", fontSize: 12.5, fontWeight: 700, color: "#16A34A", cursor: "pointer", flexShrink: 0 }}>
+                        <button onClick={() => { closeAll(); navigate(`/profile?id=${f.id}`); }} style={{ background: "#F0FDF4", border: "1.5px solid #DCFCE7", borderRadius: 10, padding: "7px 12px", fontSize: 12.5, fontWeight: 700, color: "var(--bp-primary-dark)", cursor: "pointer", flexShrink: 0 }}>
                           Voir
                         </button>
                       </div>
@@ -871,13 +871,13 @@ export default function UserProfilePage({ userId }: { userId: number }) {
           <SubPage title="Groupes en commun" onBack={closeAll}>
             {mutualGroupsLoading ? (
               <div style={{ textAlign: "center", padding: "60px 0" }}>
-                <div style={{ width: 40, height: 40, border: "4px solid #DCFCE7", borderTop: "4px solid #22C55E", borderRadius: "50%", margin: "0 auto 14px", animation: "spin 0.8s linear infinite" }} />
+                <div style={{ width: 40, height: 40, border: "4px solid #DCFCE7", borderTop: "4px solid var(--bp-primary)", borderRadius: "50%", margin: "0 auto 14px", animation: "spin 0.8s linear infinite" }} />
                 <div style={{ color: "#94A3B8", fontSize: 14 }}>Chargement…</div>
               </div>
             ) : mutualGroups.length === 0 ? (
               <div style={{ textAlign: "center", padding: "40px 0" }}>
                 <EmptyMutualIllustration />
-                <div style={{ fontWeight: 800, fontSize: 17, color: "#111827", marginTop: 16, marginBottom: 8 }}>Aucun groupe en commun</div>
+                <div style={{ fontWeight: 800, fontSize: 17, color: "var(--theme-text)", marginTop: 16, marginBottom: 8 }}>Aucun groupe en commun</div>
                 <div style={{ fontSize: 13, color: "#94A3B8" }}>Vous n'avez pas de groupes en commun avec {user.firstName}.</div>
               </div>
             ) : (
@@ -888,12 +888,12 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                     <div key={g.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", background: "#F8FAFC", borderRadius: 16 }}>
                       {g.avatarUrl
                         ? <img src={g.avatarUrl} alt="" style={{ width: 50, height: 50, borderRadius: 14, objectFit: "cover", border: "2px solid #DCFCE7", flexShrink: 0 }} />
-                        : <div style={{ width: 50, height: 50, borderRadius: 14, background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        : <div style={{ width: 50, height: 50, borderRadius: 14, background: "var(--bp-primary)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                             <IcoGroup />
                           </div>
                       }
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontWeight: 700, fontSize: 14, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{g.name}</div>
+                        <div style={{ fontWeight: 700, fontSize: 14, color: "var(--theme-text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{g.name}</div>
                         <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 2 }}>{g.type === "channel" ? "Canal" : "Groupe"}</div>
                       </div>
                     </div>
@@ -929,9 +929,9 @@ export default function UserProfilePage({ userId }: { userId: number }) {
         <div style={{ width: 40, height: 40, borderRadius: 12, background: labelColor ? `${labelColor}15` : "#F8FAFC", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{icon}</div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 14.5, fontWeight: 700, color: labelColor ?? "#111827", lineHeight: 1.3 }}>{label}</div>
-          {sublabel && <div style={{ fontSize: 12, color: sublabelGreen ? "#16A34A" : "#94A3B8", marginTop: 2 }}>{sublabel}</div>}
+          {sublabel && <div style={{ fontSize: 12, color: sublabelGreen ? "var(--bp-primary-dark)" : "#94A3B8", marginTop: 2 }}>{sublabel}</div>}
         </div>
-        {itemLoading && <div style={{ width: 18, height: 18, border: "2.5px solid #22C55E", borderTop: "2.5px solid transparent", borderRadius: "50%", animation: "spin 0.7s linear infinite", flexShrink: 0 }} />}
+        {itemLoading && <div style={{ width: 18, height: 18, border: "2.5px solid var(--bp-primary)", borderTop: "2.5px solid transparent", borderRadius: "50%", animation: "spin 0.7s linear infinite", flexShrink: 0 }} />}
         {arrow && !itemLoading && <IcoChevron />}
       </button>
     );
@@ -942,7 +942,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
         <style>{`@keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } } @keyframes spin { to { transform: rotate(360deg); } }`}</style>
         <div style={{ animation: "slideInRight 0.22s ease-out", flex: 1, display: "flex", flexDirection: "column", height: "100%" }}>
           {/* Header */}
-          <div style={{ background: "#fff", borderBottom: "1px solid #F1F5F9", padding: "0 16px", height: 58, display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
+          <div style={{ background: "var(--theme-surface)", borderBottom: "1px solid #F1F5F9", padding: "0 16px", height: 58, display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
             <button onClick={onBack} style={{ background: "#F1F5F9", border: "none", width: 40, height: 40, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
               onPointerDown={e => (e.currentTarget.style.background = "#E5E7EB")}
               onPointerUp={e => (e.currentTarget.style.background = "#F1F5F9")}
@@ -950,7 +950,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
             >
               <IcoBack />
             </button>
-            <span style={{ fontWeight: 900, fontSize: 17, color: "#111827", flex: 1 }}>{title}</span>
+            <span style={{ fontWeight: 900, fontSize: 17, color: "var(--theme-text)", flex: 1 }}>{title}</span>
           </div>
           {/* Content */}
           <div style={{ flex: 1, overflowY: "auto", padding: "20px 20px 80px" }}>
@@ -981,21 +981,21 @@ export default function UserProfilePage({ userId }: { userId: number }) {
             : <div style={{ width: 96, height: 96, borderRadius: "50%", background: color, border: "4px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 900, fontSize: 32, boxShadow: "0 4px 20px rgba(0,0,0,0.2)" }}>{initials(user)}</div>
           }
           {isOnline && (
-            <div style={{ position: "absolute", bottom: 7, right: 5, width: 18, height: 18, borderRadius: "50%", background: "#22C55E", border: "2.5px solid #fff" }} />
+            <div style={{ position: "absolute", bottom: 7, right: 5, width: 18, height: 18, borderRadius: "50%", background: "var(--bp-primary)", border: "2.5px solid #fff" }} />
           )}
         </div>
       </div>
 
       {/* ── PROFILE INFO ── */}
-      <div style={{ background: "#fff", paddingTop: 62, borderBottom: "1px solid #F1F5F9" }}>
+      <div style={{ background: "var(--theme-surface)", paddingTop: 62, borderBottom: "1px solid #F1F5F9" }}>
         <div style={{ padding: "0 20px 18px" }}>
           {/* Name */}
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-            <span style={{ fontWeight: 900, fontSize: 23, color: "#111827", lineHeight: 1.2 }}>{name}</span>
+            <span style={{ fontWeight: 900, fontSize: 23, color: "var(--theme-text)", lineHeight: 1.2 }}>{name}</span>
             {[13, 26, 40].includes(userId) && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 22, height: 22, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />}
             {(user as any).role === "creator" && (
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2L14.09 8.26L21 9.27L16.5 13.97L17.64 21L12 17.77L6.36 21L7.5 13.97L3 9.27L9.91 8.26L12 2Z" fill="#22C55E"/>
+                <path d="M12 2L14.09 8.26L21 9.27L16.5 13.97L17.64 21L12 17.77L6.36 21L7.5 13.97L3 9.27L9.91 8.26L12 2Z" fill="var(--bp-primary)"/>
                 <polyline points="9,12 11,14 15,10" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
               </svg>
             )}
@@ -1016,7 +1016,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
               { value: stats ? fmtCount(stats.followingCount) : "—", label: "Abonnements" },
             ].map((stat, i) => (
               <div key={i} style={{ flex: 1, textAlign: "center", borderRight: i < 2 ? "1px solid #F1F5F9" : "none", padding: "2px 4px" }}>
-                <div style={{ fontWeight: 900, fontSize: 19, color: "#111827", lineHeight: 1.2 }}>{stat.value}</div>
+                <div style={{ fontWeight: 900, fontSize: 19, color: "var(--theme-text)", lineHeight: 1.2 }}>{stat.value}</div>
                 <div style={{ fontSize: 11, color: "#94A3B8", marginTop: 3, fontWeight: 500 }}>{stat.label}</div>
               </div>
             ))}
@@ -1025,7 +1025,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
           {/* Action buttons */}
           <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
             {user.friendshipStatus === "none" && !pendingRequest && (
-              <button disabled={actionLoading} onClick={handleSendRequest} style={{ flex: 1, padding: "12px 8px", background: "linear-gradient(135deg,#22C55E,#16A34A)", color: "#fff", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, opacity: actionLoading ? 0.7 : 1, boxShadow: "0 4px 14px rgba(34,197,94,0.35)", transition: "transform 0.15s" }}
+              <button disabled={actionLoading} onClick={handleSendRequest} style={{ flex: 1, padding: "12px 8px", background: "linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))", color: "#fff", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, opacity: actionLoading ? 0.7 : 1, boxShadow: "0 4px 14px rgba(34,197,94,0.35)", transition: "transform 0.15s" }}
                 onPointerDown={e => (e.currentTarget.style.transform = "scale(0.97)")}
                 onPointerUp={e => (e.currentTarget.style.transform = "scale(1)")}
                 onPointerLeave={e => (e.currentTarget.style.transform = "scale(1)")}
@@ -1041,15 +1041,15 @@ export default function UserProfilePage({ userId }: { userId: number }) {
             )}
             {(user.friendshipStatus === "pending_received" || pendingRequest) && (
               <>
-                <button disabled={actionLoading} onClick={handleAccept} style={{ flex: 1, padding: "12px 8px", background: "linear-gradient(135deg,#22C55E,#16A34A)", color: "#fff", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, boxShadow: "0 4px 14px rgba(34,197,94,0.3)" }}>
+                <button disabled={actionLoading} onClick={handleAccept} style={{ flex: 1, padding: "12px 8px", background: "linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))", color: "#fff", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, boxShadow: "0 4px 14px rgba(34,197,94,0.3)" }}>
                   <IcoCheck />{actionLoading ? "…" : "Confirmer"}
                 </button>
                 <button disabled={actionLoading} onClick={handleReject} style={{ flex: 1, padding: "12px 8px", background: "#F1F5F9", color: "#64748B", border: "none", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>Supprimer</button>
               </>
             )}
             {user.friendshipStatus === "friends" && (
-              <button style={{ flex: 1, padding: "12px 8px", background: "#F0FDF4", color: "#16A34A", border: "1.5px solid #DCFCE7", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-                <IcoCheck size={16} color="#16A34A" />Ami(e)s
+              <button style={{ flex: 1, padding: "12px 8px", background: "#F0FDF4", color: "var(--bp-primary-dark)", border: "1.5px solid #DCFCE7", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                <IcoCheck size={16} color="var(--bp-primary-dark)" />Ami(e)s
               </button>
             )}
             <button onClick={() => navigate(`/messages?userId=${user.id}`)} style={{ flex: 1, padding: "12px 8px", background: "#DCFCE7", color: "#0EA5E9", border: "1.5px solid #DCFCE7", borderRadius: 14, fontWeight: 700, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, transition: "transform 0.15s" }}
@@ -1079,7 +1079,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
             { id: "about" as ProfileTab, label: "À propos" },
             { id: "photos" as ProfileTab, label: "Photos" },
           ]).map(tab => (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{ flex: 1, padding: "14px 8px", background: "none", border: "none", cursor: "pointer", fontSize: 13, fontWeight: activeTab === tab.id ? 800 : 500, color: activeTab === tab.id ? "#22C55E" : "#94A3B8", borderBottom: `2.5px solid ${activeTab === tab.id ? "#22C55E" : "transparent"}`, transition: "color 0.15s" }}>
+            <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{ flex: 1, padding: "14px 8px", background: "none", border: "none", cursor: "pointer", fontSize: 13, fontWeight: activeTab === tab.id ? 800 : 500, color: activeTab === tab.id ? "var(--bp-primary)" : "#94A3B8", borderBottom: `2.5px solid ${activeTab === tab.id ? "var(--bp-primary)" : "transparent"}`, transition: "color 0.15s" }}>
               {tab.label}
             </button>
           ))}
@@ -1093,20 +1093,20 @@ export default function UserProfilePage({ userId }: { userId: number }) {
         {activeTab === "posts" && (
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {posts.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "52px 20px 48px", background: "#fff", borderRadius: 22, boxShadow: "0 2px 12px rgba(0,0,0,0.05)", border: "1px solid rgba(34,197,94,0.07)" }}>
+              <div style={{ textAlign: "center", padding: "52px 20px 48px", background: "var(--theme-surface)", borderRadius: 22, boxShadow: "0 2px 12px rgba(0,0,0,0.05)", border: "1px solid rgba(34,197,94,0.07)" }}>
                 <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}><EmptyPostsIllustration /></div>
-                <div style={{ fontWeight: 800, fontSize: 17, color: "#111827", marginBottom: 8 }}>Aucune publication</div>
+                <div style={{ fontWeight: 800, fontSize: 17, color: "var(--theme-text)", marginBottom: 8 }}>Aucune publication</div>
                 <div style={{ fontSize: 13, color: "#94A3B8", lineHeight: 1.6 }}>Cet utilisateur n'a pas encore partagé de contenu.</div>
               </div>
             ) : posts.map(post => (
-              <div key={post.id} style={{ background: "#fff", borderRadius: 20, padding: "16px 16px 12px", boxShadow: "0 2px 12px rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.04)" }}>
+              <div key={post.id} style={{ background: "var(--theme-surface)", borderRadius: 20, padding: "16px 16px 12px", boxShadow: "0 2px 12px rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.04)" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
                   {user.avatarUrl
                     ? <img src={user.avatarUrl} alt="" style={{ width: 44, height: 44, borderRadius: "50%", objectFit: "cover", border: "2px solid #DCFCE7" }} />
                     : <div style={{ width: 44, height: 44, borderRadius: "50%", background: color, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 15, border: "2px solid #DCFCE7", flexShrink: 0 }}>{initials(user)}</div>
                   }
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 700, fontSize: 14, color: "#111827" }}>{name}</div>
+                    <div style={{ fontWeight: 700, fontSize: 14, color: "var(--theme-text)" }}>{name}</div>
                     <div style={{ fontSize: 12, color: "#94A3B8", marginTop: 2, display: "flex", alignItems: "center", gap: 4 }}>
                       <IcoGlobe />{relTime(post.createdAt)}
                     </div>
@@ -1121,7 +1121,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                 <div style={{ display: "flex", gap: 2, marginTop: 12, paddingTop: 10, borderTop: "1px solid #F8FAFC" }}>
                   {/* J'aime */}
                   <button onClick={() => handleLike(post.id)}
-                    style={{ flex: 1, padding: "8px 4px", background: "none", border: "none", cursor: "pointer", fontWeight: 600, color: likedPostIds.has(post.id) ? "#22C55E" : "#64748B", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, borderRadius: 10, fontSize: 12.5, transition: "color .15s" }}
+                    style={{ flex: 1, padding: "8px 4px", background: "none", border: "none", cursor: "pointer", fontWeight: 600, color: likedPostIds.has(post.id) ? "var(--bp-primary)" : "#64748B", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, borderRadius: 10, fontSize: 12.5, transition: "color .15s" }}
                     onPointerDown={e => (e.currentTarget.style.background = "#F8FAFC")}
                     onPointerUp={e => (e.currentTarget.style.background = "none")}
                     onPointerLeave={e => (e.currentTarget.style.background = "none")}
@@ -1157,8 +1157,8 @@ export default function UserProfilePage({ userId }: { userId: number }) {
 
         {/* À PROPOS */}
         {activeTab === "about" && (
-          <div style={{ background: "#fff", borderRadius: 20, padding: "18px 20px", boxShadow: "0 2px 12px rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.04)" }}>
-            <div style={{ fontWeight: 800, fontSize: 16, color: "#111827", marginBottom: 16 }}>Informations</div>
+          <div style={{ background: "var(--theme-surface)", borderRadius: 20, padding: "18px 20px", boxShadow: "0 2px 12px rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.04)" }}>
+            <div style={{ fontWeight: 800, fontSize: 16, color: "var(--theme-text)", marginBottom: 16 }}>Informations</div>
             {(() => {
               const rows = [
                 user.bio && { icon: <IcoBriefcase />, label: user.bio },
@@ -1178,17 +1178,17 @@ export default function UserProfilePage({ userId }: { userId: number }) {
         {/* PHOTOS */}
         {activeTab === "photos" && (
           <div>
-            <div style={{ fontWeight: 800, fontSize: 15, color: "#111827", marginBottom: 12, paddingLeft: 4 }}>Photos ({photoCount})</div>
+            <div style={{ fontWeight: 800, fontSize: 15, color: "var(--theme-text)", marginBottom: 12, paddingLeft: 4 }}>Photos ({photoCount})</div>
             {photoCount === 0 ? (
-              <div style={{ textAlign: "center", padding: "48px 20px 44px", background: "#fff", borderRadius: 22, boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}>
+              <div style={{ textAlign: "center", padding: "48px 20px 44px", background: "var(--theme-surface)", borderRadius: 22, boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}>
                 <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}><EmptyPhotosIllustration /></div>
-                <div style={{ fontWeight: 800, fontSize: 17, color: "#111827", marginBottom: 8 }}>Aucune photo</div>
+                <div style={{ fontWeight: 800, fontSize: 17, color: "var(--theme-text)", marginBottom: 8 }}>Aucune photo</div>
                 <div style={{ fontSize: 13, color: "#94A3B8" }}>Aucune photo partagée pour l'instant.</div>
               </div>
             ) : (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 5 }}>
                 {user.avatarUrl && (
-                  <div onClick={() => openImageViewer(user.avatarUrl!)} style={{ aspectRatio: "1", borderRadius: 14, overflow: "hidden", border: "2.5px solid #22C55E", boxShadow: "0 2px 8px rgba(34,197,94,0.2)", cursor: "zoom-in" }}>
+                  <div onClick={() => openImageViewer(user.avatarUrl!)} style={{ aspectRatio: "1", borderRadius: 14, overflow: "hidden", border: "2.5px solid var(--bp-primary)", boxShadow: "0 2px 8px rgba(34,197,94,0.2)", cursor: "zoom-in" }}>
                     <img src={user.avatarUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   </div>
                 )}
@@ -1207,13 +1207,13 @@ export default function UserProfilePage({ userId }: { userId: number }) {
       {postMenu !== null && createPortal(
         <>
           <div onClick={() => setPostMenu(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 9990 }} />
-          <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#fff", borderRadius: "24px 24px 0 0", zIndex: 9991, paddingBottom: "env(safe-area-inset-bottom,12px)" }}>
+          <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "var(--theme-surface)", borderRadius: "24px 24px 0 0", zIndex: 9991, paddingBottom: "env(safe-area-inset-bottom,12px)" }}>
             <div style={{ width: 40, height: 4, background: "#E5E7EB", borderRadius: 2, margin: "10px auto 6px" }} />
             {([
               {
                 icon: savedPostIds.has(postMenu)
-                  ? <svg viewBox="0 0 24 24" width="20" height="20" fill="#22C55E" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-                  : <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>,
+                  ? <svg viewBox="0 0 24 24" width="20" height="20" fill="var(--bp-primary)" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                  : <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>,
                 label: savedPostIds.has(postMenu) ? "Enregistré" : "Enregistrer",
                 action: async () => {
                   const id = postMenu; setPostMenu(null);
@@ -1224,7 +1224,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                 },
               },
               {
-                icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>,
+                icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>,
                 label: "Copier le lien",
                 action: () => {
                   const id = postMenu; setPostMenu(null);
@@ -1233,7 +1233,7 @@ export default function UserProfilePage({ userId }: { userId: number }) {
                 },
               },
               {
-                icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>,
+                icon: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>,
                 label: "Partager",
                 action: () => {
                   const id = postMenu; setPostMenu(null);
@@ -1272,14 +1272,14 @@ export default function UserProfilePage({ userId }: { userId: number }) {
       {postReportSheet !== null && createPortal(
         <>
           <div onClick={() => setPostReportSheet(null)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 9992 }} />
-          <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#fff", borderRadius: "24px 24px 0 0", zIndex: 9993, padding: "24px 20px calc(24px + env(safe-area-inset-bottom,0px))" }}>
+          <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "var(--theme-surface)", borderRadius: "24px 24px 0 0", zIndex: 9993, padding: "24px 20px calc(24px + env(safe-area-inset-bottom,0px))" }}>
             <div style={{ width: 40, height: 4, background: "#E5E7EB", borderRadius: 2, margin: "0 auto 20px" }} />
-            <div style={{ fontWeight: 800, fontSize: 17, color: "#111827", marginBottom: 16 }}>Signaler ce post</div>
+            <div style={{ fontWeight: 800, fontSize: 17, color: "var(--theme-text)", marginBottom: 16 }}>Signaler ce post</div>
             {["Spam ou publicité", "Contenu inapproprié", "Harcèlement ou intimidation", "Fausses informations", "Contenu haineux", "Violence ou contenu choquant", "Autre raison"].map(reason => (
               <button key={reason} onClick={() => setPostReportReason(reason)}
-                style={{ width: "100%", background: postReportReason === reason ? "rgba(34,197,94,0.06)" : "none", border: postReportReason === reason ? "1.5px solid #22C55E" : "1.5px solid #F1F5F9", borderRadius: 14, padding: "12px 16px", marginBottom: 8, cursor: "pointer", textAlign: "left", fontSize: 14, fontWeight: 600, color: "#64748B", display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ width: 18, height: 18, borderRadius: "50%", border: `2px solid ${postReportReason === reason ? "#22C55E" : "#E5E7EB"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  {postReportReason === reason && <div style={{ width: 9, height: 9, borderRadius: "50%", background: "#22C55E" }} />}
+                style={{ width: "100%", background: postReportReason === reason ? "rgba(34,197,94,0.06)" : "none", border: postReportReason === reason ? "1.5px solid var(--bp-primary)" : "1.5px solid #F1F5F9", borderRadius: 14, padding: "12px 16px", marginBottom: 8, cursor: "pointer", textAlign: "left", fontSize: 14, fontWeight: 600, color: "#64748B", display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ width: 18, height: 18, borderRadius: "50%", border: `2px solid ${postReportReason === reason ? "var(--bp-primary)" : "#E5E7EB"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  {postReportReason === reason && <div style={{ width: 9, height: 9, borderRadius: "50%", background: "var(--bp-primary)" }} />}
                 </div>
                 {reason}
               </button>

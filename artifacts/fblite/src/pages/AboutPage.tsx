@@ -1,6 +1,6 @@
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"#22C55E",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"var(--bp-primary)",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
 
 function NavRow({ icon,title,last=false }:{icon:React.ReactNode;title:string;last?:boolean}) {
   return (
@@ -30,7 +30,7 @@ export default function AboutPage() {
       {/* Hero */}
       <div style={{ display:"flex",flexDirection:"column",alignItems:"center",padding:"36px 24px 24px",textAlign:"center" }}>
         {/* Logo */}
-        <div style={{ width:88,height:88,borderRadius:28,background:"linear-gradient(135deg,#16A34A,#22C55E)",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:18,boxShadow:"0 12px 36px rgba(34,197,94,0.3)" }}>
+        <div style={{ width:88,height:88,borderRadius:28,background:"linear-gradient(135deg,var(--bp-primary-dark),var(--bp-primary))",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:18,boxShadow:"0 12px 36px rgba(34,197,94,0.3)" }}>
           <span style={{ fontSize:42,fontWeight:900,color:"#fff",fontFamily:"Arial,sans-serif",lineHeight:1 }}>b</span>
         </div>
         <div style={{ fontWeight:800,fontSize:24,color:C.text,letterSpacing:"-0.5px",marginBottom:4 }}>BrutePawa</div>

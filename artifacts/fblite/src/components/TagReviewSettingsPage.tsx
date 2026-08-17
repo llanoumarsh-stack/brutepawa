@@ -13,7 +13,7 @@ export default function TagReviewSettingsPage({ onClose, onOpenTagReview }: Prop
     }}>
       {/* ── Nav bar ─────────────────────────────────────── */}
       <div style={{
-        background: "#fff", display: "flex", alignItems: "center",
+        background: "var(--theme-surface)", display: "flex", alignItems: "center",
         padding: "10px 12px", borderBottom: "1px solid #E5E7EB",
         position: "sticky", top: 0, zIndex: 2, gap: 6,
       }}>
@@ -31,7 +31,7 @@ export default function TagReviewSettingsPage({ onClose, onOpenTagReview }: Prop
           </svg>
         </button>
         <span style={{
-          fontWeight: 700, fontSize: 17, flex: 1, color: "#111827",
+          fontWeight: 700, fontSize: 17, flex: 1, color: "var(--theme-text)",
           overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
         }}>
           Examiner les publications et les identifications
@@ -40,12 +40,12 @@ export default function TagReviewSettingsPage({ onClose, onOpenTagReview }: Prop
 
       {/* ── Mode payant ─────────────────────────────────── */}
       <div style={{
-        background: "#fff", padding: "11px 16px",
+        background: "var(--theme-surface)", padding: "11px 16px",
         display: "flex", alignItems: "center", justifyContent: "space-between",
         borderBottom: "8px solid #F1F5F9",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-          <span style={{ fontWeight: 600, fontSize: 15, color: "#111827" }}>Mode payant</span>
+          <span style={{ fontWeight: 600, fontSize: 15, color: "var(--theme-text)" }}>Mode payant</span>
           <div style={{
             width: 18, height: 18, borderRadius: "50%", background: "#E5E7EB",
             display: "flex", alignItems: "center", justifyContent: "center",
@@ -55,14 +55,14 @@ export default function TagReviewSettingsPage({ onClose, onOpenTagReview }: Prop
         <button style={{
           background: "#E5E7EB", border: "none", borderRadius: 6,
           padding: "7px 14px", fontWeight: 600, fontSize: 14,
-          cursor: "pointer", color: "#111827",
+          cursor: "pointer", color: "var(--theme-text)",
         }}>
           Changer de mode
         </button>
       </div>
 
       {/* ── Section 1 : publications où l'on est identifié ── */}
-      <div style={{ background: "#fff", marginTop: 0 }}>
+      <div style={{ background: "var(--theme-surface)", marginTop: 0 }}>
         {/* header row */}
         <div style={{
           padding: "14px 16px 10px",
@@ -70,12 +70,12 @@ export default function TagReviewSettingsPage({ onClose, onOpenTagReview }: Prop
         }}>
           <span style={{
             fontWeight: 700, fontSize: 15, lineHeight: 1.4,
-            color: "#111827", flex: 1, paddingRight: 12,
+            color: "var(--theme-text)", flex: 1, paddingRight: 12,
           }}>
             Examiner les publications dans lesquelles vous êtes identifié
           </span>
           <button style={{
-            background: "none", border: "none", color: "#22C55E",
+            background: "none", border: "none", color: "var(--bp-primary)",
             fontWeight: 600, fontSize: 14, cursor: "pointer", flexShrink: 0,
             padding: 0,
           }}>
@@ -106,7 +106,7 @@ export default function TagReviewSettingsPage({ onClose, onOpenTagReview }: Prop
       </div>
 
       {/* ── Section 2 : identifications dans ses propres publis ── */}
-      <div style={{ background: "#fff" }}>
+      <div style={{ background: "var(--theme-surface)" }}>
         {/* header row */}
         <div style={{
           padding: "14px 16px 10px",
@@ -114,14 +114,14 @@ export default function TagReviewSettingsPage({ onClose, onOpenTagReview }: Prop
         }}>
           <span style={{
             fontWeight: 700, fontSize: 15, lineHeight: 1.4,
-            color: "#111827", flex: 1, paddingRight: 12,
+            color: "var(--theme-text)", flex: 1, paddingRight: 12,
           }}>
             Examiner les identifications dans vos publications
           </span>
           <button
             onClick={onOpenTagReview}
             style={{
-              background: "none", border: "none", color: "#22C55E",
+              background: "none", border: "none", color: "var(--bp-primary)",
               fontWeight: 600, fontSize: 14, cursor: "pointer", flexShrink: 0,
               padding: 0,
             }}

@@ -95,31 +95,31 @@ export default function ArchiveModal({ onClose }: Props) {
   const content = (
     <div style={{ position: "fixed", inset: 0, zIndex: 500, background: "#F1F5F9", display: "flex", flexDirection: "column", overflow: "hidden" }}>
       {/* Mode bar */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px 8px", background: "#fff", borderBottom: "1px solid #E5E7EB" }}>
-        <span style={{ fontSize: 13, fontWeight: 600, color: "#111827", display: "flex", alignItems: "center", gap: 4 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px 8px", background: "var(--theme-surface)", borderBottom: "1px solid #E5E7EB" }}>
+        <span style={{ fontSize: 13, fontWeight: 600, color: "var(--theme-text)", display: "flex", alignItems: "center", gap: 4 }}>
           Mode payant
           <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 16, height: 16, borderRadius: "50%", background: "#64748B", color: "#fff", fontSize: 10, fontWeight: 700 }}>?</span>
         </span>
         <button style={{ background: "#E5E7EB", border: "none", borderRadius: 6, padding: "6px 12px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Changer de mode</button>
       </div>
       {/* Title bar */}
-      <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", background: "#fff", borderBottom: "1px solid #E5E7EB" }}>
-        <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "#111827", padding: "0 12px 0 0", lineHeight: 1 }}>‹</button>
+      <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", background: "var(--theme-surface)", borderBottom: "1px solid #E5E7EB" }}>
+        <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "var(--theme-text)", padding: "0 12px 0 0", lineHeight: 1 }}>‹</button>
         <span style={{ flex: 1, textAlign: "center", fontWeight: 700, fontSize: 16 }}>Archive</span>
         <div style={{ width: 32 }} />
       </div>
 
       {/* Filter chips + filtres button */}
-      <div style={{ background: "#fff", borderBottom: "1px solid #E5E7EB", padding: "10px 16px", display: "flex", gap: 8, flexWrap: "wrap" }}>
+      <div style={{ background: "var(--theme-surface)", borderBottom: "1px solid #E5E7EB", padding: "10px 16px", display: "flex", gap: 8, flexWrap: "wrap" }}>
         <button
           onClick={() => setTab("stories")}
-          style={{ background: tab === "stories" ? "#22C55E" : "#E5E7EB", color: tab === "stories" ? "#fff" : "#111827", border: "none", borderRadius: 20, padding: "7px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
+          style={{ background: tab === "stories" ? "var(--bp-primary)" : "#E5E7EB", color: tab === "stories" ? "#fff" : "#111827", border: "none", borderRadius: 20, padding: "7px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
         >
           🔄 Archive stories
         </button>
         <button
           onClick={() => setTab("trash")}
-          style={{ background: tab === "trash" ? "#22C55E" : "#E5E7EB", color: tab === "trash" ? "#fff" : "#111827", border: "none", borderRadius: 20, padding: "7px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
+          style={{ background: tab === "trash" ? "var(--bp-primary)" : "#E5E7EB", color: tab === "trash" ? "#fff" : "#111827", border: "none", borderRadius: 20, padding: "7px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
         >
           🗑️ Corbeille
         </button>
@@ -134,7 +134,7 @@ export default function ArchiveModal({ onClose }: Props) {
       <div style={{ flex: 1, overflowY: "auto" }}>
         {/* Welcome info card */}
         {showWelcome && (
-          <div style={{ background: "#fff", margin: "12px 12px 0", borderRadius: 12, padding: "14px 16px", display: "flex", gap: 12, alignItems: "flex-start", border: "1px solid #E5E7EB" }}>
+          <div style={{ background: "var(--theme-surface)", margin: "12px 12px 0", borderRadius: 12, padding: "14px 16px", display: "flex", gap: 12, alignItems: "flex-start", border: "1px solid #E5E7EB" }}>
             <span style={{ fontSize: 24, flexShrink: 0 }}>🅱️</span>
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4 }}>Bienvenue dans l'archive</div>
@@ -148,13 +148,13 @@ export default function ArchiveModal({ onClose }: Props) {
 
         {/* Select all / deselect */}
         <div style={{ display: "flex", justifyContent: "space-between", padding: "14px 16px 6px" }}>
-          <button onClick={selectAll} style={{ background: "none", border: "none", color: "#22C55E", fontSize: 14, fontWeight: 600, cursor: "pointer", padding: 0 }}>Tout sélectionner</button>
-          <button onClick={deselectAll} style={{ background: "none", border: "none", color: "#22C55E", fontSize: 14, fontWeight: 600, cursor: "pointer", padding: 0 }}>Désélectionner</button>
+          <button onClick={selectAll} style={{ background: "none", border: "none", color: "var(--bp-primary)", fontSize: 14, fontWeight: 600, cursor: "pointer", padding: 0 }}>Tout sélectionner</button>
+          <button onClick={deselectAll} style={{ background: "none", border: "none", color: "var(--bp-primary)", fontSize: 14, fontWeight: 600, cursor: "pointer", padding: 0 }}>Désélectionner</button>
         </div>
 
         {loading && (
           <div style={{ textAlign: "center", padding: 32, color: "#64748B" }}>
-            <div style={{ width: 28, height: 28, border: "3px solid #E5E7EB", borderTopColor: "#22C55E", borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 12px" }} />
+            <div style={{ width: 28, height: 28, border: "3px solid #E5E7EB", borderTopColor: "var(--bp-primary)", borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 12px" }} />
             Chargement…
           </div>
         )}
@@ -169,12 +169,12 @@ export default function ArchiveModal({ onClose }: Props) {
 
         {!loading && Object.entries(groups).map(([date, dateItems]) => (
           <div key={date}>
-            <div style={{ padding: "12px 16px 6px", fontSize: 14, fontWeight: 700, color: "#111827" }}>{date}</div>
+            <div style={{ padding: "12px 16px 6px", fontSize: 14, fontWeight: 700, color: "var(--theme-text)" }}>{date}</div>
             {dateItems.map(item => (
-              <div key={item.id} style={{ background: "#fff", margin: "0 0 1px", padding: "12px 16px", display: "flex", alignItems: "center", gap: 12 }}>
+              <div key={item.id} style={{ background: "var(--theme-surface)", margin: "0 0 1px", padding: "12px 16px", display: "flex", alignItems: "center", gap: 12 }}>
                 <button style={{ background: "none", border: "none", cursor: "pointer", padding: "0 4px 0 0", color: "#64748B", fontSize: 20, lineHeight: 1 }}>⋮</button>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 14, color: "#111827", lineHeight: 1.4 }}>
+                  <div style={{ fontSize: 14, color: "var(--theme-text)", lineHeight: 1.4 }}>
                     <span style={{ fontWeight: 700 }}>{item.authorName}</span> {item.summary}
                   </div>
                   <div style={{ fontSize: 12, color: "#64748B", display: "flex", alignItems: "center", gap: 4, marginTop: 3 }}>
@@ -183,20 +183,20 @@ export default function ArchiveModal({ onClose }: Props) {
                 </div>
                 <button
                   onClick={() => toggleSelect(item.id)}
-                  style={{ width: 22, height: 22, borderRadius: 4, border: `2px solid ${selected.has(item.id) ? "#22C55E" : "#CBD5E1"}`, background: selected.has(item.id) ? "#22C55E" : "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}
+                  style={{ width: 22, height: 22, borderRadius: 4, border: `2px solid ${selected.has(item.id) ? "var(--bp-primary)" : "#CBD5E1"}`, background: selected.has(item.id) ? "var(--bp-primary)" : "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}
                 >
                   {selected.has(item.id) && <span style={{ color: "#fff", fontSize: 12, fontWeight: 900 }}>✓</span>}
                 </button>
               </div>
             ))}
-            <button style={{ width: "100%", background: "none", border: "none", color: "#22C55E", fontSize: 14, fontWeight: 600, padding: "10px 16px", cursor: "pointer", textAlign: "left" }}>Suivant</button>
+            <button style={{ width: "100%", background: "none", border: "none", color: "var(--bp-primary)", fontSize: 14, fontWeight: 600, padding: "10px 16px", cursor: "pointer", textAlign: "left" }}>Suivant</button>
           </div>
         ))}
         <div style={{ height: 80 }} />
       </div>
 
       {/* Bottom action buttons */}
-      <div style={{ background: "#fff", borderTop: "1px solid #E5E7EB", padding: "10px 16px 20px", display: "flex", gap: 10 }}>
+      <div style={{ background: "var(--theme-surface)", borderTop: "1px solid #E5E7EB", padding: "10px 16px 20px", display: "flex", gap: 10 }}>
         <button
           onClick={handleRestore}
           disabled={selected.size === 0 || actionLoading}

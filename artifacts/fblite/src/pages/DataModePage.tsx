@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#111827", secondary:"#64748B", muted:"#9CA3AF", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"var(--bp-primary)", primaryDark:"var(--bp-primary-dark)", text:"#111827", secondary:"#64748B", muted:"#9CA3AF", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
 
 function SubHeader({ title, onBack }:{title:string;onBack:()=>void}) {
   return (
@@ -80,7 +80,7 @@ export default function DataModePage() {
         <div style={{ background:C.card,borderRadius:24,boxShadow:C.shadow,overflow:"hidden",marginBottom:12 }}>
           {/* Mode données toggle */}
           <div style={{ display:"flex",alignItems:"center",gap:14,padding:"14px 18px",borderBottom:"1px solid #F1F5F9" }}>
-            <div style={{ width:46,height:46,borderRadius:"50%",background:dataSaver?"linear-gradient(135deg,#16A34A,#22C55E)":"#F1F5F9",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,transition:"background 300ms",boxShadow:dataSaver?"0 3px 10px rgba(34,197,94,0.3)":"none" }}>
+            <div style={{ width:46,height:46,borderRadius:"50%",background:dataSaver?"linear-gradient(135deg,var(--bp-primary-dark),var(--bp-primary))":"#F1F5F9",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,transition:"background 300ms",boxShadow:dataSaver?"0 3px 10px rgba(34,197,94,0.3)":"none" }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={dataSaver?"#fff":C.muted} strokeWidth="2" strokeLinecap="round">
                 <path d="M1.5 8.5a17 17 0 0121 0M5 12a12 12 0 0114 0M8.5 15.5a7 7 0 017 0M12 19h.01"/>
               </svg>

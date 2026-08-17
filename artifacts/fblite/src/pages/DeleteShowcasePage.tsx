@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from "react";
 
 /* ─── Palette ─────────────────────────────────────────────── */
 const C = {
-  green:      "#22C55E",
-  darkGreen:  "#16A34A",
+  green:      "var(--bp-primary)",
+  darkGreen:  "var(--bp-primary-dark)",
   lightGreen: "#DCFCE7",
   white:      "#FFFFFF",
   black:      "#111827",
@@ -45,7 +45,7 @@ function ParticleCanvas({ stage, w, h }: { stage: number; w: number; h: number }
       const a  = (Math.random() * 0.6 + 0.35) * alpha;
 
       // Varied greens
-      const greens = ["#22C55E","#16A34A","#4ADE80","#86EFAC","#BBF7D0","#6EE7A0","#34D399"];
+      const greens = ["var(--bp-primary)","var(--bp-primary-dark)","#4ADE80","#86EFAC","#BBF7D0","#6EE7A0","#34D399"];
       ctx.globalAlpha = a;
       ctx.fillStyle   = greens[Math.floor(Math.random() * greens.length)];
       ctx.beginPath();
@@ -101,7 +101,7 @@ function Phone({ stage }: { stage: number }) {
   return (
     <div style={{
       width: "100%", aspectRatio: "9/17",
-      background: "#fff",
+      background: "var(--theme-surface)",
       borderRadius: 20,
       overflow: "hidden",
       boxShadow: "0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.10)",
@@ -126,7 +126,7 @@ function Phone({ stage }: { stage: number }) {
       <div style={{
         padding: "6px 10px 3px",
         display: "flex", justifyContent: "space-between", alignItems: "center",
-        background: "#fff",
+        background: "var(--theme-surface)",
       }}>
         <span style={{ fontWeight: 700, fontSize: 7, color: C.black, letterSpacing: -0.2 }}>9:41</span>
         <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
@@ -157,7 +157,7 @@ function Phone({ stage }: { stage: number }) {
         padding: "4px 8px",
         display: "flex", alignItems: "center", gap: 5,
         borderBottom: `1px solid ${C.border}`,
-        background: "#fff",
+        background: "var(--theme-surface)",
       }}>
         {/* Back arrow */}
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={C.black} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -166,7 +166,7 @@ function Phone({ stage }: { stage: number }) {
         {/* Avatar */}
         <div style={{
           width: 22, height: 22, borderRadius: "50%",
-          background: "linear-gradient(135deg,#22C55E,#16A34A)",
+          background: "linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))",
           display: "flex", alignItems: "center", justifyContent: "center",
           color: "#fff", fontSize: 6.5, fontWeight: 800, flexShrink: 0,
         }}>SA</div>
@@ -297,7 +297,7 @@ function Phone({ stage }: { stage: number }) {
         padding: "4px 6px",
         borderTop: `1px solid ${C.border}`,
         display: "flex", alignItems: "center", gap: 4,
-        background: "#fff",
+        background: "var(--theme-surface)",
       }}>
         <div style={{ width: 12, height: 12, borderRadius: "50%", border: `1.5px solid ${C.gray}`,
           display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -321,7 +321,7 @@ function MsgBubble({ text, time, mine, check }: { text: string; time: string; mi
   return (
     <motion.div layout style={{ alignSelf: mine ? "flex-end" : "flex-start", display: "flex", alignItems: "flex-end", gap: 2 }}>
       {!mine && (
-        <div style={{ width: 11, height: 11, borderRadius: "50%", background: "linear-gradient(135deg,#22C55E,#16A34A)",
+        <div style={{ width: 11, height: 11, borderRadius: "50%", background: "linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))",
           display: "flex", alignItems: "center", justifyContent: "center", fontSize: 4, color: "#fff", fontWeight: 800, flexShrink: 0 }}>
           SA
         </div>
@@ -377,7 +377,7 @@ const STAGES = [
 export default function DeleteShowcasePage() {
   return (
     <div style={{
-      background: "linear-gradient(180deg, #ffffff 0%, #ffffff 24%, #22C55E 42%, #16A34A 80%, #16A34A 100%)",
+      background: "linear-gradient(180deg, #ffffff 0%, #ffffff 24%, var(--bp-primary) 42%, var(--bp-primary-dark) 80%, var(--bp-primary-dark) 100%)",
       fontFamily: "'Inter', system-ui, sans-serif",
       position: "relative",
       minHeight: "100vh",
@@ -392,7 +392,7 @@ export default function DeleteShowcasePage() {
         padding: "0 20px",
       }}>
         <div style={{
-          background: "#fff",
+          background: "var(--theme-surface)",
           borderRadius: "0 0 40px 40px",
           padding: "22px 28px 26px",
           boxShadow: "0 8px 40px rgba(0,0,0,0.10)",
@@ -406,7 +406,7 @@ export default function DeleteShowcasePage() {
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <div style={{
                 width: 32, height: 32, borderRadius: 8,
-                background: "linear-gradient(135deg,#22C55E,#16A34A)",
+                background: "linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}>
                 <span style={{ color: "#fff", fontWeight: 900, fontSize: 18, fontStyle: "italic" }}>B</span>
@@ -447,7 +447,7 @@ export default function DeleteShowcasePage() {
             {["Fluide", "Élégant", "Rapide", "Naturel"].map(b => (
               <div key={b} style={{
                 display: "flex", alignItems: "center", gap: 5,
-                background: "#fff",
+                background: "var(--theme-surface)",
                 border: `1.5px solid ${C.border}`,
                 borderRadius: 100,
                 padding: "5px 12px",

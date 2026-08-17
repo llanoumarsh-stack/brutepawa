@@ -83,7 +83,7 @@ class GlobalErrorBoundary extends Component<{ children: ReactNode }, { err: Erro
     if (err) {
       return (
         <div style={{
-          position: "fixed", inset: 0, background: "#fff", zIndex: 99999,
+          position: "fixed", inset: 0, background: "var(--theme-surface)", zIndex: 99999,
           display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
           padding: 24, gap: 16, fontFamily: "monospace",
         }}>
@@ -105,7 +105,7 @@ class GlobalErrorBoundary extends Component<{ children: ReactNode }, { err: Erro
           </div>
           <button
             onClick={() => { this.setState({ err: null }); window.location.reload(); }}
-            style={{ background: "#22C55E", color: "#fff", border: "none", borderRadius: 12, padding: "12px 28px", fontWeight: 700, fontSize: 15, cursor: "pointer" }}
+            style={{ background: "var(--bp-primary)", color: "#fff", border: "none", borderRadius: 12, padding: "12px 28px", fontWeight: 700, fontSize: 15, cursor: "pointer" }}
           >
             Réessayer
           </button>
@@ -122,11 +122,11 @@ class MessagesBoundary extends Component<{ children: ReactNode }, { err: string 
   render() {
     if (this.state.err) {
       return (
-        <div style={{ position: "fixed", inset: 0, background: "#fff", zIndex: 9999, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-          <p style={{ fontWeight: 800, fontSize: 18, color: "#111827" }}>Messages</p>
+        <div style={{ position: "fixed", inset: 0, background: "var(--theme-surface)", zIndex: 9999, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, gap: 16 }}>
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          <p style={{ fontWeight: 800, fontSize: 18, color: "var(--theme-text)" }}>Messages</p>
           <p style={{ fontSize: 13, color: "#666", textAlign: "center" }}>{this.state.err}</p>
-          <button onClick={() => { this.setState({ err: null }); window.location.reload(); }} style={{ background: "#22C55E", color: "#fff", border: "none", borderRadius: 12, padding: "12px 24px", fontWeight: 700, fontSize: 15, cursor: "pointer" }}>Réessayer</button>
+          <button onClick={() => { this.setState({ err: null }); window.location.reload(); }} style={{ background: "var(--bp-primary)", color: "#fff", border: "none", borderRadius: 12, padding: "12px 24px", fontWeight: 700, fontSize: 15, cursor: "pointer" }}>Réessayer</button>
         </div>
       );
     }

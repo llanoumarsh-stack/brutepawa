@@ -18,7 +18,7 @@ function Icon({ children, size, color }: { children: React.ReactNode; size: numb
 // SOCIAL
 // ═══════════════════════════════════════════
 
-export function BPFeed({ size = 24, color = "#22C55E" }) {
+export function BPFeed({ size = 24, color = "var(--bp-primary)" }) {
   return (
     <Icon size={size} color={color}>
       <rect x="3" y="3" width="8" height="8" rx="2.5" fill={color} fillOpacity="0.15" />
@@ -75,7 +75,7 @@ export function BPGroupes({ size = 24, color = "#8B5CF6" }) {
 // BUSINESS
 // ═══════════════════════════════════════════
 
-export function BPMarketplace({ size = 24, color = "#22C55E" }) {
+export function BPMarketplace({ size = 24, color = "var(--bp-primary)" }) {
   return (
     <Icon size={size} color={color}>
       <path d="M6 2L3 7v13a2 2 0 002 2h14a2 2 0 002-2V7L18 2z" fill={color} fillOpacity="0.13" />
@@ -112,7 +112,7 @@ export function BPEmplois({ size = 24, color = "#F97316" }) {
   );
 }
 
-export function BPPages({ size = 24, color = "#22C55E" }) {
+export function BPPages({ size = 24, color = "var(--bp-primary)" }) {
   return (
     <Icon size={size} color={color}>
       <path d="M4 15s1.5-2 4.5-2 5.5 2.5 8.5 2.5S21 14 21 14V4s-1.5 2-4.5 2S11 3.5 8 3.5 4 5 4 5v16"
@@ -126,7 +126,7 @@ export function BPPages({ size = 24, color = "#22C55E" }) {
 // FINANCE
 // ═══════════════════════════════════════════
 
-export function BPPortefeuille({ size = 24, color = "#22C55E" }) {
+export function BPPortefeuille({ size = 24, color = "var(--bp-primary)" }) {
   return (
     <Icon size={size} color={color}>
       <rect x="2" y="6" width="20" height="14" rx="2.5" fill={color} fillOpacity="0.13" />
@@ -154,7 +154,7 @@ export function BPTontines({ size = 24, color = "#EAB308" }) {
   );
 }
 
-export function BPRevenus({ size = 24, color = "#22C55E" }) {
+export function BPRevenus({ size = 24, color = "var(--bp-primary)" }) {
   return (
     <Icon size={size} color={color}>
       <rect x="3" y="14" width="4" height="7" rx="1.5" fill={color} fillOpacity="0.2" />
@@ -233,7 +233,7 @@ export function BPFormations({ size = 24, color = "#8B5CF6" }) {
   );
 }
 
-export function BPMonetisation({ size = 24, color = "#22C55E" }) {
+export function BPMonetisation({ size = 24, color = "var(--bp-primary)" }) {
   return (
     <Icon size={size} color={color}>
       <circle cx="12" cy="12" r="9.5" fill={color} fillOpacity="0.12" />
@@ -248,7 +248,7 @@ export function BPMonetisation({ size = 24, color = "#22C55E" }) {
 // SECTION HEADER ICONS (small, 16px)
 // ═══════════════════════════════════════════
 
-export function BPSocialHeader({ size = 16, color = "#22C55E" }) {
+export function BPSocialHeader({ size = 16, color = "var(--bp-primary)" }) {
   return (
     <svg viewBox="0 0 24 24" width={size} height={size} fill="none"
       stroke={color} strokeWidth="2.2" strokeLinecap={CAP} strokeLinejoin={JOIN}>
@@ -260,7 +260,7 @@ export function BPSocialHeader({ size = 16, color = "#22C55E" }) {
   );
 }
 
-export function BPBusinessHeader({ size = 16, color = "#22C55E" }) {
+export function BPBusinessHeader({ size = 16, color = "var(--bp-primary)" }) {
   return (
     <svg viewBox="0 0 24 24" width={size} height={size} fill={color} fillOpacity="0.15"
       stroke={color} strokeWidth="2.2" strokeLinecap={CAP} strokeLinejoin={JOIN}>
@@ -271,7 +271,7 @@ export function BPBusinessHeader({ size = 16, color = "#22C55E" }) {
   );
 }
 
-export function BPFinanceHeader({ size = 16, color = "#22C55E" }) {
+export function BPFinanceHeader({ size = 16, color = "var(--bp-primary)" }) {
   return (
     <svg viewBox="0 0 24 24" width={size} height={size} fill={color} fillOpacity="0.15"
       stroke={color} strokeWidth="2.2" strokeLinecap={CAP} strokeLinejoin={JOIN}>
@@ -282,7 +282,7 @@ export function BPFinanceHeader({ size = 16, color = "#22C55E" }) {
   );
 }
 
-export function BPCreateurHeader({ size = 16, color = "#22C55E" }) {
+export function BPCreateurHeader({ size = 16, color = "var(--bp-primary)" }) {
   return (
     <svg viewBox="0 0 24 24" width={size} height={size}
       fill={color} stroke="none">
@@ -295,7 +295,7 @@ export function BPCreateurHeader({ size = 16, color = "#22C55E" }) {
 // QUICK ACTIONS BAR
 // ═══════════════════════════════════════════
 
-export function BPPublier({ size = 22, color = "#22C55E" }) {
+export function BPPublier({ size = 22, color = "var(--bp-primary)" }) {
   return (
     <Icon size={size} color={color}>
       <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"
@@ -408,7 +408,7 @@ export function BPBell({ size = 18, color = "#0F172A" }) {
 // NAVIGATION BAR
 // ═══════════════════════════════════════════
 
-export function BPNavHome({ size = 24, active = false, color = "#22C55E" }) {
+export function BPNavHome({ size = 24, active = false, color = "var(--bp-primary)" }) {
   return (
     <svg viewBox="0 0 24 24" width={size} height={size} fill="none"
       stroke={active ? color : "#94A3B8"} strokeWidth="2" strokeLinecap={CAP} strokeLinejoin={JOIN}>
@@ -419,7 +419,7 @@ export function BPNavHome({ size = 24, active = false, color = "#22C55E" }) {
   );
 }
 
-export function BPNavFriends({ size = 24, active = false, color = "#22C55E" }) {
+export function BPNavFriends({ size = 24, active = false, color = "var(--bp-primary)" }) {
   return (
     <svg viewBox="0 0 24 24" width={size} height={size} fill="none"
       stroke={active ? color : "#94A3B8"} strokeWidth="2" strokeLinecap={CAP} strokeLinejoin={JOIN}>
@@ -431,7 +431,7 @@ export function BPNavFriends({ size = 24, active = false, color = "#22C55E" }) {
   );
 }
 
-export function BPNavMessages({ size = 24, active = false, color = "#22C55E" }) {
+export function BPNavMessages({ size = 24, active = false, color = "var(--bp-primary)" }) {
   return (
     <svg viewBox="0 0 24 24" width={size} height={size} fill="none"
       stroke={active ? color : "#94A3B8"} strokeWidth="2" strokeLinecap={CAP} strokeLinejoin={JOIN}>
@@ -442,7 +442,7 @@ export function BPNavMessages({ size = 24, active = false, color = "#22C55E" }) 
   );
 }
 
-export function BPNavProfile({ size = 24, active = false, color = "#22C55E" }) {
+export function BPNavProfile({ size = 24, active = false, color = "var(--bp-primary)" }) {
   return (
     <svg viewBox="0 0 24 24" width={size} height={size} fill="none"
       stroke={active ? color : "#94A3B8"} strokeWidth="2" strokeLinecap={CAP} strokeLinejoin={JOIN}>
@@ -453,7 +453,7 @@ export function BPNavProfile({ size = 24, active = false, color = "#22C55E" }) {
   );
 }
 
-export function BPNavDiscover({ size = 24, active = false, color = "#22C55E" }) {
+export function BPNavDiscover({ size = 24, active = false, color = "var(--bp-primary)" }) {
   return (
     <svg viewBox="0 0 24 24" width={size} height={size} fill="none"
       stroke={active ? color : "#94A3B8"} strokeWidth="2" strokeLinecap={CAP} strokeLinejoin={JOIN}>
@@ -479,7 +479,7 @@ export function BPSettings({ size = 22, color = "#64748B" }) {
   );
 }
 
-export function BPVerify({ size = 22, color = "#22C55E" }) {
+export function BPVerify({ size = 22, color = "var(--bp-primary)" }) {
   return (
     <svg viewBox="0 0 24 24" width={size} height={size}>
       <circle cx="12" cy="12" r="10" fill={color} fillOpacity="0.15" stroke={color} strokeWidth={W} />

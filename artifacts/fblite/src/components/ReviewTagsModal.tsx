@@ -23,7 +23,7 @@ function timeAgo(iso: string) {
 }
 
 const AVATAR_COLORS = [
-  "#22C55E","#EC4899","#8B5CF6","#D97706","#388E3C","#00838F","#EF4444",
+  "var(--bp-primary)","#EC4899","#8B5CF6","#D97706","#388E3C","#00838F","#EF4444",
 ];
 
 export default function ReviewTagsModal({ onClose }: Props) {
@@ -79,7 +79,7 @@ export default function ReviewTagsModal({ onClose }: Props) {
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          background: "#fff",
+          background: "var(--theme-surface)",
           borderRadius: "20px 20px 0 0",
           width: "100%",
           maxWidth: 600,
@@ -104,7 +104,7 @@ export default function ReviewTagsModal({ onClose }: Props) {
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ fontSize: 20 }}>👁️</span>
-            <span style={{ fontWeight: 800, fontSize: 18, color: "#111827" }}>
+            <span style={{ fontWeight: 800, fontSize: 18, color: "var(--theme-text)" }}>
               Examiner les identifications
             </span>
           </div>
@@ -114,7 +114,7 @@ export default function ReviewTagsModal({ onClose }: Props) {
               background: "#F1F5F9", border: "none", borderRadius: "50%",
               width: 32, height: 32, cursor: "pointer",
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 16, color: "#111827", fontWeight: 700, flexShrink: 0,
+              fontSize: 16, color: "var(--theme-text)", fontWeight: 700, flexShrink: 0,
             }}
           >
             ✕
@@ -149,8 +149,8 @@ export default function ReviewTagsModal({ onClose }: Props) {
                 padding: "12px 8px",
                 fontWeight: tab === id ? 700 : 500,
                 fontSize: 14,
-                color: tab === id ? "#22C55E" : "#64748B",
-                borderBottom: tab === id ? "3px solid #22C55E" : "3px solid transparent",
+                color: tab === id ? "var(--bp-primary)" : "#64748B",
+                borderBottom: tab === id ? "3px solid var(--bp-primary)" : "3px solid transparent",
                 cursor: "pointer",
                 transition: "color .15s",
               }}
@@ -167,7 +167,7 @@ export default function ReviewTagsModal({ onClose }: Props) {
             <div style={{ textAlign: "center", padding: 40, color: "#64748B" }}>
               <div style={{
                 width: 28, height: 28, border: "3px solid #E5E7EB",
-                borderTopColor: "#22C55E", borderRadius: "50%",
+                borderTopColor: "var(--bp-primary)", borderRadius: "50%",
                 animation: "rt-spin .7s linear infinite",
                 margin: "0 auto 10px",
               }} />
@@ -193,7 +193,7 @@ export default function ReviewTagsModal({ onClose }: Props) {
                     strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
                 )}
               </svg>
-              <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 4, color: "#111827" }}>
+              <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 4, color: "var(--theme-text)" }}>
                 {tab === "pending"
                   ? "Aucune identification en attente"
                   : "Aucune identification examinée"}
@@ -215,7 +215,7 @@ export default function ReviewTagsModal({ onClose }: Props) {
               <div
                 key={post.id}
                 style={{
-                  background: "#fff",
+                  background: "var(--theme-surface)",
                   borderRadius: 12,
                   border: "1px solid #E5E7EB",
                   padding: "14px 14px 12px",
@@ -240,7 +240,7 @@ export default function ReviewTagsModal({ onClose }: Props) {
                     </div>
                   )}
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 700, fontSize: 14, color: "#111827" }}>
+                    <div style={{ fontWeight: 700, fontSize: 14, color: "var(--theme-text)" }}>
                       {post.authorName}
                     </div>
                     <div style={{ fontSize: 12, color: "#64748B", marginTop: 1 }}>
@@ -261,7 +261,7 @@ export default function ReviewTagsModal({ onClose }: Props) {
 
                 {/* post content */}
                 <div style={{
-                  fontSize: 14, color: "#111827", marginBottom: 12,
+                  fontSize: 14, color: "var(--theme-text)", marginBottom: 12,
                   lineHeight: 1.45,
                 }}>
                   {post.content}
@@ -286,7 +286,7 @@ export default function ReviewTagsModal({ onClose }: Props) {
                       onClick={() => handleAction(post.id, "approved")}
                       style={{
                         flex: 1, background: "#DCFCE7",
-                        color: "#22C55E", border: "1px solid #DCFCE7",
+                        color: "var(--bp-primary)", border: "1px solid #DCFCE7",
                         borderRadius: 8, padding: "9px 0",
                         fontWeight: 700, fontSize: 13, cursor: "pointer",
                       }}

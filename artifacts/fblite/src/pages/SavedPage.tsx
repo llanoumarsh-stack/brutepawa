@@ -56,8 +56,8 @@ export default function SavedPage() {
 
   return (
     <div style={{ maxWidth: 680, margin: "0 auto", paddingBottom: 40 }}>
-      <div style={{ background: "#fff", padding: "14px 16px", borderBottom: "1px solid #E5E7EB", display: "flex", alignItems: "center", gap: 10, position: "sticky", top: 0, zIndex: 10 }}>
-        <button onClick={() => navigate("/")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#22C55E" }}>←</button>
+      <div style={{ background: "var(--theme-surface)", padding: "14px 16px", borderBottom: "1px solid #E5E7EB", display: "flex", alignItems: "center", gap: 10, position: "sticky", top: 0, zIndex: 10 }}>
+        <button onClick={() => navigate("/")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "var(--bp-primary)" }}>←</button>
         <div style={{ fontWeight: 800, fontSize: 18, flex: 1 }}>🔖 Enregistrements</div>
         <div style={{ fontSize: 13, color: "#64748B" }}>{saved.length} élément{saved.length !== 1 ? "s" : ""}</div>
       </div>
@@ -86,12 +86,12 @@ export default function SavedPage() {
             const flag = item.authorCountry ? (FLAGS[item.authorCountry] ?? "🌍") : "🌍";
             const isVid = item.imageUrl && /\.(mp4|mov|webm|ogg|m4v)(\?.*)?$/i.test(item.imageUrl);
             return (
-              <div key={item.id} style={{ background: "#fff", borderRadius: 12, border: "1px solid #E5E7EB", overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+              <div key={item.id} style={{ background: "var(--theme-surface)", borderRadius: 12, border: "1px solid #E5E7EB", overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
                 <div style={{ padding: 12 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
                     {item.authorAvatarUrl
                       ? <img src={item.authorAvatarUrl} alt="" style={{ width: 38, height: 38, borderRadius: "50%", objectFit: "cover" }} />
-                      : <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#22C55E", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 14 }}>{inits}</div>
+                      : <div style={{ width: 38, height: 38, borderRadius: "50%", background: "var(--bp-primary)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 14 }}>{inits}</div>
                     }
                     <div style={{ flex: 1 }}>
                       <div style={{ fontWeight: 700, fontSize: 14 }}>{item.authorName} {flag}</div>
@@ -106,7 +106,7 @@ export default function SavedPage() {
                     </button>
                   </div>
                   {item.content && (
-                    <div style={{ fontSize: 14, color: "#111827", marginBottom: item.imageUrl ? 10 : 0, lineHeight: 1.5 }}>
+                    <div style={{ fontSize: 14, color: "var(--theme-text)", marginBottom: item.imageUrl ? 10 : 0, lineHeight: 1.5 }}>
                       {item.content.slice(0, 200)}{item.content.length > 200 ? "…" : ""}
                     </div>
                   )}
@@ -120,7 +120,7 @@ export default function SavedPage() {
                   <span>👍 {item.likesCount}</span>
                   <span>💬 {item.commentsCount}</span>
                   <button onClick={() => navigate(`/post/${item.postId}`)}
-                    style={{ marginLeft: "auto", background: "none", border: "none", color: "#22C55E", cursor: "pointer", fontWeight: 600, fontSize: 13 }}>
+                    style={{ marginLeft: "auto", background: "none", border: "none", color: "var(--bp-primary)", cursor: "pointer", fontWeight: 600, fontSize: 13 }}>
                     Voir la publication →
                   </button>
                 </div>

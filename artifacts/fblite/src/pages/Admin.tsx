@@ -172,8 +172,8 @@ export default function Admin() {
             {/* KPI cards */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
               {[
-                { label: "Utilisateurs total", value: formatNumber(totalUsers), icon: "👤", color: "#22C55E" },
-                { label: "Actifs ce mois", value: formatNumber(totalActive), icon: "🟢", color: "#22C55E" },
+                { label: "Utilisateurs total", value: formatNumber(totalUsers), icon: "👤", color: "var(--bp-primary)" },
+                { label: "Actifs ce mois", value: formatNumber(totalActive), icon: "🟢", color: "var(--bp-primary)" },
                 { label: "Publications", value: formatNumber(totalPosts), icon: "📝", color: "#9C27B0" },
                 { label: "Offres d'emploi", value: formatNumber(totalJobs), icon: "💼", color: "#FF9800" },
               ].map((kpi, i) => (
@@ -196,7 +196,7 @@ export default function Admin() {
                       <div style={{ fontSize: 12, color: "#D97706" }}>{v.request} · {v.date}</div>
                     </div>
                     <div style={{ display: "flex", gap: 6 }}>
-                      <button style={{ background: "#22C55E", color: "#fff", border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>✓</button>
+                      <button style={{ background: "var(--bp-primary)", color: "#fff", border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>✓</button>
                       <button style={{ background: "#EF4444", color: "#fff", border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>✗</button>
                     </div>
                   </div>
@@ -297,7 +297,7 @@ export default function Admin() {
               <div key={i} style={{ background: "var(--fb-white)", borderRadius: 10, border: "1px solid var(--fb-divider)", padding: "12px 14px", marginBottom: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div style={{ fontSize: 14, flex: 1 }}>⚠️ {c}</div>
                 <div style={{ display: "flex", gap: 6 }}>
-                  <button style={{ background: "#22C55E", color: "#fff", border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>✓ Approuver</button>
+                  <button style={{ background: "var(--bp-primary)", color: "#fff", border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>✓ Approuver</button>
                   <button style={{ background: "#EF4444", color: "#fff", border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>✗ Supprimer</button>
                 </div>
               </div>
@@ -334,7 +334,7 @@ export default function Admin() {
                   <div style={{ fontSize: 12, color: "var(--fb-text-secondary)" }}>{job.company} · {job.country} · {job.budget}</div>
                 </div>
                 <div style={{ display: "flex", gap: 6 }}>
-                  <button style={{ background: "#22C55E", color: "#fff", border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>Publier</button>
+                  <button style={{ background: "var(--bp-primary)", color: "#fff", border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>Publier</button>
                   <button style={{ background: "#EF4444", color: "#fff", border: "none", borderRadius: 6, padding: "5px 10px", fontSize: 12, cursor: "pointer", fontWeight: 700 }}>Refuser</button>
                 </div>
               </div>
@@ -400,7 +400,7 @@ export default function Admin() {
                 {reports.map(r => {
                   const statusMeta: Record<string, { bg: string; color: string; label: string }> = {
                     pending:   { bg: "#FEE2E2", color: "#EF4444", label: "En attente" },
-                    reviewed:  { bg: "#DCFCE7", color: "#16A34A", label: "Examiné" },
+                    reviewed:  { bg: "#DCFCE7", color: "var(--bp-primary-dark)", label: "Examiné" },
                     dismissed: { bg: "#F1F5F9", color: "#9CA3AF", label: "Ignoré" },
                   };
                   const sm = statusMeta[r.status] ?? statusMeta.pending;
@@ -430,7 +430,7 @@ export default function Admin() {
                           <button
                             onClick={() => handleReportAction(r.id, "reviewed")}
                             disabled={isBusy}
-                            style={{ flex: 1, background: "#22C55E", color: "#fff", border: "none", borderRadius: 6, padding: "7px", fontSize: 13, cursor: isBusy ? "not-allowed" : "pointer", fontWeight: 700, opacity: isBusy ? 0.6 : 1 }}
+                            style={{ flex: 1, background: "var(--bp-primary)", color: "#fff", border: "none", borderRadius: 6, padding: "7px", fontSize: 13, cursor: isBusy ? "not-allowed" : "pointer", fontWeight: 700, opacity: isBusy ? 0.6 : 1 }}
                           >
                             ✓ Marquer examiné
                           </button>
@@ -474,7 +474,7 @@ export default function Admin() {
         {section === "monetization" && (
           <>
             <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 16 }}>💳 Revenus & Monétisation</div>
-            <div style={{ background: "linear-gradient(135deg, #22C55E, #9C27B0)", borderRadius: 16, padding: "20px", color: "#fff", marginBottom: 20, textAlign: "center" }}>
+            <div style={{ background: "linear-gradient(135deg, var(--bp-primary), #9C27B0)", borderRadius: 16, padding: "20px", color: "#fff", marginBottom: 20, textAlign: "center" }}>
               <div style={{ fontSize: 13, opacity: 0.85 }}>Revenus du mois (juin 2026)</div>
               <div style={{ fontSize: 40, fontWeight: 900, margin: "8px 0" }}>18 240 000 <span style={{ fontSize: 20 }}>FCFA</span></div>
               <div style={{ display: "flex", justifyContent: "center", gap: 24, marginTop: 12, fontSize: 13 }}>
@@ -496,7 +496,7 @@ export default function Admin() {
                   <div style={{ fontWeight: 700, fontSize: 14 }}>{item.label}</div>
                   <div style={{ fontSize: 13, color: "var(--fb-text-secondary)" }}>{item.value} actifs</div>
                 </div>
-                <div style={{ fontWeight: 900, color: "#22C55E", fontSize: 14, textAlign: "right" }}>{item.revenue}</div>
+                <div style={{ fontWeight: 900, color: "var(--bp-primary)", fontSize: 14, textAlign: "right" }}>{item.revenue}</div>
               </div>
             ))}
           </>
@@ -527,7 +527,7 @@ export default function Admin() {
             {/* Summary card */}
             {!wdLoading && (
               <div style={{
-                background: "linear-gradient(135deg, #22C55E 0%, #0EA5E9 100%)",
+                background: "linear-gradient(135deg, var(--bp-primary) 0%, #0EA5E9 100%)",
                 borderRadius: 14,
                 padding: "16px 18px",
                 marginBottom: 16,
@@ -590,7 +590,7 @@ export default function Admin() {
                   const statusColors: Record<string, { bg: string; color: string; label: string }> = {
                     pending:   { bg: "#FEF3C7", color: "#D97706", label: "En attente" },
                     validated: { bg: "#DCFCE7", color: "#1565C0", label: "Validé" },
-                    paid:      { bg: "#DCFCE7", color: "#16A34A", label: "Payé" },
+                    paid:      { bg: "#DCFCE7", color: "var(--bp-primary-dark)", label: "Payé" },
                     rejected:  { bg: "#FEE2E2", color: "#EF4444", label: "Rejeté" },
                   };
                   const sc = statusColors[w.status] ?? statusColors.pending;
@@ -616,7 +616,7 @@ export default function Admin() {
                         <div style={{ background: "var(--fb-bg)", borderRadius: 8, padding: "6px 12px", fontSize: 13, fontWeight: 700 }}>
                           🪙 {w.tokensAmount.toLocaleString("fr-FR")} jetons
                         </div>
-                        <div style={{ background: "var(--fb-bg)", borderRadius: 8, padding: "6px 12px", fontSize: 13, fontWeight: 700, color: "#16A34A" }}>
+                        <div style={{ background: "var(--fb-bg)", borderRadius: 8, padding: "6px 12px", fontSize: 13, fontWeight: 700, color: "var(--bp-primary-dark)" }}>
                           {w.xofAmount.toLocaleString("fr-FR")} XOF
                         </div>
                         <div style={{ background: "var(--fb-bg)", borderRadius: 8, padding: "6px 12px", fontSize: 13 }}>
@@ -655,7 +655,7 @@ export default function Admin() {
                           <button
                             disabled={isBusy}
                             onClick={() => handleWithdrawalAction(w.id, "paid")}
-                            style={{ flex: 1, background: "#16A34A", color: "#fff", border: "none", borderRadius: 6, padding: "8px", fontSize: 13, cursor: "pointer", fontWeight: 700, opacity: isBusy ? 0.6 : 1 }}
+                            style={{ flex: 1, background: "var(--bp-primary-dark)", color: "#fff", border: "none", borderRadius: 6, padding: "8px", fontSize: 13, cursor: "pointer", fontWeight: 700, opacity: isBusy ? 0.6 : 1 }}
                           >
                             💰 Marquer payé
                           </button>

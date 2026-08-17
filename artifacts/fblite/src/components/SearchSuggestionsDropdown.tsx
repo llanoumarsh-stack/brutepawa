@@ -22,7 +22,7 @@ interface Props {
   onCommitSearch?: (q: string) => void;
 }
 
-const AVATAR_COLORS = ["#22C55E","#E91E63","#9C27B0","#D97706","#388E3C","#D32F2F","#00838F","#5D4037"];
+const AVATAR_COLORS = ["var(--bp-primary)","#E91E63","#9C27B0","#D97706","#388E3C","#D32F2F","#00838F","#5D4037"];
 function colorForId(id: number) { return AVATAR_COLORS[id % AVATAR_COLORS.length]; }
 
 function snippet(text: string, maxLen = 80): string {

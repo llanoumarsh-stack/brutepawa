@@ -11,8 +11,8 @@ interface Props {
   onPublish?: (content: string, bg?: string, mood?: string, location?: string) => void;
 }
 
-const G = "#22C55E";
-const GD = "#16A34A";
+const G = "var(--bp-primary)";
+const GD = "var(--bp-primary-dark)";
 
 const BG_CHIPS = [
   { id: "none",      label: "Aucun",       value: "none" },
@@ -62,16 +62,16 @@ function SubPage({ title, onClose, children, rightAction }: {
   rightAction?: { label: string; action: () => void };
 }) {
   return (
-    <div style={{ position: "fixed", inset: 0, background: "#fff", zIndex: 200, display: "flex", flexDirection: "column", fontFamily: "'Inter',-apple-system,sans-serif" }}>
+    <div style={{ position: "fixed", inset: 0, background: "var(--theme-surface)", zIndex: 200, display: "flex", flexDirection: "column", fontFamily: "'Inter',-apple-system,sans-serif" }}>
       <div style={{
         display: "flex", alignItems: "center", padding: "14px 16px",
         borderBottom: "1.5px solid #F1F5F9", flexShrink: 0,
-        position: "sticky", top: 0, background: "#fff", zIndex: 10,
+        position: "sticky", top: 0, background: "var(--theme-surface)", zIndex: 10,
       }}>
         <button onClick={onClose} style={{ width: 38, height: 38, borderRadius: "50%", border: "none", background: "#F8FAFC", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#374151" }}>
           <ArrowLeft size={20} strokeWidth={2.5} />
         </button>
-        <div style={{ flex: 1, fontWeight: 700, fontSize: 17, color: "#111827", textAlign: "center" }}>{title}</div>
+        <div style={{ flex: 1, fontWeight: 700, fontSize: 17, color: "var(--theme-text)", textAlign: "center" }}>{title}</div>
         {rightAction ? (
           <button onClick={rightAction.action} style={{ padding: "8px 14px", border: "none", background: G, color: "#fff", borderRadius: 20, fontWeight: 700, fontSize: 13, cursor: "pointer" }}>{rightAction.label}</button>
         ) : <div style={{ width: 38 }} />}
@@ -108,7 +108,7 @@ function MusicRow({ track, selected, playing, onSelect, onPlayPause }: {
 function Toggle({ value, onChange }: { value: boolean; onChange: (v: boolean) => void }) {
   return (
     <div onClick={() => onChange(!value)} style={{ width: 46, height: 26, borderRadius: 13, background: value ? G : "#E5E7EB", cursor: "pointer", position: "relative", transition: "background .2s", flexShrink: 0 }}>
-      <div style={{ position: "absolute", top: 3, left: value ? 23 : 3, width: 20, height: 20, borderRadius: "50%", background: "#fff", boxShadow: "0 1px 4px rgba(0,0,0,.2)", transition: "left .2s" }} />
+      <div style={{ position: "absolute", top: 3, left: value ? 23 : 3, width: 20, height: 20, borderRadius: "50%", background: "var(--theme-surface)", boxShadow: "0 1px 4px rgba(0,0,0,.2)", transition: "left .2s" }} />
     </div>
   );
 }
@@ -122,13 +122,13 @@ function OptionRow({ icon, color, bg, label, sub, onClick, rightEl }: {
   return (
     <div onClick={onClick} style={{
       display: "flex", alignItems: "center", gap: 14, padding: "13px 20px",
-      borderBottom: "1px solid #F8FAFC", background: "#fff", cursor: onClick ? "pointer" : "default",
+      borderBottom: "1px solid #F8FAFC", background: "var(--theme-surface)", cursor: onClick ? "pointer" : "default",
     }}>
       <div style={{ width: 44, height: 44, borderRadius: 14, background: bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color }}>
         {icon}
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontWeight: 700, fontSize: 15, color: "#111827" }}>{label}</div>
+        <div style={{ fontWeight: 700, fontSize: 15, color: "var(--theme-text)" }}>{label}</div>
         <div style={{ fontSize: 12.5, color: "#9CA3AF", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{sub}</div>
       </div>
       {rightEl ?? <ChevronRight size={16} color="#D1D5DB" strokeWidth={2.5} />}
@@ -274,7 +274,7 @@ export default function CreatePostPage({ onPublish }: Props) {
   const tagUsers = allUsers.map(u => ({
     id: u.id, name: `${u.firstName} ${u.lastName}`,
     initials: `${u.firstName[0] ?? ""}${u.lastName[0] ?? ""}`.toUpperCase(),
-    color: ["#22C55E", "#EC4899", "#8B5CF6", "#F97316", "#0EA5E9"][u.id % 5],
+    color: ["var(--bp-primary)", "#EC4899", "#8B5CF6", "#F97316", "#0EA5E9"][u.id % 5],
     country: u.country ?? "",
   }));
   const taggedNames = taggedUsers.map(id => tagUsers.find(u => u.id === id)?.name).filter(Boolean);
@@ -369,11 +369,11 @@ export default function CreatePostPage({ onPublish }: Props) {
     {
       id: "photo", label: "Photo",
       icon: (
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round">
-          <rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5" fill="#22C55E"/><path d="m21 15-5-5L5 21"/>
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round">
+          <rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5" fill="var(--bp-primary)"/><path d="m21 15-5-5L5 21"/>
         </svg>
       ),
-      color: "#22C55E", bg: "#F0FDF4",
+      color: "var(--bp-primary)", bg: "#F0FDF4",
       action: () => photoInputRef.current?.click(),
     },
     {
@@ -432,7 +432,7 @@ export default function CreatePostPage({ onPublish }: Props) {
   const MORE_OPTIONS = [
     { icon: "📊", label: "Sondage",               color: "#6366F1", bg: "#EEF2FF" },
     { icon: "💼", label: "Offre d'emploi",         color: "#0EA5E9", bg: "#E0F2FE" },
-    { icon: "🛒", label: "Vente Marketplace",      color: "#22C55E", bg: "#F0FDF4" },
+    { icon: "🛒", label: "Vente Marketplace",      color: "var(--bp-primary)", bg: "#F0FDF4" },
     { icon: "🔧", label: "Service professionnel",  color: "#F97316", bg: "#FFF7ED" },
     { icon: "📝", label: "Article long",           color: "#8B5CF6", bg: "#F5F3FF" },
     { icon: "🎁", label: "Collecte de fonds",      color: "#EC4899", bg: "#FDF2F8" },
@@ -486,7 +486,7 @@ export default function CreatePostPage({ onPublish }: Props) {
           <div style={{ fontSize: 12, color: "rgba(255,255,255,.75)", marginTop: 1 }}>Partagez avec votre communauté</div>
         </div>
         <button onClick={handlePublish} disabled={!canPublish} style={{
-          background: "#fff", color: GD, border: "none", borderRadius: 999,
+          background: "var(--theme-surface)", color: GD, border: "none", borderRadius: 999,
           padding: "10px 18px", fontWeight: 700, fontSize: 13,
           cursor: canPublish ? "pointer" : "not-allowed",
           display: "flex", alignItems: "center", gap: 6, flexShrink: 0,
@@ -503,7 +503,7 @@ export default function CreatePostPage({ onPublish }: Props) {
 
         {/* ── COMPOSER CARD ── */}
         <div style={{
-          margin: "16px 14px 0", background: "#fff", borderRadius: 24,
+          margin: "16px 14px 0", background: "var(--theme-surface)", borderRadius: 24,
           boxShadow: "0 8px 30px rgba(0,0,0,.06)",
           animation: "cp-in 300ms ease both",
         }}>
@@ -531,7 +531,7 @@ export default function CreatePostPage({ onPublish }: Props) {
 
             <div style={{ flex: 1, minWidth: 0 }}>
               {/* Name + mood */}
-              <div style={{ fontWeight: 700, fontSize: 15.5, color: "#111827", lineHeight: 1.3, marginBottom: 8 }}>
+              <div style={{ fontWeight: 700, fontSize: 15.5, color: "var(--theme-text)", lineHeight: 1.3, marginBottom: 8 }}>
                 {user.name} {userFlag}
                 {moodEmoji && <span style={{ fontWeight: 400, color: "#64748B" }}> est {moodEmoji} <em>{moodWord}</em></span>}
                 {taggedNames.length > 0 && (
@@ -636,7 +636,7 @@ export default function CreatePostPage({ onPublish }: Props) {
                 return (
                   <div style={{
                     position: "relative", zIndex: 50,
-                    background: "#fff", borderRadius: 14, marginTop: 6,
+                    background: "var(--theme-surface)", borderRadius: 14, marginTop: 6,
                     boxShadow: "0 4px 24px rgba(0,0,0,.13)", border: "1px solid #E5E7EB",
                     overflow: "hidden",
                   }}>
@@ -678,7 +678,7 @@ export default function CreatePostPage({ onPublish }: Props) {
                           color: "#fff", fontWeight: 700, fontSize: 14,
                         }}>{u.initials}</div>
                         <div>
-                          <div style={{ fontWeight: 700, fontSize: 14, color: "#111827" }}>{u.name}</div>
+                          <div style={{ fontWeight: 700, fontSize: 14, color: "var(--theme-text)" }}>{u.name}</div>
                           {u.country && <div style={{ fontSize: 11, color: "#9CA3AF" }}>{u.country}</div>}
                         </div>
                       </div>
@@ -790,7 +790,7 @@ export default function CreatePostPage({ onPublish }: Props) {
               <div className="cp-chip" onClick={() => setSelectedBg("none")}
                 style={{
                   width: 52, height: 36, borderRadius: 10, flexShrink: 0,
-                  background: "#fff",
+                  background: "var(--theme-surface)",
                   border: selectedBg === "none" ? `2px solid ${G}` : "1.5px solid #E5E7EB",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   cursor: "pointer", transition: "transform .15s",
@@ -825,7 +825,7 @@ export default function CreatePostPage({ onPublish }: Props) {
         </div>
 
         {/* ── OPTIONS LIST ── */}
-        <div style={{ margin: "12px 14px 0", background: "#fff", borderRadius: 24, overflow: "hidden", boxShadow: "0 8px 30px rgba(0,0,0,.06)", animation: "cp-in 380ms ease both" }}>
+        <div style={{ margin: "12px 14px 0", background: "var(--theme-surface)", borderRadius: 24, overflow: "hidden", boxShadow: "0 8px 30px rgba(0,0,0,.06)", animation: "cp-in 380ms ease both" }}>
           <OptionRow
             icon={<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>}
             color="#3B82F6" bg="#EFF6FF"
@@ -855,8 +855,8 @@ export default function CreatePostPage({ onPublish }: Props) {
             onClick={() => setShowMood(true)}
           />
           <OptionRow
-            icon={<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>}
-            color="#22C55E" bg="#F0FDF4"
+            icon={<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>}
+            color="var(--bp-primary)" bg="#F0FDF4"
             label="Recevoir des messages"
             sub="Autorisez les messages privés"
             rightEl={<Toggle value={allowMessages} onChange={setAllowMessages} />}
@@ -885,7 +885,7 @@ export default function CreatePostPage({ onPublish }: Props) {
 
       {/* ══ BOTTOM BAR ══ */}
       <div style={{
-        position: "sticky", bottom: 0, background: "#fff", borderTop: "1.5px solid #F1F5F9",
+        position: "sticky", bottom: 0, background: "var(--theme-surface)", borderTop: "1.5px solid #F1F5F9",
         padding: "12px 16px", display: "flex", gap: 12, alignItems: "center", flexShrink: 0,
         boxShadow: "0 -4px 20px rgba(0,0,0,.06)",
       }}>
@@ -903,7 +903,7 @@ export default function CreatePostPage({ onPublish }: Props) {
             </div>
           </button>
           {showCommentAudience && (
-            <div style={{ position: "absolute", bottom: 40, left: 0, background: "#fff", border: "1px solid #E5E7EB", borderRadius: 16, boxShadow: "0 8px 24px rgba(0,0,0,.12)", zIndex: 20, overflow: "hidden", minWidth: 180 }}>
+            <div style={{ position: "absolute", bottom: 40, left: 0, background: "var(--theme-surface)", border: "1px solid #E5E7EB", borderRadius: 16, boxShadow: "0 8px 24px rgba(0,0,0,.12)", zIndex: 20, overflow: "hidden", minWidth: 180 }}>
               {(["public", "friends", "nobody"] as const).map(a => (
                 <div key={a} onClick={() => { setCommentAudience(a); setShowCommentAudience(false); }} style={{ padding: "12px 16px", cursor: "pointer", display: "flex", alignItems: "center", gap: 10, fontWeight: commentAudience === a ? 700 : 500, background: commentAudience === a ? "#F0FDF4" : "#fff" }}>
                   <span style={{ fontSize: 14, color: "#374151" }}>{COMMENT_MAP[a]}</span>
@@ -965,7 +965,7 @@ export default function CreatePostPage({ onPublish }: Props) {
               {MORE_OPTIONS.map((opt, i) => (
                 <div key={i} onClick={() => setShowMoreOptions(false)} style={{
                   display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
-                  padding: "16px 8px", background: "#fff", borderRadius: 16,
+                  padding: "16px 8px", background: "var(--theme-surface)", borderRadius: 16,
                   boxShadow: "0 2px 10px rgba(0,0,0,.06)", cursor: "pointer",
                   border: "1.5px solid #F1F5F9",
                   transition: "transform .15s",
@@ -1069,7 +1069,7 @@ export default function CreatePostPage({ onPublish }: Props) {
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke={G} strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg>
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 700, fontSize: 15, color: "#111827" }}>Ma position actuelle</div>
+              <div style={{ fontWeight: 700, fontSize: 15, color: "var(--theme-text)" }}>Ma position actuelle</div>
               <div style={{ fontSize: 12.5, color: "#9CA3AF" }}>Utiliser ma localisation</div>
             </div>
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#D1D5DB" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
@@ -1101,9 +1101,9 @@ export default function CreatePostPage({ onPublish }: Props) {
               {locationResults.slice(0, 6).map((place, i) => (
                 <div key={i} onClick={() => { setSelectedLocation(place); setLocStep("privacy"); }}
                   style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 20px", cursor: "pointer", borderBottom: "1px solid #F8FAFC" }}>
-                  <div style={{ width: 10, height: 10, borderRadius: "50%", background: ["#22C55E","#F97316","#3B82F6","#8B5CF6","#EC4899","#EAB308"][i % 6], flexShrink: 0 }} />
+                  <div style={{ width: 10, height: 10, borderRadius: "50%", background: ["var(--bp-primary)","#F97316","#3B82F6","#8B5CF6","#EC4899","#EAB308"][i % 6], flexShrink: 0 }} />
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 600, fontSize: 14, color: "#111827" }}>{place.city}</div>
+                    <div style={{ fontWeight: 600, fontSize: 14, color: "var(--theme-text)" }}>{place.city}</div>
                     <div style={{ fontSize: 12, color: "#9CA3AF" }}>{place.country}</div>
                   </div>
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#D1D5DB" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
@@ -1125,10 +1125,10 @@ export default function CreatePostPage({ onPublish }: Props) {
 
       {/* ══ LIEU : Écran 3 — Autorisation GPS ══ */}
       {showLocation && locStep === "gps-authorize" && (
-        <div style={{ position: "fixed", inset: 0, background: "#fff", zIndex: 200, display: "flex", flexDirection: "column", fontFamily: "'Inter',-apple-system,sans-serif", alignItems: "center", justifyContent: "space-between", padding: "24px 24px 40px" }}>
+        <div style={{ position: "fixed", inset: 0, background: "var(--theme-surface)", zIndex: 200, display: "flex", flexDirection: "column", fontFamily: "'Inter',-apple-system,sans-serif", alignItems: "center", justifyContent: "space-between", padding: "24px 24px 40px" }}>
           <div style={{ width: "100%", display: "flex", alignItems: "center" }}>
             <button onClick={() => setLocStep("select")} style={{ width: 38, height: 38, borderRadius: "50%", border: "none", background: "#F8FAFC", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><ArrowLeft size={20} strokeWidth={2.5} /></button>
-            <div style={{ flex: 1, fontWeight: 700, fontSize: 17, color: "#111827", textAlign: "center" }}>Localisation</div>
+            <div style={{ flex: 1, fontWeight: 700, fontSize: 17, color: "var(--theme-text)", textAlign: "center" }}>Localisation</div>
             <div style={{ width: 38 }} />
           </div>
 
@@ -1142,7 +1142,7 @@ export default function CreatePostPage({ onPublish }: Props) {
               </div>
             </div>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontWeight: 800, fontSize: 21, color: "#111827", marginBottom: 8 }}>BrutePawa souhaite<br/>accéder à votre position</div>
+              <div style={{ fontWeight: 800, fontSize: 21, color: "var(--theme-text)", marginBottom: 8 }}>BrutePawa souhaite<br/>accéder à votre position</div>
               <div style={{ fontSize: 14, color: "#64748B", lineHeight: 1.5 }}>Cela nous permet de proposer des lieux<br/>à proximité et améliorer votre expérience.</div>
             </div>
             <div style={{ width: "100%", background: "#F8FAFC", borderRadius: 16, padding: "16px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
@@ -1182,7 +1182,7 @@ export default function CreatePostPage({ onPublish }: Props) {
 
       {/* ══ LIEU : Écran 4 — Détection ══ */}
       {showLocation && locStep === "gps-detecting" && (
-        <div style={{ position: "fixed", inset: 0, background: "#fff", zIndex: 200, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 24 }}>
+        <div style={{ position: "fixed", inset: 0, background: "var(--theme-surface)", zIndex: 200, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 24 }}>
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg,#e8f5e9 0%,#f1f8e9 100%)", opacity: .5 }} />
           <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 24 }}>
             <div style={{ position: "relative", width: 160, height: 160, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -1195,7 +1195,7 @@ export default function CreatePostPage({ onPublish }: Props) {
               </div>
             </div>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontWeight: 700, fontSize: 18, color: "#111827", marginBottom: 6 }}>Détection en cours</div>
+              <div style={{ fontWeight: 700, fontSize: 18, color: "var(--theme-text)", marginBottom: 6 }}>Détection en cours</div>
               <div style={{ fontSize: 14, color: "#64748B" }}>Recherche de votre position...</div>
               <div style={{ fontSize: 13, color: "#9CA3AF", marginTop: 4 }}>Veuillez patienter quelques secondes</div>
             </div>
@@ -1211,7 +1211,7 @@ export default function CreatePostPage({ onPublish }: Props) {
               <MapPin size={24} color={G} />
             </div>
             <div>
-              <div style={{ fontWeight: 800, fontSize: 17, color: "#111827" }}>{detectedLoc.name}, {detectedLoc.country}</div>
+              <div style={{ fontWeight: 800, fontSize: 17, color: "var(--theme-text)" }}>{detectedLoc.name}, {detectedLoc.country}</div>
               {detectedLoc.region && <div style={{ fontSize: 13, color: "#64748B" }}>{detectedLoc.region}, {detectedLoc.country}</div>}
             </div>
           </div>
@@ -1219,7 +1219,7 @@ export default function CreatePostPage({ onPublish }: Props) {
             {([["Quartier", detectedLoc.neighborhood || "—"], ["Ville", detectedLoc.city], ["Pays", `${detectedLoc.countryCode === "BJ" ? "🇧🇯" : detectedLoc.countryCode === "CI" ? "🇨🇮" : detectedLoc.countryCode === "SN" ? "🇸🇳" : detectedLoc.countryCode === "TG" ? "🇹🇬" : "📍"} ${detectedLoc.country}`], ["Coordonnées", `${detectedLoc.lat.toFixed(4)}° N, ${detectedLoc.lng.toFixed(4)}° E`]] as [string, string][]).map(([label, val], i) => (
               <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 20px", borderBottom: "1px solid #F8FAFC" }}>
                 <span style={{ fontSize: 14, color: "#64748B", fontWeight: 500 }}>{label}</span>
-                <span style={{ fontSize: 14, fontWeight: 600, color: "#111827" }}>{val}</span>
+                <span style={{ fontSize: 14, fontWeight: 600, color: "var(--theme-text)" }}>{val}</span>
               </div>
             ))}
           </div>
@@ -1232,7 +1232,7 @@ export default function CreatePostPage({ onPublish }: Props) {
               style={{ width: "100%", padding: 16, borderRadius: 16, border: "none", background: `linear-gradient(135deg,${G},${GD})`, color: "#fff", fontWeight: 700, fontSize: 16, cursor: "pointer", boxShadow: "0 4px 16px rgba(34,197,94,.3)" }}>
               Confirmer ce lieu
             </button>
-            <button onClick={() => setLocStep("select")} style={{ width: "100%", padding: 14, borderRadius: 16, border: "2px solid #E5E7EB", background: "#fff", color: "#374151", fontWeight: 700, fontSize: 15, cursor: "pointer" }}>
+            <button onClick={() => setLocStep("select")} style={{ width: "100%", padding: 14, borderRadius: 16, border: "2px solid #E5E7EB", background: "var(--theme-surface)", color: "#374151", fontWeight: 700, fontSize: 15, cursor: "pointer" }}>
               Choisir un autre lieu
             </button>
           </div>
@@ -1244,7 +1244,7 @@ export default function CreatePostPage({ onPublish }: Props) {
         <SubPage title="Choisir sur la carte" onClose={() => setLocStep("gps-confirm")}>
           <div style={{ padding: "10px 16px" }}>
             <div style={{ position: "relative" }}>
-              <input placeholder="Rechercher un lieu ici" style={{ width: "100%", padding: "11px 16px 11px 42px", border: "1.5px solid #E5E7EB", borderRadius: 24, fontSize: 14, outline: "none", background: "#fff", boxSizing: "border-box", boxShadow: "0 2px 8px rgba(0,0,0,.06)" }}
+              <input placeholder="Rechercher un lieu ici" style={{ width: "100%", padding: "11px 16px 11px 42px", border: "1.5px solid #E5E7EB", borderRadius: 24, fontSize: 14, outline: "none", background: "var(--theme-surface)", boxSizing: "border-box", boxShadow: "0 2px 8px rgba(0,0,0,.06)" }}
                 onFocus={e => (e.currentTarget.style.borderColor = G)} onBlur={e => (e.currentTarget.style.borderColor = "#E5E7EB")} />
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9CA3AF" strokeWidth="2" style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)" }}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             </div>
@@ -1252,8 +1252,8 @@ export default function CreatePostPage({ onPublish }: Props) {
           <iframe title="map"
             src={`https://www.openstreetmap.org/export/embed.html?bbox=${detectedLoc.lng - 0.05},${detectedLoc.lat - 0.04},${detectedLoc.lng + 0.05},${detectedLoc.lat + 0.04}&layer=mapnik&marker=${detectedLoc.lat},${detectedLoc.lng}`}
             style={{ width: "100%", height: 300, border: "none", display: "block" }} loading="lazy" />
-          <div style={{ background: "#fff", padding: "14px 20px", boxShadow: "0 -4px 16px rgba(0,0,0,.07)" }}>
-            <div style={{ fontWeight: 700, fontSize: 15, color: "#111827", marginBottom: 2 }}>{detectedLoc.name}{detectedLoc.region ? `, ${detectedLoc.region}` : ""}</div>
+          <div style={{ background: "var(--theme-surface)", padding: "14px 20px", boxShadow: "0 -4px 16px rgba(0,0,0,.07)" }}>
+            <div style={{ fontWeight: 700, fontSize: 15, color: "var(--theme-text)", marginBottom: 2 }}>{detectedLoc.name}{detectedLoc.region ? `, ${detectedLoc.region}` : ""}</div>
             {detectedLoc.neighborhood && <div style={{ fontSize: 13, color: "#64748B", marginBottom: 2 }}>{detectedLoc.neighborhood}</div>}
             <div style={{ fontSize: 12, color: "#9CA3AF", marginBottom: 12 }}>{detectedLoc.lat.toFixed(4)}° N, {detectedLoc.lng.toFixed(4)}° E</div>
             <button onClick={() => { setSelectedLocation({ city: detectedLoc.name, country: detectedLoc.country, flag: "📍" }); setLocStep("privacy"); }}
@@ -1268,7 +1268,7 @@ export default function CreatePostPage({ onPublish }: Props) {
       {showLocation && locStep === "privacy" && selectedLocation && (
         <SubPage title="Confidentialité du lieu" onClose={closeLocation}>
           <div style={{ padding: "16px 20px 8px" }}>
-            <div style={{ fontSize: 15, fontWeight: 700, color: "#111827", marginBottom: 2 }}>Qui peut voir votre lieu ?</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: "var(--theme-text)", marginBottom: 2 }}>Qui peut voir votre lieu ?</div>
           </div>
           {(["public", "followers", "friends", "private"] as const).map(opt => {
             const cfg = { public: { label: "Tout le monde", sub: "Tous les membres de BrutePawa", icon: "🌍" }, followers: { label: "Mes abonnés", sub: "Tous mes abonnés", icon: "📣" }, friends: { label: "Mes amis", sub: "Uniquement mes amis", icon: "👥" }, private: { label: "Personne", sub: "Lieu visible seulement par moi", icon: "🔒" } }[opt];
@@ -1295,7 +1295,7 @@ export default function CreatePostPage({ onPublish }: Props) {
 
       {/* ══ LIEU : Écran 10 — Succès ══ */}
       {showLocation && locStep === "success" && selectedLocation && (
-        <div style={{ position: "fixed", inset: 0, background: "#fff", zIndex: 200, display: "flex", flexDirection: "column", fontFamily: "'Inter',-apple-system,sans-serif" }}>
+        <div style={{ position: "fixed", inset: 0, background: "var(--theme-surface)", zIndex: 200, display: "flex", flexDirection: "column", fontFamily: "'Inter',-apple-system,sans-serif" }}>
           <div style={{ display: "flex", alignItems: "center", padding: "14px 16px", borderBottom: "1.5px solid #F1F5F9" }}>
             <button onClick={closeLocation} style={{ width: 38, height: 38, borderRadius: "50%", border: "none", background: "#F8FAFC", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><ArrowLeft size={20} strokeWidth={2.5} /></button>
             <div style={{ flex: 1 }} />
@@ -1310,7 +1310,7 @@ export default function CreatePostPage({ onPublish }: Props) {
               </div>
             </div>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontWeight: 800, fontSize: 22, color: "#111827", marginBottom: 6 }}>{selectedLocation.city}, {selectedLocation.country}</div>
+              <div style={{ fontWeight: 800, fontSize: 22, color: "var(--theme-text)", marginBottom: 6 }}>{selectedLocation.city}, {selectedLocation.country}</div>
               <div style={{ fontSize: 14, color: "#64748B" }}>a été ajouté à votre publication</div>
             </div>
             <div style={{ background: "#F0FDF4", borderRadius: 16, padding: "14px 20px", display: "flex", alignItems: "center", gap: 12, width: "100%", boxSizing: "border-box" }}>
@@ -1421,7 +1421,7 @@ export default function CreatePostPage({ onPublish }: Props) {
             ].map((item, i) => (
               <div key={i} style={{ display: "flex", alignItems: "center", gap: 14, padding: "16px 20px", borderBottom: "1px solid #F8FAFC" }}>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 700, fontSize: 14, color: "#111827" }}>{item.label}</div>
+                  <div style={{ fontWeight: 700, fontSize: 14, color: "var(--theme-text)" }}>{item.label}</div>
                   <div style={{ fontSize: 12.5, color: "#9CA3AF", marginTop: 2 }}>{item.sub}</div>
                 </div>
                 <Toggle value={item.key === "allow" ? allowMessages : !allowMessages && item.key === "disable"} onChange={v => { if (item.key === "allow") setAllowMessages(v); if (item.key === "disable") setAllowMessages(!v); }} />
@@ -1429,7 +1429,7 @@ export default function CreatePostPage({ onPublish }: Props) {
             ))}
             <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "16px 20px", borderBottom: "1px solid #F8FAFC", cursor: "pointer" }}>
               <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 700, fontSize: 14, color: "#111827" }}>Réponses automatiques</div>
+                <div style={{ fontWeight: 700, fontSize: 14, color: "var(--theme-text)" }}>Réponses automatiques</div>
                 <div style={{ fontSize: 12.5, color: "#9CA3AF", marginTop: 2 }}>Configurez un message automatique</div>
               </div>
               <ChevronRight size={16} color="#D1D5DB" />
@@ -1493,7 +1493,7 @@ export default function CreatePostPage({ onPublish }: Props) {
 
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 0", borderTop: "1px solid #F1F5F9", borderBottom: "1px solid #F1F5F9", marginBottom: 14 }}>
               <div>
-                <div style={{ fontWeight: 700, fontSize: 14, color: "#111827" }}>Évènement payant</div>
+                <div style={{ fontWeight: 700, fontSize: 14, color: "var(--theme-text)" }}>Évènement payant</div>
                 <div style={{ fontSize: 12.5, color: "#9CA3AF" }}>Activer les paiements Mobile Money</div>
               </div>
               <Toggle value={eventPaid} onChange={setEventPaid} />
@@ -1501,7 +1501,7 @@ export default function CreatePostPage({ onPublish }: Props) {
 
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 0", borderBottom: "1px solid #F1F5F9", marginBottom: 20 }}>
               <div>
-                <div style={{ fontWeight: 700, fontSize: 14, color: "#111827" }}>Participants</div>
+                <div style={{ fontWeight: 700, fontSize: 14, color: "var(--theme-text)" }}>Participants</div>
                 <div style={{ fontSize: 12.5, color: "#9CA3AF" }}>Limiter le nombre de places</div>
               </div>
               <ChevronRight size={16} color="#D1D5DB" />
@@ -1563,7 +1563,7 @@ export default function CreatePostPage({ onPublish }: Props) {
             ].map((item, i) => (
               <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 0", borderBottom: "1px solid #F1F5F9" }}>
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: 14, color: "#111827" }}>{item.label}</div>
+                  <div style={{ fontWeight: 700, fontSize: 14, color: "var(--theme-text)" }}>{item.label}</div>
                   <div style={{ fontSize: 12.5, color: "#9CA3AF", marginTop: 2 }}>{item.sub}</div>
                 </div>
                 <Toggle value={item.value} onChange={item.set} />

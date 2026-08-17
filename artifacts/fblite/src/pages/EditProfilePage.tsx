@@ -941,13 +941,13 @@ export default function EditProfilePage() {
     <div style={{ background: "#F8FAFC", minHeight: "100vh", maxWidth: 480, margin: "0 auto", paddingBottom: 108, fontFamily: "system-ui,-apple-system,sans-serif" }}>
 
       {/* ── HEADER ── */}
-      <div style={{ position: "sticky", top: 0, zIndex: 20, background: "#fff", borderBottom: "1px solid #F1F5F9", padding: "14px 20px" }}>
+      <div style={{ position: "sticky", top: 0, zIndex: 20, background: "var(--theme-surface)", borderBottom: "1px solid #F1F5F9", padding: "14px 20px" }}>
         <div style={{ display: "flex", alignItems: "center" }}>
           <button onClick={() => navigate("/profile")} style={{ background: "#F1F5F9", border: "none", width: 36, height: 36, borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M11 4L6 9l5 5" stroke="#111827" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </button>
           <div style={{ flex: 1, textAlign: "center" }}>
-            <div style={{ fontSize: 17, fontWeight: 800, color: "#111827" }}>Modifier le profil</div>
+            <div style={{ fontSize: 17, fontWeight: 800, color: "var(--theme-text)" }}>Modifier le profil</div>
             <div style={{ fontSize: 11.5, color: "#9ca3af", marginTop: 1 }}>Complétez votre profil pour une meilleure expérience</div>
           </div>
           <div style={{ width: 36 }} />
@@ -957,15 +957,15 @@ export default function EditProfilePage() {
       <div style={{ padding: "14px 14px 0" }}>
 
         {/* ── PROFIL CARD ── */}
-        <div style={{ background: "linear-gradient(135deg, #16A34A 0%, #22c55e 100%)", borderRadius: 24, padding: "20px 20px 22px", marginBottom: 12, position: "relative", overflow: "hidden", cursor: "pointer" }}>
+        <div style={{ background: "linear-gradient(135deg, var(--bp-primary-dark) 0%, #22c55e 100%)", borderRadius: 24, padding: "20px 20px 22px", marginBottom: 12, position: "relative", overflow: "hidden", cursor: "pointer" }}>
           <div style={{ position: "absolute", top: -24, right: -24, width: 110, height: 110, borderRadius: "50%", background: "rgba(255,255,255,0.06)" }} />
           <div style={{ position: "absolute", bottom: -28, left: 40, width: 90, height: 90, borderRadius: "50%", background: "rgba(255,255,255,0.04)" }} />
           <div style={{ display: "flex", alignItems: "center", gap: 16, position: "relative" }}>
             <div style={{ position: "relative", flexShrink: 0 }}>
-              <div style={{ width: 72, height: 72, borderRadius: "50%", background: "linear-gradient(135deg, #052e16, #16A34A)", border: "3px solid rgba(255,255,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ width: 72, height: 72, borderRadius: "50%", background: "linear-gradient(135deg, #052e16, var(--bp-primary-dark))", border: "3px solid rgba(255,255,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <span style={{ color: "#fff", fontWeight: 900, fontSize: 22, letterSpacing: -1 }}>bp</span>
               </div>
-              <div style={{ position: "absolute", bottom: 0, left: 0, width: 26, height: 26, borderRadius: "50%", background: "#fff", border: "2px solid #22c55e", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+              <div style={{ position: "absolute", bottom: 0, left: 0, width: 26, height: 26, borderRadius: "50%", background: "var(--theme-surface)", border: "2px solid #22c55e", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
                 <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M9.5 2L11 3.5 4 10.5H2.5V9L9.5 2z" stroke="#22c55e" strokeWidth="1.2" strokeLinejoin="round"/><path d="M8.5 3l1.5 1.5" stroke="#22c55e" strokeWidth="1.2" strokeLinecap="round"/></svg>
               </div>
             </div>
@@ -977,7 +977,7 @@ export default function EditProfilePage() {
               <div style={{ color: "rgba(255,255,255,0.72)", fontSize: 12.5, marginBottom: 10 }}>{userHandle}</div>
               <div style={{ color: "rgba(255,255,255,0.9)", fontSize: 12, marginBottom: 5 }}>Profil complété à {completion}%</div>
               <div style={{ height: 5, background: "rgba(255,255,255,0.2)", borderRadius: 3, overflow: "hidden" }}>
-                <div style={{ height: "100%", width: `${completion}%`, background: "#fff", borderRadius: 3 }} />
+                <div style={{ height: "100%", width: `${completion}%`, background: "var(--theme-surface)", borderRadius: 3 }} />
               </div>
             </div>
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M7 5l5 5-5 5" stroke="rgba(255,255,255,0.6)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -1041,7 +1041,7 @@ export default function EditProfilePage() {
                       <div style={{ width: 26, height: 26, borderRadius: 8, background: "#f0fdf4", border: "1px solid #DCFCE7", display: "flex", alignItems: "center", justifyContent: "center" }}>{item.icon}</div>
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 4.5l2 3 2-3" stroke="#22c55e" strokeWidth="1.2" strokeLinecap="round"/></svg>
                     </div>
-                    <div style={{ fontSize: 12.5, fontWeight: 700, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.label}</div>
+                    <div style={{ fontSize: 12.5, fontWeight: 700, color: "var(--theme-text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.label}</div>
                     <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>{item.sub}</div>
                   </div>
                 ))}
@@ -1051,7 +1051,7 @@ export default function EditProfilePage() {
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#22c55e" strokeWidth="1.2"/><path d="M8 1.5C8 1.5 5 4.5 5 8s3 6.5 3 6.5M8 1.5c0 0 3 3 3 6.5s-3 6.5-3 6.5M1.5 8h13" stroke="#22c55e" strokeWidth="1.1" strokeLinecap="round"/></svg>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13.5, fontWeight: 700, color: "#111827" }}>Langues</div>
+                  <div style={{ fontSize: 13.5, fontWeight: 700, color: "var(--theme-text)" }}>Langues</div>
                   <div style={{ fontSize: 11.5, color: "#9ca3af" }}>{ext.languages || "Non renseignées"}</div>
                 </div>
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#22c55e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -1144,7 +1144,7 @@ export default function EditProfilePage() {
                       </div>
                     )}
                     <div style={{ display: "flex", justifyContent: "center", marginBottom: 6 }}>{item.icon}</div>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "#111827", lineHeight: 1.2 }}>{item.label}</div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "var(--theme-text)", lineHeight: 1.2 }}>{item.label}</div>
                     {item.count > 0 && <div style={{ fontSize: 10, color: "#22c55e", marginTop: 3, fontWeight: 600 }}>{item.count} sélectionné{item.count > 1 ? "s" : ""}</div>}
                   </div>
                 ))}
@@ -1211,7 +1211,7 @@ export default function EditProfilePage() {
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M12 2.5a2 2 0 100 4 2 2 0 000-4zM5 7.5a2 2 0 100 4 2 2 0 000-4zM12 12.5a2 2 0 100 4 2 2 0 000-4z" stroke="#22c55e" strokeWidth="1.3"/><path d="M7 8.7l3.5-2.2M7 10.2l3.5 2" stroke="#22c55e" strokeWidth="1.3" strokeLinecap="round"/></svg>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: "#111827" }}>Réseaux sociaux</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: "var(--theme-text)" }}>Réseaux sociaux</div>
                   <div style={{ fontSize: 12, color: "#9ca3af" }}>{ext.socialLinks || "Ajoutez vos réseaux sociaux"}</div>
                 </div>
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#22c55e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -1222,7 +1222,7 @@ export default function EditProfilePage() {
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3.5 2.5h3l1.5 3.5-2 1.5a8 8 0 003.5 3.5l1.5-2 3.5 1.5v3c0 .8-.7 1.5-1.5 1.5C5.5 15.5 1.5 11.5 1.5 4c0-.8.7-1.5 1.5-1.5z" stroke="#22c55e" strokeWidth="1.3" strokeLinejoin="round"/></svg>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: "#111827" }}>{phone || "+225 5 00 00 00 00"}</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: "var(--theme-text)" }}>{phone || "+225 5 00 00 00 00"}</div>
                   <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
                     <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="2" y="4.5" width="6" height="4.5" rx="1" stroke="#9ca3af" strokeWidth="0.9"/><path d="M3.5 4.5V3.5a1.5 1.5 0 013 0V4.5" stroke="#9ca3af" strokeWidth="0.9" strokeLinecap="round"/></svg>
                     <span style={{ fontSize: 11.5, color: "#9ca3af" }}>Moi uniquement</span>
@@ -1238,7 +1238,7 @@ export default function EditProfilePage() {
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="5" width="14" height="9" rx="2" stroke="#22c55e" strokeWidth="1.3"/><path d="M2 7.5l7 4.5 7-4.5" stroke="#22c55e" strokeWidth="1.3" strokeLinecap="round"/></svg>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: "#111827" }}>{localUser.email || "5@brutepawa.com"}</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: "var(--theme-text)" }}>{localUser.email || "5@brutepawa.com"}</div>
                   <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
                     <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="2" y="4.5" width="6" height="4.5" rx="1" stroke="#9ca3af" strokeWidth="0.9"/><path d="M3.5 4.5V3.5a1.5 1.5 0 013 0V4.5" stroke="#9ca3af" strokeWidth="0.9" strokeLinecap="round"/></svg>
                     <span style={{ fontSize: 11.5, color: "#9ca3af" }}>Moi uniquement</span>
@@ -1260,7 +1260,7 @@ export default function EditProfilePage() {
                 <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2L3 5.5v5c0 5 3.5 9.5 8 10 4.5-.5 8-5 8-10V5.5L11 2z" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.4"/><path d="M7 11l3 3 5.5-5" stroke="#22c55e" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
               </div>
               <div>
-                <div style={{ fontSize: 15, fontWeight: 800, color: "#111827" }}>Stockage</div>
+                <div style={{ fontSize: 15, fontWeight: 800, color: "var(--theme-text)" }}>Stockage</div>
                 <div style={{ fontSize: 11.5, color: "#9ca3af" }}>Votre espace de stockage Brutepawa</div>
               </div>
             </div>
@@ -1276,12 +1276,12 @@ export default function EditProfilePage() {
                 />
               </svg>
               <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                <span style={{ fontSize: 15, fontWeight: 900, color: "#111827" }}>0%</span>
+                <span style={{ fontSize: 15, fontWeight: 900, color: "var(--theme-text)" }}>0%</span>
                 <span style={{ fontSize: 9.5, color: "#9ca3af", marginTop: 1 }}>utilisé</span>
               </div>
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 15, fontWeight: 700, color: "#111827" }}>0 Go utilisés</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "var(--theme-text)" }}>0 Go utilisés</div>
               <div style={{ fontSize: 12.5, color: "#64748B" }}>1.00 Go au total</div>
               <div style={{ height: 5, background: "#e5e7eb", borderRadius: 3, margin: "8px 0" }}>
                 <div style={{ height: "100%", width: "1%", background: "linear-gradient(90deg, #22c55e, #16a34a)", borderRadius: 3 }} />
@@ -1300,7 +1300,7 @@ export default function EditProfilePage() {
               <div style={{ fontSize: 13.5, fontWeight: 800, color: "#D97706" }}>Passez à Brutepawa Premium</div>
               <div style={{ fontSize: 11.5, color: "#D97706", marginTop: 1 }}>Plus d'espace, plus de fonctionnalités.</div>
             </div>
-            <button style={{ background: "#fff", border: "1px solid #FEF3C7", borderRadius: 10, padding: "8px 12px", fontSize: 12.5, fontWeight: 700, color: "#d97706", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, whiteSpace: "nowrap", fontFamily: "inherit" }}>
+            <button style={{ background: "var(--theme-surface)", border: "1px solid #FEF3C7", borderRadius: 10, padding: "8px 12px", fontSize: 12.5, fontWeight: 700, color: "#d97706", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, whiteSpace: "nowrap", fontFamily: "inherit" }}>
               Découvrir
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2l4 4-4 4" stroke="#d97706" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
             </button>
@@ -1311,7 +1311,7 @@ export default function EditProfilePage() {
 
       {/* ── BOTTOM BAR (fixe) ── */}
       <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 480, zIndex: 30, padding: "0 14px 18px", boxSizing: "border-box" }}>
-        <div style={{ background: "linear-gradient(135deg, #16A34A, #22c55e)", borderRadius: 20, padding: "14px 18px", display: "flex", alignItems: "center", gap: 12, boxShadow: "0 8px 32px rgba(34,197,94,0.3)" }}>
+        <div style={{ background: "linear-gradient(135deg, var(--bp-primary-dark), #22c55e)", borderRadius: 20, padding: "14px 18px", display: "flex", alignItems: "center", gap: 12, boxShadow: "0 8px 32px rgba(34,197,94,0.3)" }}>
           <div style={{ width: 42, height: 42, borderRadius: 13, background: "rgba(255,255,255,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2L3 6v5c0 5 3.5 9.5 8 10 4.5-.5 8-5 8-10V6L11 2z" fill="rgba(255,255,255,0.15)" stroke="white" strokeWidth="1.6"/><path d="M7.5 11l2.5 3L15 8" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </div>
@@ -1369,7 +1369,7 @@ function SubPage({ title, onClose, onBack, backLabel, children }: {
 
 function PCard({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ background: "#fff", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.05)", marginBottom: 12, overflow: "hidden", border: "1px solid rgba(0,0,0,0.04)" }}>
+    <div style={{ background: "var(--theme-surface)", borderRadius: 20, boxShadow: "0 2px 12px rgba(0,0,0,0.05)", marginBottom: 12, overflow: "hidden", border: "1px solid rgba(0,0,0,0.04)" }}>
       {children}
     </div>
   );
@@ -1384,7 +1384,7 @@ function PSectionHeader({ icon, title, badge, badgeGreen, open, onToggle }: {
         {icon}
       </div>
       <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 15, fontWeight: 800, color: "#111827" }}>{title}</div>
+        <div style={{ fontSize: 15, fontWeight: 800, color: "var(--theme-text)" }}>{title}</div>
       </div>
       {badge && (
         <span style={{ background: badgeGreen ? "#f0fdf4" : "#F8FAFC", border: `1px solid ${badgeGreen ? "#BBF7D0" : "#e5e7eb"}`, borderRadius: 20, padding: "4px 10px", fontSize: 11.5, fontWeight: 700, color: badgeGreen ? "#16a34a" : "#64748B", whiteSpace: "nowrap" }}>
@@ -1410,7 +1410,7 @@ function PRow({ icon, label, sub, onClick, showArrow, showEdit, last }: {
         {icon}
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 14, fontWeight: 700, color: "#111827" }}>{label}</div>
+        <div style={{ fontSize: 14, fontWeight: 700, color: "var(--theme-text)" }}>{label}</div>
         {sub && <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{sub}</div>}
       </div>
       {showEdit && (
@@ -1433,7 +1433,7 @@ function PAddRow({ icon, label, sub, onClick }: { icon: React.ReactNode; label: 
           {icon}
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#111827" }}>{label}</div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "var(--theme-text)" }}>{label}</div>
           <div style={{ fontSize: 12, color: "#9ca3af" }}>{sub}</div>
         </div>
         <div style={{ width: 30, height: 30, borderRadius: "50%", background: "#22c55e", display: "flex", alignItems: "center", justifyContent: "center" }}>

@@ -7,7 +7,7 @@ import {
 import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignaling";
 
 /* ─── helpers ─────────────────────────────────────────────────── */
-const COLORS = ["#22C55E","#EC4899","#8B5CF6","#D97706","#388E3C","#00838F","#D32F2F"];
+const COLORS = ["var(--bp-primary)","#EC4899","#8B5CF6","#D97706","#388E3C","#00838F","#D32F2F"];
 const mkInitials = (n: string) => n.split(" ").filter(Boolean).map(w => w[0]).join("").slice(0,2).toUpperCase() || "?";
 
 function presLabel(online: boolean, lastSeenAt: string | null) {
@@ -46,13 +46,13 @@ interface Conv {
 /* ─── attachment panel items ───────────────────────────────────── */
 const ATTACH_ITEMS = [
   { icon: "📷", label: "Photo",     bg: "#E91E63", kind: "photo"     as const, text: "📷 Photo envoyée" },
-  { icon: "📋", label: "CV",        bg: "#22C55E", kind: "cv"        as const, text: "📋 CV envoyé" },
+  { icon: "📋", label: "CV",        bg: "var(--bp-primary)", kind: "cv"        as const, text: "📋 CV envoyé" },
   { icon: "📊", label: "Sondage",   bg: "#64748B", kind: "poll"      as const, text: "📊 Sondage : quel créneau ?" },
   { icon: "📅", label: "Entretien", bg: "#0EA5E9", kind: "interview" as const, text: "📅 Entretien proposé : demain 10h" },
   { icon: "📍", label: "Position",  bg: "#EF4444", kind: "location"  as const, text: "📍 Ma localisation" },
   { icon: "📄", label: "Document",  bg: "#9C27B0", kind: "doc"       as const, text: "📄 Document envoyé" },
   { icon: "🎵", label: "Audio",     bg: "#FF9800", kind: "audio"     as const, text: "🎵 Message vocal (0:12)" },
-  { icon: "💼", label: "Offre",     bg: "#22C55E", kind: "job"       as const, text: "💼 Offre partagée" },
+  { icon: "💼", label: "Offre",     bg: "var(--bp-primary)", kind: "job"       as const, text: "💼 Offre partagée" },
 ];
 
 /* ─── kind icon / label ─────────────────────────────────────────── */
@@ -289,7 +289,7 @@ export default function JobInboxPage({ initialUserId, initialJobTitle }: Props) 
               <div style={{ color:"rgba(255,255,255,.85)", fontSize:13, fontWeight:500 }}>Raccrocher</div>
             </div>
             <div style={{ textAlign:"center", cursor:"pointer" }} onClick={() => sig.acceptCall()}>
-              <div style={{ width:68, height:68, borderRadius:"50%", background:"#22C55E", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 8px", boxShadow:"0 4px 20px rgba(76,175,80,.5)" }}>
+              <div style={{ width:68, height:68, borderRadius:"50%", background:"var(--bp-primary)", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 8px", boxShadow:"0 4px 20px rgba(76,175,80,.5)" }}>
                 <svg viewBox="0 0 24 24" width="32" height="32" fill="#fff"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.12-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
               </div>
               <div style={{ color:"rgba(255,255,255,.85)", fontSize:13, fontWeight:500 }}>Accepter</div>
@@ -423,7 +423,7 @@ export default function JobInboxPage({ initialUserId, initialJobTitle }: Props) 
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231877F2' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
           }
           .ji-mine {
-            background: #22C55E;
+            background: var(--bp-primary);
             color: #fff;
             border-radius: 12px 12px 3px 12px;
           }
@@ -445,7 +445,7 @@ export default function JobInboxPage({ initialUserId, initialJobTitle }: Props) 
             <button onClick={() => selMsgs.size > 0 && setShowDel(true)} style={{ background:"none", border:"none", cursor:"pointer", color:selMsgs.size>0?"#fff":"rgba(255,255,255,.35)", fontSize:20, padding:6 }}>🗑</button>
           </div>
         ) : (
-          <div style={{ background:"#22C55E", padding:"8px 10px", display:"flex", alignItems:"center", gap:8, flexShrink:0, boxShadow:"0 2px 6px rgba(0,0,0,.2)" }}>
+          <div style={{ background:"var(--bp-primary)", padding:"8px 10px", display:"flex", alignItems:"center", gap:8, flexShrink:0, boxShadow:"0 2px 6px rgba(0,0,0,.2)" }}>
             {/* Back */}
             <button onClick={() => { setActive(null); }} style={{ background:"none", border:"none", fontSize:22, cursor:"pointer", color:"#fff", padding:"4px 2px", display:"flex", alignItems:"center" }}>←</button>
 
@@ -454,7 +454,7 @@ export default function JobInboxPage({ initialUserId, initialJobTitle }: Props) 
               <div className="avatar" style={{ background:"rgba(255,255,255,.25)", width:40, height:40, fontSize:14, color:"#fff", border:"2px solid rgba(255,255,255,.4)", borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontWeight:700 }}>
                 {activeConv.initials}
               </div>
-              {presence.online && <div style={{ position:"absolute", bottom:1, right:1, width:11, height:11, background:"#22C55E", borderRadius:"50%", border:"2px solid #22C55E" }} />}
+              {presence.online && <div style={{ position:"absolute", bottom:1, right:1, width:11, height:11, background:"var(--bp-primary)", borderRadius:"50%", border:"2px solid var(--bp-primary)" }} />}
             </div>
 
             {/* Name + status */}
@@ -514,7 +514,7 @@ export default function JobInboxPage({ initialUserId, initialJobTitle }: Props) 
                 style={{ display:"flex", justifyContent:msg.mine ? "flex-end" : "flex-start", alignItems:"flex-end", gap:5, marginTop:isFirst ? 6 : 1, paddingLeft:selMode ? 4 : 0, background:isSel ? "rgba(24,119,242,.12)" : "transparent", borderRadius:8, cursor:selMode ? "pointer" : "default", userSelect:"none" }}
               >
                 {selMode && (
-                  <div style={{ width:22, height:22, borderRadius:"50%", flexShrink:0, border:isSel ? "none" : "2px solid #aaa", background:isSel ? "#22C55E" : "transparent", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  <div style={{ width:22, height:22, borderRadius:"50%", flexShrink:0, border:isSel ? "none" : "2px solid #aaa", background:isSel ? "var(--bp-primary)" : "transparent", display:"flex", alignItems:"center", justifyContent:"center" }}>
                     {isSel && <span style={{ color:"#fff", fontSize:12, fontWeight:700 }}>✓</span>}
                   </div>
                 )}
@@ -548,7 +548,7 @@ export default function JobInboxPage({ initialUserId, initialJobTitle }: Props) 
                       <div style={{ marginTop:8, borderTop:`1px solid ${msg.mine ? "rgba(255,255,255,.2)" : "rgba(0,0,0,.08)"}`, paddingTop:6 }}>
                         {["Lundi matin","Mardi 14h-16h","Mercredi soir"].map((opt, idx) => (
                           <div key={idx} style={{ display:"flex", alignItems:"center", gap:8, marginBottom:5 }}>
-                            <div style={{ width:18, height:18, borderRadius:"50%", border:`2px solid ${msg.mine ? "rgba(255,255,255,.6)" : "#22C55E"}`, flexShrink:0 }} />
+                            <div style={{ width:18, height:18, borderRadius:"50%", border:`2px solid ${msg.mine ? "rgba(255,255,255,.6)" : "var(--bp-primary)"}`, flexShrink:0 }} />
                             <span style={{ fontSize:13, opacity:.9 }}>{opt}</span>
                           </div>
                         ))}
@@ -613,7 +613,7 @@ export default function JobInboxPage({ initialUserId, initialJobTitle }: Props) 
             {/* + button */}
             <button
               onClick={() => setShowAttach(o => !o)}
-              style={{ background:showAttach ? "#22C55E" : "#fff", border:"none", width:40, height:40, borderRadius:"50%", cursor:"pointer", fontSize:22, display:"flex", alignItems:"center", justifyContent:"center", color:showAttach ? "#fff" : "#555", flexShrink:0, boxShadow:"0 1px 3px rgba(0,0,0,.12)", transition:"all .2s" }}
+              style={{ background:showAttach ? "var(--bp-primary)" : "#fff", border:"none", width:40, height:40, borderRadius:"50%", cursor:"pointer", fontSize:22, display:"flex", alignItems:"center", justifyContent:"center", color:showAttach ? "#fff" : "#555", flexShrink:0, boxShadow:"0 1px 3px rgba(0,0,0,.12)", transition:"all .2s" }}
             >
               {showAttach ? "✕" : "＋"}
             </button>
@@ -630,9 +630,9 @@ export default function JobInboxPage({ initialUserId, initialJobTitle }: Props) 
 
             {/* Send / mic */}
             {draft.trim() ? (
-              <button onClick={() => send()} style={{ background:"#22C55E", border:"none", borderRadius:"50%", width:40, height:40, color:"#fff", cursor:"pointer", fontSize:16, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(24,119,242,.5)" }}>➤</button>
+              <button onClick={() => send()} style={{ background:"var(--bp-primary)", border:"none", borderRadius:"50%", width:40, height:40, color:"#fff", cursor:"pointer", fontSize:16, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(24,119,242,.5)" }}>➤</button>
             ) : (
-              <button style={{ background:"#22C55E", border:"none", borderRadius:"50%", width:40, height:40, color:"#fff", cursor:"pointer", fontSize:18, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(24,119,242,.5)" }}>🎤</button>
+              <button style={{ background:"var(--bp-primary)", border:"none", borderRadius:"50%", width:40, height:40, color:"#fff", cursor:"pointer", fontSize:18, flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(24,119,242,.5)" }}>🎤</button>
             )}
           </div>
         )}
@@ -644,7 +644,7 @@ export default function JobInboxPage({ initialUserId, initialJobTitle }: Props) 
               <div style={{ fontWeight:800, fontSize:16, marginBottom:10 }}>Supprimer le message</div>
               <div style={{ fontSize:14, color:"#555", marginBottom:20, lineHeight:1.5 }}>Supprimer {selMsgs.size > 1 ? `ces ${selMsgs.size} messages` : "ce message"} ?</div>
               <div style={{ display:"flex", justifyContent:"flex-end", gap:4 }}>
-                <button onClick={() => setShowDel(false)} style={{ background:"none", border:"none", padding:"10px 16px", fontSize:15, fontWeight:700, color:"#22C55E", cursor:"pointer", borderRadius:8 }}>Annuler</button>
+                <button onClick={() => setShowDel(false)} style={{ background:"none", border:"none", padding:"10px 16px", fontSize:15, fontWeight:700, color:"var(--bp-primary)", cursor:"pointer", borderRadius:8 }}>Annuler</button>
                 <button onClick={confirmDel} style={{ background:"none", border:"none", padding:"10px 16px", fontSize:15, fontWeight:700, color:"#EF4444", cursor:"pointer", borderRadius:8 }}>Supprimer</button>
               </div>
             </div>
@@ -666,7 +666,7 @@ export default function JobInboxPage({ initialUserId, initialJobTitle }: Props) 
       `}</style>
 
       {/* Header */}
-      <div style={{ background:"#22C55E", flexShrink:0 }}>
+      <div style={{ background:"var(--bp-primary)", flexShrink:0 }}>
         <div style={{ display:"flex", alignItems:"center", gap:10, padding:"12px 14px 8px" }}>
           <button onClick={() => navigate("/jobs")} style={{ background:"rgba(255,255,255,.15)", border:"none", borderRadius:"50%", width:36, height:36, cursor:"pointer", fontSize:18, color:"#fff", display:"flex", alignItems:"center", justifyContent:"center" }}>←</button>
           <div style={{ flex:1, fontWeight:900, fontSize:20, color:"#fff" }}>💼 Inbox Emploi</div>
@@ -701,7 +701,7 @@ export default function JobInboxPage({ initialUserId, initialJobTitle }: Props) 
             <div style={{ fontSize:13, color:"#888", lineHeight:1.6 }}>
               {search ? "Essayez un autre nom" : "Postulez à une offre et contactez\nle recruteur depuis la page détail"}
             </div>
-            <button onClick={() => navigate("/jobs")} style={{ marginTop:20, background:"#22C55E", color:"#fff", border:"none", borderRadius:22, padding:"11px 28px", fontWeight:700, fontSize:14, cursor:"pointer" }}>
+            <button onClick={() => navigate("/jobs")} style={{ marginTop:20, background:"var(--bp-primary)", color:"#fff", border:"none", borderRadius:22, padding:"11px 28px", fontWeight:700, fontSize:14, cursor:"pointer" }}>
               Voir les offres d'emploi
             </button>
           </div>
@@ -722,17 +722,17 @@ export default function JobInboxPage({ initialUserId, initialJobTitle }: Props) 
               <div style={{ flex:1, minWidth:0, alignSelf:"center" }}>
                 <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:2 }}>
                   <span style={{ fontWeight:conv.unread>0 ? 800 : 600, fontSize:15.5, color:"#111", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:"68%" }}>{conv.name}</span>
-                  <span style={{ fontSize:11.5, color:conv.unread>0 ? "#22C55E" : "#aaa", fontWeight:conv.unread>0 ? 700 : 400, flexShrink:0 }}>{conv.time}</span>
+                  <span style={{ fontSize:11.5, color:conv.unread>0 ? "var(--bp-primary)" : "#aaa", fontWeight:conv.unread>0 ? 700 : 400, flexShrink:0 }}>{conv.time}</span>
                 </div>
                 {conv.jobTitle && (
-                  <div style={{ fontSize:12, color:"#22C55E", fontWeight:600, marginBottom:2, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>💼 {conv.jobTitle}</div>
+                  <div style={{ fontSize:12, color:"var(--bp-primary)", fontWeight:600, marginBottom:2, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>💼 {conv.jobTitle}</div>
                 )}
                 <div style={{ display:"flex", alignItems:"center", gap:4 }}>
                   <div style={{ flex:1, fontSize:13.5, color:conv.unread>0 ? "#222" : "#888", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", fontWeight:conv.unread>0 ? 600 : 400 }}>
                     {conv.lastMessage || "Démarrer une conversation"}
                   </div>
                   {conv.unread > 0 && (
-                    <div style={{ background:"#22C55E", color:"#fff", borderRadius:20, minWidth:20, height:20, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:800, padding:"0 5px", flexShrink:0 }}>
+                    <div style={{ background:"var(--bp-primary)", color:"#fff", borderRadius:20, minWidth:20, height:20, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:800, padding:"0 5px", flexShrink:0 }}>
                       {conv.unread > 99 ? "99+" : conv.unread}
                     </div>
                   )}
@@ -746,7 +746,7 @@ export default function JobInboxPage({ initialUserId, initialJobTitle }: Props) 
       {/* FAB */}
       <button
         onClick={() => navigate("/jobs")}
-        style={{ position:"absolute", bottom:16, right:16, width:54, height:54, borderRadius:"50%", background:"#22C55E", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", fontSize:24, color:"#fff", boxShadow:"0 4px 16px rgba(24,119,242,.45)", zIndex:10 }}
+        style={{ position:"absolute", bottom:16, right:16, width:54, height:54, borderRadius:"50%", background:"var(--bp-primary)", border:"none", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", fontSize:24, color:"#fff", boxShadow:"0 4px 16px rgba(24,119,242,.45)", zIndex:10 }}
         title="Voir les offres"
       >💼</button>
     </div>

@@ -10,8 +10,8 @@ import {
 import { useR2Upload } from "../hooks/useR2Upload";
 
 /* ─── Design tokens ────────────────────────────────────────── */
-const G  = "#22C55E";
-const GD = "#16A34A";
+const G  = "var(--bp-primary)";
+const GD = "var(--bp-primary-dark)";
 const BG = "#F8FAFC";
 
 /* ─── Helpers ──────────────────────────────────────────────── */
@@ -55,7 +55,7 @@ const MOCK_PRODUCTS = [
 ];
 
 const MOCK_SERVICES: ApiMarketplaceService[] = [
-  { id: 1, userId: 1, name: "Martin D.",  profession: "Plombier",        rating: 4.8, reviewsCount: 124, avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80", coverColor: "#22C55E", isVerified: true, status: "active", city: "Abidjan", country: "CI", description: null, price: null, currency: "XOF", createdAt: new Date(Date.now() - 3600000).toISOString() },
+  { id: 1, userId: 1, name: "Martin D.",  profession: "Plombier",        rating: 4.8, reviewsCount: 124, avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80", coverColor: "var(--bp-primary)", isVerified: true, status: "active", city: "Abidjan", country: "CI", description: null, price: null, currency: "XOF", createdAt: new Date(Date.now() - 3600000).toISOString() },
   { id: 2, userId: 1, name: "Aminata C.", profession: "Femme de ménage", rating: 4.9, reviewsCount: 98,  avatarUrl: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&q=80", coverColor: "#F97316", isVerified: true, status: "active", city: "Dakar",   country: "SN", description: null, price: null, currency: "XOF", createdAt: new Date(Date.now() - 7200000).toISOString() },
   { id: 3, userId: 1, name: "Yacine B.",  profession: "Électricien",     rating: 4.7, reviewsCount: 76,  avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80", coverColor: "#6366F1", isVerified: true, status: "active", city: "Abidjan", country: "CI", description: null, price: null, currency: "XOF", createdAt: new Date(Date.now() - 10800000).toISOString() },
   { id: 4, userId: 1, name: "Sophie K.",  profession: "Coiffeuse",       rating: 4.7, reviewsCount: 112, avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80", coverColor: "#EC4899", isVerified: true, status: "active", city: "Lomé",    country: "TG", description: null, price: null, currency: "XOF", createdAt: new Date(Date.now() - 14400000).toISOString() },
@@ -245,7 +245,7 @@ export default function MarketplacePage() {
 
       {/* ── Tab bar ─────────────────────────────────────────── */}
       <div style={{
-        background: "#fff", borderBottom: "1px solid #E5E7EB",
+        background: "var(--theme-surface)", borderBottom: "1px solid #E5E7EB",
         display: "flex", padding: "0 4px", position: "sticky", top: 0, zIndex: 20,
         overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" as any,
         width: "100%", boxSizing: "border-box",
@@ -271,14 +271,14 @@ export default function MarketplacePage() {
         <div style={{ display: "flex", gap: 10, marginBottom: 14, alignItems: "center" }}>
           <div style={{
             flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 8,
-            background: "#fff", border: "1px solid #E5E7EB", borderRadius: 24, height: 44, padding: "0 14px",
+            background: "var(--theme-surface)", border: "1px solid #E5E7EB", borderRadius: 24, height: 44, padding: "0 14px",
             boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
           }}>
             <IcoSearch />
             <input
               value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Rechercher un produit, service..."
-              style={{ flex: 1, border: "none", outline: "none", background: "none", fontSize: 14, color: "#111827", fontFamily: "inherit" }}
+              style={{ flex: 1, border: "none", outline: "none", background: "none", fontSize: 14, color: "var(--theme-text)", fontFamily: "inherit" }}
             />
           </div>
           <button
@@ -356,7 +356,7 @@ export default function MarketplacePage() {
             {loadingProviders ? (
               <div style={{ display: "flex", gap: 12, overflowX: "auto", scrollbarWidth: "none", marginBottom: 28, paddingBottom: 4 }}>
                 {[0,1,2].map(i => (
-                  <div key={i} style={{ flex: "0 0 140px", background: "#fff", borderRadius: 16, padding: 14, boxShadow: "0 2px 8px rgba(0,0,0,0.07)" }}>
+                  <div key={i} style={{ flex: "0 0 140px", background: "var(--theme-surface)", borderRadius: 16, padding: 14, boxShadow: "0 2px 8px rgba(0,0,0,0.07)" }}>
                     <div style={{ width: 56, height: 56, borderRadius: "50%", background: "#F1F5F9", margin: "0 auto 10px" }} />
                     <div style={{ height: 12, background: "#F1F5F9", borderRadius: 6, marginBottom: 6 }} />
                     <div style={{ height: 10, background: "#F1F5F9", borderRadius: 6, width: "70%", margin: "0 auto 10px" }} />
@@ -489,7 +489,7 @@ export default function MarketplacePage() {
           onClick={() => setShowCreate(false)}
         >
           <div
-            style={{ background: "#fff", borderRadius: "24px 24px 0 0", width: "100%", maxHeight: "92vh", overflowY: "auto", padding: "0 16px 40px" }}
+            style={{ background: "var(--theme-surface)", borderRadius: "24px 24px 0 0", width: "100%", maxHeight: "92vh", overflowY: "auto", padding: "0 16px 40px" }}
             onClick={e => e.stopPropagation()}
           >
             {/* Handle */}
@@ -511,7 +511,7 @@ export default function MarketplacePage() {
               ))}
             </div>
 
-            <div style={{ fontWeight: 800, fontSize: 18, color: "#111827", marginBottom: 18 }}>
+            <div style={{ fontWeight: 800, fontSize: 18, color: "var(--theme-text)", marginBottom: 18 }}>
               {createType === "service" ? "Proposer un service" : "Publier un emploi"}
             </div>
 
@@ -612,7 +612,7 @@ function SectionHeader({ icon, title, onSeeAll }: { icon: "products"|"services"|
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14, gap: 8 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <SectionIcon type={icon} />
-        <span style={{ fontWeight: 800, fontSize: 15.5, color: "#111827" }}>{title}</span>
+        <span style={{ fontWeight: 800, fontSize: 15.5, color: "var(--theme-text)" }}>{title}</span>
       </div>
       <button onClick={onSeeAll} style={{ background: "none", border: "none", color: G, fontWeight: 700, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 2, fontFamily: "inherit", whiteSpace: "nowrap" }}>
         Voir tout <span style={{ fontSize: 15 }}>›</span>
@@ -629,7 +629,7 @@ function ProductCard({ product, isFav, onFav, onClick }: {
   return (
     <div
       onClick={onClick}
-      style={{ background: "#fff", borderRadius: 16, overflow: "hidden", cursor: "pointer", boxShadow: "0 2px 12px rgba(0,0,0,0.08)", position: "relative" }}
+      style={{ background: "var(--theme-surface)", borderRadius: 16, overflow: "hidden", cursor: "pointer", boxShadow: "0 2px 12px rgba(0,0,0,0.08)", position: "relative" }}
     >
       {/* Discount badge */}
       {product.discountPct && (
@@ -640,7 +640,7 @@ function ProductCard({ product, isFav, onFav, onClick }: {
       {/* Heart */}
       <button
         onClick={e => { e.stopPropagation(); onFav(); }}
-        style={{ position: "absolute", top: 9, right: 9, background: "#fff", border: "none", borderRadius: "50%", width: 30, height: 30, cursor: "pointer", zIndex: 2, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 1px 6px rgba(0,0,0,0.15)" }}
+        style={{ position: "absolute", top: 9, right: 9, background: "var(--theme-surface)", border: "none", borderRadius: "50%", width: 30, height: 30, cursor: "pointer", zIndex: 2, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 1px 6px rgba(0,0,0,0.15)" }}
       >
         <IcoHeart on={isFav} />
       </button>
@@ -653,7 +653,7 @@ function ProductCard({ product, isFav, onFav, onClick }: {
       </div>
       {/* Info */}
       <div style={{ padding: "10px 11px 12px" }}>
-        <div style={{ fontWeight: 700, fontSize: 13, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 4 }}>{product.title}</div>
+        <div style={{ fontWeight: 700, fontSize: 13, color: "var(--theme-text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 4 }}>{product.title}</div>
         <div style={{ fontWeight: 800, color: G, fontSize: 14, marginBottom: 5 }}>{fmtPrice(product.price)}</div>
         <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
           <IcoPin />
@@ -680,7 +680,7 @@ function ProductCard({ product, isFav, onFav, onClick }: {
 function ServiceCard({ service }: { service: ApiMarketplaceService }) {
   return (
     <div style={{
-      background: "#fff", borderRadius: 16, padding: "14px 12px", flexShrink: 0,
+      background: "var(--theme-surface)", borderRadius: 16, padding: "14px 12px", flexShrink: 0,
       width: 106, display: "flex", flexDirection: "column", alignItems: "center", gap: 7,
       boxShadow: "0 2px 10px rgba(0,0,0,0.07)",
     }}>
@@ -707,11 +707,11 @@ function ServiceCard({ service }: { service: ApiMarketplaceService }) {
       </div>
       {/* Text */}
       <div style={{ textAlign: "center", width: "100%" }}>
-        <div style={{ fontWeight: 700, fontSize: 12, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{service.name}</div>
+        <div style={{ fontWeight: 700, fontSize: 12, color: "var(--theme-text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{service.name}</div>
         <div style={{ fontSize: 10.5, color: "#64748B", marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{service.profession}</div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, marginTop: 5 }}>
           <IcoStar />
-          <span style={{ fontWeight: 700, fontSize: 11, color: "#111827" }}>{service.rating.toFixed(1)}</span>
+          <span style={{ fontWeight: 700, fontSize: 11, color: "var(--theme-text)" }}>{service.rating.toFixed(1)}</span>
           <span style={{ fontSize: 10, color: "#9CA3AF" }}>({service.reviewsCount})</span>
         </div>
       </div>
@@ -734,7 +734,7 @@ function ProviderCard({ provider, onContact }: { provider: ApiServiceProvider; o
   const initials = provider.name.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase();
   return (
     <div style={{
-      background: "#fff", borderRadius: 16, padding: "16px 12px", flexShrink: 0,
+      background: "var(--theme-surface)", borderRadius: 16, padding: "16px 12px", flexShrink: 0,
       width: 136, display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
       boxShadow: "0 2px 12px rgba(0,0,0,0.08)", border: "1px solid #F1F5F9",
     }}>
@@ -766,13 +766,13 @@ function ProviderCard({ provider, onContact }: { provider: ApiServiceProvider; o
 
       {/* Info */}
       <div style={{ textAlign: "center", width: "100%" }}>
-        <div style={{ fontWeight: 700, fontSize: 12.5, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{provider.name}</div>
+        <div style={{ fontWeight: 700, fontSize: 12.5, color: "var(--theme-text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{provider.name}</div>
         <div style={{ fontSize: 11, color: "#64748B", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{provider.profession}</div>
 
         {/* Rating */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 3, marginTop: 6 }}>
           <IcoStar />
-          <span style={{ fontWeight: 700, fontSize: 11.5, color: "#111827" }}>{provider.rating.toFixed(1)}</span>
+          <span style={{ fontWeight: 700, fontSize: 11.5, color: "var(--theme-text)" }}>{provider.rating.toFixed(1)}</span>
           <span style={{ fontSize: 10, color: "#9CA3AF" }}>({provider.reviewsCount})</span>
         </div>
 
@@ -807,7 +807,7 @@ function ProviderCard({ provider, onContact }: { provider: ApiServiceProvider; o
 /* ─── Service card grid (services tab) ─────────────────────── */
 function ServiceCardGrid({ service }: { service: ApiMarketplaceService }) {
   return (
-    <div style={{ background: "#fff", borderRadius: 18, padding: 14, boxShadow: "0 2px 10px rgba(0,0,0,0.06)", display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
+    <div style={{ background: "var(--theme-surface)", borderRadius: 18, padding: 14, boxShadow: "0 2px 10px rgba(0,0,0,0.06)", display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
       <div style={{ position: "relative" }}>
         <div style={{ width: 62, height: 62, borderRadius: "50%", overflow: "hidden", background: service.coverColor }}>
           {service.avatarUrl
@@ -822,11 +822,11 @@ function ServiceCardGrid({ service }: { service: ApiMarketplaceService }) {
         )}
       </div>
       <div style={{ textAlign: "center" }}>
-        <div style={{ fontWeight: 700, fontSize: 14, color: "#111827" }}>{service.name}</div>
+        <div style={{ fontWeight: 700, fontSize: 14, color: "var(--theme-text)" }}>{service.name}</div>
         <div style={{ fontSize: 12, color: "#64748B", marginTop: 1 }}>{service.profession}</div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, marginTop: 6 }}>
           <IcoStar />
-          <span style={{ fontWeight: 700, fontSize: 13, color: "#111827" }}>{service.rating.toFixed(1)}</span>
+          <span style={{ fontWeight: 700, fontSize: 13, color: "var(--theme-text)" }}>{service.rating.toFixed(1)}</span>
           <span style={{ fontSize: 11, color: "#9CA3AF" }}>({service.reviewsCount})</span>
         </div>
       </div>
@@ -844,14 +844,14 @@ function JobCard({ job }: {
 }) {
   const isNew = Date.now() - new Date(job.createdAt).getTime() < 24 * 60 * 60 * 1000;
   return (
-    <div style={{ background: "#fff", borderRadius: 16, padding: "13px 14px", boxShadow: "0 2px 10px rgba(0,0,0,0.06)", display: "flex", alignItems: "center", gap: 12 }}>
+    <div style={{ background: "var(--theme-surface)", borderRadius: 16, padding: "13px 14px", boxShadow: "0 2px 10px rgba(0,0,0,0.06)", display: "flex", alignItems: "center", gap: 12 }}>
       {/* Logo */}
       <div style={{ width: 44, height: 44, borderRadius: 12, background: job.logoColor, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 900, fontSize: 14, flexShrink: 0, letterSpacing: -0.5 }}>
         {job.logoText}
       </div>
       {/* Info */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontWeight: 700, fontSize: 14, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{job.title}</div>
+        <div style={{ fontWeight: 700, fontSize: 14, color: "var(--theme-text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{job.title}</div>
         <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 2 }}>
           <span style={{ fontSize: 12, color: "#64748B", fontWeight: 500 }}>{job.company}</span>
           {job.verified && (
@@ -888,7 +888,7 @@ function ProdSkeleton() {
   return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 28 }}>
       {[1,2,3,4].map(i => (
-        <div key={i} style={{ background: "#fff", borderRadius: 16, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
+        <div key={i} style={{ background: "var(--theme-surface)", borderRadius: 16, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
           <div style={{ height: 136, background: "linear-gradient(90deg,#F1F5F9 25%,#E5E7EB 50%,#F1F5F9 75%)", backgroundSize: "200% 100%", animation: "shimmer 1.4s infinite" }} />
           <div style={{ padding: "10px 11px 12px" }}>
             <div style={{ height: 12, background: "#F1F5F9", borderRadius: 6, marginBottom: 8 }} />
@@ -902,7 +902,7 @@ function ProdSkeleton() {
 }
 
 /* ─── Form helpers ─────────────────────────────────────────── */
-const inputStyle: React.CSSProperties = { border: "1.5px solid #E5E7EB", borderRadius: 12, padding: "13px 14px", fontSize: 14, fontFamily: "inherit", outline: "none", color: "#111827", background: "#fff", width: "100%", boxSizing: "border-box" };
+const inputStyle: React.CSSProperties = { border: "1.5px solid #E5E7EB", borderRadius: 12, padding: "13px 14px", fontSize: 14, fontFamily: "inherit", outline: "none", color: "var(--theme-text)", background: "var(--theme-surface)", width: "100%", boxSizing: "border-box" };
 const taStyle: React.CSSProperties = { ...inputStyle, resize: "none", height: 80 };
 const uploadBtnStyle: React.CSSProperties = { border: "2px dashed #E5E7EB", background: "#F8FAFC", borderRadius: 14, padding: "16px 0", cursor: "pointer", color: "#9CA3AF", fontSize: 14, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center", gap: 10, fontFamily: "inherit" };
 

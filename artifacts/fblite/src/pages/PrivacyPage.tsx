@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#111827", secondary:"#64748B", muted:"#9CA3AF", border:"#F1F5F9", danger:"#EF4444", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
+const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"var(--bp-primary)", primaryDark:"var(--bp-primary-dark)", text:"#111827", secondary:"#64748B", muted:"#9CA3AF", border:"#F1F5F9", danger:"#EF4444", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
 type PVal = "Tout le monde"|"Amis"|"Amis uniquement"|"Moi uniquement";
 
 function SubHeader({ title, onBack }:{title:string;onBack:()=>void}) {
@@ -76,11 +76,11 @@ export default function PrivacyPage() {
           <div style={{ position:"relative", width:110, height:110 }}>
             <div style={{ width:110,height:110,borderRadius:"50%",background:"radial-gradient(circle at 40% 35%,#DCFCE7,#BBF7D0)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 0 0 12px #F0FDF4,0 8px 30px rgba(34,197,94,0.2)" }}>
               <svg width="56" height="56" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7L12 2z" fill="#22C55E" opacity=".18"/>
-                <path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7L12 2z" stroke="#16A34A" strokeWidth="1.8" fill="none"/>
-                <rect x="8" y="11" width="8" height="6" rx="1.5" stroke="#16A34A" strokeWidth="1.6" fill="none"/>
-                <path d="M10 11V9a2 2 0 014 0v2" stroke="#16A34A" strokeWidth="1.6" strokeLinecap="round"/>
-                <circle cx="12" cy="14.5" r="1" fill="#16A34A"/>
+                <path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7L12 2z" fill="var(--bp-primary)" opacity=".18"/>
+                <path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7L12 2z" stroke="var(--bp-primary-dark)" strokeWidth="1.8" fill="none"/>
+                <rect x="8" y="11" width="8" height="6" rx="1.5" stroke="var(--bp-primary-dark)" strokeWidth="1.6" fill="none"/>
+                <path d="M10 11V9a2 2 0 014 0v2" stroke="var(--bp-primary-dark)" strokeWidth="1.6" strokeLinecap="round"/>
+                <circle cx="12" cy="14.5" r="1" fill="var(--bp-primary-dark)"/>
               </svg>
             </div>
           </div>
@@ -96,7 +96,7 @@ export default function PrivacyPage() {
         </div>
 
         {/* Confidentialité avancée card */}
-        <button style={{ width:"100%", background:"linear-gradient(135deg,#16A34A,#22C55E)", borderRadius:24, padding:"18px 20px", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, boxShadow:"0 8px 30px rgba(34,197,94,0.3)", overflow:"hidden", position:"relative", textAlign:"left" }}>
+        <button style={{ width:"100%", background:"linear-gradient(135deg,var(--bp-primary-dark),var(--bp-primary))", borderRadius:24, padding:"18px 20px", border:"none", cursor:"pointer", display:"flex", alignItems:"center", gap:14, boxShadow:"0 8px 30px rgba(34,197,94,0.3)", overflow:"hidden", position:"relative", textAlign:"left" }}>
           <div style={{ position:"absolute",top:-30,right:-30,width:100,height:100,borderRadius:"50%",background:"rgba(255,255,255,0.08)",pointerEvents:"none" }}/>
           <div style={{ width:48,height:48,borderRadius:"50%",background:"rgba(255,255,255,0.2)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,backdropFilter:"blur(8px)" }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round">

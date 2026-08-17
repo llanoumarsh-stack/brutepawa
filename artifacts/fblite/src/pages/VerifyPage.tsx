@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "../router";
 
-const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#111827", secondary:"#64748B", muted:"#9CA3AF", shadow:"0 8px 30px rgba(0,0,0,0.05)", danger:"#EF4444" };
+const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"var(--bp-primary)", primaryDark:"var(--bp-primary-dark)", text:"#111827", secondary:"#64748B", muted:"#9CA3AF", shadow:"0 8px 30px rgba(0,0,0,0.05)", danger:"#EF4444" };
 type Step = "intro"|"phone"|"otp"|"done";
 
 function SubHeader({ title, onBack }:{title:string;onBack:()=>void}) {
@@ -21,7 +21,7 @@ function ProgressBar({ step }:{step:Step}) {
   return (
     <div style={{ padding:"12px 14px 0" }}>
       <div style={{ height:4,background:"#E5E7EB",borderRadius:999,overflow:"hidden" }}>
-        <div style={{ height:"100%",width:`${pct}%`,background:"linear-gradient(90deg,#16A34A,#22C55E)",borderRadius:999,transition:"width 400ms ease" }}/>
+        <div style={{ height:"100%",width:`${pct}%`,background:"linear-gradient(90deg,var(--bp-primary-dark),var(--bp-primary))",borderRadius:999,transition:"width 400ms ease" }}/>
       </div>
       <div style={{ display:"flex",justifyContent:"space-between",marginTop:6 }}>
         <span style={{ fontSize:11,color:C.muted }}>Étape {pct===25?1:pct===50?2:pct===75?3:4} / 4</span>
@@ -40,8 +40,8 @@ function IntroStep({ onNext }:{onNext:()=>void}) {
         <div style={{ width:120,height:120,borderRadius:"50%",background:"radial-gradient(circle at 40% 35%,#DCFCE7,#DCFCE7)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 0 0 12px rgba(59,130,246,0.07),0 0 0 24px rgba(59,130,246,0.03),0 12px 40px rgba(59,130,246,0.2)" }}>
           <svg width="68" height="68" viewBox="0 0 24 24" fill="none">
             <path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7L12 2z" fill="#0EA5E9" opacity=".15"/>
-            <path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7L12 2z" stroke="#22C55E" strokeWidth="1.8" fill="none"/>
-            <path d="M9 12l2 2 4-4" stroke="#22C55E" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7L12 2z" stroke="var(--bp-primary)" strokeWidth="1.8" fill="none"/>
+            <path d="M9 12l2 2 4-4" stroke="var(--bp-primary)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </div>
         <div style={{ position:"absolute",top:4,right:-4,width:14,height:14,borderRadius:"50%",background:"#FBBF24",opacity:.9 }}/>
@@ -62,7 +62,7 @@ function IntroStep({ onNext }:{onNext:()=>void}) {
         ].map((b,i,a)=>(
           <div key={i} style={{ display:"flex",alignItems:"center",gap:12,padding:"13px 16px",borderBottom:i<a.length-1?"1px solid #F1F5F9":"none" }}>
             <div style={{ width:36,height:36,borderRadius:"50%",background:"linear-gradient(135deg,#DCFCE7,#DCFCE7)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>
             </div>
             <div>
               <div style={{ fontWeight:600,fontSize:14,color:C.text }}>{b.t}</div>
@@ -90,7 +90,7 @@ function PhoneStep({ onNext }:{onNext:(phone:string)=>void}) {
     <div style={{ padding:"32px 20px 40px" }}>
       <div style={{ display:"flex",justifyContent:"center",marginBottom:24 }}>
         <div style={{ width:80,height:80,borderRadius:"50%",background:"linear-gradient(135deg,#DCFCE7,#DCFCE7)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 8px 24px rgba(59,130,246,0.18)" }}>
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round">
             <rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>
           </svg>
         </div>
@@ -144,7 +144,7 @@ function OtpStep({ phone, onNext }:{phone:string;onNext:()=>void}) {
     <div style={{ padding:"32px 20px 40px" }}>
       <div style={{ display:"flex",justifyContent:"center",marginBottom:24 }}>
         <div style={{ width:80,height:80,borderRadius:"50%",background:"linear-gradient(135deg,#DCFCE7,#DCFCE7)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 8px 24px rgba(59,130,246,0.18)" }}>
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="1.8" strokeLinecap="round">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="1.8" strokeLinecap="round">
             <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
             <line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="13" y2="14"/>
           </svg>
@@ -176,7 +176,7 @@ function DoneStep({ onClose }:{onClose:()=>void}) {
   return (
     <div style={{ padding:"48px 24px 40px",display:"flex",flexDirection:"column",alignItems:"center",textAlign:"center" }}>
       <div style={{ width:120,height:120,borderRadius:"50%",background:"radial-gradient(circle at 40% 35%,#DCFCE7,#BBF7D0)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 0 0 12px rgba(34,197,94,0.08),0 0 0 24px rgba(34,197,94,0.04),0 12px 40px rgba(34,197,94,0.25)",marginBottom:28,animation:"popIn 400ms cubic-bezier(0.34,1.56,0.64,1)" }}>
-        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2.2" strokeLinecap="round">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary-dark)" strokeWidth="2.2" strokeLinecap="round">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
           <path d="M9 12l2 2 4-4"/>
         </svg>
@@ -193,7 +193,7 @@ function DoneStep({ onClose }:{onClose:()=>void}) {
           <div style={{ fontWeight:700,fontSize:13,color:C.primary,marginTop:2 }}>Vérifié</div>
         </div>
       </div>
-      <button onClick={onClose} style={{ width:"100%",marginTop:20,padding:"16px",borderRadius:18,background:"linear-gradient(135deg,#16A34A,#22C55E)",border:"none",color:"#fff",fontWeight:700,fontSize:16,cursor:"pointer",boxShadow:"0 8px 24px rgba(34,197,94,0.35)" }}>
+      <button onClick={onClose} style={{ width:"100%",marginTop:20,padding:"16px",borderRadius:18,background:"linear-gradient(135deg,var(--bp-primary-dark),var(--bp-primary))",border:"none",color:"#fff",fontWeight:700,fontSize:16,cursor:"pointer",boxShadow:"0 8px 24px rgba(34,197,94,0.35)" }}>
         Revenir aux paramètres
       </button>
       <style>{`@keyframes popIn{from{transform:scale(0.6);opacity:0}to{transform:scale(1);opacity:1}}`}</style>

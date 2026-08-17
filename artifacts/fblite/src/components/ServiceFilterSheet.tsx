@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 
 /* ─── Design tokens ─────────────────────────────────────── */
-const G   = "#22C55E";
-const GD  = "#16A34A";
+const G   = "var(--bp-primary)";
+const GD  = "var(--bp-primary-dark)";
 const BG  = "#F8FAFC";
 const BOR = "#E5E7EB";
 const T1  = "#111827";
@@ -138,7 +138,7 @@ function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void 
     >
       <span style={{
         width: 27, height: 27, borderRadius: "50%",
-        background: "#fff",
+        background: "var(--theme-surface)",
         boxShadow: "0 2px 4px rgba(0,0,0,0.25)",
         transform: on ? "translateX(20px)" : "translateX(0px)",
         transition: "transform 200ms ease-out",
@@ -300,7 +300,7 @@ export default function ServiceFilterSheet({ open, onClose, onApply, resultCount
         onClick={e => e.stopPropagation()}
         style={{
           position: "fixed", left: 0, right: 0, bottom: 0, zIndex: 501,
-          background: "#fff",
+          background: "var(--theme-surface)",
           borderRadius: "32px 32px 0 0",
           boxShadow: "0 -8px 32px rgba(0,0,0,0.12)",
           maxHeight: "92dvh",
@@ -428,7 +428,7 @@ export default function ServiceFilterSheet({ open, onClose, onApply, resultCount
                 style={{
                   width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
                   border: `1px solid ${BOR}`, borderRadius: 18,
-                  padding: "12px 16px", background: "#fff", cursor: "pointer",
+                  padding: "12px 16px", background: "var(--theme-surface)", cursor: "pointer",
                   fontFamily: "inherit",
                 }}
               >
@@ -441,7 +441,7 @@ export default function ServiceFilterSheet({ open, onClose, onApply, resultCount
               {rayonOpen && (
                 <div style={{
                   position: "absolute", top: "calc(100% + 6px)", left: 0, right: 0, zIndex: 10,
-                  background: "#fff", border: `1px solid ${BOR}`, borderRadius: 14,
+                  background: "var(--theme-surface)", border: `1px solid ${BOR}`, borderRadius: 14,
                   boxShadow: "0 8px 32px rgba(0,0,0,0.08)", overflow: "hidden",
                 }}>
                   {RAYONS.map(r => (
@@ -582,7 +582,7 @@ export default function ServiceFilterSheet({ open, onClose, onApply, resultCount
                 style={{
                   width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
                   border: `1px solid ${BOR}`, borderRadius: 18,
-                  padding: "14px 16px", background: "#fff", cursor: "pointer",
+                  padding: "14px 16px", background: "var(--theme-surface)", cursor: "pointer",
                   fontFamily: "inherit",
                 }}
               >
@@ -598,7 +598,7 @@ export default function ServiceFilterSheet({ open, onClose, onApply, resultCount
               {triOpen && (
                 <div style={{
                   position: "absolute", bottom: "calc(100% + 6px)", left: 0, right: 0, zIndex: 10,
-                  background: "#fff", border: `1px solid ${BOR}`, borderRadius: 14,
+                  background: "var(--theme-surface)", border: `1px solid ${BOR}`, borderRadius: 14,
                   boxShadow: "0 -8px 32px rgba(0,0,0,0.08)", overflow: "hidden",
                 }}>
                   {TRI_OPTIONS.map(t => (
@@ -629,7 +629,7 @@ export default function ServiceFilterSheet({ open, onClose, onApply, resultCount
           padding: "14px 20px",
           paddingBottom: "max(14px, env(safe-area-inset-bottom, 14px))",
           borderTop: `1px solid ${BOR}`,
-          background: "#fff",
+          background: "var(--theme-surface)",
           flexShrink: 0,
           display: "flex", flexDirection: "column", gap: 10,
         }}>
@@ -661,7 +661,7 @@ export default function ServiceFilterSheet({ open, onClose, onApply, resultCount
             onClick={onClose}
             style={{
               width: "100%", height: 48,
-              background: "#fff",
+              background: "var(--theme-surface)",
               border: `1.5px solid ${G}`, borderRadius: 16,
               color: G, fontWeight: 700, fontSize: 15,
               cursor: "pointer", fontFamily: "inherit",

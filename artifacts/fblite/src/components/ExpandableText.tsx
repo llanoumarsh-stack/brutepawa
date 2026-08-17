@@ -28,7 +28,7 @@ function renderWithMentions(
         key={m.index}
         onClick={onMentionClick ? e => { e.stopPropagation(); onMentionClick(name); } : undefined}
         style={{
-          color: "#22C55E",
+          color: "var(--bp-primary)",
           fontWeight: 700,
           cursor: onMentionClick ? "pointer" : "default",
         }}
@@ -71,7 +71,7 @@ export default function ExpandableText({
         {"  "}
         <span
           onClick={e => { e.stopPropagation(); setExpanded(false); }}
-          style={{ color: "#22C55E", fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}
+          style={{ color: "var(--bp-primary)", fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}
         >
           Voir moins
         </span>
@@ -87,7 +87,7 @@ export default function ExpandableText({
       <span style={{ color: "#9CA3AF" }}>{"... "}</span>
       <span
         onClick={e => { e.stopPropagation(); setExpanded(true); }}
-        style={{ color: "#22C55E", fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}
+        style={{ color: "var(--bp-primary)", fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}
       >
         Voir plus
       </span>

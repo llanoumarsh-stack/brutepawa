@@ -10,7 +10,7 @@ import {
 import MusicLibraryPage, { type MusicTrack } from "./MusicLibraryPage";
 
 const BG_OPTIONS = [
-  { id: "blue",    value: "#22C55E" },
+  { id: "blue",    value: "var(--bp-primary)" },
   { id: "pink",    value: "#E91E63" },
   { id: "purple",  value: "#9C27B0" },
   { id: "orange",  value: "#D97706" },
@@ -18,9 +18,9 @@ const BG_OPTIONS = [
   { id: "black",   value: "#212121" },
   { id: "red",     value: "#D32F2F" },
   { id: "teal",    value: "#00838F" },
-  { id: "grad1",   value: "linear-gradient(135deg,#22C55E,#9C27B0)" },
+  { id: "grad1",   value: "linear-gradient(135deg,var(--bp-primary),#9C27B0)" },
   { id: "grad2",   value: "linear-gradient(135deg,#E91E63,#D97706)" },
-  { id: "grad3",   value: "linear-gradient(135deg,#22C55E,#16A34A)" },
+  { id: "grad3",   value: "linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))" },
 ];
 
 const EMOJIS = ["🔥","😊","❤️","🎉","💪","🌍","😍","🙏","✨","🎵","🌅","💼","🎓","🤝","🛍️","🏆"];
@@ -248,14 +248,14 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
           <div key={i} style={{
             flex: 1, height: 4, borderRadius: 999,
             background: i === 0
-              ? "linear-gradient(90deg, #22C55E, #16A34A)"
+              ? "linear-gradient(90deg, var(--bp-primary), var(--bp-primary-dark))"
               : "rgba(255,255,255,0.15)",
             overflow: "hidden",
           }}>
             {i === 0 && (
               <div style={{
                 height: "100%", width: "60%",
-                background: "linear-gradient(90deg, #22C55E, #16A34A)",
+                background: "linear-gradient(90deg, var(--bp-primary), var(--bp-primary-dark))",
               }} />
             )}
           </div>
@@ -289,7 +289,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
           <div style={{ position: "relative" }}>
             <div style={{
               width: 44, height: 44, borderRadius: "50%", padding: 2,
-              background: "linear-gradient(135deg, #22C55E, #16A34A)",
+              background: "linear-gradient(135deg, var(--bp-primary), var(--bp-primary-dark))",
               boxShadow: "0 0 25px rgba(34,197,94,0.35)",
             }}>
               <div style={{
@@ -303,7 +303,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
                   <div style={{
                     width: "100%", height: "100%",
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    background: "linear-gradient(135deg, #22C55E, #16A34A)",
+                    background: "linear-gradient(135deg, var(--bp-primary), var(--bp-primary-dark))",
                     fontSize: 18, fontWeight: 800, color: "#fff",
                   }}>
                     {user?.name?.[0]?.toUpperCase() ?? "B"}
@@ -326,8 +326,8 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
               borderRadius: 999, padding: "2px 8px",
               width: "fit-content",
             }}>
-              <Globe size={10} color="#22C55E" strokeWidth={2} />
-              <span style={{ color: "#22C55E", fontSize: 11, fontWeight: 600 }}>Public</span>
+              <Globe size={10} color="var(--bp-primary)" strokeWidth={2} />
+              <span style={{ color: "var(--bp-primary)", fontSize: 11, fontWeight: 600 }}>Public</span>
             </div>
           </div>
         </div>
@@ -381,7 +381,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
               onMouseDown={e => (e.currentTarget.style.transform = "scale(0.98)")}
               onMouseUp={e => (e.currentTarget.style.transform = "translateY(-2px)")}
             >
-              <Icon size={22} color="#22C55E" strokeWidth={2} />
+              <Icon size={22} color="var(--bp-primary)" strokeWidth={2} />
               <span style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>{label}</span>
             </button>
           ))}
@@ -413,7 +413,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
               textShadow: "0 2px 24px rgba(0,0,0,0.4)",
             }}>
               Brute<span style={{
-                color: "#22C55E",
+                color: "var(--bp-primary)",
                 textShadow: "0 0 32px rgba(34,197,94,0.5), 0 2px 8px rgba(0,0,0,0.3)",
               }}>Pawa</span>
             </h1>
@@ -425,7 +425,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
             }}>
               Réseau social de nouvelle génération
             </p>
-            <div style={{ width: 36, height: 2.5, background: "linear-gradient(90deg, #22C55E, #16A34A)", borderRadius: 999, marginTop: 6, boxShadow: "0 0 12px rgba(34,197,94,0.5)" }} />
+            <div style={{ width: 36, height: 2.5, background: "linear-gradient(90deg, var(--bp-primary), var(--bp-primary-dark))", borderRadius: 999, marginTop: 6, boxShadow: "0 0 12px rgba(34,197,94,0.5)" }} />
           </div>
         )}
 
@@ -495,7 +495,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
             <div style={{ height: 4, background: "rgba(255,255,255,0.15)" }}>
               <div style={{
                 height: "100%", width: `${progress}%`,
-                background: "linear-gradient(90deg, #22C55E, #16A34A)",
+                background: "linear-gradient(90deg, var(--bp-primary), var(--bp-primary-dark))",
                 transition: "width 0.2s ease-out",
                 borderRadius: 999,
               }} />
@@ -538,7 +538,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
             onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-2px)")}
             onMouseLeave={e => (e.currentTarget.style.transform = "translateY(0)")}
           >
-            <Sparkles size={16} color="#22C55E" strokeWidth={2} />
+            <Sparkles size={16} color="var(--bp-primary)" strokeWidth={2} />
             <span style={{ color: "#E5E7EB", fontSize: 13, fontWeight: 500 }}>Ajouter un effet</span>
           </button>
         </div>
@@ -568,7 +568,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
           >
             <div style={{
               width: 36, height: 36, borderRadius: "50%",
-              background: "linear-gradient(135deg, #22C55E, #16A34A)",
+              background: "linear-gradient(135deg, var(--bp-primary), var(--bp-primary-dark))",
               display: "flex", alignItems: "center", justifyContent: "center",
               flexShrink: 0,
             }}>
@@ -612,7 +612,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
               display: "flex", alignItems: "center", justifyContent: "center",
               flexShrink: 0,
             }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                 <circle cx="9" cy="7" r="4"/>
                 <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
@@ -632,7 +632,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
             style={{
               flex: 1.2,
               background: canPublish && !submitting
-                ? "linear-gradient(135deg, #22C55E, #16A34A)"
+                ? "linear-gradient(135deg, var(--bp-primary), var(--bp-primary-dark))"
                 : "rgba(255,255,255,0.08)",
               border: "none",
               borderRadius: 20,
@@ -690,7 +690,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
 
             {/* Info */}
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ color: "#111827", fontSize: 13, fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              <div style={{ color: "var(--theme-text)", fontSize: 13, fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                 {selectedMusic.title}
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
@@ -706,7 +706,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
               {[10, 18, 12, 20, 8, 16, 10].map((h, i) => (
                 <div key={i} style={{
                   width: 3, borderRadius: 2,
-                  background: "linear-gradient(180deg,#22C55E,#16A34A)",
+                  background: "linear-gradient(180deg,var(--bp-primary),var(--bp-primary-dark))",
                   animation: `bpWave 0.75s ease-in-out infinite alternate`,
                   animationDelay: `${i * 0.09}s`,
                   height: h,
@@ -738,7 +738,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
               }}
             >
               <div style={{ width:36,height:36,borderRadius:"50%",background:"rgba(34,197,94,0.15)",display:"flex",alignItems:"center",justifyContent:"center" }}>
-                <Music2 size={16} color="#22C55E" strokeWidth={2}/>
+                <Music2 size={16} color="var(--bp-primary)" strokeWidth={2}/>
               </div>
               Changer la musique
             </button>
@@ -801,7 +801,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
                   flexShrink: 0, width: 32, height: 32, borderRadius: "50%",
                   background: bg.value,
                   border: selectedBg.id === bg.id
-                    ? "3px solid #22C55E"
+                    ? "3px solid var(--bp-primary)"
                     : "2px solid rgba(255,255,255,0.15)",
                   boxShadow: selectedBg.id === bg.id ? "0 0 0 2px rgba(34,197,94,0.4)" : "none",
                   cursor: "pointer", transition: "all 200ms ease-out",
@@ -826,7 +826,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
               onClick={confirmText}
               style={{
                 flex: 2, padding: "14px", borderRadius: 20,
-                background: "linear-gradient(135deg, #22C55E, #16A34A)",
+                background: "linear-gradient(135deg, var(--bp-primary), var(--bp-primary-dark))",
                 border: "none",
                 color: "#fff", fontWeight: 700, fontSize: 15, cursor: "pointer",
                 boxShadow: "0 8px 32px rgba(34,197,94,0.3)",
@@ -860,7 +860,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
               onClick={() => { setSelectedEmoji(null); setActiveTool(null); }}
               style={{
                 width: "100%", aspectRatio: "1", borderRadius: "50%",
-                border: !selectedEmoji ? "2px solid #22C55E" : "2px solid rgba(255,255,255,0.12)",
+                border: !selectedEmoji ? "2px solid var(--bp-primary)" : "2px solid rgba(255,255,255,0.12)",
                 background: "rgba(255,255,255,0.05)",
                 cursor: "pointer", fontSize: 14, color: "#E5E7EB",
                 display: "flex", alignItems: "center", justifyContent: "center",
@@ -872,7 +872,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
                 onClick={() => { setSelectedEmoji(selectedEmoji === e ? null : e); setActiveTool(null); }}
                 style={{
                   width: "100%", aspectRatio: "1", borderRadius: "50%",
-                  border: selectedEmoji === e ? "2px solid #22C55E" : "2px solid rgba(255,255,255,0.08)",
+                  border: selectedEmoji === e ? "2px solid var(--bp-primary)" : "2px solid rgba(255,255,255,0.08)",
                   background: selectedEmoji === e ? "rgba(34,197,94,0.12)" : "rgba(255,255,255,0.04)",
                   cursor: "pointer", fontSize: 22,
                   display: "flex", alignItems: "center", justifyContent: "center",
@@ -943,7 +943,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
             boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
           }}
         >
-          <ImageIcon size={14} color="#22C55E" strokeWidth={2} />
+          <ImageIcon size={14} color="var(--bp-primary)" strokeWidth={2} />
           Changer
         </button>
       )}
@@ -966,7 +966,7 @@ export default function CreateStoryPage({ onCreated }: { onCreated?: () => void 
             transition: "all 200ms ease-out",
           }}
         >
-          <ImageIcon size={14} color="#22C55E" strokeWidth={2} />
+          <ImageIcon size={14} color="var(--bp-primary)" strokeWidth={2} />
           {mode === "photo" ? "Mode texte" : "Ajouter photo"}
         </button>
       )}

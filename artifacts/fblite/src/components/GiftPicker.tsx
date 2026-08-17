@@ -229,7 +229,7 @@ export default function GiftPicker({
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <div style={{
                 width: 42, height: 42, borderRadius: "50%",
-                background: "linear-gradient(135deg,#22C55E,#22C55E)",
+                background: "linear-gradient(135deg,var(--bp-primary),var(--bp-primary))",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 boxShadow: "0 0 16px rgba(22,194,74,0.5)", flexShrink: 0,
               }}>
@@ -243,14 +243,14 @@ export default function GiftPicker({
                   {receiverAvatar ? (
                     <img src={receiverAvatar} alt="" style={{ width: 20, height: 20, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
                   ) : (
-                    <div style={{ width: 20, height: 20, borderRadius: "50%", background: "linear-gradient(135deg,#22C55E,#0EA5E9)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, color: "#fff", flexShrink: 0 }}>
+                    <div style={{ width: 20, height: 20, borderRadius: "50%", background: "linear-gradient(135deg,var(--bp-primary),#0EA5E9)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, color: "#fff", flexShrink: 0 }}>
                       {initials}
                     </div>
                   )}
                   <span style={{ fontSize: 12, color: "rgba(255,255,255,0.6)" }}>
                     à <strong style={{ color: "#fff" }}>{receiverName}</strong>
                   </span>
-                  <svg viewBox="0 0 24 24" width="12" height="12" fill="#22C55E"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="var(--bp-primary)"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
                 </div>
               </div>
             </div>
@@ -270,13 +270,13 @@ export default function GiftPicker({
               <button
                 onClick={onBuyTokens}
                 style={{
-                  background: "transparent", border: "1.5px solid #22C55E",
+                  background: "transparent", border: "1.5px solid var(--bp-primary)",
                   borderRadius: 20, padding: "3px 10px",
-                  color: "#22C55E", fontSize: 11, fontWeight: 700,
+                  color: "var(--bp-primary)", fontSize: 11, fontWeight: 700,
                   cursor: "pointer", display: "flex", alignItems: "center", gap: 4, marginLeft: "auto",
                 }}
               >
-                <svg viewBox="0 0 24 24" width="11" height="11" fill="#22C55E"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                <svg viewBox="0 0 24 24" width="11" height="11" fill="var(--bp-primary)"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 Recharger
               </button>
             </div>
@@ -293,7 +293,7 @@ export default function GiftPicker({
                 onClick={() => setCat(c.id)}
                 style={{
                   flexShrink: 0, padding: "7px 14px", borderRadius: 22, border: "none",
-                  background: cat === c.id ? "linear-gradient(135deg,#22C55E,#22C55E)" : "rgba(255,255,255,0.08)",
+                  background: cat === c.id ? "linear-gradient(135deg,var(--bp-primary),var(--bp-primary))" : "rgba(255,255,255,0.08)",
                   color: cat === c.id ? "#fff" : "rgba(255,255,255,0.55)",
                   fontWeight: cat === c.id ? 800 : 600, fontSize: 13,
                   cursor: "pointer",
@@ -325,7 +325,7 @@ export default function GiftPicker({
                       style={{
                         position: "relative",
                         background: isSel ? "rgba(22,194,74,0.12)" : "rgba(18,18,32,0.95)",
-                        border: isSel ? "2px solid #22C55E" : "1.5px solid rgba(255,255,255,0.08)",
+                        border: isSel ? "2px solid var(--bp-primary)" : "1.5px solid rgba(255,255,255,0.08)",
                         borderRadius: 14, padding: 0, overflow: "hidden",
                         cursor: "pointer",
                         opacity: canAfford ? 1 : 0.45,
@@ -362,7 +362,7 @@ export default function GiftPicker({
                       {isSel && (
                         <div style={{
                           position: "absolute", top: 5, right: 5,
-                          width: 17, height: 17, borderRadius: "50%", background: "#22C55E",
+                          width: 17, height: 17, borderRadius: "50%", background: "var(--bp-primary)",
                           display: "flex", alignItems: "center", justifyContent: "center",
                           boxShadow: "0 0 8px rgba(22,194,74,0.8)",
                         }}>
@@ -373,7 +373,7 @@ export default function GiftPicker({
                       {/* Name + price at bottom */}
                       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 7px 7px" }}>
                         <div style={{
-                          color: isSel ? "#22C55E" : "#fff", fontWeight: 700, fontSize: 11,
+                          color: isSel ? "var(--bp-primary)" : "#fff", fontWeight: 700, fontSize: 11,
                           overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                           marginBottom: 4, lineHeight: 1.2, transition: "color 0.15s",
                         }}>{g.name}</div>
@@ -455,7 +455,7 @@ export default function GiftPicker({
                   style={{
                     width: 32, height: 32, borderRadius: "50%",
                     background: "rgba(22,194,74,0.25)", border: "1.5px solid rgba(22,194,74,0.5)",
-                    color: "#22C55E", fontSize: 20, cursor: "pointer",
+                    color: "var(--bp-primary)", fontSize: 20, cursor: "pointer",
                     display: "flex", alignItems: "center", justifyContent: "center",
                     lineHeight: 1, fontWeight: 300,
                   }}
@@ -474,8 +474,8 @@ export default function GiftPicker({
                 </div>
               )}
               {success && (
-                <div style={{ background: "rgba(22,194,74,0.15)", border: "1px solid rgba(22,194,74,0.35)", borderRadius: 10, padding: "9px 13px", fontSize: 14, color: "#22C55E", textAlign: "center", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="#22C55E"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                <div style={{ background: "rgba(22,194,74,0.15)", border: "1px solid rgba(22,194,74,0.35)", borderRadius: 10, padding: "9px 13px", fontSize: 14, color: "var(--bp-primary)", textAlign: "center", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="var(--bp-primary)"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
                   Cadeau envoyé avec succès !
                 </div>
               )}
@@ -519,15 +519,15 @@ export default function GiftPicker({
                   background: "linear-gradient(135deg,#052e16,#052e16)",
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
                 }}>
-                  <svg viewBox="0 0 24 24" width="24" height="24" fill="#22C55E"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-                  <span style={{ color: "#22C55E", fontWeight: 900, fontSize: 18 }}>Envoyé !</span>
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--bp-primary)"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                  <span style={{ color: "var(--bp-primary)", fontWeight: 900, fontSize: 18 }}>Envoyé !</span>
                 </div>
               ) : selected ? (
                 <div style={{ position: "relative", borderRadius: 50, overflow: "hidden" }}>
                   <div style={{
                     borderRadius: 50, padding: "15px 20px",
                     background: canAffordSel
-                      ? "linear-gradient(135deg,#22C55E 0%,#16A34A 100%)"
+                      ? "linear-gradient(135deg,var(--bp-primary) 0%,var(--bp-primary-dark) 100%)"
                       : "rgba(255,255,255,0.08)",
                     border: canAffordSel ? "none" : "1.5px solid rgba(255,255,255,0.12)",
                     display: "flex", alignItems: "center", justifyContent: "center", gap: 10,

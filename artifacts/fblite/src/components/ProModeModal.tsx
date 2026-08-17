@@ -26,7 +26,7 @@ function ProgressBar({ current }: { current: string }) {
   return (
     <div style={{ display: "flex", gap: 4, padding: "0 16px 12px" }}>
       {PROGRESS_STEPS.map((_, i) => (
-        <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: i <= idx ? "#22C55E" : "#E5E7EB" }} />
+        <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: i <= idx ? "var(--bp-primary)" : "#E5E7EB" }} />
       ))}
     </div>
   );
@@ -36,23 +36,23 @@ function TopBar({ title, onBack, showModeBar = true }: { title: string; onBack?:
   return (
     <>
       {showModeBar && (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px 8px", borderBottom: "1px solid #E5E7EB", background: "#fff" }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: "#111827", display: "flex", alignItems: "center", gap: 4 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px 8px", borderBottom: "1px solid #E5E7EB", background: "var(--theme-surface)" }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: "var(--theme-text)", display: "flex", alignItems: "center", gap: 4 }}>
             Mode payant
             <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 16, height: 16, borderRadius: "50%", background: "#64748B", color: "#fff", fontSize: 10, fontWeight: 700, cursor: "pointer" }}>?</span>
           </span>
-          <button style={{ background: "#E5E7EB", border: "none", borderRadius: 6, padding: "6px 12px", fontSize: 13, fontWeight: 600, color: "#111827", cursor: "pointer" }}>
+          <button style={{ background: "#E5E7EB", border: "none", borderRadius: 6, padding: "6px 12px", fontSize: 13, fontWeight: 600, color: "var(--theme-text)", cursor: "pointer" }}>
             Changer de mode
           </button>
         </div>
       )}
-      <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", borderBottom: "1px solid #E5E7EB", background: "#fff" }}>
+      <div style={{ display: "flex", alignItems: "center", padding: "12px 16px", borderBottom: "1px solid #E5E7EB", background: "var(--theme-surface)" }}>
         {onBack ? (
-          <button onClick={onBack} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#111827", padding: "0 12px 0 0", lineHeight: 1 }}>‹</button>
+          <button onClick={onBack} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "var(--theme-text)", padding: "0 12px 0 0", lineHeight: 1 }}>‹</button>
         ) : (
           <div style={{ width: 32 }} />
         )}
-        <span style={{ flex: 1, textAlign: "center", fontWeight: 700, fontSize: 16, color: "#111827" }}>{title}</span>
+        <span style={{ flex: 1, textAlign: "center", fontWeight: 700, fontSize: 16, color: "var(--theme-text)" }}>{title}</span>
         <div style={{ width: 32 }} />
       </div>
     </>
@@ -64,7 +64,7 @@ function BtnPrimary({ label, onClick, disabled }: { label: string; onClick: () =
     <button
       onClick={onClick}
       disabled={disabled}
-      style={{ width: "100%", background: disabled ? "#CBD5E1" : "#22C55E", color: "#fff", border: "none", borderRadius: 8, padding: "14px", fontSize: 16, fontWeight: 700, cursor: disabled ? "default" : "pointer" }}
+      style={{ width: "100%", background: disabled ? "#CBD5E1" : "var(--bp-primary)", color: "#fff", border: "none", borderRadius: 8, padding: "14px", fontSize: 16, fontWeight: 700, cursor: disabled ? "default" : "pointer" }}
     >
       {label}
     </button>
@@ -75,7 +75,7 @@ function BtnSecondary({ label, onClick }: { label: string; onClick: () => void }
   return (
     <button
       onClick={onClick}
-      style={{ width: "100%", background: "#fff", color: "#111827", border: "1.5px solid #CBD5E1", borderRadius: 8, padding: "13px", fontSize: 16, fontWeight: 600, cursor: "pointer" }}
+      style={{ width: "100%", background: "var(--theme-surface)", color: "var(--theme-text)", border: "1.5px solid #CBD5E1", borderRadius: 8, padding: "13px", fontSize: 16, fontWeight: 600, cursor: "pointer" }}
     >
       {label}
     </button>
@@ -125,8 +125,8 @@ export default function ProModeModal({ onClose, onActivated }: Props) {
               </svg>
             </div>
           </div>
-          <div style={{ padding: "24px 20px", background: "#fff" }}>
-            <h2 style={{ margin: "0 0 8px", fontSize: 22, fontWeight: 800, color: "#111827", textAlign: "center" }}>Activer le mode pro</h2>
+          <div style={{ padding: "24px 20px", background: "var(--theme-surface)" }}>
+            <h2 style={{ margin: "0 0 8px", fontSize: 22, fontWeight: 800, color: "var(--theme-text)", textAlign: "center" }}>Activer le mode pro</h2>
             <p style={{ margin: "0 0 24px", fontSize: 14, color: "#64748B", textAlign: "center", lineHeight: 1.5 }}>
               Ajoutez de nouveaux outils à votre profil pour vous développer en tant que Creator sur Brute Pawa.
             </p>
@@ -138,20 +138,20 @@ export default function ProModeModal({ onClose, onActivated }: Props) {
               <div key={f.title} style={{ display: "flex", gap: 14, marginBottom: 20, alignItems: "flex-start" }}>
                 <span style={{ fontSize: 26, flexShrink: 0, marginTop: 2 }}>{f.icon}</span>
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: 14, color: "#111827", marginBottom: 3 }}>{f.title}</div>
+                  <div style={{ fontWeight: 700, fontSize: 14, color: "var(--theme-text)", marginBottom: 3 }}>{f.title}</div>
                   <div style={{ fontSize: 13, color: "#64748B", lineHeight: 1.45 }}>{f.desc}</div>
                 </div>
               </div>
             ))}
           </div>
         </div>
-        <div style={{ padding: "12px 16px 20px", background: "#fff", borderTop: "1px solid #E5E7EB", display: "flex", flexDirection: "column", gap: 8 }}>
+        <div style={{ padding: "12px 16px 20px", background: "var(--theme-surface)", borderTop: "1px solid #E5E7EB", display: "flex", flexDirection: "column", gap: 8 }}>
           <BtnPrimary label="Activer" onClick={handleActivate} />
           <BtnSecondary label="En savoir plus" onClick={() => {}} />
           <p style={{ margin: "8px 0 0", fontSize: 11, color: "#64748B", textAlign: "center", lineHeight: 1.4 }}>
             Brute Pawa affichera plus d'informations sur les profils en mode professionnel.{" "}
-            <span style={{ color: "#22C55E", cursor: "pointer" }}>En savoir plus</span>. En sélectionnant «&nbsp;Activer&nbsp;», vous acceptez les{" "}
-            <span style={{ color: "#22C55E", cursor: "pointer" }}>Conditions commerciales</span>.
+            <span style={{ color: "var(--bp-primary)", cursor: "pointer" }}>En savoir plus</span>. En sélectionnant «&nbsp;Activer&nbsp;», vous acceptez les{" "}
+            <span style={{ color: "var(--bp-primary)", cursor: "pointer" }}>Conditions commerciales</span>.
           </p>
         </div>
       </div>
@@ -185,7 +185,7 @@ export default function ProModeModal({ onClose, onActivated }: Props) {
                 <div style={{ fontSize: 13, color: "#64748B", lineHeight: 1.45 }}>{f.desc}</div>
                 {f.loading && (
                   <div style={{ position: "absolute", inset: 0, background: "rgba(255,255,255,0.7)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <div style={{ width: 24, height: 24, border: "3px solid #E5E7EB", borderTopColor: "#22C55E", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+                    <div style={{ width: 24, height: 24, border: "3px solid #E5E7EB", borderTopColor: "var(--bp-primary)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
                   </div>
                 )}
               </div>
@@ -207,7 +207,7 @@ export default function ProModeModal({ onClose, onActivated }: Props) {
           {/* Illustration */}
           <div style={{ background: "linear-gradient(135deg, #DCFCE7 0%, #DCFCE7 50%, #EDE9FE 100%)", padding: "28px 16px", display: "flex", alignItems: "center", justifyContent: "center", minHeight: 180, position: "relative", overflow: "hidden" }}>
             <div style={{ display: "flex", gap: -12, alignItems: "flex-end", position: "relative" }}>
-              {["#E91E63","#22C55E","#9C27B0"].map((c, i) => (
+              {["#E91E63","var(--bp-primary)","#9C27B0"].map((c, i) => (
                 <div key={i} style={{ width: 64, height: 80, borderRadius: "50% 50% 0 0", background: c, margin: "0 -4px", opacity: 0.85, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 28 }}>
                   {["😊","📱","🤳"][i]}
                 </div>
@@ -236,7 +236,7 @@ export default function ProModeModal({ onClose, onActivated }: Props) {
             ))}
           </div>
         </div>
-        <div style={{ padding: "0 16px 20px", background: "#fff", borderTop: "1px solid #E5E7EB" }}>
+        <div style={{ padding: "0 16px 20px", background: "var(--theme-surface)", borderTop: "1px solid #E5E7EB" }}>
           <ProgressBar current="welcome" />
           <BtnPrimary label="Suivant" onClick={() => setStep("audience")} />
         </div>
@@ -261,23 +261,23 @@ export default function ProModeModal({ onClose, onActivated }: Props) {
             <button
               key={opt.id}
               onClick={() => setAudience(opt.id)}
-              style={{ width: "100%", background: "#fff", border: `2px solid ${audience === opt.id ? "#22C55E" : "#E5E7EB"}`, borderRadius: 12, padding: "14px 16px", marginBottom: 12, display: "flex", alignItems: "center", gap: 14, cursor: "pointer", textAlign: "left" }}
+              style={{ width: "100%", background: "var(--theme-surface)", border: `2px solid ${audience === opt.id ? "var(--bp-primary)" : "#E5E7EB"}`, borderRadius: 12, padding: "14px 16px", marginBottom: 12, display: "flex", alignItems: "center", gap: 14, cursor: "pointer", textAlign: "left" }}
             >
               <div style={{ ...MENU_ICON_STYLE, background: "#E5E7EB", flexShrink: 0 }}>{opt.icon}</div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 3 }}>{opt.label}</div>
                 <div style={{ fontSize: 12, color: "#64748B", lineHeight: 1.4 }}>{opt.desc}</div>
               </div>
-              <div style={{ width: 20, height: 20, borderRadius: "50%", border: `2px solid ${audience === opt.id ? "#22C55E" : "#CBD5E1"}`, background: audience === opt.id ? "#22C55E" : "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                {audience === opt.id && <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#fff" }} />}
+              <div style={{ width: 20, height: 20, borderRadius: "50%", border: `2px solid ${audience === opt.id ? "var(--bp-primary)" : "#CBD5E1"}`, background: audience === opt.id ? "var(--bp-primary)" : "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                {audience === opt.id && <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--theme-surface)" }} />}
               </div>
             </button>
           ))}
           <div style={{ padding: "4px 0 16px" }}>
-            <span style={{ color: "#22C55E", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Comment aider à choisir ?</span>
+            <span style={{ color: "var(--bp-primary)", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Comment aider à choisir ?</span>
           </div>
         </div>
-        <div style={{ padding: "0 16px 20px", background: "#fff", borderTop: "1px solid #E5E7EB" }}>
+        <div style={{ padding: "0 16px 20px", background: "var(--theme-surface)", borderTop: "1px solid #E5E7EB" }}>
           <ProgressBar current="audience" />
           <BtnPrimary label="Suivant" onClick={() => setStep("review")} />
         </div>
@@ -311,7 +311,7 @@ export default function ProModeModal({ onClose, onActivated }: Props) {
           ))}
           <div style={{ height: 16 }} />
         </div>
-        <div style={{ padding: "12px 16px 20px", background: "#fff", borderTop: "1px solid #E5E7EB", display: "flex", flexDirection: "column", gap: 8 }}>
+        <div style={{ padding: "12px 16px 20px", background: "var(--theme-surface)", borderTop: "1px solid #E5E7EB", display: "flex", flexDirection: "column", gap: 8 }}>
           <BtnPrimary label="Confirmer" onClick={() => setStep("monetization")} />
           <BtnSecondary label="Modifier les paramètres" onClick={() => setStep("custom")} />
         </div>
@@ -323,7 +323,7 @@ export default function ProModeModal({ onClose, onActivated }: Props) {
       <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
         <TopBar title="Paramètres personnalisés" onBack={() => setStep("review")} />
         <div style={{ flex: 1, overflowY: "auto", padding: 16 }}>
-          <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #E5E7EB", overflow: "hidden" }}>
+          <div style={{ background: "var(--theme-surface)", borderRadius: 12, border: "1px solid #E5E7EB", overflow: "hidden" }}>
             <div style={{ padding: "14px 16px", borderBottom: "1px solid #F1F5F9" }}>
               <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 2 }}>Paramètres personnalisés</div>
             </div>
@@ -358,9 +358,9 @@ export default function ProModeModal({ onClose, onActivated }: Props) {
                   </div>
                   <button
                     onClick={() => setCustomSettings(s => ({ ...s, [row.key]: !s[row.key] }))}
-                    style={{ flexShrink: 0, width: 50, height: 28, borderRadius: 14, background: customSettings[row.key] ? "#22C55E" : "#CBD5E1", border: "none", cursor: "pointer", position: "relative", marginTop: 4 }}
+                    style={{ flexShrink: 0, width: 50, height: 28, borderRadius: 14, background: customSettings[row.key] ? "var(--bp-primary)" : "#CBD5E1", border: "none", cursor: "pointer", position: "relative", marginTop: 4 }}
                   >
-                    <div style={{ position: "absolute", top: 3, left: customSettings[row.key] ? 25 : 3, width: 22, height: 22, borderRadius: "50%", background: "#fff", transition: "left 0.2s" }} />
+                    <div style={{ position: "absolute", top: 3, left: customSettings[row.key] ? 25 : 3, width: 22, height: 22, borderRadius: "50%", background: "var(--theme-surface)", transition: "left 0.2s" }} />
                   </button>
                 </div>
               </div>
@@ -383,7 +383,7 @@ export default function ProModeModal({ onClose, onActivated }: Props) {
           </div>
           <div style={{ height: 16 }} />
         </div>
-        <div style={{ padding: "12px 16px 20px", background: "#fff", borderTop: "1px solid #E5E7EB" }}>
+        <div style={{ padding: "12px 16px 20px", background: "var(--theme-surface)", borderTop: "1px solid #E5E7EB" }}>
           <BtnPrimary label="Terminé" onClick={() => setStep("review")} />
         </div>
       </div>
@@ -410,9 +410,9 @@ export default function ProModeModal({ onClose, onActivated }: Props) {
           <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 14 }}>Pas encore éligible</div>
           {[
             { icon: "⭐", color: "#F59E0B", title: "Étoiles", desc: "Donnez à vos fans l'opportunité de vous soutenir via des Étoiles et des cadeaux." },
-            { icon: "💚", color: "#22C55E", title: "Abonnement", desc: "Générez des revenus mensuels avec du contenu exclusif." },
+            { icon: "💚", color: "var(--bp-primary)", title: "Abonnement", desc: "Générez des revenus mensuels avec du contenu exclusif." },
           ].map(tool => (
-            <div key={tool.title} style={{ background: "#fff", border: "1px solid #E5E7EB", borderRadius: 12, padding: "16px", marginBottom: 12 }}>
+            <div key={tool.title} style={{ background: "var(--theme-surface)", border: "1px solid #E5E7EB", borderRadius: 12, padding: "16px", marginBottom: 12 }}>
               <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 10 }}>
                 <span style={{ fontSize: 26 }}>{tool.icon}</span>
                 <div>
@@ -420,14 +420,14 @@ export default function ProModeModal({ onClose, onActivated }: Props) {
                   <div style={{ fontSize: 13, color: "#64748B", lineHeight: 1.4, marginTop: 2 }}>{tool.desc}</div>
                 </div>
               </div>
-              <button style={{ width: "100%", background: "#F1F5F9", border: "none", borderRadius: 8, padding: "10px", fontSize: 14, fontWeight: 600, cursor: "pointer", color: "#111827" }}>En savoir plus</button>
+              <button style={{ width: "100%", background: "#F1F5F9", border: "none", borderRadius: 8, padding: "10px", fontSize: 14, fontWeight: 600, cursor: "pointer", color: "var(--theme-text)" }}>En savoir plus</button>
             </div>
           ))}
           <div style={{ textAlign: "center", padding: "8px 0 16px" }}>
-            <span style={{ color: "#22C55E", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>En savoir plus sur les outils de monétisation</span>
+            <span style={{ color: "var(--bp-primary)", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>En savoir plus sur les outils de monétisation</span>
           </div>
         </div>
-        <div style={{ padding: "0 16px 20px", background: "#fff", borderTop: "1px solid #E5E7EB" }}>
+        <div style={{ padding: "0 16px 20px", background: "var(--theme-surface)", borderTop: "1px solid #E5E7EB" }}>
           <ProgressBar current="monetization" />
           <BtnPrimary label="Suivant" onClick={() => setStep("pro_tools")} />
         </div>
@@ -440,7 +440,7 @@ export default function ProModeModal({ onClose, onActivated }: Props) {
         <TopBar title="Outils professionnels" onBack={() => setStep("monetization")} />
         <div style={{ flex: 1, overflowY: "auto", padding: "20px 16px" }}>
           {/* Mini perf card */}
-          <div style={{ background: "linear-gradient(135deg,#7C3AED 0%,#22C55E 100%)", borderRadius: 14, padding: "16px", marginBottom: 22, position: "relative", overflow: "hidden" }}>
+          <div style={{ background: "linear-gradient(135deg,#7C3AED 0%,var(--bp-primary) 100%)", borderRadius: 14, padding: "16px", marginBottom: 22, position: "relative", overflow: "hidden" }}>
             <div style={{ background: "rgba(255,255,255,0.12)", borderRadius: 10, padding: "12px 14px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                 <div style={{ color: "#fff", fontWeight: 700, fontSize: 13 }}>Performance ⓘ</div>
@@ -455,7 +455,7 @@ export default function ProModeModal({ onClose, onActivated }: Props) {
                   { label: "Nouveaux abonnés", val: "324", pct: "+50%" },
                 ].map(s => (
                   <div key={s.label}>
-                    <div style={{ color: "#fff", fontSize: 15, fontWeight: 700 }}>{s.val} <span style={{ color: "#22C55E", fontSize: 11 }}>{s.pct}</span></div>
+                    <div style={{ color: "#fff", fontSize: 15, fontWeight: 700 }}>{s.val} <span style={{ color: "var(--bp-primary)", fontSize: 11 }}>{s.pct}</span></div>
                     <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 10 }}>{s.label}</div>
                   </div>
                 ))}
@@ -483,7 +483,7 @@ export default function ProModeModal({ onClose, onActivated }: Props) {
             </div>
           ))}
         </div>
-        <div style={{ padding: "0 16px 20px", background: "#fff", borderTop: "1px solid #E5E7EB" }}>
+        <div style={{ padding: "0 16px 20px", background: "var(--theme-surface)", borderTop: "1px solid #E5E7EB" }}>
           <ProgressBar current="pro_tools" />
           <BtnPrimary label="Suivant" onClick={() => { onActivated(); onClose(); }} />
         </div>

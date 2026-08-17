@@ -85,7 +85,7 @@ export default function TontinesPage({ initialTontineId }: { initialTontineId?: 
             { label: "Cotisation", value: `${selected.contributionAmount.toLocaleString()} FCFA`, icon: "📅", color: "var(--bp-primary)" },
             { label: "Membres", value: `${selected.membersCount} personnes`, icon: "👥", color: "#FF9800" },
             { label: "Prochain tour", value: fmtDate(selected.nextContributionDate), icon: "📆", color: "#9C27B0" },
-            { label: "Statut", value: selected.status === "active" ? "Actif ✅" : selected.status, icon: "✅", color: "#22C55E" },
+            { label: "Statut", value: selected.status === "active" ? "Actif ✅" : selected.status, icon: "✅", color: "var(--bp-primary)" },
           ].map(card => (
             <div key={card.label} style={{ background: "var(--fb-white)", borderRadius: 12, padding: 14, border: "1px solid var(--fb-divider)" }}>
               <div style={{ fontSize: 22, marginBottom: 6 }}>{card.icon}</div>
@@ -98,11 +98,11 @@ export default function TontinesPage({ initialTontineId }: { initialTontineId?: 
         <div style={{ margin: "0 16px 16px" }}>
           {!isPaid ? (
             <button onClick={() => handlePay(selected.id, selected.contributionAmount)} style={{
-              width: "100%", background: "#22C55E", color: "#fff", border: "none",
+              width: "100%", background: "var(--bp-primary)", color: "#fff", border: "none",
               borderRadius: 10, padding: "12px", fontWeight: 800, fontSize: 15, cursor: "pointer"
             }}>💳 Payer la cotisation — {selected.contributionAmount.toLocaleString()} FCFA</button>
           ) : (
-            <div style={{ background: "#DCFCE7", borderRadius: 12, padding: 14, textAlign: "center", color: "#22C55E", fontWeight: 800 }}>
+            <div style={{ background: "#DCFCE7", borderRadius: 12, padding: 14, textAlign: "center", color: "var(--bp-primary)", fontWeight: 800 }}>
               ✅ Cotisation payée pour ce mois !
             </div>
           )}
@@ -177,7 +177,7 @@ export default function TontinesPage({ initialTontineId }: { initialTontineId?: 
                   </div>
                 </div>
                 <div style={{ textAlign: "right" }}>
-                  {isPaid && <div style={{ color: "#22C55E", fontWeight: 700, fontSize: 12 }}>✓ Payé</div>}
+                  {isPaid && <div style={{ color: "var(--bp-primary)", fontWeight: 700, fontSize: 12 }}>✓ Payé</div>}
                   <div style={{ fontSize: 11, color: "var(--fb-text-secondary)" }}>
                     Prochain : {t.nextContributionDate
                       ? new Date(t.nextContributionDate).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })

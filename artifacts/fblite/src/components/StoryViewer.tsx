@@ -10,7 +10,7 @@ interface Props {
 }
 
 const STORY_DURATION = 5000;
-const BG_COLORS = ["#22C55E","#E91E63","#9C27B0","#D97706","#388E3C","#212121","#D32F2F","#00838F"];
+const BG_COLORS = ["var(--bp-primary)","#E91E63","#9C27B0","#D97706","#388E3C","#212121","#D32F2F","#00838F"];
 
 function getInitials(name: string) {
   const parts = name.trim().split(" ");
@@ -44,7 +44,7 @@ function EqBars({ playing }: { playing: boolean }) {
           key={i}
           style={{
             width: 3, borderRadius: 2,
-            background: "#22C55E",
+            background: "var(--bp-primary)",
             height: playing ? undefined : 4,
             animation: playing ? `${b.anim} ${b.dur} ease-in-out ${b.delay} infinite` : "none",
           }}
@@ -95,7 +95,7 @@ function MusicWidget({ story, muted, onToggleMute }: {
         : (
           <div style={{
             width: 42, height: 42, borderRadius: 10, flexShrink: 0,
-            background: "linear-gradient(135deg,#22C55E,#16A34A)",
+            background: "linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))",
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -286,7 +286,7 @@ export default function StoryViewer({ groups, initialGroupIndex, onClose, onAuth
         {Array.from({ length: storyCount }).map((_, i) => (
           <div key={i} style={{ flex:1,height:3,borderRadius:2,background:"rgba(255,255,255,0.35)",overflow:"hidden" }}>
             <div style={{
-              height:"100%", borderRadius:2, background:"#22C55E",
+              height:"100%", borderRadius:2, background:"var(--bp-primary)",
               width: i < storyIdx ? "100%" : i === storyIdx ? `${progress}%` : "0%",
               transition: i === storyIdx ? "none" : undefined,
             }} />
@@ -299,7 +299,7 @@ export default function StoryViewer({ groups, initialGroupIndex, onClose, onAuth
         {/* Avatar */}
         <div
           onClick={e => { e.stopPropagation(); onAuthorClick?.(group.authorId); }}
-          style={{ width:40,height:40,borderRadius:"50%",flexShrink:0, border:"2.5px solid #22C55E",overflow:"hidden", background:authorBg, display:"flex",alignItems:"center",justifyContent:"center", color:"#fff",fontWeight:700,fontSize:14, cursor:onAuthorClick?"pointer":"default" }}
+          style={{ width:40,height:40,borderRadius:"50%",flexShrink:0, border:"2.5px solid var(--bp-primary)",overflow:"hidden", background:authorBg, display:"flex",alignItems:"center",justifyContent:"center", color:"#fff",fontWeight:700,fontSize:14, cursor:onAuthorClick?"pointer":"default" }}
         >
           {group.authorAvatarUrl
             ? <img src={group.authorAvatarUrl} alt={group.authorName} style={{ width:"100%",height:"100%",objectFit:"cover" }} />
@@ -313,7 +313,7 @@ export default function StoryViewer({ groups, initialGroupIndex, onClose, onAuth
               {group.authorName}
             </span>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink:0 }}>
-              <circle cx="8" cy="8" r="8" fill="#22C55E"/>
+              <circle cx="8" cy="8" r="8" fill="var(--bp-primary)"/>
               <path d="M4.5 8.5l2.2 2.2 4.5-5" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
@@ -397,8 +397,8 @@ export default function StoryViewer({ groups, initialGroupIndex, onClose, onAuth
         {/* Action buttons */}
         <div style={{ display:"flex",alignItems:"center",justifyContent:"space-around" }}>
           <button onClick={e => { e.stopPropagation(); setLiked(v => !v); }} style={{ background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:6,color:"#fff",padding:"4px 8px" }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill={liked?"#22C55E":"none"}>
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke={liked?"#22C55E":"rgba(255,255,255,0.9)"} strokeWidth="1.6"/>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill={liked?"var(--bp-primary)":"none"}>
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke={liked?"var(--bp-primary)":"rgba(255,255,255,0.9)"} strokeWidth="1.6"/>
             </svg>
             <span style={{ fontSize:13,fontWeight:600,color:"rgba(255,255,255,0.9)" }}>J'aime</span>
           </button>
