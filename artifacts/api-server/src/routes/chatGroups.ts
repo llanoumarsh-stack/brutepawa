@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { requireAuth } from "../middlewares/requireAuth";
-import { db, chatGroupsTable, chatGroupMembersTable, chatGroupMessagesTable, usersTable } from "@workspace/db";
+import { db, chatGroupsTable, chatGroupMembersTable, chatGroupMessagesTable, chatGroupInviteLinksTable, usersTable } from "@workspace/db";
 import { eq, and, inArray, desc } from "drizzle-orm";
 import { pushToUserDevice } from "./push";
 import { assertChatGroupAdminOrOwner } from "../lib/groupAuth";
@@ -11,7 +11,7 @@ const router = Router();
 // ── Audit helpers ────────────────────────────────────────────────────────────
 
 /** Write an audit entry using an existing transaction/db handle. Throws on failure. */
-async function writeAudit(tx: typeof db, groupId: number, actorId: number, event: string, targetId?: number, detail?: string) {
+async function writeAudit(tx: Pick<typeof db, "execute">, groupId: number, actorId: number, event: string, targetId?: number, detail?: string) {
   await tx.execute(sql`
     INSERT INTO chat_group_audit_log (group_id, actor_id, target_id, event, detail)
     VALUES (${groupId}, ${actorId}, ${targetId ?? null}, ${event}::chat_group_audit_event, ${detail ?? null})
@@ -401,6 +401,350 @@ router.get("/chat-groups/:id/audit-log", requireAuth, async (req, res): Promise<
   }));
 
   res.json(entries);
+});
+
+/* ── Group management: members / admins / settings / invite links / permissions / reactions ── */
+
+async function getMembership(groupId: number, userId: number) {
+  const [membership] = await db.select().from(chatGroupMembersTable)
+    .where(and(eq(chatGroupMembersTable.groupId, groupId), eq(chatGroupMembersTable.userId, userId)));
+  return membership;
+}
+
+function isGroupAdmin(m?: { role: string }) {
+  return !!m && (m.role === "owner" || m.role === "admin");
+}
+
+function parseGroupId(raw: string): number | null {
+  const id = parseInt(raw);
+  return isNaN(id) ? null : id;
+}
+
+async function fetchMembers(groupId: number) {
+  return db.select({
+    userId: chatGroupMembersTable.userId,
+    role: chatGroupMembersTable.role,
+    firstName: usersTable.firstName,
+    lastName: usersTable.lastName,
+    avatarUrl: usersTable.avatarUrl,
+    joinedAt: chatGroupMembersTable.joinedAt,
+  }).from(chatGroupMembersTable)
+    .leftJoin(usersTable, eq(chatGroupMembersTable.userId, usersTable.id))
+    .where(eq(chatGroupMembersTable.groupId, groupId));
+}
+
+// GET members, grouped in sections
+router.get("/chat-groups/:id/members", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const id = parseGroupId(req.params.id);
+  if (id === null) { res.status(400).json({ error: "Invalid id" }); return; }
+  const membership = await getMembership(id, me);
+  if (!membership) { res.status(403).json({ error: "Accès refusé" }); return; }
+
+  const members = await fetchMembers(id);
+  const admins = members.filter(m => m.role === "owner" || m.role === "admin");
+  const others = members.filter(m => m.role === "member");
+  res.json({ admins, bots: [], others, total: members.length, myRole: membership.role });
+});
+
+// Change a member's role (promote/demote)
+router.patch("/chat-groups/:id/members/:userId", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const id = parseGroupId(req.params.id);
+  const targetId = parseGroupId(req.params.userId);
+  if (id === null || targetId === null) { res.status(400).json({ error: "Invalid id" }); return; }
+  const membership = await getMembership(id, me);
+  if (!isGroupAdmin(membership)) { res.status(403).json({ error: "Accès refusé" }); return; }
+
+  const target = await getMembership(id, targetId);
+  if (!target) { res.status(404).json({ error: "Membre introuvable" }); return; }
+  if (target.role === "owner") { res.status(403).json({ error: "Impossible de modifier le propriétaire" }); return; }
+
+  const { role } = req.body as { role?: string };
+  if (role !== "admin" && role !== "member") { res.status(400).json({ error: "Rôle invalide" }); return; }
+  if (role === "admin" && membership!.role !== "owner") {
+    res.status(403).json({ error: "Seul le propriétaire peut promouvoir un admin" }); return;
+  }
+
+  await db.transaction(async (tx) => {
+    await tx.update(chatGroupMembersTable).set({ role })
+      .where(and(eq(chatGroupMembersTable.groupId, id), eq(chatGroupMembersTable.userId, targetId)));
+    await writeAudit(tx, id, me, "role_changed", targetId, `→ ${role === "admin" ? "Administrateur" : "Membre"}`);
+  });
+  res.json({ ok: true });
+});
+
+// (Eject is handled by the DELETE /chat-groups/:id/members/:userId route above, with audit logging.)
+
+// List admins
+router.get("/chat-groups/:id/admins", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const id = parseGroupId(req.params.id);
+  if (id === null) { res.status(400).json({ error: "Invalid id" }); return; }
+  const membership = await getMembership(id, me);
+  if (!membership) { res.status(403).json({ error: "Accès refusé" }); return; }
+
+  const members = await fetchMembers(id);
+  res.json(members.filter(m => m.role === "owner" || m.role === "admin"));
+});
+
+// Promote to admin
+router.post("/chat-groups/:id/admins", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const id = parseGroupId(req.params.id);
+  if (id === null) { res.status(400).json({ error: "Invalid id" }); return; }
+  const membership = await getMembership(id, me);
+  if (!membership || membership.role !== "owner") { res.status(403).json({ error: "Seul le propriétaire peut promouvoir un admin" }); return; }
+
+  const { userId } = req.body as { userId?: number };
+  if (!userId || typeof userId !== "number") { res.status(400).json({ error: "userId requis" }); return; }
+  const target = await getMembership(id, userId);
+  if (!target) { res.status(404).json({ error: "Membre introuvable" }); return; }
+  if (target.role === "owner") { res.status(400).json({ error: "Déjà propriétaire" }); return; }
+
+  await db.transaction(async (tx) => {
+    await tx.update(chatGroupMembersTable).set({ role: "admin" })
+      .where(and(eq(chatGroupMembersTable.groupId, id), eq(chatGroupMembersTable.userId, userId)));
+    await writeAudit(tx, id, me, "role_changed", userId, "→ Administrateur");
+  });
+  res.json({ ok: true });
+});
+
+// Demote an admin
+router.delete("/chat-groups/:id/admins/:userId", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const id = parseGroupId(req.params.id);
+  const targetId = parseGroupId(req.params.userId);
+  if (id === null || targetId === null) { res.status(400).json({ error: "Invalid id" }); return; }
+  const membership = await getMembership(id, me);
+  if (!isGroupAdmin(membership)) { res.status(403).json({ error: "Accès refusé" }); return; }
+
+  const target = await getMembership(id, targetId);
+  if (!target) { res.status(404).json({ error: "Membre introuvable" }); return; }
+  if (target.role === "owner") { res.status(403).json({ error: "Impossible de rétrograder le propriétaire" }); return; }
+
+  await db.transaction(async (tx) => {
+    await tx.update(chatGroupMembersTable).set({ role: "member" })
+      .where(and(eq(chatGroupMembersTable.groupId, id), eq(chatGroupMembersTable.userId, targetId)));
+    await writeAudit(tx, id, me, "role_changed", targetId, "→ Membre");
+  });
+  res.json({ ok: true });
+});
+
+function settingsPayload(g: typeof chatGroupsTable.$inferSelect) {
+  let reactEmojis: string[] = [];
+  try { reactEmojis = JSON.parse(g.reactEmojis) as string[]; } catch { /* ignore */ }
+  return {
+    hideMembers: g.hideMembers,
+    antiSpam: g.antiSpam,
+    topicsEnabled: g.topicsEnabled,
+    permissions: {
+      sendMsgs: g.permSendMsgs,
+      sendMedia: g.permSendMedia,
+      addUsers: g.permAddUsers,
+      pinMsgs: g.permPinMsgs,
+      modTitles: g.permModTitles,
+      modExchange: g.permModExchange,
+    },
+    chargeTokens: g.chargeTokens,
+    tokenPrice: g.tokenPrice,
+    reactMode: g.reactMode as "all" | "some" | "none",
+    reactEmojis,
+  };
+}
+
+// GET all group settings (any member can read)
+router.get("/chat-groups/:id/settings", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const id = parseGroupId(req.params.id);
+  if (id === null) { res.status(400).json({ error: "Invalid id" }); return; }
+  const membership = await getMembership(id, me);
+  if (!membership) { res.status(403).json({ error: "Accès refusé" }); return; }
+
+  const [group] = await db.select().from(chatGroupsTable).where(eq(chatGroupsTable.id, id));
+  if (!group) { res.status(404).json({ error: "Groupe introuvable" }); return; }
+  res.json(settingsPayload(group));
+});
+
+// PATCH general settings (hideMembers, antiSpam, topicsEnabled) — admin only
+router.patch("/chat-groups/:id/settings", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const id = parseGroupId(req.params.id);
+  if (id === null) { res.status(400).json({ error: "Invalid id" }); return; }
+  const membership = await getMembership(id, me);
+  if (!isGroupAdmin(membership)) { res.status(403).json({ error: "Accès refusé" }); return; }
+
+  const { hideMembers, antiSpam, topicsEnabled } = req.body as { hideMembers?: boolean; antiSpam?: boolean; topicsEnabled?: boolean };
+  const updates: Record<string, unknown> = {};
+  if (typeof hideMembers === "boolean") updates.hideMembers = hideMembers;
+  if (typeof antiSpam === "boolean") updates.antiSpam = antiSpam;
+  if (typeof topicsEnabled === "boolean") updates.topicsEnabled = topicsEnabled;
+  if (Object.keys(updates).length === 0) { res.status(400).json({ error: "Aucune modification" }); return; }
+
+  const [updated] = await db.update(chatGroupsTable).set(updates).where(eq(chatGroupsTable.id, id)).returning();
+  res.json(settingsPayload(updated));
+});
+
+// GET permissions
+router.get("/chat-groups/:id/permissions", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const id = parseGroupId(req.params.id);
+  if (id === null) { res.status(400).json({ error: "Invalid id" }); return; }
+  const membership = await getMembership(id, me);
+  if (!membership) { res.status(403).json({ error: "Accès refusé" }); return; }
+
+  const [group] = await db.select().from(chatGroupsTable).where(eq(chatGroupsTable.id, id));
+  if (!group) { res.status(404).json({ error: "Groupe introuvable" }); return; }
+  const p = settingsPayload(group);
+  res.json({ permissions: p.permissions, chargeTokens: p.chargeTokens, tokenPrice: p.tokenPrice });
+});
+
+// PATCH permissions — admin only
+router.patch("/chat-groups/:id/permissions", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const id = parseGroupId(req.params.id);
+  if (id === null) { res.status(400).json({ error: "Invalid id" }); return; }
+  const membership = await getMembership(id, me);
+  if (!isGroupAdmin(membership)) { res.status(403).json({ error: "Accès refusé" }); return; }
+
+  const body = req.body as {
+    permissions?: Partial<Record<"sendMsgs"|"sendMedia"|"addUsers"|"pinMsgs"|"modTitles"|"modExchange", boolean>>;
+    chargeTokens?: boolean; tokenPrice?: number;
+  };
+  const updates: Record<string, unknown> = {};
+  const p = body.permissions ?? {};
+  if (typeof p.sendMsgs === "boolean") updates.permSendMsgs = p.sendMsgs;
+  if (typeof p.sendMedia === "boolean") updates.permSendMedia = p.sendMedia;
+  if (typeof p.addUsers === "boolean") updates.permAddUsers = p.addUsers;
+  if (typeof p.pinMsgs === "boolean") updates.permPinMsgs = p.pinMsgs;
+  if (typeof p.modTitles === "boolean") updates.permModTitles = p.modTitles;
+  if (typeof p.modExchange === "boolean") updates.permModExchange = p.modExchange;
+  if (typeof body.chargeTokens === "boolean") updates.chargeTokens = body.chargeTokens;
+  if (typeof body.tokenPrice === "number" && body.tokenPrice >= 1 && body.tokenPrice <= 35000) updates.tokenPrice = Math.round(body.tokenPrice);
+  if (Object.keys(updates).length === 0) { res.status(400).json({ error: "Aucune modification" }); return; }
+
+  const [updated] = await db.update(chatGroupsTable).set(updates).where(eq(chatGroupsTable.id, id)).returning();
+  const s = settingsPayload(updated);
+  res.json({ permissions: s.permissions, chargeTokens: s.chargeTokens, tokenPrice: s.tokenPrice });
+});
+
+// GET reactions config
+router.get("/chat-groups/:id/reactions", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const id = parseGroupId(req.params.id);
+  if (id === null) { res.status(400).json({ error: "Invalid id" }); return; }
+  const membership = await getMembership(id, me);
+  if (!membership) { res.status(403).json({ error: "Accès refusé" }); return; }
+
+  const [group] = await db.select().from(chatGroupsTable).where(eq(chatGroupsTable.id, id));
+  if (!group) { res.status(404).json({ error: "Groupe introuvable" }); return; }
+  const s = settingsPayload(group);
+  res.json({ mode: s.reactMode, emojis: s.reactEmojis });
+});
+
+// PATCH reactions config — admin only
+router.patch("/chat-groups/:id/reactions", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const id = parseGroupId(req.params.id);
+  if (id === null) { res.status(400).json({ error: "Invalid id" }); return; }
+  const membership = await getMembership(id, me);
+  if (!isGroupAdmin(membership)) { res.status(403).json({ error: "Accès refusé" }); return; }
+
+  const { mode, emojis } = req.body as { mode?: string; emojis?: string[] };
+  const updates: Record<string, unknown> = {};
+  if (mode !== undefined) {
+    if (mode !== "all" && mode !== "some" && mode !== "none") { res.status(400).json({ error: "Mode invalide" }); return; }
+    updates.reactMode = mode;
+  }
+  if (emojis !== undefined) {
+    if (!Array.isArray(emojis) || emojis.some(e => typeof e !== "string" || e.length > 16)) { res.status(400).json({ error: "Emojis invalides" }); return; }
+    updates.reactEmojis = JSON.stringify(emojis.slice(0, 50));
+  }
+  if (Object.keys(updates).length === 0) { res.status(400).json({ error: "Aucune modification" }); return; }
+
+  const [updated] = await db.update(chatGroupsTable).set(updates).where(eq(chatGroupsTable.id, id)).returning();
+  const s = settingsPayload(updated);
+  res.json({ mode: s.reactMode, emojis: s.reactEmojis });
+});
+
+function linkPayload(l: typeof chatGroupInviteLinksTable.$inferSelect, creator?: { firstName: string | null; lastName: string | null } | null) {
+  return {
+    id: l.id,
+    code: l.code,
+    url: `brutepawa.com/join/${l.code}`,
+    label: l.label,
+    createdById: l.createdById,
+    createdByName: creator?.firstName && creator?.lastName ? `${creator.firstName} ${creator.lastName}` : null,
+    revoked: l.revoked,
+    createdAt: l.createdAt.toISOString(),
+  };
+}
+
+function genInviteCode(groupId: number): string {
+  const rand = Math.random().toString(36).slice(2, 8);
+  return `${groupId.toString(36)}${rand}`;
+}
+
+// List invite links (admin only)
+router.get("/chat-groups/:id/invite-links", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const id = parseGroupId(req.params.id);
+  if (id === null) { res.status(400).json({ error: "Invalid id" }); return; }
+  const membership = await getMembership(id, me);
+  if (!isGroupAdmin(membership)) { res.status(403).json({ error: "Accès refusé" }); return; }
+
+  let links = await db.select().from(chatGroupInviteLinksTable)
+    .where(eq(chatGroupInviteLinksTable.groupId, id))
+    .orderBy(desc(chatGroupInviteLinksTable.createdAt));
+
+  // Ensure the group always has a primary (non-revoked) link
+  if (!links.some(l => !l.revoked)) {
+    const [created] = await db.insert(chatGroupInviteLinksTable).values({
+      groupId: id, code: genInviteCode(id), label: "Lien principal", createdById: me,
+    }).returning();
+    links = [created, ...links];
+  }
+
+  const creatorIds = [...new Set(links.map(l => l.createdById))];
+  const creators = creatorIds.length > 0
+    ? await db.select({ id: usersTable.id, firstName: usersTable.firstName, lastName: usersTable.lastName })
+        .from(usersTable).where(inArray(usersTable.id, creatorIds))
+    : [];
+  const creatorMap = new Map(creators.map(c => [c.id, c]));
+  res.json(links.map(l => linkPayload(l, creatorMap.get(l.createdById))));
+});
+
+// Create a new invite link (admin only)
+router.post("/chat-groups/:id/invite-links", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const id = parseGroupId(req.params.id);
+  if (id === null) { res.status(400).json({ error: "Invalid id" }); return; }
+  const membership = await getMembership(id, me);
+  if (!isGroupAdmin(membership)) { res.status(403).json({ error: "Accès refusé" }); return; }
+
+  const { label } = req.body as { label?: string };
+  const [created] = await db.insert(chatGroupInviteLinksTable).values({
+    groupId: id, code: genInviteCode(id), label: label?.trim() || null, createdById: me,
+  }).returning();
+  res.status(201).json(linkPayload(created));
+});
+
+// Revoke an invite link (admin only)
+router.delete("/chat-groups/:id/invite-links/:linkId", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const id = parseGroupId(req.params.id);
+  const linkId = parseGroupId(req.params.linkId);
+  if (id === null || linkId === null) { res.status(400).json({ error: "Invalid id" }); return; }
+  const membership = await getMembership(id, me);
+  if (!isGroupAdmin(membership)) { res.status(403).json({ error: "Accès refusé" }); return; }
+
+  const [link] = await db.select().from(chatGroupInviteLinksTable)
+    .where(and(eq(chatGroupInviteLinksTable.id, linkId), eq(chatGroupInviteLinksTable.groupId, id)));
+  if (!link) { res.status(404).json({ error: "Lien introuvable" }); return; }
+
+  await db.update(chatGroupInviteLinksTable).set({ revoked: true })
+    .where(eq(chatGroupInviteLinksTable.id, linkId));
+  res.json({ ok: true });
 });
 
 export default router;

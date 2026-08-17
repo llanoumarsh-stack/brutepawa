@@ -6,3 +6,4 @@
 - [Custom domain split](custom-domain-split.md) — brutepawa.com pointed to an old deployment; always check which domain the user browses vs getDeploymentInfo additionalUrls
 - [Contact management system](contact-management.md) — 4 new tables (muted/pinned/favorite/deleted_conversations), API at /contacts/:userId, 12 mobile screens under app/contact/[userId]/, ContactOptionsBottomSheet component
 - [Appearance/Theme system](appearance-system.md) — AppearanceContext + user_preferences table + GET/PUT /api/preferences; dark mode via data-bp-theme on html; localStorage key = bp_appearance
+- [Drizzle migration workflow](db-migrations-drizzle.md) — generate via drizzle-kit (journal+snapshot), never hand-write SQL; runner fails hard on real errors

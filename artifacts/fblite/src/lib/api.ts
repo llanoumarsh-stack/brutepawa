@@ -1000,6 +1000,25 @@ export async function apiUpdateChatGroup(id: number, data: { name?: string; avat
   return res.json() as Promise<ApiChatGroup>;
 }
 
+export interface ApiGroupSettings {
+  hideMembers: boolean;
+  antiSpam: boolean;
+  topicsEnabled: boolean;
+  permissions: { sendMsgs: boolean; sendMedia: boolean; addUsers: boolean; pinMsgs: boolean; modTitles: boolean; modExchange: boolean };
+  chargeTokens: boolean;
+  tokenPrice: number;
+  reactMode: "all" | "some" | "none";
+  reactEmojis: string[];
+}
+
+export interface ApiChatGroupMemberEntry {
+  userId: number;
+  role: string;
+  firstName: string | null;
+  lastName: string | null;
+  avatarUrl: string | null;
+  joinedAt: string | null;
+}
 export async function apiAddChatGroupMembers(id: number, userIds: number[]): Promise<void> {
   await apiFetch(`/chat-groups/${id}/members`, {
     method: "POST",
@@ -2201,4 +2220,78 @@ export async function apiSearch(
     pagination: { page: 1, limit: 20, hasMore: false }, durationMs: 0,
   };
   return res.json() as Promise<SearchResponseDTO>;
+}
+
+export async function apiPatchGroupReactions(id: number, data: { mode?: "all" | "some" | "none"; emojis?: string[] }): Promise<void> {
+  const res = await apiFetch(`/chat-groups/${id}/reactions`, { method: "PATCH", body: JSON.stringify(data) });
+  if (!res.ok) throw new Error("Erreur mise à jour réactions");
+}
+
+export async function apiSetChatGroupMemberRole(id: number, userId: number, role: "admin" | "member"): Promise<void> {
+  const res = await apiFetch(`/chat-groups/${id}/members/${userId}`, { method: "PATCH", body: JSON.stringify({ role }) });
+  if (!res.ok) throw new Error("Erreur changement de rôle");
+}
+
+export async function apiPatchGroupSettings(id: number, data: { hideMembers?: boolean; antiSpam?: boolean; topicsEnabled?: boolean }): Promise<ApiGroupSettings> {
+  const res = await apiFetch(`/chat-groups/${id}/settings`, { method: "PATCH", body: JSON.stringify(data) });
+  if (!res.ok) throw new Error("Erreur mise à jour paramètres");
+  return res.json() as Promise<ApiGroupSettings>;
+}
+
+export async function apiRemoveChatGroupMember(id: number, userId: number): Promise<void> {
+  const res = await apiFetch(`/chat-groups/${id}/members/${userId}`, { method: "DELETE" });
+  if (!res.ok) throw new Error("Erreur éjection du membre");
+}
+
+export interface ApiGroupInviteLink {
+  id: number;
+  code: string;
+  url: string;
+  label: string | null;
+  createdById: number;
+  createdByName: string | null;
+  revoked: boolean;
+  createdAt: string;
+}
+
+export async function apiGetGroupSettings(id: number): Promise<ApiGroupSettings> {
+  const res = await apiFetch(`/chat-groups/${id}/settings`);
+  if (!res.ok) throw new Error("Erreur chargement paramètres");
+  return res.json() as Promise<ApiGroupSettings>;
+}
+
+export async function apiPatchGroupPermissions(id: number, data: { permissions?: Partial<ApiGroupSettings["permissions"]>; chargeTokens?: boolean; tokenPrice?: number }): Promise<void> {
+  const res = await apiFetch(`/chat-groups/${id}/permissions`, { method: "PATCH", body: JSON.stringify(data) });
+  if (!res.ok) throw new Error("Erreur mise à jour permissions");
+}
+
+export async function apiGetGroupInviteLinks(id: number): Promise<ApiGroupInviteLink[]> {
+  const res = await apiFetch(`/chat-groups/${id}/invite-links`);
+  if (!res.ok) throw new Error("Erreur chargement liens");
+  return res.json() as Promise<ApiGroupInviteLink[]>;
+}
+
+export async function apiCreateGroupInviteLink(id: number, label?: string): Promise<ApiGroupInviteLink> {
+  const res = await apiFetch(`/chat-groups/${id}/invite-links`, { method: "POST", body: JSON.stringify({ label }) });
+  if (!res.ok) throw new Error("Erreur création lien");
+  return res.json() as Promise<ApiGroupInviteLink>;
+}
+
+export async function apiRevokeGroupInviteLink(id: number, linkId: number): Promise<void> {
+  const res = await apiFetch(`/chat-groups/${id}/invite-links/${linkId}`, { method: "DELETE" });
+  if (!res.ok) throw new Error("Erreur révocation lien");
+}
+
+export interface ApiChatGroupMembersGrouped {
+  admins: ApiChatGroupMemberEntry[];
+  bots: ApiChatGroupMemberEntry[];
+  others: ApiChatGroupMemberEntry[];
+  total: number;
+  myRole: string;
+}
+
+export async function apiGetChatGroupMembersGrouped(id: number): Promise<ApiChatGroupMembersGrouped> {
+  const res = await apiFetch(`/chat-groups/${id}/members`);
+  if (!res.ok) throw new Error("Impossible de charger les membres");
+  return res.json() as Promise<ApiChatGroupMembersGrouped>;
 }

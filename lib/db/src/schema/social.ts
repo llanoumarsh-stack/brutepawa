@@ -235,10 +235,32 @@ export const chatGroupsTable = pgTable("chat_groups", {
   avatarUrl: text("avatar_url"),
   type: chatGroupTypeEnum("type").notNull().default("group"),
   createdById: integer("created_by_id").notNull(),
+  hideMembers: boolean("hide_members").notNull().default(false),
+  antiSpam: boolean("anti_spam").notNull().default(false),
+  topicsEnabled: boolean("topics_enabled").notNull().default(false),
+  permSendMsgs: boolean("perm_send_msgs").notNull().default(true),
+  permSendMedia: boolean("perm_send_media").notNull().default(true),
+  permAddUsers: boolean("perm_add_users").notNull().default(true),
+  permPinMsgs: boolean("perm_pin_msgs").notNull().default(true),
+  permModTitles: boolean("perm_mod_titles").notNull().default(true),
+  permModExchange: boolean("perm_mod_exchange").notNull().default(true),
+  chargeTokens: boolean("charge_tokens").notNull().default(false),
+  tokenPrice: integer("token_price").notNull().default(190),
+  reactMode: text("react_mode").notNull().default("all"),
+  reactEmojis: text("react_emojis").notNull().default("[]"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });
 
+export const chatGroupInviteLinksTable = pgTable("chat_group_invite_links", {
+  id: serial("id").primaryKey(),
+  groupId: integer("group_id").notNull(),
+  code: text("code").notNull(),
+  label: text("label"),
+  createdById: integer("created_by_id").notNull(),
+  revoked: boolean("revoked").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [uniqueIndex("chat_group_invite_links_code_unique").on(t.code), index("chat_group_invite_links_group_idx").on(t.groupId)]);
 export const chatGroupMembersTable = pgTable("chat_group_members", {
   id: serial("id").primaryKey(),
   groupId: integer("group_id").notNull(),

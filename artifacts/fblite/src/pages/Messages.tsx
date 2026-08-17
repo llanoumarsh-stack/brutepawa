@@ -5,6 +5,7 @@ import { useCurrentUser } from "../hooks/useCurrentUser";
 import { openImageViewer } from "../components/ImageViewer";
 import { apiFetch, apiGetConversations, apiGetMessages, apiMarkMessagesRead, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiUpdateChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadFileXHR, apiUploadVoice, apiDeleteConversation, apiDeleteMessage, apiGetLinkPreview, apiGetMessagingSettings, apiUpdateMessagingSettings, apiGetMessageRequests, apiUpdateMessageRequest, apiGetContactInfo, apiMuteContact, apiUnmuteContact, apiPinContact, apiUnpinContact, apiFavoriteContact, apiUnfavoriteContact, apiBlockUser, apiUnblockUser, apiReportUser, apiSendFriendRequest, apiSearchInConversation, apiDeleteConversationContact, apiGetMyGroups, apiAddContactToGroup, apiGetGroupAuditLog, apiKickGroupMember, apiChangeGroupMemberRole, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview, type MessageRequest, type ContactInfo, type GroupAuditEntry } from "../lib/api";
 import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignaling";
+import { apiFetch, apiGetConversations, apiGetMessages, apiMarkMessagesRead, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiUpdateChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadFileXHR, apiUploadVoice, apiDeleteConversation, apiDeleteMessage, apiGetLinkPreview, apiGetMessagingSettings, apiUpdateMessagingSettings, apiGetMessageRequests, apiUpdateMessageRequest, apiGetContactInfo, apiMuteContact, apiUnmuteContact, apiPinContact, apiUnpinContact, apiFavoriteContact, apiUnfavoriteContact, apiBlockUser, apiUnblockUser, apiReportUser, apiSendFriendRequest, apiSearchInConversation, apiDeleteConversationContact, apiGetMyGroups, apiAddContactToGroup, apiGetGroupSettings, apiPatchGroupSettings, apiPatchGroupPermissions, apiPatchGroupReactions, apiSetChatGroupMemberRole, apiRemoveChatGroupMember, apiGetChatGroupMembersGrouped, apiAddChatGroupMembers, apiGetGroupInviteLinks, apiCreateGroupInviteLink, apiRevokeGroupInviteLink, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview, type MessageRequest, type ContactInfo, type ApiGroupInviteLink } from "../lib/api";
 
 void ({} as ApiChatGroup);
 
@@ -626,6 +627,14 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [grpReactEmojis, setGrpReactEmojis]         = useState<Record<string,boolean>>({"❤️":true,"👍":true,"👎":false,"🔥":false,"🥰":false,"👏":false,"😊":false,"🎉":false,"🤩":false,"😢":false,"🤮":false});
   const [showGrpTopics, setShowGrpTopics]           = useState(false);
   const [grpTopicsOn, setGrpTopicsOn]               = useState(false);
+  const [grpInviteLinks, setGrpInviteLinks]         = useState<ApiGroupInviteLink[]>([]);
+  const [grpLinkMenu, setGrpLinkMenu]               = useState<number|null>(null);
+  const [grpAdminMenu, setGrpAdminMenu]             = useState<number|null>(null);
+  const [grpAddAdminOpen, setGrpAddAdminOpen]       = useState(false);
+  const [grpAddMembersOpen, setGrpAddMembersOpen]   = useState(false);
+  const [grpAllUsers, setGrpAllUsers]               = useState<PublicUser[]>([]);
+  const [grpMembersData, setGrpMembersData]         = useState<import("../lib/api").ApiChatGroupMembersGrouped | null>(null);
+  const grpPriceTimer = useRef<ReturnType<typeof setTimeout>|null>(null);
   const [showGrpStats, setShowGrpStats]             = useState(false);
   const [grpStatsTab, setGrpStatsTab]               = useState<"stats"|"boosts">("stats");
   /* ─── Group audit log ─── */
@@ -1662,9 +1671,46 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     };
     loadMsgs();
     apiGetChatGroupInfo(activeGroupId).then(setGroupInfo).catch(() => {});
+    apiGetGroupSettings(activeGroupId).then(s => {
+      setGrpHideMembers(s.hideMembers);
+      setGrpAntiSpam(s.antiSpam);
+      setGrpTopicsOn(s.topicsEnabled);
+      setGrpPerms(s.permissions);
+      setGrpChargeStars(s.chargeTokens);
+      setGrpStarPrice(s.tokenPrice);
+      setGrpReactMode(s.reactMode);
+      setGrpReactEmojis(prev => {
+        const next: Record<string, boolean> = {};
+        Object.keys(prev).forEach(e => { next[e] = s.reactEmojis.includes(e); });
+        s.reactEmojis.forEach(e => { next[e] = true; });
+        return next;
+      });
+    }).catch(() => {});
     const poll = setInterval(loadMsgs, 15000); /* SSE handles real-time; polling is a fallback */
     return () => clearInterval(poll);
   }, [activeGroupId, meId]);
+
+  useEffect(() => {
+    if (!activeGroupId || (!showGrpLinks && !showGrpParamType)) return;
+    apiGetGroupInviteLinks(activeGroupId).then(setGrpInviteLinks).catch(() => {});
+  }, [activeGroupId, showGrpLinks, showGrpParamType]);
+
+  useEffect(() => {
+    if (!activeGroupId || !showGrpMembers) { setGrpAddMembersOpen(false); return; }
+    apiGetChatGroupMembersGrouped(activeGroupId).then(setGrpMembersData).catch(() => {});
+  }, [activeGroupId, showGrpMembers]);
+
+  useEffect(() => {
+    if (!grpAddMembersOpen) return;
+    apiGetUsers().then(setGrpAllUsers).catch(() => {});
+  }, [grpAddMembersOpen]);
+
+  const refreshGroupInfo = useCallback(() => {
+    if (activeGroupId) {
+      apiGetChatGroupInfo(activeGroupId).then(setGroupInfo).catch(() => {});
+      apiGetChatGroupMembersGrouped(activeGroupId).then(setGrpMembersData).catch(() => {});
+    }
+  }, [activeGroupId]);
 
   useEffect(() => { groupBottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [groupMsgs, activeGroupId]);
   useEffect(() => {
@@ -2924,8 +2970,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
   /* ── PARAMÈTRES DU GROUPE (type + lien) ── */
   if (activeGroupId !== null && showGrpParamType) {
-    const grp = chatGroups.find(g => g.id === activeGroupId);
-    const inviteLink = `brutepawa.com/join/${(grp?.id ?? 0).toString(36)}xK9m`;
+    const inviteLink = grpInviteLinks.find(l => !l.revoked)?.url ?? "…";
     return createPortal(
       <div style={{ position:"fixed", inset:0, background:"#F1F5F9", zIndex:10002, display:"flex", flexDirection:"column" }}>
         {GRP_SUB_HEADER("Paramètres du groupe", () => setShowGrpParamType(false),
@@ -2987,15 +3032,17 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   /* ── MEMBRES ── */
   if (activeGroupId !== null && showGrpMembers) {
     const grp = chatGroups.find(g => g.id === activeGroupId);
-    const members = groupInfo?.members ?? [];
-    const admins = members.filter(m => m.role === "owner" || m.role === "admin");
+    const members = grpMembersData ? [...grpMembersData.admins, ...grpMembersData.others] : (groupInfo?.members ?? []);
+    const admins = grpMembersData ? grpMembersData.admins : members.filter(m => m.role === "owner" || m.role === "admin");
     const bots: {userId:number;name:string;desc:string}[] = [];
-    const others = members.filter(m => m.role !== "owner" && m.role !== "admin");
-    const mkName = (m:{firstName?:string;lastName?:string;userId:number}) => m.firstName && m.lastName ? `${m.firstName} ${m.lastName}` : `Utilisateur #${m.userId}`;
+    const others = grpMembersData ? grpMembersData.others : members.filter(m => m.role !== "owner" && m.role !== "admin");
+    const memberIds = new Set(members.map(m => m.userId));
+    const addCandidates = grpAllUsers.filter(u => !memberIds.has(u.id));
+    const mkName = (m:{firstName?:string|null;lastName?:string|null;userId:number}) => m.firstName && m.lastName ? `${m.firstName} ${m.lastName}` : `Utilisateur #${m.userId}`;
     const Section = ({label}:{label:string}) => (
       <div style={{ padding:"8px 16px 4px", fontSize:13, fontWeight:600, color:"#9CA3AF", background:"transparent" }}>{label}</div>
     );
-    const MemberRow = ({m, isAdmin}:{m:{userId:number;role:string;firstName?:string;lastName?:string};isAdmin?:boolean}) => {
+    const MemberRow = ({m, isAdmin}:{m:{userId:number;role:string;firstName?:string|null;lastName?:string|null};isAdmin?:boolean}) => {
       const name = mkName(m);
       const col = CONV_COLORS[m.userId % CONV_COLORS.length];
       const menuOpen = grpMemberMenu === m.userId;
@@ -3017,8 +3064,12 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             <>
               <div onClick={() => setGrpMemberMenu(null)} style={{ position:"fixed", inset:0, zIndex:5 }} />
               <div style={{ position:"absolute", right:8, top:52, background:"#fff", borderRadius:16, boxShadow:"0 8px 32px rgba(0,0,0,0.15)", zIndex:10, width:220, overflow:"hidden" }}>
-                {[{label:"Promouvoir",icon:"🛡️",color:"#000"},{label:"Modifier les permissions",icon:"🔑",color:"#000"},{label:"Éjecter",icon:"🚫",color:"#EF4444"}].map((item,idx)=>(
-                  <div key={item.label} onClick={() => setGrpMemberMenu(null)}
+                {[
+                  {label:"Promouvoir",icon:"🛡️",color:"#000",action:()=>{ apiSetChatGroupMemberRole(activeGroupId, m.userId, "admin").then(refreshGroupInfo).catch(()=>{}); }},
+                  {label:"Modifier les permissions",icon:"🔑",color:"#000",action:()=>{ setShowGrpMembers(false); setShowGrpPerms(true); }},
+                  {label:"Éjecter",icon:"🚫",color:"#EF4444",action:()=>{ apiRemoveChatGroupMember(activeGroupId, m.userId).then(refreshGroupInfo).catch(()=>{}); }},
+                ].map((item,idx)=>(
+                  <div key={item.label} onClick={() => { setGrpMemberMenu(null); item.action(); }}
                     style={{ display:"flex", alignItems:"center", gap:14, padding:"13px 18px", cursor:"pointer", borderBottom:idx<2?"1px solid rgba(0,0,0,0.07)":"none" }}>
                     <span style={{ fontSize:18 }}>{item.icon}</span>
                     <span style={{ fontSize:15.5, color:item.color }}>{item.label}</span>
@@ -3042,7 +3093,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           <div style={{ background:"#fff", margin:"0 0 10px", padding:"0 16px" }}>
             <div style={{ display:"flex", alignItems:"center", padding:"14px 0", borderBottom:"1px solid rgba(0,0,0,0.07)" }}>
               <span style={{ flex:1, fontSize:15.5, color:"#000", fontWeight:500 }}>Cacher les membres</span>
-              <div onClick={e => {e.stopPropagation(); setGrpHideMembers(v=>!v);}} style={{ width:48, height:28, borderRadius:14, background:grpHideMembers?"var(--bp-primary)":"#E5E7EB", position:"relative", cursor:"pointer", transition:"background 0.2s" }}>
+              <div onClick={e => {e.stopPropagation(); const nv=!grpHideMembers; setGrpHideMembers(nv); apiPatchGroupSettings(activeGroupId, { hideMembers:nv }).catch(()=>setGrpHideMembers(!nv));}} style={{ width:48, height:28, borderRadius:14, background:grpHideMembers?"var(--bp-primary)":"#E5E7EB", position:"relative", cursor:"pointer", transition:"background 0.2s" }}>
                 <div style={{ position:"absolute", top:3, left:grpHideMembers?22:3, width:22, height:22, borderRadius:"50%", background:"#fff", boxShadow:"0 1px 3px rgba(0,0,0,0.25)", transition:"left 0.2s" }} />
               </div>
             </div>
@@ -3050,13 +3101,32 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           </div>
           {/* Actions */}
           <div style={{ background:"#fff", margin:"0 0 10px" }}>
-            {[{icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>, label:"Ajouter des membres"},
-              {icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>, label:"Inviter avec un lien"}
+            {[{icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>, label:"Ajouter des membres", action:()=>setGrpAddMembersOpen(v=>!v)},
+              {icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>, label:"Inviter avec un lien", action:()=>{ setShowGrpMembers(false); setShowGrpLinks(true); }}
             ].map((a,i)=>(
-              <div key={a.label} style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 16px", borderBottom:i===0?"1px solid rgba(0,0,0,0.07)":"none", cursor:"pointer" }}>
+              <div key={a.label} onClick={e=>{e.stopPropagation(); a.action();}} style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 16px", borderBottom:i===0?"1px solid rgba(0,0,0,0.07)":"none", cursor:"pointer" }}>
                 {a.icon}<span style={{ fontSize:15.5, color:"var(--bp-primary)", fontWeight:500 }}>{a.label}</span>
               </div>
             ))}
+            {grpAddMembersOpen && (
+              <div style={{ borderTop:"1px solid rgba(0,0,0,0.07)", maxHeight:280, overflowY:"auto" }}>
+                {addCandidates.map(u => {
+                  const name = `${u.firstName} ${u.lastName}`;
+                  const col = CONV_COLORS[u.id % CONV_COLORS.length];
+                  return (
+                    <div key={u.id} onClick={e => { e.stopPropagation(); setGrpAddMembersOpen(false); apiAddChatGroupMembers(activeGroupId, [u.id]).then(refreshGroupInfo).catch(()=>{}); }}
+                      style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 16px", borderBottom:"1px solid rgba(0,0,0,0.06)", cursor:"pointer" }}>
+                      <div style={{ width:40, height:40, borderRadius:"50%", background:col, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, fontSize:13, flexShrink:0 }}>{mkInitials(name)}</div>
+                      <span style={{ flex:1, fontSize:15, color:"#000", fontWeight:500 }}>{name}</span>
+                      <span style={{ fontSize:13, color:"var(--bp-primary)", fontWeight:600 }}>Ajouter</span>
+                    </div>
+                  );
+                })}
+                {addCandidates.length === 0 && (
+                  <p style={{ fontSize:13, color:"#9CA3AF", padding:"12px 16px", margin:0 }}>Aucun utilisateur à ajouter.</p>
+                )}
+              </div>
+            )}
           </div>
           {/* Admins */}
           {admins.length > 0 && <><Section label="Contacts dans ce groupe" /><div style={{ background:"#fff", margin:"0 0 0" }}>{admins.map(m=><MemberRow key={m.userId} m={m} isAdmin />)}</div></>}
@@ -3083,7 +3153,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     // Guard: non-admins must not access this sub-page
     if (grp?.role !== "owner" && grp?.role !== "admin") { setTimeout(() => setShowGrpAdmins(false), 0); return null; }
     const admins = (groupInfo?.members ?? []).filter(m => m.role==="owner" || m.role==="admin");
-    const mkName = (m:{firstName?:string;lastName?:string;userId:number}) => m.firstName && m.lastName ? `${m.firstName} ${m.lastName}` : `Utilisateur #${m.userId}`;
+    const mkName = (m:{firstName?:string|null;lastName?:string|null;userId:number}) => m.firstName && m.lastName ? `${m.firstName} ${m.lastName}` : `Utilisateur #${m.userId}`;
     return createPortal(
       <div style={{ position:"fixed", inset:0, background:"#F1F5F9", zIndex:10002, display:"flex", flexDirection:"column" }}>
         {GRP_SUB_HEADER("Administrateurs", () => setShowGrpAdmins(false))}
@@ -3093,7 +3163,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             <div style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 0" }}>
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
               <span style={{ flex:1, fontSize:15.5, color:"#000" }}>Anti-spam agressif</span>
-              <div onClick={() => setGrpAntiSpam(v=>!v)} style={{ width:48, height:28, borderRadius:14, background:grpAntiSpam?"var(--bp-primary)":"#E5E7EB", position:"relative", cursor:"pointer", transition:"background 0.2s" }}>
+              <div onClick={() => { const nv=!grpAntiSpam; setGrpAntiSpam(nv); apiPatchGroupSettings(activeGroupId, { antiSpam:nv }).catch(()=>setGrpAntiSpam(!nv)); }} style={{ width:48, height:28, borderRadius:14, background:grpAntiSpam?"var(--bp-primary)":"#E5E7EB", position:"relative", cursor:"pointer", transition:"background 0.2s" }}>
                 <div style={{ position:"absolute", top:3, left:grpAntiSpam?22:3, width:22, height:22, borderRadius:"50%", background:"#fff", boxShadow:"0 1px 3px rgba(0,0,0,0.25)", transition:"left 0.2s" }} />
               </div>
             </div>
@@ -3101,12 +3171,27 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           </div>
           {/* Add admin */}
           <div style={{ background:"#fff", margin:"0 0 6px" }}>
-            <div style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 16px", cursor:"pointer" }}>
+            <div onClick={() => setGrpAddAdminOpen(v=>!v)} style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 16px", cursor:"pointer" }}>
               <div style={{ width:46, height:46, borderRadius:"50%", background:"#EFF6FF", display:"flex", alignItems:"center", justifyContent:"center" }}>
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
               </div>
               <span style={{ fontSize:15.5, color:"var(--bp-primary)", fontWeight:500 }}>Ajouter un administrateur</span>
             </div>
+            {grpAddAdminOpen && (groupInfo?.members ?? []).filter(m => m.role === "member").map(m => {
+              const name = mkName(m);
+              const col = CONV_COLORS[m.userId % CONV_COLORS.length];
+              return (
+                <div key={m.userId} onClick={() => { setGrpAddAdminOpen(false); apiSetChatGroupMemberRole(activeGroupId, m.userId, "admin").then(refreshGroupInfo).catch(()=>{}); }}
+                  style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 16px", borderTop:"1px solid rgba(0,0,0,0.06)", cursor:"pointer" }}>
+                  <div style={{ width:40, height:40, borderRadius:"50%", background:col, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, fontSize:13, flexShrink:0 }}>{mkInitials(name)}</div>
+                  <span style={{ flex:1, fontSize:15, color:"#000", fontWeight:500 }}>{name}</span>
+                  <span style={{ fontSize:13, color:"var(--bp-primary)", fontWeight:600 }}>Promouvoir</span>
+                </div>
+              );
+            })}
+            {grpAddAdminOpen && (groupInfo?.members ?? []).filter(m => m.role === "member").length === 0 && (
+              <p style={{ fontSize:13, color:"#9CA3AF", padding:"0 16px 12px", margin:0 }}>Tous les membres sont déjà administrateurs.</p>
+            )}
           </div>
           {/* Admin list */}
           <div style={{ background:"#fff", margin:"0 0 6px" }}>
@@ -3121,9 +3206,23 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     <div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:1 }}>{m.role==="owner"?"Propriétaire":`Promu par ${grp?.name??'Admin'}`}</div>
                   </div>
                   {m.role !== "owner" && (
-                    <button style={{ background:"none", border:"none", cursor:"pointer", padding:8 }}>
-                      <svg viewBox="0 0 24 24" width="18" height="18" fill="#CBD5E1"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
-                    </button>
+                    <div style={{ position:"relative" }}>
+                      <button onClick={() => setGrpAdminMenu(grpAdminMenu === m.userId ? null : m.userId)} style={{ background:"none", border:"none", cursor:"pointer", padding:8 }}>
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="#CBD5E1"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+                      </button>
+                      {grpAdminMenu === m.userId && (
+                        <>
+                          <div onClick={() => setGrpAdminMenu(null)} style={{ position:"fixed", inset:0, zIndex:5 }} />
+                          <div style={{ position:"absolute", right:0, top:36, background:"#fff", borderRadius:14, boxShadow:"0 8px 32px rgba(0,0,0,0.15)", zIndex:10, width:200, overflow:"hidden" }}>
+                            <div onClick={() => { setGrpAdminMenu(null); apiSetChatGroupMemberRole(activeGroupId, m.userId, "member").then(refreshGroupInfo).catch(()=>{}); }}
+                              style={{ display:"flex", alignItems:"center", gap:12, padding:"13px 16px", cursor:"pointer" }}>
+                              <span style={{ fontSize:17 }}>⬇️</span>
+                              <span style={{ fontSize:15, color:"#EF4444" }}>Retirer des admins</span>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
                   )}
                 </div>
               );
@@ -3140,8 +3239,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
   /* ── LIENS D'INVITATION ── */
   if (activeGroupId !== null && showGrpLinks) {
-    const grp = chatGroups.find(g => g.id === activeGroupId);
-    const inviteLink = `brutepawa.com/join/${(grp?.id ?? 0).toString(36)}xK9m`;
+    const activeLinks = grpInviteLinks.filter(l => !l.revoked);
+    const primaryLink = activeLinks[0];
+    const inviteLink = primaryLink?.url ?? "…";
+    const otherLinks = activeLinks.slice(1);
+    const revokedLinks = grpInviteLinks.filter(l => l.revoked);
     return createPortal(
       <div style={{ position:"fixed", inset:0, background:"#F1F5F9", zIndex:10002, display:"flex", flexDirection:"column" }}>
         {GRP_SUB_HEADER("Liens d'invitation", () => setShowGrpLinks(false))}
@@ -3164,7 +3266,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             </div>
           </div>
           <div style={{ background:"#fff", margin:"0 0 6px" }}>
-            <div style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 16px", cursor:"pointer" }}>
+            <div onClick={() => { apiCreateGroupInviteLink(activeGroupId).then(l => setGrpInviteLinks(prev => [...prev, l])).catch(()=>{}); }}
+              style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 16px", cursor:"pointer" }}>
               <div style={{ width:32, height:32, borderRadius:"50%", background:"var(--bp-primary)", display:"flex", alignItems:"center", justifyContent:"center" }}>
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               </div>
@@ -3172,22 +3275,49 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             </div>
           </div>
           <p style={{ margin:"4px 16px 16px", fontSize:12.5, color:"#9CA3AF", lineHeight:1.5 }}>Vous pouvez créer des liens d'invitation supplémentaires dont la durée et le nombre d'utilisateurs sont limités.</p>
-          <div style={{ background:"#fff", margin:"0 0 6px", padding:"10px 16px 4px" }}>
-            <div style={{ fontSize:14, fontWeight:700, color:"var(--bp-primary)", marginBottom:10 }}>Liens créés par d'autres administrateurs</div>
-            {(groupInfo?.members ?? []).filter(m=>m.role==="admin").slice(0,3).map((m,i)=>{
-              const name = m.firstName && m.lastName ? `${m.firstName} ${m.lastName}` : `Utilisateur #${m.userId}`;
-              const col = CONV_COLORS[m.userId % CONV_COLORS.length];
-              return (
-                <div key={m.userId} style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 0", borderBottom:"1px solid rgba(0,0,0,0.07)" }}>
-                  <div style={{ width:42, height:42, borderRadius:"50%", background:col, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, fontSize:14 }}>{mkInitials(name)}</div>
-                  <div style={{ flex:1 }}><div style={{ fontWeight:600, fontSize:15, color:"#000" }}>{name}</div><div style={{ fontSize:12.5, color:"#9CA3AF" }}>{i+1} lien d'invitation</div></div>
+          {otherLinks.length > 0 && (
+            <div style={{ background:"#fff", margin:"0 0 6px", padding:"10px 16px 4px" }}>
+              <div style={{ fontSize:14, fontWeight:700, color:"var(--bp-primary)", marginBottom:10 }}>Autres liens actifs</div>
+              {otherLinks.map(l => (
+                <div key={l.id} style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 0", borderBottom:"1px solid rgba(0,0,0,0.07)", position:"relative" }}>
+                  <div style={{ width:42, height:42, borderRadius:"50%", background:"var(--bp-primary)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                  </div>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ fontWeight:600, fontSize:14.5, color:"#000", fontFamily:"monospace", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{l.url}</div>
+                    <div style={{ fontSize:12.5, color:"#9CA3AF" }}>{l.createdByName ? `Créé par ${l.createdByName}` : l.label ?? "Lien d'invitation"}</div>
+                  </div>
+                  <button onClick={() => setGrpLinkMenu(grpLinkMenu === l.id ? null : l.id)} style={{ background:"none", border:"none", cursor:"pointer", padding:6 }}>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="#CBD5E1"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+                  </button>
+                  {grpLinkMenu === l.id && (
+                    <>
+                      <div onClick={() => setGrpLinkMenu(null)} style={{ position:"fixed", inset:0, zIndex:5 }} />
+                      <div style={{ position:"absolute", right:0, top:44, background:"#fff", borderRadius:14, boxShadow:"0 8px 32px rgba(0,0,0,0.15)", zIndex:10, width:180, overflow:"hidden" }}>
+                        <div onClick={() => { navigator.clipboard?.writeText(l.url); setGrpLinkMenu(null); }} style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 16px", cursor:"pointer", borderBottom:"1px solid rgba(0,0,0,0.07)" }}>
+                          <span style={{ fontSize:16 }}>📋</span><span style={{ fontSize:14.5, color:"#000" }}>Copier</span>
+                        </div>
+                        <div onClick={() => { setGrpLinkMenu(null); apiRevokeGroupInviteLink(activeGroupId, l.id).then(() => setGrpInviteLinks(prev => prev.map(x => x.id === l.id ? { ...x, revoked:true } : x))).catch(()=>{}); }}
+                          style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 16px", cursor:"pointer" }}>
+                          <span style={{ fontSize:16 }}>🚫</span><span style={{ fontSize:14.5, color:"#EF4444" }}>Révoquer</span>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
-              );
-            })}
-            {(groupInfo?.members ?? []).filter(m=>m.role==="admin").length === 0 && (
-              <p style={{ fontSize:13.5, color:"#9CA3AF", paddingBottom:12 }}>Aucun autre administrateur n'a créé de liens.</p>
-            )}
-          </div>
+              ))}
+            </div>
+          )}
+          {revokedLinks.length > 0 && (
+            <div style={{ background:"#fff", margin:"0 0 6px", padding:"10px 16px 12px" }}>
+              <div style={{ fontSize:14, fontWeight:700, color:"#9CA3AF", marginBottom:10 }}>Liens révoqués</div>
+              {revokedLinks.map(l => (
+                <div key={l.id} style={{ padding:"6px 0", borderBottom:"1px solid rgba(0,0,0,0.05)" }}>
+                  <div style={{ fontSize:13.5, color:"#9CA3AF", fontFamily:"monospace", textDecoration:"line-through", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{l.url}</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     , document.body);
@@ -3225,7 +3355,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               <div key={p.key}>
                 <div style={{ display:"flex", alignItems:"center", padding:"13px 0", gap:14 }}>
                   <span style={{ flex:1, fontSize:15.5, color:"#000" }}>{p.label}</span>
-                  <Toggle on={!grpPerms[p.key]} onToggle={()=>setGrpPerms(v=>({...v,[p.key]:!v[p.key]}))} />
+                  <Toggle on={!grpPerms[p.key]} onToggle={()=>{ const nv=!grpPerms[p.key]; setGrpPerms(v=>({...v,[p.key]:nv})); apiPatchGroupPermissions(activeGroupId, { permissions:{ [p.key]:nv } }).catch(()=>setGrpPerms(v=>({...v,[p.key]:!nv}))); }} />
                 </div>
                 {i<PERMS_LIST.length-1 && <div style={{ height:1, background:"rgba(0,0,0,0.07)" }} />}
               </div>
@@ -3235,7 +3365,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           <div style={{ background:"#fff", margin:"0 0 6px", padding:"0 16px" }}>
             <div style={{ display:"flex", alignItems:"center", padding:"14px 0", gap:14, borderBottom:"1px solid rgba(0,0,0,0.07)" }}>
               <span style={{ flex:1, fontSize:15.5, color:"#000" }}>Facturer des tokens pour les messages</span>
-              <div onClick={() => setGrpChargeStars(v=>!v)} style={{ width:48, height:28, borderRadius:14, background:grpChargeStars?"var(--bp-primary)":"#E5E7EB", position:"relative", cursor:"pointer", transition:"background 0.2s" }}>
+              <div onClick={() => { const nv=!grpChargeStars; setGrpChargeStars(nv); apiPatchGroupPermissions(activeGroupId, { chargeTokens:nv }).catch(()=>setGrpChargeStars(!nv)); }} style={{ width:48, height:28, borderRadius:14, background:grpChargeStars?"var(--bp-primary)":"#E5E7EB", position:"relative", cursor:"pointer", transition:"background 0.2s" }}>
                 <div style={{ position:"absolute", top:3, left:grpChargeStars?22:3, width:22, height:22, borderRadius:"50%", background:"#fff", boxShadow:"0 1px 3px rgba(0,0,0,0.25)", transition:"left 0.2s" }} />
               </div>
             </div>
@@ -3245,7 +3375,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 <div style={{ fontSize:14, fontWeight:700, color:"var(--bp-primary)", marginBottom:12 }}>Définir le prix par message</div>
                 <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:8 }}>
                   <span style={{ fontSize:13, color:"#9CA3AF", width:24 }}>1</span>
-                  <input type="range" min={1} max={35000} value={grpStarPrice} onChange={e=>setGrpStarPrice(Number(e.target.value))}
+                  <input type="range" min={1} max={35000} value={grpStarPrice} onChange={e=>{ const v=Number(e.target.value); setGrpStarPrice(v); if (grpPriceTimer.current) clearTimeout(grpPriceTimer.current); grpPriceTimer.current = setTimeout(()=>{ apiPatchGroupPermissions(activeGroupId, { tokenPrice:v }).catch(()=>{}); }, 500); }}
                     style={{ flex:1, accentColor:"var(--bp-primary)" }} />
                   <span style={{ fontSize:13, color:"#9CA3AF", width:48, textAlign:"right" }}>35000</span>
                 </div>
@@ -3274,7 +3404,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           <div style={{ background:"#fff", margin:"0 0 4px", padding:"4px 16px" }}>
             <div style={{ fontSize:14, fontWeight:700, color:"var(--bp-primary)", padding:"10px 0 6px" }}>Réactions disponibles</div>
             {[{val:"all",label:"Toutes les réactions"},{val:"some",label:"Certaines réactions"},{val:"none",label:"Aucune réaction"}].map((opt,i,arr)=>(
-              <div key={opt.val} onClick={()=>setGrpReactMode(opt.val as "all"|"some"|"none")}
+              <div key={opt.val} onClick={()=>{ const mode = opt.val as "all"|"some"|"none"; const prev = grpReactMode; setGrpReactMode(mode); apiPatchGroupReactions(activeGroupId, { mode }).catch(()=>setGrpReactMode(prev)); }}
                 style={{ display:"flex", alignItems:"center", padding:"13px 0", gap:14, borderBottom:i<arr.length-1?"1px solid rgba(0,0,0,0.07)":"none", cursor:"pointer" }}>
                 <span style={{ flex:1, fontSize:15.5, color:"#000" }}>{opt.label}</span>
                 <div style={{ width:22, height:22, borderRadius:"50%", border:`2px solid ${grpReactMode===opt.val?"var(--bp-primary)":"#CBD5E1"}`, background:grpReactMode===opt.val?"var(--bp-primary)":"transparent", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
@@ -3291,7 +3421,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 <div key={item.emoji} style={{ display:"flex", alignItems:"center", gap:14, padding:"12px 0", borderBottom:i<EMOJI_LIST.length-1?"1px solid rgba(0,0,0,0.07)":"none" }}>
                   <span style={{ fontSize:24 }}>{item.emoji}</span>
                   <span style={{ flex:1, fontSize:15.5, color:"#000" }}>{item.label}</span>
-                  <div onClick={()=>setGrpReactEmojis(v=>({...v,[item.emoji]:!v[item.emoji]}))}
+                  <div onClick={()=>{ const next = { ...grpReactEmojis, [item.emoji]: !grpReactEmojis[item.emoji] }; const prev = grpReactEmojis; setGrpReactEmojis(next); apiPatchGroupReactions(activeGroupId, { emojis: Object.keys(next).filter(e=>next[e]) }).catch(()=>setGrpReactEmojis(prev)); }}
                     style={{ width:48, height:28, borderRadius:14, background:grpReactEmojis[item.emoji]?"var(--bp-primary)":"#E5E7EB", position:"relative", cursor:"pointer", transition:"background 0.2s" }}>
                     <div style={{ position:"absolute", top:3, left:grpReactEmojis[item.emoji]?22:3, width:22, height:22, borderRadius:"50%", background:"#fff", boxShadow:"0 1px 3px rgba(0,0,0,0.25)", transition:"left 0.2s" }} />
                   </div>
@@ -3315,7 +3445,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           <div style={{ background:"#fff", borderRadius:14, padding:"0 16px", width:"100%", maxWidth:420 }}>
             <div style={{ display:"flex", alignItems:"center", padding:"15px 0" }}>
               <span style={{ flex:1, fontSize:15.5, color:"#000" }}>Activer les sujets</span>
-              <div onClick={()=>setGrpTopicsOn(v=>!v)} style={{ width:48, height:28, borderRadius:14, background:grpTopicsOn?"var(--bp-primary)":"#E5E7EB", position:"relative", cursor:"pointer", transition:"background 0.2s" }}>
+              <div onClick={()=>{ const nv=!grpTopicsOn; setGrpTopicsOn(nv); apiPatchGroupSettings(activeGroupId, { topicsEnabled:nv }).catch(()=>setGrpTopicsOn(!nv)); }} style={{ width:48, height:28, borderRadius:14, background:grpTopicsOn?"var(--bp-primary)":"#E5E7EB", position:"relative", cursor:"pointer", transition:"background 0.2s" }}>
                 <div style={{ position:"absolute", top:3, left:grpTopicsOn?22:3, width:22, height:22, borderRadius:"50%", background:"#fff", boxShadow:"0 1px 3px rgba(0,0,0,0.25)", transition:"left 0.2s" }} />
               </div>
             </div>
