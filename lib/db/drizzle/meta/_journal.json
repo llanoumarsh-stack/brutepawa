@@ -22,13 +22,6 @@
       "when": 1781783035568,
       "tag": "0002_parched_namora",
       "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1786980313045,
-      "tag": "0003_fresh_devos",
-      "breakpoints": true
     }
   ]
 }

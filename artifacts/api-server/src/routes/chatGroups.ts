@@ -3,6 +3,7 @@ import { requireAuth } from "../middlewares/requireAuth";
 import { db, chatGroupsTable, chatGroupMembersTable, chatGroupMessagesTable, usersTable } from "@workspace/db";
 import { eq, and, inArray, desc } from "drizzle-orm";
 import { pushToUserDevice } from "./push";
+import { assertChatGroupAdminOrOwner } from "../lib/groupAuth";
 
 const router = Router();
 
@@ -202,11 +203,8 @@ router.patch("/chat-groups/:id", requireAuth, async (req, res): Promise<void> =>
   const id = parseInt(req.params.id);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
-  const [membership] = await db.select().from(chatGroupMembersTable)
-    .where(and(eq(chatGroupMembersTable.groupId, id), eq(chatGroupMembersTable.userId, me)));
-  if (!membership || (membership.role !== "owner" && membership.role !== "admin")) {
-    res.status(403).json({ error: "Accès refusé" }); return;
-  }
+  const membership = await assertChatGroupAdminOrOwner(res, id, me);
+  if (!membership) return;
 
   const { name, avatarUrl } = req.body as { name?: string; avatarUrl?: string };
   const updates: Record<string, unknown> = {};
@@ -233,11 +231,8 @@ router.post("/chat-groups/:id/members", requireAuth, async (req, res): Promise<v
   const id = parseInt(req.params.id);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
-  const [membership] = await db.select().from(chatGroupMembersTable)
-    .where(and(eq(chatGroupMembersTable.groupId, id), eq(chatGroupMembersTable.userId, me)));
-  if (!membership || (membership.role !== "owner" && membership.role !== "admin")) {
-    res.status(403).json({ error: "Accès refusé" }); return;
-  }
+  const membership = await assertChatGroupAdminOrOwner(res, id, me);
+  if (!membership) return;
 
   const { userIds } = req.body as { userIds: number[] };
   if (!Array.isArray(userIds) || userIds.length === 0) { res.status(400).json({ error: "userIds requis" }); return; }

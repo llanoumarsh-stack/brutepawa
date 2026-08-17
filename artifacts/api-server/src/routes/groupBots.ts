@@ -10,6 +10,10 @@ import {
 } from "@workspace/db";
 import { eq, and, desc, sql } from "drizzle-orm";
 import { requireAuth } from "../middlewares/requireAuth";
+import {
+  assertCommunityGroupAdmin,
+  assertCommunityGroupAdminOrModerator,
+} from "../lib/groupAuth";
 
 const router = Router();
 
@@ -170,16 +174,8 @@ router.get("/groups/:id/bots", requireAuth, async (req, res): Promise<void> => {
     return;
   }
 
-  const [myMembership] = await db
-    .select({ role: groupMembersTable.role })
-    .from(groupMembersTable)
-    .where(and(eq(groupMembersTable.groupId, groupId), eq(groupMembersTable.userId, userId)))
-    .limit(1);
-
-  if (!myMembership || myMembership.role !== "admin") {
-    res.status(403).json({ error: "Réservé aux administrateurs" });
-    return;
-  }
+  const membership = await assertCommunityGroupAdmin(res, groupId, userId);
+  if (!membership) return;
 
   const bots = await db
     .select()
@@ -218,16 +214,8 @@ router.patch("/groups/:id/bots/:type", requireAuth, async (req, res): Promise<vo
     return;
   }
 
-  const [myMembership] = await db
-    .select({ role: groupMembersTable.role })
-    .from(groupMembersTable)
-    .where(and(eq(groupMembersTable.groupId, groupId), eq(groupMembersTable.userId, userId)))
-    .limit(1);
-
-  if (!myMembership || myMembership.role !== "admin") {
-    res.status(403).json({ error: "Réservé aux administrateurs" });
-    return;
-  }
+  const membership = await assertCommunityGroupAdmin(res, groupId, userId);
+  if (!membership) return;
 
   const { enabled, settings } = req.body as { enabled?: boolean; settings?: object };
 
@@ -270,16 +258,8 @@ router.get("/groups/:id/bot-logs", requireAuth, async (req, res): Promise<void> 
     return;
   }
 
-  const [myMembership] = await db
-    .select({ role: groupMembersTable.role })
-    .from(groupMembersTable)
-    .where(and(eq(groupMembersTable.groupId, groupId), eq(groupMembersTable.userId, userId)))
-    .limit(1);
-
-  if (!myMembership || (myMembership.role !== "admin" && myMembership.role !== "moderator")) {
-    res.status(403).json({ error: "Réservé aux admins et modérateurs" });
-    return;
-  }
+  const membership = await assertCommunityGroupAdminOrModerator(res, groupId, userId);
+  if (!membership) return;
 
   const logs = await db
     .select()

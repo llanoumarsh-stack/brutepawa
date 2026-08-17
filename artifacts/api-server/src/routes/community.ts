@@ -3,6 +3,10 @@ import { db, groupsTable, groupMembersTable, groupPostsTable, groupJoinRequestsT
 import { desc, eq, and, or, sql, ilike, inArray } from "drizzle-orm";
 import { requireAuth } from "../middlewares/requireAuth";
 import { runWelcomeBot, runContentBots } from "./groupBots";
+import {
+  assertCommunityGroupAdmin,
+  assertCommunityGroupAdminOrModerator,
+} from "../lib/groupAuth";
 
 const router = Router();
 
@@ -180,16 +184,8 @@ router.patch("/groups/:id", requireAuth, async (req, res): Promise<void> => {
     return;
   }
 
-  const [myMembership] = await db
-    .select({ role: groupMembersTable.role })
-    .from(groupMembersTable)
-    .where(and(eq(groupMembersTable.groupId, groupId), eq(groupMembersTable.userId, userId)))
-    .limit(1);
-
-  if (!myMembership || myMembership.role !== "admin") {
-    res.status(403).json({ error: "Réservé à l'administrateur du groupe" });
-    return;
-  }
+  const membership = await assertCommunityGroupAdmin(res, groupId, userId);
+  if (!membership) return;
 
   const { name, description, category, coverUrl, privacy } = req.body as {
     name?: string;
@@ -489,16 +485,8 @@ router.delete("/groups/:id/members/:targetUserId", requireAuth, async (req, res)
     return;
   }
 
-  const [myMembership] = await db
-    .select({ role: groupMembersTable.role })
-    .from(groupMembersTable)
-    .where(and(eq(groupMembersTable.groupId, groupId), eq(groupMembersTable.userId, userId)))
-    .limit(1);
-
-  if (!myMembership || (myMembership.role !== "admin" && myMembership.role !== "moderator")) {
-    res.status(403).json({ error: "Réservé aux admins et modérateurs" });
-    return;
-  }
+  const myMembership = await assertCommunityGroupAdminOrModerator(res, groupId, userId);
+  if (!myMembership) return;
 
   const [target] = await db
     .select({ role: groupMembersTable.role })
@@ -549,16 +537,8 @@ router.patch("/groups/:id/members/:targetUserId/role", requireAuth, async (req, 
     return;
   }
 
-  const [myMembership] = await db
-    .select({ role: groupMembersTable.role })
-    .from(groupMembersTable)
-    .where(and(eq(groupMembersTable.groupId, groupId), eq(groupMembersTable.userId, userId)))
-    .limit(1);
-
-  if (!myMembership || myMembership.role !== "admin") {
-    res.status(403).json({ error: "Réservé à l'administrateur du groupe" });
-    return;
-  }
+  const membership = await assertCommunityGroupAdmin(res, groupId, userId);
+  if (!membership) return;
 
   const [target] = await db
     .select({ role: groupMembersTable.role })
@@ -652,16 +632,8 @@ router.get("/groups/:id/join-requests", requireAuth, async (req, res): Promise<v
     return;
   }
 
-  const [myMembership] = await db
-    .select({ role: groupMembersTable.role })
-    .from(groupMembersTable)
-    .where(and(eq(groupMembersTable.groupId, groupId), eq(groupMembersTable.userId, userId)))
-    .limit(1);
-
-  if (!myMembership || (myMembership.role !== "admin" && myMembership.role !== "moderator")) {
-    res.status(403).json({ error: "Réservé aux admins et modérateurs" });
-    return;
-  }
+  const membership = await assertCommunityGroupAdminOrModerator(res, groupId, userId);
+  if (!membership) return;
 
   const requests = await db
     .select({
@@ -703,16 +675,8 @@ router.patch("/groups/:id/join-requests/:requestId", requireAuth, async (req, re
     return;
   }
 
-  const [myMembership] = await db
-    .select({ role: groupMembersTable.role })
-    .from(groupMembersTable)
-    .where(and(eq(groupMembersTable.groupId, groupId), eq(groupMembersTable.userId, userId)))
-    .limit(1);
-
-  if (!myMembership || (myMembership.role !== "admin" && myMembership.role !== "moderator")) {
-    res.status(403).json({ error: "Réservé aux admins et modérateurs" });
-    return;
-  }
+  const membership = await assertCommunityGroupAdminOrModerator(res, groupId, userId);
+  if (!membership) return;
 
   const [joinReq] = await db
     .select()

@@ -11,8 +11,7 @@
     "push": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 drizzle-kit push --config ./drizzle.config.ts",
     "push-force": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 drizzle-kit push --force --config ./drizzle.config.ts",
     "migrate": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 node ./migrate.mjs",
-    "apply-migration": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 node ./apply-migration.mjs",
-    "apply-all-migrations": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 node ./apply-all-migrations.mjs"
+    "apply-migration": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 node ./apply-migration.mjs"
   },
   "dependencies": {
     "cross-env": "^10.1.0",
