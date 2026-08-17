@@ -6,6 +6,7 @@ import { apiGetUsers, apiCreatePost, type PublicUser } from "../lib/api";
 import { useCurrentUser } from "../hooks/useCurrentUser";
 import { useR2Upload, phaseLabel, type UploadedMedia } from "../hooks/useR2Upload";
 import VoiceRecorder from "../components/VoiceRecorder";
+import PhotoPicker from "../components/PhotoPicker";
 import { ArrowLeft, Send, Check, Globe, Users, ChevronDown, ChevronRight, MapPin, Music, Eye } from "lucide-react";
 
 interface Props {
@@ -201,6 +202,7 @@ export default function CreatePostPage({ onPublish }: Props) {
   const [mediaPreviews, setMediaPreviews] = useState<string[]>([]);
   const [mediaIsVideo, setMediaIsVideo] = useState<boolean[]>([]);
   const [uploadingIdx, setUploadingIdx] = useState<number | null>(null);
+  const [showPhotoPicker, setShowPhotoPicker] = useState(false);
   const { upload, status: uploadStatus, phase: uploadPhase, progress, error: uploadError, reset: resetUpload } = useR2Upload();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
@@ -341,6 +343,24 @@ export default function CreatePostPage({ onPublish }: Props) {
     }
   };
 
+  /* Reçoit les fichiers sélectionnés depuis PhotoPicker */
+  const handleFilesFromPicker = async (files: File[]) => {
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const isVid = file.type.startsWith("video/") || VIDEO_EXTS.test(file.name);
+      const previewUrl = URL.createObjectURL(file);
+      setMediaPreviews(p => [...p, previewUrl]);
+      setMediaIsVideo(v => [...v, isVid]);
+      setUploadingIdx(medias.length + i);
+      const result = await upload(file);
+      setUploadingIdx(null);
+      if (result) { setMedias(m => [...m, result]); } else {
+        setMediaPreviews(p => p.filter(u => u !== previewUrl));
+        setMediaIsVideo(v => v.filter((_, j) => j !== i));
+      }
+    }
+  };
+
   const handleCoverSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]; if (!file) return;
     if (e.target) e.target.value = "";
@@ -374,7 +394,7 @@ export default function CreatePostPage({ onPublish }: Props) {
         </svg>
       ),
       color: "var(--bp-primary)", bg: "#F0FDF4",
-      action: () => photoInputRef.current?.click(),
+      action: () => setShowPhotoPicker(true),
     },
     {
       id: "video", label: "Vidéo",
@@ -466,6 +486,14 @@ export default function CreatePostPage({ onPublish }: Props) {
       <input ref={photoInputRef} type="file" accept="image/*" multiple style={{ display: "none" }} onChange={handleFileSelect} />
       <input ref={videoInputRef} type="file" accept="video/*" multiple style={{ display: "none" }} onChange={handleFileSelect} />
       <input ref={coverInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleCoverSelect} />
+
+      {/* ── Photo Picker Premium ── */}
+      <PhotoPicker
+        open={showPhotoPicker}
+        onClose={() => setShowPhotoPicker(false)}
+        onConfirm={handleFilesFromPicker}
+        maxFiles={10}
+      />
 
       {/* ══ HEADER ══ */}
       <div style={{
