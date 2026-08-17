@@ -3075,6 +3075,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   /* ── ADMINISTRATEURS ── */
   if (activeGroupId !== null && showGrpAdmins) {
     const grp = chatGroups.find(g => g.id === activeGroupId);
+    // Guard: non-admins must not access this sub-page
+    if (grp?.role !== "owner" && grp?.role !== "admin") { setTimeout(() => setShowGrpAdmins(false), 0); return null; }
     const admins = (groupInfo?.members ?? []).filter(m => m.role==="owner" || m.role==="admin");
     const mkName = (m:{firstName?:string;lastName?:string;userId:number}) => m.firstName && m.lastName ? `${m.firstName} ${m.lastName}` : `Utilisateur #${m.userId}`;
     return createPortal(
@@ -3188,6 +3190,9 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
   /* ── PERMISSIONS ── */
   if (activeGroupId !== null && showGrpPerms) {
+    // Guard: non-admins must not access this sub-page
+    const _grpPerm = chatGroups.find(g => g.id === activeGroupId);
+    if (_grpPerm?.role !== "owner" && _grpPerm?.role !== "admin") { setTimeout(() => setShowGrpPerms(false), 0); return null; }
     const PERMS_LIST: {key: keyof typeof grpPerms; label: string}[] = [
       {key:"sendMsgs", label:"Envoyer des messages"},
       {key:"sendMedia", label:"Envoyer des médias"},
@@ -3425,6 +3430,8 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   if (activeGroupId !== null && showGroupInfo && showGrpEdit) {
 
     const grp = chatGroups.find(g => g.id === activeGroupId);
+    // Guard: non-admins must not access this sub-page
+    if (grp?.role !== "owner" && grp?.role !== "admin") { setTimeout(() => setShowGrpEdit(false), 0); return null; }
     const isChannelG = grp?.type === "channel";
     const grpColorEdit = ["#EC4899","#8B5CF6","#F97316","var(--bp-primary)","#0EA5E9","#0EA5E9","#F59E0B"][activeGroupId % 7];
     const grpInitialEdit = (grp?.name ?? "G")[0].toUpperCase();
@@ -4742,7 +4749,10 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
         {/* ── PARAMÈTRES sticky row (admin shortcut) ── */}
         {(() => {
-          const myRole = (groupInfo?.members ?? []).find(m => m.userId === meId)?.role;
+          // Prefer the role from the group list (loaded upfront) to avoid depending on the
+          // async groupInfo fetch. Fall back to groupInfo only if the list entry is missing.
+          const grpEntry = chatGroups.find(g => g.id === activeGroupId);
+          const myRole = grpEntry?.role ?? (groupInfo?.members ?? []).find(m => m.userId === meId)?.role;
           if (myRole !== "owner" && myRole !== "admin") return null;
           return (
             <div style={{ flexShrink:0, background:"rgba(255,255,255,0.96)", borderTop:"1px solid rgba(0,0,0,0.06)", display:"flex", alignItems:"center", justifyContent:"center", padding:"6px 16px", gap:10 }}>
