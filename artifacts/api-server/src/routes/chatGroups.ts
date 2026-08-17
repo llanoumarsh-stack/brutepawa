@@ -667,21 +667,38 @@ router.patch("/chat-groups/:id/reactions", requireAuth, async (req, res): Promis
   res.json({ mode: s.reactMode, emojis: s.reactEmojis });
 });
 
+function getLinkStatus(l: typeof chatGroupInviteLinksTable.$inferSelect): "active" | "expired" | "revoked" | "limit_reached" {
+  if (l.revoked) return "revoked";
+  if (l.expiresAt && l.expiresAt < new Date()) return "expired";
+  if (l.maxUses != null && l.usesCount >= l.maxUses) return "limit_reached";
+  return "active";
+}
+
 function linkPayload(l: typeof chatGroupInviteLinksTable.$inferSelect, creator?: { firstName: string | null; lastName: string | null } | null) {
   return {
     id: l.id,
     code: l.code,
     url: `brutepawa.com/join/${l.code}`,
     label: l.label,
+    name: l.name,
+    type: l.type as "unlimited" | "uses" | "duration" | "both",
+    maxUses: l.maxUses,
+    usesCount: l.usesCount,
+    expiresAt: l.expiresAt?.toISOString() ?? null,
+    clicksCount: l.clicksCount,
     createdById: l.createdById,
     createdByName: creator?.firstName && creator?.lastName ? `${creator.firstName} ${creator.lastName}` : null,
     revoked: l.revoked,
+    revokedAt: l.revokedAt?.toISOString() ?? null,
     createdAt: l.createdAt.toISOString(),
+    status: getLinkStatus(l),
   };
 }
 
 function genInviteCode(groupId: number): string {
-  const rand = Math.random().toString(36).slice(2, 8);
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  let rand = "";
+  for (let i = 0; i < 8; i++) rand += chars[Math.floor(Math.random() * chars.length)];
   return `${groupId.toString(36)}${rand}`;
 }
 
@@ -722,11 +739,95 @@ router.post("/chat-groups/:id/invite-links", requireAuth, async (req, res): Prom
   const membership = await getMembership(id, me);
   if (!isGroupAdmin(membership)) { res.status(403).json({ error: "Accès refusé" }); return; }
 
-  const { label } = req.body as { label?: string };
+  const { label, name, type, maxUses, expiresAt } = req.body as { label?: string; name?: string; type?: string; maxUses?: number; expiresAt?: string };
   const [created] = await db.insert(chatGroupInviteLinksTable).values({
-    groupId: id, code: genInviteCode(id), label: label?.trim() || null, createdById: me,
+    groupId: id,
+    code: genInviteCode(id),
+    label: label?.trim() || null,
+    name: name?.trim() || null,
+    type: type || "unlimited",
+    maxUses: maxUses ?? null,
+    expiresAt: expiresAt ? new Date(expiresAt) : null,
+    createdById: me,
   }).returning();
   res.status(201).json(linkPayload(created));
+});
+
+// Update an invite link (admin only)
+router.patch("/chat-groups/:id/invite-links/:linkId", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const id = parseGroupId(req.params.id);
+  const linkId = parseGroupId(req.params.linkId);
+  if (id === null || linkId === null) { res.status(400).json({ error: "Invalid id" }); return; }
+  const membership = await getMembership(id, me);
+  if (!isGroupAdmin(membership)) { res.status(403).json({ error: "Accès refusé" }); return; }
+
+  const [link] = await db.select().from(chatGroupInviteLinksTable)
+    .where(and(eq(chatGroupInviteLinksTable.id, linkId), eq(chatGroupInviteLinksTable.groupId, id)));
+  if (!link) { res.status(404).json({ error: "Lien introuvable" }); return; }
+  if (link.revoked) { res.status(400).json({ error: "Ce lien est révoqué" }); return; }
+
+  const { name, type, maxUses, expiresAt } = req.body as { name?: string; type?: string; maxUses?: number | null; expiresAt?: string | null };
+  const updates: Partial<typeof chatGroupInviteLinksTable.$inferInsert> = {};
+  if (name !== undefined) updates.name = name?.trim() || null;
+  if (type !== undefined) updates.type = type;
+  if (maxUses !== undefined) updates.maxUses = maxUses ?? null;
+  if (expiresAt !== undefined) updates.expiresAt = expiresAt ? new Date(expiresAt) : null;
+
+  const [updated] = await db.update(chatGroupInviteLinksTable).set(updates)
+    .where(eq(chatGroupInviteLinksTable.id, linkId)).returning();
+  res.json(linkPayload(updated));
+});
+
+// Get stats for an invite link (admin only)
+router.get("/chat-groups/:id/invite-links/:linkId/stats", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const id = parseGroupId(req.params.id);
+  const linkId = parseGroupId(req.params.linkId);
+  if (id === null || linkId === null) { res.status(400).json({ error: "Invalid id" }); return; }
+  const membership = await getMembership(id, me);
+  if (!isGroupAdmin(membership)) { res.status(403).json({ error: "Accès refusé" }); return; }
+
+  const [link] = await db.select().from(chatGroupInviteLinksTable)
+    .where(and(eq(chatGroupInviteLinksTable.id, linkId), eq(chatGroupInviteLinksTable.groupId, id)));
+  if (!link) { res.status(404).json({ error: "Lien introuvable" }); return; }
+
+  const clicks = link.clicksCount;
+  const uses = link.usesCount;
+  const conversionRate = clicks > 0 ? Math.round((uses / clicks) * 1000) / 10 : 0;
+
+  // Build recent activity from group members who joined after the link was created
+  const COLORS = ["#EC4899","#8B5CF6","#F97316","#22C55E","#0EA5E9","#F59E0B","#EF4444"];
+  const recentMembers = await db.select({
+    userId: chatGroupMembersTable.userId,
+    joinedAt: chatGroupMembersTable.joinedAt,
+    firstName: usersTable.firstName,
+    lastName: usersTable.lastName,
+  })
+    .from(chatGroupMembersTable)
+    .innerJoin(usersTable, eq(usersTable.id, chatGroupMembersTable.userId))
+    .where(and(
+      eq(chatGroupMembersTable.groupId, id),
+      sql`${chatGroupMembersTable.joinedAt} >= ${link.createdAt}`
+    ))
+    .orderBy(desc(chatGroupMembersTable.joinedAt))
+    .limit(10);
+
+  function timeAgo(date: Date): string {
+    const diff = Math.floor((Date.now() - date.getTime()) / 1000);
+    if (diff < 60) return `il y a ${diff}s`;
+    if (diff < 3600) return `il y a ${Math.floor(diff/60)}mn`;
+    if (diff < 86400) return `il y a ${Math.floor(diff/3600)}h`;
+    return `il y a ${Math.floor(diff/86400)}j`;
+  }
+
+  const activity = recentMembers.map(m => {
+    const name = `${m.firstName ?? ""} ${m.lastName ?? ""}`.trim() || "Utilisateur Anonyme";
+    const initials = name.split(" ").map(w=>w[0]?.toUpperCase()||"").join("").slice(0,2);
+    return { userName: name, action: "A utilisé le lien", time: timeAgo(m.joinedAt), initials, color: COLORS[m.userId % COLORS.length] };
+  });
+
+  res.json({ clicks, uses, conversionRate, activity });
 });
 
 // Revoke an invite link (admin only)
@@ -742,9 +843,48 @@ router.delete("/chat-groups/:id/invite-links/:linkId", requireAuth, async (req, 
     .where(and(eq(chatGroupInviteLinksTable.id, linkId), eq(chatGroupInviteLinksTable.groupId, id)));
   if (!link) { res.status(404).json({ error: "Lien introuvable" }); return; }
 
-  await db.update(chatGroupInviteLinksTable).set({ revoked: true })
+  await db.update(chatGroupInviteLinksTable).set({ revoked: true, revokedAt: new Date() })
     .where(eq(chatGroupInviteLinksTable.id, linkId));
   res.json({ ok: true });
+});
+
+// Track invite link click (public, no auth)
+router.post("/invite/:code/click", async (req, res): Promise<void> => {
+  const { code } = req.params;
+  await db.update(chatGroupInviteLinksTable)
+    .set({ clicksCount: sql`${chatGroupInviteLinksTable.clicksCount} + 1` })
+    .where(and(eq(chatGroupInviteLinksTable.code, code), eq(chatGroupInviteLinksTable.revoked, false)));
+  res.json({ ok: true });
+});
+
+// Join via invite link (requires auth)
+router.post("/invite/:code/join", requireAuth, async (req, res): Promise<void> => {
+  const me = req.userId!;
+  const { code } = req.params;
+
+  const [link] = await db.select().from(chatGroupInviteLinksTable)
+    .where(eq(chatGroupInviteLinksTable.code, code));
+  if (!link) { res.status(404).json({ error: "Lien introuvable" }); return; }
+  if (link.revoked) { res.status(410).json({ error: "Ce lien a été révoqué" }); return; }
+  if (link.expiresAt && link.expiresAt < new Date()) { res.status(410).json({ error: "Ce lien a expiré" }); return; }
+  if (link.maxUses != null && link.usesCount >= link.maxUses) { res.status(410).json({ error: "La limite d'utilisations est atteinte" }); return; }
+
+  const [group] = await db.select({ id: chatGroupsTable.id, name: chatGroupsTable.name, type: chatGroupsTable.type })
+    .from(chatGroupsTable).where(eq(chatGroupsTable.id, link.groupId));
+  if (!group) { res.status(404).json({ error: "Groupe introuvable" }); return; }
+
+  // Check if already member
+  const [existing] = await db.select().from(chatGroupMembersTable)
+    .where(and(eq(chatGroupMembersTable.groupId, link.groupId), eq(chatGroupMembersTable.userId, me)));
+  if (existing) { res.json({ groupId: group.id, groupName: group.name, alreadyMember: true }); return; }
+
+  // Add member + increment uses_count atomically
+  await db.insert(chatGroupMembersTable).values({ groupId: link.groupId, userId: me, role: "member" });
+  await db.update(chatGroupInviteLinksTable)
+    .set({ usesCount: sql`${chatGroupInviteLinksTable.usesCount} + 1` })
+    .where(eq(chatGroupInviteLinksTable.id, link.id));
+
+  res.json({ groupId: group.id, groupName: group.name, alreadyMember: false });
 });
 
 export default router;

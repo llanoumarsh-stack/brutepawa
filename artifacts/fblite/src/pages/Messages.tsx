@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { useCurrentUser } from "../hooks/useCurrentUser";
 import { openImageViewer } from "../components/ImageViewer";
-import { apiFetch, apiGetConversations, apiGetMessages, apiMarkMessagesRead, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiUpdateChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadFileXHR, apiUploadVoice, apiDeleteConversation, apiDeleteMessage, apiGetLinkPreview, apiGetMessagingSettings, apiUpdateMessagingSettings, apiGetMessageRequests, apiUpdateMessageRequest, apiGetContactInfo, apiMuteContact, apiUnmuteContact, apiPinContact, apiUnpinContact, apiFavoriteContact, apiUnfavoriteContact, apiBlockUser, apiUnblockUser, apiReportUser, apiSendFriendRequest, apiSearchInConversation, apiDeleteConversationContact, apiGetMyGroups, apiAddContactToGroup, apiGetGroupAuditLog, apiKickGroupMember, apiChangeGroupMemberRole, apiGetGroupSettings, apiPatchGroupSettings, apiPatchGroupPermissions, apiPatchGroupReactions, apiSetChatGroupMemberRole, apiRemoveChatGroupMember, apiGetChatGroupMembersGrouped, apiAddChatGroupMembers, apiGetGroupInviteLinks, apiCreateGroupInviteLink, apiRevokeGroupInviteLink, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview, type MessageRequest, type ContactInfo, type GroupAuditEntry, type ApiGroupInviteLink } from "../lib/api";
+import { apiFetch, apiGetConversations, apiGetMessages, apiMarkMessagesRead, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiUpdateChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadFileXHR, apiUploadVoice, apiDeleteConversation, apiDeleteMessage, apiGetLinkPreview, apiGetMessagingSettings, apiUpdateMessagingSettings, apiGetMessageRequests, apiUpdateMessageRequest, apiGetContactInfo, apiMuteContact, apiUnmuteContact, apiPinContact, apiUnpinContact, apiFavoriteContact, apiUnfavoriteContact, apiBlockUser, apiUnblockUser, apiReportUser, apiSendFriendRequest, apiSearchInConversation, apiDeleteConversationContact, apiGetMyGroups, apiAddContactToGroup, apiGetGroupAuditLog, apiKickGroupMember, apiChangeGroupMemberRole, apiGetGroupSettings, apiPatchGroupSettings, apiPatchGroupPermissions, apiPatchGroupReactions, apiSetChatGroupMemberRole, apiRemoveChatGroupMember, apiGetChatGroupMembersGrouped, apiAddChatGroupMembers, apiGetGroupInviteLinks, apiCreateGroupInviteLink, apiRevokeGroupInviteLink, apiUpdateGroupInviteLink, apiGetGroupInviteLinkStats, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview, type MessageRequest, type ContactInfo, type GroupAuditEntry, type ApiGroupInviteLink, type ApiGroupInviteLinkStats } from "../lib/api";
 import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignaling";
 
 void ({} as ApiChatGroup);
@@ -655,6 +655,31 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [showGrpApparence, setShowGrpApparence]     = useState(false);
   const [grpAddMemberSearch, setGrpAddMemberSearch] = useState("");
   const [grpApparenceColor, setGrpApparenceColor]   = useState("");
+  /* ─── Invite links extended UI ─── */
+  const [showGrpCreateLink, setShowGrpCreateLink]   = useState(false);
+  const [showGrpLinkCreated, setShowGrpLinkCreated] = useState(false);
+  const [showGrpLinkStats, setShowGrpLinkStats]     = useState(false);
+  const [showGrpLinkQR, setShowGrpLinkQR]           = useState(false);
+  const [showGrpLinkShare, setShowGrpLinkShare]     = useState(false);
+  const [showGrpLinkEdit, setShowGrpLinkEdit]       = useState(false);
+  const [showGrpLinkRevoke, setShowGrpLinkRevoke]   = useState(false);
+  const [showGrpLinkManage, setShowGrpLinkManage]   = useState(false);
+  const [activeLinkId, setActiveLinkId]             = useState<number|null>(null);
+  const [newLinkType, setNewLinkType]               = useState<"unlimited"|"uses"|"duration"|"both">("unlimited");
+  const [newLinkName, setNewLinkName]               = useState("");
+  const [newLinkMaxUses, setNewLinkMaxUses]         = useState("100");
+  const [newLinkExpiry, setNewLinkExpiry]           = useState("");
+  const [newLinkCreating, setNewLinkCreating]       = useState(false);
+  const [createdLink, setCreatedLink]               = useState<ApiGroupInviteLink|null>(null);
+  const [linkStats, setLinkStats]                   = useState<ApiGroupInviteLinkStats|null>(null);
+  const [linkStatsLoading, setLinkStatsLoading]     = useState(false);
+  const [linkManageFilter, setLinkManageFilter]     = useState<"all"|"active"|"revoked"|"expired">("all");
+  const [linkEditName, setLinkEditName]             = useState("");
+  const [linkEditType, setLinkEditType]             = useState("unlimited");
+  const [linkEditMaxUses, setLinkEditMaxUses]       = useState("100");
+  const [linkEditExpiry, setLinkEditExpiry]         = useState("");
+  const [linkEditSaving, setLinkEditSaving]         = useState(false);
+  const [grpLinkCopied, setGrpLinkCopied]          = useState(false);
   /* ─── Channel wizard ─── */
   const [chWiz, setChWiz]                     = useState<"none"|"info"|"type"|"members">("none");
   const [chName, setChName]                   = useState("");
@@ -3250,87 +3275,620 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     , document.body);
   }
 
-  /* ── LIENS D'INVITATION ── */
-  if (activeGroupId !== null && showGrpLinks) {
-    const activeLinks = grpInviteLinks.filter(l => !l.revoked);
-    const primaryLink = activeLinks[0];
-    const inviteLink = primaryLink?.url ?? "…";
-    const otherLinks = activeLinks.slice(1);
-    const revokedLinks = grpInviteLinks.filter(l => l.revoked);
-    return createPortal(
-      <div style={{ position:"fixed", inset:0, background:"#F1F5F9", zIndex:10002, display:"flex", flexDirection:"column" }}>
-        {GRP_SUB_HEADER("Liens d'invitation", () => setShowGrpLinks(false))}
-        <div style={{ flex:1, overflowY:"auto", padding:"14px 0 32px" }}>
-          <div style={{ background:"#fff", margin:"0 0 6px", padding:"14px 16px" }}>
-            <div style={{ fontSize:14, fontWeight:700, color:"var(--bp-primary)", marginBottom:12 }}>Lien d'invitation</div>
-            <div style={{ display:"flex", alignItems:"center", background:"#F1F5F9", borderRadius:10, padding:"10px 14px", marginBottom:12, gap:10 }}>
-              <span style={{ flex:1, fontSize:14, color:"#374151", fontFamily:"monospace" }}>{inviteLink}</span>
-              <button style={{ background:"none", border:"none", cursor:"pointer", padding:4 }}>
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
-              </button>
-            </div>
-            <div style={{ display:"flex", gap:10, marginBottom:6 }}>
-              {[{icon:"📋",label:"Copier"},{icon:"↗️",label:"Partager"}].map(b=>(
-                <button key={b.label} onClick={()=>b.label==="Copier"&&navigator.clipboard?.writeText(inviteLink)}
-                  style={{ flex:1, background:"var(--bp-primary)", color:"#fff", border:"none", borderRadius:24, padding:"12px 0", fontSize:15, fontWeight:600, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
-                  <span>{b.icon}</span>{b.label}
-                </button>
-              ))}
-            </div>
+  /* ── LIENS D'INVITATION (helpers) ── */
+  const activeLink = activeLinkId ? grpInviteLinks.find(l => l.id === activeLinkId) ?? null : null;
+  const grpCopyLink = (url: string) => {
+    navigator.clipboard?.writeText(`https://${url}`).then(() => { setGrpLinkCopied(true); setTimeout(() => setGrpLinkCopied(false), 2000); }).catch(() => {});
+  };
+  const LinkStatusBadge = ({ status }: { status: string }) => {
+    const cfg: Record<string, { label: string; bg: string; color: string }> = {
+      active: { label: "Actif", bg: "#DCFCE7", color: "#16A34A" },
+      expired: { label: "Expiré", bg: "#FEF3C7", color: "#D97706" },
+      revoked: { label: "Révoqué", bg: "#FEE2E2", color: "#DC2626" },
+      limit_reached: { label: "Limite", bg: "#E0E7FF", color: "#4F46E5" },
+    };
+    const c = cfg[status] ?? cfg.active;
+    return <span style={{ fontSize:11.5, fontWeight:700, padding:"3px 8px", borderRadius:20, background:c.bg, color:c.color }}>{c.label}</span>;
+  };
+  const LinkThreeDotMenu = ({ link, top }: { link: ApiGroupInviteLink; top?: number }) => (
+    grpLinkMenu === link.id ? (
+      <>
+        <div onClick={() => setGrpLinkMenu(null)} style={{ position:"fixed", inset:0, zIndex:10008 }} />
+        <div style={{ position:"absolute", right:8, top:top ?? 40, background:"#fff", borderRadius:14, boxShadow:"0 8px 32px rgba(0,0,0,0.18)", zIndex:10009, width:220, overflow:"hidden", animation:"fadeIn 0.12s ease" }}>
+          <div onClick={() => { setGrpLinkMenu(null); setLinkEditName(link.name ?? link.label ?? ""); setLinkEditType(link.type ?? "unlimited"); setLinkEditMaxUses(String(link.maxUses ?? 100)); setLinkEditExpiry(link.expiresAt ? link.expiresAt.slice(0,16) : ""); setActiveLinkId(link.id); setShowGrpLinkEdit(true); }}
+            style={{ display:"flex", alignItems:"center", gap:12, padding:"13px 16px", cursor:"pointer", borderBottom:"1px solid rgba(0,0,0,0.07)" }}>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            <span style={{ fontSize:15, color:"#111" }}>Modifier</span>
           </div>
-          <div style={{ background:"#fff", margin:"0 0 6px" }}>
-            <div onClick={() => { apiCreateGroupInviteLink(activeGroupId).then(l => setGrpInviteLinks(prev => [...prev, l])).catch(()=>{}); }}
+          <div onClick={() => { setGrpLinkMenu(null); setActiveLinkId(link.id); setShowGrpLinkRevoke(true); }}
+            style={{ display:"flex", alignItems:"center", gap:12, padding:"13px 16px", cursor:"pointer", borderBottom:"1px solid rgba(0,0,0,0.07)" }}>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="9"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+            <span style={{ fontSize:15, color:"#EF4444" }}>Révoquer le lien</span>
+          </div>
+          <div onClick={() => { setGrpLinkMenu(null); setActiveLinkId(link.id); setLinkStatsLoading(true); setShowGrpLinkStats(true); apiGetGroupInviteLinkStats(activeGroupId!, link.id).then(s => { setLinkStats(s); setLinkStatsLoading(false); }).catch(() => setLinkStatsLoading(false)); }}
+            style={{ display:"flex", alignItems:"center", gap:12, padding:"13px 16px", cursor:"pointer", borderBottom:"1px solid rgba(0,0,0,0.07)" }}>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <span style={{ fontSize:15, color:"#111" }}>Voir les statistiques</span>
+          </div>
+          <div onClick={() => { setGrpLinkMenu(null); setActiveLinkId(link.id); setShowGrpLinkQR(true); }}
+            style={{ display:"flex", alignItems:"center", gap:12, padding:"13px 16px", cursor:"pointer" }}>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h7v7"/><path d="M14 14v3"/><path d="M17 14h4"/><path d="M17 17h4"/></svg>
+            <span style={{ fontSize:15, color:"#111" }}>Partager via QR Code</span>
+          </div>
+        </div>
+      </>
+    ) : null
+  );
+
+  /* ── LIENS D'INVITATION (portal principal) ── */
+  if (activeGroupId !== null && showGrpLinks) {
+    const activeLinks = grpInviteLinks.filter(l => !l.revoked && l.status !== "expired" && l.status !== "limit_reached");
+    const primaryLink = activeLinks[0];
+    const inviteUrl = primaryLink?.url ?? "";
+    const otherLinks = grpInviteLinks.filter(l => l.id !== primaryLink?.id);
+
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, background:"#F1F5F9", zIndex:10002, display:"flex", flexDirection:"column" }} onClick={() => setGrpLinkMenu(null)}>
+        {GRP_SUB_HEADER("Liens d'invitation", () => setShowGrpLinks(false))}
+        <div style={{ flex:1, overflowY:"auto", padding:"12px 0 40px" }}>
+          {/* Lien principal */}
+          <div style={{ background:"#fff", margin:"0 0 8px", padding:"16px 16px 14px" }}>
+            <div style={{ fontSize:13, fontWeight:700, color:"var(--bp-primary)", textTransform:"uppercase", letterSpacing:0.7, marginBottom:12 }}>Lien d'invitation</div>
+            {primaryLink ? (
+              <div style={{ position:"relative" }}>
+                <div style={{ display:"flex", alignItems:"center", background:"#F8FAFC", borderRadius:12, padding:"12px 14px", marginBottom:12, border:"1px solid #E2E8F0" }}>
+                  <span style={{ flex:1, fontSize:13.5, color:"#374151", fontFamily:"monospace", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{inviteUrl}</span>
+                  <button onClick={e => { e.stopPropagation(); setGrpLinkMenu(grpLinkMenu === primaryLink.id ? null : primaryLink.id); }}
+                    style={{ background:"none", border:"none", cursor:"pointer", padding:"4px 6px", marginLeft:4, borderRadius:6, display:"flex", alignItems:"center" }}>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="#94A3B8"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>
+                  </button>
+                  <LinkThreeDotMenu link={primaryLink} top={44} />
+                </div>
+                <div style={{ display:"flex", gap:10 }}>
+                  <button onClick={() => grpCopyLink(inviteUrl)}
+                    style={{ flex:1, background: grpLinkCopied ? "#16A34A" : "var(--bp-primary)", color:"#fff", border:"none", borderRadius:24, padding:"13px 0", fontSize:15, fontWeight:600, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8, transition:"background 0.2s" }}>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    {grpLinkCopied ? "Copié !" : "Copier"}
+                  </button>
+                  <button onClick={() => { setActiveLinkId(primaryLink.id); setShowGrpLinkShare(true); }}
+                    style={{ flex:1, background:"var(--bp-primary)", color:"#fff", border:"none", borderRadius:24, padding:"13px 0", fontSize:15, fontWeight:600, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                    Partager
+                  </button>
+                </div>
+                <p style={{ fontSize:12.5, color:"#9CA3AF", lineHeight:1.55, margin:"10px 0 0" }}>Il est possible de rejoindre votre groupe en suivant ce lien. Vous pouvez le révoquer à tout moment.</p>
+              </div>
+            ) : (
+              <div style={{ textAlign:"center", padding:"16px 0" }}>
+                <p style={{ fontSize:14, color:"#9CA3AF", margin:"0 0 12px" }}>Aucun lien actif</p>
+              </div>
+            )}
+          </div>
+
+          {/* Créer un nouveau lien */}
+          <div style={{ background:"#fff", margin:"0 0 2px" }}>
+            <div onClick={() => { setNewLinkType("unlimited"); setNewLinkName(""); setNewLinkMaxUses("100"); setNewLinkExpiry(""); setShowGrpCreateLink(true); }}
               style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 16px", cursor:"pointer" }}>
-              <div style={{ width:32, height:32, borderRadius:"50%", background:"var(--bp-primary)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+              <div style={{ width:34, height:34, borderRadius:"50%", background:"var(--bp-primary)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               </div>
-              <span style={{ fontSize:15.5, color:"var(--bp-primary)", fontWeight:500 }}>Créer un nouveau lien</span>
+              <span style={{ fontSize:15.5, color:"var(--bp-primary)", fontWeight:600 }}>Créer un nouveau lien</span>
             </div>
           </div>
-          <p style={{ margin:"4px 16px 16px", fontSize:12.5, color:"#9CA3AF", lineHeight:1.5 }}>Vous pouvez créer des liens d'invitation supplémentaires dont la durée et le nombre d'utilisateurs sont limités.</p>
-          {otherLinks.length > 0 && (
-            <div style={{ background:"#fff", margin:"0 0 6px", padding:"10px 16px 4px" }}>
-              <div style={{ fontSize:14, fontWeight:700, color:"var(--bp-primary)", marginBottom:10 }}>Autres liens actifs</div>
-              {otherLinks.map(l => (
-                <div key={l.id} style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 0", borderBottom:"1px solid rgba(0,0,0,0.07)", position:"relative" }}>
-                  <div style={{ width:42, height:42, borderRadius:"50%", background:"var(--bp-primary)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          {/* Gérer les liens */}
+          <div style={{ background:"#fff", margin:"0 0 8px" }}>
+            <div onClick={() => setShowGrpLinkManage(true)}
+              style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 16px", cursor:"pointer", borderTop:"1px solid rgba(0,0,0,0.06)" }}>
+              <div style={{ width:34, height:34, borderRadius:"50%", background:"#F1F5F9", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+              </div>
+              <div style={{ flex:1 }}>
+                <div style={{ fontSize:15.5, color:"#000", fontWeight:500 }}>Gérer les liens d'invitation</div>
+                <div style={{ fontSize:12.5, color:"#9CA3AF" }}>Définissez des liens supplémentaires ayant des limites personnalisées.</div>
+              </div>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#CBD5E1" strokeWidth="2" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+
+          {/* À propos */}
+          <div style={{ background:"#fff", margin:"0 0 8px", padding:"16px 16px 20px" }}>
+            <div style={{ fontSize:13.5, fontWeight:700, color:"#374151", marginBottom:14 }}>À propos des liens d'invitation</div>
+            {[
+              "Les liens d'invitation permettent à d'autres personnes de rejoindre votre groupe.",
+              "Vous pouvez créer plusieurs liens avec des limites personnalisées.",
+              "Vous pouvez révoquer un lien à tout moment.",
+            ].map((txt, i) => (
+              <div key={i} style={{ display:"flex", alignItems:"flex-start", gap:10, marginBottom:i<2?12:0 }}>
+                <div style={{ width:26, height:26, borderRadius:"50%", background:"rgba(34,197,94,0.12)", flexShrink:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round">
+                    {i===0 && <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>}
+                    {i===1 && <><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></>}
+                    {i===2 && <><circle cx="12" cy="12" r="9"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></>}
+                  </svg>
+                </div>
+                <span style={{ fontSize:13.5, color:"#4B5563", lineHeight:1.5 }}>{txt}</span>
+              </div>
+            ))}
+            {/* Chain illustration */}
+            <div style={{ display:"flex", justifyContent:"center", marginTop:24 }}>
+              <svg viewBox="0 0 120 60" width="120" height="60">
+                <ellipse cx="30" cy="30" rx="25" ry="14" fill="none" stroke="#22C55E" strokeWidth="6" strokeLinecap="round" transform="rotate(-30 30 30)"/>
+                <ellipse cx="90" cy="30" rx="25" ry="14" fill="none" stroke="#22C55E" strokeWidth="6" strokeLinecap="round" transform="rotate(-30 90 30)"/>
+                <ellipse cx="60" cy="30" rx="25" ry="14" fill="none" stroke="#4ADE80" strokeWidth="6" strokeLinecap="round" transform="rotate(30 60 30)"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <style>{`@keyframes fadeIn { from { opacity:0; transform:scale(0.96) translateY(-4px); } to { opacity:1; transform:scale(1) translateY(0); } }`}</style>
+      </div>
+    , document.body);
+  }
+
+  /* ── CRÉER UN NOUVEAU LIEN ── */
+  if (activeGroupId !== null && showGrpCreateLink) {
+    const showUses = newLinkType === "uses" || newLinkType === "both";
+    const showDur  = newLinkType === "duration" || newLinkType === "both";
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, background:"#F1F5F9", zIndex:10003, display:"flex", flexDirection:"column" }}>
+        {GRP_SUB_HEADER("Créer un nouveau lien", () => setShowGrpCreateLink(false))}
+        <div style={{ flex:1, overflowY:"auto", padding:"12px 0 32px" }}>
+          {/* Type de lien */}
+          <div style={{ background:"#fff", margin:"0 0 6px", padding:"14px 16px" }}>
+            <div style={{ fontSize:13, fontWeight:700, color:"var(--bp-primary)", textTransform:"uppercase", letterSpacing:0.7, marginBottom:14 }}>Type de lien</div>
+            {([
+              { val:"unlimited", label:"Lien illimité", desc:"Aucune limite d'utilisation ou de durée." },
+              { val:"uses", label:"Lien avec limite d'utilisations", desc:"Limitez le nombre de personnes pouvant utiliser ce lien." },
+              { val:"duration", label:"Lien avec durée limitée", desc:"Définissez une date d'expiration pour ce lien." },
+              { val:"both", label:"Lien avec limites personnalisées", desc:"Combinez limite d'utilisations et date d'expiration." },
+            ] as { val: typeof newLinkType; label: string; desc: string }[]).map((opt, i, arr) => (
+              <div key={opt.val} onClick={() => setNewLinkType(opt.val)}
+                style={{ display:"flex", alignItems:"flex-start", gap:12, padding:"12px 0", borderBottom:i<arr.length-1?"1px solid rgba(0,0,0,0.07)":"none", cursor:"pointer" }}>
+                <div style={{ width:22, height:22, borderRadius:"50%", border:`2px solid ${newLinkType===opt.val?"var(--bp-primary)":"#CBD5E1"}`, background:newLinkType===opt.val?"var(--bp-primary)":"transparent", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, marginTop:2 }}>
+                  {newLinkType===opt.val && <div style={{ width:8, height:8, borderRadius:"50%", background:"#fff" }} />}
+                </div>
+                <div>
+                  <div style={{ fontSize:15.5, color:"#000", fontWeight:500 }}>{opt.label}</div>
+                  <div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:2 }}>{opt.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Paramètres */}
+          <div style={{ background:"#fff", margin:"0 0 6px", padding:"14px 16px" }}>
+            <div style={{ fontSize:13, fontWeight:700, color:"var(--bp-primary)", textTransform:"uppercase", letterSpacing:0.7, marginBottom:14 }}>Paramètres du lien</div>
+            {/* Nom optionnel */}
+            <div style={{ marginBottom:16 }}>
+              <div style={{ fontSize:13, fontWeight:600, color:"#374151", marginBottom:6 }}>Nom du lien (optionnel)</div>
+              <input value={newLinkName} onChange={e=>setNewLinkName(e.target.value)} placeholder="Ex: Événement spécial"
+                style={{ width:"100%", border:"1.5px solid #E2E8F0", borderRadius:10, padding:"11px 13px", fontSize:15, color:"#111", background:"#F8FAFC", outline:"none", boxSizing:"border-box" }} />
+            </div>
+            {showUses && (
+              <div style={{ marginBottom:16 }}>
+                <div style={{ fontSize:13, fontWeight:600, color:"#374151", marginBottom:6 }}>Limite d'utilisations</div>
+                <div style={{ position:"relative" }}>
+                  <input type="number" min={1} max={99999} value={newLinkMaxUses} onChange={e=>setNewLinkMaxUses(e.target.value)}
+                    style={{ width:"100%", border:"1.5px solid #E2E8F0", borderRadius:10, padding:"11px 13px", fontSize:15, color:"#111", background:"#F8FAFC", outline:"none", boxSizing:"border-box" }} />
+                  <span style={{ position:"absolute", right:12, top:"50%", transform:"translateY(-50%)", fontSize:13, color:"#9CA3AF" }}>0 / {newLinkMaxUses || 0} utilisations</span>
+                </div>
+              </div>
+            )}
+            {showDur && (
+              <div style={{ marginBottom:8 }}>
+                <div style={{ fontSize:13, fontWeight:600, color:"#374151", marginBottom:6 }}>Date d'expiration</div>
+                <input type="datetime-local" value={newLinkExpiry} onChange={e=>setNewLinkExpiry(e.target.value)}
+                  style={{ width:"100%", border:"1.5px solid #E2E8F0", borderRadius:10, padding:"11px 13px", fontSize:15, color:"#111", background:"#F8FAFC", outline:"none", boxSizing:"border-box" }} />
+                {!newLinkExpiry && <p style={{ fontSize:12, color:"#F59E0B", margin:"6px 0 0" }}>Veuillez sélectionner une date d'expiration.</p>}
+              </div>
+            )}
+          </div>
+        </div>
+        {/* Bouton créer */}
+        <div style={{ padding:"12px 16px 28px", background:"#fff", borderTop:"1px solid rgba(0,0,0,0.07)" }}>
+          <button disabled={newLinkCreating || (showDur && !newLinkExpiry)}
+            onClick={() => {
+              setNewLinkCreating(true);
+              apiCreateGroupInviteLink(activeGroupId, newLinkName.trim() || undefined, {
+                type: newLinkType,
+                maxUses: showUses && newLinkMaxUses ? parseInt(newLinkMaxUses) : undefined,
+                expiresAt: showDur && newLinkExpiry ? new Date(newLinkExpiry).toISOString() : undefined,
+              }).then(link => {
+                setGrpInviteLinks(prev => [link, ...prev]);
+                setCreatedLink(link);
+                setNewLinkCreating(false);
+                setShowGrpCreateLink(false);
+                setShowGrpLinkCreated(true);
+              }).catch(() => setNewLinkCreating(false));
+            }}
+            style={{ width:"100%", padding:"14px", background: (newLinkCreating||(showDur&&!newLinkExpiry)) ? "#9CA3AF" : "var(--bp-primary)", border:"none", borderRadius:14, fontSize:16, fontWeight:700, color:"#fff", cursor: (newLinkCreating||(showDur&&!newLinkExpiry)) ? "default" : "pointer" }}>
+            {newLinkCreating ? "Création…" : "Créer le lien"}
+          </button>
+        </div>
+      </div>
+    , document.body);
+  }
+
+  /* ── LIEN CRÉÉ (success) ── */
+  if (activeGroupId !== null && showGrpLinkCreated && createdLink) {
+    const typeLabel: Record<string,string> = { unlimited:"Illimité", uses:"Limité en utilisations", duration:"Durée limitée", both:"Limites personnalisées" };
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, background:"#F1F5F9", zIndex:10003, display:"flex", flexDirection:"column" }}>
+        {GRP_SUB_HEADER("Lien d'invitation créé !", () => { setShowGrpLinkCreated(false); setCreatedLink(null); })}
+        <div style={{ flex:1, overflowY:"auto", padding:"32px 16px 24px", display:"flex", flexDirection:"column", alignItems:"center" }}>
+          {/* Success animation */}
+          <div style={{ width:90, height:90, borderRadius:"50%", background:"linear-gradient(135deg, #dcfce7, #bbf7d0)", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:16, boxShadow:"0 8px 32px rgba(34,197,94,0.25)" }}>
+            <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="#16A34A" strokeWidth="2.5" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div style={{ fontSize:19, fontWeight:700, color:"#000", marginBottom:6, textAlign:"center" }}>Votre lien a été créé avec succès</div>
+          {/* Link card */}
+          <div style={{ width:"100%", background:"#fff", borderRadius:16, padding:"14px 16px", marginBottom:16, marginTop:16, boxShadow:"0 2px 12px rgba(0,0,0,0.06)" }}>
+            <div style={{ display:"flex", alignItems:"center", background:"#F8FAFC", borderRadius:10, padding:"11px 13px", marginBottom:12, border:"1px solid #E2E8F0", gap:8 }}>
+              <span style={{ flex:1, fontSize:13.5, color:"#374151", fontFamily:"monospace", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{createdLink.url}</span>
+              <button onClick={() => setGrpLinkMenu(grpLinkMenu===createdLink.id?null:createdLink.id)} style={{ background:"none", border:"none", cursor:"pointer", padding:4, position:"relative" }}>
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="#94A3B8"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>
+              </button>
+            </div>
+            <div style={{ fontSize:13, fontWeight:700, color:"#374151", marginBottom:10 }}>Détails du lien</div>
+            {[
+              { icon:<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>, label:"Type", val: typeLabel[createdLink.type] ?? "Illimité" },
+              { icon:<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>, label:"Utilisations", val: `0 / ${createdLink.maxUses ?? "∞"}` },
+              { icon:<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>, label:"Expire le", val: createdLink.expiresAt ? new Date(createdLink.expiresAt).toLocaleString("fr-FR") : "Jamais" },
+            ].map(item => (
+              <div key={item.label} style={{ display:"flex", alignItems:"center", gap:10, padding:"8px 0", borderBottom:"1px solid rgba(0,0,0,0.06)" }}>
+                {item.icon}
+                <span style={{ fontSize:13.5, color:"#9CA3AF", width:90 }}>{item.label}</span>
+                <span style={{ fontSize:13.5, color:"#111", fontWeight:500 }}>{item.val}</span>
+              </div>
+            ))}
+          </div>
+          {/* Actions */}
+          <div style={{ display:"flex", gap:10, width:"100%" }}>
+            <button onClick={() => grpCopyLink(createdLink.url)} style={{ flex:1, background:"var(--bp-primary)", color:"#fff", border:"none", borderRadius:24, padding:"13px 0", fontSize:15, fontWeight:600, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copier
+            </button>
+            <button onClick={() => { setActiveLinkId(createdLink.id); setShowGrpLinkShare(true); }} style={{ flex:1, background:"var(--bp-primary)", color:"#fff", border:"none", borderRadius:24, padding:"13px 0", fontSize:15, fontWeight:600, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+              Partager
+            </button>
+          </div>
+          <button onClick={() => { setShowGrpLinkCreated(false); setCreatedLink(null); }} style={{ background:"none", border:"none", color:"#9CA3AF", fontSize:15, padding:"14px", cursor:"pointer", marginTop:4 }}>Terminer</button>
+        </div>
+      </div>
+    , document.body);
+  }
+
+  /* ── STATISTIQUES DU LIEN ── */
+  if (activeGroupId !== null && showGrpLinkStats && activeLink) {
+    const STAT_COLORS = ["#EC4899","#8B5CF6","#F97316","#22C55E","#0EA5E9","#F59E0B","#EF4444"];
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, background:"#F1F5F9", zIndex:10004, display:"flex", flexDirection:"column" }}>
+        {GRP_SUB_HEADER("Statistiques du lien", () => setShowGrpLinkStats(false))}
+        <div style={{ flex:1, overflowY:"auto", padding:"12px 0 32px" }}>
+          {linkStatsLoading ? (
+            <div style={{ display:"flex", justifyContent:"center", padding:"60px 0" }}>
+              <div style={{ width:32, height:32, border:"3px solid #E5E7EB", borderTop:"3px solid var(--bp-primary)", borderRadius:"50%", animation:"spin 0.8s linear infinite" }} />
+            </div>
+          ) : linkStats ? (
+            <>
+              {/* URL card */}
+              <div style={{ background:"#fff", margin:"0 0 8px", padding:"12px 16px" }}>
+                <span style={{ fontSize:13, color:"#374151", fontFamily:"monospace" }}>{activeLink.url}</span>
+              </div>
+              {/* Vue d'ensemble */}
+              <div style={{ background:"#fff", margin:"0 0 8px", padding:"16px" }}>
+                <div style={{ fontSize:13, fontWeight:700, color:"#374151", marginBottom:14 }}>Vue d'ensemble</div>
+                <div style={{ display:"flex", gap:12 }}>
+                  {[
+                    { icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>, label:"Clics", val:linkStats.clicks },
+                    { icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>, label:"Utilisations", val:linkStats.uses },
+                    { icon:<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>, label:"Conversion", val:`${linkStats.conversionRate}%` },
+                  ].map(s => (
+                    <div key={s.label} style={{ flex:1, textAlign:"center", background:"#F8FAFC", borderRadius:14, padding:"14px 8px" }}>
+                      <div style={{ display:"flex", justifyContent:"center", marginBottom:6 }}>{s.icon}</div>
+                      <div style={{ fontSize:20, fontWeight:800, color:"#111" }}>{s.val}</div>
+                      <div style={{ fontSize:12, color:"#9CA3AF", fontWeight:500 }}>{s.label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {/* Activité récente */}
+              <div style={{ background:"#fff", margin:"0 0 8px", padding:"16px 16px 8px" }}>
+                <div style={{ fontSize:13, fontWeight:700, color:"#374151", marginBottom:12 }}>Activité récente</div>
+                {linkStats.activity.length === 0 && <p style={{ fontSize:14, color:"#9CA3AF", textAlign:"center", padding:"20px 0" }}>Aucune activité récente</p>}
+                {linkStats.activity.map((item, i) => (
+                  <div key={i} style={{ display:"flex", alignItems:"center", gap:12, padding:"10px 0", borderBottom:i<linkStats.activity.length-1?"1px solid rgba(0,0,0,0.06)":"none" }}>
+                    <div style={{ width:40, height:40, borderRadius:"50%", background: STAT_COLORS[i % STAT_COLORS.length], display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, fontSize:14, flexShrink:0 }}>{item.initials}</div>
+                    <div style={{ flex:1 }}>
+                      <div style={{ fontWeight:600, fontSize:14.5, color:"#000" }}>{item.userName}</div>
+                      <div style={{ fontSize:12.5, color:"#9CA3AF" }}>{item.action}</div>
+                    </div>
+                    <span style={{ fontSize:12, color:"#9CA3AF", whiteSpace:"nowrap" }}>{item.time}</span>
                   </div>
+                ))}
+                {linkStats.activity.length > 0 && (
+                  <div style={{ textAlign:"center", padding:"12px 0 4px" }}>
+                    <span style={{ fontSize:14, color:"var(--bp-primary)", fontWeight:600, cursor:"pointer" }}>Voir toutes les activités &gt;</span>
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <div style={{ textAlign:"center", padding:"60px 16px" }}>
+              <p style={{ fontSize:14, color:"#9CA3AF" }}>Impossible de charger les statistiques.</p>
+            </div>
+          )}
+        </div>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    , document.body);
+  }
+
+  /* ── QR CODE ── */
+  if (activeGroupId !== null && showGrpLinkQR && activeLink) {
+    const qrUrl = `https://${activeLink.url}`;
+    const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qrUrl)}&bgcolor=FFFFFF&color=000000&qzone=2&format=png`;
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, background:"#F1F5F9", zIndex:10004, display:"flex", flexDirection:"column" }}>
+        {GRP_SUB_HEADER("Partager via QR Code", () => setShowGrpLinkQR(false))}
+        <div style={{ flex:1, overflowY:"auto", display:"flex", flexDirection:"column", alignItems:"center", padding:"32px 24px" }}>
+          <div style={{ background:"#fff", borderRadius:20, padding:24, boxShadow:"0 4px 24px rgba(0,0,0,0.1)", marginBottom:24 }}>
+            <img src={qrImgUrl} alt="QR Code" width={220} height={220} style={{ display:"block", borderRadius:8 }} />
+          </div>
+          <div style={{ background:"#F8FAFC", borderRadius:12, padding:"10px 16px", marginBottom:24, width:"100%", border:"1px solid #E2E8F0", textAlign:"center" }}>
+            <span style={{ fontSize:13.5, color:"#374151", fontFamily:"monospace" }}>{activeLink.url}</span>
+          </div>
+          <div style={{ display:"flex", gap:12, width:"100%" }}>
+            <a href={qrImgUrl} download="qr-code.png" target="_blank" rel="noopener noreferrer"
+              style={{ flex:1, background:"var(--bp-primary)", color:"#fff", border:"none", borderRadius:24, padding:"13px 0", fontSize:15, fontWeight:600, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8, textDecoration:"none" }}>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Enregistrer
+            </a>
+            <button onClick={() => { setShowGrpLinkQR(false); setShowGrpLinkShare(true); }}
+              style={{ flex:1, background:"var(--bp-primary)", color:"#fff", border:"none", borderRadius:24, padding:"13px 0", fontSize:15, fontWeight:600, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+              Partager
+            </button>
+          </div>
+        </div>
+      </div>
+    , document.body);
+  }
+
+  /* ── PARTAGER LE LIEN ── */
+  if (activeGroupId !== null && showGrpLinkShare && activeLink) {
+    const shareUrl = `https://${activeLink.url}`;
+    const socialLinks = [
+      { name:"WhatsApp", bg:"#25D366", url:`https://wa.me/?text=${encodeURIComponent("Rejoins mon groupe BrutePawa : "+shareUrl)}`, icon:<svg viewBox="0 0 24 24" width="26" height="26" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> },
+      { name:"Messenger", bg:"#0099FF", url:`https://m.me/share?link=${encodeURIComponent(shareUrl)}`, icon:<svg viewBox="0 0 24 24" width="26" height="26" fill="#fff"><path d="M12 0C5.373 0 0 4.974 0 11.111c0 3.498 1.745 6.622 4.472 8.652V24l4.086-2.242c1.09.301 2.246.464 3.442.464 6.627 0 12-4.975 12-11.111S18.627 0 12 0zm1.193 14.963l-3.056-3.26-5.963 3.26L10.986 8.4l3.13 3.26 5.888-3.26-6.81 6.563z"/></svg> },
+      { name:"Telegram", bg:"#26A5E4", url:`https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=Rejoins+mon+groupe`, icon:<svg viewBox="0 0 24 24" width="26" height="26" fill="#fff"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg> },
+      { name:"Facebook", bg:"#1877F2", url:`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, icon:<svg viewBox="0 0 24 24" width="26" height="26" fill="#fff"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> },
+    ];
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, background:"#F1F5F9", zIndex:10004, display:"flex", flexDirection:"column" }}>
+        {GRP_SUB_HEADER("Partager le lien", () => setShowGrpLinkShare(false))}
+        <div style={{ flex:1, overflowY:"auto", padding:"24px 0" }}>
+          {/* Apps de partage */}
+          <div style={{ background:"#fff", margin:"0 0 8px", padding:"20px 16px" }}>
+            <div style={{ display:"flex", justifyContent:"space-around", marginBottom:4 }}>
+              {socialLinks.map(s => (
+                <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer" style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:8, textDecoration:"none" }}>
+                  <div style={{ width:56, height:56, borderRadius:"50%", background:s.bg, display:"flex", alignItems:"center", justifyContent:"center", boxShadow:"0 2px 8px rgba(0,0,0,0.15)" }}>
+                    {s.icon}
+                  </div>
+                  <span style={{ fontSize:12, color:"#374151", fontWeight:500 }}>{s.name}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+          {/* Actions supplémentaires */}
+          <div style={{ background:"#fff", margin:"0 0 8px" }}>
+            {[
+              { icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>, label:"Copier le lien", action: () => grpCopyLink(activeLink.url) },
+              { icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h7v7"/><path d="M14 14v3"/><path d="M17 14h4"/></svg>, label:"Partager via QR Code", action: () => { setShowGrpLinkShare(false); setShowGrpLinkQR(true); } },
+              { icon:<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>, label:"Plus d'options", action: () => { if (navigator.share) navigator.share({ title: "BrutePawa", url: shareUrl }).catch(()=>{}); else grpCopyLink(activeLink.url); } },
+            ].map((item, i, arr) => (
+              <div key={item.label} onClick={item.action}
+                style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 16px", borderBottom:i<arr.length-1?"1px solid rgba(0,0,0,0.07)":"none", cursor:"pointer" }}>
+                <div style={{ width:38, height:38, borderRadius:"50%", background:"rgba(34,197,94,0.1)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                  {item.icon}
+                </div>
+                <span style={{ fontSize:15.5, color:"#111" }}>{item.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    , document.body);
+  }
+
+  /* ── MODIFIER LE LIEN ── */
+  if (activeGroupId !== null && showGrpLinkEdit && activeLink) {
+    const editShowUses = linkEditType === "uses" || linkEditType === "both";
+    const editShowDur  = linkEditType === "duration" || linkEditType === "both";
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, background:"#F1F5F9", zIndex:10004, display:"flex", flexDirection:"column" }}>
+        {GRP_SUB_HEADER("Modifier le lien", () => setShowGrpLinkEdit(false))}
+        <div style={{ flex:1, overflowY:"auto", padding:"12px 0 24px" }}>
+          <div style={{ background:"#fff", margin:"0 0 8px", padding:"14px 16px" }}>
+            {/* Nom */}
+            <div style={{ marginBottom:16 }}>
+              <div style={{ fontSize:13, fontWeight:600, color:"#374151", marginBottom:6 }}>Nom du lien</div>
+              <input value={linkEditName} onChange={e=>setLinkEditName(e.target.value)} placeholder="Ex: Invitation communauté BrutePawa"
+                style={{ width:"100%", border:"1.5px solid #E2E8F0", borderRadius:10, padding:"11px 13px", fontSize:15, color:"#111", background:"#F8FAFC", outline:"none", boxSizing:"border-box" }} />
+            </div>
+            {/* Type */}
+            <div style={{ fontSize:13, fontWeight:600, color:"#374151", marginBottom:8 }}>Type de lien</div>
+            {([
+              { val:"unlimited", label:"Lien illimité" },
+              { val:"uses", label:"Limité en utilisations" },
+              { val:"duration", label:"Durée limitée" },
+              { val:"both", label:"Limites personnalisées" },
+            ] as { val: string; label: string }[]).map((opt, i, arr) => (
+              <div key={opt.val} onClick={() => setLinkEditType(opt.val)}
+                style={{ display:"flex", alignItems:"center", gap:12, padding:"11px 0", borderBottom:i<arr.length-1?"1px solid rgba(0,0,0,0.07)":"none", cursor:"pointer" }}>
+                <div style={{ width:20, height:20, borderRadius:"50%", border:`2px solid ${linkEditType===opt.val?"var(--bp-primary)":"#CBD5E1"}`, background:linkEditType===opt.val?"var(--bp-primary)":"transparent", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                  {linkEditType===opt.val && <div style={{ width:7, height:7, borderRadius:"50%", background:"#fff" }} />}
+                </div>
+                <span style={{ fontSize:15, color:"#111" }}>{opt.label}</span>
+              </div>
+            ))}
+          </div>
+          {(editShowUses || editShowDur) && (
+            <div style={{ background:"#fff", margin:"0 0 8px", padding:"14px 16px" }}>
+              {editShowUses && (
+                <div style={{ marginBottom:editShowDur?16:0 }}>
+                  <div style={{ fontSize:13, fontWeight:600, color:"#374151", marginBottom:6 }}>Limite d'utilisations</div>
+                  <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                    <input type="number" min={1} value={linkEditMaxUses} onChange={e=>setLinkEditMaxUses(e.target.value)}
+                      style={{ flex:1, border:"1.5px solid #E2E8F0", borderRadius:10, padding:"11px 13px", fontSize:15, color:"#111", background:"#F8FAFC", outline:"none" }} />
+                    <span style={{ fontSize:13, color:"#9CA3AF", whiteSpace:"nowrap" }}>{activeLink.usesCount} / {linkEditMaxUses} utilisations</span>
+                  </div>
+                </div>
+              )}
+              {editShowDur && (
+                <div>
+                  <div style={{ fontSize:13, fontWeight:600, color:"#374151", marginBottom:6 }}>Date d'expiration</div>
+                  <input type="datetime-local" value={linkEditExpiry} onChange={e=>setLinkEditExpiry(e.target.value)}
+                    style={{ width:"100%", border:"1.5px solid #E2E8F0", borderRadius:10, padding:"11px 13px", fontSize:15, color:"#111", background:"#F8FAFC", outline:"none", boxSizing:"border-box" }} />
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+        <div style={{ padding:"12px 16px 28px", background:"#fff", borderTop:"1px solid rgba(0,0,0,0.07)" }}>
+          <button disabled={linkEditSaving}
+            onClick={() => {
+              setLinkEditSaving(true);
+              apiUpdateGroupInviteLink(activeGroupId, activeLink.id, {
+                name: linkEditName.trim() || undefined,
+                type: linkEditType,
+                maxUses: editShowUses ? parseInt(linkEditMaxUses) || null : null,
+                expiresAt: editShowDur && linkEditExpiry ? new Date(linkEditExpiry).toISOString() : null,
+              }).then(updated => {
+                setGrpInviteLinks(prev => prev.map(l => l.id === updated.id ? updated : l));
+                setLinkEditSaving(false);
+                setShowGrpLinkEdit(false);
+              }).catch(() => setLinkEditSaving(false));
+            }}
+            style={{ width:"100%", padding:"14px", background:linkEditSaving?"#9CA3AF":"var(--bp-primary)", border:"none", borderRadius:14, fontSize:16, fontWeight:700, color:"#fff", cursor:linkEditSaving?"default":"pointer" }}>
+            {linkEditSaving ? "Enregistrement…" : "Enregistrer les modifications"}
+          </button>
+        </div>
+      </div>
+    , document.body);
+  }
+
+  /* ── RÉVOQUER LE LIEN (confirmation) ── */
+  if (activeGroupId !== null && showGrpLinkRevoke && activeLink) {
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, zIndex:10010, display:"flex", alignItems:"flex-end", justifyContent:"center" }}>
+        <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.5)" }} onClick={() => setShowGrpLinkRevoke(false)} />
+        <div style={{ position:"relative", background:"#fff", borderRadius:"20px 20px 0 0", padding:"24px 16px 36px", width:"100%", maxWidth:480, animation:"slideUp 0.2s ease" }}>
+          <div style={{ width:40, height:4, borderRadius:2, background:"#E5E7EB", margin:"0 auto 20px" }} />
+          <div style={{ width:56, height:56, borderRadius:"50%", background:"#FEE2E2", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 16px" }}>
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="9"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+          </div>
+          <h3 style={{ fontSize:19, fontWeight:700, color:"#000", textAlign:"center", margin:"0 0 10px" }}>Révoquer ce lien ?</h3>
+          <p style={{ fontSize:14.5, color:"#6B7280", textAlign:"center", lineHeight:1.55, margin:"0 0 24px" }}>Les personnes utilisant ce lien ne pourront plus rejoindre le groupe avec celui-ci.</p>
+          <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+            <button onClick={() => {
+              apiRevokeGroupInviteLink(activeGroupId, activeLink.id)
+                .then(() => {
+                  setGrpInviteLinks(prev => prev.map(l => l.id === activeLink.id ? { ...l, revoked: true, status: "revoked" as const, revokedAt: new Date().toISOString() } : l));
+                  setShowGrpLinkRevoke(false);
+                  setActiveLinkId(null);
+                })
+                .catch(() => {});
+            }}
+              style={{ padding:"14px", background:"#EF4444", border:"none", borderRadius:14, fontSize:16, fontWeight:700, color:"#fff", cursor:"pointer" }}>
+              Révoquer le lien
+            </button>
+            <button onClick={() => setShowGrpLinkRevoke(false)}
+              style={{ padding:"14px", background:"#F1F5F9", border:"none", borderRadius:14, fontSize:16, fontWeight:600, color:"#374151", cursor:"pointer" }}>
+              Annuler
+            </button>
+          </div>
+        </div>
+        <style>{`@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }`}</style>
+      </div>
+    , document.body);
+  }
+
+  /* ── GESTION DES LIENS ── */
+  if (activeGroupId !== null && showGrpLinkManage) {
+    const FILTERS: { key: typeof linkManageFilter; label: string }[] = [
+      { key: "all", label: "Tous" },
+      { key: "active", label: "Actifs" },
+      { key: "revoked", label: "Révoqués" },
+      { key: "expired", label: "Expirés" },
+    ];
+    const filteredLinks = grpInviteLinks.filter(l => {
+      if (linkManageFilter === "all") return true;
+      return l.status === linkManageFilter;
+    });
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, background:"#F1F5F9", zIndex:10003, display:"flex", flexDirection:"column" }}>
+        {GRP_SUB_HEADER("Gestion des liens", () => setShowGrpLinkManage(false))}
+        {/* Filtres */}
+        <div style={{ display:"flex", gap:8, padding:"12px 16px", background:"#fff", borderBottom:"1px solid rgba(0,0,0,0.07)" }}>
+          {FILTERS.map(f => (
+            <button key={f.key} onClick={() => setLinkManageFilter(f.key)}
+              style={{ flex:1, padding:"7px 0", borderRadius:20, border:"none", background:linkManageFilter===f.key?"var(--bp-primary)":"#F1F5F9", color:linkManageFilter===f.key?"#fff":"#374151", fontWeight:linkManageFilter===f.key?700:500, fontSize:13, cursor:"pointer", transition:"all 0.15s" }}>
+              {f.label}
+            </button>
+          ))}
+        </div>
+        <div style={{ flex:1, overflowY:"auto", padding:"12px 0 32px" }}>
+          {filteredLinks.length === 0 && (
+            <div style={{ textAlign:"center", padding:"60px 16px" }}>
+              <p style={{ fontSize:14, color:"#9CA3AF" }}>Aucun lien dans cette catégorie.</p>
+            </div>
+          )}
+          {filteredLinks.map((l, idx) => {
+            const typeLabel: Record<string,string> = { unlimited:"Illimité", uses:"Limité", duration:"Expirant", both:"Personnalisé" };
+            return (
+              <div key={l.id} style={{ background:"#fff", margin:"0 0 6px", padding:"14px 16px", position:"relative" }}>
+                <div style={{ display:"flex", alignItems:"flex-start", gap:10 }}>
                   <div style={{ flex:1, minWidth:0 }}>
-                    <div style={{ fontWeight:600, fontSize:14.5, color:"#000", fontFamily:"monospace", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{l.url}</div>
-                    <div style={{ fontSize:12.5, color:"#9CA3AF" }}>{l.createdByName ? `Créé par ${l.createdByName}` : l.label ?? "Lien d'invitation"}</div>
+                    <div style={{ fontFamily:"monospace", fontSize:13.5, color:"#374151", fontWeight:600, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{l.url}</div>
+                    <div style={{ fontSize:12, color:"#9CA3AF", marginTop:3 }}>
+                      {l.name || typeLabel[l.type] || "Illimité"}
+                      {l.createdAt && ` • Créé le ${new Date(l.createdAt).toLocaleDateString("fr-FR")}`}
+                    </div>
+                    <div style={{ display:"flex", gap:10, marginTop:6, flexWrap:"wrap" }}>
+                      <span style={{ fontSize:12, color:"#9CA3AF" }}>
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#9CA3AF" strokeWidth="2" style={{ marginRight:3, verticalAlign:"middle" }}><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        {l.clicksCount} clics
+                      </span>
+                      <span style={{ fontSize:12, color:"#9CA3AF" }}>
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#9CA3AF" strokeWidth="2" style={{ marginRight:3, verticalAlign:"middle" }}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                        {l.usesCount} / {l.maxUses ?? "∞"} utilisations
+                      </span>
+                      {l.expiresAt && <span style={{ fontSize:12, color:"#9CA3AF" }}>Expire le {new Date(l.expiresAt).toLocaleDateString("fr-FR")}</span>}
+                    </div>
                   </div>
-                  <button onClick={() => setGrpLinkMenu(grpLinkMenu === l.id ? null : l.id)} style={{ background:"none", border:"none", cursor:"pointer", padding:6 }}>
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="#CBD5E1"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
-                  </button>
-                  {grpLinkMenu === l.id && (
-                    <>
-                      <div onClick={() => setGrpLinkMenu(null)} style={{ position:"fixed", inset:0, zIndex:5 }} />
-                      <div style={{ position:"absolute", right:0, top:44, background:"#fff", borderRadius:14, boxShadow:"0 8px 32px rgba(0,0,0,0.15)", zIndex:10, width:180, overflow:"hidden" }}>
-                        <div onClick={() => { navigator.clipboard?.writeText(l.url); setGrpLinkMenu(null); }} style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 16px", cursor:"pointer", borderBottom:"1px solid rgba(0,0,0,0.07)" }}>
-                          <span style={{ fontSize:16 }}>📋</span><span style={{ fontSize:14.5, color:"#000" }}>Copier</span>
-                        </div>
-                        <div onClick={() => { setGrpLinkMenu(null); apiRevokeGroupInviteLink(activeGroupId, l.id).then(() => setGrpInviteLinks(prev => prev.map(x => x.id === l.id ? { ...x, revoked:true } : x))).catch(()=>{}); }}
-                          style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 16px", cursor:"pointer" }}>
-                          <span style={{ fontSize:16 }}>🚫</span><span style={{ fontSize:14.5, color:"#EF4444" }}>Révoquer</span>
-                        </div>
-                      </div>
-                    </>
-                  )}
+                  <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0 }}>
+                    <LinkStatusBadge status={l.status} />
+                    {!l.revoked && (
+                      <button onClick={e => { e.stopPropagation(); setActiveLinkId(l.id); setGrpLinkMenu(grpLinkMenu===l.id?null:l.id); }}
+                        style={{ background:"none", border:"none", cursor:"pointer", padding:4, position:"relative" }}>
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="#94A3B8"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>
+                        <LinkThreeDotMenu link={l} top={28} />
+                      </button>
+                    )}
+                  </div>
                 </div>
-              ))}
-            </div>
-          )}
-          {revokedLinks.length > 0 && (
-            <div style={{ background:"#fff", margin:"0 0 6px", padding:"10px 16px 12px" }}>
-              <div style={{ fontSize:14, fontWeight:700, color:"#9CA3AF", marginBottom:10 }}>Liens révoqués</div>
-              {revokedLinks.map(l => (
-                <div key={l.id} style={{ padding:"6px 0", borderBottom:"1px solid rgba(0,0,0,0.05)" }}>
-                  <div style={{ fontSize:13.5, color:"#9CA3AF", fontFamily:"monospace", textDecoration:"line-through", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{l.url}</div>
-                </div>
-              ))}
-            </div>
-          )}
+              </div>
+            );
+          })}
+        </div>
+        {/* Bouton créer */}
+        <div style={{ padding:"12px 16px 28px", background:"#fff", borderTop:"1px solid rgba(0,0,0,0.07)" }}>
+          <button onClick={() => { setNewLinkType("unlimited"); setNewLinkName(""); setNewLinkMaxUses("100"); setNewLinkExpiry(""); setShowGrpCreateLink(true); }}
+            style={{ width:"100%", padding:"13px", background:"var(--bp-primary)", border:"none", borderRadius:14, fontSize:15, fontWeight:700, color:"#fff", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Créer un nouveau lien
+          </button>
         </div>
       </div>
     , document.body);

@@ -1,0 +1,844 @@
+MISSION — REPRODUCTION UI 1000 % ET EXTENSION COMPLÈTE
+
+Tu dois reproduire et développer l’interface BrutePawa — Gestion des liens d’invitation de groupe à un niveau de finition ultra premium, supérieur à une interface sociale classique.
+
+RÈGLE ABSOLUE
+
+La moindre interprétation personnelle, approximation, simplification ou invention visuelle est considérée comme un ÉCHEC.
+
+Le résultat attendu doit respecter la référence fournie dans sa structure, ses proportions, ses espacements, sa hiérarchie visuelle, ses couleurs, ses composants et son comportement.
+
+Tu dois d’abord analyser intégralement les captures de référence avant de modifier le code.
+
+NE SUPPRIME AUCUN élément existant fonctionnel.
+
+NE CHANGE PAS arbitrairement la structure actuelle.
+
+N’AJOUTE PAS d’éléments décoratifs inutiles.
+
+L’objectif est :
+
+«Même logique + même structure visuelle + même expérience utilisateur + finition BrutePawa ultra premium.»
+
+---
+
+1. ÉCRANS DE RÉFÉRENCE À RESPECTER
+
+Les captures fournies constituent la référence principale.
+
+Elles montrent notamment :
+
+Écran A — Paramètres du groupe
+
+Titre :
+
+Paramètres du groupe
+
+En-tête :
+
+- flèche retour à gauche
+- titre centré
+- coche verte de validation à droite
+
+Section :
+
+Type de groupe
+
+Deux choix :
+
+Groupe privé
+
+- indicateur vert sélectionné
+- titre noir
+- description grise
+
+Groupe public
+
+- cercle non sélectionné
+- titre noir
+- description grise
+
+Séparateur horizontal.
+
+Section :
+
+Lien d'invitation
+
+Carte du lien :
+"brutepawa.com/join/8rk3c0n"
+
+Menu trois points vertical à droite.
+
+Deux boutons :
+
+- Copier
+- Partager
+
+Texte explicatif sous les boutons.
+
+Puis :
+
+Gérer les liens d'invitation
+
+avec icône de chaîne/lien et description.
+
+---
+
+2. ÉCRAN B — LIENS D'INVITATION
+
+Titre :
+
+Liens d'invitation
+
+En-tête avec retour.
+
+Section :
+
+Lien d'invitation
+
+Carte contenant :
+"brutepawa.com/join/8rk3c0n"
+
+Menu trois points.
+
+Boutons :
+
+- Copier
+- Partager
+
+Puis une action clairement séparée :
+
++ Créer un nouveau lien
+
+Puis une zone explicative.
+
+Conserver exactement cette logique.
+
+---
+
+3. ÉCRAN C — MENU DES TROIS POINTS
+
+Lorsque l'utilisateur appuie sur le bouton "⋮", afficher un menu contextuel premium.
+
+Le menu doit être :
+
+- propre
+- compact
+- parfaitement aligné
+- accessible
+- animé subtilement
+- avec ombre légère
+- avec coins arrondis
+- sans effet excessif
+
+Options obligatoires :
+
+Modifier
+
+Permet de modifier les paramètres du lien.
+
+Révoquer le lien
+
+Action destructive.
+
+Elle doit demander une confirmation avant exécution.
+
+Voir les statistiques
+
+Ouvre la page complète des statistiques du lien.
+
+Partager via QR Code
+
+Ouvre la page QR Code.
+
+---
+
+4. SOUS-PAGE « MODIFIER LE LIEN »
+
+Créer une vraie page dédiée.
+
+Titre :
+
+Modifier le lien
+
+Afficher :
+
+Nom du lien
+
+Champ permettant de donner un nom personnalisé au lien.
+
+Exemple :
+
+"Invitation communauté BrutePawa"
+
+Type de lien
+
+Options :
+
+- Lien illimité
+- Limité en utilisations
+- Limité dans le temps
+- Limité en utilisations + durée
+
+Limite d'utilisations
+
+Champ numérique.
+
+Exemple :
+
+"100"
+
+Afficher clairement :
+
+"0 / 100 utilisations"
+
+Date d'expiration
+
+Sélecteur date + heure.
+
+Bouton principal
+
+Enregistrer les modifications
+
+Le bouton doit utiliser le vert officiel BrutePawa.
+
+---
+
+5. SOUS-PAGE « RÉVOQUER LE LIEN »
+
+Ne jamais révoquer immédiatement.
+
+Afficher une modale de confirmation premium.
+
+Titre :
+
+Révoquer ce lien ?
+
+Texte :
+
+«Les personnes utilisant ce lien ne pourront plus rejoindre le groupe avec celui-ci.»
+
+Deux actions :
+
+Annuler
+
+Révoquer le lien
+
+La deuxième action est destructive et visuellement distincte.
+
+Après confirmation :
+
+- invalider réellement le lien
+- empêcher toute nouvelle utilisation
+- conserver l'historique
+- passer son statut à Révoqué
+
+Afficher une confirmation claire.
+
+---
+
+6. SOUS-PAGE « STATISTIQUES DU LIEN »
+
+Créer une page complète et professionnelle.
+
+Titre :
+
+Statistiques du lien
+
+Afficher en haut une carte récapitulative.
+
+Indicateurs :
+
+Clics
+
+Exemple :
+"245"
+
+Utilisations
+
+Exemple :
+"87"
+
+Taux de conversion
+
+Exemple :
+"35,5 %"
+
+Puis :
+
+Activité récente
+
+Liste chronologique.
+
+Chaque événement doit afficher :
+
+- utilisateur
+- action
+- date/heure relative
+- avatar si disponible
+- statut
+
+Exemples :
+
+"Utilisateur anonyme — A utilisé le lien"
+
+"Jean Dupont — A utilisé le lien"
+
+"Marie Martin — A cliqué sur le lien"
+
+Ajouter :
+
+Voir toutes les activités
+
+---
+
+7. SOUS-PAGE « QR CODE »
+
+Titre :
+
+Partager via QR Code
+
+Afficher le QR Code du lien réel.
+
+Le QR Code doit être généré dynamiquement à partir du véritable lien.
+
+Sous le QR Code :
+
+Enregistrer
+
+Partager
+
+Le QR Code doit être parfaitement scannable.
+
+Ne jamais utiliser une image QR décorative fixe si un générateur dynamique est disponible.
+
+Ajouter éventuellement le logo BrutePawa au centre uniquement si cela ne compromet pas la lisibilité du QR Code.
+
+---
+
+8. SOUS-PAGE « PARTAGER LE LIEN »
+
+Créer une interface de partage premium.
+
+Afficher :
+
+Partager le lien
+
+Applications/actions :
+
+- WhatsApp
+- Messenger
+- Telegram
+- Facebook
+- Copier le lien
+- Partager via QR Code
+- Plus d'options
+
+Utiliser de vraies icônes cohérentes.
+
+NE PAS dessiner manuellement des logos approximatifs.
+
+Utiliser des bibliothèques d'icônes fiables ou les assets officiels disponibles dans le projet.
+
+---
+
+9. SOUS-PAGE « CRÉER UN NOUVEAU LIEN »
+
+Titre :
+
+Créer un nouveau lien
+
+Type de lien
+
+Sélection :
+
+Lien illimité
+
+Description :
+
+"Aucune limite d'utilisation ou de durée."
+
+Lien avec limite d'utilisations
+
+Description :
+
+"Limitez le nombre de personnes pouvant utiliser ce lien."
+
+Lien avec durée limitée
+
+Description :
+
+"Définissez une date d'expiration pour ce lien."
+
+Lien avec limites personnalisées
+
+Permet de combiner les deux.
+
+---
+
+Paramètres
+
+Nom du lien
+
+Champ optionnel.
+
+Limite d'utilisations
+
+Champ numérique.
+
+Date d'expiration
+
+Date + heure.
+
+Bouton
+
+Créer le lien
+
+Après création :
+
+rediriger vers une page de succès.
+
+---
+
+10. PAGE « LIEN CRÉÉ »
+
+Créer une page de confirmation premium.
+
+Afficher :
+
+✓
+
+Lien créé avec succès
+
+Afficher le nouveau lien.
+
+Puis :
+
+Détails du lien
+
+- Type
+- Nombre d'utilisations
+- Expiration
+- Statut
+
+Actions :
+
+Copier
+
+Partager
+
+Terminer
+
+---
+
+11. PAGE « GESTION DES LIENS »
+
+La section :
+
+Gérer les liens d'invitation
+
+doit maintenant ouvrir une vraie interface.
+
+Titre :
+
+Gestion des liens
+
+Filtres :
+
+- Tous
+- Actifs
+- Révoqués
+- Expirés
+
+Chaque lien doit être affiché dans une carte compacte.
+
+Exemple :
+
+"brutepawa.com/join/8rk3c0n"
+
+Informations :
+
+"Illimité"
+
+"245 clics"
+
+"87 utilisations"
+
+Statut :
+
+Actif
+
+Actions via "⋮".
+
+---
+
+12. COMPORTEMENT DES STATUTS
+
+Chaque lien doit avoir un véritable état :
+
+ACTIF
+
+Le lien fonctionne normalement.
+
+EXPIRÉ
+
+La date limite est dépassée.
+
+RÉVOQUÉ
+
+Le propriétaire a manuellement invalidé le lien.
+
+LIMITE ATTEINTE
+
+Le nombre maximum d'utilisations est atteint.
+
+Les états doivent être déterminés par la logique réelle de l'application.
+
+Ne jamais afficher un statut uniquement visuel.
+
+---
+
+13. LOGIQUE BACKEND OBLIGATOIRE
+
+Tous les liens doivent être persistants.
+
+Chaque lien doit posséder au minimum :
+
+- id
+- group_id
+- creator_id
+- token unique
+- name
+- type
+- max_uses
+- uses_count
+- expires_at
+- created_at
+- revoked_at
+- status
+
+Le token doit être suffisamment aléatoire.
+
+Ne jamais utiliser un token prévisible.
+
+---
+
+14. SÉCURITÉ
+
+Un lien révoqué doit être réellement inutilisable.
+
+Un lien expiré doit être réellement inutilisable.
+
+Un lien ayant atteint sa limite doit être réellement inutilisable.
+
+La vérification doit être faite côté serveur.
+
+Ne jamais faire confiance uniquement au frontend.
+
+Empêcher :
+
+- double utilisation concurrente
+- dépassement de limite
+- manipulation du compteur
+- accès non autorisé aux statistiques
+- modification d'un lien appartenant à un autre utilisateur
+
+---
+
+15. DESIGN SYSTEM BRUTEPawa
+
+Respecter strictement le langage visuel existant.
+
+Couleur principale
+
+Vert BrutePawa :
+
+"#22C55E"
+
+Utiliser le vert avec parcimonie.
+
+Fond
+
+Blanc / gris extrêmement clair.
+
+Texte principal
+
+Noir / presque noir.
+
+Texte secondaire
+
+Gris neutre.
+
+Séparateurs
+
+Gris très léger.
+
+Cartes
+
+Coins légèrement arrondis.
+
+Ombres extrêmement discrètes.
+
+---
+
+16. ICÔNES
+
+Utiliser de véritables icônes vectorielles.
+
+Ne jamais remplacer une icône par :
+
+- emoji
+- caractère Unicode approximatif
+- dessin CSS
+- symbole improvisé
+
+Les icônes doivent avoir :
+
+- même poids visuel
+- même taille
+- même alignement
+- même style
+
+Le bouton "⋮" doit rester parfaitement vertical.
+
+---
+
+17. ESPACEMENTS
+
+Respecter rigoureusement :
+
+- marges horizontales
+- hauteur des headers
+- hauteur des boutons
+- espacement entre titres et descriptions
+- espacement entre sections
+- padding des cartes
+- position des icônes
+- alignement vertical
+
+Aucun élément ne doit être placé « à peu près ».
+
+Utiliser un système d'espacement cohérent.
+
+---
+
+18. RESPONSIVE
+
+L'interface doit être parfaite sur :
+
+- petits smartphones
+- smartphones standards
+- grands smartphones
+- tablettes
+
+Ne jamais casser :
+
+- les boutons
+- les cartes
+- les titres
+- les menus
+- les champs
+- les QR Codes
+
+Aucun scroll horizontal.
+
+---
+
+19. ANIMATIONS
+
+Utiliser uniquement des animations premium et rapides :
+
+- ouverture du menu
+- fermeture du menu
+- changement de page
+- confirmation
+- création du lien
+- apparition des modales
+
+Les animations doivent être :
+
+rapides + fluides + discrètes.
+
+Pas de grosses animations inutiles.
+
+---
+
+20. ACCESSIBILITÉ
+
+Tous les éléments interactifs doivent avoir :
+
+- zone tactile suffisante
+- état focus
+- état pressed
+- contraste suffisant
+- label accessible
+
+Le menu trois points doit être utilisable au clavier lorsqu'il s'agit du web.
+
+---
+
+21. ÉTATS À IMPLÉMENTER
+
+Chaque page doit gérer :
+
+Loading
+
+Skeleton propre.
+
+Empty state
+
+Message clair.
+
+Error
+
+Message compréhensible.
+
+Success
+
+Confirmation élégante.
+
+Disabled
+
+Boutons désactivés lorsque nécessaire.
+
+Offline / réseau indisponible
+
+Message approprié.
+
+Ne jamais laisser une page vide sans explication.
+
+---
+
+22. INTERDICTIONS ABSOLUES
+
+Tu ne dois PAS :
+
+- changer arbitrairement les couleurs
+- inventer une nouvelle palette
+- modifier le style BrutePawa
+- supprimer des fonctions
+- ajouter des widgets inutiles
+- ajouter des statistiques imaginaires
+- inventer des données backend
+- utiliser des emojis à la place des icônes
+- utiliser des logos sociaux dessinés approximativement
+- créer des boutons incohérents
+- modifier les textes sans raison
+- déplacer les éléments sans nécessité
+- créer des marges aléatoires
+- ajouter des animations excessives
+- créer des pages mortes
+- simuler une fonctionnalité qui devrait fonctionner réellement
+
+---
+
+23. QUALITÉ VISUELLE EXIGÉE
+
+Le résultat final doit donner immédiatement l'impression :
+
+« Produit social international haut de gamme. »
+
+Le niveau attendu doit être comparable à une application professionnelle majeure.
+
+Chaque pixel compte.
+
+Chaque alignement compte.
+
+Chaque espacement compte.
+
+Chaque état compte.
+
+Chaque interaction compte.
+
+---
+
+24. AVANT DE CODER
+
+Tu dois :
+
+1. inspecter le projet existant ;
+2. identifier le framework utilisé ;
+3. identifier les composants existants ;
+4. identifier le système de couleurs ;
+5. identifier les routes ;
+6. identifier le backend ;
+7. identifier la base de données ;
+8. identifier les composants d'icônes ;
+9. identifier le système responsive ;
+10. réutiliser les composants existants lorsque cela est pertinent.
+
+Ne réécris pas inutilement l'application.
+
+---
+
+25. APRÈS IMPLÉMENTATION
+
+Effectuer obligatoirement une vérification complète.
+
+Tester :
+
+- création d'un lien
+- copie
+- partage
+- QR Code
+- modification
+- révocation
+- expiration
+- limite d'utilisation
+- statistiques
+- filtres
+- navigation retour
+- menu trois points
+- responsive
+- états loading
+- erreurs
+- permissions
+
+---
+
+26. CRITÈRE D'ÉCHEC
+
+Considère ton travail comme ÉCHEC si :
+
+- une page demandée manque ;
+- un bouton ne fonctionne pas ;
+- un lien révoqué fonctionne encore ;
+- un lien expiré fonctionne encore ;
+- les statistiques ne correspondent pas aux données réelles ;
+- le QR Code ne correspond pas au lien ;
+- le menu trois points ne fonctionne pas ;
+- une icône est remplacée par un emoji ;
+- l'interface déborde sur mobile ;
+- les espacements sont incohérents ;
+- le design s'éloigne de la référence ;
+- une fonctionnalité est simulée au lieu d'être réellement implémentée.
+
+---
+
+OBJECTIF FINAL
+
+Je ne veux pas une simple copie visuelle.
+
+Je veux une version BrutePawa ultra premium, complète, cohérente, fonctionnelle et prête pour une vraie application sociale internationale, construite à partir des captures fournies.
+
+Référence visuelle = autorité.
+
+Fonctionnement réel = obligatoire.
+
+Aucune invention inutile.
+
+Aucune approximation.
+
+Aucun élément oublié.
+
+Aucune interprétation personnelle.
+
+100 % demandé = minimum attendu.
+
+99 % = ÉCHEC.
+
+200 % = acceptable.
+
+1000 % = objectif.
+
+Avant de considérer la tâche terminée, vérifie chaque écran, chaque interaction, chaque état et chaque détail visuel.

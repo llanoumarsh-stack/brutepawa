@@ -257,8 +257,15 @@ export const chatGroupInviteLinksTable = pgTable("chat_group_invite_links", {
   groupId: integer("group_id").notNull(),
   code: text("code").notNull(),
   label: text("label"),
+  name: text("name"),
+  type: text("type").notNull().default("unlimited"),
+  maxUses: integer("max_uses"),
+  usesCount: integer("uses_count").notNull().default(0),
+  expiresAt: timestamp("expires_at", { withTimezone: true }),
+  clicksCount: integer("clicks_count").notNull().default(0),
   createdById: integer("created_by_id").notNull(),
   revoked: boolean("revoked").notNull().default(false),
+  revokedAt: timestamp("revoked_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [uniqueIndex("chat_group_invite_links_code_unique").on(t.code), index("chat_group_invite_links_group_idx").on(t.groupId)]);
 export const chatGroupMembersTable = pgTable("chat_group_members", {

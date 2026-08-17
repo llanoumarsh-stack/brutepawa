@@ -2248,10 +2248,25 @@ export interface ApiGroupInviteLink {
   code: string;
   url: string;
   label: string | null;
+  name: string | null;
+  type: "unlimited" | "uses" | "duration" | "both";
+  maxUses: number | null;
+  usesCount: number;
+  expiresAt: string | null;
+  clicksCount: number;
   createdById: number;
   createdByName: string | null;
   revoked: boolean;
+  revokedAt: string | null;
   createdAt: string;
+  status: "active" | "expired" | "revoked" | "limit_reached";
+}
+
+export interface ApiGroupInviteLinkStats {
+  clicks: number;
+  uses: number;
+  conversionRate: number;
+  activity: { userName: string; action: string; time: string; initials: string; color: string; avatarUrl?: string | null }[];
 }
 
 export async function apiGetGroupSettings(id: number): Promise<ApiGroupSettings> {
@@ -2271,8 +2286,8 @@ export async function apiGetGroupInviteLinks(id: number): Promise<ApiGroupInvite
   return res.json() as Promise<ApiGroupInviteLink[]>;
 }
 
-export async function apiCreateGroupInviteLink(id: number, label?: string): Promise<ApiGroupInviteLink> {
-  const res = await apiFetch(`/chat-groups/${id}/invite-links`, { method: "POST", body: JSON.stringify({ label }) });
+export async function apiCreateGroupInviteLink(id: number, label?: string, opts?: { type?: string; maxUses?: number; expiresAt?: string }): Promise<ApiGroupInviteLink> {
+  const res = await apiFetch(`/chat-groups/${id}/invite-links`, { method: "POST", body: JSON.stringify({ label, ...opts }) });
   if (!res.ok) throw new Error("Erreur création lien");
   return res.json() as Promise<ApiGroupInviteLink>;
 }
@@ -2280,6 +2295,28 @@ export async function apiCreateGroupInviteLink(id: number, label?: string): Prom
 export async function apiRevokeGroupInviteLink(id: number, linkId: number): Promise<void> {
   const res = await apiFetch(`/chat-groups/${id}/invite-links/${linkId}`, { method: "DELETE" });
   if (!res.ok) throw new Error("Erreur révocation lien");
+}
+
+export async function apiUpdateGroupInviteLink(groupId: number, linkId: number, data: { name?: string; type?: string; maxUses?: number | null; expiresAt?: string | null }): Promise<ApiGroupInviteLink> {
+  const res = await apiFetch(`/chat-groups/${groupId}/invite-links/${linkId}`, { method: "PATCH", body: JSON.stringify(data) });
+  if (!res.ok) throw new Error("Erreur mise à jour lien");
+  return res.json() as Promise<ApiGroupInviteLink>;
+}
+
+export async function apiGetGroupInviteLinkStats(groupId: number, linkId: number): Promise<ApiGroupInviteLinkStats> {
+  const res = await apiFetch(`/chat-groups/${groupId}/invite-links/${linkId}/stats`);
+  if (!res.ok) throw new Error("Erreur chargement statistiques");
+  return res.json() as Promise<ApiGroupInviteLinkStats>;
+}
+
+export async function apiTrackInviteLinkClick(code: string): Promise<void> {
+  await apiFetch(`/invite/${code}/click`, { method: "POST" }).catch(() => {});
+}
+
+export async function apiJoinViaInviteLink(code: string): Promise<{ groupId: number; groupName: string }> {
+  const res = await apiFetch(`/invite/${code}/join`, { method: "POST" });
+  if (!res.ok) throw new Error("Impossible de rejoindre le groupe");
+  return res.json() as Promise<{ groupId: number; groupName: string }>;
 }
 
 export interface ApiChatGroupMembersGrouped {
