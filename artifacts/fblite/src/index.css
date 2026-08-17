@@ -23,6 +23,31 @@ input, textarea, [contenteditable="true"], [contenteditable] {
   -webkit-touch-callout: default;
 }
 
+/* ── Appearance theme tokens (updated by AppearanceContext) ── */
+:root {
+  --bp-primary:      #22C55E;
+  --bp-primary-dark: #16A34A;
+  --bp-font-base:    15px;
+}
+/* Light theme (default) */
+:root, [data-bp-theme="light"] {
+  --theme-bg:       #F2F2F7;
+  --theme-surface:  #FFFFFF;
+  --theme-text:     #111827;
+  --theme-text2:    #6B7280;
+  --theme-border:   #E5E7EB;
+  --theme-muted:    #9CA3AF;
+}
+/* Dark theme */
+[data-bp-theme="dark"] {
+  --theme-bg:       #111827;
+  --theme-surface:  #1F2937;
+  --theme-text:     #F9FAFB;
+  --theme-text2:    #9CA3AF;
+  --theme-border:   #374151;
+  --theme-muted:    #6B7280;
+}
+
 :root {
   --fb-blue: #22C55E;
   --fb-blue-dark: #16A34A;

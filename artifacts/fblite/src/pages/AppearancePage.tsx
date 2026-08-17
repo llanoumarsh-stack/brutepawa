@@ -1,127 +1,232 @@
 import { useState } from "react";
 import { useNavigate } from "../router";
+import { useAppearance, type Theme, type FontSize, type PrimaryColor } from "../contexts/AppearanceContext";
 
-const C = { bg:"#F8FAFC", card:"#FFFFFF", primary:"#22C55E", primaryDark:"#16A34A", text:"#111827", secondary:"#64748B", muted:"#9CA3AF", shadow:"0 8px 30px rgba(0,0,0,0.05)" };
-type Theme = "clair"|"sombre"|"systeme";
-type Size  = "petite"|"moyenne"|"grande";
+/* ── Constants ──────────────────────────────────────────────── */
+const THEMES: { key: Theme; label: string }[] = [
+  { key: "light",  label: "Clair"   },
+  { key: "dark",   label: "Sombre"  },
+  { key: "system", label: "Système" },
+];
 
-function SubHeader({ title, onBack }:{title:string;onBack:()=>void}) {
+const COLORS: { v: PrimaryColor; label: string }[] = [
+  { v: "#22C55E", label: "Vert"   },
+  { v: "#3B82F6", label: "Bleu"   },
+  { v: "#EF4444", label: "Rouge"  },
+  { v: "#8B5CF6", label: "Violet" },
+  { v: "#F97316", label: "Orange" },
+  { v: "#EC4899", label: "Rose"   },
+];
+
+const SIZES: { key: FontSize; label: string; px: number }[] = [
+  { key: "small",  label: "Petite",  px: 13 },
+  { key: "medium", label: "Moyenne", px: 16 },
+  { key: "large",  label: "Grande",  px: 20 },
+];
+
+/* ── Theme tokens per mode ───────────────────────────────────── */
+type Mode = "light" | "dark";
+function resolveMode(theme: Theme): Mode {
+  if (theme === "light") return "light";
+  if (theme === "dark")  return "dark";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+const T = {
+  light: { bg: "#F2F2F7", card: "#FFFFFF", text: "#111827", sub: "#6B7280", border: "#E5E7EB", muted: "#9CA3AF" },
+  dark:  { bg: "#111827", card: "#1F2937", text: "#F9FAFB", sub: "#9CA3AF", border: "#374151", muted: "#6B7280" },
+};
+
+/* ── Mini phone thumbnail ────────────────────────────────────── */
+function PhoneThumbnail({ themeKey, accent }: { themeKey: Theme; accent: string }) {
+  const isDark = themeKey === "dark";
+  const bg     = isDark ? "#1F2937" : "#FFFFFF";
+  const line   = isDark ? "#374151" : "#E5E7EB";
+
+  if (themeKey === "system") {
+    return (
+      <div style={{ width: 52, height: 68, borderRadius: 10, overflow: "hidden", border: "1.5px solid #E5E7EB", position: "relative", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+        {/* Left half: light */}
+        <div style={{ position: "absolute", left: 0, top: 0, width: "50%", height: "100%", background: "#FFFFFF" }}>
+          <div style={{ height: 9, background: accent, opacity: 0.9 }} />
+          <div style={{ margin: "5px 4px 0", height: 4, background: "#111827", borderRadius: 2, opacity: 0.15 }} />
+          <div style={{ margin: "3px 4px 0", height: 4, background: "#111827", borderRadius: 2, opacity: 0.1, width: "70%" }} />
+        </div>
+        {/* Right half: dark */}
+        <div style={{ position: "absolute", right: 0, top: 0, width: "50%", height: "100%", background: "#1F2937" }}>
+          <div style={{ height: 9, background: accent, opacity: 0.9 }} />
+          <div style={{ margin: "5px 4px 0", height: 4, background: "#F9FAFB", borderRadius: 2, opacity: 0.2 }} />
+          <div style={{ margin: "3px 4px 0", height: 4, background: "#F9FAFB", borderRadius: 2, opacity: 0.12, width: "70%" }} />
+        </div>
+        {/* Diagonal separator */}
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg,transparent 49.5%,rgba(0,0,0,0.18) 49.5%,rgba(0,0,0,0.18) 50.5%,transparent 50.5%)" }} />
+      </div>
+    );
+  }
+
   return (
-    <div style={{ background:"#fff", borderBottom:"1px solid #F1F5F9", height:56, display:"flex", alignItems:"center", padding:"0 6px", position:"sticky", top:0, zIndex:30, boxShadow:"0 1px 8px rgba(0,0,0,0.04)" }}>
-      <button onClick={onBack} style={{ width:44,height:44,borderRadius:"50%",background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center" }}>
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={C.text} strokeWidth="2.2" strokeLinecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-      </button>
-      <h1 style={{ flex:1,fontWeight:700,fontSize:17,color:C.text,margin:0,letterSpacing:"-0.3px",textAlign:"center" }}>{title}</h1>
-      <button style={{ width:44,height:44,borderRadius:"50%",background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center" }}>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.5" fill={C.muted}/><circle cx="12" cy="12" r="1.5" fill={C.muted}/><circle cx="12" cy="19" r="1.5" fill={C.muted}/></svg>
-      </button>
+    <div style={{ width: 52, height: 68, borderRadius: 10, overflow: "hidden", border: `1.5px solid ${line}`, background: bg, boxShadow: "0 2px 8px rgba(0,0,0,0.07)" }}>
+      <div style={{ height: 9, background: accent, opacity: 0.9 }} />
+      <div style={{ margin: "5px 4px 0", height: 4, background: isDark ? "#F9FAFB" : "#111827", borderRadius: 2, opacity: isDark ? 0.2 : 0.14 }} />
+      <div style={{ margin: "3px 4px 0", height: 4, background: isDark ? "#F9FAFB" : "#111827", borderRadius: 2, opacity: isDark ? 0.12 : 0.09, width: "70%" }} />
+      <div style={{ margin: "6px 4px 0", display: "flex", gap: 3, alignItems: "flex-start" }}>
+        <div style={{ width: 14, height: 14, borderRadius: 3, background: isDark ? "#374151" : "#E5E7EB", flexShrink: 0 }} />
+        <div style={{ flex: 1 }}>
+          <div style={{ height: 3, background: isDark ? "#F9FAFB" : "#111827", borderRadius: 1, opacity: isDark ? 0.15 : 0.1, marginBottom: 2 }} />
+          <div style={{ height: 3, background: isDark ? "#F9FAFB" : "#111827", borderRadius: 1, opacity: isDark ? 0.1 : 0.07, width: "80%" }} />
+        </div>
+      </div>
     </div>
   );
 }
 
-const THEMES: { key:Theme; label:string; bg:string; accent:string; textC:string }[] = [
-  { key:"clair",   label:"Clair",   bg:"#F8FAFC", accent:"#22C55E", textC:"#111827" },
-  { key:"sombre",  label:"Sombre",  bg:"#111827", accent:"#22C55E", textC:"#F8FAFC" },
-  { key:"systeme", label:"Système", bg:"linear-gradient(135deg,#F8FAFC 50%,#111827 50%)", accent:"#22C55E", textC:"#64748B" },
-];
+/* ── Preview card ─────────────────────────────────────────────── */
+function PreviewCard({ mode, accent, fontSize }: { mode: Mode; accent: string; fontSize: FontSize }) {
+  const tk = T[mode];
+  const nameSize = fontSize === "small" ? 13 : fontSize === "large" ? 17 : 15;
+  return (
+    <div style={{ background: tk.card, borderRadius: 20, border: `2px solid ${accent}`, padding: "16px 16px 14px", marginBottom: 14, transition: "background 0.3s, border-color 0.3s" }}>
+      {/* APERÇU label */}
+      <div style={{ fontSize: 10, fontWeight: 700, color: tk.muted, letterSpacing: "0.8px", textTransform: "uppercase", marginBottom: 12 }}>APERÇU</div>
+      {/* Logo + name row */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+        <div style={{ width: 42, height: 42, borderRadius: "50%", background: accent, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <span style={{ color: "#fff", fontWeight: 800, fontSize: 18 }}>B</span>
+        </div>
+        <div>
+          <div style={{ fontWeight: 700, fontSize: nameSize, color: tk.text, transition: "font-size 0.2s, color 0.3s" }}>BrutePawa</div>
+          <div style={{ fontSize: 11, color: tk.sub, marginTop: 2 }}>Réseau social panafricain</div>
+        </div>
+      </div>
+      {/* Accent bar */}
+      <div style={{ height: 7, background: accent, borderRadius: 99, opacity: 0.9, marginBottom: 6 }} />
+      {/* Gray placeholder lines */}
+      <div style={{ height: 6, background: tk.border, borderRadius: 99, marginBottom: 5, width: "75%" }} />
+      <div style={{ height: 6, background: tk.border, borderRadius: 99, width: "55%", marginBottom: 12 }} />
+      {/* Media row */}
+      <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+        <div style={{ width: 40, height: 36, borderRadius: 8, background: tk.border, flexShrink: 0 }} />
+        <div style={{ flex: 1 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5 }}>
+            <div style={{ width: 22, height: 22, borderRadius: "50%", background: tk.border, flexShrink: 0 }} />
+            <div style={{ height: 5, background: tk.border, borderRadius: 99, width: "40%" }} />
+          </div>
+          <div style={{ height: 5, background: tk.border, borderRadius: 99, width: "90%", marginBottom: 3, opacity: 0.7 }} />
+          <div style={{ height: 5, background: tk.border, borderRadius: 99, width: "65%", opacity: 0.5 }} />
+        </div>
+      </div>
+    </div>
+  );
+}
 
-const COLORS = [
-  { v:"#22C55E", label:"Vert" },
-  { v:"#3B82F6", label:"Bleu" },
-  { v:"#EF4444", label:"Rouge" },
-  { v:"#8B5CF6", label:"Violet" },
-  { v:"#F59E0B", label:"Ambre" },
-  { v:"#EC4899", label:"Rose" },
-];
-
-const SIZES: { key:Size; label:string; size:number }[] = [
-  { key:"petite",  label:"Petite",  size:13 },
-  { key:"moyenne", label:"Moyenne", size:15 },
-  { key:"grande",  label:"Grande",  size:17 },
-];
-
+/* ── Main page ────────────────────────────────────────────────── */
 export default function AppearancePage() {
   const navigate = useNavigate();
-  const [theme, setTheme]   = useState<Theme>("clair");
-  const [color, setColor]   = useState("#22C55E");
-  const [size, setSize]     = useState<Size>("moyenne");
+  const { prefs, setPrefs, save, saving, saved } = useAppearance();
 
-  const selTheme = THEMES.find(t=>t.key===theme)!;
+  /* Local draft state — only committed on "Enregistrer" */
+  const [draft, setDraft] = useState({ ...prefs });
+
+  const mode  = resolveMode(draft.theme);
+  const tk    = T[mode];
+  const color = draft.primaryColor;
+
+  const update = <K extends keyof typeof draft>(k: K, v: typeof draft[K]) =>
+    setDraft(d => ({ ...d, [k]: v }));
+
+  const handleSave = async () => {
+    setPrefs(draft);
+    await save();
+  };
 
   return (
-    <div style={{ background:C.bg, minHeight:"100dvh", fontFamily:"Inter,-apple-system,BlinkMacSystemFont,sans-serif" }}>
-      <SubHeader title="Apparence" onBack={()=>navigate("/settings")}/>
+    <div style={{ background: tk.bg, minHeight: "100dvh", fontFamily: "Inter,-apple-system,BlinkMacSystemFont,sans-serif", transition: "background 0.3s" }}>
 
-      <div style={{ padding:"20px 14px 40px" }}>
-        {/* Live preview card */}
-        <div style={{ background:selTheme.bg,borderRadius:24,boxShadow:C.shadow,padding:"20px 18px",marginBottom:16,border:"2px solid "+color,transition:"all 400ms ease" }}>
-          <div style={{ fontWeight:700,fontSize:13,color:selTheme.textC,marginBottom:12,textTransform:"uppercase",letterSpacing:"0.6px",opacity:.5 }}>Aperçu</div>
-          <div style={{ display:"flex",alignItems:"center",gap:12 }}>
-            <div style={{ width:44,height:44,borderRadius:"50%",background:color,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 4px 12px "+color+"55",flexShrink:0 }}>
-              <span style={{ color:"#fff",fontWeight:800,fontSize:18 }}>B</span>
-            </div>
-            <div>
-              <div style={{ fontWeight:700,fontSize:SIZES.find(s=>s.key===size)!.size,color:selTheme.textC,transition:"font-size 300ms" }}>BrutePawa</div>
-              <div style={{ fontSize:12,color:selTheme.textC,opacity:.5 }}>Réseau social panafricain</div>
-            </div>
-          </div>
-          <div style={{ marginTop:14,height:8,background:color,borderRadius:999,opacity:.2 }}/>
-          <div style={{ marginTop:6,height:8,background:selTheme.textC,borderRadius:999,opacity:.08,width:"70%" }}/>
-          <div style={{ marginTop:6,height:8,background:selTheme.textC,borderRadius:999,opacity:.05,width:"50%" }}/>
-        </div>
+      {/* ── Header ── */}
+      <div style={{ background: tk.card, borderBottom: `1px solid ${tk.border}`, height: 56, display: "flex", alignItems: "center", padding: "0 4px", position: "sticky", top: 0, zIndex: 30, transition: "background 0.3s, border-color 0.3s" }}>
+        <button onClick={() => navigate("/settings")} aria-label="Retour"
+          style={{ width: 44, height: 44, borderRadius: "50%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={tk.text} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 5l-7 7 7 7"/></svg>
+        </button>
+        <h1 style={{ flex: 1, fontWeight: 700, fontSize: 17, color: tk.text, margin: 0, textAlign: "center" }}>Apparence</h1>
+        <button aria-label="Menu" style={{ width: 44, height: 44, borderRadius: "50%", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={tk.muted} strokeWidth="2.1" strokeLinecap="round">
+            <circle cx="12" cy="5"  r="1.2" fill={tk.muted} stroke="none"/>
+            <circle cx="12" cy="12" r="1.2" fill={tk.muted} stroke="none"/>
+            <circle cx="12" cy="19" r="1.2" fill={tk.muted} stroke="none"/>
+          </svg>
+        </button>
+      </div>
 
-        {/* Themes */}
-        <div style={{ background:C.card,borderRadius:24,boxShadow:C.shadow,padding:"18px",marginBottom:12 }}>
-          <div style={{ fontWeight:700,fontSize:14,color:C.text,marginBottom:14 }}>Thème</div>
-          <div style={{ display:"flex",gap:10 }}>
-            {THEMES.map(t=>(
-              <button key={t.key} onClick={()=>setTheme(t.key)} style={{ flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:10,padding:"14px 8px",borderRadius:18,border:theme===t.key?"2px solid "+color:"1.5px solid #E5E7EB",background:theme===t.key?"#F0FDF4":"#F8FAFC",cursor:"pointer",transition:"all 250ms" }}>
-                {/* Mini phone preview */}
-                <div style={{ width:48,height:64,borderRadius:10,background:t.bg,border:"1.5px solid #E5E7EB",overflow:"hidden",position:"relative",boxShadow:"0 2px 8px rgba(0,0,0,0.06)" }}>
-                  <div style={{ height:10,background:color,opacity:.9 }}/>
-                  <div style={{ margin:"6px 5px 0",height:5,background:t.textC,borderRadius:3,opacity:.15 }}/>
-                  <div style={{ margin:"4px 5px 0",height:5,background:t.textC,borderRadius:3,opacity:.1,width:"60%" }}/>
-                  {t.key==="systeme" && <div style={{ position:"absolute",inset:0,background:"linear-gradient(135deg,transparent 50%,rgba(0,0,0,0.5) 50%)" }}/>}
-                </div>
-                <span style={{ fontSize:12,fontWeight:theme===t.key?700:500,color:theme===t.key?color:C.secondary }}>{t.label}</span>
-                {theme===t.key && <div style={{ width:20,height:20,borderRadius:"50%",background:color,display:"flex",alignItems:"center",justifyContent:"center" }}>
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>
-                </div>}
-              </button>
-            ))}
-          </div>
-        </div>
+      <div style={{ padding: "14px 14px 40px" }}>
 
-        {/* Couleur principale */}
-        <div style={{ background:C.card,borderRadius:24,boxShadow:C.shadow,padding:"18px",marginBottom:12 }}>
-          <div style={{ fontWeight:700,fontSize:14,color:C.text,marginBottom:14 }}>Couleur principale</div>
-          <div style={{ display:"flex",gap:12,flexWrap:"wrap" }}>
-            {COLORS.map(cl=>(
-              <button key={cl.v} onClick={()=>setColor(cl.v)} title={cl.label}
-                style={{ width:42,height:42,borderRadius:"50%",background:cl.v,border:color===cl.v?"3px solid #fff":"2px solid transparent",boxShadow:color===cl.v?"0 0 0 2.5px "+cl.v+",0 4px 12px "+cl.v+"55":"0 2px 6px rgba(0,0,0,0.12)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",transition:"all 200ms",flexShrink:0 }}>
-                {color===cl.v && <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>}
-              </button>
-            ))}
+        {/* ── Preview card ── */}
+        <PreviewCard mode={mode} accent={color} fontSize={draft.fontSize} />
+
+        {/* ── Thème ── */}
+        <div style={{ background: tk.card, borderRadius: 20, padding: "16px 16px 18px", marginBottom: 12, transition: "background 0.3s" }}>
+          <div style={{ fontWeight: 700, fontSize: 16, color: tk.text, marginBottom: 14 }}>Thème</div>
+          <div style={{ display: "flex", gap: 10 }}>
+            {THEMES.map(t => {
+              const sel = draft.theme === t.key;
+              return (
+                <button key={t.key} onClick={() => update("theme", t.key)}
+                  aria-pressed={sel}
+                  style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 8, padding: "12px 6px 14px", borderRadius: 16, border: sel ? `2px solid ${color}` : `1.5px solid ${tk.border}`, background: sel ? (mode === "dark" ? "#1a2e1a" : "#F0FDF4") : tk.bg, cursor: "pointer", transition: "all 0.2s" }}>
+                  <PhoneThumbnail themeKey={t.key} accent={color} />
+                  <span style={{ fontSize: 12, fontWeight: sel ? 700 : 500, color: sel ? color : tk.sub }}>{t.label}</span>
+                  {sel && (
+                    <div style={{ width: 22, height: 22, borderRadius: "50%", background: color, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                    </div>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* Taille du texte */}
-        <div style={{ background:C.card,borderRadius:24,boxShadow:C.shadow,padding:"18px" }}>
-          <div style={{ fontWeight:700,fontSize:14,color:C.text,marginBottom:4 }}>Taille du texte</div>
-          <div style={{ fontSize:12,color:C.muted,marginBottom:14 }}>Choisissez la taille de lecture confortable</div>
-          <div style={{ display:"flex",gap:8 }}>
-            {SIZES.map(s=>(
-              <button key={s.key} onClick={()=>setSize(s.key)}
-                style={{ flex:1,padding:"12px 6px",borderRadius:14,border:size===s.key?"2px solid "+color:"1.5px solid #E5E7EB",background:size===s.key?"#F0FDF4":"#F8FAFC",cursor:"pointer",textAlign:"center",transition:"all 200ms" }}>
-                <div style={{ fontSize:s.size,fontWeight:700,color:size===s.key?color:C.secondary,transition:"font-size 200ms" }}>Aa</div>
-                <div style={{ fontSize:11,color:size===s.key?color:C.muted,fontWeight:size===s.key?700:400,marginTop:4 }}>{s.label}</div>
-              </button>
-            ))}
+        {/* ── Couleur principale ── */}
+        <div style={{ background: tk.card, borderRadius: 20, padding: "16px 16px 18px", marginBottom: 12, transition: "background 0.3s" }}>
+          <div style={{ fontWeight: 700, fontSize: 16, color: tk.text, marginBottom: 14 }}>Couleur principale</div>
+          <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+            {COLORS.map(cl => {
+              const sel = draft.primaryColor === cl.v;
+              return (
+                <button key={cl.v} onClick={() => update("primaryColor", cl.v)}
+                  aria-pressed={sel} title={cl.label}
+                  style={{ width: 44, height: 44, borderRadius: "50%", background: cl.v, border: sel ? "2.5px solid #fff" : "2px solid transparent", boxShadow: sel ? `0 0 0 2.5px ${cl.v}, 0 3px 10px ${cl.v}55` : "0 2px 6px rgba(0,0,0,0.15)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.18s", flexShrink: 0 }}>
+                  {sel && <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        <button style={{ width:"100%",marginTop:16,padding:"16px",borderRadius:18,background:"linear-gradient(135deg,#16A34A,#22C55E)",border:"none",color:"#fff",fontWeight:700,fontSize:16,cursor:"pointer",boxShadow:"0 8px 24px rgba(34,197,94,0.3)" }}>
-          Appliquer le thème
+        {/* ── Taille du texte ── */}
+        <div style={{ background: tk.card, borderRadius: 20, padding: "16px 16px 18px", marginBottom: 20, transition: "background 0.3s" }}>
+          <div style={{ fontWeight: 700, fontSize: 16, color: tk.text, marginBottom: 4 }}>Taille du texte</div>
+          <div style={{ fontSize: 12, color: tk.muted, marginBottom: 14 }}>Choisissez la taille de lecture confortable</div>
+          <div style={{ display: "flex", gap: 10 }}>
+            {SIZES.map(s => {
+              const sel = draft.fontSize === s.key;
+              return (
+                <button key={s.key} onClick={() => update("fontSize", s.key)}
+                  aria-pressed={sel}
+                  style={{ flex: 1, padding: "12px 6px 13px", borderRadius: 14, border: sel ? `2px solid ${color}` : `1.5px solid ${tk.border}`, background: sel ? (mode === "dark" ? "#1a2e1a" : "#F0FDF4") : tk.bg, cursor: "pointer", textAlign: "center", transition: "all 0.18s" }}>
+                  <div style={{ fontSize: s.px, fontWeight: 700, color: sel ? color : tk.sub, transition: "font-size 0.2s, color 0.2s", lineHeight: 1.2 }}>Aa</div>
+                  <div style={{ fontSize: 11, color: sel ? color : tk.muted, fontWeight: sel ? 700 : 400, marginTop: 5 }}>{s.label}</div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ── Save button ── */}
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          style={{ width: "100%", padding: "16px", borderRadius: 18, background: saved ? "#16A34A" : `linear-gradient(135deg, #16A34A, #22C55E)`, border: "none", color: "#fff", fontWeight: 700, fontSize: 16, cursor: saving ? "default" : "pointer", boxShadow: "0 6px 20px rgba(34,197,94,0.35)", opacity: saving ? 0.8 : 1, transition: "all 0.2s", letterSpacing: "-0.1px" }}>
+          {saving ? "Enregistrement…" : saved ? "✓ Enregistré" : "Enregistrer les modifications"}
         </button>
       </div>
     </div>

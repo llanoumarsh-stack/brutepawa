@@ -68,6 +68,7 @@ import PagesPage from "./pages/PagesPage";
 
 import { Toaster } from "sonner";
 import { ADMIN_SECRET_PATH } from "./lib/admin";
+import { AppearanceProvider } from "./contexts/AppearanceContext";
 import { Post } from "./lib/store";
 import { apiGetPosts, apiLikePost, apiCreatePost, getBpToken } from "./lib/api";
 import InstallBanner from "./components/InstallBanner";
@@ -554,13 +555,15 @@ function AppContent() {
 export default function App() {
   return (
     <GlobalErrorBoundary>
-      <Router>
-        <TopLoadingBar />
-        <PushAutoSubscribe />
-        <AppContent />
-        <InstallBanner />
-        <Toaster position="top-center" richColors closeButton />
-      </Router>
+      <AppearanceProvider>
+        <Router>
+          <TopLoadingBar />
+          <PushAutoSubscribe />
+          <AppContent />
+          <InstallBanner />
+          <Toaster position="top-center" richColors closeButton />
+        </Router>
+      </AppearanceProvider>
     </GlobalErrorBoundary>
   );
 }

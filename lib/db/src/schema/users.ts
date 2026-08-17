@@ -30,3 +30,12 @@ export const usersTable = pgTable("users", {
 export const insertUserSchema = createInsertSchema(usersTable).omit({ id: true, createdAt: true, updatedAt: true });
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof usersTable.$inferSelect;
+
+export const userPreferencesTable = pgTable("user_preferences", {
+  id:           serial("id").primaryKey(),
+  userId:       integer("user_id").notNull().unique(),
+  theme:        text("theme").notNull().default("system"),      // light | dark | system
+  primaryColor: text("primary_color").notNull().default("#22C55E"),
+  fontSize:     text("font_size").notNull().default("medium"),  // small | medium | large
+  updatedAt:    timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
+});
