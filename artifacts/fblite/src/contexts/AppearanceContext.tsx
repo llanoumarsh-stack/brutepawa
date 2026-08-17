@@ -78,16 +78,17 @@ function computeGreenTokens(primary: string): Record<string, string> {
   const [h, s, l] = hexToHsl(primary);
   const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
   return {
-    "--bp-green-soft":     hslToHex(h, s,                         clamp(l + 5, 10, 94)),   // légèrement plus clair (top gradient)
-    "--bp-green-subtle":   hslToHex(h, s,                         clamp(l - 4, 5,  88)),   // légèrement plus sombre (bottom gradient)
-    "--bp-green-surface":  hslToHex(h, clamp(s - 35, 8, 60),     clamp(l + 50, 90, 97)),  // fond très pâle
-    "--bp-green-border":   hslToHex(h, clamp(s - 15, 20, 75),    clamp(l + 30, 75, 92)),  // bordure légère
-    "--bp-green-hover":    hslToHex(h, s,                         clamp(l - 6,  5,  85)),  // hover discret
-    "--bp-green-pressed":  hslToHex(h, clamp(s + 3, 0, 100),     clamp(l - 11, 5,  80)),  // pressé plus profond
-    "--bp-green-disabled": hslToHex(h, clamp(s - 40, 8, 50),     clamp(l + 22, 70, 92)),  // désactivé atténué
-    "--bp-green-strong":   hslToHex(h, clamp(s + 2, 0, 100),     clamp(l - 14, 5,  75)),  // fort / sombre
-    "--bp-green-inset":    `rgba(255,255,255,0.14)`,                                        // reflet interne bouton
-    "--bp-green-shadow":   `rgba(${hexToRgb(primary)},0.28)`,                              // ombre douce
+    // Gradient stops — plage plus large pour être clairement visible à l'œil nu
+    "--bp-green-soft":     hslToHex(h, clamp(s - 4, 0, 100),     clamp(l + 11, 10, 94)), // + clair (top gradient)
+    "--bp-green-subtle":   hslToHex(h, clamp(s + 4, 0, 100),     clamp(l - 8,  5,  88)), // + sombre (bottom gradient)
+    "--bp-green-surface":  hslToHex(h, clamp(s - 35, 8, 60),     clamp(l + 50, 90, 97)), // fond très pâle
+    "--bp-green-border":   hslToHex(h, clamp(s - 15, 20, 75),    clamp(l + 30, 75, 92)), // bordure légère
+    "--bp-green-hover":    hslToHex(h, s,                         clamp(l - 7,  5,  85)), // hover discret
+    "--bp-green-pressed":  hslToHex(h, clamp(s + 5, 0, 100),     clamp(l - 13, 5,  80)), // pressé profond
+    "--bp-green-disabled": hslToHex(h, clamp(s - 40, 8, 50),     clamp(l + 22, 70, 92)), // désactivé atténué
+    "--bp-green-strong":   hslToHex(h, clamp(s + 5, 0, 100),     clamp(l - 16, 5,  75)), // fort / sombre
+    "--bp-green-inset":    `rgba(255,255,255,0.20)`,                                       // reflet interne bouton (renforcé)
+    "--bp-green-shadow":   `rgba(${hexToRgb(primary)},0.32)`,                             // ombre douce
   };
 }
 

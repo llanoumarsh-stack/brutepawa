@@ -30,16 +30,16 @@ input, textarea, [contenteditable="true"], [contenteditable] {
   --bp-font-base:    15px;
 
   /* ── Green micro-nuance system (fallbacks — overridden at runtime by AppearanceContext) ── */
-  --bp-green-soft:     #34D068;   /* légèrement plus clair : top des gradients */
-  --bp-green-subtle:   #1EBB57;   /* légèrement plus sombre : bottom des gradients */
+  --bp-green-soft:     #3DDC72;   /* +11% luminosité, -4% saturation : top gradient (clairement plus clair) */
+  --bp-green-subtle:   #18A84A;   /* -8% luminosité, +4% saturation : bottom gradient (clairement plus sombre) */
   --bp-green-surface:  #ECFDF5;   /* fond vert très pâle */
   --bp-green-border:   #BBF7D0;   /* bordure verte légère */
-  --bp-green-hover:    #1DB954;   /* hover discret */
-  --bp-green-pressed:  #178F44;   /* état pressé profond */
+  --bp-green-hover:    #1CBF56;   /* hover discret */
+  --bp-green-pressed:  #158844;   /* état pressé profond */
   --bp-green-disabled: #86CFA0;   /* désactivé atténué */
-  --bp-green-strong:   #158A40;   /* fort / accentué */
-  --bp-green-inset:    rgba(255,255,255,0.14);   /* reflet interne bouton */
-  --bp-green-shadow:   rgba(34,197,94,0.28);     /* ombre douce */
+  --bp-green-strong:   #127A3A;   /* fort / accentué */
+  --bp-green-inset:    rgba(255,255,255,0.20);   /* reflet interne bouton (renforcé) */
+  --bp-green-shadow:   rgba(34,197,94,0.32);     /* ombre douce */
 }
 /* Light theme (default) */
 :root, [data-bp-theme="light"] {
