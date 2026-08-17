@@ -103,6 +103,7 @@ export default function AboutPage() {
             icon={<FileText size={20} color="var(--bp-primary)" strokeWidth={1.9} />}
             title="Conditions d'utilisation"
             subtitle="Règles et conditions d'utilisation de BrutePawa"
+            onClick={() => navigate("/settings/terms")}
           />
           <OptionRow
             icon={<ShieldCheck size={20} color="var(--bp-primary)" strokeWidth={1.9} />}

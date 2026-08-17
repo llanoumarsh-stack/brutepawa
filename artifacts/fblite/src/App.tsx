@@ -62,6 +62,7 @@ import MediaQualityPage from "./pages/MediaQualityPage";
 import ChatBackupPage from "./pages/ChatBackupPage";
 import AdvancedSettingsPage from "./pages/AdvancedSettingsPage";
 import AboutPage from "./pages/AboutPage";
+import TermsPage from "./pages/TermsPage";
 import DeleteShowcasePage from "./pages/DeleteShowcasePage";
 import BroadcastListPage from "./pages/BroadcastListPage";
 import PeoplePage from "./pages/PeoplePage";
@@ -469,6 +470,7 @@ function AppContent() {
   if (path === "/settings/messaging/backup") return <ChatBackupPage />;
   if (path === "/settings/messaging/advanced") return <AdvancedSettingsPage />;
   if (path === "/settings/messaging/about") return <AboutPage />;
+  if (path === "/settings/terms") return <TermsPage />;
   if (path === "/delete-showcase") return <DeleteShowcasePage />;
 
   if (groupMatch) {
