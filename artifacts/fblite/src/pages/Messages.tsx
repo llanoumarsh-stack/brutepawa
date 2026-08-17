@@ -3,9 +3,8 @@ import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { useCurrentUser } from "../hooks/useCurrentUser";
 import { openImageViewer } from "../components/ImageViewer";
-import { apiFetch, apiGetConversations, apiGetMessages, apiMarkMessagesRead, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiUpdateChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadFileXHR, apiUploadVoice, apiDeleteConversation, apiDeleteMessage, apiGetLinkPreview, apiGetMessagingSettings, apiUpdateMessagingSettings, apiGetMessageRequests, apiUpdateMessageRequest, apiGetContactInfo, apiMuteContact, apiUnmuteContact, apiPinContact, apiUnpinContact, apiFavoriteContact, apiUnfavoriteContact, apiBlockUser, apiUnblockUser, apiReportUser, apiSendFriendRequest, apiSearchInConversation, apiDeleteConversationContact, apiGetMyGroups, apiAddContactToGroup, apiGetGroupAuditLog, apiKickGroupMember, apiChangeGroupMemberRole, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview, type MessageRequest, type ContactInfo, type GroupAuditEntry } from "../lib/api";
+import { apiFetch, apiGetConversations, apiGetMessages, apiMarkMessagesRead, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiUpdateChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadFileXHR, apiUploadVoice, apiDeleteConversation, apiDeleteMessage, apiGetLinkPreview, apiGetMessagingSettings, apiUpdateMessagingSettings, apiGetMessageRequests, apiUpdateMessageRequest, apiGetContactInfo, apiMuteContact, apiUnmuteContact, apiPinContact, apiUnpinContact, apiFavoriteContact, apiUnfavoriteContact, apiBlockUser, apiUnblockUser, apiReportUser, apiSendFriendRequest, apiSearchInConversation, apiDeleteConversationContact, apiGetMyGroups, apiAddContactToGroup, apiGetGroupAuditLog, apiKickGroupMember, apiChangeGroupMemberRole, apiGetGroupSettings, apiPatchGroupSettings, apiPatchGroupPermissions, apiPatchGroupReactions, apiSetChatGroupMemberRole, apiRemoveChatGroupMember, apiGetChatGroupMembersGrouped, apiAddChatGroupMembers, apiGetGroupInviteLinks, apiCreateGroupInviteLink, apiRevokeGroupInviteLink, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview, type MessageRequest, type ContactInfo, type GroupAuditEntry, type ApiGroupInviteLink } from "../lib/api";
 import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignaling";
-import { apiFetch, apiGetConversations, apiGetMessages, apiMarkMessagesRead, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiUpdateChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadFileXHR, apiUploadVoice, apiDeleteConversation, apiDeleteMessage, apiGetLinkPreview, apiGetMessagingSettings, apiUpdateMessagingSettings, apiGetMessageRequests, apiUpdateMessageRequest, apiGetContactInfo, apiMuteContact, apiUnmuteContact, apiPinContact, apiUnpinContact, apiFavoriteContact, apiUnfavoriteContact, apiBlockUser, apiUnblockUser, apiReportUser, apiSendFriendRequest, apiSearchInConversation, apiDeleteConversationContact, apiGetMyGroups, apiAddContactToGroup, apiGetGroupSettings, apiPatchGroupSettings, apiPatchGroupPermissions, apiPatchGroupReactions, apiSetChatGroupMemberRole, apiRemoveChatGroupMember, apiGetChatGroupMembersGrouped, apiAddChatGroupMembers, apiGetGroupInviteLinks, apiCreateGroupInviteLink, apiRevokeGroupInviteLink, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview, type MessageRequest, type ContactInfo, type ApiGroupInviteLink } from "../lib/api";
 
 void ({} as ApiChatGroup);
 
@@ -642,6 +641,20 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [grpAuditLog, setGrpAuditLog]               = useState<GroupAuditEntry[]>([]);
   const [grpAuditFilter, setGrpAuditFilter]         = useState<string>("all");
   const [grpAuditLoading, setGrpAuditLoading]       = useState(false);
+  /* ─── Permissions extras ─── */
+  const [grpSlowMode, setGrpSlowMode]               = useState(0); // 0=Aucun,5,10,30,60,300,900,3600
+  const [grpNoRestrictBoosters, setGrpNoRestrictBoosters] = useState(false);
+  const [showGrpBanned, setShowGrpBanned]           = useState(false);
+  const [showGrpBanPicker, setShowGrpBanPicker]     = useState(false);
+  const [grpBanSearch, setGrpBanSearch]             = useState("");
+  const [grpExceptions, setGrpExceptions]           = useState<{id:number;name:string;initials:string;color:string;avatarUrl?:string|null}[]>([]);
+  const [grpExceptionMenu, setGrpExceptionMenu]     = useState<number|null>(null);
+  /* ─── Modifier extras ─── */
+  const [grpHistoriqueVisible, setGrpHistoriqueVisible] = useState(true);
+  const [showGrpHistoriqueSheet, setShowGrpHistoriqueSheet] = useState(false);
+  const [showGrpApparence, setShowGrpApparence]     = useState(false);
+  const [grpAddMemberSearch, setGrpAddMemberSearch] = useState("");
+  const [grpApparenceColor, setGrpApparenceColor]   = useState("");
   /* ─── Channel wizard ─── */
   const [chWiz, setChWiz]                     = useState<"none"|"info"|"type"|"members">("none");
   const [chName, setChName]                   = useState("");
@@ -3385,6 +3398,88 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             )}
           </div>
           {!grpChargeStars && <p style={{ margin:"4px 16px 0", fontSize:12.5, color:"#9CA3AF", lineHeight:1.5 }}>Si vous activez cette option, les membres réguliers du groupe devront payer des tokens pour envoyer des messages.</p>}
+
+          {/* ── MODE RALENTI ── */}
+          {(() => {
+            const SLOW_STEPS = [0,5,10,30,60,300,900,3600];
+            const SLOW_LABELS = ["Aucun","5s","10s","30s","1mn","5mn","15mn","1h"];
+            const curIdx = SLOW_STEPS.indexOf(grpSlowMode) >= 0 ? SLOW_STEPS.indexOf(grpSlowMode) : 0;
+            return (
+              <div style={{ background:"#fff", margin:"6px 0 0", padding:"14px 16px 10px" }}>
+                <div style={{ fontSize:14, fontWeight:700, color:"var(--bp-primary)", marginBottom:10 }}>Mode ralenti</div>
+                <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
+                  {SLOW_LABELS.map((lbl,i)=>(
+                    <span key={lbl} style={{ fontSize:11, color:i===curIdx?"var(--bp-primary)":"#9CA3AF", fontWeight:i===curIdx?700:400 }}>{lbl}</span>
+                  ))}
+                </div>
+                <div style={{ position:"relative", height:28, display:"flex", alignItems:"center" }}>
+                  <div style={{ position:"absolute", left:0, right:0, height:3, background:"#E5E7EB", borderRadius:2 }} />
+                  <div style={{ position:"absolute", left:0, width:`${(curIdx/(SLOW_STEPS.length-1))*100}%`, height:3, background:"var(--bp-primary)", borderRadius:2 }} />
+                  {SLOW_STEPS.map((_,i)=>(
+                    <div key={i} onClick={()=>setGrpSlowMode(SLOW_STEPS[i])}
+                      style={{ position:"absolute", left:`${(i/(SLOW_STEPS.length-1))*100}%`, transform:"translateX(-50%)", width:i===curIdx?14:10, height:i===curIdx?14:10, borderRadius:"50%", background:i<=curIdx?"var(--bp-primary)":"#E5E7EB", border:`2px solid ${i<=curIdx?"var(--bp-primary)":"#CBD5E1"}`, cursor:"pointer", zIndex:2, transition:"all 0.15s" }} />
+                  ))}
+                </div>
+                <p style={{ fontSize:12.5, color:"#9CA3AF", lineHeight:1.5, margin:"12px 0 0" }}>Choisissez à quelle fréquence les membres peuvent envoyer un message.</p>
+              </div>
+            );
+          })()}
+
+          {/* ── NE PAS RESTREINDRE LES BOOSTERS ── */}
+          <div style={{ background:"#fff", margin:"6px 0 0", padding:"0 16px" }}>
+            <div style={{ display:"flex", alignItems:"center", padding:"14px 0", gap:14 }}>
+              <span style={{ flex:1, fontSize:15.5, color:"#000" }}>Ne pas restreindre les boosters</span>
+              <div onClick={()=>setGrpNoRestrictBoosters(v=>!v)} style={{ width:48, height:28, borderRadius:14, background:grpNoRestrictBoosters?"var(--bp-primary)":"#E5E7EB", position:"relative", cursor:"pointer", transition:"background 0.2s", flexShrink:0 }}>
+                <div style={{ position:"absolute", top:3, left:grpNoRestrictBoosters?22:3, width:22, height:22, borderRadius:"50%", background:"#fff", boxShadow:"0 1px 3px rgba(0,0,0,0.25)", transition:"left 0.2s" }} />
+              </div>
+            </div>
+            <p style={{ fontSize:12.5, color:"#9CA3AF", lineHeight:1.5, margin:"0 0 12px" }}>Activez ceci pour toujours autoriser les utilisateurs ayant boosté votre groupe à envoyer des messages et médias.</p>
+          </div>
+
+          {/* ── UTILISATEURS BANNIS ── */}
+          <div style={{ background:"#fff", margin:"6px 0 0", padding:"0 16px" }}>
+            <div onClick={()=>setShowGrpBanned(true)} style={{ display:"flex", alignItems:"center", padding:"14px 0", gap:14, cursor:"pointer" }}>
+              <span style={{ flex:1, fontSize:15.5, color:"#000" }}>Utilisateurs bannis</span>
+              <span style={{ fontSize:15, fontWeight:600, color:"var(--bp-primary)" }}>0</span>
+            </div>
+          </div>
+
+          {/* ── EXCEPTIONS ── */}
+          <div style={{ background:"#fff", margin:"6px 0 0", padding:"0 16px" }}>
+            <div onClick={()=>setShowGrpBanPicker(true)} style={{ display:"flex", alignItems:"center", gap:10, padding:"13px 0", cursor:"pointer", borderBottom:"1px solid rgba(0,0,0,0.07)" }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+              <span style={{ fontSize:15, color:"var(--bp-primary)", fontWeight:500 }}>Ajouter une exception</span>
+            </div>
+            {grpExceptions.map((ex,i)=>(
+              <div key={ex.id} style={{ position:"relative" }}>
+                <div style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 0", borderBottom:i<grpExceptions.length-1?"1px solid rgba(0,0,0,0.07)":"none" }}>
+                  {ex.avatarUrl
+                    ? <img src={ex.avatarUrl} style={{ width:40, height:40, borderRadius:"50%", objectFit:"cover", flexShrink:0 }} alt="" />
+                    : <div style={{ width:40, height:40, borderRadius:"50%", background:ex.color, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, fontSize:15, flexShrink:0 }}>{ex.initials}</div>
+                  }
+                  <span style={{ flex:1, fontSize:15, color:"#000" }}>{ex.name}</span>
+                  <div onClick={()=>setGrpExceptionMenu(grpExceptionMenu===ex.id?null:ex.id)} style={{ padding:"8px 4px", cursor:"pointer" }}>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="#9CA3AF"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+                  </div>
+                </div>
+                {grpExceptionMenu===ex.id && (
+                  <div style={{ position:"absolute", right:0, top:"100%", background:"#fff", borderRadius:12, boxShadow:"0 4px 24px rgba(0,0,0,0.15)", zIndex:20, minWidth:220, overflow:"hidden" }}
+                    onClick={e=>e.stopPropagation()}>
+                    <div onClick={()=>setGrpExceptionMenu(null)} style={{ display:"flex", alignItems:"center", gap:12, padding:"14px 16px", cursor:"pointer" }}>
+                      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#555" strokeWidth="1.8" strokeLinecap="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                      <span style={{ fontSize:15.5, color:"#000" }}>Modifier les permissions</span>
+                    </div>
+                    <div style={{ height:1, background:"rgba(0,0,0,0.07)" }} />
+                    <div onClick={()=>{ setGrpExceptions(v=>v.filter(e=>e.id!==ex.id)); setGrpExceptionMenu(null); }}
+                      style={{ display:"flex", alignItems:"center", gap:12, padding:"14px 16px", cursor:"pointer" }}>
+                      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#EF4444" strokeWidth="1.8" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6m4-6v6"/><path d="M9 6V4h6v2"/></svg>
+                      <span style={{ fontSize:15.5, color:"#EF4444" }}>Supprimer de cette liste</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     , document.body);
@@ -3651,10 +3746,18 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             </div>
             {SEP}
             {/* Historique des discussions */}
-            <div style={{ ...ROW_STYLE }}>
+            <div style={{ ...ROW_STYLE }} onClick={() => setShowGrpHistoriqueSheet(true)}>
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              <span style={{ flex: 1, fontSize: 15.5, color: "var(--theme-text)" }}>Historique des discussions</span>
-              <Val v="Masqué" /><Chevron />
+              <span style={{ flex: 1, fontSize: 15.5, color: "var(--theme-text)" }}>Historique de discussion</span>
+              <Val v={grpHistoriqueVisible ? "Visible" : "Invisible"} /><Chevron />
+            </div>
+            {SEP}
+            {/* Apparence */}
+            <div style={{ ...ROW_STYLE }} onClick={() => setShowGrpApparence(true)}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><circle cx="12" cy="12" r="10"/><path d="M8 12a4 4 0 0 0 8 0"/><circle cx="9" cy="9" r="1.2" fill="#9CA3AF"/><circle cx="15" cy="9" r="1.2" fill="#9CA3AF"/></svg>
+              <span style={{ flex: 1, fontSize: 15.5, color: "var(--theme-text)" }}>Apparence</span>
+              <span style={{ fontSize: 10.5, fontWeight: 700, color: "#fff", background: "var(--bp-primary)", borderRadius: 5, padding: "2px 6px", marginRight: 10 }}>NOUVEAU</span>
+              <div style={{ width:22, height:22, borderRadius:"50%", background:"var(--bp-primary)", flexShrink:0 }} />
             </div>
             {SEP}
             {/* Sujets */}
@@ -3693,7 +3796,29 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             ))}
           </div>
 
-          {/* ── CARTE 4 : Supprimer ── */}
+          {/* ── CARTE 4 : Statistiques + Actions ── */}
+          <div style={{ ...CARD_STYLE }}>
+            <div style={{ ...ROW_STYLE }} onClick={() => setShowGrpStats(true)}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+              <span style={{ flex: 1, fontSize: 15.5, color: "var(--theme-text)" }}>Statistiques</span>
+              <Chevron />
+            </div>
+            {SEP}
+            <div style={{ ...ROW_STYLE }} onClick={() => {
+              setGrpAuditLoading(true);
+              setShowGrpAuditLog(true);
+              apiGetGroupAuditLog(activeGroupId!).then(entries => {
+                setGrpAuditLog(entries);
+                setGrpAuditLoading(false);
+              }).catch(() => setGrpAuditLoading(false));
+            }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9CA3AF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink:0 }}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              <span style={{ flex: 1, fontSize: 15.5, color: "var(--theme-text)" }}>Actions récentes</span>
+              <Chevron />
+            </div>
+          </div>
+
+          {/* ── CARTE 5 : Supprimer ── */}
           <div style={{ ...CARD_STYLE, cursor: "pointer" }} onClick={() => setShowDeleteQuitDlg(true)}>
             <div style={{ padding: "15px 16px" }}>
               <span style={{ fontSize: 15.5, color: "#EF4444", fontWeight: 500 }}>Supprimer et quitter le groupe</span>
@@ -3877,6 +4002,197 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           )}
         </div>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    , document.body);
+  }
+
+  /* ── UTILISATEURS BANNIS ── */
+  if (activeGroupId !== null && showGrpBanned) {
+    const grp = chatGroups.find(g => g.id === activeGroupId);
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, background:"#F1F5F9", zIndex:10003, display:"flex", flexDirection:"column" }}>
+        {GRP_SUB_HEADER("Utilisateurs bannis", () => setShowGrpBanned(false),
+          <button style={{ background:"none", border:"none", cursor:"pointer", width:48, height:48, display:"flex", alignItems:"center", justifyContent:"center" }}>
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+          </button>
+        )}
+        <div style={{ flex:1, overflowY:"auto" }}>
+          {/* Bannir un utilisateur */}
+          <div style={{ background:"#fff", margin:"8px 0 0", padding:"0 16px" }}>
+            <div onClick={() => setShowGrpBanPicker(true)} style={{ display:"flex", alignItems:"center", gap:12, padding:"14px 0", cursor:"pointer" }}>
+              <div style={{ width:38, height:38, borderRadius:"50%", background:"rgba(239,68,68,0.1)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="9"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+              </div>
+              <span style={{ fontSize:15.5, color:"#EF4444", fontWeight:500 }}>Bannir un utilisateur</span>
+            </div>
+          </div>
+          {/* Description */}
+          <div style={{ padding:"10px 16px" }}>
+            <p style={{ fontSize:12.5, color:"#9CA3AF", lineHeight:1.55, margin:0 }}>
+              Les utilisateurs éjectés du groupe par des administrateurs ne peuvent pas revenir dans le groupe via un lien d'invitation ou en rejoignant le groupe par recherche. Les administrateurs peuvent les débannir depuis cette liste.
+            </p>
+          </div>
+          {/* Section header */}
+          <div style={{ padding:"8px 16px 4px" }}>
+            <span style={{ fontSize:12, fontWeight:700, color:"#9CA3AF", textTransform:"uppercase", letterSpacing:0.8 }}>0 utilisateurs bannis</span>
+          </div>
+          <div style={{ textAlign:"center", padding:"40px 16px" }}>
+            <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#CBD5E1" strokeWidth="1.2" strokeLinecap="round" style={{ marginBottom:12 }}><circle cx="12" cy="12" r="9"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+            <p style={{ fontSize:14, color:"#9CA3AF", margin:0 }}>Aucun utilisateur banni</p>
+          </div>
+        </div>
+      </div>
+    , document.body);
+  }
+
+  /* ── BANNIR UN UTILISATEUR (picker) ── */
+  if (activeGroupId !== null && showGrpBanPicker) {
+    const grp = chatGroups.find(g => g.id === activeGroupId);
+    const gInfo = groupInfo;
+    const allM = gInfo?.members ?? [];
+    const filtered = allM.filter(m => {
+      const name = (m.firstName ?? "") + " " + (m.lastName ?? "");
+      return grpBanSearch === "" || name.toLowerCase().includes(grpBanSearch.toLowerCase());
+    });
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, background:"#F1F5F9", zIndex:10004, display:"flex", flexDirection:"column" }}>
+        {GRP_SUB_HEADER("Bannir un utilisateur", () => setShowGrpBanPicker(false))}
+        {/* Search */}
+        <div style={{ padding:"8px 16px 4px" }}>
+          <div style={{ display:"flex", alignItems:"center", background:"#fff", borderRadius:12, padding:"8px 12px", gap:8 }}>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+            <input value={grpBanSearch} onChange={e=>setGrpBanSearch(e.target.value)}
+              placeholder="Rechercher un membre…"
+              style={{ flex:1, border:"none", outline:"none", fontSize:15, background:"transparent", color:"#111" }} />
+          </div>
+        </div>
+        <div style={{ flex:1, overflowY:"auto" }}>
+          {/* Toggle cacher les membres */}
+          <div style={{ background:"#fff", margin:"8px 0", padding:"0 16px" }}>
+            <div style={{ display:"flex", alignItems:"center", padding:"14px 0" }}>
+              <span style={{ flex:1, fontSize:15.5, color:"#000" }}>Cacher les membres</span>
+              <div onClick={()=>setGrpHideMembers(v=>!v)} style={{ width:48, height:28, borderRadius:14, background:grpHideMembers?"var(--bp-primary)":"#E5E7EB", position:"relative", cursor:"pointer", transition:"background 0.2s", flexShrink:0 }}>
+                <div style={{ position:"absolute", top:3, left:grpHideMembers?22:3, width:22, height:22, borderRadius:"50%", background:"#fff", boxShadow:"0 1px 3px rgba(0,0,0,0.25)", transition:"left 0.2s" }} />
+              </div>
+            </div>
+          </div>
+          {filtered.length === 0 && <div style={{ textAlign:"center", color:"#9CA3AF", padding:"40px 16px", fontSize:14 }}>Aucun membre trouvé</div>}
+          {filtered.length > 0 && (
+            <>
+              <div style={{ padding:"6px 16px 2px" }}>
+                <span style={{ fontSize:12, fontWeight:700, color:"#9CA3AF", textTransform:"uppercase", letterSpacing:0.8 }}>Membres ({filtered.length})</span>
+              </div>
+              <div style={{ background:"#fff", margin:"4px 0" }}>
+                {filtered.map((m, i) => {
+                  const name = `${m.firstName ?? ""} ${m.lastName ?? ""}`.trim();
+                  const col = CONV_COLORS[m.userId % CONV_COLORS.length];
+                  const initials = mkInitials(name);
+                  return (
+                    <div key={m.userId} onClick={() => {
+                      setShowGrpBanPicker(false);
+                      setShowGrpBanned(false);
+                    }} style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 16px", borderBottom:i<filtered.length-1?"1px solid rgba(0,0,0,0.06)":"none", cursor:"pointer" }}>
+                      <div style={{ position:"relative" }}>
+                        <div style={{ width:46, height:46, borderRadius:"50%", background:col, display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, fontSize:15, flexShrink:0 }}>{initials}</div>
+                        <div style={{ position:"absolute", bottom:1, right:1, width:11, height:11, borderRadius:"50%", background:"#22C55E", border:"2px solid #fff" }} />
+                      </div>
+                      <div style={{ flex:1 }}>
+                        <div style={{ fontWeight:600, fontSize:15, color:"#000" }}>{name || "Utilisateur"}</div>
+                        <div style={{ fontSize:12.5, color:"#22C55E" }}>en ligne</div>
+                      </div>
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="9"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    , document.body);
+  }
+
+  /* ── APPARENCE ── */
+  if (activeGroupId !== null && showGrpApparence) {
+    const grp = chatGroups.find(g => g.id === activeGroupId);
+    const grpColor = ["#EC4899","#8B5CF6","#F97316","var(--bp-primary)","#0EA5E9","#0EA5E9","#F59E0B"][activeGroupId % 7];
+    const PALETTE = ["#2563EB","#0EA5E9","#22C55E","#16A34A","#F59E0B","#F97316","#EF4444","#EC4899","#8B5CF6","#6366F1","#14B8A6","#0F766E","#854D0E","#92400E","#1E293B","#64748B"];
+    const selColor = grpApparenceColor || grpColor;
+    const setSelColor_ = setGrpApparenceColor;
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, background:"#F1F5F9", zIndex:10003, display:"flex", flexDirection:"column" }}>
+        {GRP_SUB_HEADER("Apparence", () => setShowGrpApparence(false))}
+        <div style={{ flex:1, overflowY:"auto" }}>
+          {/* Avatar preview */}
+          <div style={{ display:"flex", flexDirection:"column", alignItems:"center", padding:"28px 0 18px", background:"#fff", marginBottom:8 }}>
+            <div style={{ width:90, height:90, borderRadius:"50%", background:grpColor, display:"flex", alignItems:"center", justifyContent:"center", marginBottom:10 }}>
+              <span style={{ fontSize:36, fontWeight:700, color:"#fff" }}>{(grp?.name ?? "G")[0].toUpperCase()}</span>
+            </div>
+            <p style={{ fontSize:13, color:"#9CA3AF", margin:0 }}>Le groupe a <b>0</b> boost. <span style={{ color:"var(--bp-primary)", fontWeight:500 }}>Que sont les boosts ?</span></p>
+          </div>
+          {/* Color palette */}
+          <div style={{ background:"#fff", padding:"14px 16px", marginBottom:8 }}>
+            <p style={{ fontSize:13, color:"#9CA3AF", margin:"0 0 12px" }}>Couleur du groupe</p>
+            <div style={{ display:"flex", flexWrap:"wrap", gap:10 }}>
+              {PALETTE.map(c => (
+                <div key={c} onClick={() => setSelColor_(c)}
+                  style={{ width:38, height:38, borderRadius:"50%", background:c, cursor:"pointer", border:`3px solid ${selColor===c?"#fff":"transparent"}`, boxShadow:selColor===c?"0 0 0 2px "+c:"none", transition:"all 0.15s" }} />
+              ))}
+            </div>
+          </div>
+          {/* Locked features */}
+          <div style={{ background:"#fff", padding:"0 16px", marginBottom:8 }}>
+            {[
+              { label:"Logo de profil", badge:"🔒 Niveau 5", status:"Désactivé" },
+              { label:"Lot d'emoji du groupe", badge:"🔒 Niveau 4", status:"Désactivé" },
+              { label:"Statut emoji du groupe", badge:"🔒 Niveau 8", status:"Désactivé" },
+            ].map((item, i, arr) => (
+              <div key={item.label} style={{ display:"flex", alignItems:"center", padding:"14px 0", borderBottom:i<arr.length-1?"1px solid rgba(0,0,0,0.07)":"none", opacity:0.65 }}>
+                <span style={{ flex:1, fontSize:15.5, color:"#000" }}>{item.label}</span>
+                <span style={{ fontSize:12, color:"#9CA3AF", marginRight:8 }}>{item.badge}</span>
+                <span style={{ fontSize:13.5, color:"#9CA3AF" }}>{item.status}</span>
+              </div>
+            ))}
+          </div>
+          {/* Appliquer */}
+          <div style={{ padding:"16px" }}>
+            <button style={{ width:"100%", padding:"14px", background:"var(--bp-primary)", border:"none", borderRadius:12, fontSize:16, fontWeight:700, color:"#fff", cursor:"pointer" }}
+              onClick={() => setShowGrpApparence(false)}>
+              Appliquer
+            </button>
+          </div>
+        </div>
+      </div>
+    , document.body);
+  }
+
+  /* ── HISTORIQUE DE DISCUSSION (bottom sheet) ── */
+  if (activeGroupId !== null && showGrpHistoriqueSheet) {
+    return createPortal(
+      <div style={{ position:"fixed", inset:0, zIndex:10005, display:"flex", flexDirection:"column", justifyContent:"flex-end" }}>
+        <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.45)" }} onClick={() => setShowGrpHistoriqueSheet(false)} />
+        <div style={{ position:"relative", background:"#fff", borderRadius:"20px 20px 0 0", padding:"20px 16px 36px" }}>
+          <div style={{ width:40, height:4, borderRadius:2, background:"#E5E7EB", margin:"0 auto 18px" }} />
+          <h3 style={{ fontSize:17, fontWeight:700, color:"#000", margin:"0 0 6px", textAlign:"center" }}>Historique pour les nouveaux membres</h3>
+          <p style={{ fontSize:13.5, color:"#9CA3AF", textAlign:"center", lineHeight:1.5, margin:"0 0 22px" }}>
+            Choisissez si les nouveaux membres peuvent voir les messages précédents du groupe.
+          </p>
+          {[
+            { val: true, label: "Visible", desc: "Les nouveaux membres peuvent lire l'historique complet des messages." },
+            { val: false, label: "Invisible", desc: "Les nouveaux membres ne verront que les messages envoyés après qu'ils ont rejoint." },
+          ].map(opt => (
+            <div key={String(opt.val)} onClick={() => { setGrpHistoriqueVisible(opt.val); setShowGrpHistoriqueSheet(false); }}
+              style={{ display:"flex", alignItems:"flex-start", gap:14, padding:"14px 0", borderBottom:"1px solid rgba(0,0,0,0.07)", cursor:"pointer" }}>
+              <div style={{ width:22, height:22, borderRadius:"50%", border:`2px solid ${grpHistoriqueVisible===opt.val?"var(--bp-primary)":"#CBD5E1"}`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, marginTop:1 }}>
+                {grpHistoriqueVisible===opt.val && <div style={{ width:12, height:12, borderRadius:"50%", background:"var(--bp-primary)" }} />}
+              </div>
+              <div>
+                <div style={{ fontSize:16, fontWeight:600, color:"#000", marginBottom:3 }}>{opt.label}</div>
+                <div style={{ fontSize:13.5, color:"#9CA3AF", lineHeight:1.45 }}>{opt.desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     , document.body);
   }
