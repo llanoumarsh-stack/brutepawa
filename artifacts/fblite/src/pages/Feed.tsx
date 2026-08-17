@@ -8,6 +8,7 @@ import { apiGetPosts, apiCreatePost, apiLikePost, apiGetStories, apiToggleSaved,
 import StoryViewer from "../components/StoryViewer";
 import { storyDraftStore } from "../lib/storyDraft";
 import { UserBadge } from "../components/UserBadge";
+import ShareSheet, { type SharePost } from "../components/ShareSheet";
 
 /* ── Premium Music Card ─────────────────────────────────────── */
 const WAVE_HEIGHTS = [5,10,7,14,9,12,6,15,8,11,5,13,9,7,12,6,14,10,8,5,11,9,13,7,10,6,14,8,12,5,8,11];
@@ -216,6 +217,7 @@ export default function Feed() {
   const [postMenuId, setPostMenuId] = useState<number | null>(null);
   const [savedSet, setSavedSet] = useState<Set<number>>(new Set());
   const [followedIds, setFollowedIds] = useState<Set<number>>(new Set());
+  const [sharePost, setSharePost] = useState<SharePost | null>(null);
 
   // Lock body scroll when bottom sheet is open to prevent layout shift
   const [menuPos, setMenuPos] = useState<{ top: number; right: number } | null>(null);
@@ -837,6 +839,7 @@ export default function Feed() {
                 <div style={{ width: 1, background: "#E5E7EB", alignSelf: "stretch", margin: "6px 0" }} />
                 {/* Partager */}
                 <button
+                  onClick={() => setSharePost({ id: post.id, authorName: post.authorName, content: post.content })}
                   style={{ flex: 1, background: "none", border: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "9px 4px", fontSize: 13.5, fontWeight: 700, color: "#64748B", cursor: "pointer" }}
                 >
                   <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#64748B" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
@@ -866,6 +869,13 @@ export default function Feed() {
 
       {/* ── Spin animation ── */}
       <style>{`@keyframes fb-spin { to { transform: rotate(360deg); } }`}</style>
+
+      {/* ── Share Sheet ── */}
+      <ShareSheet
+        open={sharePost !== null}
+        post={sharePost}
+        onClose={() => setSharePost(null)}
+      />
 
       {/* ── Floating post menu ── */}
       {postMenuId !== null && menuPos !== null && createPortal(

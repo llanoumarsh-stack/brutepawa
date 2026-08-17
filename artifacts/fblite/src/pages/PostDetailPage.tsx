@@ -3,6 +3,7 @@ import { useCurrentUser } from "../hooks/useCurrentUser";
 import { BADGE_CONFIG, UserBadge } from "../components/UserBadge";
 import { useNavigate } from "../router";
 import { openImageViewer } from "../components/ImageViewer";
+import ShareSheet, { type SharePost } from "../components/ShareSheet";
 import {
   apiFetch,
   apiGetComments,
@@ -126,6 +127,7 @@ export default function PostDetailPage({ postId }: Props) {
   const [showReactions, setShowReactions]   = useState(false);
   const reactionTimer                 = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [saved, setSaved]             = useState(false);
+  const [showShare, setShowShare]     = useState(false);
   const [comments, setComments]       = useState<PostComment[]>([]);
   const [newComment, setNewComment]   = useState("");
   const [submitting, setSubmitting]   = useState(false);
@@ -669,7 +671,7 @@ export default function PostDetailPage({ postId }: Props) {
           </button>
 
           {/* Partager */}
-          <button className="bp-pill">
+          <button className="bp-pill" onClick={() => setShowShare(true)}>
             <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#64748B" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
             <span>Partager</span>
           </button>
@@ -1211,6 +1213,15 @@ export default function PostDetailPage({ postId }: Props) {
         @keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
         @keyframes slideUp { from { transform:translateY(100%) } to { transform:translateY(0) } }
       `}</style>
+
+      {/* ── Share Sheet ── */}
+      {post && (
+        <ShareSheet
+          open={showShare}
+          post={{ id: post.id, authorName: post.authorFirstName ? `${post.authorFirstName} ${post.authorLastName ?? ""}`.trim() : "Auteur", content: post.content }}
+          onClose={() => setShowShare(false)}
+        />
+      )}
     </div>
   );
 }
