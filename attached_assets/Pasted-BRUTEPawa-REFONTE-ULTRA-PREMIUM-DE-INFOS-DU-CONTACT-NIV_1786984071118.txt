@@ -1,0 +1,862 @@
+BRUTEPawa — REFONTE ULTRA PREMIUM DE « INFOS DU CONTACT »
+
+NIVEAU D'EXIGENCE : MAXIMUM ABSOLU
+
+Tu dois modifier l'interface Infos du contact de BrutePawa en prenant l'image de référence fournie comme autorité visuelle absolue.
+
+Je veux une réalisation ultra premium, extrêmement propre, moderne, cohérente et digne d'une application sociale internationale de premier plan.
+
+RÈGLE ABSOLUE
+
+AUCUNE INTERPRÉTATION.
+
+AUCUNE INVENTION.
+
+AUCUNE SIMPLIFICATION.
+
+AUCUN ÉLÉMENT IMPORTANT OUBLIÉ.
+
+AUCUNE MODIFICATION ARBITRAIRE.
+
+Toute différence visuelle importante ou fonctionnalité inventée est considérée comme un ÉCHEC.
+
+Le résultat doit être réalisé avec un niveau de précision supérieur à la référence tout en conservant exactement sa logique.
+
+---
+
+1. COMPRENDRE LA PAGE AVANT DE CODER
+
+Cette page représente :
+
+«LES INFORMATIONS D'UN AUTRE UTILISATEUR / CONTACT»
+
+Ce n'est PAS :
+
+- la page de mon propre profil ;
+- mon propre tableau de bord ;
+- ma page de paramètres personnels ;
+- une page de modification de profil.
+
+Le propriétaire de la page est donc le contact consulté.
+
+Toutes les informations affichées doivent appartenir à ce contact.
+
+---
+
+2. RÉFÉRENCE VISUELLE ABSOLUE
+
+Utilise l'image fournie dans cette conversation comme référence.
+
+Tu dois reproduire fidèlement :
+
+- structure générale ;
+- proportions ;
+- hiérarchie ;
+- position des éléments ;
+- taille des éléments ;
+- espacements ;
+- rayons des cartes ;
+- typographie ;
+- poids des textes ;
+- couleurs ;
+- icônes ;
+- boutons ;
+- séparateurs ;
+- marges ;
+- arrière-plan ;
+- comportement des interactions.
+
+Ne transforme pas la page en une autre interface.
+
+---
+
+3. HEADER
+
+Le header doit rester extrêmement proche de la référence.
+
+À gauche :
+
+flèche retour verte
+
+Au centre :
+
+Infos du contact
+
+À droite :
+
+menu trois points vertical
+
+Le header doit être :
+
+- blanc ;
+- propre ;
+- parfaitement aligné ;
+- suffisamment haut ;
+- sans surcharge ;
+- avec une hiérarchie typographique nette.
+
+INTERDICTION
+
+Ne pas ajouter :
+
+- logo ;
+- bouton rechercher ;
+- bouton modifier ;
+- bouton partager supplémentaire ;
+- badge inutile ;
+- texte supplémentaire.
+
+---
+
+4. ARRIÈRE-PLAN
+
+Utiliser un arrière-plan extrêmement clair avec une légère tonalité BrutePawa.
+
+Le fond doit rester principalement blanc / très légèrement teinté de vert.
+
+Éviter absolument :
+
+- gradients agressifs ;
+- textures ;
+- motifs ;
+- illustrations inutiles ;
+- effets 3D excessifs.
+
+Le premium doit venir de la précision, pas de la surcharge.
+
+---
+
+5. CARTE PRINCIPALE DU CONTACT
+
+Créer une grande carte blanche premium.
+
+Elle doit contenir :
+
+Avatar
+
+Afficher l'avatar réel du contact.
+
+Si le contact n'a pas de photo :
+
+utiliser son avatar généré à partir de ses initiales, comme dans la référence.
+
+L'avatar doit avoir :
+
+- forme parfaitement circulaire ;
+- bordure verte BrutePawa ;
+- anneau extérieur très subtil ;
+- indicateur de présence correctement positionné.
+
+Statut
+
+Afficher le statut réel :
+
+En ligne
+
+si le contact est réellement en ligne.
+
+Sinon afficher le statut approprié :
+
+- En ligne
+- Actif récemment
+- Hors ligne
+
+Ne jamais afficher « En ligne » de manière statique si le backend indique le contraire.
+
+---
+
+6. NOM DU CONTACT
+
+Afficher le nom réel du contact.
+
+Exemple de référence :
+
+Omar Omar
+
+Le nom doit être :
+
+- fortement lisible ;
+- centré ;
+- suffisamment grand ;
+- noir / presque noir ;
+- parfaitement aligné.
+
+Ne pas ajouter automatiquement :
+
+- @username ;
+- ID ;
+- pays ;
+- âge ;
+- nombre d'abonnés ;
+- nombre d'amis.
+
+Ces informations ne doivent apparaître que si elles sont réellement prévues dans cette interface.
+
+---
+
+7. ACTIONS PRINCIPALES
+
+Conserver les trois actions principales :
+
+Message
+
+Icône message réelle.
+
+Appel audio
+
+Icône téléphone réelle.
+
+Vidéo
+
+Icône caméra réelle.
+
+Les trois boutons doivent avoir :
+
+- dimensions cohérentes ;
+- même largeur ;
+- même hauteur ;
+- même espacement ;
+- icônes parfaitement centrées ;
+- texte correctement aligné.
+
+---
+
+8. ICÔNES — RÈGLE TRÈS STRICTE
+
+NE JAMAIS utiliser :
+
+- emoji ;
+- caractères Unicode comme icônes ;
+- icônes dessinées approximativement ;
+- SVG improvisés sans cohérence.
+
+Utiliser une vraie bibliothèque d'icônes déjà présente dans le projet ou une bibliothèque professionnelle cohérente.
+
+Toutes les icônes doivent avoir :
+
+- même famille ;
+- même poids ;
+- même taille visuelle ;
+- même couleur ;
+- même alignement.
+
+---
+
+9. LES DEUX LIGNES DU BAS
+
+Dans la référence, deux lignes sont présentes sous la carte principale.
+
+Elles doivent être conservées uniquement si elles correspondent à de vraies informations accessibles.
+
+Ligne 1
+
+Contenu :
+
+Bonjour ! J'utilise Brute Pawa.
+
+avec son icône correspondante.
+
+Cette ligne doit ouvrir une page dédiée uniquement si le contenu nécessite réellement une vue détaillée.
+
+Ligne 2
+
+Contenu :
+
+Omar Omar
+
+avec l'icône correspondante.
+
+Cette ligne doit ouvrir uniquement la page correspondant réellement à cette information.
+
+---
+
+10. RÈGLE CRITIQUE SUR LES SOUS-PAGES
+
+NE CRÉE PAS SIX SOUS-PAGES simplement pour remplir l'écran.
+
+NE CRÉE PAS :
+
+- page « Profil » supplémentaire ;
+- page « Activité » ;
+- page « Intérêts » ;
+- page « Groupes communs » ;
+- page « Médias partagés » ;
+- page « Confidentialité » ;
+
+si ces informations ne sont pas directement accessibles depuis la référence ou nécessaires au fonctionnement de l'élément concerné.
+
+Principe :
+
+«UNE LIGNE = UNE DESTINATION LOGIQUE.»
+
+Si une ligne n'a pas besoin d'une sous-page :
+
+SUPPRIMER LA FLÈCHE ET NE PAS CRÉER DE SOUS-PAGE.
+
+Si une ligne nécessite une sous-page :
+
+CRÉER UNE SOUS-PAGE SIMPLE, PREMIUM ET STRICTEMENT LIÉE À CETTE LIGNE.
+
+Aucune page décorative.
+
+Aucune navigation artificielle.
+
+---
+
+11. SOUS-PAGE « À PROPOS »
+
+Si la première ligne ouvre réellement les informations « À propos », créer une page :
+
+À propos
+
+Cette page doit rester concentrée sur :
+
+À propos de moi
+
+Afficher le texte réel du contact.
+
+Exemple :
+
+«Bonjour ! J'utilise Brute Pawa.»
+
+Ne pas inventer :
+
+- centres d'intérêt ;
+- profession ;
+- biographie ;
+- passions ;
+- activité ;
+- localisation ;
+
+si ces informations ne sont pas présentes dans les données réelles.
+
+IMPORTANT
+
+Cette page doit être beaucoup plus sobre que la page principale.
+
+---
+
+12. SOUS-PAGE DES INFORMATIONS DU CONTACT
+
+Si la deuxième ligne correspond réellement à une fiche de détails du contact, créer une page :
+
+Informations du contact
+
+ou le titre réellement approprié selon la donnée.
+
+Afficher uniquement les informations réellement disponibles et autorisées.
+
+Exemples possibles :
+
+- nom ;
+- nom d'utilisateur ;
+- téléphone si autorisé ;
+- date d'ajout ;
+- informations publiques.
+
+NE PAS inventer de valeurs.
+
+NE PAS afficher de données privées non autorisées.
+
+---
+
+13. MENU TROIS POINTS
+
+Le bouton "⋮" doit fonctionner.
+
+Lorsqu'on appuie dessus, ouvrir un menu contextuel premium.
+
+Le menu doit contenir uniquement les actions réellement disponibles pour un contact.
+
+Les actions possibles selon les fonctionnalités existantes :
+
+- Rechercher dans la conversation ;
+- Partager le contact ;
+- Bloquer ;
+- Signaler ;
+- Supprimer le contact.
+
+IMPORTANT
+
+Ne pas afficher une action si elle n'existe pas réellement dans BrutePawa.
+
+Ne jamais créer des boutons « fictifs ».
+
+---
+
+14. BLOQUER LE CONTACT
+
+Si l'action existe :
+
+Afficher une confirmation avant blocage.
+
+Titre :
+
+Bloquer ce contact ?
+
+Expliquer clairement la conséquence.
+
+Actions :
+
+Annuler
+
+Bloquer
+
+Après confirmation :
+
+- le backend doit réellement enregistrer le blocage ;
+- les appels doivent être traités conformément au blocage ;
+- les messages doivent respecter le blocage ;
+- l'interface doit refléter immédiatement le nouvel état.
+
+---
+
+15. SIGNALER LE CONTACT
+
+Si cette fonction existe :
+
+Créer une page/modale de signalement professionnelle.
+
+Permettre de sélectionner un motif réel.
+
+Exemples :
+
+- Spam
+- Harcèlement
+- Contenu inapproprié
+- Faux profil
+- Autre
+
+Ne pas inventer une infrastructure de modération inexistante.
+
+---
+
+16. MESSAGE
+
+Le bouton Message doit ouvrir la conversation réelle avec ce contact.
+
+Il ne doit jamais ouvrir une fausse conversation de démonstration.
+
+Utiliser :
+
+- conversation réelle ;
+- avatar réel ;
+- nom réel ;
+- statut réel ;
+- historique réel.
+
+---
+
+17. APPEL AUDIO
+
+Le bouton doit déclencher le système réel d'appel audio de BrutePawa si celui-ci existe.
+
+Avant d'implémenter une nouvelle infrastructure :
+
+inspecter le projet existant.
+
+Ne pas créer un faux écran d'appel uniquement pour faire joli.
+
+---
+
+18. APPEL VIDÉO
+
+Même règle.
+
+Le bouton doit utiliser le système d'appel vidéo réel existant.
+
+Si aucune infrastructure d'appel n'existe :
+
+ne pas fabriquer une fonctionnalité prétendument opérationnelle.
+
+Préparer proprement l'interface pour l'intégration future sans mentir à l'utilisateur.
+
+---
+
+19. ÉTATS DU CONTACT
+
+La page doit gérer correctement :
+
+En ligne
+
+Point vert + texte.
+
+Hors ligne
+
+Statut approprié.
+
+Bloqué
+
+Afficher l'état bloqué et adapter les actions.
+
+Contact supprimé
+
+Afficher un état cohérent.
+
+Compte désactivé
+
+Afficher un état cohérent.
+
+Chargement
+
+Afficher un skeleton premium.
+
+Erreur
+
+Afficher une erreur claire et élégante.
+
+---
+
+20. RESPONSIVE
+
+La page doit être parfaite sur :
+
+- 320 px ;
+- 360 px ;
+- 375 px ;
+- 390 px ;
+- 414 px ;
+- grands smartphones ;
+- tablettes.
+
+Aucun :
+
+- débordement ;
+- bouton coupé ;
+- texte tronqué incorrectement ;
+- icône décalée ;
+- carte cassée ;
+- scroll horizontal.
+
+---
+
+21. DESIGN PREMIUM
+
+Le premium doit être obtenu grâce à :
+
+- précision ;
+- espace blanc ;
+- typographie ;
+- alignements ;
+- proportions ;
+- micro-interactions ;
+- cohérence ;
+- hiérarchie.
+
+PAS grâce à une surcharge.
+
+À ÉVITER ABSOLUMENT
+
+- grosses ombres ;
+- gradients partout ;
+- glassmorphism excessif ;
+- néons ;
+- effets 3D inutiles ;
+- animations spectaculaires ;
+- dizaines de badges ;
+- cartes imbriquées sans raison.
+
+---
+
+22. COULEURS
+
+Couleur principale BrutePawa :
+
+"#22C55E"
+
+Utiliser cette couleur principalement pour :
+
+- actions ;
+- icônes importantes ;
+- statut en ligne ;
+- indicateurs ;
+- accents.
+
+Le texte principal doit rester très sombre.
+
+Le texte secondaire doit rester gris.
+
+Les fonds doivent rester très clairs.
+
+---
+
+23. TYPOGRAPHIE
+
+Respecter une hiérarchie claire :
+
+Titre principal
+
+Fort et lisible.
+
+Nom
+
+Très visible.
+
+Statut
+
+Secondaire mais clairement identifiable.
+
+Actions
+
+Lisibles et suffisamment contrastées.
+
+Informations secondaires
+
+Plus petites et grises.
+
+Ne pas utiliser 10 tailles de police différentes.
+
+---
+
+24. ESPACEMENTS
+
+Tous les espacements doivent être systématiques.
+
+Utiliser un système cohérent basé sur des multiples réguliers.
+
+Les éléments doivent respirer.
+
+Ne jamais :
+
+- coller les boutons ;
+- rapprocher artificiellement les cartes ;
+- créer des espaces aléatoires ;
+- utiliser des valeurs différentes sans justification.
+
+---
+
+25. MICRO-INTERACTIONS
+
+Ajouter uniquement les animations utiles :
+
+- pression d'un bouton ;
+- ouverture du menu ;
+- transition de page ;
+- retour ;
+- changement d'état ;
+- confirmation.
+
+Animations :
+
+courtes + fluides + premium.
+
+Aucune animation permanente.
+
+---
+
+26. DONNÉES RÉELLES
+
+Tous les éléments doivent être reliés aux vraies données.
+
+Le nom :
+
+→ données utilisateur.
+
+L'avatar :
+
+→ données utilisateur.
+
+Le statut :
+
+→ présence réelle.
+
+La bio :
+
+→ données utilisateur.
+
+Les actions :
+
+→ fonctions réelles.
+
+Les états :
+
+→ backend réel.
+
+INTERDICTION ABSOLUE
+
+Ne pas mettre de données fictives dans l'application finale.
+
+Les données de démonstration ne doivent servir qu'en développement si nécessaire.
+
+---
+
+27. PERFORMANCE
+
+Ne pas alourdir inutilement la page.
+
+Optimiser :
+
+- images ;
+- avatars ;
+- icônes ;
+- animations ;
+- requêtes ;
+- composants.
+
+Ne pas charger une bibliothèque énorme pour une seule icône.
+
+---
+
+28. ARCHITECTURE DU CODE
+
+Avant toute modification :
+
+1. inspecter le projet ;
+2. identifier le framework ;
+3. identifier les composants existants ;
+4. identifier les routes ;
+5. identifier les services utilisateur ;
+6. identifier le système de présence ;
+7. identifier le système de messagerie ;
+8. identifier le système d'appel ;
+9. identifier les permissions ;
+10. réutiliser l'architecture existante.
+
+Ne pas casser les fonctionnalités existantes.
+
+---
+
+29. NE PAS RÉÉCRIRE INUTILEMENT
+
+Tu dois modifier uniquement ce qui est nécessaire.
+
+Ne pas :
+
+- supprimer des composants fonctionnels ;
+- changer toute l'architecture ;
+- remplacer inutilement la navigation ;
+- créer une nouvelle base de données ;
+- créer une nouvelle API ;
+- remplacer un système existant qui fonctionne.
+
+---
+
+30. VALIDATION VISUELLE OBLIGATOIRE
+
+Après réalisation, compare visuellement le résultat à l'image de référence.
+
+Vérifie individuellement :
+
+- header ;
+- flèche ;
+- titre ;
+- menu trois points ;
+- avatar ;
+- anneau ;
+- statut ;
+- nom ;
+- trois boutons ;
+- première ligne ;
+- deuxième ligne ;
+- cartes ;
+- marges ;
+- espacements ;
+- arrière-plan ;
+- couleurs ;
+- tailles ;
+- alignements.
+
+---
+
+31. VALIDATION FONCTIONNELLE
+
+Tester obligatoirement :
+
+- retour ;
+- menu trois points ;
+- Message ;
+- Appel audio ;
+- Vidéo ;
+- première ligne ;
+- deuxième ligne ;
+- blocage ;
+- signalement ;
+- chargement ;
+- erreur ;
+- utilisateur hors ligne ;
+- utilisateur bloqué ;
+- responsive.
+
+---
+
+32. RÈGLE SPÉCIALE POUR LES SOUS-PAGES
+
+C'est extrêmement important :
+
+NE CHERCHE PAS À REMPLIR L'APPLICATION AVEC DES SOUS-PAGES.
+
+Une sous-page n'est créée que lorsqu'elle apporte une information ou une action nécessaire.
+
+Si l'élément entouré dans la référence ouvre réellement quelque chose :
+
+→ créer la sous-page.
+
+Si son contenu peut être affiché directement sans navigation :
+
+→ ne pas créer de sous-page.
+
+Si l'élément n'a aucune fonction réelle :
+
+→ supprimer l'indicateur de navigation.
+
+Une flèche ">" doit toujours avoir une destination réelle.
+
+---
+
+33. CRITÈRE « 1000 % »
+
+Le travail est considéré comme ÉCHEC si :
+
+- tu inventes une page ;
+- tu inventes une donnée ;
+- tu inventes un bouton ;
+- tu inventes une fonctionnalité ;
+- tu transformes la fiche contact en profil personnel ;
+- tu modifies arbitrairement la structure ;
+- tu utilises des emojis comme icônes ;
+- tu changes la palette ;
+- tu oublies un état ;
+- tu oublies une interaction ;
+- une flèche mène vers une page vide ;
+- un bouton est décoratif mais semble fonctionnel ;
+- le responsive est imparfait ;
+- les espacements sont incohérents ;
+- le menu "⋮" ne fonctionne pas ;
+- le statut n'est pas dynamique ;
+- le contact affiché n'est pas le bon.
+
+---
+
+34. RÈGLE FINALE
+
+Ne cherche pas à impressionner en ajoutant davantage.
+
+Impressionne par la précision.
+
+Le résultat final doit donner l'impression qu'une équipe UI/UX senior a conçu cette interface pour une application sociale internationale.
+
+La référence fournie est la base.
+
+Le design doit être :
+
+plus propre que la référence,
+
+plus précis que la référence,
+
+plus cohérent que la référence,
+
+mais jamais différent dans sa logique.
+
+OBJECTIF
+
+100 % de fidélité fonctionnelle.
+
+100 % de cohérence visuelle.
+
+200 % de finition.
+
+1000 % d'exigence.
+
+0 % d'invention arbitraire.
+
+Avant de déclarer la tâche terminée, effectue une dernière inspection complète du code et de l'interface et corrige automatiquement toute divergence détectée.

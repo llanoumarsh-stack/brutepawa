@@ -5183,72 +5183,72 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
         <div style={{ position: "fixed", bottom: 80, left: -40, width: 160, height: 160, borderRadius: "50%", background: "radial-gradient(circle, rgba(34,197,94,0.07) 0%, transparent 70%)", pointerEvents: "none" }} />
 
         {/* ── HEADER ── */}
-        <div style={{ position: "sticky", top: 0, zIndex: 10, background: "rgba(255,255,255,0.92)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", borderBottom: "1px solid rgba(34,197,94,0.12)", padding: "12px 16px", display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={() => setOverlay("none")} style={{ width: 38, height: 38, borderRadius: "50%", background: "#F0FDF4", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <div style={{ position: "sticky", top: 0, zIndex: 10, background: "rgba(255,255,255,0.92)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", borderBottom: "1px solid rgba(34,197,94,0.12)", padding: "10px 13px", display: "flex", alignItems: "center", gap: 10 }}>
+          <button onClick={() => setOverlay("none")} style={{ width: 30, height: 30, borderRadius: "50%", background: "#F0FDF4", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="15 18 9 12 15 6"/>
             </svg>
           </button>
-          <div style={{ flex: 1, fontWeight: 800, fontSize: 17, color: "var(--theme-text)" }}>Infos du contact</div>
-          <button onClick={() => setOverlay("contact-options")} style={{ width: 38, height: 38, borderRadius: "50%", background: "#F0FDF4", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--bp-primary)">
+          <div style={{ flex: 1, fontWeight: 800, fontSize: 14, color: "var(--theme-text)" }}>Infos du contact</div>
+          <button onClick={() => setOverlay("contact-options")} style={{ width: 30, height: 30, borderRadius: "50%", background: "#F0FDF4", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--bp-primary)">
               <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
             </svg>
           </button>
         </div>
 
         {/* ── PROFILE CARD ── */}
-        <div style={{ margin: "20px 16px 0", background: "var(--theme-surface)", borderRadius: 24, padding: "28px 20px 24px", textAlign: "center", boxShadow: "0 4px 24px rgba(34,197,94,0.10), 0 1px 4px rgba(0,0,0,0.06)", border: "1px solid rgba(34,197,94,0.08)" }}>
+        <div style={{ margin: "16px 13px 0", background: "var(--theme-surface)", borderRadius: 19, padding: "22px 16px 19px", textAlign: "center", boxShadow: "0 4px 24px rgba(34,197,94,0.10), 0 1px 4px rgba(0,0,0,0.06)", border: "1px solid rgba(34,197,94,0.08)" }}>
           {/* avatar */}
-          <div style={{ position: "relative", display: "inline-block", marginBottom: 18 }}>
+          <div style={{ position: "relative", display: "inline-block", marginBottom: 14 }}>
             {activeUser.avatarUrl
-              ? <img src={activeUser.avatarUrl} alt={activeUser.name} style={{ width: 104, height: 104, borderRadius: "50%", objectFit: "cover", display: "block", border: "3.5px solid var(--bp-primary)", boxShadow: "0 0 0 4px rgba(34,197,94,0.15), 0 6px 20px rgba(0,0,0,0.12)" }} />
-              : <div style={{ width: 104, height: 104, borderRadius: "50%", background: activeUser.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, fontWeight: 900, color: "#fff", border: "3.5px solid var(--bp-primary)", boxShadow: "0 0 0 4px rgba(34,197,94,0.15), 0 6px 20px rgba(0,0,0,0.12)" }}>
+              ? <img src={activeUser.avatarUrl} alt={activeUser.name} style={{ width: 83, height: 83, borderRadius: "50%", objectFit: "cover", display: "block", border: "2.8px solid var(--bp-primary)", boxShadow: "0 0 0 3px rgba(34,197,94,0.15), 0 6px 20px rgba(0,0,0,0.12)" }} />
+              : <div style={{ width: 83, height: 83, borderRadius: "50%", background: activeUser.color, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 29, fontWeight: 900, color: "#fff", border: "2.8px solid var(--bp-primary)", boxShadow: "0 0 0 3px rgba(34,197,94,0.15), 0 6px 20px rgba(0,0,0,0.12)" }}>
                   {activeUser.initials}
                 </div>
             }
             {/* presence dot */}
-            <div style={{ position: "absolute", bottom: 6, right: 6, width: 20, height: 20, borderRadius: "50%", background: presence.online ? "var(--bp-primary)" : "#9CA3AF", border: "3px solid #fff", boxShadow: "0 1px 4px rgba(0,0,0,0.15)" }} />
+            <div style={{ position: "absolute", bottom: 5, right: 5, width: 16, height: 16, borderRadius: "50%", background: presence.online ? "var(--bp-primary)" : "#9CA3AF", border: "2.4px solid #fff", boxShadow: "0 1px 4px rgba(0,0,0,0.15)" }} />
           </div>
 
           {/* name + verified badge */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, marginBottom: 6 }}>
-            <span style={{ fontWeight: 900, fontSize: 22, color: "var(--theme-text)", letterSpacing: -0.3 }}>{activeUser.name}</span>
-            {[13, 26, 40].includes(activeConv) && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 22, height: 22, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 5 }}>
+            <span style={{ fontWeight: 900, fontSize: 18, color: "var(--theme-text)", letterSpacing: -0.3 }}>{activeUser.name}</span>
+            {[13, 26, 40].includes(activeConv) && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 18, height: 18, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />}
           </div>
 
           {/* presence text */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 24 }}>
-            <div style={{ width: 8, height: 8, borderRadius: "50%", background: presence.online ? "var(--bp-primary)" : "#9CA3AF", flexShrink: 0 }} />
-            <span style={{ fontSize: 13, color: presence.online ? "var(--bp-primary)" : "#9CA3AF", fontWeight: 600 }}>{presence.online ? "En ligne" : presText}</span>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5, marginBottom: 19 }}>
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: presence.online ? "var(--bp-primary)" : "#9CA3AF", flexShrink: 0 }} />
+            <span style={{ fontSize: 10, color: presence.online ? "var(--bp-primary)" : "#9CA3AF", fontWeight: 600 }}>{presence.online ? "En ligne" : presText}</span>
           </div>
 
           {/* action buttons */}
-          <div style={{ display: "flex", gap: 10 }}>
+          <div style={{ display: "flex", gap: 8 }}>
             {infoActions.map(a => (
-              <div key={a.label} onClick={a.action} style={{ flex: 1, background: "#F0FDF4", borderRadius: 16, padding: "14px 8px 12px", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 8, border: "1px solid rgba(34,197,94,0.15)", boxShadow: "0 2px 8px rgba(34,197,94,0.08)", transition: "transform 0.15s" }}
+              <div key={a.label} onClick={a.action} style={{ flex: 1, background: "#F0FDF4", borderRadius: 13, padding: "11px 6px 10px", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 6, border: "1px solid rgba(34,197,94,0.15)", boxShadow: "0 2px 8px rgba(34,197,94,0.08)", transition: "transform 0.15s" }}
                 onPointerDown={e => (e.currentTarget.style.transform = "scale(0.96)")}
                 onPointerUp={e => (e.currentTarget.style.transform = "scale(1)")}
                 onPointerLeave={e => (e.currentTarget.style.transform = "scale(1)")}
               >
-                <div style={{ width: 48, height: 48, borderRadius: 14, background: "var(--theme-surface)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(34,197,94,0.15)" }}>
+                <div style={{ width: 38, height: 38, borderRadius: 11, background: "var(--theme-surface)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(34,197,94,0.15)" }}>
                   {a.icon}
                 </div>
-                <span style={{ fontSize: 11.5, fontWeight: 700, color: "#64748B", textAlign: "center" }}>{a.label}</span>
+                <span style={{ fontSize: 9, fontWeight: 700, color: "#64748B", textAlign: "center" }}>{a.label}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* ── INFO ROWS ── */}
-        <div style={{ margin: "14px 16px 32px", background: "var(--theme-surface)", borderRadius: 20, overflow: "hidden", boxShadow: "0 2px 12px rgba(0,0,0,0.05)", border: "1px solid rgba(34,197,94,0.07)" }}>
+        <div style={{ margin: "11px 13px 26px", background: "var(--theme-surface)", borderRadius: 16, overflow: "hidden", boxShadow: "0 2px 12px rgba(0,0,0,0.05)", border: "1px solid rgba(34,197,94,0.07)" }}>
           {infoRows.map((row, i) => (
-            <div key={i} style={{ display: "flex", alignItems: "center", gap: 14, padding: "16px 18px", borderBottom: i < infoRows.length - 1 ? "1px solid #F0FDF4" : "none" }}>
-              <div style={{ width: 38, height: 38, borderRadius: 12, background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 11, padding: "13px 14px", borderBottom: i < infoRows.length - 1 ? "1px solid #F0FDF4" : "none" }}>
+              <div style={{ width: 30, height: 30, borderRadius: 10, background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 {row.icon}
               </div>
-              <span style={{ flex: 1, fontSize: 14.5, color: "var(--theme-text)", fontWeight: 500 }}>{row.label}</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <span style={{ flex: 1, fontSize: 12, color: "var(--theme-text)", fontWeight: 500 }}>{row.label}</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="9 18 15 12 9 6"/>
               </svg>
             </div>
@@ -5382,34 +5382,34 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
     return createPortal(
       <div style={{ position:"fixed", inset:0, zIndex:10001, background:"rgba(0,0,0,0.45)", display:"flex", flexDirection:"column", justifyContent:"flex-end" }}
         onClick={goInfo}>
-        <div style={{ background:"#fff", borderRadius:"24px 24px 0 0", maxHeight:"92vh", overflowY:"auto", paddingBottom:24 }}
+        <div style={{ background:"#fff", borderRadius:"19px 19px 0 0", maxHeight:"92vh", overflowY:"auto", paddingBottom:19 }}
           onClick={e => e.stopPropagation()}>
-          <div style={{ display:"flex", justifyContent:"center", padding:"12px 0 8px" }}>
-            <div style={{ width:40, height:4, borderRadius:2, background:"#E5E7EB" }} />
+          <div style={{ display:"flex", justifyContent:"center", padding:"10px 0 6px" }}>
+            <div style={{ width:32, height:3, borderRadius:2, background:"#E5E7EB" }} />
           </div>
-          <div style={{ display:"flex", alignItems:"center", gap:12, padding:"4px 20px 16px", borderBottom:"1px solid #F3F4F6" }}>
+          <div style={{ display:"flex", alignItems:"center", gap:10, padding:"3px 16px 13px", borderBottom:"1px solid #F3F4F6" }}>
             {activeUser.avatarUrl
-              ? <img src={activeUser.avatarUrl} alt={activeUser.name} style={{ width:44, height:44, borderRadius:"50%", objectFit:"cover", border:"2px solid var(--bp-primary)" }} />
-              : <div style={{ width:44, height:44, borderRadius:"50%", background:activeUser.color, display:"flex", alignItems:"center", justifyContent:"center", fontWeight:800, fontSize:17, color:"#fff", border:"2px solid var(--bp-primary)" }}>{activeUser.initials}</div>}
+              ? <img src={activeUser.avatarUrl} alt={activeUser.name} style={{ width:35, height:35, borderRadius:"50%", objectFit:"cover", border:"1.5px solid var(--bp-primary)" }} />
+              : <div style={{ width:35, height:35, borderRadius:"50%", background:activeUser.color, display:"flex", alignItems:"center", justifyContent:"center", fontWeight:800, fontSize:14, color:"#fff", border:"1.5px solid var(--bp-primary)" }}>{activeUser.initials}</div>}
             <div>
-              <div style={{ fontWeight:800, fontSize:16, color:"#111827" }}>{activeUser.name}</div>
-              <div style={{ fontSize:12.5, color:presence.online ? "var(--bp-primary)" : "#9CA3AF", fontWeight:600 }}>{presence.online ? "En ligne" : presText}</div>
+              <div style={{ fontWeight:800, fontSize:13, color:"#111827" }}>{activeUser.name}</div>
+              <div style={{ fontSize:10, color:presence.online ? "var(--bp-primary)" : "#9CA3AF", fontWeight:600 }}>{presence.online ? "En ligne" : presText}</div>
             </div>
           </div>
           {options.map((opt, i) => (
             <div key={i} onClick={opt.action}
-              style={{ display:"flex", alignItems:"center", gap:14, padding:"14px 20px", cursor:"pointer", borderBottom: i < options.length - 1 ? "1px solid #F9FAFB" : "none" }}
+              style={{ display:"flex", alignItems:"center", gap:11, padding:"11px 16px", cursor:"pointer", borderBottom: i < options.length - 1 ? "1px solid #F9FAFB" : "none" }}
               onPointerDown={e => (e.currentTarget.style.background = "#F9FAFB")}
               onPointerUp={e => (e.currentTarget.style.background = "transparent")}
               onPointerLeave={e => (e.currentTarget.style.background = "transparent")}>
-              <div style={{ width:40, height:40, borderRadius:12, background:`${opt.color}18`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+              <div style={{ width:32, height:32, borderRadius:10, background:`${opt.color}18`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
                 {opt.icon}
               </div>
               <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ fontWeight:700, fontSize:15, color:"#111827" }}>{opt.label}</div>
-                <div style={{ fontSize:12.5, color:"#9CA3AF", marginTop:1 }}>{opt.sub}</div>
+                <div style={{ fontWeight:700, fontSize:12, color:"#111827" }}>{opt.label}</div>
+                <div style={{ fontSize:10, color:"#9CA3AF", marginTop:1 }}>{opt.sub}</div>
               </div>
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#D1D5DB" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#D1D5DB" strokeWidth="2.5" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
             </div>
           ))}
         </div>
