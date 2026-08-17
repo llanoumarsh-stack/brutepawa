@@ -109,6 +109,7 @@ export default function AboutPage() {
             icon={<ShieldCheck size={20} color="var(--bp-primary)" strokeWidth={1.9} />}
             title="Politique de confidentialité"
             subtitle={<>Découvrez comment nous protégeons<br />vos données</>}
+            onClick={() => navigate("/settings/privacy-policy")}
           />
           <OptionRow
             icon={<Code2 size={20} color="var(--bp-primary)" strokeWidth={1.9} />}
