@@ -972,11 +972,11 @@ export default function UserProfilePage({ userId }: { userId: number }) {
         <div style={{ height: 190, background: `linear-gradient(135deg, ${color}ee 0%, ${color}88 60%, ${color}33 100%)`, position: "relative", overflow: "hidden" }}>
           <div style={{ position: "absolute", top: -60, right: -60, width: 220, height: 220, borderRadius: "50%", background: "rgba(255,255,255,0.12)" }} />
           <div style={{ position: "absolute", bottom: -40, right: 60, width: 140, height: 140, borderRadius: "50%", background: "rgba(255,255,255,0.07)" }} />
-          {user.coverUrl && <img src={user.coverUrl} alt="cover" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }} />}
+          {user.coverUrl && <img src={user.coverUrl} alt="cover" onClick={() => openImageViewer(user.coverUrl!)} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block", cursor: "zoom-in" }} />}
         </div>
         <div style={{ position: "absolute", bottom: -48, left: 20, zIndex: 5 }}>
           {user.avatarUrl
-            ? <img src={user.avatarUrl} alt={name} style={{ width: 96, height: 96, borderRadius: "50%", border: "4px solid #fff", objectFit: "cover", boxShadow: "0 4px 20px rgba(0,0,0,0.2)" }} />
+            ? <img src={user.avatarUrl} alt={name} onClick={() => openImageViewer(user.avatarUrl!)} style={{ width: 96, height: 96, borderRadius: "50%", border: "4px solid #fff", objectFit: "cover", boxShadow: "0 4px 20px rgba(0,0,0,0.2)", cursor: "zoom-in" }} />
             : <div style={{ width: 96, height: 96, borderRadius: "50%", background: color, border: "4px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 900, fontSize: 32, boxShadow: "0 4px 20px rgba(0,0,0,0.2)" }}>{initials(user)}</div>
           }
           {isOnline && (
