@@ -256,6 +256,24 @@ export const chatGroupMessagesTable = pgTable("chat_group_messages", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [index("chat_group_messages_group_idx").on(t.groupId)]);
 
+export const chatGroupAuditEventEnum = pgEnum("chat_group_audit_event", [
+  "member_added",
+  "member_left",
+  "member_kicked",
+  "role_changed",
+  "group_updated",
+]);
+
+export const chatGroupAuditLogTable = pgTable("chat_group_audit_log", {
+  id: serial("id").primaryKey(),
+  groupId: integer("group_id").notNull(),
+  actorId: integer("actor_id").notNull(),
+  targetId: integer("target_id"),
+  event: chatGroupAuditEventEnum("event").notNull(),
+  detail: text("detail"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [index("chat_group_audit_log_group_idx").on(t.groupId)]);
+
 export const insertPostSchema = createInsertSchema(postsTable).omit({ id: true, createdAt: true, updatedAt: true, likesCount: true, commentsCount: true });
 export const insertMessageSchema = createInsertSchema(messagesTable).omit({ id: true, createdAt: true });
 export const insertCommentSchema = createInsertSchema(commentsTable).omit({ id: true, createdAt: true, updatedAt: true, likesCount: true });

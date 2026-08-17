@@ -1007,6 +1007,46 @@ export async function apiAddChatGroupMembers(id: number, userIds: number[]): Pro
   });
 }
 
+export async function apiKickGroupMember(groupId: number, userId: number): Promise<void> {
+  const res = await apiFetch(`/chat-groups/${groupId}/members/${userId}`, { method: "DELETE" });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(err.error ?? "Erreur lors de l'exclusion");
+  }
+}
+
+export async function apiChangeGroupMemberRole(groupId: number, userId: number, role: "admin" | "member"): Promise<void> {
+  const res = await apiFetch(`/chat-groups/${groupId}/members/${userId}/role`, {
+    method: "PATCH",
+    body: JSON.stringify({ role }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(err.error ?? "Erreur lors du changement de rôle");
+  }
+}
+
+export interface GroupAuditEntry {
+  id: number;
+  groupId: number;
+  actorId: number;
+  targetId: number | null;
+  event: "member_added" | "member_left" | "member_kicked" | "role_changed" | "group_updated";
+  detail: string | null;
+  createdAt: string;
+  actorName: string;
+  actorAvatar: string | null;
+  targetName: string | null;
+  targetAvatar: string | null;
+}
+
+export async function apiGetGroupAuditLog(groupId: number, event?: string): Promise<GroupAuditEntry[]> {
+  const params = event ? `?event=${encodeURIComponent(event)}` : "";
+  const res = await apiFetch(`/chat-groups/${groupId}/audit-log${params}`);
+  if (!res.ok) return [];
+  return res.json() as Promise<GroupAuditEntry[]>;
+}
+
 export async function apiGetUserPosts(userId: number): Promise<FeedPost[]> {
   const res = await apiFetch(`/posts?authorId=${userId}`);
   if (!res.ok) return [];

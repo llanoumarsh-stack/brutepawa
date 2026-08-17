@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { useCurrentUser } from "../hooks/useCurrentUser";
 import { openImageViewer } from "../components/ImageViewer";
-import { apiFetch, apiGetConversations, apiGetMessages, apiMarkMessagesRead, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiUpdateChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadFileXHR, apiUploadVoice, apiDeleteConversation, apiDeleteMessage, apiGetLinkPreview, apiGetMessagingSettings, apiUpdateMessagingSettings, apiGetMessageRequests, apiUpdateMessageRequest, apiGetContactInfo, apiMuteContact, apiUnmuteContact, apiPinContact, apiUnpinContact, apiFavoriteContact, apiUnfavoriteContact, apiBlockUser, apiUnblockUser, apiReportUser, apiSendFriendRequest, apiSearchInConversation, apiDeleteConversationContact, apiGetMyGroups, apiAddContactToGroup, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview, type MessageRequest, type ContactInfo } from "../lib/api";
+import { apiFetch, apiGetConversations, apiGetMessages, apiMarkMessagesRead, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiUpdateChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadFileXHR, apiUploadVoice, apiDeleteConversation, apiDeleteMessage, apiGetLinkPreview, apiGetMessagingSettings, apiUpdateMessagingSettings, apiGetMessageRequests, apiUpdateMessageRequest, apiGetContactInfo, apiMuteContact, apiUnmuteContact, apiPinContact, apiUnpinContact, apiFavoriteContact, apiUnfavoriteContact, apiBlockUser, apiUnblockUser, apiReportUser, apiSendFriendRequest, apiSearchInConversation, apiDeleteConversationContact, apiGetMyGroups, apiAddContactToGroup, apiGetGroupAuditLog, apiKickGroupMember, apiChangeGroupMemberRole, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview, type MessageRequest, type ContactInfo, type GroupAuditEntry } from "../lib/api";
 import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignaling";
 
 void ({} as ApiChatGroup);
@@ -628,6 +628,11 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   const [grpTopicsOn, setGrpTopicsOn]               = useState(false);
   const [showGrpStats, setShowGrpStats]             = useState(false);
   const [grpStatsTab, setGrpStatsTab]               = useState<"stats"|"boosts">("stats");
+  /* ─── Group audit log ─── */
+  const [showGrpAuditLog, setShowGrpAuditLog]       = useState(false);
+  const [grpAuditLog, setGrpAuditLog]               = useState<GroupAuditEntry[]>([]);
+  const [grpAuditFilter, setGrpAuditFilter]         = useState<string>("all");
+  const [grpAuditLoading, setGrpAuditLoading]       = useState(false);
   /* ─── Channel wizard ─── */
   const [chWiz, setChWiz]                     = useState<"none"|"info"|"type"|"members">("none");
   const [chName, setChName]                   = useState("");
@@ -3591,6 +3596,161 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
   /* ══════════════════════════════════════════════════════════════
      GROUP INFO VIEW — Telegram 99%
   ══════════════════════════════════════════════════════════════ */
+
+  /* ── JOURNAL DES ACTIONS (audit log) ── */
+  if (activeGroupId !== null && showGroupInfo && showGrpAuditLog) {
+    const grp = chatGroups.find(g => g.id === activeGroupId);
+    const AUDIT_FILTERS: { key: string; label: string }[] = [
+      { key: "all",           label: "Tout" },
+      { key: "member_kicked", label: "Exclusions" },
+      { key: "role_changed",  label: "Permissions" },
+      { key: "member_added",  label: "Ajouts" },
+      { key: "member_left",   label: "Départs" },
+      { key: "group_updated", label: "Paramètres" },
+    ];
+
+    const EVENT_ICONS: Record<string, React.ReactNode> = {
+      member_kicked: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" y1="11" x2="23" y2="11"/></svg>,
+      member_added:  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>,
+      member_left:   <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>,
+      role_changed:  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#8B5CF6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+      group_updated: <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>,
+    };
+
+    const EVENT_LABELS: Record<string, string> = {
+      member_kicked: "Membre exclu",
+      member_added:  "Membre(s) ajouté(s)",
+      member_left:   "Membre parti",
+      role_changed:  "Rôle modifié",
+      group_updated: "Paramètres mis à jour",
+    };
+
+    const EVENT_COLORS: Record<string, string> = {
+      member_kicked: "#EF4444",
+      member_added:  "#22C55E",
+      member_left:   "#F97316",
+      role_changed:  "#8B5CF6",
+      group_updated: "#3B82F6",
+    };
+
+    const EVENT_BG: Record<string, string> = {
+      member_kicked: "#FEF2F2",
+      member_added:  "#F0FDF4",
+      member_left:   "#FFF7ED",
+      role_changed:  "#F5F3FF",
+      group_updated: "#EFF6FF",
+    };
+
+    const visibleLog = grpAuditFilter === "all" ? grpAuditLog : grpAuditLog.filter(e => e.event === grpAuditFilter);
+
+    const formatRelTime = (iso: string) => {
+      const diff = Date.now() - new Date(iso).getTime();
+      const mins = Math.floor(diff / 60000);
+      if (mins < 1) return "à l'instant";
+      if (mins < 60) return `il y a ${mins} min`;
+      const hrs = Math.floor(mins / 60);
+      if (hrs < 24) return `il y a ${hrs} h`;
+      const days = Math.floor(hrs / 24);
+      if (days < 7) return `il y a ${days} j`;
+      return new Date(iso).toLocaleDateString("fr", { day: "numeric", month: "short" });
+    };
+
+    return createPortal(
+      <div style={{ position: "fixed", inset: 0, background: "#F8FAFC", zIndex: 10003, display: "flex", flexDirection: "column" }}>
+        {/* Header */}
+        <div style={{ background: "var(--theme-surface)", display: "flex", alignItems: "center", height: 56, padding: "0 4px", flexShrink: 0, boxShadow: "0 1px 0 rgba(0,0,0,0.08)" }}>
+          <button onClick={() => setShowGrpAuditLog(false)}
+            style={{ background: "none", border: "none", cursor: "pointer", width: 48, height: 48, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="var(--bp-primary)" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div style={{ flex: 1, textAlign: "center" }}>
+            <div style={{ fontWeight: 600, fontSize: 17, color: "#000" }}>Journal des actions</div>
+            <div style={{ fontSize: 12, color: "#9CA3AF" }}>{grp?.name ?? "Groupe"}</div>
+          </div>
+          <div style={{ width: 48 }} />
+        </div>
+
+        {/* Filter tabs */}
+        <div style={{ background: "var(--theme-surface)", borderBottom: "1px solid rgba(0,0,0,0.07)", overflowX: "auto", display: "flex", flexShrink: 0, scrollbarWidth: "none" }}>
+          {AUDIT_FILTERS.map(f => (
+            <button key={f.key} onClick={() => setGrpAuditFilter(f.key)}
+              style={{ flexShrink: 0, background: "none", border: "none", cursor: "pointer", padding: "11px 14px", fontSize: 13.5, fontWeight: grpAuditFilter === f.key ? 700 : 400, color: grpAuditFilter === f.key ? "var(--bp-primary)" : "#6B7280", borderBottom: grpAuditFilter === f.key ? "2.5px solid var(--bp-primary)" : "2.5px solid transparent", transition: "all 0.15s", whiteSpace: "nowrap" }}>
+              {f.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Content */}
+        <div style={{ flex: 1, overflowY: "auto" }}>
+          {grpAuditLoading ? (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 48 }}>
+              <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="var(--bp-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: "spin 1s linear infinite" }}>
+                <line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/>
+                <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/>
+                <line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/>
+                <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/>
+              </svg>
+            </div>
+          ) : visibleLog.length === 0 ? (
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "60px 32px", textAlign: "center" }}>
+              <div style={{ width: 72, height: 72, borderRadius: "50%", background: "#F1F5F9", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
+                <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#CBD5E1" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+                </svg>
+              </div>
+              <div style={{ fontSize: 16, fontWeight: 600, color: "#374151", marginBottom: 6 }}>Aucune action pour l'instant</div>
+              <div style={{ fontSize: 14, color: "#9CA3AF", lineHeight: 1.5 }}>
+                {grpAuditFilter === "all" ? "Les bannissements, changements de permissions et départs apparaîtront ici." : `Aucun événement de type "${AUDIT_FILTERS.find(f=>f.key===grpAuditFilter)?.label}" trouvé.`}
+              </div>
+            </div>
+          ) : (
+            <div style={{ padding: "12px 0 32px" }}>
+              {visibleLog.map((entry, i) => {
+                const color = EVENT_COLORS[entry.event] ?? "#6B7280";
+                const bg = EVENT_BG[entry.event] ?? "#F8FAFC";
+                const icon = EVENT_ICONS[entry.event];
+                const label = EVENT_LABELS[entry.event] ?? entry.event;
+                const actorInitial = entry.actorName[0]?.toUpperCase() ?? "?";
+                const actorColor = ["#EC4899","#8B5CF6","#F97316","var(--bp-primary)","#0EA5E9","#F59E0B"][entry.actorId % 6];
+                return (
+                  <div key={entry.id} style={{ display: "flex", gap: 12, padding: "12px 16px", background: i % 2 === 0 ? "var(--theme-surface)" : "transparent", borderBottom: "1px solid rgba(0,0,0,0.05)", alignItems: "flex-start" }}>
+                    {/* Actor avatar */}
+                    <div style={{ width: 42, height: 42, borderRadius: "50%", background: actorColor, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15, flexShrink: 0 }}>
+                      {entry.actorAvatar
+                        ? <img src={entry.actorAvatar} style={{ width: 42, height: 42, borderRadius: "50%", objectFit: "cover" }} alt="" />
+                        : actorInitial}
+                    </div>
+
+                    {/* Content */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3, flexWrap: "wrap" }}>
+                        <span style={{ fontWeight: 600, fontSize: 14.5, color: "#111" }}>{entry.actorName}</span>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 4, background: bg, color, borderRadius: 20, padding: "2px 8px", fontSize: 12.5, fontWeight: 600 }}>
+                          {icon}
+                          {label}
+                        </span>
+                      </div>
+                      {entry.targetName && (
+                        <div style={{ fontSize: 13, color: "#6B7280", marginBottom: 2 }}>
+                          Cible : <span style={{ fontWeight: 500, color: "#374151" }}>{entry.targetName}</span>
+                        </div>
+                      )}
+                      {entry.detail && (
+                        <div style={{ fontSize: 12.5, color: "#9CA3AF", fontStyle: "italic" }}>{entry.detail}</div>
+                      )}
+                      <div style={{ fontSize: 12, color: "#CBD5E1", marginTop: 4 }}>{formatRelTime(entry.createdAt)}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    , document.body);
+  }
+
   if (activeGroupId !== null && showGroupInfo) {
     const grp = chatGroups.find(g => g.id === activeGroupId);
     const gInfo = groupInfo;
@@ -3798,6 +3958,24 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           </div>
           <div style={{ fontWeight: 700, fontSize: 22, color: "#000", marginBottom: 4 }}>{grp?.name ?? "Groupe"}</div>
           <div style={{ fontSize: 14, color: "#9CA3AF" }}>{memberCount} membre{memberCount !== 1 ? "s" : ""} · {isChannelG ? "Canal" : "Groupe"}</div>
+          {(gInfo?.role === "owner" || gInfo?.role === "admin") && (
+            <button onClick={() => {
+              setGrpAuditFilter("all");
+              setGrpAuditLoading(true);
+              setGrpAuditLog([]);
+              setShowGrpAuditLog(true);
+              apiGetGroupAuditLog(activeGroupId).then(entries => {
+                setGrpAuditLog(entries);
+                setGrpAuditLoading(false);
+              }).catch(() => setGrpAuditLoading(false));
+            }}
+              style={{ background: "none", border: "none", cursor: "pointer", marginTop: 8, fontSize: 13, color: "var(--bp-primary)", fontWeight: 600, display: "inline-flex", alignItems: "center", gap: 4 }}>
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+              </svg>
+              Toutes les actions
+            </button>
+          )}
         </div>
 
         {/* ── QUICK ACTIONS ── */}
