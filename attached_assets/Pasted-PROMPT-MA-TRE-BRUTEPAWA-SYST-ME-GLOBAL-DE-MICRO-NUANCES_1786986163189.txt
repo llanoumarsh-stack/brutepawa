@@ -1,0 +1,687 @@
+PROMPT MAÎTRE — BRUTEPAWA
+SYSTÈME GLOBAL DE MICRO-NUANCES VERTES
+ULTRA PREMIUM — NIVEAU 2030 — ZÉRO INTERPRÉTATION
+
+IMPORTANT :
+L'image de référence fournie avec ce prompt est la référence VISUELLE.
+
+OBJECTIF UNIQUE :
+Transformer la gestion du vert dans TOUTE la plateforme BrutePawa afin d'obtenir une identité visuelle beaucoup plus premium, riche et sophistiquée, tout en conservant EXACTEMENT le design, la structure, les fonctionnalités et la hiérarchie actuels.
+
+==================================================
+RÈGLE ABSOLUE
+==================================================
+
+NE REFAIS PAS LE DESIGN DE BRUTEPAWA.
+
+NE CHANGE PAS LA STRUCTURE.
+
+NE CHANGE PAS LES COMPOSANTS.
+
+NE CHANGE PAS LA NAVIGATION.
+
+NE CHANGE PAS LES textes.
+
+NE CHANGE PAS LES espacements existants.
+
+NE CHANGE PAS les dimensions.
+
+NE CHANGE PAS les icônes.
+
+NE CHANGE PAS la hiérarchie visuelle.
+
+NE SUPPRIME RIEN.
+
+N'AJOUTE RIEN qui n'existe pas déjà.
+
+Ta mission est UNIQUEMENT d'améliorer le SYSTÈME VISUEL DU VERT.
+
+Toute interprétation créative non demandée = ÉCHEC.
+
+Toute surcharge = ÉCHEC.
+
+Toute modification de structure = ÉCHEC.
+
+==================================================
+1. COULEUR OFFICIELLE
+==================================================
+
+Le vert BrutePawa officiel reste :
+
+#22C55E
+
+Cette couleur doit rester le cœur de toute l'identité.
+
+Elle ne doit jamais être remplacée.
+
+Le nouveau système doit être construit AUTOUR de cette couleur.
+
+==================================================
+2. MICRO-NUANCES PREMIUM
+==================================================
+
+Le problème actuel est que certaines surfaces vertes paraissent trop plates.
+
+Créer donc un système de MICRO-NUANCES.
+
+Attention :
+
+JE NE VEUX PAS DE GROS GRADIENTS.
+
+Je veux une profondeur presque imperceptible.
+
+Le principe est :
+
+#22C55E
++
+variations extrêmement proches
++
+lumière douce
++
+profondeur
++
+cohérence.
+
+À première vue :
+
+"c'est le vert BrutePawa."
+
+En regardant attentivement :
+
+"le vert possède une profondeur et une finition premium."
+
+C'est exactement cet effet qui est recherché.
+
+==================================================
+3. SYSTÈME GLOBAL DE TOKENS
+==================================================
+
+Ne modifie pas les couleurs manuellement composant par composant.
+
+Centralise le système.
+
+Créer des tokens globaux cohérents tels que :
+
+--bp-green-primary
+--bp-green-soft
+--bp-green-subtle
+--bp-green-surface
+--bp-green-border
+--bp-green-hover
+--bp-green-active
+--bp-green-pressed
+--bp-green-disabled
+--bp-green-strong
+
+Les valeurs doivent rester dans la famille du vert BrutePawa.
+
+Aucune couleur étrangère ne doit être introduite.
+
+==================================================
+4. RÈGLE DE PROPORTION
+==================================================
+
+Plus la surface est grande :
+
+→ plus la micro-nuance peut être perceptible.
+
+Plus l'élément est petit :
+
+→ plus la couleur doit rester uniforme.
+
+EXEMPLES :
+
+HEADER VERT
+→ profondeur très subtile.
+
+GRAND FOND VERT
+→ micro-gradient légèrement perceptible.
+
+BOUTON VERT
+→ variation extrêmement légère.
+
+BADGE VERT
+→ presque uniforme.
+
+ICÔNE VERTE
+→ couleur essentiellement uniforme.
+
+TEXTE VERT
+→ couleur uniforme.
+
+POINT "EN LIGNE"
+→ couleur uniforme.
+
+SWITCH ACTIF
+→ légère variation uniquement.
+
+==================================================
+5. APPLICATION À TOUTE LA PLATEFORME
+==================================================
+
+Inspecte TOUT le projet.
+
+Recherche toutes les utilisations du vert :
+
+HEX
+RGB
+RGBA
+CSS
+Tailwind
+variables
+SVG
+inline styles
+gradients
+backgrounds
+borders
+shadows
+hover
+active
+focus
+selected
+disabled
+
+Puis applique le système global.
+
+Cela concerne notamment :
+
+Accueil
+Profil
+Profils utilisateurs
+Groupes
+Infos de contact
+Messagerie
+Conversations
+Notifications
+Recherche
+Paramètres
+Paramètres des groupes
+Modifier un groupe
+Liens d'invitation
+Administrateurs
+Membres
+Permissions
+Statistiques
+Actions récentes
+Création de contenu
+Commentaires
+Pages
+Communautés
+Formulaires
+Boutons
+Badges
+Switches
+Indicateurs
+Navigation
+Menus
+États actifs
+États sélectionnés
+États de confirmation
+Et toutes les futures interfaces utilisant le vert.
+
+==================================================
+6. HEADER ET GRANDES SURFACES VERTES
+==================================================
+
+Les grandes surfaces vertes doivent recevoir la finition la plus sophistiquée.
+
+NE PAS créer un gradient évident.
+
+Créer plutôt une variation extrêmement douce de luminosité.
+
+L'œil doit percevoir une surface légèrement vivante et profonde.
+
+Aucune démarcation.
+
+Aucune ligne.
+
+Aucune tache.
+
+Aucun motif.
+
+Aucun effet artificiel.
+
+==================================================
+7. BOUTONS
+==================================================
+
+Les boutons verts doivent rester exactement à leur place et conserver leurs dimensions.
+
+Améliorer uniquement leur finition.
+
+Normal :
+→ vert BrutePawa.
+
+Hover :
+→ variation très légère.
+
+Pressed :
+→ légèrement plus profond.
+
+Disabled :
+→ version atténuée.
+
+Focus :
+→ contour accessible et subtil.
+
+Aucune animation spectaculaire.
+
+==================================================
+8. BADGES
+==================================================
+
+Les badges verts doivent rester compacts.
+
+Exemple :
+
+NOUVEAU
+
+Ne pas les agrandir.
+
+Ne pas ajouter de glow.
+
+Ne pas transformer leur couleur en gradient visible.
+
+La finition doit être nette et premium.
+
+==================================================
+9. SWITCHES
+==================================================
+
+Les switches actifs doivent utiliser le système vert.
+
+Actif :
+→ vert BrutePawa + variation subtile.
+
+Inactif :
+→ conserver le gris actuel.
+
+Animation :
+→ rapide et fluide.
+
+Aucun effet lumineux.
+
+==================================================
+10. ICÔNES ET STATUTS
+==================================================
+
+Les icônes vertes restent vertes.
+
+Ne pas leur appliquer de gros gradients.
+
+Le niveau premium doit venir :
+
+- de la précision ;
+- du contraste ;
+- de la cohérence ;
+- de la netteté.
+
+Même règle pour :
+
+"En ligne"
+
+les indicateurs actifs et les petits points verts.
+
+==================================================
+11. SURFACES VERTES PÂLES
+==================================================
+
+Les fonds verts très pâles doivent utiliser une nuance cohérente avec #22C55E.
+
+Ils doivent donner une sensation :
+
+propre
+douce
+premium
+aérée
+
+sans devenir visiblement verts.
+
+==================================================
+12. OMBRES
+==================================================
+
+Les ombres doivent rester extrêmement discrètes.
+
+NE PAS créer d'ombres vertes fortes.
+
+NE PAS créer de glow.
+
+NE PAS créer d'effet néon.
+
+Les cartes blanches doivent rester blanches.
+
+==================================================
+13. INTERDICTION ABSOLUE DE SURCHARGE
+==================================================
+
+NE PAS ajouter :
+
+- néons
+- glow
+- particules
+- textures
+- bruit
+- motifs
+- rayons lumineux
+- 3D
+- glassmorphism excessif
+- animations permanentes
+- couleurs supplémentaires
+- gradients agressifs
+- effets gaming
+- effets cyberpunk
+
+Le résultat doit être PREMIUM, PAS SPECTACULAIRE.
+
+==================================================
+14. TYPOGRAPHIE
+==================================================
+
+NE MODIFIE PAS la typographie existante.
+
+Ne change ni :
+
+- famille
+- taille
+- poids
+- hauteur
+- espacement
+
+Le système de couleur doit fonctionner avec la typographie existante.
+
+==================================================
+15. CARTES BLANCHES
+==================================================
+
+Les cartes blanches doivent rester blanches.
+
+Ne leur ajoute PAS un fond vert.
+
+Une très légère nuance verte peut être utilisée uniquement lorsqu'une surface était déjà destinée à être une surface verte pâle.
+
+Ne transforme jamais une carte blanche en carte colorée.
+
+==================================================
+16. ACCESSIBILITÉ
+==================================================
+
+Toutes les combinaisons doivent conserver un excellent contraste.
+
+Vérifier particulièrement :
+
+texte blanc / vert
+
+texte vert / blanc
+
+icône verte / blanc
+
+badge vert / blanc
+
+switch vert
+
+lien vert
+
+statut vert
+
+Si une nuance diminue la lisibilité :
+
+NE PAS L'UTILISER.
+
+==================================================
+17. PERFORMANCE
+==================================================
+
+Le système doit être léger.
+
+Préférer :
+
+CSS
+tokens
+variables
+gradients CSS légers
+
+Éviter les images lourdes.
+
+Éviter les animations permanentes.
+
+Éviter JavaScript uniquement pour produire un effet visuel.
+
+==================================================
+18. RESPONSIVE
+==================================================
+
+Le système doit être parfait sur :
+
+320 px
+360 px
+375 px
+390 px
+412 px
+430 px
+tablette
+desktop
+
+Les nuances doivent rester cohérentes quelle que soit la résolution.
+
+==================================================
+19. COMPATIBILITÉ
+==================================================
+
+Ne casse aucun composant existant.
+
+Ne casse aucune route.
+
+Ne casse aucun formulaire.
+
+Ne casse aucune interaction.
+
+Ne casse aucune fonctionnalité backend.
+
+Ne casse aucune logique métier.
+
+Ne change aucun comportement fonctionnel.
+
+==================================================
+20. ANALYSE AVANT MODIFICATION
+==================================================
+
+AVANT de modifier le code :
+
+1. inspecte l'architecture existante ;
+2. identifie le système de couleurs actuel ;
+3. identifie les tokens existants ;
+4. identifie les composants réutilisés ;
+5. identifie les couleurs hardcodées ;
+6. identifie les gradients existants ;
+7. identifie les états interactifs ;
+8. identifie les pages utilisant le vert.
+
+Ensuite seulement, implémente le système.
+
+==================================================
+21. NE PAS DUPLIQUER LES STYLES
+==================================================
+
+Si un composant utilise déjà un token global :
+
+réutilise-le.
+
+Ne crée pas une nouvelle couleur uniquement pour ce composant.
+
+Le système doit être centralisé.
+
+==================================================
+22. OBJECTIF DESIGN
+==================================================
+
+Je veux une esthétique comparable à une plateforme sociale internationale haut de gamme.
+
+Le résultat doit sembler :
+
+2026
+→ moderne
+
+2027
+→ sophistiqué
+
+2028
+→ mature
+
+2029
+→ premium
+
+2030
+→ toujours élégant
+
+Sans tomber dans un style futuriste artificiel.
+
+==================================================
+23. TEST AVANT / APRÈS
+==================================================
+
+Compare visuellement :
+
+AVANT :
+
+vert plat.
+
+APRÈS :
+
+vert BrutePawa avec profondeur extrêmement subtile.
+
+Le changement doit être qualitatif mais discret.
+
+==================================================
+24. TEST DE COHÉRENCE
+==================================================
+
+Ouvre successivement :
+
+Accueil
+Profil
+Messagerie
+Groupe
+Infos du contact
+Modifier groupe
+Liens d'invitation
+Paramètres
+Notifications
+Statistiques
+
+Le vert doit immédiatement sembler appartenir au même système.
+
+Aucune page ne doit avoir son propre vert.
+
+==================================================
+25. TEST FINAL STRICT
+==================================================
+
+Avant de considérer le travail terminé :
+
+[ ] #22C55E conservé.
+[ ] Micro-nuances globales.
+[ ] Toutes les zones vertes harmonisées.
+[ ] Aucun gradient agressif.
+[ ] Aucun glow.
+[ ] Aucun néon.
+[ ] Aucun élément ajouté inutilement.
+[ ] Aucun élément supprimé.
+[ ] Aucun texte modifié.
+[ ] Aucun espacement modifié.
+[ ] Aucun composant déplacé.
+[ ] Aucun comportement cassé.
+[ ] Aucun contraste dégradé.
+[ ] Aucun débordement mobile.
+[ ] Aucun effet visuel excessif.
+[ ] Toutes les pages utilisent le même langage vert.
+[ ] Les grandes surfaces ont plus de profondeur.
+[ ] Les petits éléments restent sobres.
+[ ] Les boutons restent élégants.
+[ ] Les badges restent compacts.
+[ ] Les switches restent propres.
+[ ] Les icônes restent nettes.
+
+==================================================
+CRITÈRE D'ÉCHEC
+==================================================
+
+Si le résultat ressemble à un simple gradient :
+
+ÉCHEC.
+
+Si le résultat est trop flashy :
+
+ÉCHEC.
+
+Si le vert change d'identité :
+
+ÉCHEC.
+
+Si chaque page possède une nuance différente :
+
+ÉCHEC.
+
+Si la structure du design change :
+
+ÉCHEC.
+
+Si quelque chose est ajouté sans nécessité :
+
+ÉCHEC.
+
+Si quelque chose de la maquette disparaît :
+
+ÉCHEC.
+
+==================================================
+OBJECTIF FINAL ABSOLU
+==================================================
+
+Je ne veux pas que tu "redessines" BrutePawa.
+
+Je veux que tu prennes EXACTEMENT le BrutePawa existant et que tu lui donnes une finition chromatique beaucoup plus sophistiquée.
+
+Même interface.
+
+Même architecture.
+
+Même identité.
+
+Même fonctionnalités.
+
+Mais avec une signature verte beaucoup plus raffinée.
+
+Le résultat final doit donner l'impression que :
+
+"BrutePawa a toujours utilisé ce système de couleurs."
+
+Il ne doit jamais donner l'impression qu'un gradient a été ajouté après coup.
+
+UNE IDENTITÉ VERTE.
+
+UNE SEULE.
+
+COHÉRENTE PARTOUT.
+
+SUBTILE.
+
+PREMIUM.
+
+PRÉCISE.
+
+INTEMPORELLE.
+
+NIVEAU DE QUALITÉ CIBLE :
+1000 %.
+
+TOLÉRANCE AUX OUBLIS :
+0 %.
+
+TOLÉRANCE AUX INTERPRÉTATIONS :
+0 %.
+
+TOLÉRANCE AUX SURCHARGES :
+0 %.
+
+Toute déviation de ces règles doit être corrigée avant livraison.

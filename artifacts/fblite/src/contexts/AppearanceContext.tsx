@@ -41,6 +41,56 @@ function hexToRgb(hex: string): string {
   return `${r}, ${g}, ${b}`;
 }
 
+/** Convert hex → [H°, S%, L%] */
+function hexToHsl(hex: string): [number, number, number] {
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h = 0, s = 0;
+  const l = (max + min) / 2;
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+      case g: h = ((b - r) / d + 2) / 6; break;
+      case b: h = ((r - g) / d + 4) / 6; break;
+    }
+  }
+  return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)];
+}
+
+/** Convert [H°, S%, L%] → hex */
+function hslToHex(h: number, s: number, l: number): string {
+  const sl = s / 100, ll = l / 100;
+  const a = sl * Math.min(ll, 1 - ll);
+  const f = (n: number) => {
+    const k = (n + h / 30) % 12;
+    const c = ll - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+    return Math.round(255 * c).toString(16).padStart(2, "0");
+  };
+  return `#${f(0)}${f(8)}${f(4)}`;
+}
+
+/** Derive the full green micro-nuance token set from any primary hex */
+function computeGreenTokens(primary: string): Record<string, string> {
+  const [h, s, l] = hexToHsl(primary);
+  const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
+  return {
+    "--bp-green-soft":     hslToHex(h, s,                         clamp(l + 5, 10, 94)),   // légèrement plus clair (top gradient)
+    "--bp-green-subtle":   hslToHex(h, s,                         clamp(l - 4, 5,  88)),   // légèrement plus sombre (bottom gradient)
+    "--bp-green-surface":  hslToHex(h, clamp(s - 35, 8, 60),     clamp(l + 50, 90, 97)),  // fond très pâle
+    "--bp-green-border":   hslToHex(h, clamp(s - 15, 20, 75),    clamp(l + 30, 75, 92)),  // bordure légère
+    "--bp-green-hover":    hslToHex(h, s,                         clamp(l - 6,  5,  85)),  // hover discret
+    "--bp-green-pressed":  hslToHex(h, clamp(s + 3, 0, 100),     clamp(l - 11, 5,  80)),  // pressé plus profond
+    "--bp-green-disabled": hslToHex(h, clamp(s - 40, 8, 50),     clamp(l + 22, 70, 92)),  // désactivé atténué
+    "--bp-green-strong":   hslToHex(h, clamp(s + 2, 0, 100),     clamp(l - 14, 5,  75)),  // fort / sombre
+    "--bp-green-inset":    `rgba(255,255,255,0.14)`,                                        // reflet interne bouton
+    "--bp-green-shadow":   `rgba(${hexToRgb(primary)},0.28)`,                              // ombre douce
+  };
+}
+
 function applyToDOM(prefs: AppearancePrefs) {
   const resolved  = resolveTheme(prefs.theme);
   const primary   = prefs.primaryColor;
@@ -64,6 +114,12 @@ function applyToDOM(prefs: AppearancePrefs) {
   root.style.setProperty("--theme-text2",   isDark ? "#9CA3AF" : "#6B7280");
   root.style.setProperty("--theme-border",  isDark ? "#374151" : "#E5E7EB");
   root.style.setProperty("--theme-muted",   isDark ? "#6B7280" : "#9CA3AF");
+
+  /* ── Green micro-nuance tokens (computed from primary) ─────────── */
+  const greenTokens = computeGreenTokens(primary);
+  for (const [k, v] of Object.entries(greenTokens)) {
+    root.style.setProperty(k, v);
+  }
 
   /* ── Legacy CSS vars (keeps existing CSS working) ─────────────── */
   root.style.setProperty("--fb-blue",            primary);
