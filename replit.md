@@ -60,8 +60,7 @@ All already set in Replit Secrets / env:
 ## User Preferences
 
 - **DB exclusive**: Use only Supabase (`APP_DATABASE_URL`). Never use Replit managed DB (`executeSql` / `checkDatabase`)
-- **Push to GitHub** after each work session: `git push "https://x-access-token:${GITHUB_PERSONAL_ACCESS_TOKEN}@github.com/llanoumarsh-stack/brutepawa.git" main`
-- Use `-o push.default=current -o push.autoSetupRemote=true -o receive.denyCurrentBranch=ignore` flags if secret scanning blocks push
+- **Push to GitHub après chaque finition** : `git push origin main` (remote déjà configuré avec GITHUB_PERSONAL_ACCESS_TOKEN)
 
 ## Gotchas
 
