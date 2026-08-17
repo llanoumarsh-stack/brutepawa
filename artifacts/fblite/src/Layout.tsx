@@ -6,6 +6,7 @@ import SearchSuggestionsDropdown from "./components/SearchSuggestionsDropdown";
 import MobileSearchOverlay from "./components/MobileSearchOverlay";
 import { apiGetFriendRequests, apiGetUnreadNotifCount } from "./lib/api";
 import ImageViewer from "./components/ImageViewer";
+import { useCurrentUser } from "./hooks/useCurrentUser";
 
 interface Props {
   children: ReactNode;
@@ -64,8 +65,7 @@ export default function Layout({ children, onNewPost }: Props) {
     });
   };
 
-  const rawUser      = localStorage.getItem("fb_user");
-  const user         = rawUser ? JSON.parse(rawUser) : { name: "Utilisateur", email: "", avatarUrl: null };
+  const user         = useCurrentUser();
   const userInitials = user.name ? user.name.slice(0, 2).toUpperCase() : "ME";
 
   // Pre-fill search bar if already on /search?q=...
@@ -374,7 +374,7 @@ export default function Layout({ children, onNewPost }: Props) {
       {showPostModal && (
         <PostModal
           userInitials={userInitials}
-          userName={user.name}
+          userName={user.name ?? ""}
           onClose={() => setShowPostModal(false)}
           onPost={(content) => { onNewPost?.(content); }}
         />

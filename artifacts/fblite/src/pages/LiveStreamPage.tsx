@@ -3,6 +3,7 @@ import { useNavigate } from "../router";
 import { useCloudflareStream } from "../hooks/useCloudflareStream";
 import { getBpToken } from "../lib/api";
 import GiftPicker from "../components/GiftPicker";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 const REACTIONS = ["❤️", "😍", "🔥", "👏", "😂", "🎉"];
 
@@ -11,8 +12,7 @@ interface FloatingReaction { id: number; emoji: string; x: number; }
 
 export default function LiveStreamPage() {
   const navigate = useNavigate();
-  const rawUser = localStorage.getItem("fb_user");
-  const user = rawUser ? JSON.parse(rawUser) : { name: "Moi", flag: "", email: "" };
+  const user = useCurrentUser();
   const userInitials = user.name ? user.name.slice(0, 2).toUpperCase() : "ME";
   const userId = user.email || user.name || "anonymous";
 
@@ -226,7 +226,7 @@ export default function LiveStreamPage() {
     if (!localStreamRef.current) return;
     await cfStream.startStream(localStreamRef.current, {
       userId,
-      userName: user.name,
+      userName: user.name ?? "",
       userFlag: user.flag ?? "",
     });
   };
@@ -261,7 +261,7 @@ export default function LiveStreamPage() {
     setNewComment("");
     setShowCommentInput(false);
     // Optimistic: add locally immediately
-    setComments(prev => [...prev.slice(-30), { id: Date.now(), user: user.name.split(" ")[0], text }]);
+    setComments(prev => [...prev.slice(-30), { id: Date.now(), user: (user.name ?? "").split(" ")[0], text }]);
     // Persist to the server if we're live so viewers also see it
     if (isLive && cfStream.session?.id) {
       const token = getBpToken();

@@ -3,6 +3,7 @@ import { useNavigate } from "../router";
 import { searchPlaces, type Place } from "../data/locations";
 import { searchItunes, MUSIC_CATEGORIES, type Track } from "../data/music";
 import { apiGetUsers, apiCreatePost, type PublicUser } from "../lib/api";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 import { useR2Upload, phaseLabel, type UploadedMedia } from "../hooks/useR2Upload";
 import VoiceRecorder from "../components/VoiceRecorder";
 import { ArrowLeft, Send, Check, Globe, Users, ChevronDown, ChevronRight, MapPin, Music, Eye } from "lucide-react";
@@ -139,8 +140,7 @@ function OptionRow({ icon, color, bg, label, sub, onClick, rightEl }: {
 /* ══════════════════════════════════════════════════════════ */
 export default function CreatePostPage({ onPublish }: Props) {
   const navigate = useNavigate();
-  const rawUser = localStorage.getItem("fb_user");
-  const user = rawUser ? JSON.parse(rawUser) : { name: "Utilisateur", flag: "🇧🇯" };
+  const user = useCurrentUser();
   const userInitials = user.name ? user.name.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase() : "US";
   const userFlag = user.country ? (COUNTRY_FLAGS[user.country] ?? user.flag ?? "") : (user.flag ?? "🇧🇯");
 

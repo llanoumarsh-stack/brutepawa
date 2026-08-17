@@ -3,6 +3,7 @@ import { useNavigate } from "../router";
 import { apiCreateStory } from "../lib/api";
 import { useR2Upload } from "../hooks/useR2Upload";
 import { storyDraftStore } from "../lib/storyDraft";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 import {
   Type, Smile, Music2, Sparkles, PenLine, UserPlus, Link2, Crop,
   ChevronDown, X, Settings, ArrowRight, Globe, ImageIcon,
@@ -41,8 +42,7 @@ type ActiveTool = "text" | "sticker" | "music" | "effects" | "draw" | "tag" | "l
 export default function CreateStoryPage({ onCreated }: { onCreated?: () => void }) {
   const navigate = useNavigate();
 
-  const rawUser = localStorage.getItem("fb_user");
-  const user = rawUser ? (() => { try { return JSON.parse(rawUser); } catch { return null; } })() : null;
+  const user = useCurrentUser();
 
   const [mode, setMode] = useState<"text" | "photo">("text");
   const [text, setText] = useState("");

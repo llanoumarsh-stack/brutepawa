@@ -3,6 +3,7 @@ import ExpandableText from "../components/ExpandableText";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { openImageViewer } from "../components/ImageViewer";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 import { apiGetPosts, apiCreatePost, apiLikePost, apiGetStories, apiToggleSaved, apiFollow, apiCheckFollowing, apiDeletePost, apiArchivePost, apiPinPost, apiSearchUsers, type FeedPost, type StoryGroup } from "../lib/api";
 import StoryViewer from "../components/StoryViewer";
 import { storyDraftStore } from "../lib/storyDraft";
@@ -229,8 +230,7 @@ export default function Feed() {
     navigate("/create-story");
   };
 
-  const rawUser = localStorage.getItem("fb_user");
-  const user = rawUser ? JSON.parse(rawUser) as { id?: number; name: string; email: string; avatarUrl?: string; flag?: string } : { name: "Moi", email: "" };
+  const user = useCurrentUser();
   const userInitials = user.name ? user.name.slice(0, 2).toUpperCase() : "ME";
 
   const loadPosts = useCallback(async () => {
@@ -966,7 +966,7 @@ export default function Feed() {
               </div>
               <textarea
                 style={{ width: "100%", border: "none", outline: "none", resize: "none", fontSize: 18, minHeight: 120, color: "var(--theme-text)", fontFamily: "inherit", lineHeight: 1.5, background: "transparent" }}
-                placeholder={`Quoi de neuf, ${user.name.split(" ")[0]} ?`}
+                placeholder={`Quoi de neuf, ${(user.name ?? "").split(" ")[0]} ?`}
                 value={newPost}
                 onChange={e => setNewPost(e.target.value)}
                 autoFocus

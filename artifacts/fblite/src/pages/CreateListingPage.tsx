@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { useNavigate } from "../router";
 import { COUNTRIES } from "../data/mock";
 import { apiCreateProduct } from "../lib/api";
+import { getCurrentUser } from "../hooks/useCurrentUser";
 import { useR2Upload, phaseLabel } from "../hooks/useR2Upload";
 import imgAI      from "@assets/file_00000000dc9871f486329b83a7a1d9d1_1782125734073.png";
 import imgShield  from "@assets/file_00000000a50c71f49a3cfccdfd4ceab1_1782125734281.png";
@@ -900,8 +901,7 @@ function Step4({
   onPublish:()=>void; publishing:boolean; error:string|null;
 }) {
   const [photoIdx, setPhotoIdx] = useState(0);
-  const raw     = useRef(localStorage.getItem("fb_user"));
-  const fbUser  = raw.current ? JSON.parse(raw.current) : { firstName:"Vous", lastName:"", avatarUrl:null };
+  const fbUser  = getCurrentUser();
   const seller  = `${fbUser.firstName??""}${fbUser.lastName?" "+fbUser.lastName:""}`.trim()||"Vous";
   const selectedCo = COUNTRIES.find(c=>c.code===country)??COUNTRIES[0];
   const rawPrice   = price.replace(/[\s\u202f]/g,"");

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 import { BADGE_CONFIG, UserBadge } from "../components/UserBadge";
 import { useNavigate } from "../router";
 import { openImageViewer } from "../components/ImageViewer";
@@ -110,13 +111,11 @@ interface PostData {
 }
 
 
-
 interface Props { postId: number; }
 
 export default function PostDetailPage({ postId }: Props) {
   const navigate = useNavigate();
-  const rawUser  = localStorage.getItem("fb_user") ?? localStorage.getItem("bp_user");
-  const user     = rawUser ? JSON.parse(rawUser) as { name: string; email: string; avatarUrl?: string; id?: number } : { name: "", email: "" };
+  const user     = useCurrentUser();
 
   const [post, setPost]               = useState<PostData | null>(null);
   const [loading, setLoading]         = useState(true);

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback, Fragment } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 import { openImageViewer } from "../components/ImageViewer";
 import { apiFetch, apiGetConversations, apiGetMessages, apiMarkMessagesRead, apiSendMessage, apiGetUsers, apiGetUserPresence, apiGetChatGroups, apiCreateChatGroup, apiGetChatGroupInfo, apiGetChatGroupMessages, apiSendChatGroupMessage, apiLeaveChatGroup, apiUpdateChatGroup, apiSendTyping, apiGetTyping, apiUploadFile, apiUploadFileXHR, apiUploadVoice, apiDeleteConversation, apiDeleteMessage, apiGetLinkPreview, apiGetMessagingSettings, apiUpdateMessagingSettings, apiGetMessageRequests, apiUpdateMessageRequest, apiGetContactInfo, apiMuteContact, apiUnmuteContact, apiPinContact, apiUnpinContact, apiFavoriteContact, apiUnfavoriteContact, apiBlockUser, apiUnblockUser, apiReportUser, apiSendFriendRequest, apiSearchInConversation, apiDeleteConversationContact, apiGetMyGroups, apiAddContactToGroup, type PublicUser, type ApiChatGroup, type ApiChatGroupInfo, type LinkPreview, type MessageRequest, type ContactInfo } from "../lib/api";
 import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignaling";
@@ -521,7 +522,8 @@ const _uploadsCache = new Map<number, MediaUploadState>();
 
 export default function Messages({ initialUserId, initialGroupId }: { initialUserId?: number; initialGroupId?: number }) {
   const navigate = useNavigate();
-  const meId = (() => { try { return (JSON.parse(localStorage.getItem("fb_user") ?? "{}") as { id?: number }).id ?? 0; } catch { return 0; } })();
+  const currentUser = useCurrentUser();
+  const meId = currentUser.id ?? 0;
 
   const [activeConv, setActiveConv]   = useState<number | null>(initialUserId ?? null);
   const [messages, setMessages]       = useState<Record<number, Message[]>>(() => ({..._msgCache}));
@@ -1386,7 +1388,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
           const f = freshById.get(m.id);
           if (!f) return m;
           const freshStatus = f.isRead ? "read" as const : f.isDelivered ? "delivered" as const : "sent" as const;
-          if ((rank[freshStatus] ?? 0) > (rank[m.status] ?? 0)) return { ...m, status: freshStatus };
+          if ((rank[freshStatus] ?? 0) > (rank[m.status ?? ""] ?? 0)) return { ...m, status: freshStatus };
           return m;
         });
         return { ...prev, [convId]: updated };
@@ -2070,7 +2072,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                 const isMe = uid === meId;
                 const WIZ_COLORS = ["#EC4899","#8B5CF6","#F97316","var(--bp-primary)","#0EA5E9","#EF4444","#0EA5E9","#F59E0B","#6366F1","#8B5CF6"];
                 const col = WIZ_COLORS[uid % WIZ_COLORS.length];
-                const displayName = isMe ? ((() => { try { const s = JSON.parse(localStorage.getItem("fb_user")??"{}"); return s.firstName && s.lastName ? `${s.firstName} ${s.lastName}` : "Vous"; } catch { return "Vous"; } })()) : (u ? `${u.firstName} ${u.lastName}` : `Utilisateur #${uid}`);
+                const displayName = isMe ? (currentUser.firstName && currentUser.lastName ? `${currentUser.firstName} ${currentUser.lastName}` : "Vous") : (u ? `${u.firstName} ${u.lastName}` : `Utilisateur #${uid}`);
                 const initials = displayName.split(" ").map((w: string) => w[0]).join("").toUpperCase().slice(0, 2);
                 const avatarUrl = u?.avatarUrl ?? null;
                 return (
@@ -6193,7 +6195,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
                     <button onClick={() => setAttachPage("none")} style={{ background:"none", border:"none", cursor:"pointer", fontSize:22, color:"#555", padding:0 }}>‹</button>
                     <div style={{ fontWeight:800, fontSize:17 }}>Partager un contact</div>
                   </div>
-                  {allUsers.filter(u => u.id !== (JSON.parse(localStorage.getItem("fb_user")||"{}") as {id?:number}).id).slice(0,20).map(u => (
+                  {allUsers.filter(u => u.id !== currentUser.id).slice(0,20).map(u => (
                     <button key={u.id} onClick={() => {
                       const fullName = `${u.firstName} ${u.lastName}`;
                       const text = `👤 Contact : ${fullName}`;
@@ -7001,7 +7003,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
             {/* Avatar initials */}
             <div style={{ width: 34, height: 34, borderRadius: "50%", background: "linear-gradient(135deg,var(--bp-primary),var(--bp-primary-dark))", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, color: "#fff", flexShrink: 0, cursor: "pointer", marginLeft: 2 }}
               onClick={() => navigate("/profile")}>
-              {(() => { try { const n = (JSON.parse(localStorage.getItem("fb_user") ?? "{}") as { name?: string }).name ?? ""; return n.split(" ").map((w:string) => w[0]).join("").slice(0,2).toUpperCase() || "BP"; } catch { return "BP"; } })()}
+              {(currentUser.name ?? "").split(" ").map((w:string) => w[0]).join("").slice(0,2).toUpperCase() || "BP"}
             </div>
           </div>
         )}
@@ -7019,7 +7021,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
               <div style={{ flexShrink: 0, textAlign: "center", width: 66, padding: "0 3px" }}>
                 <div style={{ position: "relative", marginBottom: 4 }}>
                   <div className="avatar" style={{ width: 52, height: 52, fontSize: 17, margin: "0 auto", background: "#E5E7EB", color: "#64748B", border: "2.5px solid #fff" }}>
-                    {(() => { try { return (JSON.parse(localStorage.getItem("fb_user") ?? "{}") as { name?: string }).name?.slice(0,2).toUpperCase() ?? "??"; } catch { return "??"; } })()}
+                    {currentUser.name?.slice(0,2).toUpperCase() ?? "??"}
                   </div>
                   <div style={{ position: "absolute", bottom: 0, right: 5, width: 18, height: 18, background: "var(--bp-primary)", borderRadius: "50%", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 13, fontWeight: 900, lineHeight: 1 }}>+</div>
                 </div>
@@ -7431,7 +7433,7 @@ export default function Messages({ initialUserId, initialGroupId }: { initialUse
 
         {/* ── SCREEN 1 — Paramètres de messagerie PREMIUM ── */}
         {settingsPage === "main" && (() => {
-          const fbUser = (() => { try { return JSON.parse(localStorage.getItem("fb_user") ?? "{}") as { id?: number; name?: string; firstName?: string; lastName?: string; avatarUrl?: string }; } catch { return {}; } })();
+          const fbUser = currentUser;
           const fullName = fbUser.firstName && fbUser.lastName ? `${fbUser.firstName} ${fbUser.lastName}` : fbUser.name ?? "Mon profil";
           const initials = fullName.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
           const chevron = <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#CBD5E1" strokeWidth="2.2" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>;

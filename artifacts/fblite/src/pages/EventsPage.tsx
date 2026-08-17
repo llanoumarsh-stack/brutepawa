@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "../router";
 import { apiFetch } from "../lib/api";
 import { createPortal } from "react-dom";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 interface ApiEvent {
   id: number;
@@ -125,8 +126,8 @@ export default function EventsPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [rsvpLoading, setRsvpLoading] = useState<number | null>(null);
 
-  const rawUser = localStorage.getItem("fb_user");
-  const userId = rawUser ? (JSON.parse(rawUser) as { id?: number }).id ?? 0 : 0;
+  const user = useCurrentUser();
+  const userId = user.id ?? 0;
 
   const load = async () => {
     try {

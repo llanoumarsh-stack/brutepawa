@@ -1,5 +1,6 @@
 import { useState, useEffect, Component, ReactNode } from "react";
 import { Router, useLocation, useNavigate } from "./router";
+import { isUserLoggedIn } from "./hooks/useCurrentUser";
 import Layout from "./Layout";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -163,7 +164,7 @@ function matchDynamic(pattern: string, path: string): Record<string, string> | n
 }
 
 function PushAutoSubscribe() {
-  const isAuth = Boolean(localStorage.getItem("fb_user"));
+  const isAuth = isUserLoggedIn();
   const { permission, subscribed, subscribe } = usePushNotifications();
 
   useEffect(() => {
@@ -181,7 +182,7 @@ function PushAutoSubscribe() {
 function AppContent() {
   const path = useLocation();
   const navigate = useNavigate();
-  const isAuth = Boolean(localStorage.getItem("fb_user"));
+  const isAuth = isUserLoggedIn();
   const isPublic = PUBLIC_PATHS.includes(path);
 
   const [posts, setPosts] = useState<Post[]>([]);

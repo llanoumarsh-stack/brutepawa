@@ -3,6 +3,7 @@ import { useNavigate } from "../router";
 import { useViewerPresence } from "../hooks/useViewerPresence";
 import { getBpToken } from "../lib/api";
 import GiftPicker from "../components/GiftPicker";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 interface LiveInfo {
   id: number;
@@ -42,10 +43,9 @@ interface Props {
 
 export default function LiveWatchPage({ streamId }: Props) {
   const navigate = useNavigate();
-  const rawUser = localStorage.getItem("fb_user");
-  const localUser = rawUser ? (JSON.parse(rawUser) as { name?: string; flag?: string }) : null;
-  const viewerName = localUser?.name || "Anonyme";
-  const viewerFlag = localUser?.flag || "";
+  const localUser = useCurrentUser();
+  const viewerName = localUser.name || "Anonyme";
+  const viewerFlag = localUser.flag || "";
 
   const [stream, setStream]           = useState<LiveInfo | null>(null);
   const [error, setError]             = useState<string | null>(null);

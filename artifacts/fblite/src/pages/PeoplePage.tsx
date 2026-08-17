@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "../router";
 import { apiFetch, getBpToken } from "../lib/api";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 /* ─── Types ──────────────────────────────────────────────────────────────── */
 interface PersonUser {
@@ -285,7 +286,7 @@ export default function PeoplePage() {
   const [friendsTab, setFriendsTab]     = useState<"requests"|"list">("requests");
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const me = (() => { try { return JSON.parse(localStorage.getItem("fb_user")??"{}") as {id?:number;name?:string}; } catch { return {}; } })();
+  const me = useCurrentUser();
 
   const loadMain = useCallback(async () => {
     setLoading(true);

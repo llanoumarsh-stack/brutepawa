@@ -1,4 +1,5 @@
 import { useNavigate } from "../router";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 const C = { bg:"#F8FAFC",card:"#FFFFFF",primary:"var(--bp-primary)",text:"#111827",secondary:"#64748B",muted:"#9CA3AF",border:"#E5E7EB",shadow:"0 2px 16px rgba(0,0,0,0.05)" };
 
@@ -38,8 +39,7 @@ const sv = { stroke:"#fff",fill:"none",strokeWidth:2,strokeLinecap:"round" as co
 
 export default function MessagingSettingsPage() {
   const navigate = useNavigate();
-  const rawUser = localStorage.getItem("fb_user");
-  const user = rawUser ? JSON.parse(rawUser) : {};
+  const user = useCurrentUser();
   const name = [user.firstName,user.lastName].filter(Boolean).join(" ") || user.name || "Junior Omar";
 
   const ROWS = [

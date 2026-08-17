@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "../router";
 import { apiGetUserStats } from "../lib/api";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 const C = {
   bg:"#F8FAFC", card:"#FFFFFF", primary:"var(--bp-primary)", primaryDark:"var(--bp-primary-dark)",
@@ -84,8 +85,7 @@ const I = {
 
 export default function ProfileMenuPage() {
   const navigate = useNavigate();
-  const rawUser = localStorage.getItem("fb_user");
-  const user = rawUser ? JSON.parse(rawUser) : {};
+  const user = useCurrentUser();
   const name = [user.firstName, user.lastName].filter(Boolean).join(" ") || user.name || "Junior Omar";
   const username = user.username || (user.email?.split("@")[0]) || "junioromar";
   const userId = user.id ? String(user.id).padStart(8,"0") : "10000123";

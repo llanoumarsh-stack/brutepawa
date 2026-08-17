@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 import { Post } from "../lib/store";
 import { formatNumber } from "../data/mock";
 import { apiGetStories, apiGetComments, apiPostComment, apiPostVoiceComment, apiUploadVoice, apiDeleteComment, apiToggleCommentLike, apiToggleSaved, apiReportPost, apiFollow, apiCheckFollowing, apiBlockUser, apiDeletePost, apiHidePost, apiUnpinPost, apiPinPost, apiArchivePost, apiTogglePostComments, apiSetPostAudience, apiGetPostStats, apiSearchUsers, type StoryGroup, type PostComment } from "../lib/api";
@@ -57,8 +58,7 @@ type PostMenu = {
 
 export default function Home({ posts = [], postsLoading = false, onLike, newPosts = [] }: Props) {
   const navigate = useNavigate();
-  const rawUser = localStorage.getItem("fb_user");
-  const user = rawUser ? JSON.parse(rawUser) as { name: string; email: string; avatarUrl?: string; flag?: string; id?: number } : { name: "Moi", email: "" };
+  const user = useCurrentUser();
   const userInitials = user.name ? user.name.slice(0, 2).toUpperCase() : "ME";
 
   const [storyGroups, setStoryGroups] = useState<StoryGroup[]>([]);
@@ -440,7 +440,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
             onClick={() => navigate("/create-post")}
             style={{ flex: 1, background: "#132a1f", borderRadius: 30, padding: "11px 16px", fontSize: 15, color: "#9CA3AF", cursor: "pointer", fontWeight: 400, lineHeight: 1 }}
           >
-            Quoi de neuf, {user.name.split(" ")[0]} ?
+            Quoi de neuf, {(user.name ?? "").split(" ")[0]} ?
           </div>
           {/* Photo icon */}
           <button onClick={() => { sessionStorage.setItem("createPost_mode","photo"); navigate("/create-post"); }} style={{ background: "none", border: "none", cursor: "pointer", padding: 6, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -1028,7 +1028,7 @@ export default function Home({ posts = [], postsLoading = false, onLike, newPost
                         <input
                           ref={el => { commentInputRef.current[post.id] = el; }}
                           style={{ flex: 1, background: "transparent", border: "none", padding: "9px 0", fontSize: 14, outline: "none", color: "#f0f0f0", minWidth: 0 }}
-                          placeholder={replyContextPostId === post.id && replyingTo != null ? `Répondre à ${replyContextName.split(" ")[0]}…` : `Commenter en tant que ${user.name.split(" ")[0]}…`}
+                          placeholder={replyContextPostId === post.id && replyingTo != null ? `Répondre à ${replyContextName.split(" ")[0]}…` : `Commenter en tant que ${(user.name ?? "").split(" ")[0]}…`}
                           value={newComment[post.id] ?? ""}
                           onChange={e => setNewComment(prev => ({ ...prev, [post.id]: e.target.value }))}
                           onKeyDown={e => { if (e.key === "Enter") submitComment(post.id); if (e.key === "Escape" && replyingTo) cancelReply(); }}

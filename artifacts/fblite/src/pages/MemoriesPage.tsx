@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "../router";
 import { apiFetch } from "../lib/api";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 interface MemoryPost {
   id: number;
@@ -18,9 +19,9 @@ export default function MemoriesPage() {
   const [memories, setMemories] = useState<MemoryPost[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const rawUser = localStorage.getItem("fb_user");
-  const userName: string = rawUser ? (JSON.parse(rawUser) as { name?: string }).name ?? "Utilisateur" : "Utilisateur";
-  const avatarUrl: string | null = rawUser ? (JSON.parse(rawUser) as { avatarUrl?: string | null }).avatarUrl ?? null : null;
+  const currentUser = useCurrentUser();
+  const userName: string = currentUser.name ?? "Utilisateur";
+  const avatarUrl: string | null = currentUser.avatarUrl ?? null;
   const userInitials = userName.slice(0, 2).toUpperCase();
 
   useEffect(() => {

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "../router";
 import { COUNTRIES } from "../data/mock";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 import ServiceFilterSheet, { type ServiceFilters } from "../components/ServiceFilterSheet";
 import {
   apiGetProducts, apiGetJobs, apiGetMarketplaceServices, apiToggleMarketplaceFavorite, apiGetMarketplaceFavorites,
@@ -80,8 +81,7 @@ const TABS: { id: MarketTab; label: string; icon: React.ReactNode }[] = [
 /* ═══════════════════════════════════════════════════════════ */
 export default function MarketplacePage() {
   const navigate = useNavigate();
-  const rawUser  = localStorage.getItem("fb_user");
-  const fbUser   = rawUser ? JSON.parse(rawUser) : { name: "Moi", countryCode: "CI" };
+  const fbUser   = useCurrentUser();
 
   const [activeTab,     setActiveTab]     = useState<MarketTab>("marketplace");
   const [search,        setSearch]        = useState("");

@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { openImageViewer } from "../components/ImageViewer";
 import ImageViewer from "../components/ImageViewer";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 import {
   apiGetUserById, apiGetUsersWithStatus, apiGetFriendRequests, apiGetUserPosts,
   apiSendFriendRequest, apiAcceptFriendRequest, apiRejectFriendRequest,
@@ -231,6 +232,7 @@ const EmptyMutualIllustration = () => (
 
 export default function UserProfilePage({ userId }: { userId: number }) {
   const navigate = useNavigate();
+  const meId = useCurrentUser().id;
 
   const coverImgRef = useRef<HTMLImageElement>(null);
 
@@ -446,8 +448,6 @@ export default function UserProfilePage({ userId }: { userId: number }) {
   const name = fullName(user);
   const color = avatarColor(user.id);
   const photoCount = posts.filter(p => p.imageUrl).length + (user.avatarUrl ? 1 : 0);
-  const rawMe = localStorage.getItem("fb_user");
-  const meId = rawMe ? (JSON.parse(rawMe) as { id?: number }).id : undefined;
   const isOwner = meId === user.id;
   const joinYear = user.createdAt ? new Date(user.createdAt).getFullYear() : new Date().getFullYear();
 

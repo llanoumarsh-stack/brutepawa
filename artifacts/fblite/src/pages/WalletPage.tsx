@@ -4,6 +4,7 @@ import {
   apiGetCreatorWallet, apiPurchaseTokens, apiGetTokenPurchaseStatus, apiGetGiftHistory,
   type ApiTx, type PublicUser, type ApiTokenPurchase, type ApiGiftHistoryItem,
 } from "../lib/api";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 const BP_GREEN   = "var(--bp-primary)";
 const USD_RATE   = 600; // 1 USD = 600 FCFA
@@ -107,7 +108,7 @@ export default function WalletPage() {
   const [success, setSuccess]         = useState<string|null>(null);
   const [txError, setTxError]         = useState<string|null>(null);
 
-  const meId = (() => { try { return (JSON.parse(localStorage.getItem("fb_user")??"{}") as {id?:number}).id??0; } catch { return 0; } })();
+  const meId = useCurrentUser().id ?? 0;
 
   /* ── initial load ── */
   useEffect(() => {

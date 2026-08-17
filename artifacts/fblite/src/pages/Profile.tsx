@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "../router";
 import { useR2Upload } from "../hooks/useR2Upload";
+import { useCurrentUser, getCurrentUser } from "../hooks/useCurrentUser";
 import { apiGetMe, apiUpdateMe, saveFbUser, apiGetFriends, apiGetUserPosts, apiDeletePost, apiArchivePost, apiPinPost, apiUnpinPost, apiTogglePostComments, apiSetPostAudience, apiGetPostStats, type PublicUser, type FeedPost } from "../lib/api";
 import { computeScore, type ScoreFactors } from "../lib/score";
 import ProModeModal from "../components/ProModeModal";
@@ -17,11 +18,7 @@ import TagReviewSettingsPage from "../components/TagReviewSettingsPage";
 
 export default function Profile() {
   const navigate = useNavigate();
-  const rawUser = localStorage.getItem("fb_user");
-  const localUser: {
-    id?: number; name: string; email: string; flag?: string; country?: string;
-    countryCode?: string; phone?: string; avatarUrl?: string; coverUrl?: string; bio?: string;
-  } = rawUser ? JSON.parse(rawUser) : { name: "Utilisateur", email: "", flag: "🌍", country: "Afrique", countryCode: "CI" };
+  const localUser = useCurrentUser();
 
   const userInitials = localUser.name ? localUser.name.slice(0, 2).toUpperCase() : "ME";
 
@@ -155,9 +152,7 @@ export default function Profile() {
   }, []);
 
   useEffect(() => {
-    const raw = localStorage.getItem("fb_user");
-    if (!raw) return;
-    const u = JSON.parse(raw) as { id?: number };
+    const u = getCurrentUser();
     if (!u.id) return;
     Promise.all([apiGetUserPosts(u.id), apiGetFriends()])
       .then(([posts, friendList]) => {
@@ -478,7 +473,7 @@ export default function Profile() {
                 <div style={{ display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap" }}>
                   <span className="profile-name">{localUser.name}</span>
                   {/* Verified blue badge — premium users */}
-                  {[13, 26, 40].includes(localUser.id) && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 22, height: 22, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />}
+                  {localUser.id !== undefined && [13, 26, 40].includes(localUser.id) && <img src="/badge-verified.jpg" alt="Vérifié" style={{ width: 22, height: 22, objectFit: "cover", borderRadius: "50%", flexShrink: 0 }} />}
                   {/* Medal badge — argent, SVG custom */}
                   <svg width="20" height="22" viewBox="0 0 20 22" fill="none" style={{ flexShrink: 0 }}>
                     {/* Ribbon */}
@@ -976,7 +971,7 @@ export default function Profile() {
 
       {showProfileStatus && (
         <ProfileStatusModal
-          userName={localUser.name}
+          userName={localUser.name ?? ""}
           avatarUrl={avatarUrl || undefined}
           onClose={() => setShowProfileStatus(false)}
         />
@@ -1011,7 +1006,7 @@ export default function Profile() {
       {showVoirEnTantQue && (
         <VoirEnTantQueModal
           onClose={() => setShowVoirEnTantQue(false)}
-          userName={localUser.name}
+          userName={localUser.name ?? ""}
           avatarUrl={avatarUrl || undefined}
           bio={bio}
           country={localUser.country}

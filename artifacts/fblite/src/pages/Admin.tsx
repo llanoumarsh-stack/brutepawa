@@ -3,6 +3,7 @@ import { useNavigate } from "../router";
 import { STATS_BY_COUNTRY, formatNumber } from "../data/mock";
 import { isAdmin } from "../lib/admin";
 import { apiGetUsers, type PublicUser, apiAdminGetWithdrawals, apiAdminPatchWithdrawal, type AdminWithdrawal, apiAdminGetReports, apiAdminPatchReport, type AdminReport } from "../lib/api";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 type AdminSection = "dashboard" | "users" | "content" | "jobs" | "reports" | "monetization" | "withdrawals" | "settings";
 
@@ -40,11 +41,10 @@ export default function Admin() {
   const [rptActing, setRptActing] = useState<number | null>(null);
   const [rptError, setRptError] = useState<string | null>(null);
 
-  const rawUser = localStorage.getItem("fb_user");
-  const user = rawUser ? JSON.parse(rawUser) : null;
+  const user = useCurrentUser();
 
   useEffect(() => {
-    if (!user || !isAdmin(user.email)) {
+    if (!isAdmin(user.email ?? "")) {
       navigate("/");
       return;
     }
@@ -101,7 +101,7 @@ export default function Admin() {
     }
   }
 
-  if (!user || !isAdmin(user.email)) return null;
+  if (!isAdmin(user.email ?? "")) return null;
 
   const totalUsers = STATS_BY_COUNTRY.reduce((sum, c) => sum + c.users, 0);
   const totalActive = STATS_BY_COUNTRY.reduce((sum, c) => sum + c.active, 0);

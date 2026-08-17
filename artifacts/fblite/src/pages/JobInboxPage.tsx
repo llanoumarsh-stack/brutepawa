@@ -5,6 +5,7 @@ import {
   apiGetUserPresence, type PublicUser,
 } from "../lib/api";
 import { useCallSignaling, type NewMessagePayload } from "../hooks/useCallSignaling";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 /* ─── helpers ─────────────────────────────────────────────────── */
 const COLORS = ["var(--bp-primary)","#EC4899","#8B5CF6","#D97706","#388E3C","#00838F","#D32F2F"];
@@ -77,7 +78,7 @@ interface Props { initialUserId?: number; initialJobTitle?: string; }
 
 export default function JobInboxPage({ initialUserId, initialJobTitle }: Props) {
   const navigate  = useNavigate();
-  const meId      = (() => { try { return (JSON.parse(localStorage.getItem("fb_user") ?? "{}") as { id?: number }).id ?? 0; } catch { return 0; } })();
+  const meId      = useCurrentUser().id ?? 0;
 
   const [active,    setActive]    = useState<number | null>(initialUserId ?? null);
   const [msgs,      setMsgs]      = useState<Record<number, TgMsg[]>>({});

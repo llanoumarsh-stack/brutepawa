@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "../router";
 import { apiGetMe, apiUpdateMe, saveFbUser, apiGetFriends, type PublicUser } from "../lib/api";
+import { useCurrentUser, getCurrentUser } from "../hooks/useCurrentUser";
 import StorageSection from "../components/StorageSection";
 import { WORLD_CITIES, WORLD_MUSIC_GENRES } from "../lib/world-data";
 
@@ -481,9 +482,7 @@ type SKey = "intro"|"info"|"exp"|"edu"|"loisirs"|"interests"|"voyage"|"liens"|"c
 export default function EditProfilePage() {
   const navigate = useNavigate();
 
-  const rawUser = localStorage.getItem("fb_user");
-  const localUser: { name: string; email: string; phone?: string; country?: string; bio?: string } =
-    rawUser ? JSON.parse(rawUser) : { name: "", email: "" };
+  const localUser = useCurrentUser();
 
   const [bio,   setBio]   = useState(localUser.bio ?? "");
   const [city,  setCity]  = useState(localUser.country ?? "");
@@ -523,8 +522,7 @@ export default function EditProfilePage() {
         .then(data => {
           if (data.length > 0) { setFriends(data); return; }
           // fallback: all users (minus current user)
-          const rawMe = localStorage.getItem("fb_user");
-          const meId: number = rawMe ? (JSON.parse(rawMe) as { id?: number }).id ?? -1 : -1;
+          const meId: number = getCurrentUser().id ?? -1;
           import("../lib/api").then(({ apiGetUsers }) =>
             apiGetUsers().then(all => setFriends(all.filter(u => u.id !== meId)))
           ).catch(() => {});
@@ -559,7 +557,7 @@ export default function EditProfilePage() {
     else if (v === "websites")    { setTmp(ext.websites); }
     else if (v === "social")      { setTmp(ext.socialLinks); }
     else if (v === "phone")       { setTmpPhones([phone, ...ext.extraPhones]); }
-    else if (v === "email")       { setTmp(localUser.email); }
+    else if (v === "email")       { setTmp(localUser.email ?? ""); }
   };
 
   /* ── Save sub-view ─────────────────────────────────────────────────────── */

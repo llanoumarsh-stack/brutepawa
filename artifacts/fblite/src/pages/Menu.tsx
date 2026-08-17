@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "../router";
 import { isAdmin, ADMIN_SECRET_PATH } from "../lib/admin";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 import { apiGetTontines, apiGetCourses, apiGetEnrollments, apiGetWallet, apiGetBlockedUsers, apiUnblockUser, apiGetConversations, apiGetFriendRequests, apiGetGroups, apiGetUserStats, type ApiTontine, type ApiCourse, type ApiEnrollment, type BlockedUser } from "../lib/api";
 import { BPFeed, BPMessages, BPAmis, BPGroupes, BPMarketplace, BPServices, BPEmplois, BPPages, BPPortefeuille, BPTontines, BPRevenus, BPPaiements, BPReels, BPLives, BPFormations, BPMonetisation, BPSocialHeader, BPBusinessHeader, BPFinanceHeader, BPCreateurHeader, BPPublier, BPReel, BPProduit, BPService, BPOffreEmploi, BPSearch, BPQR, BPBell } from "../components/BPIcons";
 
@@ -16,8 +17,7 @@ type Section = "main" | "wallet" | "tontines" | "formations" | "emplois" | "bout
 
 export default function Menu() {
   const navigate = useNavigate();
-  const rawUser = localStorage.getItem("fb_user");
-  const user = rawUser ? JSON.parse(rawUser) : { name: "Utilisateur", email: "", flag: "🌍", country: "" };
+  const user = useCurrentUser();
   const userInitials = user.name ? user.name.slice(0, 2).toUpperCase() : "ME";
 
   const [activeSection, setActiveSection] = useState<Section>("main");
@@ -1041,7 +1041,7 @@ export default function Menu() {
         </svg>
       ),
     },
-    ...(isAdmin(user.email) ? [{
+    ...(isAdmin(user.email ?? "") ? [{
       label: "Admin", sub: "Panneau d'administration",
       bg: "#FEE2E2", iconColor: "#E91E63", badge: 0, action: () => navigate(ADMIN_SECRET_PATH),
       icon: (_c: string) => (

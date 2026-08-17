@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getBpToken } from "../lib/api";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 interface GiftItem {
   id: number;
@@ -105,6 +106,7 @@ export default function GiftPicker({
   contextType, contextId,
   tokenBalance: initialBalance, onClose, onSent, onBuyTokens,
 }: Props) {
+  const currentUser = useCurrentUser();
   const [catalog, setCatalog]     = useState<GiftItem[]>([]);
   const [selected, setSelected]   = useState<GiftItem | null>(null);
   const [qty, setQty]             = useState(1);
@@ -138,15 +140,13 @@ export default function GiftPicker({
   const handleSend = async () => {
     if (!selected || loading || success || !canAffordSel) return;
     setLoading(true); setError(null);
-    const rawUser = localStorage.getItem("fb_user");
-    const user    = rawUser ? JSON.parse(rawUser) as { name?: string } : {};
     const token   = getBpToken();
     try {
       for (let i = 0; i < qty; i++) {
         const res = await fetch("/api/gifts/send", {
           method: "POST",
           headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-          body: JSON.stringify({ giftId: selected.id, receiverId, contextType, contextId, senderName: user.name ?? "" }),
+          body: JSON.stringify({ giftId: selected.id, receiverId, contextType, contextId, senderName: currentUser.name ?? "" }),
         });
         if (!res.ok) {
           const e = await res.json().catch(() => ({})) as { error?: string };
